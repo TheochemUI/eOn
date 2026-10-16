@@ -4027,87 +4027,138 @@ double parabolicFactor(double temperature, double crossover) {
   return phase / s;
 }
 
+namespace {
+
+struct HarmonicSpectrum {
+  VectorXd reactant;
+  VectorXd saddle;
+  std::vector<bool> rigidReactant;
+  std::vector<bool> rigidSaddle;
+};
+
+HarmonicSpectrum harmonicSpectrum(const MatrixXd &hessReactant,
+                                  const MatrixXd &hessSaddle, double beta,
+                                  double barrier, long rigidModes) {
+  if (!(beta > 0.0) || !std::isfinite(beta) || !std::isfinite(barrier) ||
+      hessReactant.size() == 0 || hessSaddle.size() == 0 ||
+      hessReactant.rows() != hessReactant.cols() ||
+      hessSaddle.rows() != hessSaddle.cols() ||
+      hessReactant.rows() != hessSaddle.rows() || rigidModes < 0 ||
+      rigidModes >= hessReactant.rows() || !hessReactant.allFinite() ||
+      !hessSaddle.allFinite()) {
+    throw std::invalid_argument(
+        "harmonic TST: need finite beta > 0 and barrier, matching finite "
+        "square Hessians, and fewer rigid modes than degrees of freedom");
+  }
+  if (beta > 1.0 &&
+      std::abs(barrier) > std::numeric_limits<double>::max() / beta) {
+    throw std::overflow_error("harmonic TST: beta times barrier overflows");
+  }
+  const ColMajorXd hr =
+      0.5 * hessReactant + 0.5 * hessReactant.transpose();
+  const ColMajorXd hs = 0.5 * hessSaddle + 0.5 * hessSaddle.transpose();
+  const Eigen::SelfAdjointEigenSolver<ColMajorXd> er(hr,
+                                                  Eigen::EigenvaluesOnly);
+  const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(hs,
+                                                  Eigen::EigenvaluesOnly);
+  if (er.info() != Eigen::Success || es.info() != Eigen::Success ||
+      !er.eigenvalues().allFinite() || !es.eigenvalues().allFinite()) {
+    throw std::runtime_error("harmonic TST: Hessian eigensolver failed");
+  }
+  HarmonicSpectrum out{er.eigenvalues(), es.eigenvalues(), {}, {}};
+  if (!(out.saddle(0) < 0.0)) {
+    throw std::invalid_argument(
+        "harmonic TST: the saddle Hessian has no negative eigenvalue");
+  }
+  out.rigidReactant = nearestZero(out.reactant, rigidModes);
+  out.rigidSaddle = nearestZero(out.saddle, rigidModes, 1);
+  for (long m = 0; m < out.reactant.size(); ++m) {
+    if (!out.rigidReactant[static_cast<size_t>(m)] &&
+        !(out.reactant(m) > 0.0)) {
+      throw std::invalid_argument(
+          "harmonic TST: the reactant Hessian has a non-positive "
+          "vibrational eigenvalue");
+    }
+  }
+  for (long m = 1; m < out.saddle.size(); ++m) {
+    if (!out.rigidSaddle[static_cast<size_t>(m)] && !(out.saddle(m) > 0.0)) {
+      throw std::invalid_argument(
+          "harmonic TST: the saddle Hessian has a non-positive "
+          "vibrational eigenvalue besides its unstable mode");
+    }
+  }
+  return out;
+}
+
+double finiteHarmonicLogRate(double rate) {
+  if (!std::isfinite(rate)) {
+    throw std::overflow_error("harmonic TST: non-finite logarithmic rate");
+  }
+  return rate;
+}
+
+} // namespace
+
 double harmonicTstLogRate(const MatrixXd &hessReactant,
                           const MatrixXd &hessSaddle, double beta,
                           double barrier, long rigidModes) {
-  if (!(beta > 0.0) || hessReactant.size() == 0 || hessSaddle.size() == 0 ||
-      hessReactant.rows() != hessReactant.cols() ||
-      hessSaddle.rows() != hessSaddle.cols() ||
-      hessReactant.rows() != hessSaddle.rows() || rigidModes < 0) {
-    throw std::invalid_argument(
-        "harmonicTstLogRate: need beta > 0, matching square Hessians and a "
-        "non-negative rigid-mode count");
-  }
-  const Eigen::SelfAdjointEigenSolver<MatrixXd> er(
-      0.5 * (hessReactant + hessReactant.transpose()), Eigen::EigenvaluesOnly);
-  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(
-      0.5 * (hessSaddle + hessSaddle.transpose()), Eigen::EigenvaluesOnly);
-  const VectorXd &lr = er.eigenvalues();
-  const VectorXd &ls = es.eigenvalues();
-  if (!(ls(0) < 0.0)) {
-    throw std::invalid_argument(
-        "harmonicTstLogRate: the saddle Hessian has no negative eigenvalue");
-  }
-  const std::vector<bool> rigidR = nearestZero(lr, rigidModes);
-  const std::vector<bool> rigidS = nearestZero(ls, rigidModes, 1);
+  const HarmonicSpectrum spectrum =
+      harmonicSpectrum(hessReactant, hessSaddle, beta, barrier, rigidModes);
+  const VectorXd &lr = spectrum.reactant;
+  const VectorXd &ls = spectrum.saddle;
   double logRatio = 0.0;
   for (long m = 0; m < lr.size(); ++m) {
-    if (!rigidR[static_cast<size_t>(m)]) {
+    if (!spectrum.rigidReactant[static_cast<size_t>(m)]) {
       logRatio += 0.5 * std::log(lr(m));
     }
   }
   // Eigenvalue 0 is the unstable mode, the most negative.
   for (long m = 1; m < ls.size(); ++m) {
-    if (!rigidS[static_cast<size_t>(m)]) {
-      logRatio -= 0.5 * std::log(std::abs(ls(m)));
+    if (!spectrum.rigidSaddle[static_cast<size_t>(m)]) {
+      logRatio -= 0.5 * std::log(ls(m));
     }
   }
-  return logRatio - std::log(2.0 * std::numbers::pi) - beta * barrier;
+  return finiteHarmonicLogRate(
+      logRatio - std::log(2.0 * std::numbers::pi) - beta * barrier);
 }
 
 double quantumHarmonicTstLogRate(const MatrixXd &hessReactant,
                                  const MatrixXd &hessSaddle, double beta,
                                  double barrier, long rigidModes) {
-  if (!(beta > 0.0) || hessReactant.size() == 0 || hessSaddle.size() == 0 ||
-      hessReactant.rows() != hessReactant.cols() ||
-      hessSaddle.rows() != hessSaddle.cols() ||
-      hessReactant.rows() != hessSaddle.rows() || rigidModes < 0) {
-    throw std::invalid_argument(
-        "quantumHarmonicTstLogRate: need beta > 0, matching square Hessians "
-        "and a non-negative rigid-mode count");
-  }
-  const ColMajorXd hr = 0.5 * (hessReactant + hessReactant.transpose());
-  const ColMajorXd hsd = 0.5 * (hessSaddle + hessSaddle.transpose());
-  const Eigen::SelfAdjointEigenSolver<ColMajorXd> er(hr,
-                                                     Eigen::EigenvaluesOnly);
-  const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(hsd,
-                                                     Eigen::EigenvaluesOnly);
-  const VectorXd lr = er.eigenvalues();
-  const VectorXd ls = es.eigenvalues();
-  if (!(ls(0) < 0.0)) {
-    throw std::invalid_argument("quantumHarmonicTstLogRate: the saddle "
-                                "Hessian has no negative eigenvalue");
-  }
-  const std::vector<bool> rigidR = nearestZero(lr, rigidModes);
-  const std::vector<bool> rigidS = nearestZero(ls, rigidModes, 1);
+  const HarmonicSpectrum spectrum =
+      harmonicSpectrum(hessReactant, hessSaddle, beta, barrier, rigidModes);
+  const VectorXd &lr = spectrum.reactant;
+  const VectorXd &ls = spectrum.saddle;
   const double bh = beta * kHbar;
+  if (!(bh > 0.0) || !std::isfinite(bh)) {
+    throw std::overflow_error("harmonic TST: beta hbar is not finite and positive");
+  }
   // ln(2 sinh(x / 2)) without overflow for large x, and without the
   // cancellation of 1 - exp(-x) for small x.
-  auto logTwoSinhHalf = [](double x) {
+  auto logTwoSinhHalf = [bh](double omega) {
+    if (omega > 1.0 && bh > std::numeric_limits<double>::max() / omega) {
+      throw std::overflow_error("harmonic TST: beta hbar omega overflows");
+    }
+    const double x = bh * omega;
+    if (!(x > 0.0)) {
+      throw std::underflow_error("harmonic TST: beta hbar omega underflows");
+    }
     return 0.5 * x + std::log(-std::expm1(-x));
   };
   double logRatio = 0.0;
   for (long m = 0; m < lr.size(); ++m) {
-    if (!rigidR[static_cast<size_t>(m)]) {
-      logRatio += logTwoSinhHalf(bh * std::sqrt(lr(m)));
+    if (!spectrum.rigidReactant[static_cast<size_t>(m)]) {
+      logRatio += logTwoSinhHalf(std::sqrt(lr(m)));
     }
   }
   for (long m = 1; m < ls.size(); ++m) {
-    if (!rigidS[static_cast<size_t>(m)]) {
-      logRatio -= logTwoSinhHalf(bh * std::sqrt(std::abs(ls(m))));
+    if (!spectrum.rigidSaddle[static_cast<size_t>(m)]) {
+      logRatio -= logTwoSinhHalf(std::sqrt(ls(m)));
     }
   }
-  return logRatio - std::log(2.0 * std::numbers::pi * bh) - beta * barrier;
+  return finiteHarmonicLogRate(
+      logRatio - std::log(2.0 * std::numbers::pi) - std::log(bh) -
+      beta * barrier);
 }
 
 } // namespace eonc::tunneling

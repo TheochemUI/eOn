@@ -3156,6 +3156,35 @@ pi_time_step = 1.0
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
+                 "InstantonJob rejects a reactant with unstable vibrations",
+                 "[job][instanton][integration][HarmonicValidation]") {
+  REQUIRE(copyTestData("neb_lj13"));
+  // A saddle supplied as the reactant is not a metastable well. Its
+  // unstable vibration remains after the cluster's rigid modes leave.
+  std::filesystem::copy_file(
+      workdir / "saddle.con", workdir / "reactant.con",
+      std::filesystem::copy_options::overwrite_existing);
+  writeConfig(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+mode = rate
+temperature = 400
+beads = 16
+)");
+  const auto results = runJob();
+  REQUIRE(results.at("termination_reason") != "0");
+  REQUIRE(results.count("rate_parabolic") == 0);
+  REQUIRE(results.count("rate_parabolic_log") == 0);
+  REQUIRE(results.count("rate_instanton") == 0);
+  REQUIRE(std::filesystem::file_size(workdir / "rate_instanton.dat") > 0);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
                  "GlobalOptimizationJob records a random hop and an MD hop",
                  "[job][global_optimization]") {
   EON_REQUIRE_TEST_DATA("neb_morse");

@@ -18,6 +18,7 @@
 
 #include <Eigen/Eigenvalues>
 #include <cmath>
+#include <limits>
 #include <memory>
 #include <numbers>
 #include <stdexcept>
@@ -1089,6 +1090,69 @@ TEST_CASE("Harmonic TST never takes a soft barrier mode for a rigid mode",
       std::log(2.0 * std::numbers::pi * bh) - beta * barrier;
   REQUIRE_THAT(quantumHarmonicTstLogRate(hr, hs, beta, barrier, 1),
                WithinRel(quantum, 1e-12));
+}
+
+TEST_CASE("Harmonic rates reject unstable wells and higher-index saddles",
+          "[Tunneling][Instanton][HarmonicValidation]") {
+  MatrixXd hr = MatrixXd::Identity(3, 3);
+  MatrixXd hs = MatrixXd::Identity(3, 3);
+  hs(0, 0) = -4.0;
+  for (const bool quantum : {false, true}) {
+    auto rate = [&](const MatrixXd &r, const MatrixXd &s, long rigid = 0) {
+      return quantum ? quantumHarmonicTstLogRate(r, s, 5.0, 0.3, rigid)
+                     : harmonicTstLogRate(r, s, 5.0, 0.3, rigid);
+    };
+    CAPTURE(quantum);
+    for (const double curvature : {-1.0, 0.0}) {
+      MatrixXd unstableWell = hr;
+      unstableWell(1, 1) = curvature;
+      REQUIRE_THROWS_AS(rate(unstableWell, hs), std::invalid_argument);
+      MatrixXd unstableSaddle = hs;
+      unstableSaddle(1, 1) = curvature;
+      REQUIRE_THROWS_AS(rate(hr, unstableSaddle), std::invalid_argument);
+    }
+    REQUIRE_THROWS_AS(rate(hr, hr), std::invalid_argument);
+    REQUIRE_THROWS_AS(rate(hr, hs, -1), std::invalid_argument);
+    REQUIRE_THROWS_AS(rate(hr, hs, 3), std::invalid_argument);
+    // Only a caller-specified rigid mode is excluded from the spectrum.
+    MatrixXd rigidWell = hr;
+    MatrixXd rigidSaddle = hs;
+    rigidWell(1, 1) = -1e-8;
+    rigidSaddle(1, 1) = -1e-8;
+    REQUIRE(std::isfinite(rate(rigidWell, rigidSaddle, 1)));
+  }
+}
+
+TEST_CASE("Harmonic rates reject non-finite inputs and results",
+          "[Tunneling][Instanton][HarmonicValidation]") {
+  MatrixXd hr = MatrixXd::Identity(2, 2);
+  MatrixXd hs = MatrixXd::Identity(2, 2);
+  hs(0, 0) = -1.0;
+  const double infinity = std::numeric_limits<double>::infinity();
+  const double nan = std::numeric_limits<double>::quiet_NaN();
+  for (const bool quantum : {false, true}) {
+    auto rate = [&](const MatrixXd &r, const MatrixXd &s, double beta,
+                    double barrier) {
+      return quantum ? quantumHarmonicTstLogRate(r, s, beta, barrier, 0)
+                     : harmonicTstLogRate(r, s, beta, barrier, 0);
+    };
+    CAPTURE(quantum);
+    for (const double invalid : {infinity, nan}) {
+      REQUIRE_THROWS_AS(rate(hr, hs, invalid, 0.3), std::invalid_argument);
+      REQUIRE_THROWS_AS(rate(hr, hs, 5.0, invalid), std::invalid_argument);
+      MatrixXd invalidReactant = hr;
+      invalidReactant(0, 0) = invalid;
+      REQUIRE_THROWS_AS(rate(invalidReactant, hs, 5.0, 0.3),
+                        std::invalid_argument);
+      MatrixXd invalidSaddle = hs;
+      invalidSaddle(0, 1) = invalid;
+      REQUIRE_THROWS_AS(rate(hr, invalidSaddle, 5.0, 0.3),
+                        std::invalid_argument);
+    }
+    REQUIRE_THROWS_AS(rate(hr, hs, 0.0, 0.3), std::invalid_argument);
+    REQUIRE_THROWS_AS(rate(hr, hs, 2.0, std::numeric_limits<double>::max()),
+                      std::overflow_error);
+  }
 }
 
 // Two beads in the wells given a curvature far below the spring's make two

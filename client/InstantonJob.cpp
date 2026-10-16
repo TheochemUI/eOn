@@ -602,6 +602,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
            "ln_k_per_s k_per_s ln_k_htst_per_s barrier_effective_eV "
            "ln_k_wkb_path_per_s ln_k_parabolic_per_s parabolic_factor\n";
   table << std::setprecision(10);
+  table.flush();
   returnFiles.push_back(tableFile);
   const double logSecond = std::log(tunneling::kTimeUnitSeconds);
   const double nan = std::numeric_limits<double>::quiet_NaN();
@@ -636,7 +637,13 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
           const double logQhtst = tunneling::quantumHarmonicTstLogRate(
               hReactant, hSaddle, beta, vSaddle - vReactant, rigidModes);
           const double logPar = logQhtst + std::log(factor);
-          const double kPar = std::exp(logPar) / tunneling::kTimeUnitSeconds;
+          const double logPerSecond = logPar - logSecond;
+          if (!std::isfinite(logPerSecond) ||
+              logPerSecond > std::log(std::numeric_limits<double>::max())) {
+            throw std::runtime_error(
+                "instanton: non-finite parabolic rate; no rate is recorded");
+          }
+          const double kPar = std::exp(logPerSecond);
           EONC_LOG_INFO("[Instanton] {:.4g} K is above the crossover {:.4g} "
                         "K; parabolic factor {:.6g}, ln(k s) = {:.4f}",
                         temperature, tc, factor, logPar - logSecond);
@@ -658,9 +665,11 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         }
       }
       if (!wrote) {
-        EONC_LOG_ERROR("[Instanton] {:.4g} K is at the crossover temperature "
-                       "{:.4g} K; the parabolic factor diverges there",
-                       temperature, tc);
+        if (!(temperature > tc)) {
+          EONC_LOG_ERROR("[Instanton] {:.4g} K is at the crossover temperature "
+                         "{:.4g} K; the parabolic factor diverges there",
+                         temperature, tc);
+        }
         table << temperature << ' ' << tc << ' ' << o.beads
               << " 0 0 nan 0 nan nan nan nan " << wkbLog << " nan nan\n";
         rateFailed = true;
@@ -672,6 +681,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
           }
         }
       }
+      table.flush();
       continue;
     }
 
