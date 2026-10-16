@@ -164,23 +164,9 @@ void LAMMPSPot::cleanMemory() {
   }
 }
 
-#if !defined(EONMPI) && !defined(IS_WINDOWS)
-// ---------------------------------------------------------------------------
-// Process-per-image worker plumbing (POSIX only)
-// ---------------------------------------------------------------------------
 namespace {
-// Report a geometry the worker could not evaluate as an impassable wall.
-//
-// Every failure path here used to throw, and nothing between the potential
-// call and main catches it, so the client terminated. That loses the whole
-// job, including searches that had already converged: a copper V/SIA search
-// reached a saddle at 0.082 eV with a force of 0.027 eV/A and a curvature of
-// -0.47, then died on the next evaluation before the result was written.
-//
-// A large finite energy with zeroed forces reads to the optimiser as a wall,
-// so it backs out of the step and the search abandons this configuration and
-// carries on. Callers stop the worker first; ensureWorker respawns it on the
-// next evaluation.
+// Rejected geometries carry a high energy and a nonzero force so force-based
+// optimizers cannot accept a failed evaluation as a stationary structure.
 void rejectGeometry(double *U, double *F, long N) {
   *U = 1.0e6;
   // Zero forces would be read as convergence: an optimiser judges a point
@@ -199,6 +185,11 @@ void rejectGeometry(double *U, double *F, long N) {
   }
 }
 
+} // namespace
+
+#if !defined(EONMPI) && !defined(IS_WINDOWS)
+// Process-per-image worker plumbing (POSIX only).
+namespace {
 // Blocking read/write of exactly n bytes over a pipe.  Returns false on EOF or
 // error, so a dead peer is detected rather than silently producing garbage.
 bool readExact(int fd, void *buf, size_t n) {
@@ -429,13 +420,18 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
                       double *U, double *variance, const double *box) {
   variance = nullptr;
 
-#ifdef EONMPI
+#if defined(EONMPI) || defined(IS_WINDOWS)
   std::lock_guard<std::mutex> stateLock(workerMutex);
-  forceLocal(N, R, atomicNrs, F, U, box);
-#elif defined(IS_WINDOWS)
-  // No fork/pipe on Windows; call forceLocal directly.
-  std::lock_guard<std::mutex> stateLock(workerMutex);
-  forceLocal(N, R, atomicNrs, F, U, box);
+  try {
+    forceLocal(N, R, atomicNrs, F, U, box);
+  } catch (const std::exception &error) {
+    EONC_LOG_WARNING("[LAMMPSPot] evaluation failed; rejecting geometry: {}",
+                     error.what());
+    cleanMemory();
+    haveStress_ = false;
+    stress_.setZero();
+    rejectGeometry(U, F, N);
+  }
 #else
   // Drive the dedicated worker process so this image's LAMMPS runs in its own
   // process (own MPI_COMM_WORLD).  Per-image NEB threads thus evaluate forces

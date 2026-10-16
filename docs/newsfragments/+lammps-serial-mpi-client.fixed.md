@@ -1,1 +1,1 @@
-Allow an MPI-enabled client to use a serial LAMMPS runtime for a single-rank calculator while requiring MPI support for multiple calculator ranks.
+Allow a single-rank serial LAMMPS runtime in MPI-enabled clients and preserve geometry-rejection behavior for invalid in-process evaluations.
