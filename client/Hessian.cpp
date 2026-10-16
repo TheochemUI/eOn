@@ -605,9 +605,11 @@ bool Hessian::calculateSerial(double dr, FdScheme scheme) {
   AtomMatrix forcePlus(nAtoms, 3);
   AtomMatrix forceMinus(nAtoms, 3);
 
-  const std::string context = columnCheckpointContext(*matter, atoms, dr, scheme, parameters);
+  const std::string context =
+      columnCheckpointContext(*matter, atoms, dr, scheme, parameters);
   int startCol = 0;
-  if (wantResume && loadColumnCheckpoint(ckptPath, size, startCol, hessian, context)) {
+  if (wantResume &&
+      loadColumnCheckpoint(ckptPath, size, startCol, hessian, context)) {
     QUILL_LOG_DEBUG(log, "[Hessian] resume from column {} / {}\n", startCol,
                     size);
   } else {

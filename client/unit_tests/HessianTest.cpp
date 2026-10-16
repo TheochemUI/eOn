@@ -820,7 +820,8 @@ namespace {
 class InterruptedLJ final : public eonc::Potential {
 public:
   InterruptedLJ(std::shared_ptr<eonc::Potential> inner, const Parameters &p)
-      : eonc::Potential(PotType::LJ, p), inner_(std::move(inner)) {}
+      : eonc::Potential(PotType::LJ, p),
+        inner_(std::move(inner)) {}
   int calls = 0;
   bool interrupt = true;
   void force(long n, const double *r, const int *z, double *f, double *u,
@@ -833,18 +834,22 @@ public:
     }
     inner_->force(n, r, z, f, u, var, box);
   }
+
 private:
   std::shared_ptr<eonc::Potential> inner_;
 };
-}
+} // namespace
 
-TEST_CASE_METHOD(HessianScratch, "Hessian resume rejects changed finite-difference context",
+TEST_CASE_METHOD(HessianScratch,
+                 "Hessian resume rejects changed finite-difference context",
                  "[hessian][checkpoint-context]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   ParametersLoadAccess::hessian_options(params).fd_scheme = "one_sided";
-  ParametersLoadAccess::hessian_options(params).checkpoint_path = "context.ckpt";
-  auto lj = eonc::helpers::sharePotential(eonc::helpers::makePotential(PotType::LJ, params));
+  ParametersLoadAccess::hessian_options(params).checkpoint_path =
+      "context.ckpt";
+  auto lj = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto potential = std::make_shared<InterruptedLJ>(lj, params);
   Matter matter(potential, params);
   matter.con2matter(std::string("reactant.con"));
@@ -877,7 +882,8 @@ TEST_CASE_METHOD(HessianScratch, "Hessian resume rejects changed finite-differen
   REQUIRE(expected.rows() == 6);
   for (int i = 0; i < 6; ++i) {
     for (int j = 0; j < 6; ++j) {
-      REQUIRE_THAT(actual(i, j), Catch::Matchers::WithinAbs(expected(i, j), 1e-12));
+      REQUIRE_THAT(actual(i, j),
+                   Catch::Matchers::WithinAbs(expected(i, j), 1e-12));
     }
   }
 }
