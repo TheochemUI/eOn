@@ -20,7 +20,7 @@ work=$(mktemp -d "$here/runs/point-$(date +%Y%m%dT%H%M%S)-XXXXXX")
 if [[ ${input,,} == *.xyz ]]; then
     uv run --script "$here/xyz_to_con.py" "$input" "$work/pos.con"
 else
-    cp "$input" "$work/pos.con"
+    uv run --script "$here/con_to_input.py" "$input" "$work/pos.con"
 fi
 cat > "$work/config.ini" <<CONFIG
 [Main]
