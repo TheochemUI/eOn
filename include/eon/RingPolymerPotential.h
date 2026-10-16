@@ -14,6 +14,10 @@
 #include "eon/Potential.h"
 #include "eon/Tunneling.h"
 
+#include <cmath>
+#include <stdexcept>
+#include <utility>
+
 namespace eonc::tunneling {
 
 /// One structure whose coordinates are the beads of a closed ring. The
@@ -51,6 +55,20 @@ public:
   [[nodiscard]] long structureAtoms() const { return nAtoms_; }
   [[nodiscard]] long activeBeads() const { return nActive_; }
 
+  void setDiscretization(std::vector<double> weights) {
+    if (!weights.empty()) {
+      if (fold_ || static_cast<long>(weights.size()) != nBeads_) {
+        throw std::invalid_argument("link weights require one value per full-ring bead");
+      }
+      for (double value : weights) {
+        if (!(value > 0.0) || !std::isfinite(value)) {
+          throw std::invalid_argument("link weights must be positive and finite");
+        }
+      }
+    }
+    discretization_ = std::move(weights);
+  }
+
   void packActive(const std::vector<VectorXd> &active, double *positions) const;
   [[nodiscard]] std::vector<VectorXd> unpack(const double *positions) const;
   void packMode(const VectorXd &dir, AtomMatrix &mode) const;
@@ -71,6 +89,7 @@ private:
   double spring_{0.0};
   double energyShift_{0.0};
   std::vector<double> eta_;
+  std::vector<double> discretization_;
   bool fold_{false};
   VectorXd modeDir_;
 };

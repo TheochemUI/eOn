@@ -2305,3 +2305,155 @@ TEST_CASE("Physical bead Hessians use their own mass weighted displacement",
   REQUIRE_THROWS_AS(optimizeRateInstanton(VectorXd::Zero(2), hs, 10.0/kHbar,
                                          {}, potential, options), std::invalid_argument);
 }
+
+
+TEST_CASE("bath curvature classifies an exact stationary quartic ring",
+          "[Tunneling][Instanton][FrictionCurvature]") {
+  const long dimension = GENERATE(1L, 2L);
+  const double c = 0.05;
+  const double eta = 0.5;
+  const double amplitude2 = 1.0 - 2.0 * c - std::sqrt(2.0) * eta;
+  const double amplitude = std::sqrt(amplitude2);
+  const BatchPotential potential = [=](const std::vector<VectorXd> &q,
+                                      std::vector<double> &v,
+                                      std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.assign(q.size(), VectorXd::Zero(dimension));
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0);
+      v[j] = 0.25 * std::pow(x * x - 1.0, 2);
+      g[j](0) = x * x * x - x;
+      if (dimension == 2) {
+        v[j] += q[j](1) * q[j](1);
+        g[j](1) = 2.0 * q[j](1);
+      }
+    }
+  };
+  std::vector<VectorXd> guess(4, VectorXd::Zero(dimension));
+  for (size_t j = 0; j < guess.size(); ++j) {
+    guess[j](0) = j < 2 ? amplitude : -amplitude;
+  }
+  // The four x curvatures are h, h+2c+sqrt(2)eta (twice), h+4c+2eta.
+  const double h = 3.0 * amplitude2 - 1.0;
+  REQUIRE(h < 0.0);
+  REQUIRE(h + 2.0 * c < 0.0);
+  REQUIRE(h + 4.0 * c < 0.0);
+  REQUIRE(h + 2.0 * c + std::sqrt(2.0) * eta > 0.0);
+  REQUIRE(h + 4.0 * c + 2.0 * eta > 0.0);
+  MatrixXd saddleHessian = MatrixXd::Identity(dimension, dimension) * 2.0;
+  saddleHessian(0, 0) = -1.0;
+  RateInstantonOptions options;
+  options.beads = 4;
+  options.halfRing = false;
+  options.newtonLimit = 1024;
+  options.maxIterations = 1;
+  options.forceTolerance = 1e-8;
+  options.physicalHessianStep = 1e-5;
+  options.initialHessians = "finite_difference";
+  options.checkOddSector = false;
+  options.friction = true;
+  options.frictionEta = eta;
+  const double beta = 4.0 / (std::sqrt(c) * kHbar);
+  const auto exact = optimizeRateInstanton(VectorXd::Zero(dimension),
+      saddleHessian, beta, guess, potential, options);
+  REQUIRE(exact.converged);
+  REQUIRE_FALSE(exact.collapsed);
+  for (size_t j = 0; j < guess.size(); ++j) {
+    REQUIRE((exact.beads[j] - guess[j]).norm() < 1e-10);
+  }
+  options.frictionExplicit = true;
+  options.frictionEtaBeads = std::vector<double>(4, eta);
+  const auto explicitBath = optimizeRateInstanton(VectorXd::Zero(dimension),
+      saddleHessian, beta, guess, potential, options);
+  REQUIRE(explicitBath.converged);
+  REQUIRE(explicitBath.ringPotential == Catch::Approx(exact.ringPotential).margin(1e-12));
+  options.frictionExplicit = false;
+
+  // A scaled ring has a closed-form Newton step along its amplitude.
+  const double initial = 1.1 * amplitude;
+  for (auto &q : guess) {
+    q(0) = q(0) > 0.0 ? initial : -initial;
+  }
+  const double expected = initial - initial * (initial * initial - amplitude2) /
+      (3.0 * initial * initial - amplitude2);
+  options.maxStep = 1.0;
+  const auto step = optimizeRateInstanton(VectorXd::Zero(dimension),
+      saddleHessian, beta, guess, potential, options);
+  for (size_t j = 0; j < guess.size(); ++j) {
+    REQUIRE(step.beads[j](0) == Catch::Approx(j < 2 ? expected : -expected).margin(1e-8));
+    if (dimension == 2) {
+      REQUIRE(std::abs(step.beads[j](1)) < 1e-12);
+    }
+  }
+  if (dimension == 2) {
+    options.maxIterations = 2;
+    const double expected2 = expected - expected * (expected * expected - amplitude2) /
+        (expected * expected + expected * initial + initial * initial - amplitude2);
+    const auto secant = optimizeRateInstanton(VectorXd::Zero(dimension),
+        saddleHessian, beta, guess, potential, options);
+    for (size_t j = 0; j < guess.size(); ++j) {
+      REQUIRE(secant.beads[j](0) == Catch::Approx(j < 2 ? expected2 : -expected2).margin(1e-8));
+    }
+  }
+
+  // This stationary branch has a physical negative time-shift direction.
+  guess.assign(4, VectorXd::Zero(dimension));
+  guess[0](0) = amplitude;
+  guess[2](0) = -amplitude;
+  options.maxIterations = 1;
+  const auto higherIndex = optimizeRateInstanton(VectorXd::Zero(dimension),
+      saddleHessian, beta, guess, potential, options);
+  REQUIRE_FALSE(higherIndex.converged);
+}
+
+TEST_CASE("full ring force backend preserves nonuniform links and bath",
+          "[Tunneling][Instanton][WeightedBath]") {
+  const BatchPotential harmonic = [](const std::vector<VectorXd> &q,
+                                     std::vector<double> &v,
+                                     std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g = q;
+    for (size_t j = 0; j < q.size(); ++j) {
+      v[j] = 0.5 * q[j].squaredNorm();
+    }
+  };
+  const double c = 0.7;
+  const std::vector<double> weights{0.5, 1.0, 2.0, 0.8};
+  const std::vector<double> eta{0.1, 0.2, 0.3, 0.4};
+  const VectorXd direction = VectorXd::Ones(1);
+  RingPolymerPotential ring(harmonic, 4, 1, c, 0.0, eta, false, direction);
+  ring.setDiscretization(weights);
+  std::vector<VectorXd> q(4, VectorXd::Zero(1));
+  q[0](0) = 0.1;
+  q[1](0) = 0.4;
+  q[2](0) = -0.3;
+  q[3](0) = -0.2;
+  std::vector<double> positions(static_cast<size_t>(3 * ring.structureAtoms()));
+  std::vector<double> forces(positions.size());
+  ring.packActive(q, positions.data());
+  double energy = 0.0;
+  double variance = 0.0;
+  ring.force(ring.structureAtoms(), positions.data(), nullptr, forces.data(),
+             &energy, &variance, nullptr);
+  std::vector<VectorXd> expectedGradient = q;
+  double expectedEnergy = 0.0;
+  for (size_t j = 0; j < q.size(); ++j) {
+    const size_t next = (j + 1) % q.size();
+    const size_t previous = (j + q.size() - 1) % q.size();
+    expectedEnergy += 0.5 * q[j].squaredNorm() +
+        0.5 * c / weights[j] * (q[next] - q[j]).squaredNorm();
+    expectedGradient[j] += c / weights[j] * (q[j] - q[next]) +
+        c / weights[previous] * (q[j] - q[previous]);
+  }
+  addFrictionBath(q, expectedEnergy, expectedGradient, eta);
+  REQUIRE(energy == Catch::Approx(expectedEnergy).margin(1e-12));
+  for (size_t j = 0; j < q.size(); ++j) {
+    REQUIRE(forces[3 * j] == Catch::Approx(-expectedGradient[j](0)).margin(1e-12));
+    REQUIRE(std::abs(forces[3 * j + 1]) < 1e-12);
+    REQUIRE(std::abs(forces[3 * j + 2]) < 1e-12);
+  }
+  REQUIRE_THROWS_AS(ring.setDiscretization({1.0}), std::invalid_argument);
+  REQUIRE_THROWS_AS(ring.setDiscretization({1.0, 1.0, -1.0, 1.0}), std::invalid_argument);
+  RingPolymerPotential folded(harmonic, 4, 1, c, 0.0, {}, true, direction);
+  REQUIRE_THROWS_AS(folded.setDiscretization(weights), std::invalid_argument);
+}

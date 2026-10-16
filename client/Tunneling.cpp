@@ -989,6 +989,7 @@ struct RingEval {
   double u = 0.0;             // U_N
   std::vector<double> v;      // V at each bead
   std::vector<VectorXd> grad; // dU_N/dq at each bead
+  std::vector<VectorXd> physicalGrad; // dV/dq without springs or bath
 };
 
 } // namespace
@@ -1127,6 +1128,7 @@ RingEval evaluateRing(const std::vector<VectorXd> &x, double c,
   if (!eta.empty()) {
     addFrictionBath(x, out.u, out.grad, eta);
   }
+  out.physicalGrad = std::move(gv);
   return out;
 }
 
@@ -1823,26 +1825,6 @@ VectorXd timeTranslation(const std::vector<VectorXd> &x) {
   return tau;
 }
 
-std::vector<VectorXd>
-physicalGradient(const std::vector<VectorXd> &x,
-                 const std::vector<VectorXd> &ringGrad, double c,
-                 const std::vector<double> &discretization = {}) {
-  const size_t n = x.size();
-  std::vector<VectorXd> g(n);
-  for (size_t j = 0; j < n; ++j) {
-    const size_t prev = (j + n - 1) % n;
-    const size_t next = (j + 1) % n;
-    if (discretization.empty()) {
-      g[j] = ringGrad[j] - c * (2.0 * x[j] - x[prev] - x[next]);
-    } else {
-      const double cj = c / discretization[j];
-      const double cp = c / discretization[prev];
-      g[j] = ringGrad[j] - cj * (x[j] - x[next]) - cp * (x[j] - x[prev]);
-    }
-  }
-  return g;
-}
-
 struct Climb {
   long index = -1;
   double curvature = 0.0;
@@ -1892,7 +1874,8 @@ VectorXd chainIndexOneStep(const std::vector<RingMode> &ritz,
                            bool closed, const std::vector<VectorXd> &grad,
                            const VectorXd &tau,
                            const std::vector<std::vector<VectorXd>> &nullRing,
-                           const std::vector<double> *weight = nullptr) {
+                           const std::vector<double> *weight = nullptr,
+                           const std::vector<double> &eta = {}) {
   if (climb.index < 0 || ritz.empty() || grad.empty()) {
     return VectorXd();
   }
@@ -1959,6 +1942,10 @@ VectorXd chainIndexOneStep(const std::vector<RingMode> &ritz,
   // The operator the step solves with: the ring plus every rank-one term.
   auto applyShifted = [&](const std::vector<VectorXd> &x) {
     std::vector<VectorXd> out = applyDiagonal(diag, spring, closed, x, weight);
+    if (!eta.empty()) {
+      double energy = 0.0;
+      addFrictionBath(x, energy, out, eta);
+    }
     for (size_t i = 0; i < extras.size(); ++i) {
       const double w = kappas[i] * dot(extras[i], x);
       for (size_t j = 0; j < out.size(); ++j) {
@@ -1971,8 +1958,8 @@ VectorXd chainIndexOneStep(const std::vector<RingMode> &ritz,
   std::vector<VectorXd> stepRing;
   bool solved = false;
   try {
-    if (dim <= kDenseRing) {
-      throw std::runtime_error("small ring: dense solve");
+    if (dim <= kDenseRing || !eta.empty()) {
+      throw std::runtime_error("dense ring or nonlocal bath: dense solve");
     }
     const WoodburyRing ring(spring, diag, closed, extras, kappas, false);
     if (ring.ok()) {
@@ -2236,6 +2223,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     x = std::move(guess);
   }
   const long f = x.front().size();
+  const std::vector<double> eta = frictionEta(options, x.size());
   const MatrixXd hS = (0.5 * (hessSaddle + hessSaddle.transpose())).eval();
   // The rigid quotient: translations and free rotations of the whole ring
   // about its centre of mass, from the current beads, orthonormalised.
@@ -2335,7 +2323,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
                        frictionEta(options, q.size()), options.discretization);
       out.u = ev.u;
       out.grad = ev.grad;
-      out.gradPot = physicalGradient(q, ev.grad, c, options.discretization);
+      out.gradPot = ev.physicalGrad;
       out.energies = ev.v;
     }
     return out;
@@ -2393,13 +2381,34 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   auto viewOf = [&](const Obj &ev) {
     nullRing = ringRigid(x);
     View v;
-    v.tau = half ? VectorXd() : timeTranslation(x);
+    const bool constantBath = eta.empty() ||
+        std::all_of(eta.begin(), eta.end(), [&](double value) {
+          return value == eta.front();
+        });
+    v.tau = (half || !constantBath) ? VectorXd() : timeTranslation(x);
     // Physical curvature determines inertia. Known rigid motions enter the
     // quotient and the step solve without changing this operator.
     v.diag = ringDiagonal(physical, c, half, linkWeight);
     auto apply = [&](const std::vector<VectorXd> &vec) {
-      return applyDiagonal(v.diag, c, !half, vec, linkWeight);
+      std::vector<VectorXd> out =
+          applyDiagonal(v.diag, c, !half, vec, linkWeight);
+      if (!eta.empty()) {
+        double energy = 0.0;
+        addFrictionBath(vec, energy, out, eta);
+      }
+      return out;
     };
+    if (v.tau.size() > 0) {
+      std::vector<VectorXd> phase(x.size(), VectorXd::Zero(f));
+      for (size_t j = 0; j < x.size(); ++j) {
+        phase[j] = v.tau.segment(static_cast<long>(j) * f, f);
+      }
+      const auto residual = apply(phase);
+      // A discrete time-shift direction can carry physical curvature.
+      if (std::sqrt(dot(residual, residual)) > 1e-6 * std::max(1.0, c)) {
+        v.tau.resize(0);
+      }
+    }
     const long dim = static_cast<long>(x.size()) * f;
     if (dim <= kDenseRing) {
       // A small ring takes its whole spectrum densely: every negative
@@ -2686,7 +2695,12 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
         for (size_t k = 0; k < x.size(); ++k) {
           dirRing[k] = dir.segment(static_cast<long>(k) * f, f);
         }
-        const VectorXd jd = packBeads(applyDiagonal(v.diag, c, !half, dirRing));
+        auto model = applyDiagonal(v.diag, c, !half, dirRing, linkWeight);
+        if (!eta.empty()) {
+          double energy = 0.0;
+          addFrictionBath(dirRing, energy, model, eta);
+        }
+        const VectorXd jd = packBeads(model);
         const double pred = gflat.dot(dir) + 0.5 * dir.dot(jd);
         const double actual = next.u - cur.u;
         // Predicted and actual changes below the energy resolution are
@@ -2784,7 +2798,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     }
     const VectorXd step =
         chainIndexOneStep(v.ritz, v.climb, v.diag, c, !half, cur.grad, v.tau,
-                          nullRing, linkWeight);
+                          nullRing, linkWeight, eta);
     bool moved = false;
     VectorXd dir = step;
     // Clip to the trust radius once, then halve that capped step.
@@ -3290,7 +3304,7 @@ void RingPolymerPotential::forceBatch(long nSystems, long nAtoms,
       g = gFull;
     };
     const RingEval ev =
-        evaluateRing(fullQ, spring_, replay, energyShift_, eta_);
+        evaluateRing(fullQ, spring_, replay, energyShift_, eta_, discretization_);
     std::vector<VectorXd> reduced;
     if (!fold_) {
       reduced = ev.grad;
@@ -3333,6 +3347,7 @@ SearchedRing oneDimerSearch(const std::vector<VectorXd> &full, double c,
   auto pot = std::make_shared<RingPolymerPotential>(
       potential, options.beads, dir.size(), c, options.energyShift, eta, fold,
       dir);
+  pot->setDiscretization(options.discretization);
   Parameters params;
   ParametersLoadAccess::main_options(params).removeNetForce = false;
   ParametersLoadAccess::main_options(params).parallel = false;
@@ -3384,7 +3399,8 @@ SearchedRing oneDimerSearch(const std::vector<VectorXd> &full, double c,
 
   std::vector<VectorXd> beads = expandMirrored(
       pot->unpack(matter->getPositions().data()), options.beads, fold);
-  RingEval ev = evaluateRing(beads, c, potential, options.energyShift, eta);
+  RingEval ev = evaluateRing(beads, c, potential, options.energyShift, eta,
+                            options.discretization);
   if (fold) {
     std::vector<VectorXd> projected = beads;
     projectMonotonePrefix(projected, options.beads / 2, dir);
@@ -3394,7 +3410,8 @@ SearchedRing oneDimerSearch(const std::vector<VectorXd> &full, double c,
           projected[static_cast<size_t>(j)];
     }
     RingEval evFold =
-        evaluateRing(projected, c, potential, options.energyShift, eta);
+        evaluateRing(projected, c, potential, options.energyShift, eta,
+                     options.discretization);
     if (largestBeadNorm(evFold.grad) <= largestBeadNorm(ev.grad)) {
       beads = std::move(projected);
       ev = std::move(evFold);
@@ -3430,7 +3447,8 @@ SearchedRing searchRingWithDimer(std::vector<VectorXd> full, double c,
     return out;
   }
   const RingEval here =
-      evaluateRing(out.beads, c, potential, options.energyShift, eta);
+      evaluateRing(out.beads, c, potential, options.energyShift, eta,
+                   options.discretization);
   if (!(largestBeadNorm(here.grad) < options.forceTolerance)) {
     return out;
   }
@@ -3496,8 +3514,12 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
     }
   }
   const long active = mirror ? (N / 2 + 1) : N;
+  // The nonlocal bath uses the dense Newton operator. Larger rings
+  // use the dimer backend, whose products include the complete bath.
+  const bool denseBath = !frictionEta(options, N).empty();
   if (options.newtonLimit > 0 &&
-      active * saddle.size() <= options.newtonLimit) {
+      active * saddle.size() <= options.newtonLimit &&
+      (!denseBath || active * saddle.size() <= kDenseRing)) {
     return optimizeRateByNewton(saddle, hessSaddle, beta, std::move(guess),
                                 potential, options);
   }
@@ -3541,7 +3563,8 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
 
   // An even count whose beads already match under j -> N-j is the
   // out-and-back instanton. The shared dimer sees one half of that ring.
-  const bool wantMirror = options.halfRing && N % 2 == 0;
+  const bool wantMirror = options.halfRing && !options.friction &&
+                          options.discretization.empty() && N % 2 == 0;
   std::vector<VectorXd> x = std::move(guess);
   bool fold = false;
   if (wantMirror) {
