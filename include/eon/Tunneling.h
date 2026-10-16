@@ -269,6 +269,9 @@ struct RateInstantonOptions {
                                 ///< eV / (amu^0.5 Angstrom)
   long lanczosFirst = 30;       ///< Lanczos steps for the first minimum mode
   long lanczosRestart = 6;      ///< Lanczos steps from the previous mode
+  /// Central physical bead-Hessian displacement in sqrt(amu) Angstrom.
+  /// Independent of the Lanczos directional finite-difference step.
+  double physicalHessianStep = 1e-4;
   double lanczosStep = 1e-4;    ///< finite-difference step, amu^0.5 Angstrom
   double maxStep = 0.05;        ///< largest bead move per step,
                                 ///< amu^0.5 Angstrom

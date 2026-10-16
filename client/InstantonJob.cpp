@@ -768,6 +768,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     ro.forceTolerance = o.force_tolerance;
     ro.halfRing = o.half_ring;
     ro.initialHessians = o.initial_hessians;
+    ro.physicalHessianStep = o.physical_hessian_step;
     ro.energyShift = o.energy_shift;
     ro.discretization = o.discretization;
     ro.friction = o.friction != "none";

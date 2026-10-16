@@ -1795,6 +1795,14 @@ int load_ini(const INIReader &ini, Parameters &params) {
                                   "or finite_difference, not " +
                                   o.initial_hessians);
     }
+    o.physical_hessian_step = ini.GetReal(
+        "Instanton", "physical_hessian_step", o.physical_hessian_step);
+    if (!(o.physical_hessian_step > 0.0) ||
+        !std::isfinite(o.physical_hessian_step)) {
+      throw std::invalid_argument(
+          "[Instanton] physical_hessian_step must be finite and positive "
+          "in sqrt(amu) Angstrom");
+    }
     o.energy_shift = ini.GetReal("Instanton", "energy_shift", o.energy_shift);
     o.discretization.clear();
     {

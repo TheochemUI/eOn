@@ -848,6 +848,8 @@ struct instanton_options_t {
   // saddle Hessian to every bead (no force calls); "finite_difference"
   // takes 2 f gradient calls per bead first.
   std::string initial_hessians{"saddle"};
+  // Central physical bead-Hessian displacement, sqrt(amu) Angstrom.
+  double physical_hessian_step{1e-4};
   // Mode rate: start at a quarter of the beads and double. Off leaves the
   // requested count alone.
   bool bead_ladder{false};

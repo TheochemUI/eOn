@@ -2267,3 +2267,41 @@ TEST_CASE("A soft saddle axis retains its physical ring instability",
                                             beta, guess, transverse, options);
   REQUIRE_FALSE(result.converged);
 }
+
+TEST_CASE("Physical bead Hessians use their own mass weighted displacement",
+          "[Tunneling][Instanton][PhysicalHessianStep]") {
+  const double step = GENERATE(2e-4, 7e-4);
+  double observed = 0.0;
+  const BatchPotential potential = [&](const std::vector<VectorXd> &q,
+                                       std::vector<double> &v,
+                                       std::vector<VectorXd> &g) {
+    if (q.size() == 4 && observed == 0.0) {
+      observed = (q[0] - q[1]).norm();
+    }
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0), y = q[j](1);
+      v[j] = 0.25 * std::pow(x*x - 1.0, 2) + 0.5*y*y;
+      g[j] = VectorXd::Zero(2);
+      g[j](0) = x*(x*x - 1.0);
+      g[j](1) = y;
+    }
+  };
+  MatrixXd hs = MatrixXd::Identity(2,2);
+  hs(0,0) = -1.0;
+  RateInstantonOptions options;
+  REQUIRE(options.physicalHessianStep == Catch::Approx(1e-4));
+  options.beads = 8;
+  options.maxIterations = 1;
+  options.halfRing = false;
+  options.checkOddSector = false;
+  options.initialHessians = "finite_difference";
+  options.lanczosStep = 0.03;
+  options.physicalHessianStep = step;
+  optimizeRateInstanton(VectorXd::Zero(2), hs, 10.0/kHbar, {}, potential, options);
+  REQUIRE(observed == Catch::Approx(2.0*step).margin(1e-12));
+  options.physicalHessianStep = 0.0;
+  REQUIRE_THROWS_AS(optimizeRateInstanton(VectorXd::Zero(2), hs, 10.0/kHbar,
+                                         {}, potential, options), std::invalid_argument);
+}

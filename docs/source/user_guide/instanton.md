@@ -266,9 +266,9 @@ modes come from Lanczos on matrix-vector products. The bead curvature
 blocks start from the saddle Hessian (`initial_hessians = saddle`, no force
 calls) and follow accepted moves with a Bofill update, rebuilt from
 finite differences up to three times when the trust radius reaches its
-floor. Near-zero eigenvectors of the saddle Hessian are held at a
-spring-sized curvature in the Newton step, so a rigid displacement does
-not singularize the chain. `initial_hessians = finite_difference` takes
+floor. Known rigid motions enter an explicit quotient and solve
+stabilization. A small saddle curvature alone does not identify a rigid
+motion and is retained in the physical ring inertia. `initial_hessians = finite_difference` takes
 {math}`2f` gradient calls per
 bead first. The rate uses the bead Hessians chosen by `hessian_final`, not
 that update. On the one-dimensional Eckart barrier the search converges
@@ -280,6 +280,16 @@ For a half ring with even bead count `P`, this evaluates `P/2 + 1`
 independent bead Hessians; central differences cost `2f` force geometries
 per bead for `f` free Cartesian coordinates. `hessian_stride` controls the
 final rate-prefactor Hessians and does not reduce this optimizer refresh.
+
+`physical_hessian_step = 0.0001` sets every central physical bead-Hessian
+displacement during Newton optimization, including initial and adaptive
+refreshes. Its units are **sqrt(amu) Angstrom**, so the Cartesian step for
+an atom of mass m in amu is this value divided by sqrt(m). This default
+is independent of the directional Lanczos step and of `[Main] finite_difference`.
+It preserves the numerical displacement convention; convergence of force
+differences with step size and SCF accuracy still needs measurement. Central
+differencing amplifies a bounded gradient error eta by at most eta/h in norm;
+an electronic SCF residual alone does not supply that gradient-error bound.
 
 `temperatures` is a comma-separated list in kelvin. The search starts at
 the highest and each ring starts the next, colder one. An empty list uses

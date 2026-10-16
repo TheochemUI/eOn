@@ -2699,6 +2699,15 @@ class InstantonConfig(BaseModel):
             " half. An odd count evaluates every bead."
         ),
     )
+    physical_hessian_step: float = Field(
+        default=1e-4,
+        gt=0,
+        allow_inf_nan=False,
+        description=(
+            "Physical bead-Hessian central displacement in sqrt(amu) Angstrom;"
+            " independent of directional Lanczos finite differences."
+        ),
+    )
     initial_hessians: Literal["saddle", "finite_difference"] = Field(
         default="saddle",
         description=(

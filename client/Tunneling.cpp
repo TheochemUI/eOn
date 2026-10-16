@@ -2257,7 +2257,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   if (f == 1 || options.initialHessians != "finite_difference") {
     physical.assign(x.size(), hS);
   } else {
-    const double eps = options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
+    const double eps = options.physicalHessianStep;
     physical.resize(x.size());
     for (size_t j = 0; j < x.size(); ++j) {
       physical[j] = fdPhysicalHessian(x[j], potential, eps);
@@ -2607,7 +2607,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       break;
     }
     if (f == 1) {
-      const double eps = options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
+      const double eps = options.physicalHessianStep;
       for (size_t j = 0; j < x.size(); ++j) {
         physical[j] = fdPhysicalHessian(x[j], potential, eps);
       }
@@ -2634,7 +2634,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
                  driftRefreshes < kMaxDriftRefreshes) {
         ++driftRefreshes;
         const double eps =
-            options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
+            options.physicalHessianStep;
         for (size_t j = 0; j < x.size(); ++j) {
           physical[j] = fdPhysicalHessian(x[j], potential, eps);
         }
@@ -2739,7 +2739,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     // that mode leaves it.
     if (v.ok && v.gmax < options.forceTolerance && v.climb.negative != 1 &&
         !exactAtX) {
-      const double eps = options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
+      const double eps = options.physicalHessianStep;
       for (size_t j = 0; j < x.size(); ++j) {
         physical[j] = fdPhysicalHessian(x[j], potential, eps);
       }
@@ -2807,7 +2807,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       if (trust <= trustFloor && refreshes < kMaxHessianRefreshes) {
         ++refreshes;
         const double eps =
-            options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
+            options.physicalHessianStep;
         for (size_t j = 0; j < x.size(); ++j) {
           physical[j] = fdPhysicalHessian(x[j], potential, eps);
         }
@@ -3460,6 +3460,12 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
                                     std::vector<VectorXd> guess,
                                     const BatchPotential &potential,
                                     const RateInstantonOptions &options) {
+  if (!(options.physicalHessianStep > 0.0) ||
+      !std::isfinite(options.physicalHessianStep)) {
+    throw std::invalid_argument(
+        "optimizeRateInstanton: physicalHessianStep must be finite and positive "
+        "in sqrt(amu) Angstrom");
+  }
   const long N = options.beads;
   if (N < 4 || !(beta > 0.0) || hessSaddle.rows() != saddle.size()) {
     throw std::invalid_argument(

@@ -1244,6 +1244,12 @@ Instanton:
         # Mode rate: where the bead Hessian blocks start. saddle copies the
         # saddle Hessian to every bead at no force calls; finite_difference
         # takes 2 f gradient calls per bead first.
+        # Physical bead-Hessian central displacement, sqrt(amu) Angstrom.
+        # Independent of directional Lanczos finite differences.
+        physical_hessian_step:
+            kind: float
+            default: 0.0001
+
         initial_hessians:
             kind: string
             default: saddle
