@@ -30,19 +30,20 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 class QuarticBandPotential final : public Potential {
 public:
-  QuarticBandPotential() : Potential(PotType::UNKNOWN) {}
+  QuarticBandPotential()
+      : Potential(PotType::UNKNOWN) {}
 
-  void force(long nAtoms, const double *positions, const int *,
-             double *forces, double *energy, double *variance,
-             const double *) override {
-    std::fill_n(forces, 3*nAtoms, 0.0);
-    const double q = 0.5*(positions[0]-positions[3]);
-    const double displacement = q*q-1.0;
-    *energy = 10.0*displacement*displacement;
-    const double derivative = 40.0*q*displacement;
-    forces[0] = -0.5*derivative;
-    forces[3] = 0.5*derivative;
-    if (variance) *variance = 0.0;
+  void force(long nAtoms, const double *positions, const int *, double *forces,
+             double *energy, double *variance, const double *) override {
+    std::fill_n(forces, 3 * nAtoms, 0.0);
+    const double q = 0.5 * (positions[0] - positions[3]);
+    const double displacement = q * q - 1.0;
+    *energy = 10.0 * displacement * displacement;
+    const double derivative = 40.0 * q * displacement;
+    forces[0] = -0.5 * derivative;
+    forces[3] = 0.5 * derivative;
+    if (variance)
+      *variance = 0.0;
   }
 };
 
@@ -67,7 +68,7 @@ TEST_CASE("CI activates on a relaxed band with tangential saddle force",
     auto matter = std::make_shared<Matter>(pot, params);
     matter->resize(2);
     matter->setPeriodic(false);
-    matter->setCell(Matrix3d::Identity()*20.0);
+    matter->setCell(Matrix3d::Identity() * 20.0);
     for (int i = 0; i < 2; ++i) {
       matter->setAtomicNr(i, 1);
       matter->setMass(i, 1.0);
@@ -85,7 +86,8 @@ TEST_CASE("CI activates on a relaxed band with tangential saddle force",
   REQUIRE(neb.convergenceForce() < options.force_tolerance);
   REQUIRE(neb.path[neb.climbingImage]->getPotentialEnergy() ==
           Catch::Approx(10.0).margin(1e-8));
-  REQUIRE(neb.path.front()->getPositions().isApprox(initial->getPositions(), 0.0));
+  REQUIRE(
+      neb.path.front()->getPositions().isApprox(initial->getPositions(), 0.0));
   REQUIRE(neb.path.back()->getPositions().isApprox(final->getPositions(), 0.0));
 }
 

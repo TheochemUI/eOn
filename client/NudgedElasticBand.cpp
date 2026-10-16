@@ -451,8 +451,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
     // CI active when force drops below relative threshold
     bool ci_active =
         params.neb_options().climbing_image.enabled &&
-        (activation_force < baseline_force *
-                         params.neb_options().climbing_image.trigger_factor ||
+        (activation_force <
+             baseline_force *
+                 params.neb_options().climbing_image.trigger_factor ||
          activation_force < params.neb_options().climbing_image.trigger_force);
 
     bool zoomedThisStep = false;
