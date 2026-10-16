@@ -1805,22 +1805,39 @@ foreach feature : features_list
     endif
 endforeach
 
-configure_file(
+version_template = configure_file(
     input: 'version.h.in',
-    output: 'version.h',
+    output: 'version-config.h.in',
     configuration: {
         'VERSION': version,
         'VERSION_MAJOR': version_major,
         'VERSION_MINOR': version_minor,
         'VERSION_PATCH': version_patch,
-        'BUILD_DATE': build_date,
+        'BUILD_DATE': '@BUILD_DATE@',
         'OS_INFO': host_system,
         'ARCH': architecture,
-        'GIT_HASH': git_hash,
-        'GIT_HASH_FULL': git_hash_full,
+        'GIT_HASH': '@GIT_HASH@',
+        'GIT_HASH_FULL': '@GIT_HASH_FULL@',
         'FEATURES': features_string,
     },
 )
+
+version_header = custom_target(
+    'client-version-header',
+    input: version_template,
+    output: 'version.h',
+    command: [
+        py.full_path(), version_script,
+        '--template', '@INPUT@', '--output', '@OUTPUT@',
+    ],
+    build_always_stale: true,
+    build_by_default: true,
+)
+version_dependency = declare_dependency(sources: version_header)
+_deps += [version_dependency]
+if get_option('with_metatomic')
+    mta_plugin_deps += [version_dependency]
+endif
 
 # --------------------- Library
 
