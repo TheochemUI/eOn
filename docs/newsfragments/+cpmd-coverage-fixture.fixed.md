@@ -1,1 +1,1 @@
-Run CPMD interface coverage against its deterministic typed-ABI fixture, preserving all assertions and bead-batch branches while keeping physical-engine and MPI tests on their configured backend.
+Bind CPMD interface coverage and its prescribed-energy checks to their deterministic typed-ABI fixture, preserving every existing assertion and branch while keeping MPI backend tests on their configured engine.

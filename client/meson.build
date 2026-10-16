@@ -2264,10 +2264,18 @@ if get_option('with_tests')
     endif
 
     if not is_windows
-        cpmd_coverage_fixture = shared_library(
-            'cpmd_coverage_fixture',
+        if _rgpot_from_pkg
+            _coverage_schema_dep = _rgpot_pkg
+        else
+            _coverage_schema_dep = _rgpot_proj.get_variable('ptlrpc_dep')
+        endif
+        if not _coverage_schema_dep.found()
+            error('CPMD interface coverage requires the rgpot RPC schema dependency')
+        endif
+        cpmd_interface_fixture = shared_library(
+            'cpmd_interface_fixture',
             'unit_tests/fixtures/cpmdc/cpmdc_fake_engine.cc',
-            dependencies: [rgpot_dep, ptlrpc_dep, capnp_dep],
+            dependencies: [rgpot_dep, _coverage_schema_dep, capnp_dep],
             include_directories: _incdirs,
             build_rpath: ':'.join(_runtime_rpath),
             install: false,
@@ -2295,10 +2303,10 @@ if get_option('with_tests')
             if _readcon_runtime_dir != ''
                 _case_env.prepend('PATH', _readcon_runtime_dir)
             endif
-            _case_env.set('CPMDC_LIBRARY', cpmd_coverage_fixture.full_path())
-            _case_env.set('RGPOT_CPMDC_ENGINE', cpmd_coverage_fixture.full_path())
-            _case_env.set('RGPOT_CPMD_ENGINE', cpmd_coverage_fixture.full_path())
-            _case_depends += [cpmd_coverage_fixture]
+            _case_env.set('CPMDC_LIBRARY', cpmd_interface_fixture.full_path())
+            _case_env.set('RGPOT_CPMDC_ENGINE', cpmd_interface_fixture.full_path())
+            _case_env.set('RGPOT_CPMD_ENGINE', cpmd_interface_fixture.full_path())
+            _case_depends += [cpmd_interface_fixture]
         endif
         if test.get(0) == 'test_client_timing'
             _case_depends += [ec]
@@ -2436,6 +2444,11 @@ if get_option('with_tests')
                 'systems',
             ),
         )
+        _rgpot_fixture_env = environment()
+        _rgpot_fixture_env.set('EON_TEST_SYSTEMS_DIR', _systems_dir)
+        _rgpot_fixture_env.set('CPMDC_LIBRARY', cpmd_interface_fixture.full_path())
+        _rgpot_fixture_env.set('RGPOT_CPMDC_ENGINE', cpmd_interface_fixture.full_path())
+        _rgpot_fixture_env.set('RGPOT_CPMD_ENGINE', cpmd_interface_fixture.full_path())
         # Optional nwchemc/cpmdc engines: tests SKIP when absent. Catch2 exits 4
         # when every case is skipped unless --allow-running-no-tests is set.
         test(
@@ -2445,7 +2458,8 @@ if get_option('with_tests')
             timeout: 120,
             suite: 'rgpot',
             is_parallel: false,
-            env: _rgpot_test_env,
+            env: _rgpot_fixture_env,
+            depends: [cpmd_interface_fixture],
             workdir: meson.project_source_root() +
                      '/client/unit_tests/data/systems/rgpot_nwchem_test',
         )
