@@ -11,9 +11,9 @@
 */
 
 #include "eon/Hessian.h"
-#include "eon/AtomicFile.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/AtomicFile.h"
 #include "eon/ConFileIO.h"
 #include "eon/Davidson.h"
 #include "eon/FiniteDifference.h"
@@ -732,11 +732,16 @@ TEST_CASE_METHOD(HessianScratch,
 } /* namespace tests */
 
 namespace tests {
-TEST_CASE_METHOD(HessianScratch, "Atomic checkpoint replacement preserves valid data on failure",
-                 "[hessian][checkpoint]") {
+TEST_CASE_METHOD(
+    HessianScratch,
+    "Atomic checkpoint replacement preserves valid data on failure",
+    "[hessian][checkpoint]") {
   const std::string path = "atomic.ckpt";
   const std::string original = "eon_hess_ckpt 1 1\n1.2345678901234567\n";
-  { std::ofstream out(path); out << original; }
+  {
+    std::ofstream out(path);
+    out << original;
+  }
   auto contents = [&]() {
     std::ifstream in(path);
     return std::string(std::istreambuf_iterator<char>(in), {});
@@ -749,14 +754,18 @@ TEST_CASE_METHOD(HessianScratch, "Atomic checkpoint replacement preserves valid 
     REQUIRE(contents() == original);
   }
   SECTION("interrupted serializer") {
-    REQUIRE_THROWS_AS(eonc::helpers::atomicWriteFile(path, [](FILE *out) -> bool {
-      std::fputs("incomplete", out);
-      throw std::runtime_error("interrupted write");
-    }), std::runtime_error);
+    REQUIRE_THROWS_AS(eonc::helpers::atomicWriteFile(
+                          path,
+                          [](FILE *out) -> bool {
+                            std::fputs("incomplete", out);
+                            throw std::runtime_error("interrupted write");
+                          }),
+                      std::runtime_error);
     REQUIRE(contents() == original);
   }
   SECTION("invalid destination") {
-    REQUIRE_FALSE(eonc::helpers::atomicWriteFile("missing/checkpoint", [](FILE *) { return true; }));
+    REQUIRE_FALSE(eonc::helpers::atomicWriteFile("missing/checkpoint",
+                                                 [](FILE *) { return true; }));
     REQUIRE(contents() == original);
   }
   SECTION("replacement failure") {
@@ -775,14 +784,17 @@ TEST_CASE_METHOD(HessianScratch, "Atomic checkpoint replacement preserves valid 
     REQUIRE(contents() == replacement);
   }
   for (const auto &entry : std::filesystem::directory_iterator(".")) {
-    REQUIRE(entry.path().filename().string().find(".tmp.") == std::string::npos);
+    REQUIRE(entry.path().filename().string().find(".tmp.") ==
+            std::string::npos);
   }
 }
 
-TEST_CASE_METHOD(HessianScratch, "Final Hessian retains every binary64 entry", "[hessian][checkpoint]") {
+TEST_CASE_METHOD(HessianScratch, "Final Hessian retains every binary64 entry",
+                 "[hessian][checkpoint]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::sharePotential(eonc::helpers::makePotential(PotType::LJ, params));
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter matter(pot, params);
   matter.con2matter(std::string("reactant.con"));
   VectorXi atoms(2);
