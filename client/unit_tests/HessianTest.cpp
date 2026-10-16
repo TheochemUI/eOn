@@ -826,7 +826,7 @@ public:
   bool interrupt = true;
   void force(long n, const double *r, const int *z, double *f, double *u,
              double *var, const double *box) override {
-    if (interrupt && ++calls > 3) {
+    if (++calls > 3 && interrupt) {
       std::fill(f, f + 3 * n, std::numeric_limits<double>::quiet_NaN());
       *u = 0;
       *var = 0;
@@ -869,6 +869,9 @@ TEST_CASE_METHOD(HessianScratch,
     REQUIRE(nextColumn == 2);
   }
   potential->interrupt = false;
+  potential->calls = 0;
+  int expectedResumeCalls = 7;
+  SECTION("unchanged context") { expectedResumeCalls = 5; }
   SECTION("coordinates") {
     AtomMatrix positions = matter.getPositions();
     positions(0, 0) += 0.2;
@@ -884,6 +887,7 @@ TEST_CASE_METHOD(HessianScratch,
   ParametersLoadAccess::hessian_options(params).resume = true;
   Hessian resumed(params, &matter);
   const MatrixXd actual = resumed.getHessian(&matter, atoms);
+  REQUIRE(potential->calls == expectedResumeCalls);
   ParametersLoadAccess::hessian_options(params).resume = false;
   Hessian fresh(params, &matter);
   const MatrixXd expected = fresh.getHessian(&matter, atoms);

@@ -78,6 +78,8 @@ bool loadColumnCheckpoint(const std::string &path, int size, int &nextCol,
   return true;
 }
 
+// The context binds completed columns to their geometry and FD recipe.
+// External potential files require independent provenance checks.
 std::string columnCheckpointContext(const Matter &matter, const VectorXi &atoms,
                                     double dr, FdScheme scheme,
                                     const Parameters &parameters) {
