@@ -986,9 +986,9 @@ double crossoverTemperature(const MatrixXd &hessSaddle) {
 namespace {
 
 struct RingEval {
-  double u = 0.0;             // U_N
-  std::vector<double> v;      // V at each bead
-  std::vector<VectorXd> grad; // dU_N/dq at each bead
+  double u = 0.0;                     // U_N
+  std::vector<double> v;              // V at each bead
+  std::vector<VectorXd> grad;         // dU_N/dq at each bead
   std::vector<VectorXd> physicalGrad; // dV/dq without springs or bath
 };
 
@@ -2381,8 +2381,8 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   auto viewOf = [&](const Obj &ev) {
     nullRing = ringRigid(x);
     View v;
-    const bool constantBath = eta.empty() ||
-        std::all_of(eta.begin(), eta.end(), [&](double value) {
+    const bool constantBath =
+        eta.empty() || std::all_of(eta.begin(), eta.end(), [&](double value) {
           return value == eta.front();
         });
     v.tau = (half || !constantBath) ? VectorXd() : timeTranslation(x);
@@ -2642,8 +2642,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       } else if (v.climb.negative > std::max(1L, exactNegatives) &&
                  driftRefreshes < kMaxDriftRefreshes) {
         ++driftRefreshes;
-        const double eps =
-            options.physicalHessianStep;
+        const double eps = options.physicalHessianStep;
         for (size_t j = 0; j < x.size(); ++j) {
           physical[j] = fdPhysicalHessian(x[j], potential, eps);
         }
@@ -2820,8 +2819,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       // region again.
       if (trust <= trustFloor && refreshes < kMaxHessianRefreshes) {
         ++refreshes;
-        const double eps =
-            options.physicalHessianStep;
+        const double eps = options.physicalHessianStep;
         for (size_t j = 0; j < x.size(); ++j) {
           physical[j] = fdPhysicalHessian(x[j], potential, eps);
         }
@@ -2990,8 +2988,8 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
   // that mode.
   const long nGot = static_cast<long>(got.beads.size());
   bool mirrored = (got.converged || got.stalledHalf) && options.halfRing &&
-                  !options.friction &&
-                  options.checkOddSector && nGot == nBeads && nGot % 2 == 0;
+                  !options.friction && options.checkOddSector &&
+                  nGot == nBeads && nGot % 2 == 0;
   for (long j = 1; mirrored && j < nGot / 2; ++j) {
     mirrored = (got.beads[static_cast<size_t>(j)] -
                 got.beads[static_cast<size_t>(nGot - j)])
@@ -3303,8 +3301,8 @@ void RingPolymerPotential::forceBatch(long nSystems, long nAtoms,
       v = vFull;
       g = gFull;
     };
-    const RingEval ev =
-        evaluateRing(fullQ, spring_, replay, energyShift_, eta_, discretization_);
+    const RingEval ev = evaluateRing(fullQ, spring_, replay, energyShift_, eta_,
+                                     discretization_);
     std::vector<VectorXd> reduced;
     if (!fold_) {
       reduced = ev.grad;
@@ -3400,7 +3398,7 @@ SearchedRing oneDimerSearch(const std::vector<VectorXd> &full, double c,
   std::vector<VectorXd> beads = expandMirrored(
       pot->unpack(matter->getPositions().data()), options.beads, fold);
   RingEval ev = evaluateRing(beads, c, potential, options.energyShift, eta,
-                            options.discretization);
+                             options.discretization);
   if (fold) {
     std::vector<VectorXd> projected = beads;
     projectMonotonePrefix(projected, options.beads / 2, dir);
@@ -3409,9 +3407,8 @@ SearchedRing oneDimerSearch(const std::vector<VectorXd> &full, double c,
       projected[static_cast<size_t>(options.beads - j)] =
           projected[static_cast<size_t>(j)];
     }
-    RingEval evFold =
-        evaluateRing(projected, c, potential, options.energyShift, eta,
-                     options.discretization);
+    RingEval evFold = evaluateRing(projected, c, potential, options.energyShift,
+                                   eta, options.discretization);
     if (largestBeadNorm(evFold.grad) <= largestBeadNorm(ev.grad)) {
       beads = std::move(projected);
       ev = std::move(evFold);
@@ -3480,9 +3477,9 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
                                     const RateInstantonOptions &options) {
   if (!(options.physicalHessianStep > 0.0) ||
       !std::isfinite(options.physicalHessianStep)) {
-    throw std::invalid_argument(
-        "optimizeRateInstanton: physicalHessianStep must be finite and positive "
-        "in sqrt(amu) Angstrom");
+    throw std::invalid_argument("optimizeRateInstanton: physicalHessianStep "
+                                "must be finite and positive "
+                                "in sqrt(amu) Angstrom");
   }
   const long N = options.beads;
   if (N < 4 || !(beta > 0.0) || hessSaddle.rows() != saddle.size()) {

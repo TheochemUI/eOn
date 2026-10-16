@@ -1683,8 +1683,9 @@ TEST_CASE("Newton includes a requested bath when a half ring is selected",
   if (explicitBath) {
     options.frictionEtaBeads = {0.1, 0.2, 0.4, 0.05, 0.3, 0.1, 0.2, 0.15};
   }
-  const RateInstanton selected = optimizeRateInstanton(
-      VectorXd::Zero(1), -MatrixXd::Identity(1, 1), beta, guess, quartic, options);
+  const RateInstanton selected =
+      optimizeRateInstanton(VectorXd::Zero(1), -MatrixXd::Identity(1, 1), beta,
+                            guess, quartic, options);
   double bath = 0.0;
   std::vector<VectorXd> bathGradient(static_cast<size_t>(beads),
                                      VectorXd::Zero(1));
@@ -1704,9 +1705,11 @@ TEST_CASE("Newton includes a requested bath when a half ring is selected",
   REQUIRE(selected.ringPotential == Catch::Approx(expected).margin(1e-10));
   REQUIRE(largestBatch == beads);
   options.halfRing = false;
-  const RateInstanton full = optimizeRateInstanton(
-      VectorXd::Zero(1), -MatrixXd::Identity(1, 1), beta, guess, quartic, options);
-  REQUIRE(selected.ringPotential == Catch::Approx(full.ringPotential).margin(1e-10));
+  const RateInstanton full =
+      optimizeRateInstanton(VectorXd::Zero(1), -MatrixXd::Identity(1, 1), beta,
+                            guess, quartic, options);
+  REQUIRE(selected.ringPotential ==
+          Catch::Approx(full.ringPotential).margin(1e-10));
 }
 
 TEST_CASE("friction bath adds a positive term and its gradient",
@@ -2226,9 +2229,9 @@ TEST_CASE("A soft saddle axis retains its physical ring instability",
   options.forceTolerance = 1e-8;
   options.maxStep = 0.1;
   const double beta = 10.0 / kHbar;
-  const auto reference = optimizeRateInstanton(
-      VectorXd::Zero(1), MatrixXd::Constant(1, 1, -1.0), beta, {},
-      quartic, options);
+  const auto reference =
+      optimizeRateInstanton(VectorXd::Zero(1), MatrixXd::Constant(1, 1, -1.0),
+                            beta, {}, quartic, options);
   REQUIRE(reference.converged);
   std::vector<VectorXd> guess;
   double meanSquare = 0.0;
@@ -2249,8 +2252,8 @@ TEST_CASE("A soft saddle axis retains its physical ring instability",
     for (size_t j = 0; j < q.size(); ++j) {
       const double x = q[j](0), y = q[j](1);
       const double curvature = 1e-8 - 0.1 * x * x;
-      v[j] = 0.25 * std::pow(x * x - 1.0, 2) +
-             0.5 * curvature * y * y + 0.25 * std::pow(y, 4);
+      v[j] = 0.25 * std::pow(x * x - 1.0, 2) + 0.5 * curvature * y * y +
+             0.25 * std::pow(y, 4);
       g[j] = VectorXd::Zero(2);
       g[j](0) = x * (x * x - 1.0) - 0.1 * x * y * y;
       g[j](1) = curvature * y + y * y * y;
@@ -2282,14 +2285,14 @@ TEST_CASE("Physical bead Hessians use their own mass weighted displacement",
     g.resize(q.size());
     for (size_t j = 0; j < q.size(); ++j) {
       const double x = q[j](0), y = q[j](1);
-      v[j] = 0.25 * std::pow(x*x - 1.0, 2) + 0.5*y*y;
+      v[j] = 0.25 * std::pow(x * x - 1.0, 2) + 0.5 * y * y;
       g[j] = VectorXd::Zero(2);
-      g[j](0) = x*(x*x - 1.0);
+      g[j](0) = x * (x * x - 1.0);
       g[j](1) = y;
     }
   };
-  MatrixXd hs = MatrixXd::Identity(2,2);
-  hs(0,0) = -1.0;
+  MatrixXd hs = MatrixXd::Identity(2, 2);
+  hs(0, 0) = -1.0;
   RateInstantonOptions options;
   REQUIRE(options.physicalHessianStep == Catch::Approx(1e-4));
   options.beads = 8;
@@ -2299,13 +2302,14 @@ TEST_CASE("Physical bead Hessians use their own mass weighted displacement",
   options.initialHessians = "finite_difference";
   options.lanczosStep = 0.03;
   options.physicalHessianStep = step;
-  optimizeRateInstanton(VectorXd::Zero(2), hs, 10.0/kHbar, {}, potential, options);
-  REQUIRE(observed == Catch::Approx(2.0*step).margin(1e-12));
+  optimizeRateInstanton(VectorXd::Zero(2), hs, 10.0 / kHbar, {}, potential,
+                        options);
+  REQUIRE(observed == Catch::Approx(2.0 * step).margin(1e-12));
   options.physicalHessianStep = 0.0;
-  REQUIRE_THROWS_AS(optimizeRateInstanton(VectorXd::Zero(2), hs, 10.0/kHbar,
-                                         {}, potential, options), std::invalid_argument);
+  REQUIRE_THROWS_AS(optimizeRateInstanton(VectorXd::Zero(2), hs, 10.0 / kHbar,
+                                          {}, potential, options),
+                    std::invalid_argument);
 }
-
 
 TEST_CASE("bath curvature classifies an exact stationary quartic ring",
           "[Tunneling][Instanton][FrictionCurvature]") {
@@ -2315,8 +2319,8 @@ TEST_CASE("bath curvature classifies an exact stationary quartic ring",
   const double amplitude2 = 1.0 - 2.0 * c - std::sqrt(2.0) * eta;
   const double amplitude = std::sqrt(amplitude2);
   const BatchPotential potential = [=](const std::vector<VectorXd> &q,
-                                      std::vector<double> &v,
-                                      std::vector<VectorXd> &g) {
+                                       std::vector<double> &v,
+                                       std::vector<VectorXd> &g) {
     v.resize(q.size());
     g.assign(q.size(), VectorXd::Zero(dimension));
     for (size_t j = 0; j < q.size(); ++j) {
@@ -2354,8 +2358,9 @@ TEST_CASE("bath curvature classifies an exact stationary quartic ring",
   options.friction = true;
   options.frictionEta = eta;
   const double beta = 4.0 / (std::sqrt(c) * kHbar);
-  const auto exact = optimizeRateInstanton(VectorXd::Zero(dimension),
-      saddleHessian, beta, guess, potential, options);
+  const auto exact =
+      optimizeRateInstanton(VectorXd::Zero(dimension), saddleHessian, beta,
+                            guess, potential, options);
   REQUIRE(exact.converged);
   REQUIRE_FALSE(exact.collapsed);
   for (size_t j = 0; j < guess.size(); ++j) {
@@ -2363,10 +2368,12 @@ TEST_CASE("bath curvature classifies an exact stationary quartic ring",
   }
   options.frictionExplicit = true;
   options.frictionEtaBeads = std::vector<double>(4, eta);
-  const auto explicitBath = optimizeRateInstanton(VectorXd::Zero(dimension),
-      saddleHessian, beta, guess, potential, options);
+  const auto explicitBath =
+      optimizeRateInstanton(VectorXd::Zero(dimension), saddleHessian, beta,
+                            guess, potential, options);
   REQUIRE(explicitBath.converged);
-  REQUIRE(explicitBath.ringPotential == Catch::Approx(exact.ringPotential).margin(1e-12));
+  REQUIRE(explicitBath.ringPotential ==
+          Catch::Approx(exact.ringPotential).margin(1e-12));
   options.frictionExplicit = false;
 
   // A scaled ring has a closed-form Newton step along its amplitude.
@@ -2375,24 +2382,30 @@ TEST_CASE("bath curvature classifies an exact stationary quartic ring",
     q(0) = q(0) > 0.0 ? initial : -initial;
   }
   const double expected = initial - initial * (initial * initial - amplitude2) /
-      (3.0 * initial * initial - amplitude2);
+                                        (3.0 * initial * initial - amplitude2);
   options.maxStep = 1.0;
-  const auto step = optimizeRateInstanton(VectorXd::Zero(dimension),
-      saddleHessian, beta, guess, potential, options);
+  const auto step =
+      optimizeRateInstanton(VectorXd::Zero(dimension), saddleHessian, beta,
+                            guess, potential, options);
   for (size_t j = 0; j < guess.size(); ++j) {
-    REQUIRE(step.beads[j](0) == Catch::Approx(j < 2 ? expected : -expected).margin(1e-8));
+    REQUIRE(step.beads[j](0) ==
+            Catch::Approx(j < 2 ? expected : -expected).margin(1e-8));
     if (dimension == 2) {
       REQUIRE(std::abs(step.beads[j](1)) < 1e-12);
     }
   }
   if (dimension == 2) {
     options.maxIterations = 2;
-    const double expected2 = expected - expected * (expected * expected - amplitude2) /
-        (expected * expected + expected * initial + initial * initial - amplitude2);
-    const auto secant = optimizeRateInstanton(VectorXd::Zero(dimension),
-        saddleHessian, beta, guess, potential, options);
+    const double expected2 =
+        expected - expected * (expected * expected - amplitude2) /
+                       (expected * expected + expected * initial +
+                        initial * initial - amplitude2);
+    const auto secant =
+        optimizeRateInstanton(VectorXd::Zero(dimension), saddleHessian, beta,
+                              guess, potential, options);
     for (size_t j = 0; j < guess.size(); ++j) {
-      REQUIRE(secant.beads[j](0) == Catch::Approx(j < 2 ? expected2 : -expected2).margin(1e-8));
+      REQUIRE(secant.beads[j](0) ==
+              Catch::Approx(j < 2 ? expected2 : -expected2).margin(1e-8));
     }
   }
 
@@ -2401,8 +2414,9 @@ TEST_CASE("bath curvature classifies an exact stationary quartic ring",
   guess[0](0) = amplitude;
   guess[2](0) = -amplitude;
   options.maxIterations = 1;
-  const auto higherIndex = optimizeRateInstanton(VectorXd::Zero(dimension),
-      saddleHessian, beta, guess, potential, options);
+  const auto higherIndex =
+      optimizeRateInstanton(VectorXd::Zero(dimension), saddleHessian, beta,
+                            guess, potential, options);
   REQUIRE_FALSE(higherIndex.converged);
 }
 
@@ -2441,19 +2455,21 @@ TEST_CASE("full ring force backend preserves nonuniform links and bath",
     const size_t next = (j + 1) % q.size();
     const size_t previous = (j + q.size() - 1) % q.size();
     expectedEnergy += 0.5 * q[j].squaredNorm() +
-        0.5 * c / weights[j] * (q[next] - q[j]).squaredNorm();
+                      0.5 * c / weights[j] * (q[next] - q[j]).squaredNorm();
     expectedGradient[j] += c / weights[j] * (q[j] - q[next]) +
-        c / weights[previous] * (q[j] - q[previous]);
+                           c / weights[previous] * (q[j] - q[previous]);
   }
   addFrictionBath(q, expectedEnergy, expectedGradient, eta);
   REQUIRE(energy == Catch::Approx(expectedEnergy).margin(1e-12));
   for (size_t j = 0; j < q.size(); ++j) {
-    REQUIRE(forces[3 * j] == Catch::Approx(-expectedGradient[j](0)).margin(1e-12));
+    REQUIRE(forces[3 * j] ==
+            Catch::Approx(-expectedGradient[j](0)).margin(1e-12));
     REQUIRE(std::abs(forces[3 * j + 1]) < 1e-12);
     REQUIRE(std::abs(forces[3 * j + 2]) < 1e-12);
   }
   REQUIRE_THROWS_AS(ring.setDiscretization({1.0}), std::invalid_argument);
-  REQUIRE_THROWS_AS(ring.setDiscretization({1.0, 1.0, -1.0, 1.0}), std::invalid_argument);
+  REQUIRE_THROWS_AS(ring.setDiscretization({1.0, 1.0, -1.0, 1.0}),
+                    std::invalid_argument);
   RingPolymerPotential folded(harmonic, 4, 1, c, 0.0, {}, true, direction);
   REQUIRE_THROWS_AS(folded.setDiscretization(weights), std::invalid_argument);
 }
