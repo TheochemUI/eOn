@@ -813,3 +813,71 @@ TEST_CASE_METHOD(HessianScratch, "Final Hessian retains every binary64 entry",
   }
 }
 } // namespace tests
+
+namespace tests {
+namespace {
+class InterruptedLJ final : public eonc::Potential {
+public:
+  InterruptedLJ(std::shared_ptr<eonc::Potential> inner, const Parameters &p)
+      : eonc::Potential(PotType::LJ, p), inner_(std::move(inner)) {}
+  int calls = 0;
+  bool interrupt = true;
+  void force(long n, const double *r, const int *z, double *f, double *u,
+             double *var, const double *box) override {
+    if (interrupt && ++calls > 3) {
+      std::fill(f, f + 3 * n, std::numeric_limits<double>::quiet_NaN());
+      *u = 0;
+      *var = 0;
+      return;
+    }
+    inner_->force(n, r, z, f, u, var, box);
+  }
+private:
+  std::shared_ptr<eonc::Potential> inner_;
+};
+}
+
+TEST_CASE_METHOD(HessianScratch, "Hessian resume rejects changed finite-difference context",
+                 "[hessian][checkpoint-context]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::hessian_options(params).fd_scheme = "one_sided";
+  ParametersLoadAccess::hessian_options(params).checkpoint_path = "context.ckpt";
+  auto lj = eonc::helpers::sharePotential(eonc::helpers::makePotential(PotType::LJ, params));
+  auto potential = std::make_shared<InterruptedLJ>(lj, params);
+  Matter matter(potential, params);
+  matter.con2matter(std::string("reactant.con"));
+  matter.setPositions(matter.getPositions());
+  VectorXi atoms(2);
+  atoms << 0, 1;
+  Hessian interrupted(params, &matter);
+  REQUIRE(interrupted.getHessian(&matter, atoms).rows() == 0);
+  REQUIRE(std::filesystem::exists("context.ckpt"));
+  potential->interrupt = false;
+  SECTION("coordinates") {
+    AtomMatrix positions = matter.getPositions();
+    positions(0, 0) += 0.2;
+    matter.setPositions(positions);
+  }
+  SECTION("displacement") {
+    ParametersLoadAccess::main_options(params).finiteDifference *= 2;
+  }
+  SECTION("stencil") {
+    ParametersLoadAccess::hessian_options(params).fd_scheme = "central";
+  }
+  SECTION("mobile atom order") { atoms << 1, 0; }
+  ParametersLoadAccess::hessian_options(params).resume = true;
+  Hessian resumed(params, &matter);
+  const MatrixXd actual = resumed.getHessian(&matter, atoms);
+  ParametersLoadAccess::hessian_options(params).resume = false;
+  Hessian fresh(params, &matter);
+  const MatrixXd expected = fresh.getHessian(&matter, atoms);
+  REQUIRE(actual.rows() == 6);
+  REQUIRE(expected.rows() == 6);
+  for (int i = 0; i < 6; ++i) {
+    for (int j = 0; j < 6; ++j) {
+      REQUIRE_THAT(actual(i, j), Catch::Matchers::WithinAbs(expected(i, j), 1e-12));
+    }
+  }
+}
+} // namespace tests
