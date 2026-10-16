@@ -2514,7 +2514,8 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       double operatorBound = 0.0;
       for (const auto &block : v.diag) {
         operatorBound = std::max(operatorBound,
-            block.cwiseAbs().rowwise().sum().maxCoeff() + 2.0*c/minimumWeight);
+                                 block.cwiseAbs().rowwise().sum().maxCoeff() +
+                                     2.0 * c / minimumWeight);
       }
       if (!eta.empty()) {
         operatorBound += 2.0 * (*std::max_element(eta.begin(), eta.end()));
@@ -2525,8 +2526,8 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
           operatorBound = std::max(operatorBound, std::abs(mode.theta));
         }
       }
-      const double cut = -64.0 * std::numeric_limits<double>::epsilon() *
-                          dim * operatorBound;
+      const double cut =
+          -64.0 * std::numeric_limits<double>::epsilon() * dim * operatorBound;
       v.climb = Climb{};
       std::vector<VectorXd> tauRing;
       if (v.tau.size() == dim) {

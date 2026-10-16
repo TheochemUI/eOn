@@ -2774,69 +2774,71 @@ TEST_CASE("an unconverged ring retains numerical prefactor diagnostics without "
   REQUIRE(std::isfinite(inst.rate));
 }
 
-TEST_CASE("a stationary ring with a soft transverse negative direction is not converged",
+TEST_CASE("a stationary ring with a soft transverse negative direction is not "
+          "converged",
           "[Tunneling][Instanton][PhysicalSoftSearch]") {
-  const double c=0.38, epsilon=1e-6, kappa=5e-4;
-  const double a2=1.0-2.0*c, a=std::sqrt(a2);
-  const double transverse=epsilon-kappa*a2*(1.0-a2);
+  const double c = 0.38, epsilon = 1e-6, kappa = 5e-4;
+  const double a2 = 1.0 - 2.0 * c, a = std::sqrt(a2);
+  const double transverse = epsilon - kappa * a2 * (1.0 - a2);
   REQUIRE(transverse < 0.0);
-  REQUIRE(std::abs(transverse) < 1e-3*std::abs(3.0*a2-1.0));
-  const BatchPotential potential=[=](const std::vector<VectorXd>&q,
-                                    std::vector<double>&v,
-                                    std::vector<VectorXd>&g) {
+  REQUIRE(std::abs(transverse) < 1e-3 * std::abs(3.0 * a2 - 1.0));
+  const BatchPotential potential = [=](const std::vector<VectorXd> &q,
+                                       std::vector<double> &v,
+                                       std::vector<VectorXd> &g) {
     v.resize(q.size());
     g.resize(q.size());
-    for(size_t j=0;j<q.size();++j) {
-      const double x=q[j](0), y=q[j](1), x2=x*x;
-      const double curvature=epsilon-kappa*x2*(1.0-x2);
-      v[j]=0.25*std::pow(x2-1.0,2)+0.5*curvature*y*y;
-      g[j]=VectorXd::Zero(2);
-      g[j](0)=x*(x2-1.0)+kappa*x*(2.0*x2-1.0)*y*y;
-      g[j](1)=curvature*y;
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0), y = q[j](1), x2 = x * x;
+      const double curvature = epsilon - kappa * x2 * (1.0 - x2);
+      v[j] = 0.25 * std::pow(x2 - 1.0, 2) + 0.5 * curvature * y * y;
+      g[j] = VectorXd::Zero(2);
+      g[j](0) = x * (x2 - 1.0) + kappa * x * (2.0 * x2 - 1.0) * y * y;
+      g[j](1) = curvature * y;
     }
   };
   std::vector<VectorXd> seed;
-  for(double sign : {1.0,1.0,-1.0,-1.0}) {
-    VectorXd q=VectorXd::Zero(2);
-    q(0)=sign*a;
+  for (double sign : {1.0, 1.0, -1.0, -1.0}) {
+    VectorXd q = VectorXd::Zero(2);
+    q(0) = sign * a;
     seed.push_back(q);
   }
   std::vector<double> energy;
   std::vector<VectorXd> gradient;
-  potential(seed,energy,gradient);
-  double residual=0.0;
-  for(long j=0;j<4;++j) {
-    const VectorXd ringGradient=gradient[static_cast<size_t>(j)]+
-        c*(2.0*seed[static_cast<size_t>(j)]-
-           seed[static_cast<size_t>((j+1)%4)]-
-           seed[static_cast<size_t>((j+3)%4)]);
-    residual=std::max(residual,ringGradient.norm());
+  potential(seed, energy, gradient);
+  double residual = 0.0;
+  for (long j = 0; j < 4; ++j) {
+    const VectorXd ringGradient = gradient[static_cast<size_t>(j)] +
+                                  c * (2.0 * seed[static_cast<size_t>(j)] -
+                                       seed[static_cast<size_t>((j + 1) % 4)] -
+                                       seed[static_cast<size_t>((j + 3) % 4)]);
+    residual = std::max(residual, ringGradient.norm());
   }
   REQUIRE(residual < 1e-14);
-  MatrixXd physical=MatrixXd::Zero(2,2);
-  physical(0,0)=3.0*a2-1.0;
-  physical(1,1)=transverse;
+  MatrixXd physical = MatrixXd::Zero(2, 2);
+  physical(0, 0) = 3.0 * a2 - 1.0;
+  physical(1, 1) = transverse;
   const Eigen::SelfAdjointEigenSolver<MatrixXd> exact(
-      denseRing(std::vector<MatrixXd>(4,physical),c));
+      denseRing(std::vector<MatrixXd>(4, physical), c));
   REQUIRE(exact.info() == Eigen::Success);
   REQUIRE((exact.eigenvalues().array() < -1e-8).count() == 2);
   REQUIRE(exact.eigenvalues()(0) == Catch::Approx(-0.28).margin(1e-12));
   REQUIRE(exact.eigenvalues()(1) == Catch::Approx(transverse).margin(1e-12));
-  MatrixXd saddle=MatrixXd::Zero(2,2);
-  saddle(0,0)=-1.0;
-  saddle(1,1)=epsilon;
+  MatrixXd saddle = MatrixXd::Zero(2, 2);
+  saddle(0, 0) = -1.0;
+  saddle(1, 1) = epsilon;
   RateInstantonOptions options;
-  options.beads=4;
-  options.halfRing=false;
-  options.checkOddSector=false;
-  options.initialHessians="finite_difference";
-  options.physicalHessianStep=1e-5;
-  options.maxIterations=1;
-  options.forceTolerance=1e-10;
-  options.lanczosFirst=8;
-  options.lanczosRestart=8;
-  const auto result=optimizeRateInstanton(VectorXd::Zero(2),saddle,
-      4.0/(std::sqrt(c)*kHbar),seed,potential,options);
-  CAPTURE(result.converged,result.iterations,residual,transverse);
+  options.beads = 4;
+  options.halfRing = false;
+  options.checkOddSector = false;
+  options.initialHessians = "finite_difference";
+  options.physicalHessianStep = 1e-5;
+  options.maxIterations = 1;
+  options.forceTolerance = 1e-10;
+  options.lanczosFirst = 8;
+  options.lanczosRestart = 8;
+  const auto result = optimizeRateInstanton(VectorXd::Zero(2), saddle,
+                                            4.0 / (std::sqrt(c) * kHbar), seed,
+                                            potential, options);
+  CAPTURE(result.converged, result.iterations, residual, transverse);
   REQUIRE_FALSE(result.converged);
 }
