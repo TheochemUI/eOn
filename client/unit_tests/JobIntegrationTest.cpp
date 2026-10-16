@@ -3198,8 +3198,9 @@ beads = 16
     const auto key = std::string("reference_") + reference;
     REQUIRE_THAT(std::stod(results.at(key + "_force_norm")),
                  Catch::Matchers::WithinAbs(forces.norm(), 1e-9));
-    REQUIRE_THAT(std::stod(results.at(key + "_max_force")),
-                 Catch::Matchers::WithinAbs(forces.rowwise().norm().maxCoeff(), 1e-9));
+    REQUIRE_THAT(
+        std::stod(results.at(key + "_max_force")),
+        Catch::Matchers::WithinAbs(forces.rowwise().norm().maxCoeff(), 1e-9));
     std::ifstream matrixFile(prefix.string() + "_hessian.dat");
     MatrixXd matrix(39, 39);
     for (long i = 0; i < matrix.rows(); ++i) {
