@@ -8,11 +8,33 @@ module; resolving them here turns it into a skip that names what is
 missing.
 """
 
+import ctypes
 import os
 import shutil
 from pathlib import Path
 
 import pytest
+
+# Defence in depth. eon._forksafe restores the OpenBLAS pool around
+# os.fork, but a test can fork eonclient through sh before it imports
+# eon. One thread here, before collection imports numpy, so that fork
+# cannot leave server_lock held. Not an environment variable: the client
+# process keeps its own pool.
+def _one_openblas_thread() -> None:
+    for name in ("libopenblas.so.0", "libopenblas.so", "libcblas.so.3", "libblas.so.3"):
+        try:
+            lib = ctypes.CDLL(name)
+        except OSError:
+            continue
+        setter = getattr(lib, "openblas_set_num_threads", None)
+        if setter is None:
+            continue
+        setter.argtypes = [ctypes.c_int]
+        setter.restype = None
+        setter(1)
+
+
+_one_openblas_thread()
 
 
 def require_binary(name):
