@@ -479,17 +479,20 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   };
 
   // Both rate regimes require a metastable well and an index-one saddle
-  // on the same free coordinates before any ring is sampled.
-  try {
-    static_cast<void>(tunneling::harmonicTstLogRate(
-        hReactant, hSaddle,
-        1.0 / (tunneling::kBoltzmann * temperatures.front()),
-        vSaddle - vReactant, rigidModes));
-  } catch (const std::exception &ex) {
-    EONC_LOG_ERROR("[Instanton] invalid rate reference: {}", ex.what());
-    write(RunStatus::FAIL_POTENTIAL_FAILED);
-    return returnFiles;
-  }
+  // on the same free coordinates before any path or ring is sampled.
+  auto validReferences = [&]() {
+    try {
+      static_cast<void>(tunneling::harmonicTstLogRate(
+          hReactant, hSaddle,
+          1.0 / (tunneling::kBoltzmann * temperatures.front()),
+          vSaddle - vReactant, rigidModes));
+      return true;
+    } catch (const std::exception &ex) {
+      EONC_LOG_ERROR("[Instanton] invalid rate reference: {}", ex.what());
+      write(RunStatus::FAIL_POTENTIAL_FAILED);
+      return false;
+    }
+  };
 
   // A band over the barrier seeds the ring and carries the
   // one-dimensional WKB rate. An empty path leaves the saddle-mode seed.
@@ -520,6 +523,9 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       throw std::runtime_error("instanton: " + o.initial_path +
                                " holds fewer than three frames");
     }
+    if (!validReferences()) {
+      return returnFiles;
+    }
     if (!haveEnergies) {
       const long before = PotRegistry::get().total_force_calls();
       std::vector<VectorXd> grads;
@@ -546,6 +552,9 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                          ex.what());
       }
     }
+  }
+  if (o.initial_path.empty() && !validReferences()) {
+    return returnFiles;
   }
   // No band: the steepest-descent path out of the saddle carries the ring
   // seed by the period condition. Cooling a cosine from the crossover finds
