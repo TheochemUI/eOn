@@ -24,6 +24,7 @@
 
 #include <Eigen/Eigenvalues>
 #include <Eigen/LU>
+#include <Eigen/QR>
 
 #include <algorithm>
 #include <cmath>
@@ -2881,6 +2882,7 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
   }
   RateInstanton inst;
   inst.discretization = options.discretization;
+  inst.bathEta = frictionEta(options, options.beads);
   inst.beta = beta;
   inst.betaN = beta / static_cast<double>(nBeads);
   inst.temperature = 1.0 / (kBoltzmann * beta);
@@ -3489,6 +3491,7 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
   }
   RateInstanton inst;
   inst.discretization = options.discretization;
+  inst.bathEta = frictionEta(options, options.beads);
   inst.beta = beta;
   inst.betaN = beta / static_cast<double>(N);
   inst.temperature = 1.0 / (kBoltzmann * beta);
@@ -3634,6 +3637,207 @@ double closedRingPotential(const std::vector<VectorXd> &beads, double spring,
   return evaluateRing(beads, spring, potential, 0.0, {}, discretization).u;
 }
 
+
+namespace {
+
+// The quadratic bath is K=T^T F^* Omega F T. Applying its gradient to
+// coordinate basis vectors retains the same finite operator as the energy.
+MatrixXd finiteBathKernel(long n, const std::vector<double> &eta,
+                          double &symmetryResidual) {
+  MatrixXd kernel = MatrixXd::Zero(n, n);
+  for (long col = 0; col < n; ++col) {
+    std::vector<VectorXd> q(static_cast<size_t>(n), VectorXd::Zero(1));
+    std::vector<VectorXd> g = q;
+    q[static_cast<size_t>(col)](0) = 1.0;
+    double energy = 0.0;
+    addFrictionBath(q, energy, g, eta);
+    for (long row = 0; row < n; ++row) {
+      kernel(row, col) = g[static_cast<size_t>(row)](0);
+    }
+  }
+  symmetryResidual = (kernel - kernel.transpose()).cwiseAbs().maxCoeff();
+  const double tolerance = 64.0 * std::numeric_limits<double>::epsilon() * n * kernel.cwiseAbs().maxCoeff();
+  if (!kernel.allFinite() || symmetryResidual > tolerance) {
+    throw std::runtime_error("instantonRate: asymmetric finite bath kernel");
+  }
+  return (0.5 * (kernel + kernel.transpose())).eval();
+}
+
+void bathFluctuations(RateInstanton &inst,
+                      const std::vector<MatrixXd> &physical,
+                      const std::vector<std::vector<VectorXd>> &rigid,
+                      const VectorXd &reactantValues,
+                      const std::vector<bool> &rigidReactant,
+                      double vReactant, double c) {
+  const long n = static_cast<long>(inst.beads.size());
+  const long f = inst.beads.front().size();
+  const long dim = n * f;
+  const double bnh = inst.betaN * kHbar;
+  if (!(bnh > 0.0) || !std::isfinite(bnh) || !(inst.beta > 0.0) || !std::isfinite(inst.beta)) {
+    throw std::invalid_argument("instantonRate: finite positive bath inverse temperature required");
+  }
+  if (!reactantValues.allFinite()) {
+    throw std::runtime_error("instantonRate: non-finite bath reactant spectrum");
+  }
+  MatrixXd bead = finiteBathKernel(n, inst.bathEta, inst.bathSymmetryResidual);
+  for (long j = 0; j < n; ++j) {
+    const long k = (j + 1) % n;
+    const double w = inst.discretization.empty() ? 1.0 : inst.discretization[static_cast<size_t>(j)];
+    const double link = c / w;
+    bead(j,j) += link;
+    bead(k,k) += link;
+    bead(j,k) -= link;
+    bead(k,j) -= link;
+  }
+  const Eigen::SelfAdjointEigenSolver<ColMajorXd> eb(bead);
+  if (eb.info() != Eigen::Success || !eb.eigenvalues().allFinite()) {
+    throw std::runtime_error("instantonRate: bath bead eigensolver failed");
+  }
+  const double beadScale = bead.cwiseAbs().maxCoeff();
+  const double beadTol = 64.0 * std::numeric_limits<double>::epsilon() * n * beadScale;
+  if (eb.eigenvalues()(0) < -beadTol) {
+    throw std::runtime_error("instantonRate: bath bead operator is not positive semidefinite");
+  }
+  // The reactant Hessian is constant over beads, so its eigenvalues add
+  // to the exact eigenvalues of the scalar bead operator, including K.
+  double reactantLogDet = 0.0;
+  long reactantDim = 0;
+  for (long k = 0; k < n; ++k) {
+    const double mu = std::max(0.0, eb.eigenvalues()(k));
+    for (long m = 0; m < f; ++m) {
+      if (k == 0 && rigidReactant[static_cast<size_t>(m)]) {
+        continue;
+      }
+      const double curvature = rigidReactant[static_cast<size_t>(m)] ? 0.0 : reactantValues(m);
+      if ((!rigidReactant[static_cast<size_t>(m)] && !(curvature > 0.0)) ||
+          !(curvature + mu > 0.0) || !std::isfinite(curvature + mu)) {
+        throw std::runtime_error("instantonRate: bath reactant curvature is not positive");
+      }
+      reactantLogDet += std::log(curvature + mu);
+      ++reactantDim;
+    }
+  }
+  inst.bathReactantLogAbsDet = reactantLogDet;
+  inst.logZr = -inst.beta * vReactant - reactantDim * std::log(bnh) - 0.5 * reactantLogDet;
+
+  ColMajorXd full = ColMajorXd::Zero(dim, dim);
+  const MatrixXd eye = MatrixXd::Identity(f, f);
+  for (long j = 0; j < n; ++j) {
+    for (long k = 0; k < n; ++k) {
+      full.block(j*f,k*f,f,f) = bead(j,k) * eye;
+    }
+    if (!physical[static_cast<size_t>(j)].allFinite()) {
+      throw std::runtime_error("instantonRate: non-finite physical bead Hessian");
+    }
+    full.block(j*f,j*f,f,f) += physical[static_cast<size_t>(j)];
+  }
+  // Only declared physical rigid generators leave this operator.
+  ColMajorXd quotient = ColMajorXd::Identity(dim, dim);
+  if (!rigid.empty()) {
+    ColMajorXd generators(dim, static_cast<long>(rigid.size()));
+    for (long j = 0; j < generators.cols(); ++j) {
+      generators.col(j) = packBeads(rigid[static_cast<size_t>(j)]);
+    }
+    Eigen::ColPivHouseholderQR<ColMajorXd> qr(generators);
+    if (qr.rank() != generators.cols()) {
+      throw std::runtime_error("instantonRate: dependent declared rigid generators");
+    }
+    const ColMajorXd q = qr.householderQ() * ColMajorXd::Identity(dim, dim);
+    quotient = q.rightCols(dim - generators.cols());
+  }
+  const double fullResidual = (full - full.transpose()).cwiseAbs().maxCoeff();
+  const double fullTolerance = 64.0 * std::numeric_limits<double>::epsilon() * dim * full.cwiseAbs().maxCoeff();
+  if (!full.allFinite() || fullResidual > fullTolerance) {
+    throw std::runtime_error("instantonRate: asymmetric bath fluctuation operator");
+  }
+  const ColMajorXd reducedRaw = quotient.transpose() * full * quotient;
+  const double reducedResidual = (reducedRaw - reducedRaw.transpose()).cwiseAbs().maxCoeff();
+  const double reducedTolerance = 64.0 * std::numeric_limits<double>::epsilon() * reducedRaw.rows() * reducedRaw.cwiseAbs().maxCoeff();
+  if (!reducedRaw.allFinite() || reducedResidual > reducedTolerance) {
+    throw std::runtime_error("instantonRate: asymmetric reduced bath fluctuation operator");
+  }
+  inst.bathSymmetryResidual = std::max({inst.bathSymmetryResidual, fullResidual, reducedResidual});
+  const ColMajorXd reduced = (0.5 * (reducedRaw + reducedRaw.transpose())).eval();
+  const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(reduced);
+  if (es.info() != Eigen::Success || !es.eigenvalues().allFinite()) {
+    throw std::runtime_error("instantonRate: bath fluctuation eigensolver failed");
+  }
+  const VectorXd values = es.eigenvalues();
+  const double span = values.cwiseAbs().maxCoeff();
+  const double zeroTol = 64.0 * std::numeric_limits<double>::epsilon() * values.size() * span;
+  inst.bathRoundoffScale = zeroTol;
+  inst.bathSignedCurvatures.assign(values.data(), values.data() + values.size());
+  inst.negativeModes = 0;
+  long nulls = 0;
+  for (long i = 0; i < values.size(); ++i) {
+    inst.negativeModes += values(i) < -zeroTol ? 1 : 0;
+    nulls += std::abs(values(i)) <= zeroTol ? 1 : 0;
+  }
+  inst.negativeEigenvalue = std::min(0.0, values(0));
+  VectorXd cycle = quotient.transpose() * timeTranslation(inst.beads);
+  const double cycleNorm = cycle.norm();
+  long phase = -1;
+  double bestOverlap = 0.0;
+  if (cycleNorm > 1e-8) {
+    cycle /= cycleNorm;
+    for (long i = 0; i < values.size(); ++i) {
+      const double overlap = std::abs(es.eigenvectors().col(i).dot(cycle));
+      if (std::abs(values(i)) <= zeroTol && overlap > 0.9 && overlap > bestOverlap) {
+        phase = i;
+        bestOverlap = overlap;
+      }
+    }
+  }
+  // Integer bead shifts are a discrete symmetry, not a continuous zero mode.
+  bool circulant = true;
+  for (long j = 0; j < n; ++j) {
+    for (long k = 0; k < n; ++k) {
+      circulant = circulant && std::abs(bead(j,k) - bead((j+1)%n,(k+1)%n)) <= beadTol;
+    }
+  }
+  inst.phaseEigenResidual = phase >= 0
+      ? (reduced * es.eigenvectors().col(phase) - values(phase) * es.eigenvectors().col(phase)).norm()
+      : std::numeric_limits<double>::quiet_NaN();
+  inst.phaseZeroVerified = phase >= 0 && nulls == 1 && circulant &&
+      inst.phaseEigenResidual <= zeroTol;
+  inst.zeroEigenvalue = phase >= 0 ? values(phase) : 0.0;
+  inst.bathLogAbsDet = 0.0;
+  for (long i = 0; i < values.size(); ++i) {
+    if (std::abs(values(i)) > zeroTol) {
+      inst.bathLogAbsDet += std::log(std::abs(values(i)));
+    }
+  }
+  // This absolute Gaussian integral excludes contour and rate normalization.
+  inst.logAbsoluteGaussianWeight = nulls == 0
+      ? -inst.betaN * inst.ringPotential - values.size() * std::log(bnh) - 0.5 * inst.bathLogAbsDet
+      : std::numeric_limits<double>::quiet_NaN();
+  inst.rateValid = inst.converged && inst.phaseZeroVerified && inst.negativeModes == 1;
+  inst.rateValidity = !inst.converged ? "unconverged_bath_ring" :
+      (nulls > 1 ? "additional_bath_null_modes" :
+      (!circulant ? "bead_dependent_operator_no_continuous_phase" :
+      (inst.negativeModes != 1 ? "non_index_one_bath_ring" :
+       (inst.phaseZeroVerified ? "numerically_null_collective_phase" : "resolved_finite_bead_phase"))));
+  if (!inst.rateValid) {
+    const double invalid = std::numeric_limits<double>::quiet_NaN();
+    inst.logRateTimesZr = inst.logRate = inst.rate = inst.effectiveBarrier = invalid;
+    return;
+  }
+  const long kept = values.size() - 1;
+  const double logProd = kept * std::log(bnh) + 0.5 * inst.bathLogAbsDet;
+  inst.logRateTimesZr = -std::log(bnh) +
+      0.5 * std::log(inst.bN / (2.0 * std::numbers::pi * inst.betaN * kHbar * kHbar)) -
+      logProd - inst.betaN * inst.ringPotential;
+  inst.logRate = inst.logRateTimesZr - inst.logZr;
+  inst.rate = std::exp(inst.logRate) / kTimeUnitSeconds;
+  inst.effectiveBarrier = -std::log(2.0 * std::numbers::pi * kHbar * inst.beta) / inst.beta -
+      inst.logRate / inst.beta;
+  if (!std::isfinite(inst.logRateTimesZr) || !std::isfinite(inst.logZr) || !std::isfinite(inst.logRate)) {
+    throw std::runtime_error("instantonRate: non-finite bath prefactor");
+  }
+}
+
+} // namespace
+
 void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
                    const MatrixXd &hessReactant, double vReactant,
                    const MatrixXd &hessSaddle, double vSaddle, long rigidModes,
@@ -3679,8 +3883,14 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
   const std::vector<double> *linkWeight =
       inst.discretization.empty() ? nullptr : &inst.discretization;
 
+  if (hessReactant.rows() != f || hessReactant.cols() != f || !hessReactant.allFinite()) {
+    throw std::runtime_error("instantonRate: invalid reactant Hessian");
+  }
   const Eigen::SelfAdjointEigenSolver<MatrixXd> er(
       0.5 * (hessReactant + hessReactant.transpose()));
+  if (er.info() != Eigen::Success || !er.eigenvalues().allFinite()) {
+    throw std::runtime_error("instantonRate: reactant eigensolver failed");
+  }
   const VectorXd &lr = er.eigenvalues();
   const std::vector<bool> rigidR = nearestZero(lr, rigidModes);
   MatrixXd nullBasis(f, 0);
@@ -3732,6 +3942,19 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
           static_cast<size_t>(N),
           (nullBasis.col(r) / std::sqrt(static_cast<double>(N))).eval());
     }
+  }
+  for (double eta : inst.bathEta) {
+    if (!(eta >= 0.0) || !std::isfinite(eta)) {
+      throw std::invalid_argument("instantonRate: bath eta must be finite and nonnegative");
+    }
+  }
+  if (std::any_of(inst.bathEta.begin(), inst.bathEta.end(), [](double eta) { return eta > 0.0; })) {
+    bathFluctuations(inst, hBead, rigid, lr, rigidR, vReactant, c);
+    if (hessSaddle.size() > 0) {
+      inst.classicalLogRate = harmonicTstLogRate(hessReactant, hessSaddle, inst.beta, vSaddle-vReactant, rigidModes);
+      inst.classicalRate = std::exp(inst.classicalLogRate) / kTimeUnitSeconds;
+    }
+    return;
   }
   auto offRigid = [&](std::vector<VectorXd> &v) {
     for (const auto &u : rigid) {
@@ -3819,13 +4042,15 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(full,
                                                        Eigen::EigenvaluesOnly);
     const VectorXd lam = es.eigenvalues();
+    const double inertiaTol = 64.0 * std::numeric_limits<double>::epsilon() *
+                              dim * lam.cwiseAbs().maxCoeff();
     double dense = 0.0, scaleSum = 0.0;
     long negative = 0;
     for (long i = 0; i < dim; ++i) {
       const double l = std::abs(lam(i));
       dense += std::log(l);
       scaleSum += std::abs(std::log(l));
-      negative += lam(i) < 0.0 ? 1 : 0;
+      negative += lam(i) < -inertiaTol ? 1 : 0;
     }
     if (!(std::abs(dense - logAbsDet) <= 1e-6 * std::max(1.0, scaleSum))) {
       throw std::runtime_error(
@@ -3834,17 +4059,7 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     }
     logAbsDet = dense;
     inst.negativeEigenvalue = std::min(0.0, lam(0));
-    // A numerical null eigenvalue can sit just below zero off the lifted
-    // directions; it is not a second unstable mode when it is tiny next to
-    // the barrier curvature.
-    long tiny = 0;
-    for (long i = 1; i < dim && lam(i) < 0.0; ++i) {
-      if (lam(i) > 1e-3 * lam(0)) {
-        ++tiny;
-      }
-    }
-    inst.negativeModes =
-        negative > 1 ? std::max(1L, negative - tiny) : negative;
+    inst.negativeModes = negative;
   } else {
     // The lowest ring eigenvalue, for the report, from products alone.
     auto applyFull = [&](const std::vector<VectorXd> &vec) {
@@ -3870,19 +4085,28 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
         inst.negativeEigenvalue = mode.theta;
       }
     }
-    // A numerical null eigenvalue can sit just below zero off the cycle,
-    // where the lift along tau does not reach it; it is not a second
-    // unstable mode when it is tiny next to the barrier curvature.
-    if (inst.negativeModes > 1 && inst.negativeEigenvalue < 0.0) {
-      long tiny = 0;
-      for (const auto &mode : modes) {
-        if (mode.theta < 0.0 && mode.theta > 1e-3 * inst.negativeEigenvalue &&
-            std::abs(dot(mode.vector, cycle)) < 0.5) {
-          ++tiny;
-        }
-      }
-      inst.negativeModes = std::max(1L, inst.negativeModes - tiny);
+    // Only resolved eigenpairs inside the matrix roundoff scale can
+    // account for numerical zeros outside the declared lifted directions.
+    double operatorBound = 2.0 * c;
+    for (const auto &block : diag) {
+      operatorBound = std::max(operatorBound,
+          block.cwiseAbs().rowwise().sum().maxCoeff() + 2.0*c);
     }
+    const double inertiaTol = 64.0 * std::numeric_limits<double>::epsilon() *
+                              dim * operatorBound;
+    long numericalZeros = 0;
+    for (const auto &mode : modes) {
+      bool lifted = false;
+      for (const auto &direction : dropped) {
+        lifted = lifted || std::abs(dot(mode.vector, direction)) > 0.5;
+      }
+      if (!lifted && mode.theta < 0.0 && std::abs(mode.theta) <= inertiaTol &&
+          mode.residual <= inertiaTol) {
+        ++numericalZeros;
+      }
+    }
+    inst.negativeModes = std::max(0L, inst.negativeModes - numericalZeros);
+
   }
   const long nDrop = 1 + nullBasis.cols();
   // Along an eigenvector the lift adds c to its eigenvalue, so it comes off
@@ -3921,11 +4145,17 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     }
   }
   inst.logZr = logZr;
+  inst.rateValid = inst.negativeModes == 1;
+  inst.rateValidity = inst.rateValid ? "collective_coordinate" : "non_index_one_ring";
   inst.logRate = inst.logRateTimesZr - logZr;
   inst.rate = std::exp(inst.logRate) / kTimeUnitSeconds;
   inst.effectiveBarrier =
       -std::log(2.0 * std::numbers::pi * kHbar * inst.beta) / inst.beta -
       inst.logRate / inst.beta;
+  if (!inst.rateValid) {
+    const double invalid = std::numeric_limits<double>::quiet_NaN();
+    inst.logRateTimesZr = inst.logRate = inst.rate = inst.effectiveBarrier = invalid;
+  }
 
   if (hessSaddle.size() > 0) {
     inst.classicalLogRate = harmonicTstLogRate(

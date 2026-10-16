@@ -914,7 +914,42 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         tunneling::instantonRate(
             inst, beadHessian, hReactant, vReactant - o.energy_shift, hSaddle,
             vSaddle - o.energy_shift, rigidModes, 4096, bodies);
-        rateOk = std::isfinite(inst.logRate) && inst.negativeModes == 1;
+        rateOk = inst.rateValid && std::isfinite(inst.logRate) &&
+                 inst.negativeModes == 1;
+        if (!inst.rateValid) {
+          EONC_LOG_ERROR("[Instanton] rate fluctuation validity: {}",
+                         inst.rateValidity);
+        }
+        if (!inst.bathSignedCurvatures.empty()) {
+          std::ostringstream name;
+          name << "instanton_fluctuations_" << std::setprecision(6)
+               << temperature << "K.dat";
+          std::ofstream spectrum(name.str());
+          if (!spectrum) {
+            throw std::runtime_error("instanton: cannot write " + name.str());
+          }
+          spectrum << std::setprecision(17)
+                   << "# Fixed quadratic bath; curvatures in eV/(amu Angstrom^2)\n"
+                   << "# rate_valid " << (inst.rateValid ? 1 : 0) << '\n'
+                   << "# validity " << inst.rateValidity << '\n'
+                   << "# phase_zero_verified " << (inst.phaseZeroVerified ? 1 : 0) << '\n'
+                   << "# log_abs_det " << inst.bathLogAbsDet << '\n'
+                   << "# reactant_log_abs_det " << inst.bathReactantLogAbsDet << '\n'
+                   << "# operator_symmetry_residual " << inst.bathSymmetryResidual << '\n'
+                   << "# algebraic_roundoff_scale " << inst.bathRoundoffScale << '\n'
+                   << "# phase_eigenpair_residual " << inst.phaseEigenResidual << '\n'
+                   << "# log_absolute_labelled_gaussian_weight "
+                   << inst.logAbsoluteGaussianWeight << '\n'
+                   << "# index signed_curvature\n";
+          for (size_t i = 0; i < inst.bathSignedCurvatures.size(); ++i) {
+            spectrum << i << ' ' << inst.bathSignedCurvatures[i] << '\n';
+          }
+          spectrum.flush();
+          if (!spectrum) {
+            throw std::runtime_error("instanton: cannot finish " + name.str());
+          }
+          returnFiles.push_back(name.str());
+        }
         if (inst.negativeModes != 1) {
           EONC_LOG_ERROR("[Instanton] the ring Hessian has {} negative modes, "
                          "not one: the ring is not a first-order saddle of U_N",
@@ -1007,6 +1042,9 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     extras.emplace_back("instanton_ring_potential", inst.ringPotential);
     extras.emplace_back("instanton_bN", inst.bN);
     extras.emplace_back("instanton_collapsed", inst.collapsed ? 1.0 : 0.0);
+    extras.emplace_back("instanton_rate_valid", rateOk ? 1.0 : 0.0);
+    extras.emplace_back("instanton_negative_modes",
+                        static_cast<double>(inst.negativeModes));
     extras.emplace_back("instanton_s_min", channel.sMin);
     extras.emplace_back("instanton_s_max", channel.sMax);
     extras.emplace_back("instanton_chord_overlap", channel.chordOverlap);
@@ -1020,8 +1058,6 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       extras.emplace_back("rate_htst", inst.classicalRate);
       extras.emplace_back("rate_htst_log", inst.classicalLogRate - logSecond);
       extras.emplace_back("barrier_effective_instanton", inst.effectiveBarrier);
-      extras.emplace_back("instanton_negative_modes",
-                          static_cast<double>(inst.negativeModes));
       extras.emplace_back("instanton_zero_mode", inst.zeroEigenvalue);
     } else {
       rateFailed = true;
