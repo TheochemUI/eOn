@@ -828,11 +828,7 @@ if not readcon_db_dep.found()
         },
     )
     _readcon_db_inner = readcon_db_proj.get_variable('readcon_dep')
-    _readcon_db_cargo = readcon_db_proj.get_variable('readcon_cargo')
-    _readcon_db_so = _readcon_db_cargo[0]
-    # Windows cargo output 1 is readcon_db.lib. link.exe cannot take the
-    # DLL (LNK1181). The import library is the input it can open.
-    _readcon_db_implib = _readcon_db_cargo[1]
+    _readcon_db_so = readcon_db_proj.get_variable('readcon_cargo')[0]
     _readcon_db_version = _readcon_db_inner.version()
     _runtime_rpath += [fs.parent(_readcon_db_so.full_path())]
     # full_path() in link_args is a string, so ninja has no edge to the
@@ -840,8 +836,10 @@ if not readcon_db_dep.found()
     # link_with is the order edge. The mirror resolves rkrdb_open at load
     # time, and GNU ld --as-needed drops a library with no link-time use.
     # Those flags are Linux-only: Apple ld rejects --no-as-needed, and
-    # -needed_library records the dylib. Windows keeps the DLL off
-    # link_with because link.exe rejects a DLL input (LNK1107).
+    # -needed_library records the dylib. On Windows, readcon_dep
+    # link_with's the MSVC import library the shared build produces.
+    # link.exe rejects the DLL (LNK1107). A path to readcon_db.lib is the
+    # static archive, and it is not a build edge (LNK1181).
     _readcon_db_order = []
     if not is_windows
         _readcon_db_order = [_readcon_db_so]
@@ -858,16 +856,20 @@ if not readcon_db_dep.found()
     if host_system == 'darwin'
         _readcon_db_link = ['-Wl,-needed_library,' + _readcon_db_so.full_path()]
     endif
-    if is_windows
-        _readcon_db_link_src = _readcon_db_implib
-        _readcon_db_link = [_readcon_db_implib.full_path()]
+    if not is_windows
+        readcon_db_dep = declare_dependency(
+            link_with: _readcon_db_order,
+            link_args: _readcon_db_link,
+            sources: [_readcon_db_link_src],
+            compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
+        )
     endif
-    readcon_db_dep = declare_dependency(
-        link_with: _readcon_db_order,
-        link_args: _readcon_db_link,
-        sources: [_readcon_db_link_src],
-        compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
-    )
+    if is_windows
+        readcon_db_dep = declare_dependency(
+            dependencies: [_readcon_db_inner],
+            compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
+        )
+    endif
 else
     _readcon_db_version = readcon_db_dep.version()
     if _readcon_db_version == ''

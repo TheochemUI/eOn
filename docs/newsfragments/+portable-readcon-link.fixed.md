@@ -1,1 +1,1 @@
-Linux keeps `--no-as-needed` around libreadcon_db. macOS records the dylib with `-needed_library`, and Windows links the import library instead of the DLL.
+Linux keeps `--no-as-needed` around libreadcon_db. macOS records the dylib with `-needed_library`. Windows links the shared readcon-db library through the import library the subproject builds.

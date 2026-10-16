@@ -37,6 +37,14 @@ def test_wrap_revision_matches_the_python_package():
     fallback = meson.split("if not readcon_db_dep.found()", 1)[1].split("else", 1)[0]
     assert "link_with: _readcon_db_order" in fallback
     assert "_readcon_db_order = [_readcon_db_so]" in fallback
+    assert "dependencies: [_readcon_db_inner]" in fallback
+    assert "_readcon_db_implib" not in meson
+    assert "patch_directory = readcon-db" in text
+    overlay = (
+        ROOT / "subprojects" / "packagefiles" / "readcon-db" / "meson.build"
+    ).read_text(encoding="utf-8")
+    assert "link_with: readcon_implib" in overlay
+    assert "readcon_db.dll.lib" in overlay
 
 
 def test_missing_library_leaves_iostatus_and_fails_the_check():
