@@ -519,6 +519,10 @@ if not chemfiles_dep.found() and not _chfl_feature.disabled()
         'CHFL_BUILD_TESTS': 'OFF',
         'CHFL_BUILD_DOCUMENTATION': 'OFF',
         'CMAKE_POSITION_INDEPENDENT_CODE': 'ON',
+        # CMake 4 rejects chemfiles 0.10.4's cmake_minimum_required(2.8.12).
+        # The wrap also bumps that line; this flag covers a configure that
+        # reaches the unpatched file.
+        'CMAKE_POLICY_VERSION_MINIMUM': '3.5',
     })
     chfl_proj = cmake.subproject(
         'chemfiles',

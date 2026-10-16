@@ -368,13 +368,35 @@ IoStatus chemfiles2matter(Matter &m, const std::string &filename,
     m.setAtomicNrs(atomic_nrs);
     m.setPositions(positions);
 
+    // Frame::velocities() is set by formats that store velocities as a
+    // trajectory array. The XYZ reader does not (FormatMetadata::velocities
+    // is false): an extxyz `velo` column is an atom property of kind
+    // VECTOR3D, so read that when the frame has no velocity array.
+    AtomMatrix v(n, 3);
+    bool have_velocities = false;
     if (const auto vel = frame.velocities()) {
-      AtomMatrix v(n, 3);
+      have_velocities = true;
       for (Eigen::Index i = 0; i < n; ++i) {
         for (int k = 0; k < 3; ++k) {
           v(i, k) = (*vel)[static_cast<size_t>(i)][k];
         }
       }
+    } else {
+      v.setZero();
+      for (Eigen::Index i = 0; i < n; ++i) {
+        const auto &atom = frame[static_cast<size_t>(i)];
+        const auto prop = atom.get("velo");
+        if (!prop || prop->kind() != chemfiles::Property::VECTOR3D) {
+          continue;
+        }
+        have_velocities = true;
+        const auto vec = prop->as_vector3d();
+        for (int k = 0; k < 3; ++k) {
+          v(i, k) = vec[static_cast<size_t>(k)];
+        }
+      }
+    }
+    if (have_velocities) {
       m.setVelocities(v);
     }
     // resize/setPositions leave the potential dirty; no file forces here.
