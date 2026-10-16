@@ -882,6 +882,7 @@ TEST_CASE_METHOD(HessianScratch,
   }
   SECTION("stencil") {
     ParametersLoadAccess::hessian_options(params).fd_scheme = "central";
+    expectedResumeCalls = 13;
   }
   SECTION("mobile atom order") { atoms << 1, 0; }
   ParametersLoadAccess::hessian_options(params).resume = true;
