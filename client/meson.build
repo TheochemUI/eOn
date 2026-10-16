@@ -978,12 +978,6 @@ else
             + 'or wipe the build directory.',
         )
     endif
-    # Preserve the dependency's capability value when it exports one.
-    if _rgpot_proj.get_variable('has_expr') and cppc.get_define(
-        'RGPOT_HAS_EXPR', dependencies: rgpot_dep,
-    ) == ''
-        _args += ['-DRGPOT_HAS_EXPR']
-    endif
     if get_option('with_serve')
         ptlrpc_dep = _rgpot_proj.get_variable('ptlrpc_dep')
     endif
