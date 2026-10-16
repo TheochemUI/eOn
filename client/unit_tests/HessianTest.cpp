@@ -11,6 +11,7 @@
 */
 
 #include "eon/Hessian.h"
+#include "eon/AtomicFile.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/ConFileIO.h"
@@ -30,6 +31,8 @@
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
+#include <iterator>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -727,3 +730,74 @@ TEST_CASE_METHOD(HessianScratch,
 }
 
 } /* namespace tests */
+
+namespace tests {
+TEST_CASE_METHOD(HessianScratch, "Atomic checkpoint replacement preserves valid data on failure",
+                 "[hessian][checkpoint]") {
+  const std::string path = "atomic.ckpt";
+  const std::string original = "eon_hess_ckpt 1 1\n1.2345678901234567\n";
+  { std::ofstream out(path); out << original; }
+  auto contents = [&]() {
+    std::ifstream in(path);
+    return std::string(std::istreambuf_iterator<char>(in), {});
+  };
+  SECTION("serializer failure") {
+    REQUIRE_FALSE(eonc::helpers::atomicWriteFile(path, [](FILE *out) {
+      std::fputs("incomplete", out);
+      return false;
+    }));
+    REQUIRE(contents() == original);
+  }
+  SECTION("interrupted serializer") {
+    REQUIRE_THROWS_AS(eonc::helpers::atomicWriteFile(path, [](FILE *out) -> bool {
+      std::fputs("incomplete", out);
+      throw std::runtime_error("interrupted write");
+    }), std::runtime_error);
+    REQUIRE(contents() == original);
+  }
+  SECTION("invalid destination") {
+    REQUIRE_FALSE(eonc::helpers::atomicWriteFile("missing/checkpoint", [](FILE *) { return true; }));
+    REQUIRE(contents() == original);
+  }
+  SECTION("replacement failure") {
+    std::filesystem::create_directory("destination");
+    REQUIRE_FALSE(eonc::helpers::atomicWriteFile("destination", [](FILE *out) {
+      return std::fputs("complete", out) >= 0;
+    }));
+    REQUIRE(std::filesystem::is_directory("destination"));
+    REQUIRE(contents() == original);
+  }
+  SECTION("successful replacement") {
+    const std::string replacement = "eon_hess_ckpt 1 1\n9.8765432109876543\n";
+    REQUIRE(eonc::helpers::atomicWriteFile(path, [&](FILE *out) {
+      return std::fputs(replacement.c_str(), out) >= 0;
+    }));
+    REQUIRE(contents() == replacement);
+  }
+  for (const auto &entry : std::filesystem::directory_iterator(".")) {
+    REQUIRE(entry.path().filename().string().find(".tmp.") == std::string::npos);
+  }
+}
+
+TEST_CASE_METHOD(HessianScratch, "Final Hessian retains every binary64 entry", "[hessian][checkpoint]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::sharePotential(eonc::helpers::makePotential(PotType::LJ, params));
+  Matter matter(pot, params);
+  matter.con2matter(std::string("reactant.con"));
+  VectorXi atoms(2);
+  atoms << 0, 1;
+  Hessian hessian(params, &matter);
+  const MatrixXd matrix = hessian.getHessian(&matter, atoms);
+  REQUIRE(matrix.rows() == 6);
+  std::ifstream input("hessian.dat");
+  REQUIRE(input.good());
+  for (int i = 0; i < matrix.rows(); ++i) {
+    for (int j = 0; j < matrix.cols(); ++j) {
+      double value = 0;
+      REQUIRE(static_cast<bool>(input >> value));
+      REQUIRE(value == matrix(i, j));
+    }
+  }
+}
+} // namespace tests

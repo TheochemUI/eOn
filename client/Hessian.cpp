@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/Hessian.h"
+#include "eon/AtomicFile.h"
 #include "eon/EonLogger.h"
 #include "eon/HelperFunctions.h"
 #include "eon/SafeMath.h"
@@ -64,18 +65,21 @@ bool loadColumnCheckpoint(const std::string &path, int size, int &nextCol,
 
 bool saveColumnCheckpoint(const std::string &path, int size, int nextCol,
                           const MatrixXd &H) {
-  std::ofstream out(path);
-  if (!out) {
-    return false;
-  }
-  out << "eon_hess_ckpt " << size << " " << nextCol << "\n";
-  out.precision(17);
-  for (int i = 0; i < size; ++i) {
-    for (int j = 0; j < size; ++j) {
-      out << H(i, j) << (j + 1 == size ? '\n' : ' ');
+  return helpers::atomicWriteFile(path, [&](FILE *out) {
+    if (std::fprintf(out, "eon_hess_ckpt %d %d\n", size, nextCol) < 0) {
+      return false;
     }
-  }
-  return static_cast<bool>(out);
+    for (int i = 0; i < size; ++i) {
+      for (int j = 0; j < size; ++j) {
+        if (std::fprintf(out, "%.*g%c",
+                         std::numeric_limits<double>::max_digits10, H(i, j),
+                         j + 1 == size ? '\n' : ' ') < 0) {
+          return false;
+        }
+      }
+    }
+    return true;
+  });
 }
 
 } // namespace
