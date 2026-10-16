@@ -774,7 +774,7 @@ void NudgedElasticBand::updateForces(bool ci_active) {
 
   if (solidState_) {
     projectSolidState(ci_active);
-    movedAfterForceCall = false;
+    movedAfterForceCall = ci_active != ci_enabled_;
     return;
   }
 
@@ -916,7 +916,7 @@ void NudgedElasticBand::updateForces(bool ci_active) {
     }
   }
 
-  movedAfterForceCall = false;
+  movedAfterForceCall = ci_active != ci_enabled_;
 }
 
 // Thin wrappers delegating to eonc::neb:: free functions

@@ -182,6 +182,36 @@ TEST_CASE_METHOD(NEBRegressionFixture,
 }
 
 TEST_CASE_METHOD(NEBRegressionFixture,
+                 "NEB configured force requests replace one-off CI overrides",
+                 "[neb][regression][force_cache][projection_override]") {
+  ParametersLoadAccess::main_options(params).parallel = false;
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = true;
+  auto neb =
+      std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
+  auto objective = std::make_shared<NEBObjectiveFunction>(neb.get(), params);
+  neb->updateForces();
+  REQUIRE(neb->climbingImage > 0);
+  const auto ci = neb->climbingImage;
+  const AtomMatrix projected = *neb->projectedForce[ci];
+  const double convergence = neb->convergenceForce();
+  const VectorXd gradient = objective->getGradient();
+  const auto calls = eonc::PotRegistry::get().total_force_calls();
+  neb->updateForces(false);
+  REQUIRE(neb->climbingImage == 0);
+  REQUIRE((projected - *neb->projectedForce[ci]).norm() > 1e-6);
+  neb->setCIEnabled(true);
+  const bool gradientRequest = GENERATE(false, true);
+  if (gradientRequest) {
+    CHECK(objective->getGradient().isApprox(gradient, 1e-12));
+  } else {
+    CHECK(neb->convergenceForce() == Catch::Approx(convergence).margin(1e-12));
+  }
+  CHECK(neb->climbingImage == ci);
+  CHECK(projected.isApprox(*neb->projectedForce[ci], 1e-12));
+  CHECK(eonc::PotRegistry::get().total_force_calls() == calls);
+}
+
+TEST_CASE_METHOD(NEBRegressionFixture,
                  "Zoom NEB reports the barrier from the original reactant",
                  "[neb][regression][zoom]") {
   // The neb_lj13 pair: reactant -39.965352 eV, and an eonclient process
