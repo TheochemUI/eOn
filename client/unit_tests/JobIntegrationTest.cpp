@@ -3184,6 +3184,28 @@ beads = 16
   REQUIRE(results.count("rate_instanton") == 0);
   REQUIRE_FALSE(std::filesystem::exists(workdir / "rate_instanton.dat"));
   REQUIRE_FALSE(std::filesystem::exists(workdir / "instanton.con"));
+  for (const char *reference : {"reactant", "saddle"}) {
+    const auto prefix = workdir / (std::string("instanton_") + reference);
+    std::ifstream matrixFile(prefix.string() + "_hessian.dat");
+    MatrixXd matrix(39, 39);
+    for (long i = 0; i < matrix.rows(); ++i) {
+      for (long j = 0; j < matrix.cols(); ++j) {
+        REQUIRE(static_cast<bool>(matrixFile >> matrix(i, j)));
+      }
+    }
+    REQUIRE(matrix.allFinite());
+    REQUIRE((matrix - matrix.transpose()).norm() < 1e-12);
+    Eigen::SelfAdjointEigenSolver<MatrixXd> solver(matrix,
+                                                  Eigen::EigenvaluesOnly);
+    REQUIRE(solver.info() == Eigen::Success);
+    std::ifstream spectrumFile(prefix.string() + "_eigenvalues.dat");
+    VectorXd spectrum(39);
+    for (long i = 0; i < spectrum.size(); ++i) {
+      REQUIRE(static_cast<bool>(spectrumFile >> spectrum[i]));
+    }
+    REQUIRE((spectrum - solver.eigenvalues()).norm() < 1e-12);
+    REQUIRE(spectrum.minCoeff() < -1e-6);
+  }
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,

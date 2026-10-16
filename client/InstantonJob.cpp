@@ -438,6 +438,35 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   const double vSaddle = saddle.getPotentialEnergy();
   const MatrixXd hReactant = hessianAt(VectorXd::Zero(n));
   const MatrixXd hSaddle = hessianAt(qSaddle);
+  // Retain the projected, mass-weighted references used by the rate
+  // calculation, including spectra that fail metastability validation.
+  auto saveReference = [&](const std::string &name, const MatrixXd &matrix) {
+    Eigen::SelfAdjointEigenSolver<MatrixXd> solver(matrix,
+                                                  Eigen::EigenvaluesOnly);
+    if (solver.info() != Eigen::Success || !solver.eigenvalues().allFinite()) {
+      throw std::runtime_error("instanton: cannot diagonalize " + name +
+                               " reference Hessian");
+    }
+    auto save = [&](const std::string &suffix, const auto &values) {
+      const std::string file = "instanton_" + name + suffix + ".dat";
+      std::ofstream stream(file, std::ios::out | std::ios::trunc);
+      stream << std::setprecision(std::numeric_limits<double>::max_digits10)
+             << values << '\n';
+      stream.close();
+      if (!stream) {
+        throw std::runtime_error("instanton: cannot write " + file);
+      }
+      returnFiles.push_back(file);
+    };
+    save("_hessian", matrix);
+    save("_eigenvalues", solver.eigenvalues());
+    EONC_LOG_INFO("[Instanton] {} reference: {} coordinates, {} negative "
+                  "eigenvalues; projected mass-weighted matrix retained",
+                  name, matrix.rows(),
+                  (solver.eigenvalues().array() < 0.0).count());
+  };
+  saveReference("reactant", hReactant);
+  saveReference("saddle", hSaddle);
   const VectorXd unstableMode = Eigen::SelfAdjointEigenSolver<MatrixXd>(
                                     0.5 * (hSaddle + hSaddle.transpose()))
                                     .eigenvectors()
