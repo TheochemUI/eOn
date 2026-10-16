@@ -321,6 +321,8 @@ eV/Angstrom. Their Euclidean norms and maximum atomic norms appear in
 The cached energy evaluations supply these forces without additional
 potential calls. Check stationarity against the physical convergence
 criterion used to prepare the minimum and saddle before interpreting a rate.
+Rate reference energies and forces are recomputed on the selected potential;
+evaluations embedded in the input CON files are not accepted as references.
 
 With no atom fixed, both the reactant and the instanton omit the three
 translations. A

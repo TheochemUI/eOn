@@ -3156,6 +3156,40 @@ pi_time_step = 1.0
   }
 }
 
+static void writeCachedForceCon(Matter &matter,
+                                const std::filesystem::path &path) {
+  struct RestoreForceWriting {
+    bool value = eonc::io::write_con_forces();
+    ~RestoreForceWriting() { eonc::io::set_write_con_forces(value); }
+  } restore;
+  eonc::io::set_write_con_forces(true);
+  REQUIRE(eonc::io::io_ok(matter.matter2con(path.string())));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "PointJob evaluates its potential despite saved file forces",
+                 "[job][point][integration][CachedInput]") {
+  REQUIRE(copyTestData("neb_lj13"));
+  Parameters stored;
+  ParametersLoadAccess::potential_options(stored).potential = PotType::LJ;
+  auto potential = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, stored));
+  Matter matter(potential, stored);
+  REQUIRE(eonc::io::io_ok(matter.con2matter((workdir / "reactant.con").string())));
+  const double expectedEnergy = matter.getPotentialEnergy();
+  const double expectedForce = matter.maxForce();
+  matter.setEvaluation(AtomMatrix::Zero(13, 3), 12345.0);
+  writeCachedForceCon(matter, workdir / "pos.con");
+  writeConfig("[Main]\njob = point\n[Potential]\npotential = lj\n");
+  const auto results = runJob();
+  REQUIRE(results.at("termination_reason") == "0");
+  REQUIRE(std::stol(results.at("total_force_calls")) >= 1);
+  REQUIRE_THAT(std::stod(results.at("potential_energy")),
+               Catch::Matchers::WithinAbs(expectedEnergy, 1e-8));
+  REQUIRE_THAT(std::stod(results.at("Max_Force")),
+               Catch::Matchers::WithinAbs(expectedForce, 1e-8));
+}
+
 TEST_CASE_METHOD(JobIntegrationFixture,
                  "InstantonJob rejects a reactant with unstable vibrations",
                  "[job][instanton][integration][HarmonicValidation]") {
@@ -3164,6 +3198,16 @@ TEST_CASE_METHOD(JobIntegrationFixture,
   // unstable vibration remains after the cluster's rigid modes leave.
   std::filesystem::copy_file(workdir / "saddle.con", workdir / "reactant.con",
                              std::filesystem::copy_options::overwrite_existing);
+  if (GENERATE(false, true)) {
+    Parameters stored;
+    ParametersLoadAccess::potential_options(stored).potential = PotType::LJ;
+    auto potential = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, stored));
+    Matter matter(potential, stored);
+    REQUIRE(eonc::io::io_ok(matter.con2matter((workdir / "reactant.con").string())));
+    matter.setEvaluation(AtomMatrix::Zero(13, 3), 12345.0);
+    writeCachedForceCon(matter, workdir / "reactant.con");
+  }
   const double temperature = GENERATE(198.0, 400.0);
   writeConfig(std::string(R"(
 [Main]
@@ -3181,6 +3225,8 @@ beads = 16
   const auto results = runJob();
   REQUIRE(results.at("termination_reason") != "0");
   REQUIRE(results.count("rate_parabolic") == 0);
+  REQUIRE_THAT(std::stod(results.at("barrier_classical")),
+               Catch::Matchers::WithinAbs(0.0, 1e-8));
   REQUIRE(results.count("rate_parabolic_log") == 0);
   REQUIRE(results.count("rate_instanton") == 0);
   REQUIRE_FALSE(std::filesystem::exists(workdir / "rate_instanton.dat"));

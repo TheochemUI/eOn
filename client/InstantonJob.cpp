@@ -447,6 +447,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     returnFiles.push_back(file);
   };
   Matter reactantReference(reactant);
+  // Rate references require evaluations on the selected potential;
+  // energy and forces saved in an input file can describe another surface.
+  reactantReference.setPositions(reactantReference.getPositions());
+  saddle.setPositions(saddle.getPositions());
   const double vReactant = reactantReference.getPotentialEnergy();
   const double vSaddle = saddle.getPotentialEnergy();
   auto referenceForces = [&](const std::string &name, const Matter &matter) {
