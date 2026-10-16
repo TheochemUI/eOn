@@ -84,6 +84,7 @@ data-aria-dark="Switch to auto color mode">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../citing.html">Citing eOn</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/eessi.html">Build develop on EESSI</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/lammps.html">LAMMPS</a></li>
@@ -511,12 +512,14 @@ finds the lowest energy possible while maintaining equal spacing to neighboring
 images. This constrained optimization is done by adding spring forces along the
 band between images and by projecting out the component of the force due to the
 potential perpendicular to the band.</p>
-<p>Details may be found in <span id="id1">Jonsson <em>et al.</em> [<a class="reference internal" href="#id54" title="Hannes Jonsson, Greg Mills, and Karsten W. Jacobsen. Nudged elastic band method for finding minimum energy paths of transitions. In Classical and Quantum Dynamics in Condensed Phase Simulations, pages 385–404. World Scientific, June 1998. doi:10.1142/9789812839664_0016.">NEB_JMJ98</a>]</span>,
-<span id="id2">Sheppard and Henkelman [<a class="reference internal" href="#id93" title="Daniel Sheppard and Graeme Henkelman. Paths to which the nudged elastic band converges. Journal of Computational Chemistry, 32(8):1769–1771, 2011. doi:10.1002/jcc.21748.">NEB_SH11</a>]</span>, and
-<span id="id3">Ásgeirsson and Jónsson [<a class="reference internal" href="#id20" title="Vilhjálmur Ásgeirsson and Hannes Jónsson. Exploring Potential Energy Surfaces with Saddle Point Searches. In Wanda Andreoni and Sidney Yip, editors, Handbook of Materials Modeling, pages 1–26. Springer International Publishing, Cham, 2018. doi:10.1007/978-3-319-42913-7_28-1.">NEB_AsgeirssonJonsson18</a>]</span>.</p>
+<p>Details may be found in <span id="id1">Jonsson <em>et al.</em> [<a class="reference internal" href="#id56" title="Hannes Jonsson, Greg Mills, and Karsten W. Jacobsen. Nudged elastic band method for finding minimum energy paths of transitions. In Classical and Quantum Dynamics in Condensed Phase Simulations, pages 385–404. World Scientific, June 1998. doi:10.1142/9789812839664_0016.">NEB_JMJ98</a>]</span>,
+<span id="id2">Sheppard and Henkelman [<a class="reference internal" href="#id95" title="Daniel Sheppard and Graeme Henkelman. Paths to which the nudged elastic band converges. Journal of Computational Chemistry, 32(8):1769–1771, 2011. doi:10.1002/jcc.21748.">NEB_SH11</a>]</span>, and
+<span id="id3">Ásgeirsson and Jónsson [<a class="reference internal" href="#id22" title="Vilhjálmur Ásgeirsson and Hannes Jónsson. Exploring Potential Energy Surfaces with Saddle Point Searches. In Wanda Andreoni and Sidney Yip, editors, Handbook of Materials Modeling, pages 1–26. Springer International Publishing, Cham, 2018. doi:10.1007/978-3-319-42913-7_28-1.">NEB_AsgeirssonJonsson18</a>]</span>.</p>
 <p>To run a nudged elastic band calculation, set <strong>job</strong> to
 <em>nudged_elastic_band</em> in the <strong>[Main]</strong> section. Details of the optimizer can be
 set as per the <a class="reference internal" href="optimizer.html"><span class="std std-doc">Optimizer</span></a> document.</p>
+<p>Please cite the eOn Zenodo record <span id="id4">[<a class="reference internal" href="#id116" title="Rohit Goswami, Sam Chill, Rye Terrell, Graeme Henkelman, Matthew Welborn, Liang Zhang, Andreas Pedersen, t-brink, Erik Edelmann, Jean Claude, Alejandro, Sung Hoon Jung, Seyed Alireza Ghasemi, chemist29, satishskamath, Maxim, Tobias Dijkhuis, and via9a. TheochemUI/eOn. Zenodo, 2026. Concept DOI, resolves to the latest release. URL: https://doi.org/10.5281/zenodo.18529495, doi:10.5281/zenodo.18529495.">NEB_GCT+26</a>]</span> and
+<span id="id5">Goswami <em>et al.</em> [<a class="reference internal" href="#id44" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 14:1807063, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">NEB_GGJonsson26</a>]</span>.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p><strong>Python API.</strong> Prefer <a class="reference internal" href="pyeonclient.html"><span class="doc">pyeonclient</span></a> for in-process NEB: build a
@@ -531,11 +534,11 @@ figures (full history, 1:1 reaction-valley panel, structure strip), see
 <section id="variants">
 <h2>Variants<a class="headerlink" href="#variants" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Classic nudged elastic band of <span id="id4">Mills and Jónsson [<a class="reference internal" href="#id77" title="Greg Mills and Hannes Jónsson. Quantum and thermal effects in H 2 dissociative adsorption: Evaluation of free energy barriers in multidimensional quantum systems. Physical Review Letters, 72(7):1124–1127, February 1994. doi:10.1103/PhysRevLett.72.1124.">NEB_MJonsson94</a>]</span> and <span id="id5">Schenter <em>et al.</em> [<a class="reference internal" href="#id89" title="Gregory K. Schenter, Gregory Mills, and Hannes Jónsson. Reversible work based quantum transition state theory. The Journal of Chemical Physics, 101(10):8964–8971, November 1994. doi:10.1063/1.468447.">NEB_SMJonsson94</a>]</span>.</p></li>
-<li><p>Improved tangent method of <span id="id6">Henkelman and Jónsson [<a class="reference internal" href="#id47" title="Graeme Henkelman and Hannes Jónsson. Improved tangent estimate in the nudged elastic band method for finding minimum energy paths and saddle points. The Journal of Chemical Physics, 113(22):9978–9985, December 2000. doi:10.1063/1.1323224.">NEB_HJonsson00</a>]</span>.</p></li>
-<li><p>Climbing image NEB of <span id="id7">Henkelman <em>et al.</em> [<a class="reference internal" href="#id45" title="Graeme Henkelman, Blas P. Uberuaga, and Hannes Jónsson. A climbing image nudged elastic band method for finding saddle points and minimum energy paths. The Journal of Chemical Physics, 113(22):9901–9904, November 2000. doi:10.1063/1.1329672.">NEB_HUJonsson00</a>]</span>.</p></li>
-<li><p>Doubly nudged method of <span id="id8">Trygubenko and Wales [<a class="reference internal" href="#id103" title="Semen A. Trygubenko and David J. Wales. A doubly nudged elastic band method for finding transition states. The Journal of Chemical Physics, 120(5):2082–2094, February 2004. doi:10.1063/1.1636455.">NEB_TW04</a>]</span>.</p></li>
-<li><p>Solid-state band of <span id="id9">Sheppard <em>et al.</em> [<a class="reference internal" href="#id91" title="Daniel Sheppard, Penghao Xiao, William Chemelewski, Duane D. Johnson, and Graeme Henkelman. A generalized solid-state nudged elastic band method. Journal of Chemical Physics, 136(7):74103, February 2012. doi:10.1063/1.3684549.">NEB_SXC+12</a>]</span>,
+<li><p>Classic nudged elastic band of <span id="id6">Mills and Jónsson [<a class="reference internal" href="#id79" title="Greg Mills and Hannes Jónsson. Quantum and thermal effects in H 2 dissociative adsorption: Evaluation of free energy barriers in multidimensional quantum systems. Physical Review Letters, 72(7):1124–1127, February 1994. doi:10.1103/PhysRevLett.72.1124.">NEB_MJonsson94</a>]</span> and <span id="id7">Schenter <em>et al.</em> [<a class="reference internal" href="#id91" title="Gregory K. Schenter, Gregory Mills, and Hannes Jónsson. Reversible work based quantum transition state theory. The Journal of Chemical Physics, 101(10):8964–8971, November 1994. doi:10.1063/1.468447.">NEB_SMJonsson94</a>]</span>.</p></li>
+<li><p>Improved tangent method of <span id="id8">Henkelman and Jónsson [<a class="reference internal" href="#id49" title="Graeme Henkelman and Hannes Jónsson. Improved tangent estimate in the nudged elastic band method for finding minimum energy paths and saddle points. The Journal of Chemical Physics, 113(22):9978–9985, December 2000. doi:10.1063/1.1323224.">NEB_HJonsson00</a>]</span>.</p></li>
+<li><p>Climbing image NEB of <span id="id9">Henkelman <em>et al.</em> [<a class="reference internal" href="#id47" title="Graeme Henkelman, Blas P. Uberuaga, and Hannes Jónsson. A climbing image nudged elastic band method for finding saddle points and minimum energy paths. The Journal of Chemical Physics, 113(22):9901–9904, November 2000. doi:10.1063/1.1329672.">NEB_HUJonsson00</a>]</span>.</p></li>
+<li><p>Doubly nudged method of <span id="id10">Trygubenko and Wales [<a class="reference internal" href="#id105" title="Semen A. Trygubenko and David J. Wales. A doubly nudged elastic band method for finding transition states. The Journal of Chemical Physics, 120(5):2082–2094, February 2004. doi:10.1063/1.1636455.">NEB_TW04</a>]</span>.</p></li>
+<li><p>Solid-state band of <span id="id11">Sheppard <em>et al.</em> [<a class="reference internal" href="#id93" title="Daniel Sheppard, Penghao Xiao, William Chemelewski, Duane D. Johnson, and Graeme Henkelman. A generalized solid-state nudged elastic band method. Journal of Chemical Physics, 136(7):74103, February 2012. doi:10.1063/1.3684549.">NEB_SXC+12</a>]</span>,
 enabled with <code class="docutils literal notranslate"><span class="pre">solid_state</span> <span class="pre">=</span> <span class="pre">true</span></code>. Interior images relax the cell with
 the atoms. The cell stays lower triangular, and the tangent uses one
 Jacobian for atomic displacements and cell strain
@@ -544,7 +547,7 @@ Jacobian for atomic displacements and cell strain
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 2.0: </span></p>
 <ul class="simple">
-<li><p>The energy weighted varying springs method of <span id="id10">Ásgeirsson <em>et al.</em> [<a class="reference internal" href="#id22" title="Vilhjálmur Ásgeirsson, Benedikt Orri Birgisson, Ragnar Bjornsson, Ute Becker, Frank Neese, Christoph Riplinger, and Hannes Jónsson. Nudged Elastic Band Method for Molecular Reactions Using Energy-Weighted Springs Combined with Eigenvector Following. Journal of Chemical Theory and Computation, 17(8):4929–4945, August 2021. doi:10.1021/acs.jctc.1c00462.">NEB_AsgeirssonBB+21</a>]</span>.</p></li>
+<li><p>The energy weighted varying springs method of <span id="id12">Ásgeirsson <em>et al.</em> [<a class="reference internal" href="#id24" title="Vilhjálmur Ásgeirsson, Benedikt Orri Birgisson, Ragnar Bjornsson, Ute Becker, Frank Neese, Christoph Riplinger, and Hannes Jónsson. Nudged Elastic Band Method for Molecular Reactions Using Energy-Weighted Springs Combined with Eigenvector Following. Journal of Chemical Theory and Computation, 17(8):4929–4945, August 2021. doi:10.1021/acs.jctc.1c00462.">NEB_AsgeirssonBB+21</a>]</span>.</p></li>
 </ul>
 </div>
 </section>
@@ -569,16 +572,16 @@ IRACompare. Hungarian assignment is not in-tree; <code class="docutils literal n
 Neither key is in <code class="docutils literal notranslate"><span class="pre">eon/config.yaml</span></code>, and the server exits on the unknown option.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">eOn</span></code>, like many other codes after <span id="id11">Sheppard <em>et al.</em> [<a class="reference internal" href="#id92" title="Daniel Sheppard, Rye Terrell, and Graeme Henkelman. Optimization methods for finding minimum energy paths. The Journal of Chemical Physics, 128(13):134106, April 2008. doi:10.1063/1.2841941.">NEB_STH08</a>]</span> uses one optimizer instance for moving the whole band of images.</p>
+<p><code class="docutils literal notranslate"><span class="pre">eOn</span></code>, like many other codes after <span id="id13">Sheppard <em>et al.</em> [<a class="reference internal" href="#id94" title="Daniel Sheppard, Rye Terrell, and Graeme Henkelman. Optimization methods for finding minimum energy paths. The Journal of Chemical Physics, 128(13):134106, April 2008. doi:10.1063/1.2841941.">NEB_STH08</a>]</span> uses one optimizer instance for moving the whole band of images.</p>
 </div>
 <div class="versionadded">
-<p><span class="versionmodified added">Added in version 2.8: </span>Via the surrogate potential interface, a native C++ implementation of the Gaussian Process accelerated NEB first described in <span id="id12">Koistinen <em>et al.</em> [<a class="reference internal" href="#id62" title="Olli-Pekka Koistinen, Freyja B. Dagbjartsdóttir, Vilhjálmur Ásgeirsson, Aki Vehtari, and Hannes Jónsson. Nudged elastic band calculations accelerated with Gaussian process regression. The Journal of Chemical Physics, 147(15):152720, September 2017. doi:10.1063/1.4986787.">NEB_KDagbjartsdottirAsgeirsson+17</a>]</span> and <span id="id13">Koistinen <em>et al.</em> [<a class="reference internal" href="#id63" title="Olli-Pekka Koistinen, Vilhjálmur Ásgeirsson, Aki Vehtari, and Hannes Jónsson. Nudged Elastic Band Calculations Accelerated with Gaussian Process Regression Based on Inverse Interatomic Distances. Journal of Chemical Theory and Computation, 15(12):6738–6751, December 2019. doi:10.1021/acs.jctc.9b00692.">NEB_KAsgeirssonVJonsson19</a>]</span>.</p>
+<p><span class="versionmodified added">Added in version 2.8: </span>Via the surrogate potential interface, a native C++ implementation of the Gaussian Process accelerated NEB first described in <span id="id14">Koistinen <em>et al.</em> [<a class="reference internal" href="#id64" title="Olli-Pekka Koistinen, Freyja B. Dagbjartsdóttir, Vilhjálmur Ásgeirsson, Aki Vehtari, and Hannes Jónsson. Nudged elastic band calculations accelerated with Gaussian process regression. The Journal of Chemical Physics, 147(15):152720, September 2017. doi:10.1063/1.4986787.">NEB_KDagbjartsdottirAsgeirsson+17</a>]</span> and <span id="id15">Koistinen <em>et al.</em> [<a class="reference internal" href="#id65" title="Olli-Pekka Koistinen, Vilhjálmur Ásgeirsson, Aki Vehtari, and Hannes Jónsson. Nudged Elastic Band Calculations Accelerated with Gaussian Process Regression Based on Inverse Interatomic Distances. Journal of Chemical Theory and Computation, 15(12):6738–6751, December 2019. doi:10.1021/acs.jctc.9b00692.">NEB_KAsgeirssonVJonsson19</a>]</span>.</p>
 </div>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 2.12: </span></p>
 <ul class="simple">
 <li><p>Onsager-Machlup action-based NEB for minimum action paths.</p></li>
-<li><p>OCINEB (Off-Path Climbing Image NEB) <span id="id14">Goswami <em>et al.</em> [<a class="reference internal" href="#id42" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">NEB_GGJonsson26</a>]</span>: hybrid CI-NEB + Min-Mode Following with hessian eigenmode alignment for automated saddle point refinement.</p></li>
+<li><p>OCINEB (Off-Path Climbing Image NEB) <span id="id16">Goswami <em>et al.</em> [<a class="reference internal" href="#id44" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 14:1807063, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">NEB_GGJonsson26</a>]</span>: hybrid CI-NEB + Min-Mode Following with hessian eigenmode alignment for automated saddle point refinement.</p></li>
 <li><p>Parallel image force evaluation (<code class="docutils literal notranslate"><span class="pre">[Main]</span> <span class="pre">parallel</span></code> on the client). In 2.12 it required TBB and <code class="docutils literal notranslate"><span class="pre">-Dwith_parallel_neb=true</span></code>; see the note under Parallel evaluation.</p></li>
 <li><p>IDPP (Image Dependent Pair Potential) path initialization.</p></li>
 <li><p>Modular strategy pattern for tangent, projection, and spring force components.</p></li>
@@ -592,7 +595,7 @@ Enable with <code class="docutils literal notranslate"><span class="pre">onsager
 </section>
 <section id="ocineb-hybrid-dimer-refinement">
 <h3>OCINEB (hybrid dimer refinement)<a class="headerlink" href="#ocineb-hybrid-dimer-refinement" title="Link to this heading">¶</a></h3>
-<p>OCINEB <span id="id15">Goswami <em>et al.</em> [<a class="reference internal" href="#id42" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">NEB_GGJonsson26</a>]</span> activates a Min-Mode
+<p>OCINEB <span id="id17">Goswami <em>et al.</em> [<a class="reference internal" href="#id44" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 14:1807063, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">NEB_GGJonsson26</a>]</span> activates a Min-Mode
 Following (dimer) search on the climbing image after it stabilizes, using
 hessian eigenmode alignment to refine the saddle point to higher accuracy
 without additional NEB iterations. Enable with <code class="docutils literal notranslate"><span class="pre">ci_mmf</span> <span class="pre">=</span> <span class="pre">true</span></code>.</p>
@@ -672,7 +675,7 @@ the cell. The initial path for <code class="docutils literal notranslate"><span 
 interpolation of those oriented endpoints. <code class="docutils literal notranslate"><span class="pre">initializer</span> <span class="pre">=</span> <span class="pre">file</span></code> keeps the
 supplied frames after the same rotation.</p>
 <p>The spring and the perpendicular force are evaluated in the joint metric of
-<span id="id16">Sheppard <em>et al.</em> [<a class="reference internal" href="#id91" title="Daniel Sheppard, Penghao Xiao, William Chemelewski, Duane D. Johnson, and Graeme Henkelman. A generalized solid-state nudged elastic band method. Journal of Chemical Physics, 136(7):74103, February 2012. doi:10.1063/1.3684549.">NEB_SXC+12</a>]</span>. <code class="docutils literal notranslate"><span class="pre">solid_state_weight</span></code>
+<span id="id18">Sheppard <em>et al.</em> [<a class="reference internal" href="#id93" title="Daniel Sheppard, Penghao Xiao, William Chemelewski, Duane D. Johnson, and Graeme Henkelman. A generalized solid-state nudged elastic band method. Journal of Chemical Physics, 136(7):74103, February 2012. doi:10.1063/1.3684549.">NEB_SXC+12</a>]</span>. <code class="docutils literal notranslate"><span class="pre">solid_state_weight</span></code>
 multiplies the cell block of the Jacobian. The default, 1, gives a cell
 strain the same weight as an atomic displacement.
 <code class="docutils literal notranslate"><span class="pre">solid_state_pressure</span></code> is a hydrostatic pressure in eV/Angstrom^3 added to
@@ -847,14 +850,14 @@ and <code class="docutils literal notranslate"><span class="pre">neb_elastic_ban
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.climbing_image_method">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">climbing_image_method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.climbing_image_method" title="Link to this definition">¶</a></dt>
-<dd><p>As discussed in <span id="id1">Henkelman <em>et al.</em> [<a class="reference internal" href="#id45" title="Graeme Henkelman, Blas P. Uberuaga, and Hannes Jónsson. A climbing image nudged elastic band method for finding saddle points and minimum energy paths. The Journal of Chemical Physics, 113(22):9901–9904, November 2000. doi:10.1063/1.1329672.">NEB_HUJonsson00</a>]</span>.</p>
+<dd><p>As discussed in <span id="id1">Henkelman <em>et al.</em> [<a class="reference internal" href="#id47" title="Graeme Henkelman, Blas P. Uberuaga, and Hannes Jónsson. A climbing image nudged elastic band method for finding saddle points and minimum energy paths. The Journal of Chemical Physics, 113(22):9901–9904, November 2000. doi:10.1063/1.1329672.">NEB_HUJonsson00</a>]</span>.</p>
 <p>Indicates if the climbing image method is used.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.old_tangent">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">old_tangent</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.old_tangent" title="Link to this definition">¶</a></dt>
-<dd><p>From <span id="id2">Mills and Jónsson [<a class="reference internal" href="#id77" title="Greg Mills and Hannes Jónsson. Quantum and thermal effects in H 2 dissociative adsorption: Evaluation of free energy barriers in multidimensional quantum systems. Physical Review Letters, 72(7):1124–1127, February 1994. doi:10.1103/PhysRevLett.72.1124.">NEB_MJonsson94</a>]</span>, before <span id="id3">Henkelman and Jónsson [<a class="reference internal" href="#id47" title="Graeme Henkelman and Hannes Jónsson. Improved tangent estimate in the nudged elastic band method for finding minimum energy paths and saddle points. The Journal of Chemical Physics, 113(22):9978–9985, December 2000. doi:10.1063/1.1323224.">NEB_HJonsson00</a>]</span>.</p>
+<dd><p>From <span id="id2">Mills and Jónsson [<a class="reference internal" href="#id79" title="Greg Mills and Hannes Jónsson. Quantum and thermal effects in H 2 dissociative adsorption: Evaluation of free energy barriers in multidimensional quantum systems. Physical Review Letters, 72(7):1124–1127, February 1994. doi:10.1103/PhysRevLett.72.1124.">NEB_MJonsson94</a>]</span>, before <span id="id3">Henkelman and Jónsson [<a class="reference internal" href="#id49" title="Graeme Henkelman and Hannes Jónsson. Improved tangent estimate in the nudged elastic band method for finding minimum energy paths and saddle points. The Journal of Chemical Physics, 113(22):9978–9985, December 2000. doi:10.1063/1.1323224.">NEB_HJonsson00</a>]</span>.</p>
 <p>Indicates if the old tangent method is used.</p>
 </dd></dl>
 
@@ -885,7 +888,7 @@ and <code class="docutils literal notranslate"><span class="pre">neb_elastic_ban
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.neb_doubly_nudged_switching">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">neb_doubly_nudged_switching</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.neb_doubly_nudged_switching" title="Link to this definition">¶</a></dt>
-<dd><p>Method as demonstrated in <span id="id4">Trygubenko and Wales [<a class="reference internal" href="#id103" title="Semen A. Trygubenko and David J. Wales. A doubly nudged elastic band method for finding transition states. The Journal of Chemical Physics, 120(5):2082–2094, February 2004. doi:10.1063/1.1636455.">NEB_TW04</a>]</span>.</p>
+<dd><p>Method as demonstrated in <span id="id4">Trygubenko and Wales [<a class="reference internal" href="#id105" title="Semen A. Trygubenko and David J. Wales. A doubly nudged elastic band method for finding transition states. The Journal of Chemical Physics, 120(5):2082–2094, February 2004. doi:10.1063/1.1636455.">NEB_TW04</a>]</span>.</p>
 <p>Indicates if the doubly nudged switching method is used.</p>
 </dd></dl>
 
@@ -905,7 +908,7 @@ and <code class="docutils literal notranslate"><span class="pre">neb_elastic_ban
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.onsager_machlup">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">onsager_machlup</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.onsager_machlup" title="Link to this definition">¶</a></dt>
-<dd><p>Method as demonstrated in <span id="id5">Mandelli and Parrinello [<a class="reference internal" href="#id73" title="D. Mandelli and M. Parrinello. A modified nudged elastic band algorithm with adaptive spring lengths. Journal of Chemical Physics, 155(7):74103, August 2021. doi:10.1063/5.0059593.">NEB_MP21</a>]</span>.</p>
+<dd><p>Method as demonstrated in <span id="id5">Mandelli and Parrinello [<a class="reference internal" href="#id75" title="D. Mandelli and M. Parrinello. A modified nudged elastic band algorithm with adaptive spring lengths. Journal of Chemical Physics, 155(7):74103, August 2021. doi:10.1063/5.0059593.">NEB_MP21</a>]</span>.</p>
 <p>Indicates if the Onsager-Machlup (OM) Action is used.</p>
 </dd></dl>
 
@@ -939,7 +942,7 @@ and <code class="docutils literal notranslate"><span class="pre">neb_elastic_ban
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.energy_weighted">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">energy_weighted</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.energy_weighted" title="Link to this definition">¶</a></dt>
-<dd><p>Method as demonstrated in <span id="id6">Ásgeirsson <em>et al.</em> [<a class="reference internal" href="#id22" title="Vilhjálmur Ásgeirsson, Benedikt Orri Birgisson, Ragnar Bjornsson, Ute Becker, Frank Neese, Christoph Riplinger, and Hannes Jónsson. Nudged Elastic Band Method for Molecular Reactions Using Energy-Weighted Springs Combined with Eigenvector Following. Journal of Chemical Theory and Computation, 17(8):4929–4945, August 2021. doi:10.1021/acs.jctc.1c00462.">NEB_AsgeirssonBB+21</a>]</span>.</p>
+<dd><p>Method as demonstrated in <span id="id6">Ásgeirsson <em>et al.</em> [<a class="reference internal" href="#id24" title="Vilhjálmur Ásgeirsson, Benedikt Orri Birgisson, Ragnar Bjornsson, Ute Becker, Frank Neese, Christoph Riplinger, and Hannes Jónsson. Nudged Elastic Band Method for Molecular Reactions Using Energy-Weighted Springs Combined with Eigenvector Following. Journal of Chemical Theory and Computation, 17(8):4929–4945, August 2021. doi:10.1021/acs.jctc.1c00462.">NEB_AsgeirssonBB+21</a>]</span>.</p>
 <p>Indicates if the energy-weighted method is used.</p>
 </dd></dl>
 
@@ -973,9 +976,9 @@ and <code class="docutils literal notranslate"><span class="pre">neb_elastic_ban
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">initializer</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.15)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'linear'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'idpp'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'idpp_collective'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sidpp'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'file'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'linear'</span></span><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.initializer" title="Link to this definition">¶</a></dt>
 <dd><p>Options:
 - <code class="docutils literal notranslate"><span class="pre">linear</span></code>: Euclidean distance based image interpolation for initial NEB paths.
-- <code class="docutils literal notranslate"><span class="pre">idpp</span></code>: Image depedent pair potential initialzation <span id="id7">Smidstrup <em>et al.</em> [<a class="reference internal" href="#id95" title="Søren Smidstrup, Andreas Pedersen, Kurt Stokbro, and Hannes Jónsson. Improved initial guess for minimum energy path calculations. The Journal of Chemical Physics, 140(21):214106, June 2014. doi:10.1063/1.4878664.">NEB_SPSJonsson14</a>]</span>.
+- <code class="docutils literal notranslate"><span class="pre">idpp</span></code>: Image depedent pair potential initialzation <span id="id7">Smidstrup <em>et al.</em> [<a class="reference internal" href="#id97" title="Søren Smidstrup, Andreas Pedersen, Kurt Stokbro, and Hannes Jónsson. Improved initial guess for minimum energy path calculations. The Journal of Chemical Physics, 140(21):214106, June 2014. doi:10.1063/1.4878664.">NEB_SPSJonsson14</a>]</span>.
 - <code class="docutils literal notranslate"><span class="pre">idpp_collective</span></code>: IDPP as a potential initialized with the NEB.
-- <code class="docutils literal notranslate"><span class="pre">sidpp</span></code>: Sequential Image depedent pair potential initialzation <span id="id8">Schmerwitz <em>et al.</em> [<a class="reference internal" href="#id90" title="Yorick L. A. Schmerwitz, Vilhjálmur Ásgeirsson, and Hannes Jónsson. Improved Initialization of Optimal Path Calculations Using Sequential Traversal over the Image-Dependent Pair Potential Surface. Journal of Chemical Theory and Computation, 20(1):155–163, January 2024. doi:10.1021/acs.jctc.3c01111.">NEB_SAsgeirssonJonsson24</a>]</span>.
+- <code class="docutils literal notranslate"><span class="pre">sidpp</span></code>: Sequential Image depedent pair potential initialzation <span id="id8">Schmerwitz <em>et al.</em> [<a class="reference internal" href="#id92" title="Yorick L. A. Schmerwitz, Vilhjálmur Ásgeirsson, and Hannes Jónsson. Improved Initialization of Optimal Path Calculations Using Sequential Traversal over the Image-Dependent Pair Potential Surface. Journal of Chemical Theory and Computation, 20(1):155–163, January 2024. doi:10.1021/acs.jctc.3c01111.">NEB_SAsgeirssonJonsson24</a>]</span>.
 - <code class="docutils literal notranslate"><span class="pre">file</span></code>: Start from an arbitrary path, needs initial_path_in set as well.</p>
 <p>Initialization strategy.</p>
 </dd></dl>
@@ -1181,80 +1184,84 @@ later. The <code class="docutils literal notranslate"><span class="pre">[Refine]
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
-<div class="docutils container" id="id17">
+<div class="docutils container" id="id19">
 <div role="list" class="citation-list">
-<div class="citation" id="id42" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>NEB_GGJonsson26<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id14">1</a>,<a role="doc-backlink" href="#id15">2</a>)</span>
-<p>Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. <em>Frontiers in Chemistry</em>, 2026. <a class="reference external" href="https://arxiv.org/abs/2601.12630">arXiv:2601.12630</a>, <a class="reference external" href="https://doi.org/10.3389/fchem.2026.1807063">doi:10.3389/fchem.2026.1807063</a>.</p>
+<div class="citation" id="id116" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">NEB_GCT+26</a><span class="fn-bracket">]</span></span>
+<p>Rohit Goswami, Sam Chill, Rye Terrell, Graeme Henkelman, Matthew Welborn, Liang Zhang, Andreas Pedersen, t-brink, Erik Edelmann, Jean Claude, Alejandro, Sung Hoon Jung, Seyed Alireza Ghasemi, chemist29, satishskamath, Maxim, Tobias Dijkhuis, and via9a. TheochemUI/eOn. Zenodo, 2026. Concept DOI, resolves to the latest release. URL: <a class="reference external" href="https://doi.org/10.5281/zenodo.18529495">https://doi.org/10.5281/zenodo.18529495</a>, <a class="reference external" href="https://doi.org/10.5281/zenodo.18529495">doi:10.5281/zenodo.18529495</a>.</p>
 </div>
-<div class="citation" id="id47" role="doc-biblioentry">
+<div class="citation" id="id44" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>NEB_GGJonsson26<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id5">1</a>,<a role="doc-backlink" href="#id16">2</a>,<a role="doc-backlink" href="#id17">3</a>)</span>
+<p>Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. <em>Frontiers in Chemistry</em>, 14:1807063, 2026. <a class="reference external" href="https://arxiv.org/abs/2601.12630">arXiv:2601.12630</a>, <a class="reference external" href="https://doi.org/10.3389/fchem.2026.1807063">doi:10.3389/fchem.2026.1807063</a>.</p>
+</div>
+<div class="citation" id="id49" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>NEB_HJonsson00<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id6">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id8">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
 <p>Graeme Henkelman and Hannes Jónsson. Improved tangent estimate in the nudged elastic band method for finding minimum energy paths and saddle points. <em>The Journal of Chemical Physics</em>, 113(22):9978–9985, December 2000. <a class="reference external" href="https://doi.org/10.1063/1.1323224">doi:10.1063/1.1323224</a>.</p>
 </div>
-<div class="citation" id="id45" role="doc-biblioentry">
+<div class="citation" id="id47" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>NEB_HUJonsson00<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id7">1</a>,<a role="doc-backlink" href="#id1">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id9">1</a>,<a role="doc-backlink" href="#id1">2</a>)</span>
 <p>Graeme Henkelman, Blas P. Uberuaga, and Hannes Jónsson. A climbing image nudged elastic band method for finding saddle points and minimum energy paths. <em>The Journal of Chemical Physics</em>, 113(22):9901–9904, November 2000. <a class="reference external" href="https://doi.org/10.1063/1.1329672">doi:10.1063/1.1329672</a>.</p>
 </div>
-<div class="citation" id="id54" role="doc-biblioentry">
+<div class="citation" id="id56" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">NEB_JMJ98</a><span class="fn-bracket">]</span></span>
 <p>Hannes Jonsson, Greg Mills, and Karsten W. Jacobsen. Nudged elastic band method for finding minimum energy paths of transitions. In <em>Classical and Quantum Dynamics in Condensed Phase Simulations</em>, pages 385–404. World Scientific, June 1998. <a class="reference external" href="https://doi.org/10.1142/9789812839664_0016">doi:10.1142/9789812839664_0016</a>.</p>
 </div>
-<div class="citation" id="id62" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id12">NEB_KDagbjartsdottirAsgeirsson+17</a><span class="fn-bracket">]</span></span>
+<div class="citation" id="id64" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id14">NEB_KDagbjartsdottirAsgeirsson+17</a><span class="fn-bracket">]</span></span>
 <p>Olli-Pekka Koistinen, Freyja B. Dagbjartsdóttir, Vilhjálmur Ásgeirsson, Aki Vehtari, and Hannes Jónsson. Nudged elastic band calculations accelerated with Gaussian process regression. <em>The Journal of Chemical Physics</em>, 147(15):152720, September 2017. <a class="reference external" href="https://doi.org/10.1063/1.4986787">doi:10.1063/1.4986787</a>.</p>
 </div>
-<div class="citation" id="id63" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id13">NEB_KAsgeirssonVJonsson19</a><span class="fn-bracket">]</span></span>
+<div class="citation" id="id65" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id15">NEB_KAsgeirssonVJonsson19</a><span class="fn-bracket">]</span></span>
 <p>Olli-Pekka Koistinen, Vilhjálmur Ásgeirsson, Aki Vehtari, and Hannes Jónsson. Nudged Elastic Band Calculations Accelerated with Gaussian Process Regression Based on Inverse Interatomic Distances. <em>Journal of Chemical Theory and Computation</em>, 15(12):6738–6751, December 2019. <a class="reference external" href="https://doi.org/10.1021/acs.jctc.9b00692">doi:10.1021/acs.jctc.9b00692</a>.</p>
 </div>
-<div class="citation" id="id73" role="doc-biblioentry">
+<div class="citation" id="id75" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">NEB_MP21</a><span class="fn-bracket">]</span></span>
 <p>D. Mandelli and M. Parrinello. A modified nudged elastic band algorithm with adaptive spring lengths. <em>Journal of Chemical Physics</em>, 155(7):74103, August 2021. <a class="reference external" href="https://doi.org/10.1063/5.0059593">doi:10.1063/5.0059593</a>.</p>
 </div>
-<div class="citation" id="id77" role="doc-biblioentry">
+<div class="citation" id="id79" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>NEB_MJonsson94<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id6">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
 <p>Greg Mills and Hannes Jónsson. Quantum and thermal effects in H 2 dissociative adsorption: Evaluation of free energy barriers in multidimensional quantum systems. <em>Physical Review Letters</em>, 72(7):1124–1127, February 1994. <a class="reference external" href="https://doi.org/10.1103/PhysRevLett.72.1124">doi:10.1103/PhysRevLett.72.1124</a>.</p>
 </div>
-<div class="citation" id="id89" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">NEB_SMJonsson94</a><span class="fn-bracket">]</span></span>
+<div class="citation" id="id91" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">NEB_SMJonsson94</a><span class="fn-bracket">]</span></span>
 <p>Gregory K. Schenter, Gregory Mills, and Hannes Jónsson. Reversible work based quantum transition state theory. <em>The Journal of Chemical Physics</em>, 101(10):8964–8971, November 1994. <a class="reference external" href="https://doi.org/10.1063/1.468447">doi:10.1063/1.468447</a>.</p>
 </div>
-<div class="citation" id="id90" role="doc-biblioentry">
+<div class="citation" id="id92" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">NEB_SAsgeirssonJonsson24</a><span class="fn-bracket">]</span></span>
 <p>Yorick L. A. Schmerwitz, Vilhjálmur Ásgeirsson, and Hannes Jónsson. Improved Initialization of Optimal Path Calculations Using Sequential Traversal over the Image-Dependent Pair Potential Surface. <em>Journal of Chemical Theory and Computation</em>, 20(1):155–163, January 2024. <a class="reference external" href="https://doi.org/10.1021/acs.jctc.3c01111">doi:10.1021/acs.jctc.3c01111</a>.</p>
 </div>
-<div class="citation" id="id93" role="doc-biblioentry">
+<div class="citation" id="id95" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">NEB_SH11</a><span class="fn-bracket">]</span></span>
 <p>Daniel Sheppard and Graeme Henkelman. Paths to which the nudged elastic band converges. <em>Journal of Computational Chemistry</em>, 32(8):1769–1771, 2011. <a class="reference external" href="https://doi.org/10.1002/jcc.21748">doi:10.1002/jcc.21748</a>.</p>
 </div>
-<div class="citation" id="id92" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">NEB_STH08</a><span class="fn-bracket">]</span></span>
+<div class="citation" id="id94" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id13">NEB_STH08</a><span class="fn-bracket">]</span></span>
 <p>Daniel Sheppard, Rye Terrell, and Graeme Henkelman. Optimization methods for finding minimum energy paths. <em>The Journal of Chemical Physics</em>, 128(13):134106, April 2008. <a class="reference external" href="https://doi.org/10.1063/1.2841941">doi:10.1063/1.2841941</a>.</p>
 </div>
-<div class="citation" id="id91" role="doc-biblioentry">
+<div class="citation" id="id93" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>NEB_SXC+12<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id9">1</a>,<a role="doc-backlink" href="#id16">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id11">1</a>,<a role="doc-backlink" href="#id18">2</a>)</span>
 <p>Daniel Sheppard, Penghao Xiao, William Chemelewski, Duane D. Johnson, and Graeme Henkelman. A generalized solid-state nudged elastic band method. <em>Journal of Chemical Physics</em>, 136(7):74103, February 2012. <a class="reference external" href="https://doi.org/10.1063/1.3684549">doi:10.1063/1.3684549</a>.</p>
 </div>
-<div class="citation" id="id95" role="doc-biblioentry">
+<div class="citation" id="id97" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">NEB_SPSJonsson14</a><span class="fn-bracket">]</span></span>
 <p>Søren Smidstrup, Andreas Pedersen, Kurt Stokbro, and Hannes Jónsson. Improved initial guess for minimum energy path calculations. <em>The Journal of Chemical Physics</em>, 140(21):214106, June 2014. <a class="reference external" href="https://doi.org/10.1063/1.4878664">doi:10.1063/1.4878664</a>.</p>
 </div>
-<div class="citation" id="id103" role="doc-biblioentry">
+<div class="citation" id="id105" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>NEB_TW04<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id8">1</a>,<a role="doc-backlink" href="#id4">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id10">1</a>,<a role="doc-backlink" href="#id4">2</a>)</span>
 <p>Semen A. Trygubenko and David J. Wales. A doubly nudged elastic band method for finding transition states. <em>The Journal of Chemical Physics</em>, 120(5):2082–2094, February 2004. <a class="reference external" href="https://doi.org/10.1063/1.1636455">doi:10.1063/1.1636455</a>.</p>
 </div>
-<div class="citation" id="id22" role="doc-biblioentry">
+<div class="citation" id="id24" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>NEB_AsgeirssonBB+21<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id10">1</a>,<a role="doc-backlink" href="#id6">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id12">1</a>,<a role="doc-backlink" href="#id6">2</a>)</span>
 <p>Vilhjálmur Ásgeirsson, Benedikt Orri Birgisson, Ragnar Bjornsson, Ute Becker, Frank Neese, Christoph Riplinger, and Hannes Jónsson. Nudged Elastic Band Method for Molecular Reactions Using Energy-Weighted Springs Combined with Eigenvector Following. <em>Journal of Chemical Theory and Computation</em>, 17(8):4929–4945, August 2021. <a class="reference external" href="https://doi.org/10.1021/acs.jctc.1c00462">doi:10.1021/acs.jctc.1c00462</a>.</p>
 </div>
-<div class="citation" id="id20" role="doc-biblioentry">
+<div class="citation" id="id22" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">NEB_AsgeirssonJonsson18</a><span class="fn-bracket">]</span></span>
 <p>Vilhjálmur Ásgeirsson and Hannes Jónsson. Exploring Potential Energy Surfaces with Saddle Point Searches. In Wanda Andreoni and Sidney Yip, editors, <em>Handbook of Materials Modeling</em>, pages 1–26. Springer International Publishing, Cham, 2018. <a class="reference external" href="https://doi.org/10.1007/978-3-319-42913-7_28-1">doi:10.1007/978-3-319-42913-7_28-1</a>.</p>
 </div>
