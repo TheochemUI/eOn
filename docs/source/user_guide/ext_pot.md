@@ -43,6 +43,7 @@ The example contains:
 | `cpmd_extpot.py` | Renders a single-point deck, runs CPMD and converts its results. |
 | `cpmd_launch.sh` | Starts CPMD with the compatible MPI runtime. |
 | `run.sh` | Converts an input if needed and preserves a separate point-job record. |
+| `con_to_input.py` | Reads a CON frame and removes cached evaluations while preserving its geometry and constraints. |
 
 ### Install the example environment
 
@@ -110,6 +111,12 @@ pixi run run /absolute/path/input.xyz
 pixi run run /absolute/path/pos.con
 ```
 
+The CON route uses `uv run --script con_to_input.py` with pinned readcon.
+It preserves coordinates, cell, atom IDs, masses and fixed flags, and clears
+stored energy and forces so your configured CPMD calculation is evaluated.
+Set `CON_FRAME=0` in `.env` for the first frame, or `CON_FRAME=-1` for the
+last. `pos.source.json` records the frame, input hash and cache removal.
+
 Each invocation prints `Record: .../runs/point-...`, evaluates one geometry,
 and prints a finite energy in eV when successful. The record retains
 `pos.con`, `config.ini`, `eon.log` and `results.dat`. CPMD input, output and
@@ -127,6 +134,8 @@ cat results.dat
 
 This direct command uses the existing `pos.con` and `config.ini` in place;
 `pixi run run` creates a separate record and handles an arbitrary input.
+Use the launcher for a CON containing stored energies and forces: an
+installed client can otherwise reuse that stored evaluation.
 For a file route using four CPMD ranks, reserve four ranks for each
 concurrent calculator. The eOn client itself stays one process.
 

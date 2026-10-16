@@ -17,6 +17,20 @@ pinned `readcon-chemfiles==0.17.1` converter through uv.
 This reference belongs to that exact input and pseudopotential. A different
 structure, cutoff or potential file has a different reference energy.
 
+The CON launcher at `e6519d948` was also exercised with that same real
+CPMD binary and installed eOn client, starting from the supplied Si7
+geometry with a deliberately incorrect cached energy of -123.45 eV and
+stored zero forces. Readcon removed the cached evaluation, and the run
+reported one potential call, `GOOD`, and **-739.9932635496 eV**. This checks
+that a CON cache cannot substitute for the configured native calculation.
+
+Four conversion tests pass for exact geometry/mass/constraint preservation,
+energy and force removal, frame selection, range rejection and existing-file
+preservation. A separate installed-client protocol check returns the cached
+energy with zero calls for the unchanged cached CON; its cleaned copy makes
+one call and returns the prescribed external result. That prescribed-output
+check verifies cache behavior and is separate from the real DFT result.
+
 ## NEB through the same executable
 
 A periodic translation provides a check whose expected barrier is zero:
