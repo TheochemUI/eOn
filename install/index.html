@@ -226,6 +226,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.approach.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.approach</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_id.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_id</span></code></a></li>
@@ -540,6 +541,12 @@ Copy a sibling checkout into place with:</p>
 for <code class="docutils literal notranslate"><span class="pre">gprdimer</span></code> then stops, and the message names <code class="docutils literal notranslate"><span class="pre">-Dwith_gprd=enabled</span></code>
 and that <code class="docutils literal notranslate"><span class="pre">rsync</span></code>.</p>
 <p>The setup line already passes <code class="docutils literal notranslate"><span class="pre">--force-fallback-for=nlohmann_json,hwy</span></code>. The rolling distro section below says why a host <code class="docutils literal notranslate"><span class="pre">nlohmann_json</span></code> breaks the conda compiler, and why the Highway name is <code class="docutils literal notranslate"><span class="pre">hwy</span></code> rather than <code class="docutils literal notranslate"><span class="pre">libhwy</span></code>. The test line should finish with a fail count of 0.</p>
+<p>Update the subprojects after each <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code>, then configure again:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">meson<span class="w"> </span>subprojects<span class="w"> </span>update<span class="w"> </span>--reset
+</span><span data-line="2">meson<span class="w"> </span>setup<span class="w"> </span>--reconfigure<span class="w"> </span>bbdir
+</span></pre></div>
+</div>
+<p>Meson skips the fetch for a wrap subproject such as <code class="docutils literal notranslate"><span class="pre">rgpot</span></code> once it sits on disk. A stale checkout then fails with missing headers, for example <code class="docutils literal notranslate"><span class="pre">rgpot/EMT/EMTPot.hpp</span></code>. The <code class="docutils literal notranslate"><span class="pre">--reset</span></code> flag throws away local edits under <code class="docutils literal notranslate"><span class="pre">subprojects/</span></code>.</p>
 <p>Some additional performance can be gained with <code class="docutils literal notranslate"><span class="pre">ccache</span></code> and <code class="docutils literal notranslate"><span class="pre">mold</span></code>, which can be
 passed with <code class="docutils literal notranslate"><span class="pre">--native-file</span></code>:</p>
 <ul class="simple">
