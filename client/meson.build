@@ -828,27 +828,44 @@ if not readcon_db_dep.found()
         },
     )
     _readcon_db_inner = readcon_db_proj.get_variable('readcon_dep')
-    _readcon_db_so = readcon_db_proj.get_variable('readcon_cargo')[0]
+    _readcon_db_cargo = readcon_db_proj.get_variable('readcon_cargo')
+    _readcon_db_so = _readcon_db_cargo[0]
+    # Windows cargo output 1 is readcon_db.lib. link.exe cannot take the
+    # DLL (LNK1181). The import library is the input it can open.
+    _readcon_db_implib = _readcon_db_cargo[1]
     _readcon_db_version = _readcon_db_inner.version()
     _runtime_rpath += [fs.parent(_readcon_db_so.full_path())]
     # full_path() in link_args is a string, so ninja has no edge to the
     # cargo target and a parallel link runs while that library is absent.
-    # link_with is the order edge. The --no-as-needed path stays: the
-    # mirror resolves rkrdb_open at load time, and --as-needed drops a
-    # library with no link-time use. Windows keeps the DLL off link_with
-    # because link.exe rejects a DLL input (LNK1107).
+    # link_with is the order edge. The mirror resolves rkrdb_open at load
+    # time, and GNU ld --as-needed drops a library with no link-time use.
+    # Those flags are Linux-only: Apple ld rejects --no-as-needed, and
+    # -needed_library records the dylib. Windows keeps the DLL off
+    # link_with because link.exe rejects a DLL input (LNK1107).
     _readcon_db_order = []
     if not is_windows
         _readcon_db_order = [_readcon_db_so]
     endif
-    readcon_db_dep = declare_dependency(
-        link_with: _readcon_db_order,
-        link_args: [
+    _readcon_db_link = []
+    _readcon_db_link_src = _readcon_db_so
+    if host_system == 'linux'
+        _readcon_db_link = [
             '-Wl,--no-as-needed',
             _readcon_db_so.full_path(),
             '-Wl,--as-needed',
-        ],
-        sources: [_readcon_db_so],
+        ]
+    endif
+    if host_system == 'darwin'
+        _readcon_db_link = ['-Wl,-needed_library,' + _readcon_db_so.full_path()]
+    endif
+    if is_windows
+        _readcon_db_link_src = _readcon_db_implib
+        _readcon_db_link = [_readcon_db_implib.full_path()]
+    endif
+    readcon_db_dep = declare_dependency(
+        link_with: _readcon_db_order,
+        link_args: _readcon_db_link,
+        sources: [_readcon_db_link_src],
         compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
     )
 else
@@ -866,17 +883,34 @@ else
         default_value: '',
     )
     if _pc_libdir != ''
-        foreach _name : ['libreadcon_db.so', 'libreadcon_db.dylib']
-            _cand = _pc_libdir / _name
+        if host_system == 'linux'
+            _cand = _pc_libdir / 'libreadcon_db.so'
             if fs.exists(_cand)
                 _readcon_db_keep = [
                     '-Wl,--no-as-needed',
                     _cand,
                     '-Wl,--as-needed',
                 ]
-                break
             endif
-        endforeach
+        elif host_system == 'darwin'
+            _cand = _pc_libdir / 'libreadcon_db.dylib'
+            if fs.exists(_cand)
+                _readcon_db_keep = ['-Wl,-needed_library,' + _cand]
+            endif
+        elif is_windows
+            foreach _name : [
+                'readcon_db.lib',
+                'readcon_db.dll.lib',
+                'libreadcon_db.lib',
+                'libreadcon_db.dll.a',
+            ]
+                _cand = _pc_libdir / _name
+                if fs.exists(_cand)
+                    _readcon_db_keep = [_cand]
+                    break
+                endif
+            endforeach
+        endif
     endif
     readcon_db_dep = declare_dependency(
         dependencies: [readcon_db_dep],
@@ -1597,19 +1631,12 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
     # _deps stops growing.
     _deps += [mts_dep, torch_deps]
     _args += ['-DWITH_METATOMIC']
-    metatomic_pot = library(
-        'metatomic_pot',
-        [
-            'potentials/Metatomic/MetatomicPotential.cpp',
-            'potentials/Metatomic/MetatomicCAbi.cpp',
-        ],
-        dependencies: _deps,
-        cpp_args: _args,
-        link_with: _linkto,
-        include_directories: _incdirs,
-        install: true,
-    )
-    potentials += [metatomic_pot]
+    # MetatomicPotential lives in eonclib, which Potential.cpp calls
+    # directly. The C ABI plugin is created after eonclib and links it.
+    # One shared library cannot hold both: MetatomicCAbi.cpp needs
+    # Parameters::Parameters() from eonclib, and eonclib would then need
+    # the plugin.
+    eonclib_sources += ['potentials/Metatomic/MetatomicPotential.cpp']
 endif
 
 # NEB image forces. GCC/Clang: a bounded std::thread pool, no dependency.
@@ -1873,6 +1900,27 @@ eclib = library(
 # MSVC scans static libraries once, left to right. eonclib references
 # the potential archives, so it has to precede them.
 _linkto = [eclib] + _linkto
+
+# dlopen surface of the fat Metatomic potential. eonclib already contains
+# MetatomicPotential and Parameters. This library only exports the C ABI
+# and links eonclib, so the Parameters constructor is not left undefined
+# and the two libraries do not depend on each other.
+if get_option('with_metatomic')
+    metatomic_pot = library(
+        'metatomic_pot',
+        [
+            'potentials/Metatomic/MetatomicCAbi.cpp',
+        ],
+        dependencies: _deps,
+        cpp_args: _args,
+        link_with: [eclib],
+        include_directories: _incdirs,
+        build_rpath: ':'.join(_runtime_rpath),
+        install_rpath: _lib_install_rpath,
+        install: true,
+    )
+    potentials += [metatomic_pot]
+endif
 
 capnp_prog = find_program('capnp', required: true)
 capnp_dep = dependency('capnp', required: true)
