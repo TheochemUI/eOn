@@ -25,11 +25,130 @@ The [ASE](project:ase_pot.md) potentials require additional compile-time flags
 that are **not** enabled in the `conda-forge` build.
 ```
 
-## CPMD method file
+## Start with a complete working example
 
-A CPMD script behind `ext_pot` should read one job TOML, the same file the
-[rgpot page](project:rgpot_pot.md) compiles to a CPMDParams message. The
-file route renders that message. The script does not keep a second cutoff.
+This example needs Python and the eOn client only. It evaluates a harmonic
+potential, so it needs no electronic-structure executable, model download or
+pseudopotentials. The commands below target Linux, including Ubuntu under WSL.
+Run calculations inside your site's compute allocation, not on its login node.
+
+Install [Pixi](https://pixi.sh), then create a separate workspace:
+
+```bash
+curl -fsSL https://pixi.sh/install.sh | sh
+export PATH="$HOME/.pixi/bin:$PATH"
+mkdir eon-external-demo
+cd eon-external-demo
+pixi init --channel conda-forge
+pixi add eon python
+pixi run eonclient --version
+```
+
+`pixi add` installs the client and Python and records their resolved packages
+in `pixi.lock`. Keep `pixi.toml` and `pixi.lock` together; a recipient can
+recreate the environment with `pixi install --locked`. No compiler or MPI
+installation is needed for this file-interface example.
+
+Save the following executable as `harmonic_extpot.py`:
+
+```python
+#!/usr/bin/env python3
+"""Harmonic energy in eV and its negative derivative in eV/Angstrom."""
+import math
+from pathlib import Path
+
+rows = [line.split() for line in
+        Path("from_eon_to_extpot").read_text().splitlines() if line.strip()]
+if len(rows) < 4 or any(len(row) != 3 for row in rows[:3]):
+    raise ValueError("Expected three box rows followed by at least one atom")
+positions = []
+for row in rows[3:]:
+    if len(row) != 4:
+        raise ValueError("Expected atomic_number x y z")
+    int(row[0])
+    xyz = [float(value) for value in row[1:]]
+    if not all(math.isfinite(value) for value in xyz):
+        raise ValueError("Non-finite coordinate")
+    positions.append(xyz)
+k = 1.0  # eV/Angstrom squared
+energy = 0.5 * k * sum(x*x for xyz in positions for x in xyz)
+forces = [[-k*x for x in xyz] for xyz in positions]
+with Path("from_extpot_to_eon").open("w") as output:
+    output.write(f"{energy:.15g}\n")
+    for force in forces:
+        output.write(" ".join(f"{value:.15g}" for value in force) + "\n")
+```
+
+Create `pos.con`, with one silicon atom at (1, 0, 0) Angstrom in a 20 Angstrom
+cube. The two blank lines between the cell angles and component count are
+part of this structure format:
+
+```text
+One atom harmonic example
+0.0
+20.0 20.0 20.0
+90.0 90.0 90.0
+
+
+1
+1
+28.0855
+Si
+Coordinates of Component 1
+1.0 0.0 0.0 0 0
+```
+
+Make the wrapper executable, create the configuration and evaluate the point:
+
+```bash
+chmod +x harmonic_extpot.py
+cat > config.ini <<EOF
+[Main]
+job = point
+
+[Potential]
+potential = ext_pot
+ext_pot_path = $PWD/harmonic_extpot.py
+EOF
+pixi run eonclient > eon.log 2>&1
+cat results.dat
+```
+
+The `potential_energy` result is **0.5 eV**. The wrapper returns one force,
+**(-1, 0, 0) eV/Angstrom**. This potential is a protocol demonstration:
+its origin is fixed and it does not model periodic interatomic interactions.
+The exact result-file formatting depends on the installed eOn release.
+
+For example, the point check prints these result entries:
+
+```text
+GOOD termination_reason_text
+EXT_POT potential_type
+1 total_force_calls
+5.000000000000e-01 potential_energy
+1.000000000000e+00 Max_Force
+```
+
+To check the wrapper independently, run it from a separate directory
+containing this `from_eon_to_extpot` file:
+
+```text
+20 0 0
+0 20 0
+0 0 20
+14 1 0 0
+```
+
+Its `from_extpot_to_eon` must contain:
+
+```text
+0.5
+-1 -0 -0
+```
+
+Signed zero is equivalent to zero. A successful wrapper-only check tests
+the file protocol; the client run also tests the structure, configuration
+and executable lookup.
 
 ## Protocol
 
@@ -77,7 +196,8 @@ directory in the environment variable `EON_EXTPOT_RUN_DIR`.
 
 ### Input file (`from_eon_to_extpot`)
 
-The first three lines are the 3x3 box matrix (one row per line, tab-separated).
+Positions and box vectors are in Angstrom. The first three lines are the
+3x3 box matrix (one lattice vector per row, tab-separated).
 Each subsequent line contains one atom: `atomic_number  x  y  z`
 (tab-separated, double precision).
 
@@ -91,8 +211,8 @@ box_20  box_21  box_22
 
 ### Output file (`from_extpot_to_eon`)
 
-The first line is the total energy (scalar).
-Each subsequent line contains the force on one atom: `fx  fy  fz`
+The first line is the total energy in eV (scalar).
+Each subsequent line contains the force on one atom in eV/Angstrom: `fx  fy  fz`
 (space-separated). The atom order must match the input.
 
 ```
@@ -117,87 +237,125 @@ configuration into per-job scratch directories. Use **absolute paths** for
 
 ## Examples
 
-### DeePMD (PyTorch) wrapper
+### Use an existing HPC CPMD installation
 
-The following Python script wraps a DeePMD-kit v3 PyTorch model and can be used
-directly as the `ext_pot_path` target. Save it as, e.g.,
-`/home/user/scripts/deepmd_extpot` and make it executable (`chmod +x`).
+Keep the eOn client in its Pixi environment and use the site's existing CPMD
+executable for the expensive force evaluations. You need all of:
 
-```{code-block} python
-:caption: deepmd_extpot
+1. The absolute path to a working `cpmd.x` (or site-named CPMD executable).
+2. Its compatible MPI runtime and the modules used to run it.
+3. The licensed pseudopotentials for every element in `pos.con`, with the
+   correct functional and angular-momentum choices.
+4. A periodic `pos.con`, the wrapper script and `config.ini`.
 
-#!/usr/bin/env python
-"""eOn ext_pot wrapper for DeePMD-kit (PyTorch backend)."""
-import numpy as np
-from deepmd.infer import DeepPot
+For example, clone the public eOn sources using Pixi's Git. This supplies
+the CPMD wrapper and a small silicon-vacancy structure; it does not build
+or install another eOn client:
 
-# --- user settings ---
-MODEL = "/absolute/path/to/model.pth"
-# ----------------------
-
-dp = DeepPot(MODEL)
-
-# Read input
-lines = open("from_eon_to_extpot").readlines()
-box = np.array([[float(v) for v in l.split()] for l in lines[:3]])
-atoms = []
-coords = []
-for l in lines[3:]:
-    tok = l.split()
-    atoms.append(int(tok[0]))
-    coords.append([float(tok[1]), float(tok[2]), float(tok[3])])
-atoms = np.array(atoms)
-coords = np.array(coords)
-
-# Evaluate
-energy, forces, _ = dp.eval(coords.reshape(1, -1, 3),
-                             box.reshape(1, 9),
-                             atoms)
-
-# Write output
-with open("from_extpot_to_eon", "w") as f:
-    f.write(f"{energy[0]:.15f}\n")
-    for fx, fy, fz in forces[0]:
-        f.write(f"{fx:.15f} {fy:.15f} {fz:.15f}\n")
+```bash
+pixi add git
+pixi run git clone --branch develop https://github.com/TheochemUI/eOn.git eon-source
+pixi run git -C eon-source rev-parse HEAD
+cp eon-source/examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py ./cpmd_extpot.py
+cp eon-source/examples/akmc-cpmd-slurm/pos.con ./pos.con
+chmod +x cpmd_extpot.py
 ```
 
-### Generic ASE calculator wrapper
+Record the printed source commit alongside the Pixi lockfile. The silicon
+example contains seven atoms and requires a silicon pseudopotential; it is
+separate from the harmonic demonstration.
 
-Any ASE-compatible calculator can be wrapped in a similar fashion:
+An executable built with Intel MPI must use its matching Intel MPI launcher.
+Do not send it through Open MPI installed for another calculator. A launcher
+script can restore the site's compiler/MPI modules in the CPMD child process
+without replacing the eOn environment. Save this as `launch-cpmd-mpi.sh` and
+replace the module initialization and module names with those from the
+working CPMD batch script:
 
-```{code-block} python
-:caption: ase_extpot
-
-#!/usr/bin/env python
-"""eOn ext_pot wrapper using an ASE calculator."""
-import numpy as np
-from ase import Atoms
-
-# --- user settings ---
-from mace_mp import MACECalculator
-calc = MACECalculator(model="/path/to/model.pt", device="cuda")
-# ----------------------
-
-lines = open("from_eon_to_extpot").readlines()
-box = np.array([[float(v) for v in l.split()] for l in lines[:3]])
-numbers = []
-positions = []
-for l in lines[3:]:
-    tok = l.split()
-    numbers.append(int(tok[0]))
-    positions.append([float(tok[1]), float(tok[2]), float(tok[3])])
-
-system = Atoms(numbers=numbers, positions=positions, cell=box, pbc=True)
-system.calc = calc
-
-energy = system.get_potential_energy()
-forces = system.get_forces()
-
-with open("from_extpot_to_eon", "w") as f:
-    f.write(f"{energy:.15f}\n")
-    for fx, fy, fz in forces:
-        f.write(f"{fx:.15f} {fy:.15f} {fz:.15f}\n")
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+source /etc/profile.d/modules.sh
+module purge
+unset LD_LIBRARY_PATH LD_PRELOAD LIBRARY_PATH CPATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH
+module load intel/oneAPI-2022 intelmpi/oneAPI-2022
+exec mpirun "$@"
 ```
+
+The module initialization path is site-specific. Add further modules only
+when that CPMD binary needs them. Verify this launcher on the allocated node;
+the `mpirun` it selects must belong to the MPI used to link CPMD.
+The library-path cleanup belongs in this child launcher before loading its
+modules; applying it to the parent process can break the eOn installation.
+
+From the workspace root, set the actual executable and pseudopotential
+locations. These are examples of account-relative paths, not files supplied
+by Pixi:
+
+```bash
+chmod +x launch-cpmd-mpi.sh
+export CPMD_BIN="$HOME/myCPMD/bin/cpmd4.3-oneAPI-2022-AMD.x"
+export PP_LIBRARY_PATH="$HOME/pseudo/"
+export CPMD_LAUNCH="$PWD/launch-cpmd-mpi.sh -np 4"
+export CPMD_PP="14:Si_MT_BLYP.psp:LMAX=D LOC=D"
+export CPMD_CUTOFF=70
+export CPMD_FUNCTIONAL=BLYP
+export CPMD_CONVERGENCE=1e-6
+export OMP_NUM_THREADS=1
+test -x "$CPMD_BIN"
+test -f "${PP_LIBRARY_PATH}Si_MT_BLYP.psp"
+cat > config.ini <<EOF
+[Main]
+job = point
+
+[Potential]
+potential = ext_pot
+ext_pot_path = $PWD/cpmd_extpot.py
+EOF
+pixi run eonclient > eon-cpmd.log 2>&1
+cat results.dat
+```
+
+Run this command inside a compute allocation with four MPI tasks available
+for CPMD. The eOn client is one process; its wrapper launches those four
+CPMD processes. For Slurm, request a node with `--ntasks=4` and enter the
+node using the site's supported interactive-job procedure. A site that
+requires `srun` instead of `mpirun` needs a launcher adapted to its MPI/PMI
+configuration. Do not start four copies of `eonclient` for this file route.
+
+The result contains a finite `potential_energy`. Its numerical value depends
+on the supplied pseudopotential, cutoff, geometry and convergence settings;
+the relaxed structure's recorded example energy is not a universal check
+at another cutoff. Inspect the exchange directory's `cpmd.out`, `input`,
+`GEOMETRY` and `RESTART.1` if the call fails. Keep these with the result when
+reporting an error.
+
+The supplied wrapper builds a neutral, single-point BLYP deck by default.
+Its environment controls listed below do **not** provide a complete method
+description for a charged, spin-polarized, dispersion-corrected or constrained
+system. Such a calculation requires a wrapper/deck that explicitly retains
+those physical settings. A dynamics or restart deck cannot be substituted
+without checking its task, charge, cell, functional, dispersion, species,
+occupations and SCF convergence. The in-process
+[RGPOT route](project:rgpot_pot.md) uses a separate serialized CPMD method
+message; it does not read this wrapper's environment as that message.
+
+### Units and force sign
+
+The external interface expects the **total energy in eV**, positions and box
+vectors in **Angstrom**, and forces in **eV/Angstrom**. For CPMD:
+
+```text
+energy_eV       = energy_Hartree * 27.211386245988
+force_eV_per_A  = force_Hartree_per_Bohr * 51.4220674763
+force           = -gradient
+```
+
+The last line applies when the source quantity is an energy gradient.
+CPMD's `GEOMETRY` columns 4–6 already contain the ionic **force** `fion`:
+convert the units without negating them. Returning a positive gradient as
+a force drives minimization uphill. The header `GRADIENTS (-FORCES)` in
+the printed CPMD table does not change what `fion` contains.
 
 ### CPMD on several MPI ranks
 
@@ -275,11 +433,28 @@ The script refuses a result whose wavefunction optimisation printed
 `PCG MINIMIZE`. It keeps `RESTART.1` in the exchange directory, so every call
 after the first in a job restarts from the previous wavefunction.
 
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| Wrapper cannot be executed or exit status 126/127 | Make it executable; check its shebang/interpreter under `pixi run`; use an absolute `ext_pot_path`. |
+| No `from_extpot_to_eon` | Run the wrapper manually from its exchange directory and inspect the calculator log and exit status. Write the response only after the calculation succeeds. |
+| Too few force rows | Return exactly one force triple per input atom, in the same order; restore species-grouped calculator output to the input order. |
+| `cpmd.x` cannot load a shared library or MPI fails | Use the compiler/MPI runtime matching that executable inside the CPMD launcher, not the Pixi MPI for a different build. |
+| SCF does not converge | Inspect `cpmd.out`, the rendered input and restart compatibility. Do not pass an unconverged energy to eOn. |
+| Minimization moves uphill | Check force units and sign; forces are the negative energy derivative. |
+| Several concurrent image calculations exhaust the allocation | Count calculator ranks per concurrent image, rather than counting the single eOn process alone. |
+
+An external wrapper must return a nonzero status for a failed calculation;
+it must not invent an energy or reuse a stale response. Return finite values
+and preserve diagnostics. A point job validates setup before a minimization,
+NEB or aKMC run makes many expensive calls.
+
 ## Performance considerations
 
 Each force call spawns a new process and re-initializes the calculator. For
-GPU-accelerated MLIPs this overhead is typically small compared to the inference
-cost, but for very fast potentials the startup cost can dominate. In that
+calculators with substantial initialization or model-loading costs, startup
+can dominate the force evaluation. Measure it for the actual calculator. In that
 scenario consider:
 
 - The built-in [ASE interface](project:ase_pot.md) (requires building from
