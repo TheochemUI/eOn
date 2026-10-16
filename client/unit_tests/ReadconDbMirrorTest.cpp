@@ -27,7 +27,9 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 TEST_CASE("loaded rkrdb_open matches the python package version",
           "[readcon-db]") {
-#ifndef _WIN32
+#ifdef _WIN32
+  SKIP("ReadconDbMirror.cpp compiles the mirror out on Windows");
+#else
   unsetenv("EON_READCON_DB_LIBRARY");
 #endif
   eonc::io::readcon_db_mirror_reset();
@@ -46,7 +48,8 @@ TEST_CASE("missing readcon-db leaves IoStatus unchanged", "[readcon-db]") {
   auto pot = eonc::helpers::sharePotential(
       eonc::helpers::makePotential(PotType::LJ, params));
   Matter matter(pot, params);
-  const eonc::io::IoStatus status = matter.con2matter(std::string("reactant.con"));
+  const eonc::io::IoStatus status =
+      matter.con2matter(std::string("reactant.con"));
   REQUIRE(status == eonc::io::IoStatus::Ok);
   REQUIRE_FALSE(eonc::io::readcon_db_mirror_ok());
 }

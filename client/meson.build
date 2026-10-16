@@ -72,108 +72,127 @@ if is_windows
         _linkargs += ['-Wl,--stack,16777216']
     elif cppc.get_id() == 'msvc'
         _linkargs += ['/STACK:16777216']
-        # conda-forge flang ships flang_rt import libs under the clang resource
-        # dir (e.g. Library/lib/clang/19/lib/x86_64-pc-windows-msvc/).  Meson
-        # links Fortran objects with MSVC link.exe, which does not search that
-        # path by default and fails with LNK1104 on FortranRuntime.dynamic.lib
-        # / flang_rt.runtime.dynamic.lib. Feedstock also puts this dir on LIB.
-        # flang-new reports id 'llvm-flang' or 'flang' depending on Meson.
+        # flang-new embeds /DEFAULTLIB:FortranRuntime.dynamic.lib (and
+        # FortranDecimal.dynamic.lib) in every COFF object. link.exe does
+        # not search the clang resource dir, so a missing /LIBPATH is
+        # LNK1104. conda-forge's `flang` package (not `libflang`) puts those
+        # libs in Library/lib, next to the compiler. -print-resource-dir is
+        # Library/lib/clang/<ver>, two levels below that. An upstream LLVM
+        # install uses <resource>/lib/<triple> instead. cmd_array()[0] is
+        # often the bare name flang-new, whose parent is not Library/lib.
+        # This block is before any target so the /LIBPATH is global and
+        # reaches the rgpot subproject, which links rgpot-3.dll.
         if use_fortran
             if fc.get_id() in ['flang', 'llvm-flang', 'flang-new']
-                _flang_rt_candidates = []
-                _flang_rt_libpath = run_command(
-                    fc,
-                    '-print-resource-dir',
-                    check: false,
-                )
-                if _flang_rt_libpath.returncode() == 0
-                    _flang_rt_res = _flang_rt_libpath.stdout().strip()
-                    # Normalize D:\... to D:/... so join_paths / fs.is_* work.
-                    _flang_rt_res = _flang_rt_res.replace('\\', '/')
-                    _flang_rt_candidates += [
-                        join_paths(_flang_rt_res, 'lib', 'x86_64-pc-windows-msvc'),
-                        join_paths(_flang_rt_res, 'lib'),
-                        _flang_rt_res,
+                _frt_names = [
+                    'FortranRuntime.dynamic.lib',
+                    'FortranDecimal.dynamic.lib',
+                    'flang_rt.runtime.dynamic.lib',
+                    'flang_rt.dynamic.lib',
+                ]
+                _flang_rt_dirs = []
+                _fc_prog = find_program(fc.cmd_array()[0], required: false)
+                if _fc_prog.found()
+                    _fc_abs = _fc_prog.full_path().replace('\\', '/')
+                    _fc_bindir = fs.parent(_fc_abs)
+                    # .../Library/bin/flang-new.exe -> .../Library/lib
+                    _flang_rt_dirs += [
+                        fs.parent(_fc_bindir) / 'lib',
+                        _fc_bindir,
                     ]
                 endif
-                # Fallback: conda/pixi layout under the compiler's bindir parents.
-                # win-64 flang often ships import libs in Library/lib (not only under
-                # the clang resource triple dir).
-                _fc_path = fc.cmd_array()[0]
-                _fc_dir = fs.parent(_fc_path)
-                # .../Library/bin/flang-new.exe -> .../Library
-                _lib_root = fs.parent(_fc_dir)
-                _flang_rt_candidates += [
-                    join_paths(_lib_root, 'lib'),
-                    join_paths(_lib_root, 'lib', 'clang'),
-                    join_paths(_lib_root, 'bin'),
-                ]
+                foreach _fname : _frt_names
+                    _pf = run_command(
+                        fc,
+                        '-print-file-name=' + _fname,
+                        check: false,
+                    )
+                    if _pf.returncode() == 0
+                        _rt_path = _pf.stdout().strip().replace('\\', '/')
+                        if (
+                            _rt_path != _fname
+                            and fs.is_absolute(_rt_path)
+                            and fs.is_file(_rt_path)
+                        )
+                            _flang_rt_dirs += fs.parent(_rt_path)
+                        endif
+                    endif
+                endforeach
+                _res = run_command(fc, '-print-resource-dir', check: false)
+                if _res.returncode() == 0
+                    _resdir = _res.stdout().strip().replace('\\', '/')
+                    _flang_rt_dirs += [
+                        join_paths(_resdir, 'lib', 'x86_64-pc-windows-msvc'),
+                        join_paths(_resdir, 'lib'),
+                        _resdir,
+                    ]
+                    _walk = _resdir
+                    foreach _i : [0, 1, 2, 3, 4]
+                        if _walk == ''
+                            break
+                        endif
+                        _flang_rt_dirs += _walk
+                        if fs.name(_walk) == 'clang'
+                            foreach _ver : ['21', '20', '19', '18', '17']
+                                _flang_rt_dirs += join_paths(
+                                    _walk,
+                                    _ver,
+                                    'lib',
+                                    'x86_64-pc-windows-msvc',
+                                )
+                            endforeach
+                        endif
+                        _walk = fs.parent(_walk)
+                    endforeach
+                endif
                 _flang_rt_dir = ''
-                foreach _cand : _flang_rt_candidates
+                foreach _cand : _flang_rt_dirs
                     if _flang_rt_dir != ''
                         break
                     endif
                     if not fs.is_dir(_cand)
                         continue
                     endif
-                    # Direct match or clang/<ver>/lib/x86_64-pc-windows-msvc under cand
-                    foreach _probe : [
-                        _cand,
-                        join_paths(_cand, 'lib', 'x86_64-pc-windows-msvc'),
-                    ]
-                        foreach _frt : [
-                            'flang_rt.runtime.dynamic.lib',
-                            'FortranRuntime.dynamic.lib',
-                            'flang_rt.dynamic.lib',
-                        ]
-                            if fs.is_file(join_paths(_probe, _frt))
-                                _flang_rt_dir = _probe
-                                break
-                            endif
-                        endforeach
-                        if _flang_rt_dir != ''
+                    foreach _fname : _frt_names
+                        if fs.is_file(join_paths(_cand, _fname))
+                            _flang_rt_dir = _cand
                             break
                         endif
                     endforeach
-                    # Walk clang version dirs one level if cand is .../lib/clang
-                    if _flang_rt_dir == '' and fs.name(_cand) == 'clang'
-                        # Meson has no readdir; try common versions from recent flang.
-                        foreach _ver : ['21', '20', '19', '18', '17']
-                            _probe = join_paths(
-                                _cand,
-                                _ver,
-                                'lib',
-                                'x86_64-pc-windows-msvc',
-                            )
-                            foreach _frt : [
-                                'flang_rt.runtime.dynamic.lib',
-                                'FortranRuntime.dynamic.lib',
-                                'flang_rt.dynamic.lib',
-                            ]
-                                if fs.is_file(join_paths(_probe, _frt))
-                                    _flang_rt_dir = _probe
-                                    break
-                                endif
-                            endforeach
-                            if _flang_rt_dir != ''
-                                break
-                            endif
-                        endforeach
-                    endif
                 endforeach
                 if _flang_rt_dir != ''
-                    _linkargs += ['/LIBPATH:' + _flang_rt_dir]
-                    message('flang_rt LIBPATH: ' + _flang_rt_dir)
-                    foreach _frt : [
-                        'flang_rt.runtime.dynamic.lib',
-                        'FortranRuntime.dynamic.lib',
-                        'flang_rt.dynamic.lib',
+                    _libpath = '/LIBPATH:' + _flang_rt_dir
+                    add_global_link_arguments(_libpath, language: ['c', 'cpp'])
+                    _linkargs += [_libpath]
+                    _rt_found = []
+                    foreach _base : [
+                        'FortranRuntime.dynamic',
+                        'FortranDecimal.dynamic',
+                        'flang_rt.runtime.dynamic',
+                        'flang_rt.dynamic',
                     ]
-                        if fs.is_file(join_paths(_flang_rt_dir, _frt))
-                            _linkargs += [join_paths(_flang_rt_dir, _frt)]
-                            break
+                        _rt = fc.find_library(
+                            _base,
+                            dirs: [_flang_rt_dir],
+                            required: false,
+                        )
+                        if _rt.found()
+                            _rt_found += _rt
+                            message('flang runtime: ' + _base)
                         endif
                     endforeach
+                    if _rt_found.length() > 0
+                        # rgpot calls dependency('flang_rt') and would
+                        # otherwise find_library the bare DEFAULTLIB name.
+                        meson.override_dependency(
+                            'flang_rt',
+                            declare_dependency(
+                                dependencies: _rt_found,
+                                link_args: [_libpath],
+                            ),
+                        )
+                    endif
+                    message('flang_rt LIBPATH: ' + _flang_rt_dir)
                 else
                     warning(
                         'flang_rt import lib dir not found; MSVC link may LNK1104',
@@ -794,6 +813,15 @@ if not readcon_dep.found()
         _have_readcon_dll_beside = true
     endif
 endif
+# wrap_mode=forcefallback makes dependency() found, so the block above
+# does not run on a wheel and readcon_order_srcs stays empty.
+# partial_dependency drops the stamp, and ninja then links
+# readcon_core.lib before cargo writes it (LNK1181). The fallback
+# already configured this subproject.
+if is_windows and readcon_order_srcs.length() == 0 and readcon_dep.type_name() == 'internal'
+    readcon_proj = subproject('readcon-core')
+    readcon_order_srcs += readcon_proj.get_variable('readcon_order', [])
+endif
 if is_windows
     # On Windows, do not put cargo .lib/.dll on eonclib: llvm-ar treats
     # the .lib as an archive name, and link rejects the DLL (LNK1107).
@@ -812,6 +840,10 @@ endif
 # readcon-db: corpus mirror. Resolve it the same way as readcon-core
 # (pkg-config, then the wrap). The shared library is not archived beside
 # the static readcon-core.
+# GNU ld drops a library with no link-time use unless --no-as-needed
+# wraps it. ld64 rejects those flags and keeps every dylib, so macOS
+# links the path alone. link.exe rejects -Wl too, so MSVC does the same.
+_readcon_db_as_needed = cppc.get_argument_syntax() == 'gcc' and host_system != 'darwin'
 readcon_db_dep = dependency(
     'readcon-db',
     version: '>=0.1.6',
@@ -835,56 +867,94 @@ if not readcon_db_dep.found()
     # cargo target and a parallel link runs while that library is absent.
     # link_with is the order edge. The --no-as-needed path stays: the
     # mirror resolves rkrdb_open at load time, and --as-needed drops a
-    # library with no link-time use. Windows keeps the DLL off link_with
-    # because link.exe rejects a DLL input (LNK1107).
-    _readcon_db_order = []
-    if not is_windows
-        _readcon_db_order = [_readcon_db_so]
-    endif
-    readcon_db_dep = declare_dependency(
-        link_with: _readcon_db_order,
-        link_args: [
+    # library with no link-time use. macOS and MSVC take the bare path.
+    _readcon_db_link = [_readcon_db_so.full_path()]
+    if _readcon_db_as_needed
+        _readcon_db_link = [
             '-Wl,--no-as-needed',
             _readcon_db_so.full_path(),
             '-Wl,--as-needed',
-        ],
-        sources: [_readcon_db_so],
-        compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
-    )
+        ]
+    endif
+    if is_windows
+        # The mirror is compiled out on Windows (ReadconDbMirror.cpp guards
+        # every rkrdb_* use with _WIN32), so nothing links readcon-db there.
+        # link.exe cannot take the DLL, and without a link_with edge the
+        # path is also absent when the first DLL links (LNK1181).
+        readcon_db_dep = declare_dependency(
+            compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
+        )
+    else
+        readcon_db_dep = declare_dependency(
+            link_with: [_readcon_db_so],
+            link_args: _readcon_db_link,
+            sources: [_readcon_db_so],
+            compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
+        )
+    endif
 else
     _readcon_db_version = readcon_db_dep.version()
     if _readcon_db_version == ''
         _readcon_db_version = '0.1.6'
     endif
-    # A wrap fallback is already found(), and its link line is the cdylib
-    # path. A bare -lreadcon_db has no -L under the wheel's conda linker.
-    # An installed pkg-config file is kept by that same path when libdir
-    # names the shared library.
-    _readcon_db_keep = []
-    _pc_libdir = readcon_db_dep.get_variable(
-        pkgconfig: 'libdir',
-        default_value: '',
-    )
-    if _pc_libdir != ''
-        foreach _name : ['libreadcon_db.so', 'libreadcon_db.dylib']
-            _cand = _pc_libdir / _name
-            if fs.exists(_cand)
-                _readcon_db_keep = [
-                    '-Wl,--no-as-needed',
-                    _cand,
-                    '-Wl,--as-needed',
-                ]
-                break
-            endif
-        endforeach
+    # wrap_mode=forcefallback makes dependency() found, so the not-found
+    # branch above does not run on a wheel. The subproject link line is
+    # readcon_db.dll, and its sources hold that DLL. link.exe rejects a
+    # DLL input (LNK1107). The mirror is compiled out on Windows, so
+    # headers and the version macro are enough.
+    if is_windows
+        readcon_db_dep = declare_dependency(
+            dependencies: [
+                readcon_db_dep.partial_dependency(
+                    includes: true,
+                    compile_args: true,
+                ),
+            ],
+            compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
+        )
+    else
+        # A wrap fallback is already found(), and its link line is the cdylib
+        # path. A bare -lreadcon_db has no -L under the wheel's conda linker.
+        # An installed pkg-config file is kept by that same path when libdir
+        # names the shared library.
+        _readcon_db_keep = []
+        _pc_libdir = readcon_db_dep.get_variable(
+            pkgconfig: 'libdir',
+            default_value: '',
+        )
+        if _pc_libdir != ''
+            foreach _name : ['libreadcon_db.so', 'libreadcon_db.dylib']
+                _cand = _pc_libdir / _name
+                if fs.exists(_cand)
+                    _readcon_db_keep = [_cand]
+                    if _readcon_db_as_needed
+                        _readcon_db_keep = [
+                            '-Wl,--no-as-needed',
+                            _cand,
+                            '-Wl,--as-needed',
+                        ]
+                    endif
+                    break
+                endif
+            endforeach
+        endif
+        readcon_db_dep = declare_dependency(
+            dependencies: [readcon_db_dep],
+            link_args: _readcon_db_keep,
+            compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
+        )
     endif
-    readcon_db_dep = declare_dependency(
-        dependencies: [readcon_db_dep],
-        link_args: _readcon_db_keep,
-        compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
-    )
 endif
 _deps += [readcon_db_dep]
+
+# Static archives install under libdir_static. meson-python cannot map
+# that path into a wheel. The pyeonclient wheel links the archives into
+# _core.pyd and does not install the server, so they stay in the build
+# tree. A normal static install still publishes them.
+_client_lib_install = true
+if get_option('default_library') == 'static' and not get_option('install_eon_server')
+    _client_lib_install = false
+endif
 
 # Potentials
 
@@ -1436,9 +1506,15 @@ if get_option('with_metatomic')
     endforeach
 
     torch_inc_args = []
+    # -isystem keeps torch headers out of -Wall on GCC and Clang.
+    # MSVC has no -isystem. /I is the include form.
+    _torch_isystem = cppc.get_argument_syntax() == 'gcc'
     foreach d : LIB_TORCH_INCLUDE_LIST
-        # Reduce the priority of each
-        torch_inc_args += ['-isystem', d]
+        if _torch_isystem
+            torch_inc_args += ['-isystem', d]
+        else
+            torch_inc_args += ['/I' + d]
+        endif
     endforeach
 
     torch_deps = declare_dependency(
@@ -1607,7 +1683,7 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
         cpp_args: _args,
         link_with: _linkto,
         include_directories: _incdirs,
-        install: true,
+        install: _client_lib_install,
     )
     potentials += [metatomic_pot]
 endif
@@ -1867,7 +1943,7 @@ eclib = library(
     link_args: _linkargs,
     build_rpath: ':'.join(_runtime_rpath),
     install_rpath: _lib_install_rpath,
-    install: true,
+    install: _client_lib_install,
 )
 
 # MSVC scans static libraries once, left to right. eonclib references
@@ -1923,14 +1999,17 @@ if is_windows
 endif
 eon_relax_engine = shared_library(
     'eon_relax_engine',
-    ['relax/RelaxEngineAbi.cpp', eon_relax_capnp],
+    ['relax/RelaxEngineAbi.cpp', eon_relax_capnp] + readcon_order_srcs,
     dependencies: _engine_deps,
     cpp_args: _args + ['-DEON_RELAX_ENGINE_BUILD'],
     link_with: _linkto,
     include_directories: _incdirs + [include_directories('.')],
     build_rpath: ':'.join(_runtime_rpath),
     install_rpath: _lib_install_rpath,
-    install: true,
+    # meson-python will not bundle a Windows DLL. The extension links
+    # static archives and does not load this module. A normal install
+    # still publishes it.
+    install: _client_lib_install,
     gnu_symbol_visibility: 'inlineshidden',
 )
 
@@ -1949,7 +2028,7 @@ if get_option('with_metatomic')
         include_directories: _incdirs,
         build_rpath: ':'.join(_runtime_rpath),
         install_rpath: _lib_install_rpath,
-        install: true,
+        install: _client_lib_install,
         gnu_symbol_visibility: 'default',
     )
 
@@ -2001,6 +2080,11 @@ if is_windows
             links: true,
         ),
     ]
+    # The import library is a raw path. The stamp is the ninja edge that
+    # builds it first. A typedef, so a second copy does not clash.
+    if readcon_order_srcs.length() > 0
+        _exe_deps += declare_dependency(sources: readcon_order_srcs)
+    endif
 endif
 
 # Export variable
@@ -2037,7 +2121,9 @@ ec = executable(
     include_directories: _incdirs,
     dependencies: _exe_deps,
     link_with: _linkto,
-    cpp_args: [_args, '-w'],
+    # -w silences the client executable. It is a GCC/Clang flag. MSVC
+    # accepts the same letter as /w, and the probe keeps it there too.
+    cpp_args: _args + cppc.get_supported_arguments(['-w']),
     link_args: _linkargs,
     build_rpath: ':'.join(_runtime_rpath),
     install_rpath: _exe_install_rpath,
@@ -2116,7 +2202,6 @@ if get_option('with_tests')
         ['test_xtsci_eindir', 'XtsciEindirTest.cpp', ''],
         ['test_lammps_loader', 'LammpsLoaderTest.cpp', ''],
         ['test_coverage_paths', 'CoveragePathsTest.cpp', 'neb_morse', 180],
-        ['test_socket_nwchem_listen', 'SocketNWChemListenTest.cpp', ''],
         ['test_plugin_loader', 'PluginLoaderTest.cpp', ''],
         ['test_ira_resource', 'IRAResourceTest.cpp', ''],
         ['test_artn_resource', 'ARTnResourceTest.cpp', ''],
@@ -2150,6 +2235,10 @@ if get_option('with_tests')
         ['test_neb_subsystem', 'NEBSubsystemTest.cpp', ''],
         ['test_neb_zoom', 'NEBZoomTest.cpp', ''],
     ]
+    # SocketNWChem is POSIX sockets and is not built on Windows.
+    if not is_windows
+        test_array += [['test_socket_nwchem_listen', 'SocketNWChemListenTest.cpp', '']]
+    endif
     # posix_spawn. On Windows the only case is skipped and Catch2 exits 4.
     if not is_windows
         test_array += [['test_client_timing', 'ClientTimingTest.cpp', '', 60]]
@@ -2255,6 +2344,18 @@ if get_option('with_tests')
         endif
         if fs.is_dir(_pbin)
             _stage_search += _pbin
+        endif
+        # Pip wheels keep the DLLs the engine imports (c10, torch_cpu,
+        # metatensor_torch, metatomic_torch) under site-packages, often in
+        # a bin/ sibling of the import lib. The prefix search does not see
+        # them, so LoadLibrary walks PATH and can bind a same-named DLL.
+        if get_option('with_metatomic')
+            _stage_search += [LIB_TORCH_LIB_PATH, LIB_TORCH_BIN_PATH]
+            if get_option('pip_metatomic')
+                foreach _d : pip_metatomic_runtime_dirs
+                    _stage_search += [_d, fs.parent(_d) / 'bin']
+                endforeach
+            endif
         endif
         _stage_engine_imports = custom_target(
             'stage-engine-dll-imports',

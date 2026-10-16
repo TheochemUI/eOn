@@ -138,10 +138,12 @@ jobs:
           set -euo pipefail
           # setup-python first
           export PATH="${pythonLocation}:${pythonLocation}/Scripts:${PATH}"
-          # Drop: Git usr (shadows MSVC link), MinGW, Strawberry Perl (broken
-          # pkg-config / windres / ld that poison CMake Eigen detection).
+          # Drop: Git usr (shadows MSVC link), Git ucrt64 (libstdc++ and
+          # libgcc that LoadLibrary binds instead of the MSVC runtime),
+          # MinGW, Strawberry Perl (broken pkg-config / windres / ld that
+          # poison CMake Eigen detection).
           export PATH=$(echo "$PATH" | tr ':' '\n' \
-            | grep -vE '/usr/bin$|[Mm]ingw|[Ss]trawberry' \
+            | grep -vE '/usr/bin$|ucrt64|[Mm]ingw|[Ss]trawberry' \
             | paste -sd:)
           # C++ deps from pixi (eigen, quill, flang, …); do not use pixi python/torch
           PIXI_PRE="${PIXI_PROJECT_ROOT:-$PWD}/.pixi/envs/dev-mta"
@@ -244,7 +246,7 @@ jobs:
           # meson test then rejects build.dat from the pip meson configure.
           export PATH="${pythonLocation}/Scripts:${pythonLocation}:${PATH}"
           export PATH=$(echo "$PATH" | tr ':' '\n' \
-            | grep -vE '/usr/bin$|[Mm]ingw|[Ss]trawberry' \
+            | grep -vE '/usr/bin$|ucrt64|[Mm]ingw|[Ss]trawberry' \
             | paste -sd:)
           PIXI_PRE="${PIXI_PROJECT_ROOT:-$PWD}/.pixi/envs/dev-mta"
           # Library/bin before torch. scripts/ci/win_msvc_path.sh appends

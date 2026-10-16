@@ -327,8 +327,7 @@ TEST_CASE("relax engine destroy NULL is a no-op", "[relax][abi]") {
   REQUIRE(eon_relax_reset(nullptr) == EON_RELAX_NULL_ENGINE);
 }
 
-TEST_CASE("relax step rejects a band before it builds a path",
-          "[relax][abi]") {
+TEST_CASE("relax step rejects a band before it builds a path", "[relax][abi]") {
   REQUIRE(eon_relax_step(nullptr, nullptr, nullptr, nullptr, nullptr) ==
           EON_RELAX_NULL_ENGINE);
   EonRelaxEngine *eng = eon_relax_create(nullptr, 0, nullptr, 0);
@@ -377,9 +376,8 @@ TEST_CASE("relax step rejects a band before it builds a path",
   REQUIRE(std::string(eon_relax_status_name(
               EON_RELAX_KIND_NEB, EON_RELAX_NEB_BAD_MAX_ITERATIONS)) ==
           "BAD_MAX_ITERATIONS");
-  REQUIRE(std::string(eon_relax_status_name(EON_RELAX_KIND_NEB,
-                                            EON_RELAX_NEB_RUNNING)) ==
-          "RUNNING");
+  REQUIRE(std::string(eon_relax_status_name(
+              EON_RELAX_KIND_NEB, EON_RELAX_NEB_RUNNING)) == "RUNNING");
   eon_relax_destroy(eng);
 }
 

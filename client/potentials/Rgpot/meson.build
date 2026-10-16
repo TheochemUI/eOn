@@ -25,7 +25,7 @@ rgpot_pot = library(
     dependencies: _rgpot_deps,
     cpp_args: _rgpot_cpp,
     link_with: _linkto,
-    install: true,
+    install: _client_lib_install,
 )
 
 if _rgpot_group_mpi.found()

@@ -114,8 +114,7 @@ TEST_CASE("enableFPE integer divide does not restart the faulting instruction",
 #endif
 }
 
-TEST_CASE("enableFPE reports overflow and an invalid operation once",
-          "[fpe]") {
+TEST_CASE("enableFPE reports overflow and an invalid operation once", "[fpe]") {
 #if defined(__APPLE__) && defined(__aarch64__)
   SKIP("Apple Silicon raises SIGILL for FE traps, not SIGFPE");
 #else

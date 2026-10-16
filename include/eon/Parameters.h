@@ -157,10 +157,18 @@ private:
   std::unique_ptr<Impl> impl_;
   Impl &ensure_impl();
   void record_load(std::string_view source, int error);
+  /// Field initializers only: no schema defaults and no validate_and_link.
+  /// Defined in eoncbase, so a plugin can build one without eonclib.
+  struct FieldDefaults {};
+  explicit Parameters(FieldDefaults);
 };
 
 /// Write hole for INI/JSON loaders and nanobind property setters.
 struct ParametersLoadAccess {
+  /// Parameters with the option structs' own initializers. For plugin
+  /// entry points that set every field they read, since the default
+  /// constructor lives in eonclib.
+  static Parameters field_defaults();
   static constants_t &constants(Parameters &p);
   static const constants_t &constants(const Parameters &p);
   static main_options_t &main_options(Parameters &p);

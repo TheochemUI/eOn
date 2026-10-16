@@ -10,8 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "eon/GleThermostat.h"
 #include "eon/PathIntegral.h"
+#include "eon/GleThermostat.h"
 
 #include "catch2/catch_amalgamated.hpp"
 
@@ -19,9 +19,9 @@
 
 #include <cmath>
 #include <filesystem>
-#include <stdexcept>
 #include <fstream>
 #include <numbers>
+#include <stdexcept>
 #include <string>
 #include <vector>
 

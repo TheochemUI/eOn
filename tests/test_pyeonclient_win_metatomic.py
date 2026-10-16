@@ -22,3 +22,17 @@ def test_win64_metatomic_wheel_is_in_the_matrix():
     win = text.split("name: abi3-win-metatomic", 1)[1].split("steps:", 1)[0]
     assert "variant: metatomic" in win
     assert "windows-2022" in win
+    # Shared plugin DLLs export nothing, so MSVC writes no import library.
+    assert 'runner.os }}" == "Windows"' in text
+    assert "setup-args=-Ddefault_library=static" in text
+    script = (
+        Path(__file__).resolve().parents[1] / "scripts" / "pyeonclient_cibw_test.sh"
+    ).read_text(encoding="utf-8")
+    assert 'OS:-}" = "Windows_NT"' in script
+    assert "PATH_PREFIX" in script
+    assert "_core*.pyd" in script
+    assert "readelf" in script
+    assert "eon-wheel-deps" in script
+    assert "add_dll_directory" in script
+    assert "/torch-" in script
+    assert "built_with_rgpot() is False" in script
