@@ -185,11 +185,12 @@
     "9134": "fix(test): delay-load the relax engine before torch binds DLLs",
     "9135": "fix(test): stage torch DLLs beside the relax engine",
     "9136": "Merge pull request #776 from TheochemUI/feat/readcon-0.17-roundtrip",
-    "9149": "docs: connect CPMD tutorial to the Slurm point job",
-    "9150": "feat(examples): add a standalone external harmonic potential",
-    "9151": "fix(examples): include harmonic point geometry",
-    "9153": "feat(examples): provide the external CPMD point configuration and script",
-    "9154": "fix(install): include the population rate module in the Python package"
+    "9148": "docs: connect CPMD tutorial to the Slurm point job",
+    "9149": "feat(examples): add a standalone external harmonic potential",
+    "9150": "fix(examples): include harmonic point geometry",
+    "9152": "feat(examples): provide the external CPMD point configuration and script",
+    "9153": "fix(install): include the population rate module in the Python package",
+    "9154": "fix(install): register the rate module in the install manifest"
   },
   "dcbade17ecc8386a4ee5804354b4994c8ba1d6d8": "update lammps webpage",
   "292bc143343709b10fb7ed150ae5bb493748b289": "gitig: Update",
@@ -380,5 +381,6 @@
   "ecc9e2318e39a50accbebe9b7945d17f7f1fabf3": "feat(examples): add a standalone external harmonic potential",
   "5f1699cea07a8b617299eff13615b978c8843bd5": "fix(examples): include harmonic point geometry",
   "8c132175422adc70e21a17ae0f2c8aada2578a4c": "feat(examples): provide the external CPMD point configuration and script",
-  "d52e3fed0585e992b1074553ce2fa665dac74335": "fix(install): include the population rate module in the Python package"
+  "d52e3fed0585e992b1074553ce2fa665dac74335": "fix(install): include the population rate module in the Python package",
+  "cc8b92a5be42822c2dca7c370e72c27735cb74e4": "fix(install): register the rate module in the install manifest"
 }
