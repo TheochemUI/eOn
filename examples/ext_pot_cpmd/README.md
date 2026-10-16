@@ -37,6 +37,13 @@ A CON input uses the same command:
 pixi run run /absolute/path/pos.con
 ```
 
+CON inputs are read and written through the pinned readcon converter before
+evaluation. It preserves the cell, coordinates, atom IDs, masses and fixed
+flags, and removes stored energies and forces so the point uses your configured
+CPMD executable and pseudopotentials. The source file is preserved.
+`CON_FRAME=0` selects the first CON frame; set `CON_FRAME=-1` in `.env` to
+select the last. `pos.source.json` records the selected frame and file hashes.
+
 For a nudged elastic band between two endpoints:
 
 ```bash
@@ -58,6 +65,12 @@ where installing dependencies is permitted:
 
 ```bash
 pixi run uv run --script xyz_to_con.py /absolute/path/input.xyz /tmp/input.con
+```
+
+For a CON source, prime the same readcon dependency with:
+
+```bash
+pixi run uv run --script con_to_input.py /absolute/path/source.con /tmp/point-input.con
 ```
 
 `XYZ_FRAME=-1` selects the last frame; nonnegative values select a zero-based
