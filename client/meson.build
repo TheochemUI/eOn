@@ -823,12 +823,6 @@ else
             + 'or wipe the build directory.',
         )
     endif
-    # pkg-config puts RGPOT_HAS_* in the .pc cflags. The wrap dependency
-    # does not, so the expression potential is compiled out and
-    # makePotential throws "Terminating".
-    if _rgpot_proj.get_variable('has_expr')
-        _args += ['-DRGPOT_HAS_EXPR']
-    endif
     if get_option('with_serve')
         ptlrpc_dep = _rgpot_proj.get_variable('ptlrpc_dep')
     endif
