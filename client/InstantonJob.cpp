@@ -239,6 +239,22 @@ bool cachedProfileMatchesSurface(const Matter &ref, const Matter &image) {
   return true;
 }
 
+/// Reference energies and derivatives share the ring's constraints and metric.
+void requireMatchingReferenceSurface(const Matter &ref, const Matter &image) {
+  if (!cachedProfileMatchesSurface(ref, image)) {
+    throw std::invalid_argument(
+        "instanton: reference surface differs in cell, species, constraints "
+        "or frozen positions");
+  }
+  for (long i = 0; i < ref.numberOfAtoms(); ++i) {
+    if (!(ref.getMass(i) > 0.0) || !std::isfinite(ref.getMass(i)) ||
+        ref.getMass(i) != image.getMass(i)) {
+      throw std::invalid_argument(
+          "instanton: reference surface differs in atomic masses");
+    }
+  }
+}
+
 /// With no atom fixed, removes the rigid part of m's displacement from
 /// ref: the mass-weighted mean (translation), and for a cluster the
 /// mass-weighted best rotation (Kabsch). A path that carried either would
@@ -455,6 +471,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   }
   // Highest first, so each ring can start the colder one.
   std::sort(temperatures.begin(), temperatures.end(), std::greater<>());
+  requireMatchingReferenceSurface(reactant, saddle);
   alignRigid(reactant, saddle);
   const long n = mw.dimension();
   const VectorXd qSaddle = mw.toQ(saddle);
@@ -1223,6 +1240,7 @@ std::vector<std::string> InstantonJob::run(void) {
   if (reactant->numberOfAtoms() != product->numberOfAtoms()) {
     throw std::runtime_error("instanton: the minima differ in atom count");
   }
+  requireMatchingReferenceSurface(*reactant, *product);
   alignRigid(*reactant, *product);
   const VectorXd qEnd = mw.toQ(*product);
 

@@ -3310,3 +3310,44 @@ TEST_CASE("the client rejects an unknown flag and a missing structure",
 #endif
 
 } // namespace tests
+
+
+TEST_CASE("instanton references share constraints and the mass metric",
+          "[job][instanton][reference-surface]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  for (long i = 0; i < reactant->numberOfAtoms(); ++i) {
+    reactant->setFixed(i, i == 0 ? 0 : 1);
+  }
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
+  auto endpoint = std::make_shared<Matter>(*reactant);
+  SECTION("frozen geometry") {
+    auto positions = endpoint->getPositions();
+    positions(1, 0) += 0.02;
+    endpoint->setPositions(positions);
+  }
+  SECTION("cell") {
+    auto cell = endpoint->getCell();
+    cell(0, 0) += 0.1;
+    endpoint->setCell(cell);
+  }
+  SECTION("species") { endpoint->setAtomicNr(0, 2); }
+  SECTION("mass") { endpoint->setMass(0, 2.0 * reactant->getMass(0)); }
+  SECTION("constraints") { endpoint->setFixed(1, 0); }
+  REQUIRE(eonc::io::io_ok(endpoint->matter2con("saddle.con", false)));
+  REQUIRE(eonc::io::io_ok(endpoint->matter2con("product.con", false)));
+  ParametersLoadAccess::instanton_options(params).beads = 4;
+  ParametersLoadAccess::instanton_options(params).max_iterations = 0;
+  for (const std::string mode : {"rate", "splitting"}) {
+    INFO(mode);
+    ParametersLoadAccess::instanton_options(params).mode = mode;
+    eonc::InstantonJob job(pot, params);
+    REQUIRE_THROWS_WITH(
+        job.run(),
+        Catch::Matchers::ContainsSubstring("instanton: reference surface differs"));
+  }
+}
