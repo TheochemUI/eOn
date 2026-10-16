@@ -1827,7 +1827,7 @@ version_header = custom_target(
     input: version_template,
     output: 'version.h',
     command: [
-        py.full_path(), version_script,
+        version_script,
         '--template', '@INPUT@', '--output', '@OUTPUT@',
     ],
     build_always_stale: true,
