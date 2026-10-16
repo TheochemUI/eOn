@@ -223,13 +223,9 @@ jobs:
               echo "TORCH_LIB=${TORCH_LIB}"
               ls "${TORCH_LIB}"/libc10* "${TORCH_LIB}"/libtorch* 2>/dev/null | head
             fi
-          CIBW_BEFORE_BUILD_WINDOWS: |
-            python -m pip install -U pip "nanobind>=2.4,<3" meson ninja meson-python
-            python -m pip install --only-binary=:all: numpy
-            if "${{ matrix.variant }}"=="metatomic" (
-              python -m pip install --only-binary=:all: torch --index-url https://download.pytorch.org/whl/cpu
-              python -m pip install metatensor metatensor-torch metatomic-torch vesin
-            )
+          # One command. cmd.exe runs only the first line of a multiline
+          # before-build, so numpy never landed in the no-isolation env.
+          CIBW_BEFORE_BUILD_WINDOWS: python scripts/pyeonclient_cibw_before_windows.py ${{ matrix.variant }}
           # The private-SONAME step first (it renames librgpot and rewrites
           # RECORD), then auditwheel, which vendors the Fortran, OpenMP and
           # Cap'n Proto runtimes and sets the manylinux tag. A failed repair

@@ -1,0 +1,1 @@
+pyeonclient wheels follow librgpot's SONAME (currently librgpot.so.4) and ship that library as libeon_rgpot. Windows wheel builds install numpy before configuring. The NWChem listen test is skipped where SocketNWChem is not built, and the client argument check no longer reads /proc/self/exe.

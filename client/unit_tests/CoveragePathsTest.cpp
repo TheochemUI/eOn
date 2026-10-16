@@ -64,11 +64,16 @@
 #include <fstream>
 #include <memory>
 #include <string>
+#include <system_error>
 #ifndef _WIN32
 #include <spawn.h>
 #include <sys/wait.h>
 #include <unistd.h>
 extern char **environ;
+#endif
+#if defined(__APPLE__)
+#include <cstdint>
+#include <mach-o/dyld.h>
 #endif
 #include <vector>
 
@@ -3143,12 +3148,38 @@ TEST_CASE("a dynamics search keeps the barrier after one step",
 }
 
 #ifndef _WIN32
+std::filesystem::path client_executable() {
+  if (const char *from_env = std::getenv("EONCLIENT")) {
+    if (from_env[0] != '\0') {
+      return from_env;
+    }
+  }
+#if defined(__APPLE__)
+  char buffer[4096];
+  uint32_t size = sizeof(buffer);
+  if (_NSGetExecutablePath(buffer, &size) != 0) {
+    return {};
+  }
+  std::error_code error;
+  const auto exe = std::filesystem::weakly_canonical(buffer, error);
+  if (error) {
+    return std::filesystem::path(buffer).parent_path() / "eonclient";
+  }
+  return exe.parent_path() / "eonclient";
+#else
+  std::error_code error;
+  const auto exe = std::filesystem::read_symlink("/proc/self/exe", error);
+  if (error) {
+    return {};
+  }
+  return exe.parent_path() / "eonclient";
+#endif
+}
+
 TEST_CASE("the client rejects an unknown flag and a missing structure",
           "[client][args]") {
-  const auto client =
-      std::filesystem::read_symlink("/proc/self/exe").parent_path() /
-      "eonclient";
-  if (!std::filesystem::exists(client)) {
+  const auto client = client_executable();
+  if (client.empty() || !std::filesystem::exists(client)) {
     return;
   }
   Workdir work;

@@ -19,6 +19,14 @@ def test_win64_metatomic_wheel_is_in_the_matrix():
     assert "name: abi3-manylinux-metatomic" in text
     assert "CIBW_BEFORE_BUILD_LINUX" in text
     assert "CIBW_BEFORE_BUILD_WINDOWS" in text
+    assert "pyeonclient_cibw_before_windows.py ${{ matrix.variant }}" in text
+    before = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "pyeonclient_cibw_before_windows.py"
+    ).read_text(encoding="utf-8")
+    assert "numpy" in before
+    assert 'variant == "metatomic"' in before
     win = text.split("name: abi3-win-metatomic", 1)[1].split("steps:", 1)[0]
     assert "variant: metatomic" in win
     assert "windows-2022" in win

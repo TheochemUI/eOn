@@ -37,6 +37,24 @@ needed_libs() {
   readelf -d "$1" 2>/dev/null | sed -n 's/.*Shared library: \[\(.*\)\]/\1/p' || true
 }
 
+# DT_SONAME. librgpot's real file is librgpot.so.<version> (3.5.1) while
+# the loader NEEDED entry is librgpot.so.<soversion> (kCxxSoversion).
+elf_soname() {
+  readelf -d "$1" 2>/dev/null | sed -n 's/.*Library soname: \[\(.*\)\]/\1/p' | head -n 1 || true
+}
+
+# Copy $1 into $2 under its SONAME when that name is not the basename.
+publish_soname() {
+  local src="$1" dest_dir="$2" soname
+  [[ -f "$src" ]] || return 0
+  soname="$(elf_soname "$src")"
+  [[ -n "$soname" ]] || return 0
+  if [[ ! -f "$dest_dir/$soname" ]]; then
+    cp -aL "$src" "$dest_dir/$soname"
+    echo "seed-soname: $soname"
+  fi
+}
+
 repair_one() {
   local whl_in="$1"
   [[ -f "$whl_in" ]] || { echo "missing wheel: $whl_in" >&2; exit 2; }
@@ -83,14 +101,8 @@ repair_one() {
     if [[ ! -f "$libs_dir/$base" ]]; then
       cp -aL "$seed" "$libs_dir/$base"
     fi
-    if [[ "$base" == librgpot.so.* ]]; then
-      local ver
-      ver="$(echo "$base" | sed -n 's/^librgpot\.so\.\([0-9][0-9]*\).*/\1/p')"
-      if [[ -n "$ver" && ! -f "$libs_dir/librgpot.so.$ver" ]]; then
-        cp -aL "$seed" "$libs_dir/librgpot.so.$ver"
-        echo "seed-rgpot-soname: librgpot.so.$ver"
-      fi
-    fi
+    # The filename's first number is the project version, not the SONAME.
+    publish_soname "$libs_dir/$base" "$libs_dir"
   done
   shopt -u nullglob
   export LD_LIBRARY_PATH="$libs_dir:${search}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
@@ -149,6 +161,17 @@ repair_one() {
         if [[ -z "${resolved:-}" || ! -f "$resolved" ]]; then
           # still missing — try find under search roots (SONAME or so.N.X.Y)
           resolved="$(find ${search//:/ } -maxdepth 6 \( -name "$needed" -o -name "${needed}.*" \) 2>/dev/null | head -1 || true)"
+        fi
+        if [[ -z "${resolved:-}" || ! -f "$resolved" ]]; then
+          # The wheel member may be named for an older soversion, or for
+          # the real file librgpot.so.3.5.1, while NEEDED is the SONAME.
+          local cand_so
+          while IFS= read -r -d '' cand_so; do
+            if [[ "$(elf_soname "$cand_so")" == "$needed" ]]; then
+              resolved="$cand_so"
+              break
+            fi
+          done < <(find "$work" -type f \( -name '*.so' -o -name '*.so.*' \) -print0)
         fi
         if [[ -z "${resolved:-}" || ! -f "$resolved" ]]; then
           echo "WARNING: cannot resolve NEEDED $needed (from $(basename "$so"))" >&2
@@ -234,14 +257,25 @@ repair_one() {
 
   # The vendored librgpot is the wrap build, without the potentials the pip
   # rgpot wheel carries (D3Pot and others). Under the shared SONAME
-  # librgpot.so.3 the copy loaded first serves both, so `import rgpot` after
+  # librgpot.so.N the copy loaded first serves both, so `import rgpot` after
   # `import pyeonclient` failed with an undefined rgpot::D3Pot typeinfo.
   # pyeonclient bundles librgpot. It does not link the pip rgpot wheel.
   # The bundled copy takes one private SONAME so both packages can load.
-  local old_soname new_soname so
-  declare -A soname_map=(
-    [librgpot.so.3]=libeon_rgpot.so.3
-  )
+  # N is kCxxSoversion (4 on the current wrap), not a hard-coded 3.
+  local old_soname new_soname so needed
+  declare -A soname_map=()
+  while IFS= read -r -d '' so; do
+    local sn
+    sn="$(elf_soname "$so")"
+    if [[ "$sn" =~ ^librgpot\.so\.([0-9]+)$ ]]; then
+      soname_map["$sn"]="libeon_rgpot.so.${BASH_REMATCH[1]}"
+    fi
+    while IFS= read -r needed; do
+      if [[ "$needed" =~ ^librgpot\.so\.([0-9]+)$ ]]; then
+        soname_map["$needed"]="libeon_rgpot.so.${BASH_REMATCH[1]}"
+      fi
+    done < <(needed_libs "$so")
+  done < <(find "$work" -type f \( -name '*.so' -o -name '*.so.*' \) -print0)
   local src
   for old_soname in "${!soname_map[@]}"; do
     new_soname="${soname_map[$old_soname]}"
