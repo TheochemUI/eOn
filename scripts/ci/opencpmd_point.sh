@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Build libcpmdc.so against a pinned OpenCPMD commit and run the Si3N4
-# isomer 1 point job. The energy line must match -1396.269526 eV.
+# Build libcpmdc.so against a pinned OpenCPMD commit and run the in-repo
+# H2 point job. The energy line must match -31.024350 eV.
 set -euo pipefail
 OPENCPMD_COMMIT=${OPENCPMD_COMMIT:-062582b7cfd832d36f88f504cd08e4ead42eb404}
 CPMDC_COMMIT=${CPMDC_COMMIT:-8439c25cf0bd5f4caefd6ed07bebf142e2b181f5}
@@ -8,11 +8,17 @@ OPENCPMD_REPO=${OPENCPMD_REPO:-https://github.com/OpenCPMD/CPMD.git}
 CPMDC_REPO=${CPMDC_REPO:-https://github.com/OmniPotentRPC/cpmdc.git}
 PREFIX=${PREFIX:-/usr}
 STACK=${STACK:?set STACK to a build directory}
-KIT=${KIT:?set KIT to the Si3N4 inputs}
 EONCLIENT=${EONCLIENT:?set EONCLIENT to eonclient}
 JOBS=${JOBS:-$(nproc)}
 PATCHES=${PATCHES:-"embed_rinitwf embed_geometry embed_rwfopt converged_state kpoints_inputfile stopgm_return tistopgm c_mem_addrs embed_teardown"}
 here=$(cd "$(dirname "$0")" && pwd)
+root=$(cd "$here/../.." && pwd)
+SYSTEM=${SYSTEM:-$root/examples/opencpmd-h2}
+EXT_POT=${EXT_POT:-$root/examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py}
+test -f "$SYSTEM/config.ini"
+test -f "$SYSTEM/pos.con"
+test -f "$SYSTEM/pseudo/H_MT_BLYP.psp"
+test -x "$EXT_POT"
 src=$STACK/src/opencpmd
 dest=$STACK/opencpmd
 cpmdc=$STACK/cpmdc-src
@@ -57,14 +63,29 @@ for line in text.splitlines(True):
 path.write_text("".join(lines))
 PY
 sed "s|@PREFIX@|$PREFIX|g" "$here/LINUX-CONDA-PIXI" > "$src/configure/LINUX-CONDA-PIXI"
+# mpif90 calls whichever gfortran is first on PATH. The apt OpenMPI modules
+# match /usr/bin/gfortran, not a pixi compiler that happens to shadow it.
+saved_path=$PATH
+export PATH="/usr/bin:/bin:$PATH"
 (cd "$src" && ./configure.sh -DEST="$dest" LINUX-CONDA-PIXI)
 make -C "$dest/obj" -f "$dest/Makefile" -j "$JOBS" "$dest/lib/libcpmd.a" timetag.o "$dest/bin/cpmd.x"
+export PATH=$saved_path
 test -s "$dest/lib/libcpmd.a"
 cpmd_bin=$(find "$dest" -name cpmd.x -type f | head -1)
 test -x "$cpmd_bin"
 
 build=$STACK/cpmdc-build
-meson setup "$build" -Dwith_cpmd=true -Dcpmd_root="$dest" -Dwith_tests=false "$cpmdc"
+# pixi's conda gcc searches its sysroot, not the apt multiarch directory
+# that holds FFTW, hwloc, libevent and zlib for this OpenMPI.
+multiarch=$(dpkg-architecture -qDEB_HOST_MULTIARCH 2>/dev/null || true)
+if [ -n "$multiarch" ] && [ -d "/usr/lib/$multiarch" ]; then
+  export LIBRARY_PATH="/usr/lib/$multiarch${LIBRARY_PATH:+:$LIBRARY_PATH}"
+fi
+if [ -f "$build/build.ninja" ]; then
+  meson setup --reconfigure "$build" -Dwith_cpmd=true -Dcpmd_root="$dest" -Dwith_tests=false "$cpmdc"
+else
+  meson setup "$build" -Dwith_cpmd=true -Dcpmd_root="$dest" -Dwith_tests=false "$cpmdc"
+fi
 meson compile -C "$build" -j "$JOBS"
 so=$(find "$build" -name 'libcpmdc.so*' -type f | head -1)
 test -n "$so"
@@ -73,10 +94,13 @@ test -s "$STACK/libcpmdc.so"
 
 work=$STACK/point
 mkdir -p "$work"
-sed "s|@EXT_POT@|$KIT/bin/ext_pot|" "$KIT/configs/point/config.ini" > "$work/config.ini"
-cp "$KIT/structures/si3n4_isomer1.con" "$work/pos.con"
+sed "s|@EXT_POT@|$EXT_POT|" "$SYSTEM/config.ini" > "$work/config.ini"
+cp "$SYSTEM/pos.con" "$work/pos.con"
 export CPMD_BIN=$cpmd_bin
-export CPMD_PP=$KIT/pseudo
+export PP_LIBRARY_PATH=$SYSTEM/pseudo
+export CPMD_PP=${CPMD_PP:-"1:H_MT_BLYP.psp:LMAX=S LOC=S"}
+export CPMD_CUTOFF=${CPMD_CUTOFF:-25}
+export CPMD_FUNCTIONAL=${CPMD_FUNCTIONAL:-BLYP}
 export CPMD_LAUNCH=${CPMD_LAUNCH:-"mpirun -np 4 --bind-to none --map-by :OVERSUBSCRIBE"}
 export CPMDC_LIBRARY=$STACK/libcpmdc.so
 export OMP_NUM_THREADS=1
@@ -96,7 +120,7 @@ for line in text.splitlines():
         found = float(parts[0])
 if found is None:
     sys.exit("results.dat has no potential_energy line")
-target = -1396.269526
+target = -31.024350
 if abs(found - target) > 1e-6:
     sys.exit(f"potential_energy {found} is not {target}")
 print(f"{found:.9f} potential_energy")

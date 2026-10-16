@@ -17,9 +17,12 @@ def test_opencpmd_point_job_is_pinned():
     assert "libcpmdc.so" in text or "libcpmdc.so" in (
         ROOT / "scripts" / "ci" / "opencpmd_point.sh"
     ).read_text(encoding="utf-8")
-    assert "-1396.269526" in (ROOT / "scripts" / "ci" / "opencpmd_point.sh").read_text(
-        encoding="utf-8"
-    )
+    script = (ROOT / "scripts" / "ci" / "opencpmd_point.sh").read_text(encoding="utf-8")
+    assert "examples/opencpmd-h2" in script
+    assert "H_MT_BLYP.psp" in script
+    assert "-31.024350" in script
+    assert "sige_repro" not in text
+    assert "SIGE_REPRO_TOKEN" not in text
     assert "cpmdc_fake_engine" not in text
     # The fast suite still uses the fake library. This job does not replace it.
     assert "cpmdc_fake_engine" in FAKE.read_text(encoding="utf-8")
