@@ -67,3 +67,7 @@ option('with_rgsaddle', type : 'boolean', value : false,
 # Install eon/ server package + eonclient CLI (disable for pyeonclient-only wheels)
 option('install_eon_server', type : 'boolean', value : true,
        description : 'Install eon Python package and eonclient binary (false for standalone pyeonclient)')
+# chemfiles structure input (xyz, extxyz, pdb, cif, gro, LAMMPS data, ...).
+# auto: use chemfiles-lib from the env, else build the CMake wrap.
+option('with_chemfiles', type : 'feature', value : 'auto',
+       description : 'Read non-.con structure files through chemfiles. Output stays .con')

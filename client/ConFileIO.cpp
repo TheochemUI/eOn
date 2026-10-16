@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/ConFileIO.h"
+#include "eon/ChemfilesIO.h"
 #include "ReadconDbMirror.h"
 #include "eon/Eigen.h"
 #include "eon/EonLogger.h"
@@ -487,6 +488,26 @@ readcon::ConFrame frame_from_matter(Matter &m,
   return builder.build();
 }
 
+/// Route a structure path: readcon for .con/.convel, chemfiles otherwise.
+/// With [Main] input_format set, "pos.con" resolves to "pos.<fmt>" when that
+/// file exists, so job code that names .con inputs reads any format.
+std::optional<std::string> foreign_input(const std::string &filename) {
+  if (eonc::io::is_chemfiles_path(filename)) {
+    return filename;
+  }
+  const auto &fmt = eonc::io::structure_input_format();
+  if (!fmt.empty()) {
+    fs::path alt(filename);
+    if (alt.extension() == ".con" || alt.extension() == ".convel") {
+      alt.replace_extension(fmt);
+      if (fs::exists(alt)) {
+        return alt.string();
+      }
+    }
+  }
+  return std::nullopt;
+}
+
 } // namespace
 
 namespace eonc::io {
@@ -620,6 +641,9 @@ IoStatus matter2con(Matter &m, std::string filename, bool append,
 }
 
 IoStatus con2matter(Matter &m, std::string filename) {
+  if (auto foreign = foreign_input(filename)) {
+    return chemfiles2matter(m, *foreign);
+  }
   filename = ensure_extension(std::move(filename), ".con");
   try {
     auto frame = readcon::read_first_frame(filename);
@@ -785,6 +809,9 @@ IoStatus matter2convel(Matter &m, std::string filename) {
 }
 
 IoStatus convel2matter(Matter &m, std::string filename) {
+  if (auto foreign = foreign_input(filename)) {
+    return chemfiles2matter(m, *foreign);
+  }
   filename = ensure_extension(std::move(filename), ".convel");
   try {
     auto frame = readcon::read_first_frame(filename);

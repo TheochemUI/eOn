@@ -39,6 +39,8 @@ rust = ">=1.88"
 # Direct RGPOT (non-Windows) links rgpot's NWChem/CPMD frontends, which need
 # Cap'n Proto. Windows builds leave that arm off.
 capnproto = ">=1.0,<2"
+# Structure input beyond .con (ChemfilesIO.cpp, -Dwith_chemfiles).
+chemfiles-lib = ">=0.10.4,<0.11"
 
 [pypi-dependencies]
 towncrier = ">=25.8.0, <26"

@@ -1,0 +1,9 @@
+[wrap-file]
+directory = chemfiles-0.10.4
+source_url = https://github.com/chemfiles/chemfiles/archive/refs/tags/0.10.4.tar.gz
+source_filename = chemfiles-0.10.4.tar.gz
+source_hash = b8232ddaae2953538274982838aa6c2df87d300f7e2f80e92c171581e06325ba
+method = cmake
+
+[provide]
+chemfiles = chemfiles_dep

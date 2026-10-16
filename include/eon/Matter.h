@@ -12,6 +12,7 @@
 #pragma once
 #include "CancelToken.h"
 #include "ConFileIO.h"
+#include "ChemfilesIO.h"
 #include "Eigen.h"
 #include "EonLogger.h"
 #include "PbcSimd.h"
@@ -269,6 +270,10 @@ public:
   // I/O delegates to eonc::io free functions (IoStatus for bindings).
   [[nodiscard]] io::IoStatus writeTibble(std::string filename) {
     return io::writeTibble(*this, filename);
+  }
+  /// Any structure file: .con/.convel via readcon, the rest via chemfiles.
+  [[nodiscard]] io::IoStatus inp2matter(const std::string &filename) {
+    return io::inp2matter(*this, filename);
   }
   [[nodiscard]] io::IoStatus con2matter(std::string filename) {
     return io::con2matter(*this, filename);

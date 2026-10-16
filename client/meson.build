@@ -507,6 +507,42 @@ else
     message('Highway SIMD: disabled (not found)')
 endif
 
+# chemfiles: XYZ/extxyz/PDB/CIF/GRO/LAMMPS data/... structure ingress
+# (ChemfilesIO.cpp). .con stays readcon's. Prefer the pixi/conda-forge
+# chemfiles-lib (CMake config or pkg-config), then the CMake wrap.
+_chfl_feature = get_option('with_chemfiles')
+chemfiles_dep = dependency('chemfiles', version: '>=0.10', required: false)
+if not chemfiles_dep.found() and not _chfl_feature.disabled()
+    chfl_opts = cmake.subproject_options()
+    chfl_opts.add_cmake_defines({
+        'BUILD_SHARED_LIBS': 'OFF',
+        'CHFL_BUILD_TESTS': 'OFF',
+        'CHFL_BUILD_DOCUMENTATION': 'OFF',
+        'CMAKE_POSITION_INDEPENDENT_CODE': 'ON',
+    })
+    chfl_proj = cmake.subproject(
+        'chemfiles',
+        required: _chfl_feature,
+        options: chfl_opts,
+    )
+    if chfl_proj.found()
+        chemfiles_dep = chfl_proj.dependency('chemfiles')
+    endif
+endif
+if _chfl_feature.disabled()
+    chemfiles_dep = dependency('', required: false)
+endif
+if _chfl_feature.enabled() and not chemfiles_dep.found()
+    error('with_chemfiles=enabled but chemfiles was not found. Install chemfiles-lib (pixi add chemfiles-lib) or allow the wrap fallback.')
+endif
+if chemfiles_dep.found()
+    _deps += chemfiles_dep
+    _args += ['-DWITH_CHEMFILES']
+    message('chemfiles structure input: enabled')
+else
+    message('chemfiles structure input: disabled (.con/.convel only)')
+endif
+
 # dl_dep needed for dlopen (LammpsLoader, rgpot engine loaders)
 dl_dep = cppc.find_library('dl', required: false)
 _deps += dl_dep
@@ -1019,6 +1055,7 @@ eonclib_sources = [
     'ParametersJSON.cpp',
     'ParametersSSOT.cpp',
     'ConFileIO.cpp',
+    'ChemfilesIO.cpp',
     'ReadconDbMirror.cpp',
     'GeometryAnalysis.cpp',
     'Optimizer.cpp',
@@ -2114,6 +2151,8 @@ if get_option('with_tests')
         ['test_saddle', 'SaddleSearchTest.cpp', 'neb_morse'],
         ['test_confileio', 'ConFileIOTest.cpp', 'neb_morse'],
         ['test_approve_confileio', 'ApproveConFileIO.cpp', 'neb_morse'],
+        # Runs without chemfiles too: the .con path and the clear refusal.
+        ['test_chemfiles_io', 'ChemfilesIOTest.cpp', 'neb_morse', 300],
         ['test_minimization', 'MinimizationTest.cpp', 'neb_morse'],
         ['test_optimizer', 'OptimizerTest.cpp', ''],
         ['test_fpe_handler', 'FPEHandlerTest.cpp', ''],
