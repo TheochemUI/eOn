@@ -21,11 +21,73 @@
 #include "eon/NudgedElasticBand.h"
 #include "eon/PotRegistry.h"
 
+#include <algorithm>
 #include <cmath>
 
 namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
+
+class QuarticBandPotential final : public Potential {
+public:
+  QuarticBandPotential() : Potential(PotType::UNKNOWN) {}
+
+  void force(long nAtoms, const double *positions, const int *,
+             double *forces, double *energy, double *variance,
+             const double *) override {
+    std::fill_n(forces, 3*nAtoms, 0.0);
+    const double q = 0.5*(positions[0]-positions[3]);
+    const double displacement = q*q-1.0;
+    *energy = 10.0*displacement*displacement;
+    const double derivative = 40.0*q*displacement;
+    forces[0] = -0.5*derivative;
+    forces[3] = 0.5*derivative;
+    if (variance) *variance = 0.0;
+  }
+};
+
+TEST_CASE("CI activates on a relaxed band with tangential saddle force",
+          "[neb][regression][force_cache][ci_activation]") {
+  Parameters params;
+  ParametersLoadAccess::main_options(params).parallel = false;
+  auto &options = ParametersLoadAccess::neb_options(params);
+  options.image_count = 2;
+  options.initialization.method = NEBInit::LINEAR;
+  options.match_endpoints = false;
+  options.endpoints.minimize = false;
+  options.climbing_image.enabled = true;
+  options.climbing_image.trigger_factor = 0.8;
+  options.climbing_image.trigger_force = 0.5;
+  options.opt_method = OptType::LBFGS;
+  options.max_iterations = 100;
+  options.force_tolerance = 1e-5;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.1;
+  auto pot = std::make_shared<QuarticBandPotential>();
+  auto endpoint = [&](double q) {
+    auto matter = std::make_shared<Matter>(pot, params);
+    matter->resize(2);
+    matter->setPeriodic(false);
+    matter->setCell(Matrix3d::Identity()*20.0);
+    for (int i = 0; i < 2; ++i) {
+      matter->setAtomicNr(i, 1);
+      matter->setMass(i, 1.0);
+    }
+    AtomMatrix positions = AtomMatrix::Zero(2, 3);
+    positions(0, 0) = q;
+    positions(1, 0) = -q;
+    matter->setPositions(positions);
+    return matter;
+  };
+  auto initial = endpoint(-1.0);
+  auto final = endpoint(1.0);
+  NudgedElasticBand neb(initial, final, params, pot);
+  REQUIRE(neb.compute() == NudgedElasticBand::NEBStatus::GOOD);
+  REQUIRE(neb.convergenceForce() < options.force_tolerance);
+  REQUIRE(neb.path[neb.climbingImage]->getPotentialEnergy() ==
+          Catch::Approx(10.0).margin(1e-8));
+  REQUIRE(neb.path.front()->getPositions().isApprox(initial->getPositions(), 0.0));
+  REQUIRE(neb.path.back()->getPositions().isApprox(final->getPositions(), 0.0));
+}
 
 class NEBRegressionFixture {
 protected:
