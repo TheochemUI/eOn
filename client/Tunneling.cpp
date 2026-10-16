@@ -2505,9 +2505,28 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     }
     v.ok = !v.ritz.empty();
     if (v.ok) {
-      // Classify from the Ritz values: the lowest mode off the cycle is
-      // the climb; further negatives below a thousandth of it count.
-      const double cut = -1e-8 * std::max(1.0, c);
+      // Physical instabilities retain their sign independently of the
+      // climb curvature. Only the matrix roundoff scale defines zero.
+      double minimumWeight = 1.0;
+      for (double weight : options.discretization) {
+        minimumWeight = std::min(minimumWeight, weight);
+      }
+      double operatorBound = 0.0;
+      for (const auto &block : v.diag) {
+        operatorBound = std::max(operatorBound,
+            block.cwiseAbs().rowwise().sum().maxCoeff() + 2.0*c/minimumWeight);
+      }
+      if (!eta.empty()) {
+        operatorBound += 2.0 * (*std::max_element(eta.begin(), eta.end()));
+      }
+      if (dim <= kDenseRing) {
+        operatorBound = 0.0;
+        for (const auto &mode : v.ritz) {
+          operatorBound = std::max(operatorBound, std::abs(mode.theta));
+        }
+      }
+      const double cut = -64.0 * std::numeric_limits<double>::epsilon() *
+                          dim * operatorBound;
       v.climb = Climb{};
       std::vector<VectorXd> tauRing;
       if (v.tau.size() == dim) {
@@ -2556,8 +2575,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
           if (onCycle(v.ritz[i].vector)) {
             continue;
           }
-          if (v.ritz[i].theta < cut &&
-              v.ritz[i].theta <= 1e-3 * v.climb.curvature) {
+          if (v.ritz[i].theta + v.ritz[i].residual < cut) {
             ++v.climb.negative;
           }
         }
