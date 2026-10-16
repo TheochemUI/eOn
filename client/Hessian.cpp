@@ -39,6 +39,7 @@ namespace {
 // doubles in row-major order matching MatrixXd storage.
 bool loadColumnCheckpoint(const std::string &path, int size, int &nextCol,
                           MatrixXd &H, const std::string &context) {
+  eonc::log::Scoped log;
   std::ifstream in(path);
   if (!in) {
     return false;
