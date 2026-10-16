@@ -2263,6 +2263,17 @@ if get_option('with_tests')
         )
     endif
 
+    if not is_windows
+        cpmd_coverage_fixture = shared_library(
+            'cpmd_coverage_fixture',
+            'unit_tests/fixtures/cpmdc/cpmdc_fake_engine.cc',
+            dependencies: [rgpot_dep, ptlrpc_dep, capnp_dep],
+            include_directories: _incdirs,
+            build_rpath: ':'.join(_runtime_rpath),
+            install: false,
+        )
+    endif
+
     foreach test : test_array
         test_timeout = test.get(3, 30)
         _case_env = _test_env
@@ -2272,6 +2283,22 @@ if get_option('with_tests')
         endif
         if _have_staged_engine_imports
             _case_depends += [_stage_engine_imports]
+        endif
+        if test.get(0) == 'test_coverage_paths' and not is_windows
+            _case_env = environment()
+            _case_env.set('EON_TEST_SYSTEMS_DIR', _systems_dir)
+            _case_env.set('EONCLIENT', ec.full_path())
+            _case_env.set('EON_RELAX_ENGINE', eon_relax_engine.full_path())
+            if _fortran_pot_dirs.length() > 0
+                _case_env.set('EON_POTENTIALS_PATH', _pot_pathsep.join(_fortran_pot_dirs))
+            endif
+            if _readcon_runtime_dir != ''
+                _case_env.prepend('PATH', _readcon_runtime_dir)
+            endif
+            _case_env.set('CPMDC_LIBRARY', cpmd_coverage_fixture.full_path())
+            _case_env.set('RGPOT_CPMDC_ENGINE', cpmd_coverage_fixture.full_path())
+            _case_env.set('RGPOT_CPMD_ENGINE', cpmd_coverage_fixture.full_path())
+            _case_depends += [cpmd_coverage_fixture]
         endif
         if test.get(0) == 'test_client_timing'
             _case_depends += [ec]
