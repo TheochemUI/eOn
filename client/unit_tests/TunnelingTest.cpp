@@ -2474,171 +2474,201 @@ TEST_CASE("full ring force backend preserves nonuniform links and bath",
   REQUIRE_THROWS_AS(folded.setDiscretization(weights), std::invalid_argument);
 }
 
-TEST_CASE("finite bath fluctuations retain a resolved phase and exact reactant product",
+TEST_CASE("finite bath fluctuations retain a resolved phase and exact reactant "
+          "product",
           "[Tunneling][Instanton][BathPrefactor]") {
   const bool explicitEta = GENERATE(false, true);
   const double c = 0.05, eta = 0.5;
-  const double a2 = 1.0 - 2.0*c - std::sqrt(2.0)*eta;
-  const double a = std::sqrt(a2), h = 3.0*a2-1.0;
+  const double a2 = 1.0 - 2.0 * c - std::sqrt(2.0) * eta;
+  const double a = std::sqrt(a2), h = 3.0 * a2 - 1.0;
   RateInstanton inst;
-  inst.betaN = 1.0/(std::sqrt(c)*kHbar);
-  inst.beta = 4.0*inst.betaN;
+  inst.betaN = 1.0 / (std::sqrt(c) * kHbar);
+  inst.beta = 4.0 * inst.betaN;
   inst.converged = true;
-  REQUIRE(std::abs(a*(a2-1.0+2.0*c+std::sqrt(2.0)*eta)) < 1e-12);
-  inst.beads = {VectorXd::Constant(1,a), VectorXd::Constant(1,a),
-                VectorXd::Constant(1,-a), VectorXd::Constant(1,-a)};
-  inst.bathEta = explicitEta ? std::vector<double>(4,eta) : std::vector<double>{eta};
-  inst.bN = 8.0*a2;
-  const double b1 = 2.0*c+std::sqrt(2.0)*eta, b2 = 4.0*c+2.0*eta;
-  inst.ringPotential = std::pow(a2-1.0,2) + 4.0*c*a2 + 2.0*std::sqrt(2.0)*eta*a2;
-  const RingBeadHessian hessian = [=](long,const VectorXd&) {
-    return MatrixXd::Constant(1,1,h);
+  REQUIRE(std::abs(a * (a2 - 1.0 + 2.0 * c + std::sqrt(2.0) * eta)) < 1e-12);
+  inst.beads = {VectorXd::Constant(1, a), VectorXd::Constant(1, a),
+                VectorXd::Constant(1, -a), VectorXd::Constant(1, -a)};
+  inst.bathEta =
+      explicitEta ? std::vector<double>(4, eta) : std::vector<double>{eta};
+  inst.bN = 8.0 * a2;
+  const double b1 = 2.0 * c + std::sqrt(2.0) * eta, b2 = 4.0 * c + 2.0 * eta;
+  inst.ringPotential =
+      std::pow(a2 - 1.0, 2) + 4.0 * c * a2 + 2.0 * std::sqrt(2.0) * eta * a2;
+  const RingBeadHessian hessian = [=](long, const VectorXd &) {
+    return MatrixXd::Constant(1, 1, h);
   };
-  instantonRate(inst,hessian,MatrixXd::Constant(1,1,2.0),0.0,MatrixXd(),0.0,0,0);
-  const double determinant = std::log(-h)+2.0*std::log(h+b1)+std::log(h+b2);
-  const double reactantDeterminant = std::log(2.0)+2.0*std::log(2.0+b1)+std::log(2.0+b2);
+  instantonRate(inst, hessian, MatrixXd::Constant(1, 1, 2.0), 0.0, MatrixXd(),
+                0.0, 0, 0);
+  const double determinant =
+      std::log(-h) + 2.0 * std::log(h + b1) + std::log(h + b2);
+  const double reactantDeterminant =
+      std::log(2.0) + 2.0 * std::log(2.0 + b1) + std::log(2.0 + b2);
   REQUIRE(inst.negativeModes == 1);
   REQUIRE(inst.bathSignedCurvatures.size() == 4);
   REQUIRE(inst.bathSignedCurvatures[0] == Catch::Approx(h).margin(1e-12));
-  REQUIRE(inst.bathSignedCurvatures[1] == Catch::Approx(h+b1).margin(1e-12));
-  REQUIRE(inst.bathSignedCurvatures[2] == Catch::Approx(h+b1).margin(1e-12));
-  REQUIRE(inst.bathSignedCurvatures[3] == Catch::Approx(h+b2).margin(1e-12));
+  REQUIRE(inst.bathSignedCurvatures[1] == Catch::Approx(h + b1).margin(1e-12));
+  REQUIRE(inst.bathSignedCurvatures[2] == Catch::Approx(h + b1).margin(1e-12));
+  REQUIRE(inst.bathSignedCurvatures[3] == Catch::Approx(h + b2).margin(1e-12));
   REQUIRE(inst.bathLogAbsDet == Catch::Approx(determinant).margin(1e-11));
-  REQUIRE(inst.bathReactantLogAbsDet == Catch::Approx(reactantDeterminant).margin(1e-11));
-  REQUIRE(inst.logZr == Catch::Approx(-4.0*std::log(inst.betaN*kHbar)-0.5*reactantDeterminant).margin(1e-11));
-  REQUIRE(inst.logAbsoluteGaussianWeight == Catch::Approx(
-      -inst.betaN*inst.ringPotential-4.0*std::log(inst.betaN*kHbar)-0.5*determinant).margin(1e-11));
+  REQUIRE(inst.bathReactantLogAbsDet ==
+          Catch::Approx(reactantDeterminant).margin(1e-11));
+  REQUIRE(inst.logZr == Catch::Approx(-4.0 * std::log(inst.betaN * kHbar) -
+                                      0.5 * reactantDeterminant)
+                            .margin(1e-11));
+  REQUIRE(inst.logAbsoluteGaussianWeight ==
+          Catch::Approx(-inst.betaN * inst.ringPotential -
+                        4.0 * std::log(inst.betaN * kHbar) - 0.5 * determinant)
+              .margin(1e-11));
   REQUIRE_FALSE(inst.phaseZeroVerified);
   REQUIRE_FALSE(inst.rateValid);
   REQUIRE(inst.rateValidity == "resolved_finite_bead_phase");
   REQUIRE_FALSE(std::isfinite(inst.rate));
 }
 
-TEST_CASE("a resolved null phase uses both bath fluctuation products in the rate",
-          "[Tunneling][Instanton][BathPrefactor]") {
+TEST_CASE(
+    "a resolved null phase uses both bath fluctuation products in the rate",
+    "[Tunneling][Instanton][BathPrefactor]") {
   const long n = 32;
   const double eta = 0.01, period = 10.0;
-  const double c = std::pow(n/period,2);
-  const BatchPotential well = [](const std::vector<VectorXd>&q,
-                                std::vector<double>&v,std::vector<VectorXd>&g) {
+  const double c = std::pow(n / period, 2);
+  const BatchPotential well = [](const std::vector<VectorXd> &q,
+                                 std::vector<double> &v,
+                                 std::vector<VectorXd> &g) {
     v.resize(q.size());
     g.resize(q.size());
-    for(size_t j=0;j<q.size();++j) {
-      const double x=q[j](0);
-      v[j]=0.25*std::pow(x*x-1.0,2);
-      g[j]=VectorXd::Constant(1,x*x*x-x);
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0);
+      v[j] = 0.25 * std::pow(x * x - 1.0, 2);
+      g[j] = VectorXd::Constant(1, x * x * x - x);
     }
   };
   std::vector<VectorXd> guess;
-  for(long j=0;j<n;++j) {
-    guess.push_back(VectorXd::Constant(1,0.8*std::cos(2.0*std::numbers::pi*j/n)));
+  for (long j = 0; j < n; ++j) {
+    guess.push_back(
+        VectorXd::Constant(1, 0.8 * std::cos(2.0 * std::numbers::pi * j / n)));
   }
   RateInstantonOptions options;
-  options.beads=n;
-  options.halfRing=false;
-  options.maxIterations=200;
-  options.forceTolerance=1e-12;
-  options.physicalHessianStep=1e-5;
-  options.maxStep=0.1;
-  options.checkOddSector=false;
-  options.friction=true;
-  options.frictionEta=eta;
-  auto inst=optimizeRateInstanton(VectorXd::Zero(1),MatrixXd::Constant(1,1,-1.0),
-                                  period/kHbar,guess,well,options);
+  options.beads = n;
+  options.halfRing = false;
+  options.maxIterations = 200;
+  options.forceTolerance = 1e-12;
+  options.physicalHessianStep = 1e-5;
+  options.maxStep = 0.1;
+  options.checkOddSector = false;
+  options.friction = true;
+  options.frictionEta = eta;
+  auto inst =
+      optimizeRateInstanton(VectorXd::Zero(1), MatrixXd::Constant(1, 1, -1.0),
+                            period / kHbar, guess, well, options);
   REQUIRE(inst.converged);
   REQUIRE(inst.bathEta == std::vector<double>{eta});
-  const RingBeadHessian hessian=[](long,const VectorXd&q) {
-    return MatrixXd::Constant(1,1,3.0*q(0)*q(0)-1.0);
+  const RingBeadHessian hessian = [](long, const VectorXd &q) {
+    return MatrixXd::Constant(1, 1, 3.0 * q(0) * q(0) - 1.0);
   };
-  instantonRate(inst,hessian,MatrixXd::Constant(1,1,2.0),0.0,MatrixXd(),0.0,0,0);
+  instantonRate(inst, hessian, MatrixXd::Constant(1, 1, 2.0), 0.0, MatrixXd(),
+                0.0, 0, 0);
   REQUIRE(inst.phaseZeroVerified);
   REQUIRE(inst.phaseEigenResidual <= inst.bathRoundoffScale);
   REQUIRE(inst.bathSymmetryResidual <= inst.bathRoundoffScale);
   REQUIRE(inst.rateValid);
   REQUIRE(inst.negativeModes == 1);
   // Independent Fourier construction uses the uniform analytic kernel.
-  MatrixXd bead=MatrixXd::Zero(n,n), full=MatrixXd::Zero(n,n);
-  double reactantLogDet=0.0;
-  for(long k=0;k<n;++k) {
-    const double sine=std::sin(std::numbers::pi*k/n);
-    const double mu=4.0*c*sine*sine+2.0*eta*std::abs(sine);
-    reactantLogDet+=std::log(2.0+mu);
-    for(long j=0;j<n;++j) {
-      for(long l=0;l<n;++l) {
-        bead(j,l)+=mu*std::cos(2.0*std::numbers::pi*k*(j-l)/n)/n;
+  MatrixXd bead = MatrixXd::Zero(n, n), full = MatrixXd::Zero(n, n);
+  double reactantLogDet = 0.0;
+  for (long k = 0; k < n; ++k) {
+    const double sine = std::sin(std::numbers::pi * k / n);
+    const double mu = 4.0 * c * sine * sine + 2.0 * eta * std::abs(sine);
+    reactantLogDet += std::log(2.0 + mu);
+    for (long j = 0; j < n; ++j) {
+      for (long l = 0; l < n; ++l) {
+        bead(j, l) +=
+            mu * std::cos(2.0 * std::numbers::pi * k * (j - l) / n) / n;
       }
     }
   }
-  full=bead;
-  for(long j=0;j<n;++j) {
-    full(j,j)+=3.0*inst.beads[static_cast<size_t>(j)](0)*inst.beads[static_cast<size_t>(j)](0)-1.0;
+  full = bead;
+  for (long j = 0; j < n; ++j) {
+    full(j, j) += 3.0 * inst.beads[static_cast<size_t>(j)](0) *
+                      inst.beads[static_cast<size_t>(j)](0) -
+                  1.0;
   }
   const Eigen::SelfAdjointEigenSolver<MatrixXd> spectrum(full);
-  const auto values=spectrum.eigenvalues();
+  const auto values = spectrum.eigenvalues();
   Eigen::Index phase;
   values.cwiseAbs().minCoeff(&phase);
-  double logDet=0.0;
-  for(long k=0;k<n;++k) {
-    if(k!=phase) logDet+=std::log(std::abs(values(k)));
+  double logDet = 0.0;
+  for (long k = 0; k < n; ++k) {
+    if (k != phase)
+      logDet += std::log(std::abs(values(k)));
   }
-  const double bnh=inst.betaN*kHbar;
-  const double logZr=-n*std::log(bnh)-0.5*reactantLogDet;
-  const double expected=-std::log(bnh)+
-      0.5*std::log(inst.bN/(2.0*std::numbers::pi*inst.betaN*kHbar*kHbar))-
-      (n-1)*std::log(bnh)-0.5*logDet-inst.betaN*inst.ringPotential-logZr;
+  const double bnh = inst.betaN * kHbar;
+  const double logZr = -n * std::log(bnh) - 0.5 * reactantLogDet;
+  const double expected =
+      -std::log(bnh) +
+      0.5 * std::log(inst.bN /
+                     (2.0 * std::numbers::pi * inst.betaN * kHbar * kHbar)) -
+      (n - 1) * std::log(bnh) - 0.5 * logDet - inst.betaN * inst.ringPotential -
+      logZr;
   REQUIRE(inst.logZr == Catch::Approx(logZr).margin(1e-9));
   REQUIRE(inst.logRate == Catch::Approx(expected).margin(1e-8));
 }
 
-TEST_CASE("the zero bath prefactor retains a physical soft transverse instability",
-          "[Tunneling][Instanton][PhysicalSoftPrefactor]") {
-  const double epsilon=1e-6, kappa=5e-4;
-  const BatchPotential well=[](const std::vector<VectorXd>&q,
-                               std::vector<double>&v,std::vector<VectorXd>&g) {
+TEST_CASE(
+    "the zero bath prefactor retains a physical soft transverse instability",
+    "[Tunneling][Instanton][PhysicalSoftPrefactor]") {
+  const double epsilon = 1e-6, kappa = 5e-4;
+  const BatchPotential well = [](const std::vector<VectorXd> &q,
+                                 std::vector<double> &v,
+                                 std::vector<VectorXd> &g) {
     v.resize(q.size());
     g.resize(q.size());
-    for(size_t j=0;j<q.size();++j) {
-      const double x=q[j](0);
-      v[j]=0.25*std::pow(x*x-1.0,2);
-      g[j]=VectorXd::Constant(1,x*x*x-x);
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0);
+      v[j] = 0.25 * std::pow(x * x - 1.0, 2);
+      g[j] = VectorXd::Constant(1, x * x * x - x);
     }
   };
   RateInstantonOptions options;
-  options.beads=32;
-  options.halfRing=false;
-  options.checkOddSector=false;
-  options.forceTolerance=1e-12;
-  options.maxIterations=200;
-  options.maxStep=0.1;
-  const auto reference=optimizeRateInstanton(VectorXd::Zero(1),
-      MatrixXd::Constant(1,1,-1.0),10.0/kHbar,{},well,options);
+  options.beads = 32;
+  options.halfRing = false;
+  options.checkOddSector = false;
+  options.forceTolerance = 1e-12;
+  options.maxIterations = 200;
+  options.maxStep = 0.1;
+  const auto reference =
+      optimizeRateInstanton(VectorXd::Zero(1), MatrixXd::Constant(1, 1, -1.0),
+                            10.0 / kHbar, {}, well, options);
   REQUIRE(reference.converged);
-  RateInstanton base=reference;
-  double transverseRayleigh=0.0;
+  RateInstanton base = reference;
+  double transverseRayleigh = 0.0;
   std::vector<MatrixXd> physical;
-  for(auto&q:base.beads) {
-    const double x=q(0);
-    q=VectorXd::Zero(2);
-    q(0)=x;
-    MatrixXd block=MatrixXd::Zero(2,2);
-    block(0,0)=3.0*x*x-1.0;
-    block(1,1)=epsilon-kappa*x*x*(1.0-x*x);
-    transverseRayleigh+=block(1,1)/options.beads;
+  for (auto &q : base.beads) {
+    const double x = q(0);
+    q = VectorXd::Zero(2);
+    q(0) = x;
+    MatrixXd block = MatrixXd::Zero(2, 2);
+    block(0, 0) = 3.0 * x * x - 1.0;
+    block(1, 1) = epsilon - kappa * x * x * (1.0 - x * x);
+    transverseRayleigh += block(1, 1) / options.beads;
     physical.push_back(block);
   }
   REQUIRE(transverseRayleigh < -1e-5);
-  const double c=1.0/std::pow(base.betaN*kHbar,2);
-  const Eigen::SelfAdjointEigenSolver<MatrixXd> exact(denseRing(physical,c));
+  const double c = 1.0 / std::pow(base.betaN * kHbar, 2);
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> exact(denseRing(physical, c));
   REQUIRE((exact.eigenvalues().array() < -1e-8).count() == 2);
-  REQUIRE(exact.eigenvalues()(1) > 1e-3*exact.eigenvalues()(0));
-  MatrixXd reactant=MatrixXd::Zero(2,2);
-  reactant(0,0)=2.0;
-  reactant(1,1)=epsilon;
-  for(const long dense:{4096L,0L}) {
-    auto inst=base;
-    instantonRate(inst,[&](long j,const VectorXd&){return physical[static_cast<size_t>(j)];},
-                    reactant,0.0,MatrixXd(),0.0,0,dense);
-    CAPTURE(dense,inst.negativeModes,inst.zeroEigenvalue,transverseRayleigh);
+  REQUIRE(exact.eigenvalues()(1) > 1e-3 * exact.eigenvalues()(0));
+  MatrixXd reactant = MatrixXd::Zero(2, 2);
+  reactant(0, 0) = 2.0;
+  reactant(1, 1) = epsilon;
+  for (const long dense : {4096L, 0L}) {
+    auto inst = base;
+    instantonRate(
+        inst,
+        [&](long j, const VectorXd &) {
+          return physical[static_cast<size_t>(j)];
+        },
+        reactant, 0.0, MatrixXd(), 0.0, 0, dense);
+    CAPTURE(dense, inst.negativeModes, inst.zeroEigenvalue, transverseRayleigh);
     REQUIRE(inst.negativeModes == 2);
     REQUIRE_FALSE(inst.rateValid);
     REQUIRE(std::isnan(inst.logRateTimesZr));

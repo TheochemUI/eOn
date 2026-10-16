@@ -928,19 +928,23 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
           if (!spectrum) {
             throw std::runtime_error("instanton: cannot write " + name.str());
           }
-          spectrum << std::setprecision(17)
-                   << "# Fixed quadratic bath; curvatures in eV/(amu Angstrom^2)\n"
-                   << "# rate_valid " << (inst.rateValid ? 1 : 0) << '\n'
-                   << "# validity " << inst.rateValidity << '\n'
-                   << "# phase_zero_verified " << (inst.phaseZeroVerified ? 1 : 0) << '\n'
-                   << "# log_abs_det " << inst.bathLogAbsDet << '\n'
-                   << "# reactant_log_abs_det " << inst.bathReactantLogAbsDet << '\n'
-                   << "# operator_symmetry_residual " << inst.bathSymmetryResidual << '\n'
-                   << "# algebraic_roundoff_scale " << inst.bathRoundoffScale << '\n'
-                   << "# phase_eigenpair_residual " << inst.phaseEigenResidual << '\n'
-                   << "# log_absolute_labelled_gaussian_weight "
-                   << inst.logAbsoluteGaussianWeight << '\n'
-                   << "# index signed_curvature\n";
+          spectrum
+              << std::setprecision(17)
+              << "# Fixed quadratic bath; curvatures in eV/(amu Angstrom^2)\n"
+              << "# rate_valid " << (inst.rateValid ? 1 : 0) << '\n'
+              << "# validity " << inst.rateValidity << '\n'
+              << "# phase_zero_verified " << (inst.phaseZeroVerified ? 1 : 0)
+              << '\n'
+              << "# log_abs_det " << inst.bathLogAbsDet << '\n'
+              << "# reactant_log_abs_det " << inst.bathReactantLogAbsDet << '\n'
+              << "# operator_symmetry_residual " << inst.bathSymmetryResidual
+              << '\n'
+              << "# algebraic_roundoff_scale " << inst.bathRoundoffScale << '\n'
+              << "# phase_eigenpair_residual " << inst.phaseEigenResidual
+              << '\n'
+              << "# log_absolute_labelled_gaussian_weight "
+              << inst.logAbsoluteGaussianWeight << '\n'
+              << "# index signed_curvature\n";
           for (size_t i = 0; i < inst.bathSignedCurvatures.size(); ++i) {
             spectrum << i << ' ' << inst.bathSignedCurvatures[i] << '\n';
           }
