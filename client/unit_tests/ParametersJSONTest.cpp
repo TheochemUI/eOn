@@ -521,8 +521,11 @@ TEST_CASE("Physical Hessian displacement survives INI and JSON configuration",
   REQUIRE(roundtrip.instanton_options().physical_hessian_step == Catch::Approx(3e-4));
   REQUIRE_THROWS_AS(ini.load_ini_text("[Instanton]\nphysical_hessian_step = 0\n"),
                     std::invalid_argument);
-  REQUIRE_THROWS_AS(roundtrip.load_json(
-      R"({"Instanton":{"physical_hessian_step":-0.001}})"), std::invalid_argument);
+  // load_json reports a rejected value as a status. It does not let the
+  // invalid_argument out: the same function already catches that and
+  // returns 1 for an unknown enum.
+  REQUIRE(roundtrip.load_json(
+              R"({"Instanton":{"physical_hessian_step":-0.001}})") != 0);
 }
 
 } /* namespace tests */
