@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" width="200" height="80">
+  <defs>
+    <filter id="gl">
+      <feGaussianBlur stdDeviation="1.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="oC"><circle cx="82" cy="38" r="28"/></clipPath>
+  </defs>
+
+  <rect width="200" height="80" fill="#0f0f0f"/>
+
+  <!-- "e" -->
+  <text x="18" y="58" font-family="'Helvetica Neue','Arial',sans-serif"
+        font-size="52" font-weight="700" fill="#e0f2f1" opacity="0.9"
+        filter="url(#gl)">e</text>
+
+  <!-- "O" with saddle inside -->
+  <circle cx="82" cy="38" r="28" fill="none" stroke="#14b8a6"
+          stroke-width="3.5" stroke-opacity="0.6" filter="url(#gl)"/>
+  <g clip-path="url(#oC)">
+    <!-- Barrier contours -->
+    <path d="M54,68 Q65,68 73,48 Q79,32 82,26 Q85,32 91,48 Q99,68 110,68"
+          fill="none" stroke="#14b8a6" stroke-opacity="0.15" stroke-width="0.8"/>
+    <path d="M54,62 Q64,62 72,42 Q78,26 82,20 Q86,26 92,42 Q100,62 110,62"
+          fill="none" stroke="#14b8a6" stroke-opacity="0.25" stroke-width="0.9"/>
+    <path d="M54,62 Q64,62 72,42 Q78,26 82,20 Q86,26 92,42 Q100,62 110,62 L110,70 L54,70 Z"
+          fill="#14b8a6" opacity="0.04"/>
+    <!-- MEP -->
+    <path d="M60,64 Q68,55 75,40 Q79,28 82,24 Q85,28 89,40 Q96,55 104,64"
+          fill="none" stroke="#14b8a6" stroke-opacity="0.35" stroke-width="0.8"
+          stroke-dasharray="2.5,2" filter="url(#gl)"/>
+    <!-- Beads -->
+    <circle cx="67" cy="56" r="1.3" fill="#14b8a6" opacity="0.3"/>
+    <circle cx="73" cy="44" r="1.4" fill="#14b8a6" opacity="0.5"/>
+    <circle cx="78" cy="30" r="1.5" fill="#14b8a6" opacity="0.6"/>
+    <circle cx="82" cy="24" r="2.5" fill="#ff655d" opacity="0.9" filter="url(#gl)"/>
+    <circle cx="82" cy="24" r="5.5" fill="none" stroke="#ff655d" stroke-opacity="0.18" stroke-width="0.5"/>
+    <circle cx="86" cy="30" r="1.5" fill="#14b8a6" opacity="0.6"/>
+    <circle cx="91" cy="44" r="1.4" fill="#14b8a6" opacity="0.5"/>
+    <circle cx="97" cy="56" r="1.3" fill="#14b8a6" opacity="0.3"/>
+  </g>
+
+  <!-- "n" -->
+  <text x="118" y="58" font-family="'Helvetica Neue','Arial',sans-serif"
+        font-size="52" font-weight="700" fill="#e0f2f1" opacity="0.9"
+        filter="url(#gl)">n</text>
+</svg>
