@@ -859,6 +859,15 @@ TEST_CASE_METHOD(HessianScratch,
   Hessian interrupted(params, &matter);
   REQUIRE(interrupted.getHessian(&matter, atoms).rows() == 0);
   REQUIRE(std::filesystem::exists("context.ckpt"));
+  {
+    std::ifstream checkpoint("context.ckpt");
+    std::string magic;
+    int size = 0, nextColumn = 0;
+    REQUIRE(static_cast<bool>(checkpoint >> magic >> size >> nextColumn));
+    REQUIRE(magic == "eon_hess_ckpt");
+    REQUIRE(size == 6);
+    REQUIRE(nextColumn == 2);
+  }
   potential->interrupt = false;
   SECTION("coordinates") {
     AtomMatrix positions = matter.getPositions();
