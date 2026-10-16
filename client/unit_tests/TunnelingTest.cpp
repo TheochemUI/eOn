@@ -2678,33 +2678,38 @@ TEST_CASE(
   }
 }
 
-TEST_CASE("weighted finite fluctuations retain their exact spectrum and product",
-          "[Tunneling][Instanton][WeightedPrefactor]") {
+TEST_CASE(
+    "weighted finite fluctuations retain their exact spectrum and product",
+    "[Tunneling][Instanton][WeightedPrefactor]") {
   const double c = 0.9, a = std::sqrt(0.1), h = -0.7;
   RateInstanton inst;
   inst.betaN = 1.0 / (std::sqrt(c) * kHbar);
   inst.beta = 4.0 * inst.betaN;
   inst.converged = true;
   inst.discretization = {1.0, 2.0, 1.0, 2.0};
-  inst.beads = {VectorXd::Constant(1,a),VectorXd::Constant(1,a),
-                VectorXd::Constant(1,-a),VectorXd::Constant(1,-a)};
-  inst.bN = 8.0*a*a;
-  inst.ringPotential = std::pow(a*a-1.0,2) + 2.0*c*a*a;
-  REQUIRE(std::abs(a*(a*a-1.0+c)) < 1e-14);
-  instantonRate(inst, [=](long,const VectorXd&) {
-      return MatrixXd::Constant(1,1,h);
-    }, MatrixXd::Constant(1,1,2.0),0.0,MatrixXd(),0.0,0,4096);
-  const std::vector<double> expected{-0.7,0.2,1.1,2.0};
+  inst.beads = {VectorXd::Constant(1, a), VectorXd::Constant(1, a),
+                VectorXd::Constant(1, -a), VectorXd::Constant(1, -a)};
+  inst.bN = 8.0 * a * a;
+  inst.ringPotential = std::pow(a * a - 1.0, 2) + 2.0 * c * a * a;
+  REQUIRE(std::abs(a * (a * a - 1.0 + c)) < 1e-14);
+  instantonRate(
+      inst, [=](long, const VectorXd &) { return MatrixXd::Constant(1, 1, h); },
+      MatrixXd::Constant(1, 1, 2.0), 0.0, MatrixXd(), 0.0, 0, 4096);
+  const std::vector<double> expected{-0.7, 0.2, 1.1, 2.0};
   REQUIRE(inst.bathSignedCurvatures.size() == expected.size());
-  for(size_t j=0;j<expected.size();++j) {
-    REQUIRE(inst.bathSignedCurvatures[j] == Catch::Approx(expected[j]).margin(1e-12));
+  for (size_t j = 0; j < expected.size(); ++j) {
+    REQUIRE(inst.bathSignedCurvatures[j] ==
+            Catch::Approx(expected[j]).margin(1e-12));
   }
-  const double logDet = std::log(0.7*0.2*1.1*2.0);
-  const double reactantLogDet = std::log(2.0*2.9*3.8*4.7);
+  const double logDet = std::log(0.7 * 0.2 * 1.1 * 2.0);
+  const double reactantLogDet = std::log(2.0 * 2.9 * 3.8 * 4.7);
   REQUIRE(inst.negativeModes == 1);
   REQUIRE(inst.bathLogAbsDet == Catch::Approx(logDet).margin(1e-12));
-  REQUIRE(inst.bathReactantLogAbsDet == Catch::Approx(reactantLogDet).margin(1e-12));
-  REQUIRE(inst.logZr == Catch::Approx(-4.0*std::log(inst.betaN*kHbar)-0.5*reactantLogDet).margin(1e-12));
+  REQUIRE(inst.bathReactantLogAbsDet ==
+          Catch::Approx(reactantLogDet).margin(1e-12));
+  REQUIRE(inst.logZr == Catch::Approx(-4.0 * std::log(inst.betaN * kHbar) -
+                                      0.5 * reactantLogDet)
+                            .margin(1e-12));
   REQUIRE_FALSE(inst.rateValid);
   REQUIRE_FALSE(inst.phaseZeroVerified);
   REQUIRE(inst.rateValidity == "bead_dependent_operator_no_continuous_phase");
@@ -2713,46 +2718,54 @@ TEST_CASE("weighted finite fluctuations retain their exact spectrum and product"
 
 TEST_CASE("raw physical Hessian asymmetry is rejected before averaging",
           "[Tunneling][Instanton][WeightedPrefactor]") {
-  const bool badReactant = GENERATE(false,true);
+  const bool badReactant = GENERATE(false, true);
   RateInstanton inst;
-  inst.betaN = 1.0/(std::sqrt(0.9)*kHbar);
-  inst.beta = 4.0*inst.betaN;
+  inst.betaN = 1.0 / (std::sqrt(0.9) * kHbar);
+  inst.beta = 4.0 * inst.betaN;
   inst.converged = true;
-  inst.discretization = {1.0,2.0,1.0,2.0};
-  for(double sign : {1.0,1.0,-1.0,-1.0}) {
+  inst.discretization = {1.0, 2.0, 1.0, 2.0};
+  for (double sign : {1.0, 1.0, -1.0, -1.0}) {
     VectorXd q = VectorXd::Zero(2);
-    q(0) = sign*std::sqrt(0.1);
+    q(0) = sign * std::sqrt(0.1);
     inst.beads.push_back(q);
   }
-  MatrixXd reactant = MatrixXd::Zero(2,2);
-  reactant(0,0)=2.0;
-  reactant(1,1)=3.0;
-  if(badReactant) reactant(0,1)=0.01;
-  const RingBeadHessian hessian = [=](long,const VectorXd&) {
-    MatrixXd h = MatrixXd::Zero(2,2);
-    h(0,0)=-0.7;
-    h(1,1)=3.0;
-    if(!badReactant) h(0,1)=0.01;
+  MatrixXd reactant = MatrixXd::Zero(2, 2);
+  reactant(0, 0) = 2.0;
+  reactant(1, 1) = 3.0;
+  if (badReactant)
+    reactant(0, 1) = 0.01;
+  const RingBeadHessian hessian = [=](long, const VectorXd &) {
+    MatrixXd h = MatrixXd::Zero(2, 2);
+    h(0, 0) = -0.7;
+    h(1, 1) = 3.0;
+    if (!badReactant)
+      h(0, 1) = 0.01;
     return h;
   };
-  REQUIRE_THROWS_AS(instantonRate(inst,hessian,reactant,0.0),std::runtime_error);
+  REQUIRE_THROWS_AS(instantonRate(inst, hessian, reactant, 0.0),
+                    std::runtime_error);
 }
 
-TEST_CASE("an unconverged ring retains numerical prefactor diagnostics without a valid rate",
+TEST_CASE("an unconverged ring retains numerical prefactor diagnostics without "
+          "a valid rate",
           "[Tunneling][Instanton][WeightedPrefactor]") {
   RateInstanton inst;
-  inst.betaN=1.0/kHbar;
-  inst.beta=8.0*inst.betaN;
-  for(long j=0;j<8;++j) {
-    inst.beads.push_back(VectorXd::Constant(1,0.2*std::cos(2.0*std::numbers::pi*j/8.0)));
+  inst.betaN = 1.0 / kHbar;
+  inst.beta = 8.0 * inst.betaN;
+  for (long j = 0; j < 8; ++j) {
+    inst.beads.push_back(VectorXd::Constant(
+        1, 0.2 * std::cos(2.0 * std::numbers::pi * j / 8.0)));
   }
-  inst.bN=0.0;
-  for(long j=0;j<8;++j) {
-    inst.bN+=(inst.beads[static_cast<size_t>((j+1)%8)]-inst.beads[static_cast<size_t>(j)]).squaredNorm();
+  inst.bN = 0.0;
+  for (long j = 0; j < 8; ++j) {
+    inst.bN += (inst.beads[static_cast<size_t>((j + 1) % 8)] -
+                inst.beads[static_cast<size_t>(j)])
+                   .squaredNorm();
   }
-  instantonRate(inst,[](long,const VectorXd&) {
-      return MatrixXd::Constant(1,1,-0.4);
-    },MatrixXd::Identity(1,1),0.0,MatrixXd(),0.0,0,4096);
+  instantonRate(
+      inst,
+      [](long, const VectorXd &) { return MatrixXd::Constant(1, 1, -0.4); },
+      MatrixXd::Identity(1, 1), 0.0, MatrixXd(), 0.0, 0, 4096);
   REQUIRE_FALSE(inst.converged);
   REQUIRE(inst.negativeModes == 1);
   REQUIRE_FALSE(inst.rateValid);
