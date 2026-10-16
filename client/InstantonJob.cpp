@@ -215,6 +215,30 @@ private:
   std::vector<double> sqrtMass_;
 };
 
+/// Cached path energies must describe the surface used by MassWeighted::place.
+bool cachedProfileMatchesSurface(const Matter &ref, const Matter &image) {
+  constexpr double inputTolerance = 1e-8; // Angstrom, including cell entries.
+  if (ref.numberOfAtoms() != image.numberOfAtoms() ||
+      ref.getPeriodic() != image.getPeriodic() ||
+      !ref.getCell().allFinite() || !image.getCell().allFinite() ||
+      (ref.getCell() - image.getCell()).cwiseAbs().maxCoeff() > inputTolerance ||
+      !(ref.getAtomicNrs().array() == image.getAtomicNrs().array()).all()) {
+    return false;
+  }
+  const AtomMatrix delta = ref.pbc(image.getPositions() - ref.getPositions());
+  if (!delta.allFinite()) {
+    return false;
+  }
+  for (long i = 0; i < ref.numberOfAtoms(); ++i) {
+    if (ref.getFixedMask(i) != image.getFixedMask(i) ||
+        (ref.getFixed(i) &&
+         delta.row(i).cwiseAbs().maxCoeff() > inputTolerance)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 /// With no atom fixed, removes the rigid part of m's displacement from
 /// ref: the mass-weighted mean (translation), and for a cluster the
 /// mass-weighted best rotation (Kabsch). A path that carried either would
@@ -571,7 +595,9 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       alignRigid(reactant, image);
       pathQ.push_back(mw.toQ(image));
       const auto energy = frame.energy_opt();
-      haveEnergies = haveEnergies && energy.has_value();
+      haveEnergies = haveEnergies && energy.has_value() &&
+                     std::isfinite(*energy) &&
+                     cachedProfileMatchesSurface(reactant, image);
       pathV.push_back(energy.value_or(0.0));
     }
     if (pathQ.size() < 3) {

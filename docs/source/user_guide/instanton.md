@@ -300,6 +300,20 @@ beads at a quarter of that count and doubles. `hessian_final` is
 On a rate calculation, `initial_path` is a band over the barrier. The ring
 starts on the closed orbit of that band whose period is {math}`\beta \hbar`,
 and the same band carries a one-dimensional WKB rate.
+With fixed atoms, each band frame is projected onto the reactant's frozen
+coordinates before its potential is evaluated. Stored frame energies are
+reused only if every frame has a finite energy and matches the reactant's
+cell, ordered species, constraint masks and frozen coordinates. Cell entries
+and frozen displacements use a tolerance of `1e-8` Angstrom; periodic frozen
+displacements are compared under the minimum image. A mismatch in any frame
+causes all band energies to be evaluated on the projected surface. Mobile
+coordinates still supply the path and ring seed.
+
+This geometry check does not establish external Hamiltonian provenance.
+Cached energies must also use the selected potential, electronic settings
+and pseudopotentials. When that provenance is uncertain, remove the stored
+energies from the input frames so the job evaluates the entire profile.
+
 `rate_instanton.dat` has one row per temperature, with columns `T_K`,
 `T_c_K`, `beads`, `converged`, `iterations`, `U_N_eV`, `negative_modes`,
 `ln_k_per_s`, `k_per_s`, `ln_k_htst_per_s`, `barrier_effective_eV`,
