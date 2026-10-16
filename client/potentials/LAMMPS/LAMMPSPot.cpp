@@ -769,34 +769,41 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   }
 
 #ifdef EONMPI
-  const std::vector<std::string> argStore =
-      eonc::lammpsOpenArgs(lammpsLogging_, true, lammpsScreenPath_);
-  std::vector<char *> argPtrs;
-  argPtrs.reserve(argStore.size());
-  for (const std::string &arg : argStore) {
-    argPtrs.push_back(const_cast<char *>(arg.c_str()));
+  const bool useMpi = lmp.open_mpi != nullptr;
+  if (!useMpi) {
+    int initialized = 0;
+    MPI_Initialized(&initialized);
+    int ranks = 1;
+    if (initialized) {
+      MPI_Comm_size(mpiComm, &ranks);
+    }
+    if (ranks > 1) {
+      throw std::runtime_error(
+          "LAMMPS calculator uses multiple MPI ranks but lammps_open is missing.\n"
+          "Install an MPI-enabled LAMMPS build.");
+    }
   }
-  int lmpargc = static_cast<int>(argPtrs.size());
-  char **lmpargv = argPtrs.data();
-  if (!lmp.open_mpi) {
-    throw std::runtime_error(
-        "LAMMPS library found but lacks MPI support (lammps_open not found).\n"
-        "Install an MPI-enabled LAMMPS build.");
-  }
-  MPI_Comm inst_comm = MPI_COMM_NULL;
-  MPI_Comm_dup(mpiComm, &inst_comm); // private comm per per-image instance
-  LAMMPSObj = lmp.open_mpi(lmpargc, lmpargv, inst_comm, nullptr);
 #else
+  constexpr bool useMpi = false;
+#endif
   const std::vector<std::string> argStore =
-      eonc::lammpsOpenArgs(lammpsLogging_, false, lammpsScreenPath_);
+      eonc::lammpsOpenArgs(lammpsLogging_, useMpi, lammpsScreenPath_);
   std::vector<char *> argPtrs;
   argPtrs.reserve(argStore.size());
   for (const std::string &arg : argStore) {
     argPtrs.push_back(const_cast<char *>(arg.c_str()));
   }
   int lmpargc = static_cast<int>(argPtrs.size());
-  LAMMPSObj = lmp.open_no_mpi(lmpargc, argPtrs.data(), nullptr);
+#ifdef EONMPI
+  if (useMpi) {
+    MPI_Comm inst_comm = MPI_COMM_NULL;
+    MPI_Comm_dup(mpiComm, &inst_comm); // private comm per per-image instance
+    LAMMPSObj = lmp.open_mpi(lmpargc, argPtrs.data(), inst_comm, nullptr);
+  } else
 #endif
+  {
+    LAMMPSObj = lmp.open_no_mpi(lmpargc, argPtrs.data(), nullptr);
+  }
   // -screen opens with truncation. The next copy starts at the new file.
   lammpsScreenRestart_ = true;
 
