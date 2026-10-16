@@ -9,8 +9,10 @@ import unittest
 
 class MesonVersionHeaderTest(unittest.TestCase):
     def test_real_custom_target_generates_and_preserves_revision_header(self):
-        source = Path(os.environ.get(
-            "EON_VERSION_SOURCE", Path(__file__).resolve().parents[2]))
+        source = os.environ.get("EON_VERSION_SOURCE")
+        if source is None:
+            source = Path(__file__).resolve().parents[2]
+        source = Path(source)
         helper = (source / "client/get_version.py").resolve()
         revision = subprocess.check_output(
             ["git", "-C", str(helper.parent), "rev-parse", "HEAD"], text=True).strip()
