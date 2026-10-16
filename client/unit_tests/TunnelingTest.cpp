@@ -2616,7 +2616,7 @@ TEST_CASE(
 TEST_CASE(
     "the zero bath prefactor retains a physical soft transverse instability",
     "[Tunneling][Instanton][PhysicalSoftPrefactor]") {
-  const double epsilon = 1e-6, kappa = 5e-4;
+  const double epsilon = 1e-6, kappa = 4e-4;
   const BatchPotential well = [](const std::vector<VectorXd> &q,
                                  std::vector<double> &v,
                                  std::vector<VectorXd> &g) {
