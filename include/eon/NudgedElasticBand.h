@@ -66,7 +66,13 @@ public:
   }
   void updateForces(bool ci_active);
   void updateForces(void) { updateForces(ci_enabled_); }
-  void setCIEnabled(bool enabled) { ci_enabled_ = enabled; }
+  void setCIEnabled(bool enabled) {
+    if (ci_enabled_ != enabled) {
+      ci_enabled_ = enabled;
+      // CI changes the projection while physical force caches remain valid.
+      movedAfterForceCall = true;
+    }
+  }
   double convergenceForce(void);
   void findExtrema(void);
   void printImageData(bool writeToFile = false, size_t idx = 0);
