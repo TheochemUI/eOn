@@ -1114,7 +1114,7 @@ RingEval evaluateRing(const std::vector<VectorXd> &x, double c,
     for (size_t j = 0; j < n; ++j) {
       const double wj = discretization[j];
       const double wp = discretization[(j + n - 1) % n];
-      if (!(wj > 0.0) || !(wp > 0.0)) {
+      if (!(wj > 0.0) || !(wp > 0.0) || !std::isfinite(wj) || !std::isfinite(wp)) {
         throw std::invalid_argument(
             "link weights must be one positive value per bead");
       }
@@ -1601,7 +1601,7 @@ ringDiagonal(const std::vector<MatrixXd> &physical, double c, bool half,
     if (weighted) {
       const double wj = (*weight)[static_cast<size_t>(j)];
       const double wp = (*weight)[static_cast<size_t>((j + beads - 1) % beads)];
-      if (!(wj > 0.0) || !(wp > 0.0)) {
+      if (!(wj > 0.0) || !(wp > 0.0) || !std::isfinite(wj) || !std::isfinite(wp)) {
         throw std::invalid_argument(
             "link weights must be one positive value per bead");
       }
@@ -3903,6 +3903,12 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     if (h.rows() != f || h.cols() != f) {
       throw std::runtime_error("instantonRate: bead Hessian size");
     }
+    const double hTolerance = 64.0 * std::numeric_limits<double>::epsilon() *
+                              f * h.cwiseAbs().maxCoeff();
+    if (!h.allFinite() ||
+        (h - h.transpose()).cwiseAbs().maxCoeff() > hTolerance) {
+      throw std::runtime_error("instantonRate: asymmetric physical bead Hessian");
+    }
     hBead[static_cast<size_t>(j)] = 0.5 * (h + h.transpose());
     double add = 2.0 * c;
     if (!inst.discretization.empty()) {
@@ -3913,7 +3919,7 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
       const double wj = inst.discretization[static_cast<size_t>(j)];
       const double wp =
           inst.discretization[static_cast<size_t>((j + N - 1) % N)];
-      if (!(wj > 0.0) || !(wp > 0.0)) {
+      if (!(wj > 0.0) || !(wp > 0.0) || !std::isfinite(wj) || !std::isfinite(wp)) {
         throw std::invalid_argument(
             "link weights must be one positive value per bead");
       }
@@ -3927,6 +3933,13 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
   if (hessReactant.rows() != f || hessReactant.cols() != f ||
       !hessReactant.allFinite()) {
     throw std::runtime_error("instantonRate: invalid reactant Hessian");
+  }
+  const double reactantTolerance =
+      64.0 * std::numeric_limits<double>::epsilon() * f *
+      hessReactant.cwiseAbs().maxCoeff();
+  if ((hessReactant - hessReactant.transpose()).cwiseAbs().maxCoeff() >
+      reactantTolerance) {
+    throw std::runtime_error("instantonRate: asymmetric reactant Hessian");
   }
   const Eigen::SelfAdjointEigenSolver<MatrixXd> er(
       0.5 * (hessReactant + hessReactant.transpose()));
@@ -3991,7 +4004,10 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
           "instantonRate: bath eta must be finite and nonnegative");
     }
   }
-  if (std::any_of(inst.bathEta.begin(), inst.bathEta.end(),
+  const bool weightedLinks = std::any_of(
+      inst.discretization.begin(), inst.discretization.end(),
+      [](double weight) { return weight != 1.0; });
+  if (weightedLinks || std::any_of(inst.bathEta.begin(), inst.bathEta.end(),
                   [](double eta) { return eta > 0.0; })) {
     bathFluctuations(inst, hBead, rigid, lr, rigidR, vReactant, c);
     if (hessSaddle.size() > 0) {
@@ -4189,15 +4205,17 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     }
   }
   inst.logZr = logZr;
-  inst.rateValid = inst.negativeModes == 1;
-  inst.rateValidity =
-      inst.rateValid ? "collective_coordinate" : "non_index_one_ring";
+  inst.rateValid = inst.converged && inst.negativeModes == 1;
+  inst.rateValidity = !inst.converged ? "unconverged_ring" :
+      (inst.negativeModes == 1 ? "collective_coordinate" : "non_index_one_ring");
   inst.logRate = inst.logRateTimesZr - logZr;
   inst.rate = std::exp(inst.logRate) / kTimeUnitSeconds;
   inst.effectiveBarrier =
       -std::log(2.0 * std::numbers::pi * kHbar * inst.beta) / inst.beta -
       inst.logRate / inst.beta;
-  if (!inst.rateValid) {
+  // An unconverged index-one input retains its numerical prefactor
+  // diagnostic; rateValid prevents its use as a stationary physical rate.
+  if (inst.negativeModes != 1) {
     const double invalid = std::numeric_limits<double>::quiet_NaN();
     inst.logRateTimesZr = inst.logRate = inst.rate = inst.effectiveBarrier =
         invalid;

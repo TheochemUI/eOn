@@ -375,6 +375,8 @@ struct RateInstanton {
   /// Absolute labelled-saddle Gaussian weight, without contour/rate factors.
   double logAbsoluteGaussianWeight = std::numeric_limits<double>::quiet_NaN();
   bool phaseZeroVerified = false;
+  /// A physical rate requires a converged index-one stationary ring.
+  /// Numerical zero-bath prefactor diagnostics can be finite when false.
   bool rateValid = false;
   std::string rateValidity = "not_evaluated";
 
