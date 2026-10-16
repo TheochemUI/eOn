@@ -690,7 +690,11 @@ bool Hessian::calculateSerial(double dr, FdScheme scheme) {
 
     if (!ckptPath.empty()) {
       // next column to compute after a clean interrupt
-      saveColumnCheckpoint(ckptPath, size, i + 1, hessian, context);
+      if (!saveColumnCheckpoint(ckptPath, size, i + 1, hessian, context)) {
+        QUILL_LOG_WARNING(log, "[Hessian] failed to replace checkpoint {} at "
+                               "column {}; retaining the last complete file",
+                          ckptPath, i + 1);
+      }
     }
   }
   return finalizeHessian(size);
