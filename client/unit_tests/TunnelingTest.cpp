@@ -1647,6 +1647,68 @@ TEST_CASE("A ring that collapses onto one point stops early",
   REQUIRE(inst.iterations < 20);
 }
 
+TEST_CASE("Newton includes a requested bath when a half ring is selected",
+          "[Tunneling][Instanton][FrictionHalfRing]") {
+  const bool explicitBath = GENERATE(false, true);
+  const long beads = 8;
+  const double beta = 60.0 / kHbar;
+  std::vector<VectorXd> guess(static_cast<size_t>(beads), VectorXd::Zero(1));
+  for (long j = 0; j < beads; ++j) {
+    guess[static_cast<size_t>(j)](0) =
+        0.2 * std::cos(2.0 * std::numbers::pi * j / beads);
+  }
+  long largestBatch = 0;
+  const BatchPotential quartic = [&](const std::vector<VectorXd> &q,
+                                     std::vector<double> &v,
+                                     std::vector<VectorXd> &g) {
+    largestBatch = std::max(largestBatch, static_cast<long>(q.size()));
+    v.resize(q.size());
+    g.assign(q.size(), VectorXd::Zero(1));
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0);
+      v[j] = 0.25 * std::pow(x * x - 1.0, 2);
+      g[j](0) = x * x * x - x;
+    }
+  };
+  RateInstantonOptions options;
+  options.beads = beads;
+  options.halfRing = true;
+  options.newtonLimit = 1024;
+  options.maxIterations = 1;
+  options.forceTolerance = 1e6;
+  options.checkOddSector = false;
+  options.friction = true;
+  options.frictionEta = 0.25;
+  options.frictionExplicit = explicitBath;
+  if (explicitBath) {
+    options.frictionEtaBeads = {0.1, 0.2, 0.4, 0.05, 0.3, 0.1, 0.2, 0.15};
+  }
+  const RateInstanton selected = optimizeRateInstanton(
+      VectorXd::Zero(1), -MatrixXd::Identity(1, 1), beta, guess, quartic, options);
+  double bath = 0.0;
+  std::vector<VectorXd> bathGradient(static_cast<size_t>(beads),
+                                     VectorXd::Zero(1));
+  addFrictionBath(selected.beads, bath, bathGradient,
+                  explicitBath ? options.frictionEtaBeads
+                               : std::vector<double>{options.frictionEta});
+  REQUIRE(bath > 0.0);
+  const double c = 1.0 / std::pow(beta * kHbar / beads, 2);
+  double expected = bath;
+  for (long j = 0; j < beads; ++j) {
+    const auto &q = selected.beads[static_cast<size_t>(j)];
+    const auto &next = selected.beads[static_cast<size_t>((j + 1) % beads)];
+    expected += 0.25 * std::pow(q(0) * q(0) - 1.0, 2) +
+                0.5 * c * (next - q).squaredNorm();
+  }
+  CAPTURE(explicitBath, selected.ringPotential, expected, bath, largestBatch);
+  REQUIRE(selected.ringPotential == Catch::Approx(expected).margin(1e-10));
+  REQUIRE(largestBatch == beads);
+  options.halfRing = false;
+  const RateInstanton full = optimizeRateInstanton(
+      VectorXd::Zero(1), -MatrixXd::Identity(1, 1), beta, guess, quartic, options);
+  REQUIRE(selected.ringPotential == Catch::Approx(full.ringPotential).margin(1e-10));
+}
+
 TEST_CASE("friction bath adds a positive term and its gradient",
           "[instanton]") {
   std::vector<VectorXd> q(4, VectorXd::Zero(1));

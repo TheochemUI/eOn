@@ -2204,7 +2204,9 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   const long nBeads = options.beads;
   // Fold only an even ring that already matches under j -> N - j. An empty
   // guess is seeded into that shape before this call.
-  bool half = options.halfRing && nBeads % 2 == 0 &&
+  // The folded Newton objective contains no bath term. Friction uses the
+  // full objective so its energy and residual include the requested bath.
+  bool half = options.halfRing && !options.friction && nBeads % 2 == 0 &&
               static_cast<long>(guess.size()) == nBeads;
   if (half) {
     const long m = nBeads / 2;
@@ -2997,6 +2999,7 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
   // that mode.
   const long nGot = static_cast<long>(got.beads.size());
   bool mirrored = (got.converged || got.stalledHalf) && options.halfRing &&
+                  !options.friction &&
                   options.checkOddSector && nGot == nBeads && nGot % 2 == 0;
   for (long j = 1; mirrored && j < nGot / 2; ++j) {
     mirrored = (got.beads[static_cast<size_t>(j)] -
@@ -3499,7 +3502,7 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
         "parabolic barrier correction, of which classical transition-state "
         "theory is only the one-bead limit");
   }
-  bool mirror = options.halfRing && N % 2 == 0;
+  bool mirror = options.halfRing && !options.friction && N % 2 == 0;
   if (mirror && static_cast<long>(guess.size()) == N) {
     const long mid = N / 2;
     for (long j = 1; j < mid && mirror; ++j) {
