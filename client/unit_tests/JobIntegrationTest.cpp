@@ -3175,7 +3175,8 @@ TEST_CASE_METHOD(JobIntegrationFixture,
   auto potential = eonc::helpers::sharePotential(
       eonc::helpers::makePotential(PotType::LJ, stored));
   Matter matter(potential, stored);
-  REQUIRE(eonc::io::io_ok(matter.con2matter((workdir / "reactant.con").string())));
+  REQUIRE(
+      eonc::io::io_ok(matter.con2matter((workdir / "reactant.con").string())));
   const double expectedEnergy = matter.getPotentialEnergy();
   const double expectedForce = matter.maxForce();
   matter.setEvaluation(AtomMatrix::Zero(13, 3), 12345.0);
@@ -3204,7 +3205,8 @@ TEST_CASE_METHOD(JobIntegrationFixture,
     auto potential = eonc::helpers::sharePotential(
         eonc::helpers::makePotential(PotType::LJ, stored));
     Matter matter(potential, stored);
-    REQUIRE(eonc::io::io_ok(matter.con2matter((workdir / "reactant.con").string())));
+    REQUIRE(eonc::io::io_ok(
+        matter.con2matter((workdir / "reactant.con").string())));
     matter.setEvaluation(AtomMatrix::Zero(13, 3), 12345.0);
     writeCachedForceCon(matter, workdir / "reactant.con");
   }
