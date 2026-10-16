@@ -311,6 +311,17 @@ applicable rigid modes are removed. With any frozen atoms, no whole-system
 rigid modes are removed; small negative curvatures require a force and
 finite-difference convergence check rather than an assumed six-mode removal.
 
+A valid Hessian index alone does not establish a stationary reference.
+`instanton_reactant_forces.dat` and `instanton_saddle_forces.dat` retain
+the physical free-atom force vectors in original free-atom order, in
+eV/Angstrom. Their Euclidean norms and maximum atomic norms appear in
+`results.dat` as `reference_reactant_force_norm`,
+`reference_reactant_max_force`, `reference_saddle_force_norm` and
+`reference_saddle_max_force`, including a spectrum-rejected calculation.
+The cached energy evaluations supply these forces without additional
+potential calls. Check stationarity against the physical convergence
+criterion used to prepare the minimum and saddle before interpreting a rate.
+
 With no atom fixed, both the reactant and the instanton omit the three
 translations. A
 rotation is omitted when it is a zero mode of the reactant Hessian, which a

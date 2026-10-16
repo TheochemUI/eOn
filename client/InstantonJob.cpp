@@ -434,8 +434,37 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   alignRigid(reactant, saddle);
   const long n = mw.dimension();
   const VectorXd qSaddle = mw.toQ(saddle);
-  const double vReactant = Matter(reactant).getPotentialEnergy();
+  auto saveData = [&](const std::string &name, const std::string &suffix,
+                      const auto &values) {
+    const std::string file = "instanton_" + name + suffix + ".dat";
+    std::ofstream stream(file, std::ios::out | std::ios::trunc);
+    stream << std::setprecision(std::numeric_limits<double>::max_digits10)
+           << values << '\n';
+    stream.close();
+    if (!stream) {
+      throw std::runtime_error("instanton: cannot write " + file);
+    }
+    returnFiles.push_back(file);
+  };
+  Matter reactantReference(reactant);
+  const double vReactant = reactantReference.getPotentialEnergy();
   const double vSaddle = saddle.getPotentialEnergy();
+  auto referenceForces = [&](const std::string &name, const Matter &matter) {
+    const AtomMatrix forces = matter.getForcesFree();
+    double maximum = 0.0;
+    for (long j = 0; j < forces.rows(); ++j) {
+      maximum = std::max(maximum, forces.row(j).norm());
+    }
+    saveData(name, "_forces", forces);
+    EONC_LOG_INFO("[Instanton] {} reference free forces: norm {:.8g}, "
+                  "maximum atomic norm {:.8g} eV/Angstrom",
+                  name, forces.norm(), maximum);
+    return std::pair{forces.norm(), maximum};
+  };
+  // Potential energy evaluations cache the same physical forces, so these
+  // stationarity diagnostics require no additional potential calls.
+  const auto reactantForce = referenceForces("reactant", reactantReference);
+  const auto saddleForce = referenceForces("saddle", saddle);
   const MatrixXd hReactant = hessianAt(VectorXd::Zero(n));
   const MatrixXd hSaddle = hessianAt(qSaddle);
   // Retain the projected, mass-weighted references used by the rate
@@ -447,19 +476,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       throw std::runtime_error("instanton: cannot diagonalize " + name +
                                " reference Hessian");
     }
-    auto save = [&](const std::string &suffix, const auto &values) {
-      const std::string file = "instanton_" + name + suffix + ".dat";
-      std::ofstream stream(file, std::ios::out | std::ios::trunc);
-      stream << std::setprecision(std::numeric_limits<double>::max_digits10)
-             << values << '\n';
-      stream.close();
-      if (!stream) {
-        throw std::runtime_error("instanton: cannot write " + file);
-      }
-      returnFiles.push_back(file);
-    };
-    save("_hessian", matrix);
-    save("_eigenvalues", solver.eigenvalues());
+    saveData(name, "_hessian", matrix);
+    saveData(name, "_eigenvalues", solver.eigenvalues());
     EONC_LOG_INFO("[Instanton] {} reference: {} coordinates, {} negative "
                   "eigenvalues; projected mass-weighted matrix retained",
                   name, matrix.rows(),
@@ -492,6 +510,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
 
   std::vector<std::pair<std::string, double>> extras{
       {"instanton_crossover_K", tc},
+      {"reference_reactant_force_norm", reactantForce.first},
+      {"reference_reactant_max_force", reactantForce.second},
+      {"reference_saddle_force_norm", saddleForce.first},
+      {"reference_saddle_max_force", saddleForce.second},
       {"barrier_classical", vSaddle - vReactant}};
   auto write = [&](RunStatus status) {
     auto env = JobResultEnvelope::fromMinimization(

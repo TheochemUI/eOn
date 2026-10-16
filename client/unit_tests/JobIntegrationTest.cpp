@@ -3187,6 +3187,19 @@ beads = 16
   REQUIRE_FALSE(std::filesystem::exists(workdir / "instanton.con"));
   for (const char *reference : {"reactant", "saddle"}) {
     const auto prefix = workdir / (std::string("instanton_") + reference);
+    std::ifstream forceFile(prefix.string() + "_forces.dat");
+    AtomMatrix forces(13, 3);
+    for (long i = 0; i < forces.rows(); ++i) {
+      for (long j = 0; j < forces.cols(); ++j) {
+        REQUIRE(static_cast<bool>(forceFile >> forces(i, j)));
+      }
+    }
+    REQUIRE(forces.norm() > 0.0);
+    const auto key = std::string("reference_") + reference;
+    REQUIRE_THAT(std::stod(results.at(key + "_force_norm")),
+                 Catch::Matchers::WithinAbs(forces.norm(), 1e-9));
+    REQUIRE_THAT(std::stod(results.at(key + "_max_force")),
+                 Catch::Matchers::WithinAbs(forces.rowwise().norm().maxCoeff(), 1e-9));
     std::ifstream matrixFile(prefix.string() + "_hessian.dat");
     MatrixXd matrix(39, 39);
     for (long i = 0; i < matrix.rows(); ++i) {
