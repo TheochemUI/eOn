@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include <fstream>
+#include <limits>
 #include <sstream>
 #include <vector>
 
@@ -61,10 +62,14 @@ GleThermostat::GleThermostat(const MatrixXd &a_drift, double kbt,
                              double dt_half, long n_dof) {
   const long dim = a_drift.rows();
   if (dim == 0 || a_drift.cols() != dim || !(kbt > 0.0) || !(dt_half > 0.0) ||
-      n_dof <= 0) {
+      n_dof <= 0 || !a_drift.allFinite() || !std::isfinite(kbt) ||
+      !std::isfinite(dt_half)) {
     return;
   }
   m_T = (-a_drift * dt_half).exp();
+  if (!m_T.allFinite()) {
+    return;
+  }
   // Fluctuation-dissipation: S S^T = kbt (I - T T^T). The right-hand
   // side is symmetric positive semi-definite; factor through its
   // eigendecomposition with negative rounding clamped so a
@@ -74,6 +79,13 @@ GleThermostat::GleThermostat(const MatrixXd &a_drift, double kbt,
       kbt * (MatrixXd::Identity(dim, dim) - m_T * m_T.transpose());
   Eigen::SelfAdjointEigenSolver<MatrixXd> es(cov);
   if (es.info() != Eigen::Success) {
+    return;
+  }
+  const double scale = es.eigenvalues().cwiseAbs().maxCoeff();
+  const double tolerance =
+      64.0 * std::numeric_limits<double>::epsilon() * dim * scale;
+  if (!es.eigenvalues().allFinite() ||
+      es.eigenvalues().minCoeff() < -tolerance) {
     return;
   }
   m_S = es.eigenvectors() *

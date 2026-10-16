@@ -34,6 +34,7 @@
 #include <cctype>
 #include <cmath>
 #include <fstream>
+#include <limits>
 #include <numbers>
 #include <numeric>
 #include <sstream>
@@ -230,10 +231,24 @@ VectorXd ecoFit(long nBeads, double xmax) {
 }
 
 MatrixXd factorCovariance(const MatrixXd &cov) {
+  if (cov.rows() == 0 || cov.rows() != cov.cols() || !cov.allFinite()) {
+    throw std::runtime_error("GLE covariance must be finite and square");
+  }
+  const double symmetryTolerance = 64.0 * std::numeric_limits<double>::epsilon() *
+                                   cov.rows() * cov.cwiseAbs().maxCoeff();
+  if ((cov - cov.transpose()).cwiseAbs().maxCoeff() > symmetryTolerance) {
+    throw std::runtime_error("GLE covariance must be symmetric");
+  }
   const MatrixXd sym = 0.5 * (cov + cov.transpose());
   Eigen::SelfAdjointEigenSolver<MatrixXd> es(sym);
   if (es.info() != Eigen::Success) {
     throw std::runtime_error("GLE covariance factorisation failed");
+  }
+  const double tolerance = 64.0 * std::numeric_limits<double>::epsilon() *
+                           cov.rows() * es.eigenvalues().cwiseAbs().maxCoeff();
+  if (!es.eigenvalues().allFinite() ||
+      es.eigenvalues().minCoeff() < -tolerance) {
+    throw std::runtime_error("GLE covariance is not positive semidefinite");
   }
   return es.eigenvectors() *
          es.eigenvalues().cwiseMax(0.0).cwiseSqrt().asDiagonal();

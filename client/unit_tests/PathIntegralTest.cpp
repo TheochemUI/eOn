@@ -184,6 +184,36 @@ TEST_CASE("Normal mode matrix is orthogonal", "[path-integral]") {
   }
 }
 
+TEST_CASE("GLE rejects stable drift with indefinite noise covariance", "[gle]") {
+  MatrixXd drift(2, 2);
+  drift << 1.0, 4.0, 0.0, 1.0;
+  eonc::GleThermostat invalid(drift, 1.0, 0.1, 1);
+  REQUIRE_FALSE(invalid.valid());
+  drift << 30.0, 8.0, -8.0, 30.0;
+  eonc::GleThermostat valid(drift, 1.0, 0.1, 1);
+  REQUIRE(valid.valid());
+}
+
+TEST_CASE("Normal mode GLE rejects indefinite and asymmetric covariance",
+          "[path-integral]") {
+  const auto path = std::filesystem::temp_directory_path() / "eon-gle-invalid.txt";
+  Options opt = baseOptions(2);
+  opt.thermostat = Thermostat::Piglet;
+  opt.gleFile = path.string();
+  for (const std::string &data : {
+           "1 2\n1 4\n0 1\n1 0\n0 1\n",
+           "1 2\n1 0\n0 1\n1 0\n0 -1\n",
+           "1 2\n1 0\n0 1\n1 1\n0 1\n"}) {
+    {
+      std::ofstream out(path);
+      REQUIRE(out);
+      out << data;
+    }
+    REQUIRE_THROWS_AS(makePolymer(opt), std::runtime_error);
+  }
+  std::filesystem::remove(path);
+}
+
 TEST_CASE("Economised eigenvalues match the fit", "[path-integral]") {
   const Eigen::VectorXd small = eonc::pathintegral::ecoEigenvalues(8, 20.0);
   REQUIRE(small.size() == 8);
