@@ -3164,7 +3164,8 @@ TEST_CASE_METHOD(JobIntegrationFixture,
   std::filesystem::copy_file(
       workdir / "saddle.con", workdir / "reactant.con",
       std::filesystem::copy_options::overwrite_existing);
-  writeConfig(R"(
+  const double temperature = GENERATE(198.0, 400.0);
+  writeConfig(std::string(R"(
 [Main]
 job = instanton
 
@@ -3173,7 +3174,7 @@ potential = lj
 
 [Instanton]
 mode = rate
-temperature = 400
+temperature = )") + std::to_string(temperature) + R"(
 beads = 16
 )");
   const auto results = runJob();
@@ -3181,7 +3182,8 @@ beads = 16
   REQUIRE(results.count("rate_parabolic") == 0);
   REQUIRE(results.count("rate_parabolic_log") == 0);
   REQUIRE(results.count("rate_instanton") == 0);
-  REQUIRE(std::filesystem::file_size(workdir / "rate_instanton.dat") > 0);
+  REQUIRE_FALSE(std::filesystem::exists(workdir / "rate_instanton.dat"));
+  REQUIRE_FALSE(std::filesystem::exists(workdir / "instanton.con"));
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
