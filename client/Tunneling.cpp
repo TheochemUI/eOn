@@ -2263,22 +2263,6 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       physical[j] = fdPhysicalHessian(x[j], potential, eps);
     }
   }
-  // Exact zeros of the saddle Hessian are rigid displacements. The same
-  // vector on every bead is a null vector of the chain, and the block LU
-  // then returns an arbitrary step. Hold those directions at a
-  // spring-sized curvature for the solve only.
-  std::vector<VectorXd> rigid;
-  {
-    const Eigen::SelfAdjointEigenSolver<ColMajorXd> esRigid(hS);
-    const auto ev = esRigid.eigenvalues();
-    const double span = std::max(std::abs(ev(0)), std::abs(ev(ev.size() - 1)));
-    const double lim = 1e-6 * std::max(1.0, span);
-    for (long i = 0; i < ev.size(); ++i) {
-      if (std::abs(ev(i)) <= lim) {
-        rigid.push_back(VectorXd(esRigid.eigenvectors().col(i)));
-      }
-    }
-  }
 
   struct Obj {
     std::vector<VectorXd> grad;
@@ -2410,16 +2394,9 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     nullRing = ringRigid(x);
     View v;
     v.tau = half ? VectorXd() : timeTranslation(x);
-    std::vector<MatrixXd> pinned = physical;
-    if (!rigid.empty()) {
-      const double pin = std::max(1.0, c);
-      for (auto &block : pinned) {
-        for (const auto &r : rigid) {
-          block.noalias() += pin * (r * r.transpose());
-        }
-      }
-    }
-    v.diag = ringDiagonal(pinned, c, half, linkWeight);
+    // Physical curvature determines inertia. Known rigid motions enter the
+    // quotient and the step solve without changing this operator.
+    v.diag = ringDiagonal(physical, c, half, linkWeight);
     auto apply = [&](const std::vector<VectorXd> &vec) {
       return applyDiagonal(v.diag, c, !half, vec, linkWeight);
     };

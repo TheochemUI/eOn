@@ -2204,3 +2204,66 @@ TEST_CASE("a double well cools a short rate ring",
   REQUIRE(pair.iterations >= 1);
   REQUIRE(std::isfinite(pair.action));
 }
+
+TEST_CASE("A soft saddle axis retains its physical ring instability",
+          "[Tunneling][Instanton][PhysicalSoftMode]") {
+  const BatchPotential quartic = [](const std::vector<VectorXd> &q,
+                                    std::vector<double> &v,
+                                    std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0);
+      v[j] = 0.25 * std::pow(x * x - 1.0, 2);
+      g[j] = VectorXd::Constant(1, x * (x * x - 1.0));
+    }
+  };
+  RateInstantonOptions options;
+  options.beads = 16;
+  options.halfRing = false;
+  options.checkOddSector = false;
+  options.maxIterations = 200;
+  options.forceTolerance = 1e-8;
+  options.maxStep = 0.1;
+  const double beta = 10.0 / kHbar;
+  const auto reference = optimizeRateInstanton(
+      VectorXd::Zero(1), MatrixXd::Constant(1, 1, -1.0), beta, {},
+      quartic, options);
+  REQUIRE(reference.converged);
+  std::vector<VectorXd> guess;
+  double meanSquare = 0.0;
+  for (const auto &bead : reference.beads) {
+    VectorXd q = VectorXd::Zero(2);
+    q(0) = bead(0);
+    meanSquare += q(0) * q(0) / options.beads;
+    guess.push_back(q);
+  }
+  // The transverse centroid has negative Rayleigh curvature on this ring,
+  // although its curvature at the saddle is positive and small.
+  REQUIRE(1e-8 - 0.1 * meanSquare < -1e-4);
+  const BatchPotential transverse = [](const std::vector<VectorXd> &q,
+                                       std::vector<double> &v,
+                                       std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0), y = q[j](1);
+      const double curvature = 1e-8 - 0.1 * x * x;
+      v[j] = 0.25 * std::pow(x * x - 1.0, 2) +
+             0.5 * curvature * y * y + 0.25 * std::pow(y, 4);
+      g[j] = VectorXd::Zero(2);
+      g[j](0) = x * (x * x - 1.0) - 0.1 * x * y * y;
+      g[j](1) = curvature * y + y * y * y;
+    }
+  };
+  MatrixXd saddleHessian = MatrixXd::Zero(2, 2);
+  saddleHessian(0, 0) = -1.0;
+  saddleHessian(1, 1) = 1e-8;
+  options.initialHessians = "finite_difference";
+  options.maxIterations = 1;
+  options.forceTolerance = 1e-6;
+  REQUIRE(options.rigidSqrtMasses.empty());
+  const auto result = optimizeRateInstanton(VectorXd::Zero(2), saddleHessian,
+                                            beta, guess, transverse, options);
+  REQUIRE_FALSE(result.converged);
+}
