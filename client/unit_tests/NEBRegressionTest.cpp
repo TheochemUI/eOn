@@ -169,7 +169,8 @@ TEST_CASE_METHOD(NEBRegressionFixture,
   REQUIRE((ordinary[ci - 1] - *neb->projectedForce[ci]).norm() > 1e-6);
   CHECK(eonc::PotRegistry::get().total_force_calls() == calls);
   neb->updateForces();
-  CHECK(neb->convergenceForce() == Catch::Approx(climbedConvergence).margin(1e-12));
+  CHECK(neb->convergenceForce() ==
+        Catch::Approx(climbedConvergence).margin(1e-12));
 
   neb->setCIEnabled(false);
   neb->convergenceForce();
