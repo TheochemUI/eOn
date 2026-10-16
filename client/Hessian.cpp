@@ -691,8 +691,9 @@ bool Hessian::calculateSerial(double dr, FdScheme scheme) {
     if (!ckptPath.empty()) {
       // next column to compute after a clean interrupt
       if (!saveColumnCheckpoint(ckptPath, size, i + 1, hessian, context)) {
-        QUILL_LOG_WARNING(log, "[Hessian] failed to replace checkpoint {} at "
-                               "column {}; retaining the last complete file",
+        QUILL_LOG_WARNING(log,
+                          "[Hessian] failed to replace checkpoint {} at "
+                          "column {}; retaining the last complete file",
                           ckptPath, i + 1);
       }
     }
