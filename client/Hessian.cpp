@@ -22,6 +22,7 @@
 #include <fstream>
 #include <iomanip>
 #include <limits>
+#include <locale>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -37,7 +38,7 @@ namespace {
 // Checkpoint: first line "eon_hess_ckpt <size> <next_col>", then size*size
 // doubles in row-major order matching MatrixXd storage.
 bool loadColumnCheckpoint(const std::string &path, int size, int &nextCol,
-                          MatrixXd &H) {
+                          MatrixXd &H, const std::string &context) {
   std::ifstream in(path);
   if (!in) {
     return false;
@@ -60,11 +61,55 @@ bool loadColumnCheckpoint(const std::string &path, int size, int &nextCol,
       H(i, j) = v;
     }
   }
+  std::string marker;
+  if (!(in >> marker)) {
+    QUILL_LOG_WARNING(log, "[Hessian] legacy checkpoint has no geometry or "
+                           "displacement identity; resume is unverified");
+    return true;
+  }
+  std::string stored;
+  if (marker != "eon_hess_context_v1" || !(in >> std::quoted(stored)) ||
+      stored != context) {
+    QUILL_LOG_WARNING(log, "[Hessian] checkpoint context mismatch; "
+                           "recomputing all finite-difference columns");
+    return false;
+  }
   return true;
 }
 
+std::string columnCheckpointContext(const Matter &matter, const VectorXi &atoms,
+                                    double dr, FdScheme scheme,
+                                    const Parameters &parameters) {
+  std::ostringstream out;
+  out.imbue(std::locale::classic());
+  out << std::setprecision(std::numeric_limits<double>::max_digits10);
+  out << dr << ' ' << static_cast<int>(scheme) << ' '
+      << parameters.main_options().removeNetForce << ' '
+      << static_cast<int>(parameters.potential_options().potential) << ' '
+      << matter.getPeriodic() << ' ' << matter.numberOfAtoms();
+  const auto positions = matter.getPositions();
+  const auto numbers = matter.getAtomicNrs();
+  for (int i = 0; i < matter.numberOfAtoms(); ++i) {
+    out << ' ' << numbers(i) << ' ' << matter.getMass(i);
+    for (int j = 0; j < 3; ++j) {
+      out << ' ' << positions(i, j) << ' ' << matter.getFixed(i, j);
+    }
+  }
+  const auto cell = matter.getCell();
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      out << ' ' << cell(i, j);
+    }
+  }
+  out << ' ' << atoms.size();
+  for (int i = 0; i < atoms.size(); ++i) {
+    out << ' ' << atoms(i);
+  }
+  return out.str();
+}
+
 bool saveColumnCheckpoint(const std::string &path, int size, int nextCol,
-                          const MatrixXd &H) {
+                          const MatrixXd &H, const std::string &context) {
   return helpers::atomicWriteFile(path, [&](FILE *out) {
     if (std::fprintf(out, "eon_hess_ckpt %d %d\n", size, nextCol) < 0) {
       return false;
@@ -78,7 +123,9 @@ bool saveColumnCheckpoint(const std::string &path, int size, int nextCol,
         }
       }
     }
-    return true;
+    std::ostringstream footer;
+    footer << "eon_hess_context_v1 " << std::quoted(context) << '\n';
+    return std::fputs(footer.str().c_str(), out) >= 0;
   });
 }
 
@@ -558,8 +605,9 @@ bool Hessian::calculateSerial(double dr, FdScheme scheme) {
   AtomMatrix forcePlus(nAtoms, 3);
   AtomMatrix forceMinus(nAtoms, 3);
 
+  const std::string context = columnCheckpointContext(*matter, atoms, dr, scheme, parameters);
   int startCol = 0;
-  if (wantResume && loadColumnCheckpoint(ckptPath, size, startCol, hessian)) {
+  if (wantResume && loadColumnCheckpoint(ckptPath, size, startCol, hessian, context)) {
     QUILL_LOG_DEBUG(log, "[Hessian] resume from column {} / {}\n", startCol,
                     size);
   } else {
@@ -637,7 +685,7 @@ bool Hessian::calculateSerial(double dr, FdScheme scheme) {
 
     if (!ckptPath.empty()) {
       // next column to compute after a clean interrupt
-      saveColumnCheckpoint(ckptPath, size, i + 1, hessian);
+      saveColumnCheckpoint(ckptPath, size, i + 1, hessian, context);
     }
   }
   return finalizeHessian(size);
