@@ -20,8 +20,8 @@
 #include <mutex>
 #include <sstream>
 #include <stdexcept>
-#include <vector>
 #include <string>
+#include <vector>
 
 #ifdef WITH_CHEMFILES
 #include <chemfiles.hpp>
@@ -156,9 +156,8 @@ bool mask_from_property(const chemfiles::Property &p, bool frozen_when_true,
 void quiet_chemfiles() {
   static std::once_flag once;
   std::call_once(once, [] {
-    chemfiles::set_warning_callback([](const std::string &msg) {
-      EONC_LOG_DEBUG("chemfiles: {}", msg);
-    });
+    chemfiles::set_warning_callback(
+        [](const std::string &msg) { EONC_LOG_DEBUG("chemfiles: {}", msg); });
   });
 }
 #endif
@@ -219,8 +218,7 @@ std::vector<double> parse_cell_values(const std::string &text) {
         throw std::invalid_argument(tok);
       }
     } catch (const std::exception &) {
-      throw std::invalid_argument("[Main] cell: '" + tok +
-                                  "' is not a number");
+      throw std::invalid_argument("[Main] cell: '" + tok + "' is not a number");
     }
   }
   if (!out.empty() && out.size() != 3 && out.size() != 9) {

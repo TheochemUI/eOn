@@ -9,9 +9,9 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#include "eon/ChemfilesIO.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
-#include "eon/ChemfilesIO.h"
 #include "eon/ConFileIO.h"
 #include "eon/HelperFunctions.h"
 #include "eon/Matter.h"
@@ -45,13 +45,12 @@ void write_text(const fs::path &p, const std::string &text) {
 }
 
 /// Three Ar atoms near the LJ minimum spacing, with a 15 A cubic lattice.
-const char *kArLattice =
-    "3\n"
-    "Lattice=\"15.0 0.0 0.0 0.0 15.0 0.0 0.0 0.0 15.0\" "
-    "Properties=species:S:1:pos:R:3 pbc=\"T T T\"\n"
-    "Ar 5.0 5.0 5.0\n"
-    "Ar 6.2 5.0 5.0\n"
-    "Ar 5.6 6.0 5.0\n";
+const char *kArLattice = "3\n"
+                         "Lattice=\"15.0 0.0 0.0 0.0 15.0 0.0 0.0 0.0 15.0\" "
+                         "Properties=species:S:1:pos:R:3 pbc=\"T T T\"\n"
+                         "Ar 5.0 5.0 5.0\n"
+                         "Ar 6.2 5.0 5.0\n"
+                         "Ar 5.6 6.0 5.0\n";
 
 /// Same atoms, no cell at all.
 const char *kArNoCell = "3\n"
@@ -122,8 +121,7 @@ TEST_CASE_METHOD(Fixture, "Foreign file without chemfiles is refused clearly",
   const auto dir = scratch("nochfl");
   write_text(dir / "pos.xyz", kArLattice);
   auto m = matter();
-  CHECK(m->inp2matter((dir / "pos.xyz").string()) ==
-        IoStatus::InvalidArgument);
+  CHECK(m->inp2matter((dir / "pos.xyz").string()) == IoStatus::InvalidArgument);
 }
 
 TEST_CASE_METHOD(Fixture, "Cell path 1: the file's own lattice wins",
@@ -150,7 +148,8 @@ TEST_CASE_METHOD(Fixture, "Cell path 1: the file's own lattice wins",
   CHECK(eonc::io::last_cell_warning().empty());
 }
 
-TEST_CASE_METHOD(Fixture, "Cell path 2: [Main] cell and pbc fill a missing cell",
+TEST_CASE_METHOD(Fixture,
+                 "Cell path 2: [Main] cell and pbc fill a missing cell",
                  "[chemfiles][cell]") {
   if (!eonc::io::chemfiles_available()) {
     SKIP("built without chemfiles");
@@ -234,12 +233,11 @@ TEST_CASE_METHOD(Fixture, "extxyz fixed atoms and velocities map into Matter",
     CHECK(m->numberOfFixedAtoms() == 1);
   }
   SECTION("fixed as a per-axis vector") {
-    write_text(dir / "fx.extxyz",
-               "2\n"
-               "Lattice=\"15 0 0 0 15 0 0 0 15\" "
-               "Properties=species:S:1:pos:R:3:fixed:R:3\n"
-               "Ar 5.0 5.0 5.0 0 0 1\n"
-               "Ar 6.2 5.0 5.0 0 0 0\n");
+    write_text(dir / "fx.extxyz", "2\n"
+                                  "Lattice=\"15 0 0 0 15 0 0 0 15\" "
+                                  "Properties=species:S:1:pos:R:3:fixed:R:3\n"
+                                  "Ar 5.0 5.0 5.0 0 0 1\n"
+                                  "Ar 6.2 5.0 5.0 0 0 0\n");
     auto m = matter();
     REQUIRE(eonc::io::io_ok(m->inp2matter((dir / "fx.extxyz").string())));
     CHECK(m->getFixed(0, 0) == 0);
@@ -247,12 +245,11 @@ TEST_CASE_METHOD(Fixture, "extxyz fixed atoms and velocities map into Matter",
     CHECK(m->getFixed(1, 2) == 0);
   }
   SECTION("velocities") {
-    write_text(dir / "v.extxyz",
-               "2\n"
-               "Lattice=\"15 0 0 0 15 0 0 0 15\" "
-               "Properties=species:S:1:pos:R:3:velo:R:3\n"
-               "Ar 5.0 5.0 5.0 0.1 0.2 0.3\n"
-               "Ar 6.2 5.0 5.0 0.0 0.0 -0.1\n");
+    write_text(dir / "v.extxyz", "2\n"
+                                 "Lattice=\"15 0 0 0 15 0 0 0 15\" "
+                                 "Properties=species:S:1:pos:R:3:velo:R:3\n"
+                                 "Ar 5.0 5.0 5.0 0.1 0.2 0.3\n"
+                                 "Ar 6.2 5.0 5.0 0.0 0.0 -0.1\n");
     auto m = matter();
     REQUIRE(eonc::io::io_ok(m->inp2matter((dir / "v.extxyz").string())));
     const AtomMatrix v = m->getVelocities();
@@ -268,13 +265,12 @@ TEST_CASE_METHOD(Fixture, "xyz, extxyz and pdb round-trip through .con",
   }
   const auto dir = scratch("rt");
   write_text(dir / "a.xyz", kArLattice);
-  write_text(dir / "b.extxyz",
-             "3\n"
-             "Lattice=\"15 0 0 0 15 0 0 0 15\" "
-             "Properties=species:S:1:pos:R:3:move_mask:L:1\n"
-             "Ar 5.0 5.0 5.0 F\n"
-             "Ar 6.2 5.0 5.0 T\n"
-             "Ar 5.6 6.0 5.0 T\n");
+  write_text(dir / "b.extxyz", "3\n"
+                               "Lattice=\"15 0 0 0 15 0 0 0 15\" "
+                               "Properties=species:S:1:pos:R:3:move_mask:L:1\n"
+                               "Ar 5.0 5.0 5.0 F\n"
+                               "Ar 6.2 5.0 5.0 T\n"
+                               "Ar 5.6 6.0 5.0 T\n");
   write_text(dir / "c.pdb",
              "CRYST1   15.000   15.000   15.000  90.00  90.00  90.00 P 1   "
              "        1\n"
@@ -335,8 +331,8 @@ TEST_CASE("eonclient minimizes and evaluates a point from pos.xyz",
                                                "[Potential]\n"
                                                "potential = lj\n",
                                                job));
-    const auto cmd = std::format("cd \"{}\" && \"{}\" > client.log 2>&1",
-                                 dir.string(), exe);
+    const auto cmd =
+        std::format("cd \"{}\" && \"{}\" > client.log 2>&1", dir.string(), exe);
     REQUIRE(std::system(cmd.c_str()) == 0);
     if (std::string(job) == "minimization") {
       CHECK(fs::exists(dir / "min.con"));
