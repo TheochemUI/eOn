@@ -1,6 +1,7 @@
 py.install_sources(
     [
         'akmc.py',
+        'approach.py',
         'akmcstatelist.py',
         'akmcstate.py',
         'amsel_superbasin_gate.py',
