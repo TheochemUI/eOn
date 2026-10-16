@@ -152,8 +152,9 @@ TEST_CASE("IRACompare matchArrays with injected mock does not load singleton",
   REQUIRE(eonc::IRAResource::instance().is_loaded() == singleton_loaded);
 }
 
-TEST_CASE("IRACompare periodic assignment and symmetry use the injected resource",
-          "[ira][resource][inject]") {
+TEST_CASE(
+    "IRACompare periodic assignment and symmetry use the injected resource",
+    "[ira][resource][inject]") {
   eonc::Parameters params;
   auto pot = eonc::helpers::sharePotential(
       eonc::helpers::makePotential(eonc::PotType::LJ, params));
@@ -167,8 +168,7 @@ TEST_CASE("IRACompare periodic assignment and symmetry use the injected resource
   matter.setPositions(positions);
 
   MockIRAResource mock;
-  const auto periodic =
-      eonc::IRACompare::matchPBC(matter, matter, 0.5, mock);
+  const auto periodic = eonc::IRACompare::matchPBC(matter, matter, 0.5, mock);
   REQUIRE(periodic.error == 0);
   REQUIRE(periodic.permutation.size() == 2);
   REQUIRE(periodic.permutation[0] == 0);
@@ -189,8 +189,8 @@ TEST_CASE("IRACompare periodic assignment and symmetry use the injected resource
   product.setAtomicNr(1, 1);
   product.setPositions(positions);
   eonc::Matter reactant = matter;
-  const auto aligned = eonc::IRACompare::alignReactantToProduct(
-      reactant, product, 1.0, mock);
+  const auto aligned =
+      eonc::IRACompare::alignReactantToProduct(reactant, product, 1.0, mock);
   REQUIRE(aligned.error == 0);
   REQUIRE(reactant.getPositions().isApprox(positions, 1e-12));
 }

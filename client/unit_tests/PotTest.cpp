@@ -74,7 +74,8 @@ TEST_CASE("Morse forces identical from cached and freshly built pair lists",
   matter->con2matter(std::string("reactant.con"));
 
   const AtomMatrix r0 = matter->getPositions();
-  static_cast<void>(matter->getPotentialEnergy()); // first sighting: phantom stamp only
+  static_cast<void>(
+      matter->getPotentialEnergy()); // first sighting: phantom stamp only
 
   // Second sighting captures the pair list (lazy capture) at r0b.
   AtomMatrix r0b = r0;

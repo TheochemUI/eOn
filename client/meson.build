@@ -563,7 +563,7 @@ _rgpot_proj = []
 _have_rgpot_wrap = false
 _rgpot_pkg = dependency(
     'rgpot',
-    version: '>=3.4.0',
+    version: '>=3.5.1',
     method: 'pkg-config',
     required: false,
     allow_fallback: false,
@@ -1846,22 +1846,39 @@ foreach feature : features_list
     endif
 endforeach
 
-configure_file(
+version_template = configure_file(
     input: 'version.h.in',
-    output: 'version.h',
+    output: 'version-config.h.in',
     configuration: {
         'VERSION': version,
         'VERSION_MAJOR': version_major,
         'VERSION_MINOR': version_minor,
         'VERSION_PATCH': version_patch,
-        'BUILD_DATE': build_date,
+        'BUILD_DATE': '@BUILD_DATE@',
         'OS_INFO': host_system,
         'ARCH': architecture,
-        'GIT_HASH': git_hash,
-        'GIT_HASH_FULL': git_hash_full,
+        'GIT_HASH': '@GIT_HASH@',
+        'GIT_HASH_FULL': '@GIT_HASH_FULL@',
         'FEATURES': features_string,
     },
 )
+
+version_header = custom_target(
+    'client-version-header',
+    input: version_template,
+    output: 'version.h',
+    command: [
+        version_script,
+        '--template', '@INPUT@', '--output', '@OUTPUT@',
+    ],
+    build_always_stale: true,
+    build_by_default: true,
+)
+version_dependency = declare_dependency(sources: version_header)
+_deps += [version_dependency]
+if get_option('with_metatomic')
+    mta_plugin_deps += [version_dependency]
+endif
 
 # --------------------- Library
 
@@ -2306,6 +2323,25 @@ if get_option('with_tests')
         )
     endif
 
+    if not is_windows
+        if _rgpot_from_pkg
+            _coverage_schema_dep = _rgpot_pkg
+        else
+            _coverage_schema_dep = _rgpot_proj.get_variable('ptlrpc_dep')
+        endif
+        if not _coverage_schema_dep.found()
+            error('CPMD interface coverage requires the rgpot RPC schema dependency')
+        endif
+        cpmd_interface_fixture = shared_library(
+            'cpmd_interface_fixture',
+            'unit_tests/fixtures/cpmdc/cpmdc_fake_engine.cc',
+            dependencies: [rgpot_dep, _coverage_schema_dep, capnp_dep],
+            include_directories: _incdirs,
+            build_rpath: ':'.join(_runtime_rpath),
+            install: false,
+        )
+    endif
+
     foreach test : test_array
         test_timeout = test.get(3, 30)
         _case_env = _test_env
@@ -2315,6 +2351,22 @@ if get_option('with_tests')
         endif
         if _have_staged_engine_imports
             _case_depends += [_stage_engine_imports]
+        endif
+        if test.get(0) == 'test_coverage_paths' and not is_windows
+            _case_env = environment()
+            _case_env.set('EON_TEST_SYSTEMS_DIR', _systems_dir)
+            _case_env.set('EONCLIENT', ec.full_path())
+            _case_env.set('EON_RELAX_ENGINE', eon_relax_engine.full_path())
+            if _fortran_pot_dirs.length() > 0
+                _case_env.set('EON_POTENTIALS_PATH', _pot_pathsep.join(_fortran_pot_dirs))
+            endif
+            if _readcon_runtime_dir != ''
+                _case_env.prepend('PATH', _readcon_runtime_dir)
+            endif
+            _case_env.set('CPMDC_LIBRARY', cpmd_interface_fixture.full_path())
+            _case_env.set('RGPOT_CPMDC_ENGINE', cpmd_interface_fixture.full_path())
+            _case_env.set('RGPOT_CPMD_ENGINE', cpmd_interface_fixture.full_path())
+            _case_depends += [cpmd_interface_fixture]
         endif
         if test.get(0) == 'test_client_timing'
             _case_depends += [ec]
@@ -2452,6 +2504,11 @@ if get_option('with_tests')
                 'systems',
             ),
         )
+        _rgpot_fixture_env = environment()
+        _rgpot_fixture_env.set('EON_TEST_SYSTEMS_DIR', _systems_dir)
+        _rgpot_fixture_env.set('CPMDC_LIBRARY', cpmd_interface_fixture.full_path())
+        _rgpot_fixture_env.set('RGPOT_CPMDC_ENGINE', cpmd_interface_fixture.full_path())
+        _rgpot_fixture_env.set('RGPOT_CPMD_ENGINE', cpmd_interface_fixture.full_path())
         # Optional nwchemc/cpmdc engines: tests SKIP when absent. Catch2 exits 4
         # when every case is skipped unless --allow-running-no-tests is set.
         test(
@@ -2461,7 +2518,8 @@ if get_option('with_tests')
             timeout: 120,
             suite: 'rgpot',
             is_parallel: false,
-            env: _rgpot_test_env,
+            env: _rgpot_fixture_env,
+            depends: [cpmd_interface_fixture],
             workdir: meson.project_source_root() +
                      '/client/unit_tests/data/systems/rgpot_nwchem_test',
         )

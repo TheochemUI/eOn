@@ -266,13 +266,30 @@ modes come from Lanczos on matrix-vector products. The bead curvature
 blocks start from the saddle Hessian (`initial_hessians = saddle`, no force
 calls) and follow accepted moves with a Bofill update, rebuilt from
 finite differences up to three times when the trust radius reaches its
-floor. Near-zero eigenvectors of the saddle Hessian are held at a
-spring-sized curvature in the Newton step, so a rigid displacement does
-not singularize the chain. `initial_hessians = finite_difference` takes
+floor. Known rigid motions enter an explicit quotient and solve
+stabilization. A small saddle curvature alone does not identify a rigid
+motion and is retained in the physical ring inertia. `initial_hessians = finite_difference` takes
 {math}`2f` gradient calls per
 bead first. The rate uses the bead Hessians chosen by `hessian_final`, not
 that update. On the one-dimensional Eckart barrier the search converges
 in 4 to 7 steps from either seed.
+
+An unexpected negative-mode count can also trigger a complete physical
+Hessian refresh during optimization, including at iteration zero.
+For a half ring with even bead count `P`, this evaluates `P/2 + 1`
+independent bead Hessians; central differences cost `2f` force geometries
+per bead for `f` free Cartesian coordinates. `hessian_stride` controls the
+final rate-prefactor Hessians and does not reduce this optimizer refresh.
+
+`physical_hessian_step = 0.0001` sets every central physical bead-Hessian
+displacement during Newton optimization, including initial and adaptive
+refreshes. Its units are **sqrt(amu) Angstrom**, so the Cartesian step for
+an atom of mass m in amu is this value divided by sqrt(m). This default
+is independent of the directional Lanczos step and of `[Main] finite_difference`.
+It preserves the numerical displacement convention; convergence of force
+differences with step size and SCF accuracy still needs measurement. Central
+differencing amplifies a bounded gradient error eta by at most eta/h in norm;
+an electronic SCF residual alone does not supply that gradient-error bound.
 
 `temperatures` is a comma-separated list in kelvin. The search starts at
 the highest and each ring starts the next, colder one. An empty list uses
@@ -291,6 +308,31 @@ Above {math}`T_c` the instanton columns are empty and the last two hold
 the parabolic rate. Below {math}`T_c` those two are empty. At {math}`T_c`
 the parabolic columns are empty. A run at more than one temperature also writes
 `instanton_<T>K.con`. The coldest temperature is written to `instanton.con`.
+
+The rate calculation retains `instanton_reactant_hessian.dat` and
+`instanton_saddle_hessian.dat`, with their sorted eigenvalues in
+`instanton_reactant_eigenvalues.dat` and
+`instanton_saddle_eigenvalues.dat`. These are the projected mass-weighted
+matrices used by the rate calculation, written with enough digits to
+round-trip a double. They are retained even when reference-spectrum
+validation rejects the rate. The reactant must be a metastable minimum
+and the saddle must have exactly one unstable vibration after the
+applicable rigid modes are removed. With any frozen atoms, no whole-system
+rigid modes are removed; small negative curvatures require a force and
+finite-difference convergence check rather than an assumed six-mode removal.
+
+A valid Hessian index alone does not establish a stationary reference.
+`instanton_reactant_forces.dat` and `instanton_saddle_forces.dat` retain
+the physical free-atom force vectors in original free-atom order, in
+eV/Angstrom. Their Euclidean norms and maximum atomic norms appear in
+`results.dat` as `reference_reactant_force_norm`,
+`reference_reactant_max_force`, `reference_saddle_force_norm` and
+`reference_saddle_max_force`, including a spectrum-rejected calculation.
+The cached energy evaluations supply these forces without additional
+potential calls. Check stationarity against the physical convergence
+criterion used to prepare the minimum and saddle before interpreting a rate.
+Rate reference energies and forces are recomputed on the selected potential;
+evaluations embedded in the input CON files are not accepted as references.
 
 With no atom fixed, both the reactant and the instanton omit the three
 translations. A
@@ -627,3 +669,64 @@ labelprefix: INST_
 keyprefix: inst-
 ---
 ```
+
+
+## Fixed bath coefficients and physical units
+
+`friction = implicit` uses one nonnegative `friction_eta` coefficient.
+`friction = explicit` uses the comma-separated `friction_eta_beads`, one
+nonnegative coefficient per bead. These inputs define a **fixed quadratic
+bead operator**. Their numerical values retain their input convention.
+
+In mass-weighted coordinates {math}`q=\sqrt{m}\,r`, the implicit bath is
+
+```{math}
+ U_{\rm bath}=\frac12\sum_k
+       \eta_{\rm eff}\,2|\sin(\pi k/P)|\,|Q_k|^2.
+```
+
+The sine factor is dimensionless. Thus `friction_eta` is a curvature
+coefficient, in **eV/(amu Angstrom²)**, equivalently inverse internal time
+squared. It is not directly a damping frequency in inverse fs.
+For a physical scalar Ohmic damping {math}`\gamma` in mass-weighted coordinates,
+the mapping at the requested temperature and bead count is
+
+```{math}
+ \omega_P=\frac{1}{\beta_P\hbar_{\rm internal}},\qquad
+ \eta_{\rm eff}=\gamma_{\rm internal}\omega_P,\qquad
+ \beta_P=\beta/P.
+```
+
+The internal time unit is approximately 10.1805 fs. A damping specified in
+inverse fs converts as `gamma_internal = gamma_per_fs * time_unit_fs`.
+Cartesian scalar friction divided by the atom's mass gives the corresponding
+mass-weighted damping. The one-coefficient API applies that mass-weighted
+damping equally to all active coordinates.
+
+At fixed physical damping, changing temperature or bead count requires
+recomputing `eta_eff`. This also applies to a bead ladder: fixed raw input
+coefficients do not define a study at fixed physical damping. The code
+does not rescale existing input coefficients automatically.
+
+For explicit coefficients, the implemented map is
+
+```{math}
+ (Tq)_0=0,\qquad (Tq)_j=(Tq)_{j-1}
+ +\tfrac12(\sqrt{\eta_{j-1}}+\sqrt{\eta_j})(q_j-q_{j-1}),
+ \qquad K=T^T F^*\Omega F T,
+```
+
+where {math}`F` is unitary and {math}`\Omega_{kk}=2|\sin(\pi k/P)|`.
+The coefficients remain fixed while differentiating this quadratic form.
+A coordinate-dependent friction tensor or frequency-dependent spectral
+density requires additional coupling data and derivatives; a list of fixed
+bead coefficients alone does not specify either model.
+
+The physical-frequency mapping follows the uniform-coupling kernel in
+[Litman et al., Eqs. (16) and (20)](https://arxiv.org/html/2202.08668).
+Their Eq. (4) supplies the collective-coordinate normalization when its
+cyclic phase mode is a zero mode. For a nonzero bath, the rate calculation checks for one
+physical negative mode and a numerically null phase before using that
+factor. A resolved nonzero phase remains in the signed fluctuation
+diagnostics; the absolute Gaussian weight excludes contour and rate
+normalization. Its `rateValid = false` status must be retained by callers.

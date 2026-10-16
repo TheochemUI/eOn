@@ -13,6 +13,7 @@
 #include "eon/Hessian.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/AtomicFile.h"
 #include "eon/ConFileIO.h"
 #include "eon/Davidson.h"
 #include "eon/FiniteDifference.h"
@@ -30,6 +31,9 @@
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
+#include <iterator>
+#include <limits>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -87,6 +91,15 @@ TEST_CASE_METHOD(HessianScratch, "Hessian on LJ cluster is symmetric",
 
   REQUIRE(H.rows() == 9);
   REQUIRE(H.cols() == 9);
+
+  std::ifstream saved("hessian.dat");
+  MatrixXd restored(H.rows(), H.cols());
+  for (long i = 0; i < H.rows(); ++i) {
+    for (long j = 0; j < H.cols(); ++j) {
+      REQUIRE(static_cast<bool>(saved >> restored(i, j)));
+      REQUIRE(restored(i, j) == H(i, j));
+    }
+  }
 
   for (long i = 0; i < H.rows(); i++) {
     for (long j = 0; j < i; j++) {
@@ -718,3 +731,174 @@ TEST_CASE_METHOD(HessianScratch,
 }
 
 } /* namespace tests */
+
+namespace tests {
+TEST_CASE_METHOD(
+    HessianScratch,
+    "Atomic checkpoint replacement preserves valid data on failure",
+    "[hessian][checkpoint]") {
+  const std::string path = "atomic.ckpt";
+  const std::string original = "eon_hess_ckpt 1 1\n1.2345678901234567\n";
+  {
+    std::ofstream out(path);
+    out << original;
+  }
+  auto contents = [&]() {
+    std::ifstream in(path);
+    return std::string(std::istreambuf_iterator<char>(in), {});
+  };
+  SECTION("serializer failure") {
+    REQUIRE_FALSE(eonc::helpers::atomicWriteFile(path, [](FILE *out) {
+      std::fputs("incomplete", out);
+      return false;
+    }));
+    REQUIRE(contents() == original);
+  }
+  SECTION("interrupted serializer") {
+    REQUIRE_THROWS_AS(eonc::helpers::atomicWriteFile(
+                          path,
+                          [](FILE *out) -> bool {
+                            std::fputs("incomplete", out);
+                            throw std::runtime_error("interrupted write");
+                          }),
+                      std::runtime_error);
+    REQUIRE(contents() == original);
+  }
+  SECTION("invalid destination") {
+    REQUIRE_FALSE(eonc::helpers::atomicWriteFile("missing/checkpoint",
+                                                 [](FILE *) { return true; }));
+    REQUIRE(contents() == original);
+  }
+  SECTION("replacement failure") {
+    std::filesystem::create_directory("destination");
+    REQUIRE_FALSE(eonc::helpers::atomicWriteFile("destination", [](FILE *out) {
+      return std::fputs("complete", out) >= 0;
+    }));
+    REQUIRE(std::filesystem::is_directory("destination"));
+    REQUIRE(contents() == original);
+  }
+  SECTION("successful replacement") {
+    const std::string replacement = "eon_hess_ckpt 1 1\n9.8765432109876543\n";
+    REQUIRE(eonc::helpers::atomicWriteFile(path, [&](FILE *out) {
+      return std::fputs(replacement.c_str(), out) >= 0;
+    }));
+    REQUIRE(contents() == replacement);
+  }
+  for (const auto &entry : std::filesystem::directory_iterator(".")) {
+    REQUIRE(entry.path().filename().string().find(".tmp.") ==
+            std::string::npos);
+  }
+}
+
+TEST_CASE_METHOD(HessianScratch, "Final Hessian retains every binary64 entry",
+                 "[hessian][checkpoint]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  Matter matter(pot, params);
+  matter.con2matter(std::string("reactant.con"));
+  VectorXi atoms(2);
+  atoms << 0, 1;
+  Hessian hessian(params, &matter);
+  const MatrixXd matrix = hessian.getHessian(&matter, atoms);
+  REQUIRE(matrix.rows() == 6);
+  std::ifstream input("hessian.dat");
+  REQUIRE(input.good());
+  for (int i = 0; i < matrix.rows(); ++i) {
+    for (int j = 0; j < matrix.cols(); ++j) {
+      double value = 0;
+      REQUIRE(static_cast<bool>(input >> value));
+      REQUIRE(value == matrix(i, j));
+    }
+  }
+}
+} // namespace tests
+
+namespace tests {
+namespace {
+class InterruptedLJ final : public eonc::Potential {
+public:
+  InterruptedLJ(std::shared_ptr<eonc::Potential> inner, const Parameters &p)
+      : eonc::Potential(PotType::LJ, p),
+        inner_(std::move(inner)) {}
+  int calls = 0;
+  bool interrupt = true;
+  void force(long n, const double *r, const int *z, double *f, double *u,
+             double *var, const double *box) override {
+    if (++calls > 3 && interrupt) {
+      std::fill(f, f + 3 * n, std::numeric_limits<double>::quiet_NaN());
+      *u = 0;
+      *var = 0;
+      return;
+    }
+    inner_->force(n, r, z, f, u, var, box);
+  }
+
+private:
+  std::shared_ptr<eonc::Potential> inner_;
+};
+} // namespace
+
+TEST_CASE_METHOD(HessianScratch,
+                 "Hessian resume rejects changed finite-difference context",
+                 "[hessian][checkpoint-context]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::hessian_options(params).fd_scheme = "one_sided";
+  ParametersLoadAccess::hessian_options(params).checkpoint_path =
+      "context.ckpt";
+  auto lj = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto potential = std::make_shared<InterruptedLJ>(lj, params);
+  Matter matter(potential, params);
+  matter.con2matter(std::string("reactant.con"));
+  matter.setPositions(matter.getPositions());
+  VectorXi atoms(2);
+  atoms << 0, 1;
+  Hessian interrupted(params, &matter);
+  REQUIRE(interrupted.getHessian(&matter, atoms).rows() == 0);
+  REQUIRE(std::filesystem::exists("context.ckpt"));
+  {
+    std::ifstream checkpoint("context.ckpt");
+    std::string magic;
+    int size = 0, nextColumn = 0;
+    REQUIRE(static_cast<bool>(checkpoint >> magic >> size >> nextColumn));
+    REQUIRE(magic == "eon_hess_ckpt");
+    REQUIRE(size == 6);
+    REQUIRE(nextColumn == 2);
+  }
+  potential->interrupt = false;
+  potential->calls = 0;
+  int expectedResumeCalls = 7;
+  SECTION("unchanged context") { expectedResumeCalls = 5; }
+  SECTION("coordinates") {
+    AtomMatrix positions = matter.getPositions();
+    positions(0, 0) += 0.2;
+    matter.setPositions(positions);
+  }
+  SECTION("displacement") {
+    ParametersLoadAccess::main_options(params).finiteDifference *= 2;
+  }
+  SECTION("stencil") {
+    ParametersLoadAccess::hessian_options(params).fd_scheme = "central";
+    expectedResumeCalls = 13;
+  }
+  SECTION("mobile atom order") { atoms << 1, 0; }
+  ParametersLoadAccess::hessian_options(params).resume = true;
+  Hessian resumed(params, &matter);
+  const MatrixXd actual = resumed.getHessian(&matter, atoms);
+  REQUIRE(potential->calls == expectedResumeCalls);
+  ParametersLoadAccess::hessian_options(params).resume = false;
+  Hessian fresh(params, &matter);
+  const MatrixXd expected = fresh.getHessian(&matter, atoms);
+  REQUIRE(actual.rows() == 6);
+  REQUIRE(expected.rows() == 6);
+  for (int i = 0; i < 6; ++i) {
+    for (int j = 0; j < 6; ++j) {
+      REQUIRE_THAT(actual(i, j),
+                   Catch::Matchers::WithinAbs(expected(i, j), 1e-12));
+    }
+  }
+}
+} // namespace tests

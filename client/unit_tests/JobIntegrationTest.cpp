@@ -19,9 +19,9 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/BaseStructures.h"
 #include "eon/BasinHoppingJob.h"
-#include "eon/GlobalOptimizationJob.h"
 #include "eon/Bundling.h"
 #include "eon/ConFileIO.h"
+#include "eon/GlobalOptimizationJob.h"
 #include "eon/Job.h"
 #include "eon/Matter.h"
 #include "eon/OHTSTJob.h"
@@ -3079,7 +3079,8 @@ force_tolerance = 1e-6
   REQUIRE(std::filesystem::exists(pathFile));
   const auto saved = readcon::read_all_frames(pathFile.string());
   REQUIRE(saved.size() >= 3);
-  const std::string text = (std::stringstream{} << std::ifstream(pathFile).rdbuf()).str();
+  const std::string text =
+      (std::stringstream{} << std::ifstream(pathFile).rdbuf()).str();
   REQUIRE(text.find("arc_length") != std::string::npos);
   for (const auto &frame : saved) {
     REQUIRE(frame.energy_opt().has_value());
@@ -3155,6 +3156,121 @@ pi_time_step = 1.0
   }
 }
 
+static void writeCachedForceCon(Matter &matter,
+                                const std::filesystem::path &path) {
+  struct RestoreForceWriting {
+    bool value = eonc::io::write_con_forces();
+    ~RestoreForceWriting() { eonc::io::set_write_con_forces(value); }
+  } restore;
+  eonc::io::set_write_con_forces(true);
+  REQUIRE(eonc::io::io_ok(matter.matter2con(path.string())));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "PointJob evaluates its potential despite saved file forces",
+                 "[job][point][integration][CachedInput]") {
+  REQUIRE(copyTestData("neb_lj13"));
+  Parameters stored;
+  ParametersLoadAccess::potential_options(stored).potential = PotType::LJ;
+  auto potential = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, stored));
+  Matter matter(potential, stored);
+  REQUIRE(
+      eonc::io::io_ok(matter.con2matter((workdir / "reactant.con").string())));
+  const double expectedEnergy = matter.getPotentialEnergy();
+  const double expectedForce = matter.maxForce();
+  matter.setEvaluation(AtomMatrix::Zero(13, 3), 12345.0);
+  writeCachedForceCon(matter, workdir / "pos.con");
+  writeConfig("[Main]\njob = point\n[Potential]\npotential = lj\n");
+  const auto results = runJob();
+  REQUIRE(results.at("termination_reason") == "0");
+  REQUIRE(std::stol(results.at("total_force_calls")) >= 1);
+  REQUIRE_THAT(std::stod(results.at("potential_energy")),
+               Catch::Matchers::WithinAbs(expectedEnergy, 1e-8));
+  REQUIRE_THAT(std::stod(results.at("Max_Force")),
+               Catch::Matchers::WithinAbs(expectedForce, 1e-8));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "InstantonJob rejects a reactant with unstable vibrations",
+                 "[job][instanton][integration][HarmonicValidation]") {
+  REQUIRE(copyTestData("neb_lj13"));
+  // A saddle supplied as the reactant is not a metastable well. Its
+  // unstable vibration remains after the cluster's rigid modes leave.
+  std::filesystem::copy_file(workdir / "saddle.con", workdir / "reactant.con",
+                             std::filesystem::copy_options::overwrite_existing);
+  if (GENERATE(false, true)) {
+    Parameters stored;
+    ParametersLoadAccess::potential_options(stored).potential = PotType::LJ;
+    auto potential = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, stored));
+    Matter matter(potential, stored);
+    REQUIRE(eonc::io::io_ok(
+        matter.con2matter((workdir / "reactant.con").string())));
+    matter.setEvaluation(AtomMatrix::Zero(13, 3), 12345.0);
+    writeCachedForceCon(matter, workdir / "reactant.con");
+  }
+  const double temperature = GENERATE(198.0, 400.0);
+  writeConfig(std::string(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+mode = rate
+temperature = )") +
+              std::to_string(temperature) + R"(
+beads = 16
+)");
+  const auto results = runJob();
+  REQUIRE(results.at("termination_reason") != "0");
+  REQUIRE(results.count("rate_parabolic") == 0);
+  REQUIRE_THAT(std::stod(results.at("barrier_classical")),
+               Catch::Matchers::WithinAbs(0.0, 1e-8));
+  REQUIRE(results.count("rate_parabolic_log") == 0);
+  REQUIRE(results.count("rate_instanton") == 0);
+  REQUIRE_FALSE(std::filesystem::exists(workdir / "rate_instanton.dat"));
+  REQUIRE_FALSE(std::filesystem::exists(workdir / "instanton.con"));
+  for (const char *reference : {"reactant", "saddle"}) {
+    const auto prefix = workdir / (std::string("instanton_") + reference);
+    std::ifstream forceFile(prefix.string() + "_forces.dat");
+    AtomMatrix forces(13, 3);
+    for (long i = 0; i < forces.rows(); ++i) {
+      for (long j = 0; j < forces.cols(); ++j) {
+        REQUIRE(static_cast<bool>(forceFile >> forces(i, j)));
+      }
+    }
+    REQUIRE(forces.norm() > 0.0);
+    const auto key = std::string("reference_") + reference;
+    REQUIRE_THAT(std::stod(results.at(key + "_force_norm")),
+                 Catch::Matchers::WithinAbs(forces.norm(), 1e-9));
+    REQUIRE_THAT(
+        std::stod(results.at(key + "_max_force")),
+        Catch::Matchers::WithinAbs(forces.rowwise().norm().maxCoeff(), 1e-9));
+    std::ifstream matrixFile(prefix.string() + "_hessian.dat");
+    MatrixXd matrix(39, 39);
+    for (long i = 0; i < matrix.rows(); ++i) {
+      for (long j = 0; j < matrix.cols(); ++j) {
+        REQUIRE(static_cast<bool>(matrixFile >> matrix(i, j)));
+      }
+    }
+    REQUIRE(matrix.allFinite());
+    REQUIRE((matrix - matrix.transpose()).norm() < 1e-12);
+    Eigen::SelfAdjointEigenSolver<MatrixXd> solver(matrix,
+                                                   Eigen::EigenvaluesOnly);
+    REQUIRE(solver.info() == Eigen::Success);
+    std::ifstream spectrumFile(prefix.string() + "_eigenvalues.dat");
+    VectorXd spectrum(39);
+    for (long i = 0; i < spectrum.size(); ++i) {
+      REQUIRE(static_cast<bool>(spectrumFile >> spectrum[i]));
+    }
+    REQUIRE((spectrum - solver.eigenvalues()).norm() < 1e-12);
+    REQUIRE(spectrum.minCoeff() < -1e-6);
+  }
+}
+
 TEST_CASE_METHOD(JobIntegrationFixture,
                  "GlobalOptimizationJob records a random hop and an MD hop",
                  "[job][global_optimization]") {
@@ -3201,8 +3317,7 @@ TEST_CASE_METHOD(JobIntegrationFixture,
   runOne("md", "npew", 1);
 }
 
-TEST_CASE_METHOD(JobIntegrationFixture,
-                 "Basin hopping keeps a unique minimum",
+TEST_CASE_METHOD(JobIntegrationFixture, "Basin hopping keeps a unique minimum",
                  "[job][basin_hopping]") {
   EON_REQUIRE_TEST_DATA("neb_morse");
   writeConfig(R"(

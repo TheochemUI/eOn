@@ -434,10 +434,61 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   alignRigid(reactant, saddle);
   const long n = mw.dimension();
   const VectorXd qSaddle = mw.toQ(saddle);
-  const double vReactant = Matter(reactant).getPotentialEnergy();
+  auto saveData = [&](const std::string &name, const std::string &suffix,
+                      const auto &values) {
+    const std::string file = "instanton_" + name + suffix + ".dat";
+    std::ofstream stream(file, std::ios::out | std::ios::trunc);
+    stream << std::setprecision(std::numeric_limits<double>::max_digits10)
+           << values << '\n';
+    stream.close();
+    if (!stream) {
+      throw std::runtime_error("instanton: cannot write " + file);
+    }
+    returnFiles.push_back(file);
+  };
+  Matter reactantReference(reactant);
+  // Rate references require evaluations on the selected potential;
+  // energy and forces saved in an input file can describe another surface.
+  reactantReference.setPositions(reactantReference.getPositions());
+  saddle.setPositions(saddle.getPositions());
+  const double vReactant = reactantReference.getPotentialEnergy();
   const double vSaddle = saddle.getPotentialEnergy();
+  auto referenceForces = [&](const std::string &name, const Matter &matter) {
+    const AtomMatrix forces = matter.getForcesFree();
+    double maximum = 0.0;
+    for (long j = 0; j < forces.rows(); ++j) {
+      maximum = std::max(maximum, forces.row(j).norm());
+    }
+    saveData(name, "_forces", forces);
+    EONC_LOG_INFO("[Instanton] {} reference free forces: norm {:.8g}, "
+                  "maximum atomic norm {:.8g} eV/Angstrom",
+                  name, forces.norm(), maximum);
+    return std::pair{forces.norm(), maximum};
+  };
+  // Potential energy evaluations cache the same physical forces, so these
+  // stationarity diagnostics require no additional potential calls.
+  const auto reactantForce = referenceForces("reactant", reactantReference);
+  const auto saddleForce = referenceForces("saddle", saddle);
   const MatrixXd hReactant = hessianAt(VectorXd::Zero(n));
   const MatrixXd hSaddle = hessianAt(qSaddle);
+  // Retain the projected, mass-weighted references used by the rate
+  // calculation, including spectra that fail metastability validation.
+  auto saveReference = [&](const std::string &name, const MatrixXd &matrix) {
+    Eigen::SelfAdjointEigenSolver<MatrixXd> solver(matrix,
+                                                   Eigen::EigenvaluesOnly);
+    if (solver.info() != Eigen::Success || !solver.eigenvalues().allFinite()) {
+      throw std::runtime_error("instanton: cannot diagonalize " + name +
+                               " reference Hessian");
+    }
+    saveData(name, "_hessian", matrix);
+    saveData(name, "_eigenvalues", solver.eigenvalues());
+    EONC_LOG_INFO("[Instanton] {} reference: {} coordinates, {} negative "
+                  "eigenvalues; projected mass-weighted matrix retained",
+                  name, matrix.rows(),
+                  (solver.eigenvalues().array() < 0.0).count());
+  };
+  saveReference("reactant", hReactant);
+  saveReference("saddle", hSaddle);
   const VectorXd unstableMode = Eigen::SelfAdjointEigenSolver<MatrixXd>(
                                     0.5 * (hSaddle + hSaddle.transpose()))
                                     .eigenvectors()
@@ -463,6 +514,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
 
   std::vector<std::pair<std::string, double>> extras{
       {"instanton_crossover_K", tc},
+      {"reference_reactant_force_norm", reactantForce.first},
+      {"reference_reactant_max_force", reactantForce.second},
+      {"reference_saddle_force_norm", saddleForce.first},
+      {"reference_saddle_max_force", saddleForce.second},
       {"barrier_classical", vSaddle - vReactant}};
   auto write = [&](RunStatus status) {
     auto env = JobResultEnvelope::fromMinimization(
@@ -476,6 +531,22 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       env.extras.push_back(kv);
     }
     env.writeResultsDat(resultsFile);
+  };
+
+  // Both rate regimes require a metastable well and an index-one saddle
+  // on the same free coordinates before any path or ring is sampled.
+  auto validReferences = [&]() {
+    try {
+      static_cast<void>(tunneling::harmonicTstLogRate(
+          hReactant, hSaddle,
+          1.0 / (tunneling::kBoltzmann * temperatures.front()),
+          vSaddle - vReactant, rigidModes));
+      return true;
+    } catch (const std::exception &ex) {
+      EONC_LOG_ERROR("[Instanton] invalid rate reference: {}", ex.what());
+      write(RunStatus::FAIL_POTENTIAL_FAILED);
+      return false;
+    }
   };
 
   // A band over the barrier seeds the ring and carries the
@@ -507,6 +578,9 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       throw std::runtime_error("instanton: " + o.initial_path +
                                " holds fewer than three frames");
     }
+    if (!validReferences()) {
+      return returnFiles;
+    }
     if (!haveEnergies) {
       const long before = PotRegistry::get().total_force_calls();
       std::vector<VectorXd> grads;
@@ -533,6 +607,9 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                          ex.what());
       }
     }
+  }
+  if (o.initial_path.empty() && !validReferences()) {
+    return returnFiles;
   }
   // No band: the steepest-descent path out of the saddle carries the ring
   // seed by the period condition. Cooling a cosine from the crossover finds
@@ -602,6 +679,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
            "ln_k_per_s k_per_s ln_k_htst_per_s barrier_effective_eV "
            "ln_k_wkb_path_per_s ln_k_parabolic_per_s parabolic_factor\n";
   table << std::setprecision(10);
+  table.flush();
   returnFiles.push_back(tableFile);
   const double logSecond = std::log(tunneling::kTimeUnitSeconds);
   const double nan = std::numeric_limits<double>::quiet_NaN();
@@ -636,7 +714,13 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
           const double logQhtst = tunneling::quantumHarmonicTstLogRate(
               hReactant, hSaddle, beta, vSaddle - vReactant, rigidModes);
           const double logPar = logQhtst + std::log(factor);
-          const double kPar = std::exp(logPar) / tunneling::kTimeUnitSeconds;
+          const double logPerSecond = logPar - logSecond;
+          if (!std::isfinite(logPerSecond) ||
+              logPerSecond > std::log(std::numeric_limits<double>::max())) {
+            throw std::runtime_error(
+                "instanton: non-finite parabolic rate; no rate is recorded");
+          }
+          const double kPar = std::exp(logPerSecond);
           EONC_LOG_INFO("[Instanton] {:.4g} K is above the crossover {:.4g} "
                         "K; parabolic factor {:.6g}, ln(k s) = {:.4f}",
                         temperature, tc, factor, logPar - logSecond);
@@ -658,9 +742,11 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         }
       }
       if (!wrote) {
-        EONC_LOG_ERROR("[Instanton] {:.4g} K is at the crossover temperature "
-                       "{:.4g} K; the parabolic factor diverges there",
-                       temperature, tc);
+        if (!(temperature > tc)) {
+          EONC_LOG_ERROR("[Instanton] {:.4g} K is at the crossover temperature "
+                         "{:.4g} K; the parabolic factor diverges there",
+                         temperature, tc);
+        }
         table << temperature << ' ' << tc << ' ' << o.beads
               << " 0 0 nan 0 nan nan nan nan " << wkbLog << " nan nan\n";
         rateFailed = true;
@@ -672,6 +758,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
           }
         }
       }
+      table.flush();
       continue;
     }
 
@@ -681,6 +768,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     ro.forceTolerance = o.force_tolerance;
     ro.halfRing = o.half_ring;
     ro.initialHessians = o.initial_hessians;
+    ro.physicalHessianStep = o.physical_hessian_step;
     ro.energyShift = o.energy_shift;
     ro.discretization = o.discretization;
     ro.friction = o.friction != "none";
@@ -826,7 +914,46 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         tunneling::instantonRate(
             inst, beadHessian, hReactant, vReactant - o.energy_shift, hSaddle,
             vSaddle - o.energy_shift, rigidModes, 4096, bodies);
-        rateOk = std::isfinite(inst.logRate) && inst.negativeModes == 1;
+        rateOk = inst.rateValid && std::isfinite(inst.logRate) &&
+                 inst.negativeModes == 1;
+        if (!inst.rateValid) {
+          EONC_LOG_ERROR("[Instanton] rate fluctuation validity: {}",
+                         inst.rateValidity);
+        }
+        if (!inst.bathSignedCurvatures.empty()) {
+          std::ostringstream name;
+          name << "instanton_fluctuations_" << std::setprecision(6)
+               << temperature << "K.dat";
+          std::ofstream spectrum(name.str());
+          if (!spectrum) {
+            throw std::runtime_error("instanton: cannot write " + name.str());
+          }
+          spectrum
+              << std::setprecision(17)
+              << "# Fixed quadratic bath; curvatures in eV/(amu Angstrom^2)\n"
+              << "# rate_valid " << (inst.rateValid ? 1 : 0) << '\n'
+              << "# validity " << inst.rateValidity << '\n'
+              << "# phase_zero_verified " << (inst.phaseZeroVerified ? 1 : 0)
+              << '\n'
+              << "# log_abs_det " << inst.bathLogAbsDet << '\n'
+              << "# reactant_log_abs_det " << inst.bathReactantLogAbsDet << '\n'
+              << "# operator_symmetry_residual " << inst.bathSymmetryResidual
+              << '\n'
+              << "# algebraic_roundoff_scale " << inst.bathRoundoffScale << '\n'
+              << "# phase_eigenpair_residual " << inst.phaseEigenResidual
+              << '\n'
+              << "# log_absolute_labelled_gaussian_weight "
+              << inst.logAbsoluteGaussianWeight << '\n'
+              << "# index signed_curvature\n";
+          for (size_t i = 0; i < inst.bathSignedCurvatures.size(); ++i) {
+            spectrum << i << ' ' << inst.bathSignedCurvatures[i] << '\n';
+          }
+          spectrum.flush();
+          if (!spectrum) {
+            throw std::runtime_error("instanton: cannot finish " + name.str());
+          }
+          returnFiles.push_back(name.str());
+        }
         if (inst.negativeModes != 1) {
           EONC_LOG_ERROR("[Instanton] the ring Hessian has {} negative modes, "
                          "not one: the ring is not a first-order saddle of U_N",
@@ -919,6 +1046,9 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     extras.emplace_back("instanton_ring_potential", inst.ringPotential);
     extras.emplace_back("instanton_bN", inst.bN);
     extras.emplace_back("instanton_collapsed", inst.collapsed ? 1.0 : 0.0);
+    extras.emplace_back("instanton_rate_valid", rateOk ? 1.0 : 0.0);
+    extras.emplace_back("instanton_negative_modes",
+                        static_cast<double>(inst.negativeModes));
     extras.emplace_back("instanton_s_min", channel.sMin);
     extras.emplace_back("instanton_s_max", channel.sMax);
     extras.emplace_back("instanton_chord_overlap", channel.chordOverlap);
@@ -932,8 +1062,6 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       extras.emplace_back("rate_htst", inst.classicalRate);
       extras.emplace_back("rate_htst_log", inst.classicalLogRate - logSecond);
       extras.emplace_back("barrier_effective_instanton", inst.effectiveBarrier);
-      extras.emplace_back("instanton_negative_modes",
-                          static_cast<double>(inst.negativeModes));
       extras.emplace_back("instanton_zero_mode", inst.zeroEigenvalue);
     } else {
       rateFailed = true;

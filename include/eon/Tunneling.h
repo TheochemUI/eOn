@@ -269,6 +269,9 @@ struct RateInstantonOptions {
                                 ///< eV / (amu^0.5 Angstrom)
   long lanczosFirst = 30;       ///< Lanczos steps for the first minimum mode
   long lanczosRestart = 6;      ///< Lanczos steps from the previous mode
+  /// Central physical bead-Hessian displacement in sqrt(amu) Angstrom.
+  /// Independent of the Lanczos directional finite-difference step.
+  double physicalHessianStep = 1e-4;
   double lanczosStep = 1e-4;    ///< finite-difference step, amu^0.5 Angstrom
   double maxStep = 0.05;        ///< largest bead move per step,
                                 ///< amu^0.5 Angstrom
@@ -360,6 +363,23 @@ struct RateInstanton {
   double bN = 0.0;                 ///< sum_j |q_{j+1} - q_j|^2, amu Angstrom^2
   /// Empty keeps every spring equal. Otherwise one positive weight per bead.
   std::vector<double> discretization;
+  /// Resolved fixed bath coefficients: empty, one value or one per bead.
+  std::vector<double> bathEta;
+  /// Exact finite bath fluctuation diagnostics after declared rigid projection.
+  std::vector<double> bathSignedCurvatures;
+  double bathLogAbsDet = std::numeric_limits<double>::quiet_NaN();
+  double bathReactantLogAbsDet = std::numeric_limits<double>::quiet_NaN();
+  double bathSymmetryResidual = std::numeric_limits<double>::quiet_NaN();
+  double bathRoundoffScale = std::numeric_limits<double>::quiet_NaN();
+  double phaseEigenResidual = std::numeric_limits<double>::quiet_NaN();
+  /// Absolute labelled-saddle Gaussian weight, without contour/rate factors.
+  double logAbsoluteGaussianWeight = std::numeric_limits<double>::quiet_NaN();
+  bool phaseZeroVerified = false;
+  /// A physical rate requires a converged index-one stationary ring.
+  /// Numerical zero-bath prefactor diagnostics can be finite when false.
+  bool rateValid = false;
+  std::string rateValidity = "not_evaluated";
+
   double negativeEigenvalue = 0.0; ///< of the ring Hessian, 1 / time^2
   double zeroEigenvalue = 0.0;     ///< the eigenvalue left out
   long negativeModes = 0;          ///< eigenvalues below the zero mode

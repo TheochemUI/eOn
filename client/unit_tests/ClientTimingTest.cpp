@@ -166,8 +166,7 @@ TEST_CASE("eonclient prints version and help", "[client][timing]") {
                     nullptr};
     posix_spawn_file_actions_t actions;
     posix_spawn_file_actions_init(&actions);
-    const fs::path sink =
-        fs::temp_directory_path() / "eon-client-flag.out";
+    const fs::path sink = fs::temp_directory_path() / "eon-client-flag.out";
     posix_spawn_file_actions_addopen(&actions, STDOUT_FILENO,
                                      sink.string().c_str(),
                                      O_WRONLY | O_CREAT | O_TRUNC, 0644);

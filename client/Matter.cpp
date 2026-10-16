@@ -700,11 +700,11 @@ void Matter::computePotential() const {
           (usePeriodicBoundaries || livePotential()->forwardsStoredCell())
               ? impl_->cell
               : Matrix3d::Zero();
-      livePotential()->force(std::span<const double>(impl_->positions.data(), n * 3),
-                       std::span<const int>(impl_->atomicNrs.data(), n),
-                       std::span<double>(impl_->forces.data(), n * 3),
-                       &potentialEnergy, &var,
-                       std::span<const double>(force_cell.data(), 9));
+      livePotential()->force(
+          std::span<const double>(impl_->positions.data(), n * 3),
+          std::span<const int>(impl_->atomicNrs.data(), n),
+          std::span<double>(impl_->forces.data(), n * 3), &potentialEnergy,
+          &var, std::span<const double>(force_cell.data(), 9));
       this->energyVariance = var;
       livePotential()->forceCallCounter++;
       PotRegistry::get().on_force_call(livePotential()->getType());

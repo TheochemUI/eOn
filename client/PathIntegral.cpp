@@ -234,7 +234,8 @@ MatrixXd factorCovariance(const MatrixXd &cov) {
   if (cov.rows() == 0 || cov.rows() != cov.cols() || !cov.allFinite()) {
     throw std::runtime_error("GLE covariance must be finite and square");
   }
-  const double symmetryTolerance = 64.0 * std::numeric_limits<double>::epsilon() *
+  const double symmetryTolerance = 64.0 *
+                                   std::numeric_limits<double>::epsilon() *
                                    cov.rows() * cov.cwiseAbs().maxCoeff();
   if ((cov - cov.transpose()).cwiseAbs().maxCoeff() > symmetryTolerance) {
     throw std::runtime_error("GLE covariance must be symmetric");
@@ -796,7 +797,8 @@ void RingPolymer::kick(double h, bool dropParallel) {
   if (!(dropParallel && constrain_)) {
     for (long bead = 0; bead < nBeads_; ++bead) {
       for (long a : freeIndex_) {
-        p_[static_cast<size_t>(bead)][a] += f_[static_cast<size_t>(bead)][a] * h;
+        p_[static_cast<size_t>(bead)][a] +=
+            f_[static_cast<size_t>(bead)][a] * h;
       }
     }
     return;

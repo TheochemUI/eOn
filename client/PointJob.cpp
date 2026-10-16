@@ -32,6 +32,9 @@ std::vector<std::string> PointJob::run() {
     throw std::runtime_error("failed to load " + posInFilename);
   }
 
+  // A point job evaluates the selected potential even when the input
+  // contains a saved energy and force evaluation.
+  pos->setPositions(pos->getPositions());
   QUILL_LOG_DEBUG(log, "Energy:         {:.12f}", pos->getPotentialEnergy());
   std::stringstream freeForcesStream;
   freeForcesStream << pos->getForcesFree();

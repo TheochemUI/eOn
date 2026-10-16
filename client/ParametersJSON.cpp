@@ -17,6 +17,7 @@
 #include "magic_enum/magic_enum.hpp"
 
 #include <cctype>
+#include <cmath>
 #include <cstdint>
 #include <format>
 #include <nlohmann/json.hpp>
@@ -323,6 +324,7 @@ json to_json(const Parameters &p) {
         {"temperatures", o.temperatures},
         {"half_ring", o.half_ring},
         {"initial_hessians", o.initial_hessians},
+        {"physical_hessian_step", o.physical_hessian_step},
         {"energy_shift", o.energy_shift},
         {"discretization", o.discretization},
         {"friction", o.friction},
@@ -794,6 +796,13 @@ void from_json(const json &j, Parameters &p) {
           "[Instanton] initial_hessians must be saddle or "
           "finite_difference, not " +
           o.initial_hessians);
+    }
+    JSON_OPT(s, "physical_hessian_step", o.physical_hessian_step);
+    if (!(o.physical_hessian_step > 0.0) ||
+        !std::isfinite(o.physical_hessian_step)) {
+      throw std::invalid_argument(
+          "[Instanton] physical_hessian_step must be finite and positive "
+          "in sqrt(amu) Angstrom");
     }
     JSON_OPT(s, "energy_shift", o.energy_shift);
     if (s.contains("discretization")) {
