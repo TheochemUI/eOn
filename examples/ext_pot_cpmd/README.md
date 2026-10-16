@@ -63,15 +63,18 @@ pixi run uv run --script xyz_to_con.py /absolute/path/input.xyz /tmp/input.con
 `XYZ_FRAME=-1` selects the last frame; nonnegative values select a zero-based
 frame. `XYZ_UNITS=angstrom` is the default. `XYZ_UNITS=bohr` converts both
 coordinates and a cell read from XYZ metadata to Angstrom. An explicit
-`CELL_ANGSTROM` is always in Angstrom:
+`CELL_ANGSTROM` is always in Angstrom. To select the first frame of a
+Bohr-coordinate input with a known periodic cell, edit these lines in `.env`:
 
 ```bash
-XYZ_FRAME=0 XYZ_UNITS=bohr CELL_ANGSTROM="9.984 19.968 14.976" \
-  pixi run run /absolute/path/input.xyz
+XYZ_FRAME=0
+XYZ_UNITS=bohr
+CELL_ANGSTROM='9.984 19.968 14.976'
 ```
 
-These variables can also be set in `.env`; sourced values take precedence
-over exported values. A positive cell supplied by XYZ metadata is retained
+Then run `pixi run run /absolute/path/input.xyz`. The launcher sources
+`.env`, so its values take precedence over one-command environment
+assignments. A positive cell supplied by XYZ metadata is retained
 unless `CELL_ANGSTROM` overrides it. This generic CPMD wrapper requires an
 orthorhombic cell and rejects non-right cell angles.
 

@@ -292,9 +292,12 @@ the printed CPMD table does not change what `fion` contains.
 
 ### CPMD on several MPI ranks
 
-`examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py` answers each call with a
-`cpmd.x` wavefunction optimisation on several MPI ranks. It reads its
-settings from the environment:
+`examples/ext_pot_cpmd/ext_pot` invokes the example's own
+`cpmd_extpot.py`, which answers each call with a `cpmd.x` wavefunction
+optimisation on several MPI ranks. It reads its settings from the
+environment. The table lists the wrapper's fallback values when a variable
+is absent. The supplied `.env.example` explicitly sets the cutoff to
+**70 Ry**, overriding the raw wrapper's **30 Ry** fallback:
 
 | Variable | Meaning | Default |
 | --- | --- | --- |
@@ -309,8 +312,8 @@ settings from the environment:
 | `CPMD_RESTART_POOL` | shared directory of converged `RESTART.1` files that seed a job's first call | unset |
 
 The runnable point and NEB commands above use this wrapper. The older
-`examples/akmc-cpmd-slurm` campaign uses the same protocol for process
-searches submitted through the cluster communicator (see
+`examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py` campaign wrapper uses the
+same protocol for process searches submitted through the cluster communicator (see
 [Communicator](project:communicator.md)). Its scheduler setup is separate
 from the workstation launcher in `examples/ext_pot_cpmd`.
 
@@ -380,7 +383,10 @@ requires a compute allocation, submit the entire eOn point job from
 sbatch --partition=YOUR_PARTITION --account=YOUR_ACCOUNT submit.sbatch
 ```
 
-The script requests four MPI ranks and runs `run.sh`; its job output is
+The script requests four MPI ranks and runs `run.sh` inside the example's
+Pixi environment. It finds Pixi on `PATH` or at `$HOME/.pixi/bin/pixi`;
+set `PIXI_BIN` to an absolute executable path for another installation.
+Its job output is
 `eon-cpmd-<job-id>.out`, and `run.sh` prints the record directory. Edit the
 rank request and `CPMD_MPI_LAUNCH` together if the calculation needs a
 different rank count. A batch script that runs a generated `cpmd.inp`
