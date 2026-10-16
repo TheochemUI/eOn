@@ -143,6 +143,44 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(NEBRegressionFixture,
+                 "NEB CI toggles refresh projection without potential calls",
+                 "[neb][regression][climbing_image][force_cache]") {
+  ParametersLoadAccess::main_options(params).parallel = false;
+  auto neb =
+      std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
+  neb->updateForces();
+  REQUIRE(neb->climbingImage == 0);
+  std::vector<AtomMatrix> ordinary;
+  for (long i = 1; i <= neb->numImages; ++i) {
+    ordinary.push_back(*neb->projectedForce[i]);
+  }
+  const auto calls = eonc::PotRegistry::get().total_force_calls();
+
+  neb->setCIEnabled(true);
+  const double climbedConvergence = neb->convergenceForce();
+  REQUIRE(neb->climbingImage > 0);
+  const auto ci = neb->climbingImage;
+  const AtomMatrix force = neb->path[ci]->getForces();
+  const AtomMatrix &tau = *neb->tangent[ci];
+  AtomMatrix expected = force - 2.0 * matDot(force, tau) * tau;
+  const auto translation = expected.colwise().mean().eval();
+  expected.rowwise() -= translation;
+  CHECK(expected.isApprox(*neb->projectedForce[ci], 1e-12));
+  REQUIRE((ordinary[ci - 1] - *neb->projectedForce[ci]).norm() > 1e-6);
+  CHECK(eonc::PotRegistry::get().total_force_calls() == calls);
+  neb->updateForces();
+  CHECK(neb->convergenceForce() == Catch::Approx(climbedConvergence).margin(1e-12));
+
+  neb->setCIEnabled(false);
+  neb->convergenceForce();
+  CHECK(neb->climbingImage == 0);
+  for (long i = 1; i <= neb->numImages; ++i) {
+    CHECK(ordinary[i - 1].isApprox(*neb->projectedForce[i], 1e-12));
+  }
+  CHECK(eonc::PotRegistry::get().total_force_calls() == calls);
+}
+
+TEST_CASE_METHOD(NEBRegressionFixture,
                  "Zoom NEB reports the barrier from the original reactant",
                  "[neb][regression][zoom]") {
   // The neb_lj13 pair: reactant -39.965352 eV, and an eonclient process
