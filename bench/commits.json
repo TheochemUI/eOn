@@ -190,7 +190,12 @@
     "9150": "fix(examples): include harmonic point geometry",
     "9152": "feat(examples): provide the external CPMD point configuration and script",
     "9153": "fix(install): include the population rate module in the Python package",
-    "9154": "fix(install): register the rate module in the install manifest"
+    "9154": "fix(install): register the rate module in the install manifest",
+    "9159": "fix(examples): diagnose CPMD launcher startup failures",
+    "9161": "feat(examples): provide optional Slurm submission for external CPMD",
+    "9162": "docs(examples): record real CPMD point and NEB checks",
+    "9167": "docs(extpot): explain empty CPMD output and allocation diagnosis",
+    "9170": "fix(build): inherit the expression capability definition"
   },
   "dcbade17ecc8386a4ee5804354b4994c8ba1d6d8": "update lammps webpage",
   "292bc143343709b10fb7ed150ae5bb493748b289": "gitig: Update",
@@ -382,5 +387,10 @@
   "5f1699cea07a8b617299eff13615b978c8843bd5": "fix(examples): include harmonic point geometry",
   "8c132175422adc70e21a17ae0f2c8aada2578a4c": "feat(examples): provide the external CPMD point configuration and script",
   "d52e3fed0585e992b1074553ce2fa665dac74335": "fix(install): include the population rate module in the Python package",
-  "cc8b92a5be42822c2dca7c370e72c27735cb74e4": "fix(install): register the rate module in the install manifest"
+  "cc8b92a5be42822c2dca7c370e72c27735cb74e4": "fix(install): register the rate module in the install manifest",
+  "6da8245b7febb499bcec3301ca479b384d926274": "fix(examples): diagnose CPMD launcher startup failures",
+  "95f934464274b21165aaeffdd852bcb3e657351f": "feat(examples): provide optional Slurm submission for external CPMD",
+  "016d30bacbc73cc3154d36f0526f963cb8bf82c8": "docs(examples): record real CPMD point and NEB checks",
+  "43d10669213e0bd05bb987b621f126c9fd2761c1": "docs(extpot): explain empty CPMD output and allocation diagnosis",
+  "83f0fb4ccf377d897281b2746efc44b8ec07e141": "fix(build): inherit the expression capability definition"
 }
