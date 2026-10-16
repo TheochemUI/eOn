@@ -323,6 +323,28 @@ node using the site's supported interactive-job procedure. A site that
 requires `srun` instead of `mpirun` needs a launcher adapted to its MPI/PMI
 configuration. Do not start four copies of `eonclient` for this file route.
 
+For the Intel oneAPI 2022 setup, the source tree also supplies a complete
+Slurm job at `examples/akmc-cpmd-slurm/run_point.sbatch`. From the workspace
+root, copy it and edit its `#SBATCH` partition/account and the child
+launcher's module names to match the site. Submit through the Pixi
+environment so the installed client and Python are inherited by the job:
+
+```bash
+cp eon-source/examples/akmc-cpmd-slurm/run_point.sbatch ./run_point.sbatch
+# Edit the scheduler directives and site module names in run_point.sbatch.
+export EON_REPO="$PWD/eon-source"
+pixi run sbatch ./run_point.sbatch "$PWD/pos.con"
+```
+
+Keep `CPMD_BIN`, `PP_LIBRARY_PATH` and the method variables exported as
+above. The script's own defaults are the public Si7 vacancy demonstration
+at 20 Ry with `LMAX=P`; an exported override changes those defaults.
+Slurm prints `Submitted batch job <jobid>`. The calculation's record is
+`eon-cpmd-point-<jobid>/`, including the copied geometry, configuration,
+wrapper and `eon.log`. The scheduler output prints the converted finite
+energy when the point calculation succeeds. The script leaves that
+directory in the submission filesystem for inspection.
+
 The result contains a finite `potential_energy`. Its numerical value depends
 on the supplied pseudopotential, cutoff, geometry and convergence settings;
 the relaxed structure's recorded example energy is not a universal check
