@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>External Potential - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="LAMMPS Potential" href="lammps_pot.html" /><link rel="prev" title="AiiDA (aiida-eon)" href="aiida.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>External Potential - eOn</title><link rel="shortcut icon" href="../_static/favicon.ico"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="LAMMPS Potential" href="lammps_pot.html" /><link rel="prev" title="AiiDA (aiida-eon)" href="aiida.html" />
       <link rel="canonical" href="https://eondocs.org/user_guide/ext_pot.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -36,8 +36,8 @@
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
     <a class="sy-head-brand" href="../index.html">
-      <img class="light-logo" src="../logo/eon_v3_light.svg" alt="eOn" height="28" loading="lazy" />
-      <img class="dark-logo" src="../logo/eon_v3_dark.svg" alt="eOn" height="28" loading="lazy" />
+      <img class="light-logo" src="../_static/logo/eon_v3_light.svg" alt="eOn" height="28" loading="lazy" />
+      <img class="dark-logo" src="../_static/logo/eon_v3_dark.svg" alt="eOn" height="28" loading="lazy" />
       <strong>eOn</strong>
     </a>
     <div class="sy-head-nav" id="head-nav">
@@ -517,6 +517,9 @@ source compilation is needed for this external route.</p>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">run.sh</span></code></p></td>
 <td><p>Converts an input if needed and preserves a separate point-job record.</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">con_to_input.py</span></code></p></td>
+<td><p>Reads a CON frame and removes cached evaluations while preserving its geometry and constraints.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -578,6 +581,11 @@ which is ignored by Git.</p>
 </span><span data-line="2">pixi<span class="w"> </span>run<span class="w"> </span>run<span class="w"> </span>/absolute/path/pos.con
 </span></pre></div>
 </div>
+<p>The CON route uses <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">--script</span> <span class="pre">con_to_input.py</span></code> with pinned readcon.
+It preserves coordinates, cell, atom IDs, masses and fixed flags, and clears
+stored energy and forces so your configured CPMD calculation is evaluated.
+Set <code class="docutils literal notranslate"><span class="pre">CON_FRAME=0</span></code> in <code class="docutils literal notranslate"><span class="pre">.env</span></code> for the first frame, or <code class="docutils literal notranslate"><span class="pre">CON_FRAME=-1</span></code> for the
+last. <code class="docutils literal notranslate"><span class="pre">pos.source.json</span></code> records the frame, input hash and cache removal.</p>
 <p>Each invocation prints <code class="docutils literal notranslate"><span class="pre">Record:</span> <span class="pre">.../runs/point-...</span></code>, evaluates one geometry,
 and prints a finite energy in eV when successful. The record retains
 <code class="docutils literal notranslate"><span class="pre">pos.con</span></code>, <code class="docutils literal notranslate"><span class="pre">config.ini</span></code>, <code class="docutils literal notranslate"><span class="pre">eon.log</span></code> and <code class="docutils literal notranslate"><span class="pre">results.dat</span></code>. CPMD input, output and
@@ -592,6 +600,8 @@ directly from this directory after editing <code class="docutils literal notrans
 </div>
 <p>This direct command uses the existing <code class="docutils literal notranslate"><span class="pre">pos.con</span></code> and <code class="docutils literal notranslate"><span class="pre">config.ini</span></code> in place;
 <code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">run</span> <span class="pre">run</span></code> creates a separate record and handles an arbitrary input.
+Use the launcher for a CON containing stored energies and forces: an
+installed client can otherwise reuse that stored evaluation.
 For a file route using four CPMD ranks, reserve four ranks for each
 concurrent calculator. The eOn client itself stays one process.</p>
 </section>
