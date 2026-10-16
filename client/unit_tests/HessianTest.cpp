@@ -827,10 +827,7 @@ public:
   void force(long n, const double *r, const int *z, double *f, double *u,
              double *var, const double *box) override {
     if (++calls > 3 && interrupt) {
-      std::fill(f, f + 3 * n, std::numeric_limits<double>::quiet_NaN());
-      *u = 0;
-      *var = 0;
-      return;
+      throw std::runtime_error("interrupted finite-difference evaluation");
     }
     inner_->force(n, r, z, f, u, var, box);
   }
@@ -857,7 +854,7 @@ TEST_CASE_METHOD(HessianScratch,
   VectorXi atoms(2);
   atoms << 0, 1;
   Hessian interrupted(params, &matter);
-  REQUIRE(interrupted.getHessian(&matter, atoms).rows() == 0);
+  REQUIRE_THROWS_AS(interrupted.getHessian(&matter, atoms), std::runtime_error);
   REQUIRE(std::filesystem::exists("context.ckpt"));
   {
     std::ifstream checkpoint("context.ckpt");
