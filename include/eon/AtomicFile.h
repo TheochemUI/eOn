@@ -2,6 +2,7 @@
 #pragma once
 
 #include <cstdio>
+#include <cstdlib>
 #include <string>
 #include <vector>
 
@@ -9,6 +10,9 @@
 #include <fcntl.h>
 #include <io.h>
 #include <sys/stat.h>
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <windows.h>
 #else
 #include <unistd.h>
