@@ -2633,8 +2633,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       } else if (v.climb.negative > std::max(1L, exactNegatives) &&
                  driftRefreshes < kMaxDriftRefreshes) {
         ++driftRefreshes;
-        const double eps =
-            options.physicalHessianStep;
+        const double eps = options.physicalHessianStep;
         for (size_t j = 0; j < x.size(); ++j) {
           physical[j] = fdPhysicalHessian(x[j], potential, eps);
         }
@@ -2806,8 +2805,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       // region again.
       if (trust <= trustFloor && refreshes < kMaxHessianRefreshes) {
         ++refreshes;
-        const double eps =
-            options.physicalHessianStep;
+        const double eps = options.physicalHessianStep;
         for (size_t j = 0; j < x.size(); ++j) {
           physical[j] = fdPhysicalHessian(x[j], potential, eps);
         }
@@ -2976,8 +2974,8 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
   // that mode.
   const long nGot = static_cast<long>(got.beads.size());
   bool mirrored = (got.converged || got.stalledHalf) && options.halfRing &&
-                  !options.friction &&
-                  options.checkOddSector && nGot == nBeads && nGot % 2 == 0;
+                  !options.friction && options.checkOddSector &&
+                  nGot == nBeads && nGot % 2 == 0;
   for (long j = 1; mirrored && j < nGot / 2; ++j) {
     mirrored = (got.beads[static_cast<size_t>(j)] -
                 got.beads[static_cast<size_t>(nGot - j)])
@@ -3462,9 +3460,9 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
                                     const RateInstantonOptions &options) {
   if (!(options.physicalHessianStep > 0.0) ||
       !std::isfinite(options.physicalHessianStep)) {
-    throw std::invalid_argument(
-        "optimizeRateInstanton: physicalHessianStep must be finite and positive "
-        "in sqrt(amu) Angstrom");
+    throw std::invalid_argument("optimizeRateInstanton: physicalHessianStep "
+                                "must be finite and positive "
+                                "in sqrt(amu) Angstrom");
   }
   const long N = options.beads;
   if (N < 4 || !(beta > 0.0) || hessSaddle.rows() != saddle.size()) {

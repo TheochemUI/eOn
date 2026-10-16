@@ -1683,8 +1683,9 @@ TEST_CASE("Newton includes a requested bath when a half ring is selected",
   if (explicitBath) {
     options.frictionEtaBeads = {0.1, 0.2, 0.4, 0.05, 0.3, 0.1, 0.2, 0.15};
   }
-  const RateInstanton selected = optimizeRateInstanton(
-      VectorXd::Zero(1), -MatrixXd::Identity(1, 1), beta, guess, quartic, options);
+  const RateInstanton selected =
+      optimizeRateInstanton(VectorXd::Zero(1), -MatrixXd::Identity(1, 1), beta,
+                            guess, quartic, options);
   double bath = 0.0;
   std::vector<VectorXd> bathGradient(static_cast<size_t>(beads),
                                      VectorXd::Zero(1));
@@ -1704,9 +1705,11 @@ TEST_CASE("Newton includes a requested bath when a half ring is selected",
   REQUIRE(selected.ringPotential == Catch::Approx(expected).margin(1e-10));
   REQUIRE(largestBatch == beads);
   options.halfRing = false;
-  const RateInstanton full = optimizeRateInstanton(
-      VectorXd::Zero(1), -MatrixXd::Identity(1, 1), beta, guess, quartic, options);
-  REQUIRE(selected.ringPotential == Catch::Approx(full.ringPotential).margin(1e-10));
+  const RateInstanton full =
+      optimizeRateInstanton(VectorXd::Zero(1), -MatrixXd::Identity(1, 1), beta,
+                            guess, quartic, options);
+  REQUIRE(selected.ringPotential ==
+          Catch::Approx(full.ringPotential).margin(1e-10));
 }
 
 TEST_CASE("friction bath adds a positive term and its gradient",
@@ -2226,9 +2229,9 @@ TEST_CASE("A soft saddle axis retains its physical ring instability",
   options.forceTolerance = 1e-8;
   options.maxStep = 0.1;
   const double beta = 10.0 / kHbar;
-  const auto reference = optimizeRateInstanton(
-      VectorXd::Zero(1), MatrixXd::Constant(1, 1, -1.0), beta, {},
-      quartic, options);
+  const auto reference =
+      optimizeRateInstanton(VectorXd::Zero(1), MatrixXd::Constant(1, 1, -1.0),
+                            beta, {}, quartic, options);
   REQUIRE(reference.converged);
   std::vector<VectorXd> guess;
   double meanSquare = 0.0;
@@ -2249,8 +2252,8 @@ TEST_CASE("A soft saddle axis retains its physical ring instability",
     for (size_t j = 0; j < q.size(); ++j) {
       const double x = q[j](0), y = q[j](1);
       const double curvature = 1e-8 - 0.1 * x * x;
-      v[j] = 0.25 * std::pow(x * x - 1.0, 2) +
-             0.5 * curvature * y * y + 0.25 * std::pow(y, 4);
+      v[j] = 0.25 * std::pow(x * x - 1.0, 2) + 0.5 * curvature * y * y +
+             0.25 * std::pow(y, 4);
       g[j] = VectorXd::Zero(2);
       g[j](0) = x * (x * x - 1.0) - 0.1 * x * y * y;
       g[j](1) = curvature * y + y * y * y;
@@ -2282,14 +2285,14 @@ TEST_CASE("Physical bead Hessians use their own mass weighted displacement",
     g.resize(q.size());
     for (size_t j = 0; j < q.size(); ++j) {
       const double x = q[j](0), y = q[j](1);
-      v[j] = 0.25 * std::pow(x*x - 1.0, 2) + 0.5*y*y;
+      v[j] = 0.25 * std::pow(x * x - 1.0, 2) + 0.5 * y * y;
       g[j] = VectorXd::Zero(2);
-      g[j](0) = x*(x*x - 1.0);
+      g[j](0) = x * (x * x - 1.0);
       g[j](1) = y;
     }
   };
-  MatrixXd hs = MatrixXd::Identity(2,2);
-  hs(0,0) = -1.0;
+  MatrixXd hs = MatrixXd::Identity(2, 2);
+  hs(0, 0) = -1.0;
   RateInstantonOptions options;
   REQUIRE(options.physicalHessianStep == Catch::Approx(1e-4));
   options.beads = 8;
@@ -2299,9 +2302,11 @@ TEST_CASE("Physical bead Hessians use their own mass weighted displacement",
   options.initialHessians = "finite_difference";
   options.lanczosStep = 0.03;
   options.physicalHessianStep = step;
-  optimizeRateInstanton(VectorXd::Zero(2), hs, 10.0/kHbar, {}, potential, options);
-  REQUIRE(observed == Catch::Approx(2.0*step).margin(1e-12));
+  optimizeRateInstanton(VectorXd::Zero(2), hs, 10.0 / kHbar, {}, potential,
+                        options);
+  REQUIRE(observed == Catch::Approx(2.0 * step).margin(1e-12));
   options.physicalHessianStep = 0.0;
-  REQUIRE_THROWS_AS(optimizeRateInstanton(VectorXd::Zero(2), hs, 10.0/kHbar,
-                                         {}, potential, options), std::invalid_argument);
+  REQUIRE_THROWS_AS(optimizeRateInstanton(VectorXd::Zero(2), hs, 10.0 / kHbar,
+                                          {}, potential, options),
+                    std::invalid_argument);
 }
