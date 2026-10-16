@@ -98,6 +98,16 @@ hessian_stride = 4
 `springs = eco` is refused. The instanton is a Trotter discretisation of
 the ring.
 
+The reactant and product must have the same ordered species, masses, cell,
+and fixed-atom masks. With a frozen environment, its positions must also
+match within 1e-8 Å under the minimum image. The same requirements apply
+to `saddle_filename` in rate mode. A mismatch raises `instanton: reference
+surface differs` before reference energies or Hessians are evaluated.
+For example, independently relaxing frozen atoms in `saddle.con` changes
+the constrained potential: those coordinates cannot supply a saddle
+energy for a ring whose frozen atoms stay at the reactant positions.
+Generate and relax both references with the same frozen environment.
+
 `beta_hbar_omega` sets the imaginary time in units of {math}`1/\omega` of
 the stiffer minimum along the line between them. It must be long enough for
 the kink to relax into both wells. `results.dat` reports
