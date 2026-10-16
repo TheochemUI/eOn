@@ -3312,6 +3312,7 @@ TEST_CASE("the client rejects an unknown flag and a missing structure",
 } // namespace tests
 
 
+namespace tests {
 TEST_CASE("instanton references share constraints and the mass metric",
           "[job][instanton][reference-surface]") {
   Workdir work;
@@ -3351,3 +3352,4 @@ TEST_CASE("instanton references share constraints and the mass metric",
         Catch::Matchers::ContainsSubstring("instanton: reference surface differs"));
   }
 }
+} // namespace tests
