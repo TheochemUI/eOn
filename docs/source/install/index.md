@@ -117,6 +117,15 @@ and that `rsync`.
 
 The setup line already passes `--force-fallback-for=nlohmann_json,hwy`. The rolling distro section below says why a host `nlohmann_json` breaks the conda compiler, and why the Highway name is `hwy` rather than `libhwy`. The test line should finish with a fail count of 0.
 
+Update the subprojects after each `git pull`, then configure again:
+
+```{code-block} bash
+meson subprojects update --reset
+meson setup --reconfigure bbdir
+```
+
+Meson skips the fetch for a wrap subproject such as `rgpot` once it sits on disk. A stale checkout then fails with missing headers, for example `rgpot/EMT/EMTPot.hpp`. The `--reset` flag throws away local edits under `subprojects/`.
+
 Some additional performance can be gained with `ccache` and `mold`, which can be
 passed with `--native-file`:
 
