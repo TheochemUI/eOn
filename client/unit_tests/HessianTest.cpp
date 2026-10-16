@@ -88,6 +88,15 @@ TEST_CASE_METHOD(HessianScratch, "Hessian on LJ cluster is symmetric",
   REQUIRE(H.rows() == 9);
   REQUIRE(H.cols() == 9);
 
+  std::ifstream saved("hessian.dat");
+  MatrixXd restored(H.rows(), H.cols());
+  for (long i = 0; i < H.rows(); ++i) {
+    for (long j = 0; j < H.cols(); ++j) {
+      REQUIRE(static_cast<bool>(saved >> restored(i, j)));
+      REQUIRE(restored(i, j) == H(i, j));
+    }
+  }
+
   for (long i = 0; i < H.rows(); i++) {
     for (long j = 0; j < i; j++) {
       REQUIRE_THAT(H(i, j), Catch::Matchers::WithinAbs(H(j, i), 1e-6));

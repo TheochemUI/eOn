@@ -19,6 +19,8 @@
 #include <algorithm>
 #include <cmath>
 #include <fstream>
+#include <iomanip>
+#include <limits>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -654,10 +656,10 @@ bool Hessian::finalizeHessian(int size) {
     return false;
   }
 
-  if (!parameters.main_options().quiet) {
-    QUILL_LOG_DEBUG(log, "[Hessian] writing hessian\n");
-  }
   if (writeFile) {
+    if (!parameters.main_options().quiet) {
+      QUILL_LOG_DEBUG(log, "[Hessian] writing hessian\n");
+    }
     // A previous case in the same process can still hold hessian.dat on
     // Windows. Replace it, and try once more after removing the old file.
     std::ofstream hessfile("hessian.dat", std::ios::out | std::ios::trunc);
@@ -670,7 +672,8 @@ bool Hessian::finalizeHessian(int size) {
       QUILL_LOG_ERROR(log, "[Hessian] failed to open hessian.dat");
       return false;
     }
-    hessfile << hessian;
+    hessfile << std::setprecision(std::numeric_limits<double>::max_digits10)
+             << hessian;
     hessfile.close();
     if (!hessfile) {
       QUILL_LOG_ERROR(log, "[Hessian] failed to write hessian.dat");
