@@ -274,6 +274,13 @@ bead first. The rate uses the bead Hessians chosen by `hessian_final`, not
 that update. On the one-dimensional Eckart barrier the search converges
 in 4 to 7 steps from either seed.
 
+An unexpected negative-mode count can also trigger a complete physical
+Hessian refresh during optimization, including at iteration zero.
+For a half ring with even bead count `P`, this evaluates `P/2 + 1`
+independent bead Hessians; central differences cost `2f` force geometries
+per bead for `f` free Cartesian coordinates. `hessian_stride` controls the
+final rate-prefactor Hessians and does not reduce this optimizer refresh.
+
 `temperatures` is a comma-separated list in kelvin. The search starts at
 the highest and each ring starts the next, colder one. An empty list uses
 `temperature`. `bead_ladder` (default off) starts a ring of at least 16
@@ -291,6 +298,18 @@ Above {math}`T_c` the instanton columns are empty and the last two hold
 the parabolic rate. Below {math}`T_c` those two are empty. At {math}`T_c`
 the parabolic columns are empty. A run at more than one temperature also writes
 `instanton_<T>K.con`. The coldest temperature is written to `instanton.con`.
+
+The rate calculation retains `instanton_reactant_hessian.dat` and
+`instanton_saddle_hessian.dat`, with their sorted eigenvalues in
+`instanton_reactant_eigenvalues.dat` and
+`instanton_saddle_eigenvalues.dat`. These are the projected mass-weighted
+matrices used by the rate calculation, written with enough digits to
+round-trip a double. They are retained even when reference-spectrum
+validation rejects the rate. The reactant must be a metastable minimum
+and the saddle must have exactly one unstable vibration after the
+applicable rigid modes are removed. With any frozen atoms, no whole-system
+rigid modes are removed; small negative curvatures require a force and
+finite-difference convergence check rather than an assumed six-mode removal.
 
 With no atom fixed, both the reactant and the instanton omit the three
 translations. A
