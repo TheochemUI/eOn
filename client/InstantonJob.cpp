@@ -442,7 +442,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   // calculation, including spectra that fail metastability validation.
   auto saveReference = [&](const std::string &name, const MatrixXd &matrix) {
     Eigen::SelfAdjointEigenSolver<MatrixXd> solver(matrix,
-                                                  Eigen::EigenvaluesOnly);
+                                                   Eigen::EigenvaluesOnly);
     if (solver.info() != Eigen::Success || !solver.eigenvalues().allFinite()) {
       throw std::runtime_error("instanton: cannot diagonalize " + name +
                                " reference Hessian");

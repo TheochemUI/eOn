@@ -1,6 +1,6 @@
 #include "eon/potentials/Rgpot/CpmdMessage.h"
-#include "eon/potentials/Rgpot/RGPotEngine.h"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/potentials/Rgpot/RGPotEngine.h"
 
 #include <capnp/message.h>
 #include <capnp/serialize.h>

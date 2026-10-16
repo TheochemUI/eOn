@@ -19,9 +19,9 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/BaseStructures.h"
 #include "eon/BasinHoppingJob.h"
-#include "eon/GlobalOptimizationJob.h"
 #include "eon/Bundling.h"
 #include "eon/ConFileIO.h"
+#include "eon/GlobalOptimizationJob.h"
 #include "eon/Job.h"
 #include "eon/Matter.h"
 #include "eon/OHTSTJob.h"
@@ -3079,7 +3079,8 @@ force_tolerance = 1e-6
   REQUIRE(std::filesystem::exists(pathFile));
   const auto saved = readcon::read_all_frames(pathFile.string());
   REQUIRE(saved.size() >= 3);
-  const std::string text = (std::stringstream{} << std::ifstream(pathFile).rdbuf()).str();
+  const std::string text =
+      (std::stringstream{} << std::ifstream(pathFile).rdbuf()).str();
   REQUIRE(text.find("arc_length") != std::string::npos);
   for (const auto &frame : saved) {
     REQUIRE(frame.energy_opt().has_value());
@@ -3161,9 +3162,8 @@ TEST_CASE_METHOD(JobIntegrationFixture,
   REQUIRE(copyTestData("neb_lj13"));
   // A saddle supplied as the reactant is not a metastable well. Its
   // unstable vibration remains after the cluster's rigid modes leave.
-  std::filesystem::copy_file(
-      workdir / "saddle.con", workdir / "reactant.con",
-      std::filesystem::copy_options::overwrite_existing);
+  std::filesystem::copy_file(workdir / "saddle.con", workdir / "reactant.con",
+                             std::filesystem::copy_options::overwrite_existing);
   const double temperature = GENERATE(198.0, 400.0);
   writeConfig(std::string(R"(
 [Main]
@@ -3174,7 +3174,8 @@ potential = lj
 
 [Instanton]
 mode = rate
-temperature = )") + std::to_string(temperature) + R"(
+temperature = )") +
+              std::to_string(temperature) + R"(
 beads = 16
 )");
   const auto results = runJob();
@@ -3196,7 +3197,7 @@ beads = 16
     REQUIRE(matrix.allFinite());
     REQUIRE((matrix - matrix.transpose()).norm() < 1e-12);
     Eigen::SelfAdjointEigenSolver<MatrixXd> solver(matrix,
-                                                  Eigen::EigenvaluesOnly);
+                                                   Eigen::EigenvaluesOnly);
     REQUIRE(solver.info() == Eigen::Success);
     std::ifstream spectrumFile(prefix.string() + "_eigenvalues.dat");
     VectorXd spectrum(39);
@@ -3254,8 +3255,7 @@ TEST_CASE_METHOD(JobIntegrationFixture,
   runOne("md", "npew", 1);
 }
 
-TEST_CASE_METHOD(JobIntegrationFixture,
-                 "Basin hopping keeps a unique minimum",
+TEST_CASE_METHOD(JobIntegrationFixture, "Basin hopping keeps a unique minimum",
                  "[job][basin_hopping]") {
   EON_REQUIRE_TEST_DATA("neb_morse");
   writeConfig(R"(

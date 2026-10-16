@@ -10,8 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "eon/GleThermostat.h"
 #include "eon/PathIntegral.h"
+#include "eon/GleThermostat.h"
 
 #include "catch2/catch_amalgamated.hpp"
 
@@ -19,9 +19,9 @@
 
 #include <cmath>
 #include <filesystem>
-#include <stdexcept>
 #include <fstream>
 #include <numbers>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -184,7 +184,8 @@ TEST_CASE("Normal mode matrix is orthogonal", "[path-integral]") {
   }
 }
 
-TEST_CASE("GLE rejects stable drift with indefinite noise covariance", "[gle]") {
+TEST_CASE("GLE rejects stable drift with indefinite noise covariance",
+          "[gle]") {
   MatrixXd drift(2, 2);
   drift << 1.0, 4.0, 0.0, 1.0;
   eonc::GleThermostat invalid(drift, 1.0, 0.1, 1);
@@ -196,14 +197,14 @@ TEST_CASE("GLE rejects stable drift with indefinite noise covariance", "[gle]") 
 
 TEST_CASE("Normal mode GLE rejects indefinite and asymmetric covariance",
           "[path-integral]") {
-  const auto path = std::filesystem::temp_directory_path() / "eon-gle-invalid.txt";
+  const auto path =
+      std::filesystem::temp_directory_path() / "eon-gle-invalid.txt";
   Options opt = baseOptions(2);
   opt.thermostat = Thermostat::Piglet;
   opt.gleFile = path.string();
-  for (const std::string &data : {
-           "1 2\n1 4\n0 1\n1 0\n0 1\n",
-           "1 2\n1 0\n0 1\n1 0\n0 -1\n",
-           "1 2\n1 0\n0 1\n1 1\n0 1\n"}) {
+  for (const std::string &data :
+       {"1 2\n1 4\n0 1\n1 0\n0 1\n", "1 2\n1 0\n0 1\n1 0\n0 -1\n",
+        "1 2\n1 0\n0 1\n1 1\n0 1\n"}) {
     {
       std::ofstream out(path);
       REQUIRE(out);
