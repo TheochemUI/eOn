@@ -360,6 +360,34 @@ it must not invent an energy or reuse a stale response. Return finite values
 and preserve diagnostics. A point job validates setup before a minimization,
 NEB or aKMC run makes many expensive calls.
 
+### Empty CPMD output or a site that requires an allocation
+
+The CPMD example launcher writes `CPMD launcher: initializing`, the module
+loading phase and the selected executable to `cpmd.out`. If these lines
+are absent, check that the checkout contains the current launcher and
+that the inspected file belongs to the failed call. eOn names exchange
+directories `extpot_<process-id>_<call-id>`; use the directory printed in
+the error rather than guessing a hidden directory name. If initialization
+appears but execution does not, inspect the module-loading error. If
+execution appears, inspect the MPI/runtime diagnostics that follow it.
+An empty file alone does not identify an SCF failure.
+
+A workstation can run the example directly. On a cluster whose MPI launch
+requires a compute allocation, submit the entire eOn point job from
+`examples/ext_pot_cpmd`, with the site's partition and account:
+
+```bash
+sbatch --partition=YOUR_PARTITION --account=YOUR_ACCOUNT submit.sbatch
+```
+
+The script requests four MPI ranks and runs `run.sh`; its job output is
+`eon-cpmd-<job-id>.out`, and `run.sh` prints the record directory. Edit the
+rank request and `CPMD_MPI_LAUNCH` together if the calculation needs a
+different rank count. A batch script that runs a generated `cpmd.inp`
+directly checks CPMD startup, but does not resume an eOn process that has
+already exited. Run eOn inside the allocation to complete the external
+potential exchange.
+
 ## Performance considerations
 
 Each force call spawns a new process and re-initializes the calculator. For
