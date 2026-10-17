@@ -4,29 +4,36 @@
 ** Copyright (c) 2010--present, eOn Development Team
 */
 #include "catch2/catch_amalgamated.hpp"
-#include "eon/Tunneling.h"
 #include "eon/DerivativeRbfModel.h"
+#include "eon/Tunneling.h"
 
 using namespace eonc::tunneling;
 
-TEST_CASE("derivative RBF site signs and physical derivatives agree with Gaussian calculus",
+TEST_CASE("derivative RBF site signs and physical derivatives agree with "
+          "Gaussian calculus",
           "[instanton][physical-bath][interpolation]") {
-  const double x=0.37,site=-0.2,length=0.8;
-  for (int order : {0,1,2}) {
-    const nlohmann::json data={{"kind","derivative_rbf"},{"length_scales",{length}},
-      {"constant",{0.0}},{"sites",{{site}}},{"weights",{{1.0}}},
-      {"derivative_orders",{{order}}}};
-    const auto model=DerivativeRbfModel::fromJson(data);
-    const auto value=model.evaluate(VectorXd::Constant(1,x));
-    const double dx=x-site,inv=1/(length*length),gaussian=std::exp(-0.5*dx*dx*inv);
-    const double expected=order==0 ? gaussian :
-      (order==1 ? dx*inv*gaussian : (dx*dx*inv*inv-inv)*gaussian);
-    REQUIRE(std::abs(value.value[0]-expected)<1e-14);
-    const double step=1e-5;
-    const auto plus=model.evaluate(VectorXd::Constant(1,x+step));
-    const auto minus=model.evaluate(VectorXd::Constant(1,x-step));
-    REQUIRE(std::abs((plus.value[0]-minus.value[0])/(2*step)-value.jacobian(0,0))<1e-8);
-    REQUIRE(std::abs((plus.jacobian(0,0)-minus.jacobian(0,0))/(2*step)-value.hessians[0](0,0))<1e-8);
+  const double x = 0.37, site = -0.2, length = 0.8;
+  for (int order : {0, 1, 2}) {
+    const nlohmann::json data = {
+        {"kind", "derivative_rbf"}, {"length_scales", {length}},
+        {"constant", {0.0}},        {"sites", {{site}}},
+        {"weights", {{1.0}}},       {"derivative_orders", {{order}}}};
+    const auto model = DerivativeRbfModel::fromJson(data);
+    const auto value = model.evaluate(VectorXd::Constant(1, x));
+    const double dx = x - site, inv = 1 / (length * length),
+                 gaussian = std::exp(-0.5 * dx * dx * inv);
+    const double expected =
+        order == 0 ? gaussian
+                   : (order == 1 ? dx * inv * gaussian
+                                 : (dx * dx * inv * inv - inv) * gaussian);
+    REQUIRE(std::abs(value.value[0] - expected) < 1e-14);
+    const double step = 1e-5;
+    const auto plus = model.evaluate(VectorXd::Constant(1, x + step));
+    const auto minus = model.evaluate(VectorXd::Constant(1, x - step));
+    REQUIRE(std::abs((plus.value[0] - minus.value[0]) / (2 * step) -
+                     value.jacobian(0, 0)) < 1e-8);
+    REQUIRE(std::abs((plus.jacobian(0, 0) - minus.jacobian(0, 0)) / (2 * step) -
+                     value.hessians[0](0, 0)) < 1e-8);
   }
 }
 

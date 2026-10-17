@@ -4077,8 +4077,8 @@ void physicalBathFluctuations(RateInstanton &inst,
   const double logMeasure = fullDimension * std::log(inst.betaN * kHbar);
   inst.bathLogAbsDet = logPrime + bath.bathLogDeterminant;
   inst.bathReactantLogAbsDet = referenceDet + referenceBath.bathLogDeterminant;
-  inst.logZr = -inst.beta * vReactant -
-               logMeasure - 0.5 * inst.bathReactantLogAbsDet;
+  inst.logZr =
+      -inst.beta * vReactant - logMeasure - 0.5 * inst.bathReactantLogAbsDet;
   // For an exact phase zero, det' H_full=det D_bath det' S times
   // ||u_full||^2/||u_retained||^2. Its phase orbit has the square root
   // of the same metric, so the reduced orbit and pseudodeterminant pair
@@ -4108,7 +4108,8 @@ void physicalBathFluctuations(RateInstanton &inst,
   inst.effectiveBarrier =
       -std::log(2 * std::numbers::pi * kHbar * inst.beta) / inst.beta -
       inst.logRate / inst.beta;
-  inst.classicalRate=inst.classicalLogRate=std::numeric_limits<double>::quiet_NaN();
+  inst.classicalRate = inst.classicalLogRate =
+      std::numeric_limits<double>::quiet_NaN();
 }
 
 } // namespace
