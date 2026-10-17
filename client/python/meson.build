@@ -106,10 +106,10 @@ print(m.group(1) if m else "0.0.0")
 ).stdout().strip()
 message('pyeonclient: version @0@'.format(_pyec_version))
 
+# Warning flags come from add_project_arguments, which drops ones cl rejects.
 _nb_cpp_args = _args + [
     '-DNB_DOMAIN=pyeonclient',
     '-DPYEONCLIENT_VERSION="' + _pyec_version + '"',
-    '-Wno-unused-parameter',
 ]
 
 if _nb_free_threaded

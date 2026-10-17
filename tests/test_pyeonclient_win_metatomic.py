@@ -26,8 +26,38 @@ def test_win64_metatomic_wheel_is_in_the_matrix():
         / "pyeonclient_cibw_before_windows.py"
     ).read_text(encoding="utf-8")
     assert "numpy" in before
-    assert "meson>=1.10.1,<1.11" in before
+    assert "meson>=1.3" in before
+    assert "<1.11" not in before
+    pyproject = (
+        Path(__file__).resolve().parents[1] / "pyproject-pyeonclient.toml"
+    ).read_text(encoding="utf-8")
+    assert 'meson>=1.3"' in pyproject
+    assert "<1.11" not in pyproject
     assert 'variant == "metatomic"' in before
     win = text.split("name: abi3-win-metatomic", 1)[1].split("steps:", 1)[0]
     assert "variant: metatomic" in win
     assert "windows-2022" in win
+
+
+def test_windows_pots_are_static_and_flang_runtime_is_a_file():
+    root = Path(__file__).resolve().parents[1]
+    extpot = (root / "client" / "potentials" / "ExtPot" / "meson.build").read_text(
+        encoding="utf-8"
+    )
+    lammps = (root / "client" / "potentials" / "LAMMPS" / "meson.build").read_text(
+        encoding="utf-8"
+    )
+    bindings = (root / "client" / "python" / "meson.build").read_text(encoding="utf-8")
+    for meson in (extpot, lammps):
+        assert "if is_windows" in meson
+        assert "default_library=static" in meson
+        assert "_install = false" in meson
+    assert "'-Wno-unused-parameter'" not in bindings
+    wrap = (root / "subprojects" / "rgpot.wrap").read_text(encoding="utf-8")
+    assert "rgpot-windows-flang-rt.patch" in wrap
+    patch = (
+        root / "subprojects" / "packagefiles" / "rgpot-windows-flang-rt.patch"
+    ).read_text(encoding="utf-8")
+    assert "FortranRuntime.dynamic.lib" in patch
+    assert "FortranDecimal.dynamic.lib" in patch
+    assert "find_library never sees the runtime" in patch

@@ -65,9 +65,7 @@ Changelog = "https://github.com/TheochemUI/eOn/blob/main/CHANGELOG.md"
 [build-system]
 requires = [
     "meson-python>=0.16",
-    # Meson 1.12 feeds -Werror=implicit-function-declaration to flang-new.
-    # flang 19 rejects it, so the Windows wheel never sees FortranRuntime.
-    "meson>=1.10.1,<1.11",
+    "meson>=1.3",
     "ninja",
     "numpy>=1.26.4",
     "nanobind>=2.2,<3",
