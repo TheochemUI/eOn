@@ -54,3 +54,22 @@ def test_import_table_lists_the_dll_and_skips_kernel32(tmp_path: Path):
     assert mod.imported_dlls(pe) == ["capnp.dll"]
     assert mod._system("KERNEL32.dll")
     assert not mod._system("capnp.dll")
+
+
+def test_donor_directory_beats_a_later_search_dir(tmp_path: Path):
+    mod = _mod()
+    torch_lib = tmp_path / "torch"
+    pixi_bin = tmp_path / "pixi"
+    torch_lib.mkdir()
+    pixi_bin.mkdir()
+    (torch_lib / "libiomp5md.dll").write_bytes(b"torch")
+    (pixi_bin / "libiomp5md.dll").write_bytes(b"pixi")
+    found = mod.find_import("libiomp5md.dll", torch_lib, [pixi_bin, torch_lib])
+    assert found is not None
+    assert found.read_bytes() == b"torch"
+    fallback = mod.find_import("capnp.dll", torch_lib, [pixi_bin])
+    assert fallback is None
+    (pixi_bin / "capnp.dll").write_bytes(b"capnp")
+    fallback = mod.find_import("capnp.dll", torch_lib, [pixi_bin])
+    assert fallback is not None
+    assert fallback.read_bytes() == b"capnp"

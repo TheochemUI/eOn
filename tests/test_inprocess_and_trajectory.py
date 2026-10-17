@@ -18,6 +18,7 @@ from tests.test_library_bodies import _Comm, _atoms, _config, _states
 
 
 def test_inprocess_minimizes_a_pair(tmp_path):
+    pytest.importorskip("pyeonclient")
     cfg = _config(tmp_path)
     scratch = tmp_path / "scratch"
     scratch.mkdir()

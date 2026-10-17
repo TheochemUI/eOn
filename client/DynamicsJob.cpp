@@ -19,7 +19,6 @@
 #include "eon/HelperFunctions.h"
 #include "eon/JobResult.h"
 #include "eon/Parameters.h"
-#include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 
 namespace eonc {
@@ -43,7 +42,7 @@ std::vector<std::string> DynamicsJob::run(void) {
   const std::string resultsFilename("results.dat");
   auto env = JobResultEnvelope::fromMinimization(
       RunStatus::GOOD, params.potential_options().potential,
-      PotRegistry::get().total_force_calls(), true, R->getPotentialEnergy());
+      pots().total_force_calls(), true, R->getPotentialEnergy());
   env.provenance = provenanceForJob(params);
   env.job_type = "dynamics";
   env.writeResultsDat(resultsFilename);

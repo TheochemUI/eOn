@@ -2,15 +2,34 @@
 """Copy wrap-built librgpot into the install prefix.
 
 rgpot sets install: not meson.is_subproject(). eOn CI uses
-meson install --skip-subprojects. eonclient then looks for
-librgpot.3.dylib (soversion 3 in rgpot 3.2.0) next to the prefix.
+meson install --skip-subprojects. eonclient then looks for the
+SONAME (librgpot.so.N / librgpot.N.dylib). N is kCxxSoversion.
+The real file is librgpot.so.<project version>, which is not that N.
 """
 from __future__ import annotations
 
 import os
+import re
 import shutil
+import subprocess
 import sys
 from pathlib import Path
+
+
+def shared_object_soname(path: Path) -> str | None:
+    readelf = shutil.which("readelf")
+    if readelf is None:
+        return None
+    proc = subprocess.run(
+        [readelf, "-d", str(path)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if proc.returncode != 0:
+        return None
+    match = re.search(r"Library soname: \[(.*)\]", proc.stdout)
+    return match.group(1) if match else None
 
 
 def main() -> int:
@@ -53,15 +72,17 @@ def main() -> int:
                 dest.symlink_to(os.readlink(path))
             else:
                 shutil.copy2(path, dest)
-            # Wheel NEEDED is librgpot.so.3; wrap file is librgpot.so.3.2.0.
-            if ".so." in name:
-                soname = name.split(".so.")[0] + ".so." + name.split(".so.")[1].split(".")[0]
-                alias = dest_dir / soname
-                if alias != dest and not alias.exists():
-                    try:
-                        alias.symlink_to(name)
-                    except OSError:
-                        shutil.copy2(path, alias)
+            # DT_SONAME is librgpot.so.<kCxxSoversion>. The filename
+            # librgpot.so.3.5.1 would otherwise alias to librgpot.so.3.
+            if not path.is_symlink():
+                soname = shared_object_soname(dest)
+                if soname:
+                    alias = dest_dir / soname
+                    if alias != dest and not alias.exists():
+                        try:
+                            alias.symlink_to(name)
+                        except OSError:
+                            shutil.copy2(path, alias)
             copied += 1
     if copied == 0:
         print(f"install_wrap_rgpot: no librgpot next to {src}", file=sys.stderr)

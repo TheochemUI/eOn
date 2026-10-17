@@ -16,7 +16,6 @@
 #include "eon/HelperFunctions.h"
 #include "eon/JobResult.h"
 #include "eon/Matter.h"
-#include "eon/PotRegistry.h"
 
 #include <array>
 #include <format>
@@ -73,7 +72,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
 
   auto env = JobResultEnvelope::fromMinimization(
       RunStatus::GOOD, params.potential_options().potential,
-      PotRegistry::get().total_force_calls(), false, 0.0);
+      pots().total_force_calls(), false, 0.0);
   env.provenance = provenanceForJob(params);
   env.job_type = "finite_difference";
 
@@ -95,7 +94,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
     table.flush();
   }
 
-  env.force_calls = PotRegistry::get().total_force_calls();
+  env.force_calls = pots().total_force_calls();
   env.writeResultsDat("results.dat");
   std::vector<std::string> returnFiles;
   returnFiles.push_back("results.dat");

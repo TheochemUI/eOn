@@ -74,6 +74,9 @@ build-backend = "mesonpy"
 
 [tool.meson-python]
 limited-api = true
+# Windows shared libraries have no RPATH. The package adds their
+# directories to the DLL search path before importing _core.
+allow-windows-internal-shared-libs = true
 
 # Default PyPI wheel: RGPOT linked (dlopen engines at runtime), no torch NEEDED.
 # Metatomic-linked wheels: override setup-args with -Dwith_metatomic=true

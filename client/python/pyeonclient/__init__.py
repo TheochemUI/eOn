@@ -25,6 +25,130 @@ Docs: https://eondocs.org/user_guide/pyeonclient.html
 
 from __future__ import annotations
 
+
+# Load these before _core. Each name is the DLL the import lib records.
+# metatensor-torch and metatomic-torch ship one DLL per torch minor under
+# torch-X.Y/bin; an older tree exports a different set of symbols.
+_WINDOWS_DLL_PRELOAD = (
+    "libiomp5md.dll",
+    "uv.dll",
+    "c10.dll",
+    "torch_cpu.dll",
+    "torch.dll",
+    "metatensor.dll",
+    "metatensor_torch.dll",
+    "metatomic_torch.dll",
+    "vesin.dll",
+)
+
+
+def _metatomic_dll_directories(site: str, torch_mm: str) -> list[str]:
+    """DLL directories for one torch minor, not every ``torch-*`` tree."""
+    import os
+
+    rels = (
+        ("torch", "lib"),
+        ("torch", "bin"),
+        ("metatensor", "bin"),
+        ("metatensor", "lib"),
+        ("metatensor_torch", f"torch-{torch_mm}", "bin"),
+        ("metatensor_torch", f"torch-{torch_mm}", "lib"),
+        ("metatensor", "torch", f"torch-{torch_mm}", "bin"),
+        ("metatensor", "torch", f"torch-{torch_mm}", "lib"),
+        ("metatomic", "torch", f"torch-{torch_mm}", "bin"),
+        ("metatomic", "torch", f"torch-{torch_mm}", "lib"),
+        ("vesin", "bin"),
+        ("vesin", "lib"),
+    )
+    found: list[str] = []
+    for parts in rels:
+        path = os.path.join(site, *parts)
+        if os.path.isdir(path):
+            found.append(path)
+    return found
+
+
+def _preload_windows_dlls(directories: list[str]) -> list[object]:
+    """Load the matching DLL by absolute path so a same-named file loses."""
+    import ctypes
+    import os
+
+    loaded: list[object] = []
+    seen: set[str] = set()
+    for name in _WINDOWS_DLL_PRELOAD:
+        for directory in directories:
+            path = os.path.join(directory, name)
+            if not os.path.isfile(path):
+                continue
+            key = os.path.normcase(os.path.abspath(path))
+            if key in seen:
+                break
+            seen.add(key)
+            try:
+                loaded.append(ctypes.WinDLL(key))
+            except OSError:
+                continue
+            break
+    return loaded
+
+
+def _extend_windows_dll_search() -> None:
+    """Put wheel DLLs on the Windows search path before ``_core`` loads.
+
+    Meson installs a DLL into bindir and its import library into libdir.
+    meson-python then stores the import library under
+    ``.pyeonclient.mesonpy.libs`` and the DLL beside the interpreter
+    scripts. CPython does not search PATH for those dependencies.
+    Metatomic wheels import torch plus the ``torch-X.Y/bin`` build of
+    metatensor and metatomic. Other ``torch-*`` directories in those
+    wheels export a different procedure set.
+    """
+    import os
+    import sys
+
+    if os.name != "nt":
+        return
+    here = os.path.dirname(os.path.abspath(__file__))
+    site = os.path.dirname(here)
+    exe_dir = os.path.dirname(os.path.abspath(sys.executable))
+    candidates = [
+        here,
+        os.path.join(site, ".pyeonclient.mesonpy.libs"),
+        exe_dir,
+        os.path.join(exe_dir, "Scripts"),
+        os.path.join(exe_dir, "Library", "bin"),
+    ]
+    try:
+        import torch
+    except ImportError:
+        torch = None  # type: ignore[assignment]
+    if torch is not None:
+        torch_mm = ".".join(torch.__version__.split("+")[0].split(".")[:2])
+        torch_site = os.path.dirname(os.path.dirname(os.path.abspath(torch.__file__)))
+        candidates.extend(_metatomic_dll_directories(torch_site, torch_mm))
+    handles = []
+    seen: set[str] = set()
+    present: list[str] = []
+    for directory in candidates:
+        if not os.path.isdir(directory):
+            continue
+        key = os.path.normcase(os.path.abspath(directory))
+        if key in seen:
+            continue
+        seen.add(key)
+        present.append(key)
+        try:
+            handles.append(os.add_dll_directory(directory))
+        except (OSError, AttributeError):
+            continue
+    global _DLL_DIR_HANDLES, _DLL_PRELOADS
+    _DLL_DIR_HANDLES = handles
+    # WinDLL drops the module when the object is collected.
+    _DLL_PRELOADS = _preload_windows_dlls(present)
+
+
+_extend_windows_dll_search()
+
 try:
     from pyeonclient._core import (  # type: ignore F401
         CancelToken,
@@ -108,6 +232,8 @@ try:
         built_with_gp_surrogate,
     )
 except ImportError as e:  # pragma: no cover
+    if "DLL load failed" in str(e):
+        raise
     raise ImportError(
         "pyeonclient._core is not built. Configure with "
         "-Dwith_pyeonclient=true (nanobind; stable ABI / free-threaded)."

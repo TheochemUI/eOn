@@ -701,8 +701,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       hwPath = tunneling::hbarOmega(tunneling::wellCurvature(*profile, true));
       EONC_LOG_INFO("[Instanton] steepest-descent path of {} points, {} "
                     "force calls",
-                    pathQ.size(),
-                    pot->forceCallCounter.load() - before);
+                    pathQ.size(), pot->forceCallCounter.load() - before);
       for (size_t k = 0; k < pathQ.size(); ++k) {
         EONC_LOG_DEBUG("[Instanton] path {} s {:.6f} V - V_reactant {:.8f}", k,
                        profile->s()[k], pathV[k] - vReactant);

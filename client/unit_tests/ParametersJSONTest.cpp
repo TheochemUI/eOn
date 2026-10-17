@@ -529,6 +529,9 @@ TEST_CASE("Physical Hessian displacement survives INI and JSON configuration",
   REQUIRE_THROWS_AS(
       ini.load_ini_text("[Instanton]\nphysical_hessian_step = 0\n"),
       std::invalid_argument);
+  // load_json reports a rejected value as a status. It does not let the
+  // invalid_argument out: the same function already catches that and
+  // returns 1 for an unknown enum.
   const auto invalidStep = nlohmann::json::parse(
       R"({"Instanton":{"physical_hessian_step":-0.001}})");
   REQUIRE(roundtrip.load_json(invalidStep.dump()) != 0);

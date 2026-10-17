@@ -65,11 +65,16 @@
 #include <fstream>
 #include <memory>
 #include <string>
+#include <system_error>
 #ifndef _WIN32
 #include <spawn.h>
 #include <sys/wait.h>
 #include <unistd.h>
 extern char **environ;
+#endif
+#if defined(__APPLE__)
+#include <cstdint>
+#include <mach-o/dyld.h>
 #endif
 #include <vector>
 
@@ -2310,7 +2315,8 @@ struct ProfileCacheQuartic final : Potential {
   std::array<int, 3> profileCalls{};
   bool preservedFrozen = true;
   ProfileCacheQuartic(const Parameters &params, AtomMatrix positions)
-      : Potential(PotType::LJ, params), reference(std::move(positions)) {}
+      : Potential(PotType::LJ, params),
+        reference(std::move(positions)) {}
   using Potential::force;
   void force(long nAtoms, const double *positions, const int *, double *forces,
              double *energy, double *variance, const double *) override {
@@ -2327,8 +2333,8 @@ struct ProfileCacheQuartic final : Potential {
     }
     for (long i = 1; i < nAtoms; ++i) {
       for (int c = 0; c < 3; ++c) {
-        preservedFrozen = preservedFrozen &&
-            std::abs(positions[3 * i + c] - reference(i, c)) < 1e-8;
+        preservedFrozen = preservedFrozen && std::abs(positions[3 * i + c] -
+                                                      reference(i, c)) < 1e-8;
       }
     }
     for (int k = 0; k < 3; ++k) {
@@ -3263,12 +3269,38 @@ TEST_CASE("a dynamics search keeps the barrier after one step",
 }
 
 #ifndef _WIN32
+std::filesystem::path client_executable() {
+  if (const char *from_env = std::getenv("EONCLIENT")) {
+    if (from_env[0] != '\0') {
+      return from_env;
+    }
+  }
+#if defined(__APPLE__)
+  char buffer[4096];
+  uint32_t size = sizeof(buffer);
+  if (_NSGetExecutablePath(buffer, &size) != 0) {
+    return {};
+  }
+  std::error_code error;
+  const auto exe = std::filesystem::weakly_canonical(buffer, error);
+  if (error) {
+    return std::filesystem::path(buffer).parent_path() / "eonclient";
+  }
+  return exe.parent_path() / "eonclient";
+#else
+  std::error_code error;
+  const auto exe = std::filesystem::read_symlink("/proc/self/exe", error);
+  if (error) {
+    return {};
+  }
+  return exe.parent_path() / "eonclient";
+#endif
+}
+
 TEST_CASE("the client rejects an unknown flag and a missing structure",
           "[client][args]") {
-  const auto client =
-      std::filesystem::read_symlink("/proc/self/exe").parent_path() /
-      "eonclient";
-  if (!std::filesystem::exists(client)) {
+  const auto client = client_executable();
+  if (client.empty() || !std::filesystem::exists(client)) {
     return;
   }
   Workdir work;
@@ -3311,7 +3343,6 @@ TEST_CASE("the client rejects an unknown flag and a missing structure",
 
 } // namespace tests
 
-
 namespace tests {
 TEST_CASE("instanton references share constraints and the mass metric",
           "[job][instanton][reference-surface]") {
@@ -3338,9 +3369,13 @@ TEST_CASE("instanton references share constraints and the mass metric",
   }
   SECTION("species") { endpoint->setAtomicNr(0, 2); }
   SECTION("mass") {
+    // CON stores one mass per element. Scaling every atom of this symbol
+    // keeps the frame writable and still changes the mass metric.
+    const long z = endpoint->getAtomicNr(0);
+    const double scaled = 2.0 * reactant->getMass(0);
     for (long i = 0; i < endpoint->numberOfAtoms(); ++i) {
-      if (endpoint->getAtomicNr(i) == reactant->getAtomicNr(0)) {
-        endpoint->setMass(i, 2.0 * reactant->getMass(i));
+      if (endpoint->getAtomicNr(i) == z) {
+        endpoint->setMass(i, scaled);
       }
     }
   }
@@ -3349,15 +3384,16 @@ TEST_CASE("instanton references share constraints and the mass metric",
   REQUIRE(eonc::io::io_ok(endpoint->matter2con("product.con", false)));
   ParametersLoadAccess::instanton_options(params).beads = 4;
   ParametersLoadAccess::instanton_options(params).max_iterations = 0;
+  // Rate mode rejects a non-positive temperature before it compares
+  // reference surfaces. The temperatures list is what that mode reads.
   ParametersLoadAccess::instanton_options(params).temperature = 100.0;
   ParametersLoadAccess::instanton_options(params).temperatures = {100.0};
   for (const std::string mode : {"rate", "splitting"}) {
     INFO(mode);
     ParametersLoadAccess::instanton_options(params).mode = mode;
     eonc::InstantonJob job(pot, params);
-    REQUIRE_THROWS_WITH(
-        job.run(),
-        Catch::Matchers::ContainsSubstring("instanton: reference surface differs"));
+    REQUIRE_THROWS_WITH(job.run(), Catch::Matchers::ContainsSubstring(
+                                       "instanton: reference surface differs"));
   }
 }
 } // namespace tests

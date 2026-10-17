@@ -3,6 +3,7 @@ directory = readcon-db
 url = https://github.com/lode-org/readcon-db.git
 revision = v0.1.6
 depth = 1
+patch_directory = readcon-db
 
 [provide]
 readcon-db = readcon_dep

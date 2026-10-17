@@ -1,0 +1,1 @@
+Windows wheels bundle the shared libraries Meson installs and add those directories to the DLL search path before the extension loads. The readcon-db DLL is copied next to the extension. Metatomic wheels load torch and the matching ``torch-X.Y/bin`` metatensor and metatomic DLLs. The relax-engine link waits for the readcon-core static library.

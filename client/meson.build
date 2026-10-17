@@ -751,6 +751,9 @@ readcon_dep = dependency(
     required: false,
 )
 readcon_order_srcs = []
+# Windows link edge to the readcon-core cargo target. Empty when readcon
+# came from pkg-config, and on every other host.
+_readcon_cargo_for_link = []
 # Directory of the readcon DLL this build linked. A pixi env can put
 # another readcon_core.dll earlier on PATH; Windows then starts the
 # test with STATUS_ENTRYPOINT_NOT_FOUND (0xC0000139).
@@ -771,6 +774,16 @@ if not readcon_dep.found()
     # drops declare_dependency.sources, so attach the stamp here. A
     # readcon-core without the stamp contributes no sources.
     readcon_order_srcs += readcon_proj.get_variable('readcon_order', [])
+    # full_path() of the staticlib is only a linker string. Without this
+    # edge ninja links eon_relax_engine.dll while cargo is still writing
+    # readcon_core.lib (LNK1181). The custom target's outputs are the
+    # DLL and the import/static lib from one cargo invocation.
+    if is_windows
+        # [1] is the static library. Depending on the whole target warns
+        # and records only the DLL, which is the other output of the same
+        # cargo rule. The linker opens the static library.
+        _readcon_cargo_for_link = [readcon_proj.get_variable('readcon_cargo')[1]]
+    endif
     if is_windows
         _readcon_dll = readcon_proj.get_variable('readcon_cargo')[0]
         _readcon_runtime_dir = fs.parent(_readcon_dll.full_path())
@@ -805,13 +818,35 @@ if is_windows
         compile_args: true,
     )
     _deps += [readcon_compile_dep]
+    # Executables and shared libraries that link the static eonclib.
+    # The cargo target's sources are the order stamp (.c), not the DLL.
+    # link.exe rejects that DLL (LNK1107); the stamp is what makes ninja
+    # wait for readcon_core.lib.
+    _readcon_link_dep = declare_dependency(
+        dependencies: [
+            readcon_dep.partial_dependency(
+                includes: true,
+                compile_args: true,
+                link_args: true,
+                links: true,
+            ),
+            readcon_dep.partial_dependency(sources: true),
+        ],
+    )
 else
     _deps += [readcon_dep]
+    _readcon_link_dep = declare_dependency()
 endif
 
 # readcon-db: corpus mirror. Resolve it the same way as readcon-core
 # (pkg-config, then the wrap). The shared library is not archived beside
 # the static readcon-core.
+# Directory of the readcon-db DLL this build produced. Empty when the
+# dependency came from pkg-config and the DLL is not in the build tree.
+_readcon_db_dll_dir = ''
+# Windows wheel: copy this cdylib next to _core.pyd. --skip-subprojects
+# drops the subproject install, and the extension still imports the DLL.
+_readcon_db_wheel_dll = []
 readcon_db_dep = dependency(
     'readcon-db',
     version: '>=0.1.6',
@@ -829,28 +864,51 @@ if not readcon_db_dep.found()
     )
     _readcon_db_inner = readcon_db_proj.get_variable('readcon_dep')
     _readcon_db_so = readcon_db_proj.get_variable('readcon_cargo')[0]
+    _readcon_db_dll_dir = fs.parent(_readcon_db_so.full_path())
+    if is_windows
+        _readcon_db_wheel_dll = [_readcon_db_so]
+    endif
     _readcon_db_version = _readcon_db_inner.version()
     _runtime_rpath += [fs.parent(_readcon_db_so.full_path())]
     # full_path() in link_args is a string, so ninja has no edge to the
     # cargo target and a parallel link runs while that library is absent.
-    # link_with is the order edge. The --no-as-needed path stays: the
-    # mirror resolves rkrdb_open at load time, and --as-needed drops a
-    # library with no link-time use. Windows keeps the DLL off link_with
-    # because link.exe rejects a DLL input (LNK1107).
+    # link_with is the order edge. The mirror resolves rkrdb_open at load
+    # time, and GNU ld --as-needed drops a library with no link-time use.
+    # Those flags are Linux-only: Apple ld rejects --no-as-needed, and
+    # -needed_library records the dylib. On Windows, readcon_dep
+    # link_with's the MSVC import library the shared build produces.
+    # link.exe rejects the DLL (LNK1107). A path to readcon_db.lib is the
+    # static archive, and it is not a build edge (LNK1181).
     _readcon_db_order = []
     if not is_windows
         _readcon_db_order = [_readcon_db_so]
     endif
-    readcon_db_dep = declare_dependency(
-        link_with: _readcon_db_order,
-        link_args: [
+    _readcon_db_link = []
+    _readcon_db_link_src = _readcon_db_so
+    if host_system == 'linux'
+        _readcon_db_link = [
             '-Wl,--no-as-needed',
             _readcon_db_so.full_path(),
             '-Wl,--as-needed',
-        ],
-        sources: [_readcon_db_so],
-        compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
-    )
+        ]
+    endif
+    if host_system == 'darwin'
+        _readcon_db_link = ['-Wl,-needed_library,' + _readcon_db_so.full_path()]
+    endif
+    if not is_windows
+        readcon_db_dep = declare_dependency(
+            link_with: _readcon_db_order,
+            link_args: _readcon_db_link,
+            sources: [_readcon_db_link_src],
+            compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
+        )
+    endif
+    if is_windows
+        readcon_db_dep = declare_dependency(
+            dependencies: [_readcon_db_inner],
+            compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
+        )
+    endif
 else
     _readcon_db_version = readcon_db_dep.version()
     if _readcon_db_version == ''
@@ -866,17 +924,34 @@ else
         default_value: '',
     )
     if _pc_libdir != ''
-        foreach _name : ['libreadcon_db.so', 'libreadcon_db.dylib']
-            _cand = _pc_libdir / _name
+        if host_system == 'linux'
+            _cand = _pc_libdir / 'libreadcon_db.so'
             if fs.exists(_cand)
                 _readcon_db_keep = [
                     '-Wl,--no-as-needed',
                     _cand,
                     '-Wl,--as-needed',
                 ]
-                break
             endif
-        endforeach
+        elif host_system == 'darwin'
+            _cand = _pc_libdir / 'libreadcon_db.dylib'
+            if fs.exists(_cand)
+                _readcon_db_keep = ['-Wl,-needed_library,' + _cand]
+            endif
+        elif is_windows
+            foreach _name : [
+                'readcon_db.lib',
+                'readcon_db.dll.lib',
+                'libreadcon_db.lib',
+                'libreadcon_db.dll.a',
+            ]
+                _cand = _pc_libdir / _name
+                if fs.exists(_cand)
+                    _readcon_db_keep = [_cand]
+                    break
+                endif
+            endforeach
+        endif
     endif
     readcon_db_dep = declare_dependency(
         dependencies: [readcon_db_dep],
@@ -1597,19 +1672,12 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
     # _deps stops growing.
     _deps += [mts_dep, torch_deps]
     _args += ['-DWITH_METATOMIC']
-    metatomic_pot = library(
-        'metatomic_pot',
-        [
-            'potentials/Metatomic/MetatomicPotential.cpp',
-            'potentials/Metatomic/MetatomicCAbi.cpp',
-        ],
-        dependencies: _deps,
-        cpp_args: _args,
-        link_with: _linkto,
-        include_directories: _incdirs,
-        install: true,
-    )
-    potentials += [metatomic_pot]
+    # MetatomicPotential lives in eonclib, which Potential.cpp calls
+    # directly. The C ABI plugin is created after eonclib and links it.
+    # One shared library cannot hold both: MetatomicCAbi.cpp needs
+    # Parameters::Parameters() from eonclib, and eonclib would then need
+    # the plugin.
+    eonclib_sources += ['potentials/Metatomic/MetatomicPotential.cpp']
 endif
 
 # NEB image forces. GCC/Clang: a bounded std::thread pool, no dependency.
@@ -1857,22 +1925,60 @@ _bin_to_lib = '$ORIGIN/' + fs.relative_to(_libdir, _bindir)
 _lib_install_rpath = ':'.join(['$ORIGIN'] + _runtime_rpath)
 _exe_install_rpath = ':'.join([_bin_to_lib] + _runtime_rpath)
 
-eclib = library(
-    'eonclib',
-    sources: eonclib_sources + readcon_order_srcs,
-    include_directories: _incdirs,
-    dependencies: _deps + _gprd_extra_deps,
-    link_with: _linkto,
-    cpp_args: _args,
-    link_args: _linkargs,
-    build_rpath: ':'.join(_runtime_rpath),
-    install_rpath: _lib_install_rpath,
-    install: true,
-)
+# MSVC writes no import library for a DLL that exports nothing. The Python
+# extension and the relax engine link this target, so Windows keeps an
+# archive. Skip installing it when the project default is shared: that is
+# the wheel, and meson-python cannot map libdir_static.
+if is_windows
+    eclib = static_library(
+        'eonclib',
+        sources: eonclib_sources + readcon_order_srcs,
+        include_directories: _incdirs,
+        dependencies: _deps + _gprd_extra_deps,
+        link_with: _linkto,
+        cpp_args: _args,
+        install: get_option('default_library') != 'shared',
+    )
+else
+    eclib = library(
+        'eonclib',
+        sources: eonclib_sources + readcon_order_srcs,
+        include_directories: _incdirs,
+        dependencies: _deps + _gprd_extra_deps,
+        link_with: _linkto,
+        cpp_args: _args,
+        link_args: _linkargs,
+        build_rpath: ':'.join(_runtime_rpath),
+        install_rpath: _lib_install_rpath,
+        install: true,
+    )
+endif
 
 # MSVC scans static libraries once, left to right. eonclib references
 # the potential archives, so it has to precede them.
 _linkto = [eclib] + _linkto
+
+# dlopen surface of the fat Metatomic potential. eonclib already contains
+# MetatomicPotential and Parameters. This library only exports the C ABI
+# and links eonclib, so the Parameters constructor is not left undefined
+# and the two libraries do not depend on each other.
+if get_option('with_metatomic')
+    metatomic_pot = library(
+        'metatomic_pot',
+        [
+            'potentials/Metatomic/MetatomicCAbi.cpp',
+        ],
+        dependencies: _deps + [_readcon_link_dep],
+        cpp_args: _args,
+        link_with: [eclib],
+        link_depends: _readcon_cargo_for_link,
+        include_directories: _incdirs,
+        build_rpath: ':'.join(_runtime_rpath),
+        install_rpath: _lib_install_rpath,
+        install: true,
+    )
+    potentials += [metatomic_pot]
+endif
 
 capnp_prog = find_program('capnp', required: true)
 capnp_dep = dependency('capnp', required: true)
@@ -1912,21 +2018,14 @@ eon_relax_capnp = custom_target(
 # off eonclib because llvm-ar and link reject the cargo DLL. This DLL
 # pulls eonclib in, so it needs the same import library the executables
 # get, without the cargo sources that contain the DLL.
-_engine_deps = _deps + _gprd_extra_deps + [capnp_dep]
-if is_windows
-    _engine_deps += readcon_dep.partial_dependency(
-        includes: true,
-        compile_args: true,
-        link_args: true,
-        links: true,
-    )
-endif
+_engine_deps = _deps + _gprd_extra_deps + [capnp_dep, _readcon_link_dep]
 eon_relax_engine = shared_library(
     'eon_relax_engine',
     ['relax/RelaxEngineAbi.cpp', eon_relax_capnp],
     dependencies: _engine_deps,
     cpp_args: _args + ['-DEON_RELAX_ENGINE_BUILD'],
     link_with: _linkto,
+    link_depends: _readcon_cargo_for_link,
     include_directories: _incdirs + [include_directories('.')],
     build_rpath: ':'.join(_runtime_rpath),
     install_rpath: _lib_install_rpath,
@@ -1943,9 +2042,10 @@ if get_option('with_metatomic')
             'potentials/Metatomic/MetatomicEngineAbi.cpp',
         ]
         + readcon_order_srcs,
-        dependencies: mta_plugin_deps,
+        dependencies: mta_plugin_deps + [_readcon_link_dep],
         cpp_args: _args + ['-DRGPOT_MTA_ENGINE_BUILD'],
         link_with: [eclib, eoncbase],
+        link_depends: _readcon_cargo_for_link,
         include_directories: _incdirs,
         build_rpath: ':'.join(_runtime_rpath),
         install_rpath: _lib_install_rpath,
@@ -1980,28 +2080,8 @@ if get_option('with_metatomic')
 endif
 
 # Full deps including readcon link_args (for executables and tests only)
-_exe_deps = _deps + _gprd_extra_deps
-if is_windows
-    # _deps carries only readcon's partial dependency there (see the
-    # partial_dependency block above); executables need the link_args too.
-    # Elsewhere _deps already holds the full readcon_dep.
-    #
-    # Everything except sources. readcon-core declares
-    # `sources: readcon_cargo`, and on Windows that array holds the DLL
-    # alongside the import library. Meson hands a dependency's sources to
-    # the linker, and link rejects a DLL as input:
-    #   readcon_core.dll : fatal error LNK1107: invalid or corrupt file
-    # link_args already names the import library by full path, which is the
-    # half MSVC wants.
-    _exe_deps += [
-        readcon_dep.partial_dependency(
-            includes: true,
-            compile_args: true,
-            link_args: true,
-            links: true,
-        ),
-    ]
-endif
+# _readcon_link_dep is empty off Windows, where _deps already links readcon.
+_exe_deps = _deps + _gprd_extra_deps + [_readcon_link_dep]
 
 # Export variable
 eclib_dep = declare_dependency(
@@ -2037,6 +2117,7 @@ ec = executable(
     include_directories: _incdirs,
     dependencies: _exe_deps,
     link_with: _linkto,
+    link_depends: _readcon_cargo_for_link,
     cpp_args: [_args, '-w'],
     link_args: _linkargs,
     build_rpath: ':'.join(_runtime_rpath),
@@ -2116,7 +2197,6 @@ if get_option('with_tests')
         ['test_xtsci_eindir', 'XtsciEindirTest.cpp', ''],
         ['test_lammps_loader', 'LammpsLoaderTest.cpp', ''],
         ['test_coverage_paths', 'CoveragePathsTest.cpp', 'neb_morse', 180],
-        ['test_socket_nwchem_listen', 'SocketNWChemListenTest.cpp', ''],
         ['test_plugin_loader', 'PluginLoaderTest.cpp', ''],
         ['test_ira_resource', 'IRAResourceTest.cpp', ''],
         ['test_artn_resource', 'ARTnResourceTest.cpp', ''],
@@ -2154,6 +2234,11 @@ if get_option('with_tests')
     # posix_spawn. On Windows the only case is skipped and Catch2 exits 4.
     if not is_windows
         test_array += [['test_client_timing', 'ClientTimingTest.cpp', '', 60]]
+    endif
+    # SocketNWChem is not built on Windows, and the listen test uses
+    # POSIX sockets (arpa/inet.h, sys/un.h).
+    if not is_windows
+        test_array += [['test_socket_nwchem_listen', 'SocketNWChemListenTest.cpp', '']]
     endif
     # Fortran potential tests: require Fortran shared libs at runtime
     if get_option('with_fortran')
@@ -2240,14 +2325,35 @@ if get_option('with_tests')
     endif
     # Windows loads a DLL's imports from the executable directory before
     # PATH. Stage the engine's non-system imports beside the test, the
-    # same place the Fortran pot DLLs sit. Torch on PATH cannot shadow
-    # them.
+    # same place the Fortran pot DLLs sit. Torch's own DLLs are in that
+    # set, so a pixi runtime of the same name cannot shadow them.
     _stage_engine_imports = []
     _have_staged_engine_imports = false
     if is_windows
+        # The build that was linked comes first, then torch, then the
+        # pixi prefix. A shared name such as libiomp5md.dll is copied
+        # from torch; capnp and the flang runtime still come from the
+        # prefix because torch does not ship them. PATH order cannot
+        # do this: meson puts every directory of a linked DLL on PATH,
+        # and the pixi bin then satisfies a torch import.
         _stage_search = []
         if _readcon_runtime_dir != ''
             _stage_search += _readcon_runtime_dir
+        endif
+        if _readcon_db_dll_dir != ''
+            _stage_search += _readcon_db_dll_dir
+        endif
+        if get_option('with_metatomic')
+            _stage_search += [LIB_TORCH_LIB_PATH, LIB_TORCH_BIN_PATH]
+            if get_option('pip_metatomic')
+                _stage_search += pip_metatomic_runtime_dirs
+                foreach _d : pip_metatomic_runtime_dirs
+                    _bin = fs.parent(_d) / 'bin'
+                    if fs.is_dir(_bin)
+                        _stage_search += _bin
+                    endif
+                endforeach
+            endif
         endif
         _lbin = get_option('prefix') / 'Library' / 'bin'
         _pbin = get_option('prefix') / 'bin'

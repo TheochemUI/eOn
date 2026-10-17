@@ -9,12 +9,12 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#include "eon/Tunneling.h"
 #include "EckartBarrier.hpp"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Parameters.h"
 #include "eon/RingPolymerPotential.h"
-#include "eon/Tunneling.h"
 
 #include <Eigen/Eigenvalues>
 #include <cmath>

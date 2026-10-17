@@ -24,7 +24,6 @@
 #include "eon/JobResult.h"
 #include "eon/ObjectiveFunction.h"
 #include "eon/Optimizer.h"
-#include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 
 namespace eonc {
@@ -285,7 +284,7 @@ std::vector<std::string> BasinHoppingJob::run() {
   {
     auto env = JobResultEnvelope::fromMinimization(
         RunStatus::GOOD, params.potential_options().potential,
-        PotRegistry::get().total_force_calls(), true, minimumEnergy);
+        pots().total_force_calls(), true, minimumEnergy);
     env.provenance = provenanceForJob(params);
     env.job_type = "basin_hopping";
     env.random_seed = params.main_options().randomSeed;

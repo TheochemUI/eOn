@@ -253,8 +253,7 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
       out << std::format("{:f} potential_energy_reactant\n",
                          reactant->getPotentialEnergy());
       out << std::format("{} force_calls_refine\n", refineForceCalls);
-      out << std::format("{} total_force_calls\n",
-                         PotRegistry::get().total_force_calls());
+      out << std::format("{} total_force_calls\n", pots().total_force_calls());
 
       if (transitionTime == 0) {
         out << "0 transition_found\n";

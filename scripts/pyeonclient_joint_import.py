@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Import pip rgpot and a bundled pyeonclient wheel in one process.
 
-pyeonclient vendors librgpot as libeon_rgpot.so.3. The rgpot wheel keeps
+pyeonclient vendors librgpot as libeon_rgpot.so.N. The rgpot wheel keeps
 the public librgpot SONAME. Both imports must succeed, and neither
 extension may satisfy the other's NEEDED entry.
 """
@@ -30,8 +30,8 @@ def main() -> int:
     print(py_need)
     print(rg_core)
     print(rg_need)
-    if "libeon_rgpot.so.3" not in py_need:
-        print("pyeonclient did not bundle libeon_rgpot.so.3", file=sys.stderr)
+    if not re.search(r"libeon_rgpot\.so\.[0-9]+", py_need):
+        print("pyeonclient did not bundle libeon_rgpot.so.N", file=sys.stderr)
         return 1
     if re.search(r"\[librgpot\.so", py_need):
         print("pyeonclient still NEEDs the pip rgpot SONAME", file=sys.stderr)
