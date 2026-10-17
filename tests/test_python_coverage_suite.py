@@ -16,6 +16,7 @@ def test_coverage_script_runs_the_package_suite():
     assert "scripts/eon-coverage.cfg" in text
     assert "pytest-datadir" in text
     assert "'sh>=2'" in text
+    assert "PYEONCLIENT_SKIP_WHEEL_BUILD=1" in text
     assert 'version = "0.dev-coverage"' in text
     assert "__version__" not in text
     cfg = (ROOT / "scripts" / "eon-coverage.cfg").read_text(encoding="utf-8")

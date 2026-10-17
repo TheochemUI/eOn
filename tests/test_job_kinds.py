@@ -28,6 +28,7 @@ def _matter():
 
 
 def test_dynamics_monte_carlo_hopping_and_a_saddle(tmp_path):
+    pytest.importorskip("pyeonclient")
     pc, pot, params, matter = _matter()
     for kind, name in (
         (pc.JobType.Dynamics, "dynamics"),

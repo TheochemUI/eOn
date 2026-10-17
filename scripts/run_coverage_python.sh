@@ -24,6 +24,10 @@ if [[ ! -f eon/version.py ]]; then
 fi
 
 export PYTHONPATH="${ROOT}${PYTHONPATH:+:$PYTHONPATH}"
+# The default env has a compiler, so the packaging test would start a
+# wheel build, hit the suite timeout, and leave pyproject.toml swapped
+# for the pyeonclient project file. This job measures the Python package.
+export PYEONCLIENT_SKIP_WHEEL_BUILD=1
 
 echo "==> pytest eon package coverage"
 # Every module under eon/ is in the line total. The suite is tests/ and
