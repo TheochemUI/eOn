@@ -69,6 +69,48 @@ struct PhysicalBathModel {
     if (out.center.norm()>1e-10)
       throw std::invalid_argument("physical bath model center must match the input reactant");
     out.bath->validate(r);
+    if (data.contains("curvature_model")) {
+      const auto &spec = data.at("curvature_model");
+      if (spec.at("kind") != "convex_endpoint_blend")
+        throw std::invalid_argument("unsupported physical bath curvature model");
+      const Eigen::MatrixXd endpoint = matrix(spec.at("endpoint"));
+      const Eigen::VectorXd coordinate = vector(spec.at("coordinate"));
+      if (endpoint.rows() != b || endpoint.cols() != b ||
+          coordinate.size() != r ||
+          !endpoint.isApprox(endpoint.transpose(), 1e-12))
+        throw std::invalid_argument("physical bath curvature model dimension or symmetry mismatch");
+      Eigen::LLT<Eigen::MatrixXd> positive(endpoint);
+      if (positive.info() != Eigen::Success)
+        throw std::invalid_argument("physical bath curvature endpoint is not positive definite");
+      const Eigen::MatrixXd initial = out.bath->curvatures.asDiagonal();
+      const Eigen::MatrixXd change = endpoint - initial;
+      out.bath->curvature = [initial, change, coordinate](const Eigen::VectorXd &q, int order) {
+        PhysicalQuadraticBath::CurvatureDerivatives result;
+        const double p = coordinate.dot(q);
+        double weight = 0, first = 0, second = 0;
+        if (p >= 1) weight = 1;
+        else if (p > 0) {
+          weight = p*p*p*(10+p*(-15+6*p));
+          first = 30*p*p*(1-p)*(1-p);
+          second = 60*p*(1-p)*(1-2*p);
+        }
+        result.value = initial + weight * change;
+        if (order >= 1) {
+          result.first.resize(coordinate.size());
+          for (long i = 0; i < coordinate.size(); ++i)
+            result.first[i] = first * coordinate[i] * change;
+        }
+        if (order >= 2) {
+          result.second.resize(coordinate.size());
+          for (long i = 0; i < coordinate.size(); ++i) {
+            result.second[i].resize(coordinate.size());
+            for (long j = 0; j < coordinate.size(); ++j)
+              result.second[i][j] = second * coordinate[i] * coordinate[j] * change;
+          }
+        }
+        return result;
+      };
+    }
     if (data.contains("source_model")) {
       auto model=std::make_shared<const DerivativeRbfModel>(DerivativeRbfModel::fromJson(data.at("source_model")));
       if (model->dimension()!=r || model->outputs()!=b)
