@@ -1,6 +1,6 @@
 --- a/CppCore/meson.build
 +++ b/CppCore/meson.build
-@@ -359,12 +359,26 @@
+@@ -359,12 +359,25 @@
      # Subproject consumers (eOn's wrap fallback) take the umbrella through
      # this variable; pkg-config consumers get the same surface from
      # rgpot.pc.
@@ -29,7 +29,6 @@
 +            compile_args: _args,
 +        )
 +    endif
-+
+
      # The Fortran kernels must stay invisible outside librgpot: an
      # exported legacy name is how two potentials used to bind to the same
-     # symbol.
