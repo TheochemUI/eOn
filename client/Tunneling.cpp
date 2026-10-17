@@ -2309,13 +2309,24 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   // dimensions the turning points are not the saddle, so each bead starts
   // from its own curvature and the Bofill update carries it.
   std::vector<MatrixXd> physical;
-  if (f == 1 || options.initialHessians != "finite_difference") {
+  auto physicalAt = [&](const VectorXd &q) -> MatrixXd {
+    if (!options.physicalHessian)
+      return fdPhysicalHessian(q, potential, options.physicalHessianStep);
+    const MatrixXd h = options.physicalHessian(q);
+    if (h.rows() != f || h.cols() != f || !h.allFinite() ||
+        !h.isApprox(h.transpose(), 1e-12))
+      throw std::invalid_argument("rate instanton: invalid analytic physical Hessian");
+    return h;
+  };
+  if (options.physicalHessian) {
+    physical.resize(x.size());
+    for (size_t j = 0; j < x.size(); ++j) physical[j] = physicalAt(x[j]);
+  } else if (f == 1 || options.initialHessians != "finite_difference") {
     physical.assign(x.size(), hS);
   } else {
-    const double eps = options.physicalHessianStep;
     physical.resize(x.size());
     for (size_t j = 0; j < x.size(); ++j) {
-      physical[j] = fdPhysicalHessian(x[j], potential, eps);
+      physical[j] = physicalAt(x[j]);
     }
   }
   // Negative curvatures each bead block may carry between exact rebuilds.
@@ -2458,6 +2469,10 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     projectMonotonePrefix(x, static_cast<long>(x.size()) - 1, climbDir);
   }
   auto viewOf = [&](const Obj &ev) {
+    if (options.physicalHessian) {
+      for (size_t j = 0; j < x.size(); ++j) physical[j] = physicalAt(x[j]);
+      recountNegatives();
+    }
     nullRing = ringRigid(x);
     View v;
     if (options.physicalBath)
@@ -2692,7 +2707,8 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   // Finite-difference rebuilds of the bead blocks when the search stalls.
   constexpr int kMaxHessianRefreshes = 3;
   int refreshes = 0;
-  bool exactAtX = f > 1 && options.initialHessians == "finite_difference";
+  bool exactAtX = options.physicalHessian ||
+                  (f > 1 && options.initialHessians == "finite_difference");
   // Negative curvatures the last finite-difference blocks showed, and the
   // rebuilds a growing Bofill count has asked for.
   long exactNegatives = -1;
@@ -2722,9 +2738,8 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       break;
     }
     if (f == 1) {
-      const double eps = options.physicalHessianStep;
-      for (size_t j = 0; j < x.size(); ++j) {
-        physical[j] = fdPhysicalHessian(x[j], potential, eps);
+        for (size_t j = 0; j < x.size(); ++j) {
+        physical[j] = physicalAt(x[j]);
       }
     }
     const View v = viewOf(cur);
@@ -2748,9 +2763,8 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       } else if (v.climb.negative > std::max(1L, exactNegatives) &&
                  driftRefreshes < kMaxDriftRefreshes) {
         ++driftRefreshes;
-        const double eps = options.physicalHessianStep;
-        for (size_t j = 0; j < x.size(); ++j) {
-          physical[j] = fdPhysicalHessian(x[j], potential, eps);
+            for (size_t j = 0; j < x.size(); ++j) {
+          physical[j] = physicalAt(x[j]);
         }
         recountNegatives();
         exactAtX = true;
@@ -2843,14 +2857,15 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       if (!ratioOk) {
         return false;
       }
-      for (size_t k = 0; k < x.size(); ++k) {
-        inertiaKeepingUpdate(physical[k], trial[k] - x[k],
-                             next.gradPot[k] - cur.gradPot[k],
-                             allowedNegatives[k]);
-      }
+      if (!options.physicalHessian)
+        for (size_t k = 0; k < x.size(); ++k) {
+          inertiaKeepingUpdate(physical[k], trial[k] - x[k],
+                               next.gradPot[k] - cur.gradPot[k],
+                               allowedNegatives[k]);
+        }
       x = std::move(trial);
       cur = std::move(next);
-      exactAtX = false;
+      exactAtX = static_cast<bool>(options.physicalHessian);
       if (ratioOk && ratio > 0.75 && ratio < 1.25 &&
           packedBeadNorm(dir, f) >= 0.99 * trust) {
         trust = std::min(2.0 * trust, options.maxStep);
@@ -2865,9 +2880,8 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     // that mode leaves it.
     if (v.ok && v.gmax < options.forceTolerance && v.climb.negative != 1 &&
         !exactAtX) {
-      const double eps = options.physicalHessianStep;
-      for (size_t j = 0; j < x.size(); ++j) {
-        physical[j] = fdPhysicalHessian(x[j], potential, eps);
+        for (size_t j = 0; j < x.size(); ++j) {
+        physical[j] = physicalAt(x[j]);
       }
       recountNegatives();
       exactAtX = true;
@@ -2933,9 +2947,8 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       // region again.
       if (trust <= trustFloor && refreshes < kMaxHessianRefreshes) {
         ++refreshes;
-        const double eps = options.physicalHessianStep;
-        for (size_t j = 0; j < x.size(); ++j) {
-          physical[j] = fdPhysicalHessian(x[j], potential, eps);
+            for (size_t j = 0; j < x.size(); ++j) {
+          physical[j] = physicalAt(x[j]);
         }
         recountNegatives();
         trust = options.maxStep;
