@@ -48,10 +48,12 @@ def test_windows_pots_are_static_and_flang_runtime_is_a_file():
         encoding="utf-8"
     )
     bindings = (root / "client" / "python" / "meson.build").read_text(encoding="utf-8")
+    client = (root / "client" / "meson.build").read_text(encoding="utf-8")
     for meson in (extpot, lammps):
         assert "if is_windows" in meson
-        assert "default_library=static" in meson
-        assert "_install = false" in meson
+        assert "static_library(" in meson
+        assert "get_option('default_library') != 'shared'" in meson
+    assert "static_library(\n        'eonclib'," in client
     assert "'-Wno-unused-parameter'" not in bindings
     wrap = (root / "subprojects" / "rgpot.wrap").read_text(encoding="utf-8")
     assert "rgpot-windows-flang-rt.patch" in wrap

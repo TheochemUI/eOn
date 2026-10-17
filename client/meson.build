@@ -1890,18 +1890,34 @@ _bin_to_lib = '$ORIGIN/' + fs.relative_to(_libdir, _bindir)
 _lib_install_rpath = ':'.join(['$ORIGIN'] + _runtime_rpath)
 _exe_install_rpath = ':'.join([_bin_to_lib] + _runtime_rpath)
 
-eclib = library(
-    'eonclib',
-    sources: eonclib_sources + readcon_order_srcs,
-    include_directories: _incdirs,
-    dependencies: _deps + _gprd_extra_deps,
-    link_with: _linkto,
-    cpp_args: _args,
-    link_args: _linkargs,
-    build_rpath: ':'.join(_runtime_rpath),
-    install_rpath: _lib_install_rpath,
-    install: true,
-)
+# MSVC writes no import library for a DLL that exports nothing. The Python
+# extension and the relax engine link this target, so Windows keeps an
+# archive. Skip installing it when the project default is shared: that is
+# the wheel, and meson-python cannot map libdir_static.
+if is_windows
+    eclib = static_library(
+        'eonclib',
+        sources: eonclib_sources + readcon_order_srcs,
+        include_directories: _incdirs,
+        dependencies: _deps + _gprd_extra_deps,
+        link_with: _linkto,
+        cpp_args: _args,
+        install: get_option('default_library') != 'shared',
+    )
+else
+    eclib = library(
+        'eonclib',
+        sources: eonclib_sources + readcon_order_srcs,
+        include_directories: _incdirs,
+        dependencies: _deps + _gprd_extra_deps,
+        link_with: _linkto,
+        cpp_args: _args,
+        link_args: _linkargs,
+        build_rpath: ':'.join(_runtime_rpath),
+        install_rpath: _lib_install_rpath,
+        install: true,
+    )
+endif
 
 # MSVC scans static libraries once, left to right. eonclib references
 # the potential archives, so it has to precede them.
