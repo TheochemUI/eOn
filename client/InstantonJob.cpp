@@ -20,6 +20,7 @@
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 #include "eon/ReferenceHessian.h"
+#include "eon/RateRingSeed.h"
 #include "eon/Tunneling.h"
 
 #include <Eigen/QR>
@@ -662,7 +663,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   // seed by the period condition. Cooling a cosine from the crossover finds
   // the ring only where it grows continuously out of the saddle; where it
   // does not, the search walks to a neighbouring saddle.
-  if (!profile) {
+  if (!profile && o.initial_ring.empty()) {
     pathQ.clear();
     pathV.clear();
     const long before = PotRegistry::get().total_force_calls();
@@ -743,6 +744,16 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   };
 
   std::vector<VectorXd> ring;
+  if (!o.initial_ring.empty()) {
+    const auto positions = tunneling::readRateRingSeed(o.initial_ring, reactant, o.beads);
+    for (const auto &xyz : positions) {
+      Matter image(reactant);
+      image.setPositions(xyz);
+      ring.push_back(mw.toQ(image));
+    }
+    EONC_LOG_INFO("[Instanton] closed-ring geometry seed from {}; energies and "
+                  "forces are evaluated on the selected potential", o.initial_ring);
+  }
   RunStatus status = RunStatus::GOOD;
   bool rateFailed = false;
   for (size_t ti = 0; ti < temperatures.size(); ++ti) {
@@ -1135,6 +1146,9 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
 
 std::vector<std::string> InstantonJob::run(void) {
   const auto &o = params.instanton_options();
+  if (o.mode != "rate" && !o.initial_ring.empty()) {
+    throw std::invalid_argument("instanton: initial_ring requires mode rate");
+  }
   pathintegral::requireTrotterSprings(o.springs, "instanton");
   std::vector<std::string> returnFiles;
   const std::string resultsFile = "results.dat";

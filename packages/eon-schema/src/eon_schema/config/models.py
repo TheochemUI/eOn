@@ -2673,6 +2673,14 @@ class InstantonConfig(BaseModel):
             " starts from the straight line between the minima."
         ),
     )
+    initial_ring: str = Field(
+        default="",
+        description=(
+            "Rate mode: closed-ring geometry seed with exactly beads CON frames. "
+            "Coordinates are checked against the reference surface; cached "
+            "energies and forces are ignored."
+        ),
+    )
     beads: int = Field(
         default=256,
         ge=4,

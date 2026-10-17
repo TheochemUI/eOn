@@ -316,6 +316,7 @@ json to_json(const Parameters &p) {
         {"reactant_filename", o.reactant_filename},
         {"product_filename", o.product_filename},
         {"initial_path", o.initial_path},
+        {"initial_ring", o.initial_ring},
         {"beads", o.beads},
         {"beta_hbar_omega", o.beta_hbar_omega},
         {"max_iterations", o.max_iterations},
@@ -786,6 +787,7 @@ void from_json(const json &j, Parameters &p) {
     JSON_OPT(s, "reactant_filename", o.reactant_filename);
     JSON_OPT(s, "product_filename", o.product_filename);
     JSON_OPT(s, "initial_path", o.initial_path);
+    JSON_OPT(s, "initial_ring", o.initial_ring);
     JSON_OPT(s, "beads", o.beads);
     JSON_OPT(s, "beta_hbar_omega", o.beta_hbar_omega);
     JSON_OPT(s, "max_iterations", o.max_iterations);

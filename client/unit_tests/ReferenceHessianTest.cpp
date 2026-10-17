@@ -4,6 +4,7 @@
 ** Copyright (c) 2010--present, eOn Development Team
 */
 #include "eon/ReferenceHessian.h"
+#include "eon/RateRingSeed.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Parameters.h"
@@ -108,6 +109,75 @@ TEST_CASE(
     }
     REQUIRE_THROWS(
         eonc::tunneling::readReferenceHessian(filename, reference, 3));
+  }
+}
+TEST_CASE("closed ring seeds retain mobile geometry and reject a changed surface",
+          "[instanton][ring][reference]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  Matter reference(pot, params);
+  REQUIRE(eonc::io::io_ok(reference.con2matter(std::string("reactant.con"))));
+  for (long atom = 0; atom < reference.numberOfAtoms(); ++atom) {
+    reference.setFixed(atom, atom == 0 ? 0 : 1);
+  }
+  const auto directory = std::filesystem::temp_directory_path() /
+      ("eon-ring-seed-" + std::to_string(
+          std::chrono::steady_clock::now().time_since_epoch().count()));
+  std::filesystem::create_directories(directory);
+  struct Cleanup {
+    std::filesystem::path path;
+    ~Cleanup() {
+      std::error_code error;
+      std::filesystem::remove_all(path, error);
+    }
+  } cleanup{directory};
+  const std::string filename = (directory / "ring.con").string();
+  bool reject = false;
+  std::string alteration;
+  SECTION("geometry with poisoned cached energies") {}
+  SECTION("frozen position") { alteration = "position"; reject = true; }
+  SECTION("mass metric") { alteration = "mass"; reject = true; }
+  SECTION("constraints") { alteration = "constraints"; reject = true; }
+  SECTION("cell") { alteration = "cell"; reject = true; }
+  std::vector<AtomMatrix> expected;
+  for (long bead = 0; bead < 4; ++bead) {
+    Matter image(reference);
+    auto positions = image.getPositions();
+    positions(0, 0) += 0.02 * (bead == 0 || bead == 3 ? -1. : 1.);
+    if (bead == 2 && alteration == "position") {
+      positions(1, 0) += 0.02;
+    }
+    image.setPositions(positions);
+    expected.push_back(positions);
+    if (bead == 2 && alteration == "mass") {
+      for (long atom = 0; atom < image.numberOfAtoms(); ++atom) {
+        image.setMass(atom, reference.getMass(atom)*2.);
+      }
+    }
+    if (bead == 2 && alteration == "constraints") {
+      image.setFixed(1, 0);
+    }
+    if (bead == 2 && alteration == "cell") {
+      auto cell = image.getCell();
+      cell(0, 0) += 0.1;
+      image.setCell(cell);
+    }
+    eonc::io::ConFrameMetadata metadata;
+    metadata.energy = 1e6 + bead;
+    REQUIRE(eonc::io::io_ok(image.matter2con(filename, bead > 0, &metadata)));
+  }
+  if (reject) {
+    REQUIRE_THROWS(eonc::tunneling::readRateRingSeed(filename, reference, 4));
+  } else {
+    const auto restored = eonc::tunneling::readRateRingSeed(filename, reference, 4);
+    REQUIRE(restored.size() == 4);
+    for (size_t bead = 0; bead < restored.size(); ++bead) {
+      REQUIRE((restored[bead]-expected[bead]).cwiseAbs().maxCoeff() < 1e-12);
+    }
+    REQUIRE_THROWS(eonc::tunneling::readRateRingSeed(filename, reference, 5));
+    REQUIRE_THROWS(eonc::tunneling::readRateRingSeed(filename, reference, 3));
   }
 }
 } // namespace tests

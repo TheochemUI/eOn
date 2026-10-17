@@ -824,6 +824,8 @@ struct instanton_options_t {
   // Optional band to start from (neb.con or any multi-frame con file whose
   // first and last frames are the two minima); empty is a straight line.
   std::string initial_path{""};
+  // Mode rate: a closed-ring geometry seed, with exactly beads frames.
+  std::string initial_ring{""};
   long beads{256};              // P, segments from one minimum to the other
   double beta_hbar_omega{30.0}; // imaginary time, in units of 1 / omega
   long max_iterations{5000};    // L-BFGS iterations on the action

@@ -370,6 +370,29 @@ the highest and each ring starts the next, colder one. An empty list uses
 beads at a quarter of that count and doubles. `hessian_final` is
 `recomputed`: the rate takes a Hessian on every stride-th bead.
 
+For a geometry warm start of a rate calculation, set `initial_ring` to a
+saved `instanton.con`. The file contains exactly `beads` frames of the closed
+ring, without an extra copy of the first frame at the end. Every frame must
+have the reference cell, ordered species, atom IDs, masses, constraints and
+frozen coordinates. Cached energies and forces are ignored. The selected
+potential evaluates the ring again; optimizer history is not restored.
+
+For example, copy a saved 32-bead ring to `seed-ring.con` in a separate run
+directory, retain the same reference and potential files, and set:
+
+```ini
+[Instanton]
+mode = rate
+beads = 32
+initial_ring = seed-ring.con
+```
+
+The seed can also start a calculation at a different temperature. Without
+`initial_path`, a supplied ring skips construction of the steepest-descent
+seed path. `initial_path` can be supplied as well when its separate WKB path
+estimate is wanted. A saved unconverged ring remains a geometry seed; it does
+not establish a rate or convergence.
+
 On a rate calculation, `initial_path` is a band over the barrier. The ring
 starts on the closed orbit of that band whose period is {math}`\beta \hbar`,
 and the same band carries a one-dimensional WKB rate.
