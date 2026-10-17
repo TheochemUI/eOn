@@ -244,8 +244,9 @@ TEST_CASE("the solid-state band climbs the Bain path of an LJ crystal",
   REQUIRE(std::abs(barrier - kBarrier) <= kBarrierTol);
 
   // No rotation, no shear drift, a square base, and no atom off its
-  // site: up to the lattice translation that wrapping into the cell
-  // adds, every image keeps the reactant's fractional coordinates.
+  // site: up to the lattice translation that wrapping into the cell adds
+  // and a rigid translation of the whole image, which costs no energy,
+  // every image keeps the reactant's fractional coordinates.
   const AtomMatrix s0 =
       reactant->getPositions() * reactant->getCell().inverse();
   for (long i = 0; i <= band.numImages + 1; ++i) {
@@ -258,8 +259,10 @@ TEST_CASE("the solid-state band climbs the Bain path of an LJ crystal",
     REQUIRE(std::abs(h(2, 0)) < 1e-10);
     REQUIRE(std::abs(h(2, 1)) < 1e-10);
     REQUIRE(std::abs(h(0, 0) - h(1, 1)) < 1e-10);
-    const AtomMatrix ds = image.getPositions() * h.inverse() - s0;
-    REQUIRE((ds.array() - ds.array().round()).abs().maxCoeff() < 1e-6);
+    AtomMatrix ds = image.getPositions() * h.inverse() - s0;
+    ds = (ds.array() - ds.array().round()).matrix();
+    ds.rowwise() -= ds.colwise().mean();
+    REQUIRE(ds.cwiseAbs().maxCoeff() < 1e-6);
   }
 }
 
