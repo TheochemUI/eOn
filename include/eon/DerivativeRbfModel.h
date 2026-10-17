@@ -71,9 +71,12 @@ public:
   Eigen::Index dimension() const { return scales_.size(); }
   Eigen::Index outputs() const { return constant_.size(); }
 
-  RbfEvaluation evaluate(const Eigen::VectorXd &q) const {
+  RbfEvaluation evaluate(const Eigen::VectorXd &q,double scalarValueShift=0.0) const {
     if (q.size()!=dimension() || !q.allFinite())
       throw std::invalid_argument("interpolant coordinate dimension or finiteness differs");
+    if (!std::isfinite(scalarValueShift) || (outputs()!=1 && scalarValueShift!=0.0))
+      throw std::invalid_argument("interpolant energy shift requires a scalar output and finite value");
+    if (outputs()==1) return evaluateScalar(q,scalarValueShift);
     RbfEvaluation result{constant_+linear_*q,linear_,quadratic_};
     for (Eigen::Index k=0;k<outputs();++k) {
       result.value[k]+=.5*q.dot(quadratic_[static_cast<size_t>(k)]*q);
@@ -99,6 +102,77 @@ public:
   }
 
 private:
+  /// Compensated accumulation retains small terms beside cancelling weights.
+  struct Sum {
+    long double value=0,correction=0;
+    void add(long double term) {
+      const long double next=value+term;
+      correction+=std::abs(value)>=std::abs(term) ? (value-next)+term : (term-next)+value;
+      value=next;
+    }
+    long double total() const { return value+correction; }
+  };
+
+  RbfEvaluation evaluateScalar(const Eigen::VectorXd &q,double shift) const {
+    const Eigen::Index d=dimension();
+    std::vector<Sum> jet(static_cast<size_t>(1+d+d*d));
+    // Shift the constant before accumulating kernels, preserving relative energies.
+    jet[0].add(static_cast<long double>(constant_[0])-static_cast<long double>(shift));
+    for (Eigen::Index i=0;i<d;++i) {
+      jet[0].add(static_cast<long double>(linear_(0,i))*q[i]);
+      jet[static_cast<size_t>(1+i)].add(linear_(0,i));
+      for (Eigen::Index j=0;j<d;++j) {
+        const long double h=quadratic_[0](i,j);
+        jet[0].add(0.5L*q[i]*h*q[j]);
+        jet[static_cast<size_t>(1+i)].add(h*q[j]);
+        jet[static_cast<size_t>(1+d+i*d+j)].add(h);
+      }
+    }
+    std::vector<int> derivative(static_cast<size_t>(d),0);
+    for (Eigen::Index site=0;site<sites_.rows();++site) {
+      const long double weight=weights_(site,0);
+      jet[0].add(weight*scalarKernel(q,site,derivative));
+      for (Eigen::Index i=0;i<d;++i) {
+        derivative[static_cast<size_t>(i)]++;
+        jet[static_cast<size_t>(1+i)].add(weight*scalarKernel(q,site,derivative));
+        for (Eigen::Index j=0;j<d;++j) {
+          derivative[static_cast<size_t>(j)]++;
+          jet[static_cast<size_t>(1+d+i*d+j)].add(weight*scalarKernel(q,site,derivative));
+          derivative[static_cast<size_t>(j)]--;
+        }
+        derivative[static_cast<size_t>(i)]--;
+      }
+    }
+    RbfEvaluation result{Eigen::VectorXd(1),Eigen::MatrixXd(1,d),
+                         {Eigen::MatrixXd(d,d)}};
+    result.value[0]=static_cast<double>(jet[0].total());
+    for (Eigen::Index i=0;i<d;++i) {
+      result.jacobian(0,i)=static_cast<double>(jet[static_cast<size_t>(1+i)].total());
+      for (Eigen::Index j=0;j<d;++j)
+        result.hessians[0](i,j)=static_cast<double>(jet[static_cast<size_t>(1+d+i*d+j)].total());
+    }
+    return result;
+  }
+
+  long double scalarKernel(const Eigen::VectorXd &q,Eigen::Index site,
+                           const std::vector<int> &inputOrder) const {
+    std::vector<long double> z(static_cast<size_t>(dimension()));
+    long double squared=0;
+    for (Eigen::Index j=0;j<dimension();++j) {
+      z[static_cast<size_t>(j)]=(static_cast<long double>(q[j])-sites_(site,j))/scales_[j];
+      squared+=z[static_cast<size_t>(j)]*z[static_cast<size_t>(j)];
+    }
+    long double value=std::exp(-0.5L*squared);
+    for (Eigen::Index j=0;j<dimension();++j) {
+      const int input=inputOrder[static_cast<size_t>(j)];
+      const int total=input+orders_[static_cast<size_t>(site)][static_cast<size_t>(j)];
+      value*=hermite(total,z[static_cast<size_t>(j)])/
+             std::pow(static_cast<long double>(scales_[j]),total);
+      if (input%2) value=-value;
+    }
+    return value;
+  }
+
   static Eigen::VectorXd vector(const nlohmann::json &data) {
     if (!data.is_array()) throw std::invalid_argument("interpolant vector must be an array");
     Eigen::VectorXd out(data.size());
@@ -117,12 +191,12 @@ private:
     if (!out.allFinite()) throw std::invalid_argument("non-finite interpolant matrix");
     return out;
   }
-  static double hermite(int n,double z) {
+  template<class Scalar> static Scalar hermite(int n,Scalar z) {
     if (n==0) return 1.;
     if (n==1) return z;
-    double previous=1.,current=z;
+    Scalar previous=1.,current=z;
     for (int k=1;k<n;++k) {
-      const double next=z*current-k*previous;
+      const Scalar next=z*current-k*previous;
       previous=current; current=next;
     }
     return current;

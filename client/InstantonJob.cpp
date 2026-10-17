@@ -962,7 +962,22 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     ro.newtonLimit = o.newton_limit;
     ro.lanczosStep = o.lanczos_step;
     ro.physicalHessianStep = o.physical_hessian_step;
-    ro.energyShift = o.energy_shift;
+    ro.energyShift = fittedPotential ? 0.0 : o.energy_shift;
+    tunneling::BatchPotential optimizerEvaluate = evaluate;
+    if (fittedPotential) {
+      const auto model = physicalModel->potentialModel;
+      optimizerEvaluate = [model, shift=o.energy_shift](const std::vector<VectorXd> &q,
+          std::vector<double> &v, std::vector<VectorXd> &g) {
+        v.resize(q.size()); g.resize(q.size());
+        for (size_t j=0;j<q.size();++j) {
+          const auto value=model->evaluate(q[j],shift);
+          v[j]=value.value[0]; g[j]=value.jacobian.row(0).transpose();
+        }
+      };
+      ro.physicalHessian = [model](const VectorXd &q)->MatrixXd {
+        return model->evaluate(q).hessians[0];
+      };
+    }
     ro.discretization = o.discretization;
     ro.friction = o.friction != "none";
     ro.frictionExplicit = o.friction == "explicit";
@@ -1010,7 +1025,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         step.beads = nb;
         const tunneling::RateInstanton rungInst =
             tunneling::optimizeRateInstanton(qSaddle, hSaddle, beta, rung,
-                                             evaluate, step);
+                                             optimizerEvaluate, step);
         ladderIterations += rungInst.iterations;
         EONC_LOG_INFO("[Instanton] ladder rung {} beads: U_N {:.6f} eV after "
                       "{} iterations{}",
@@ -1032,7 +1047,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       }
     }
     tunneling::RateInstanton inst = tunneling::optimizeRateInstanton(
-        qSaddle, hSaddle, beta, guess, evaluate, ro);
+        qSaddle, hSaddle, beta, guess, optimizerEvaluate, ro);
     inst.iterations += ladderIterations;
     EONC_LOG_INFO("[Instanton] {:.4g} K: ring U_N {:.6f} eV after {} "
                   "iterations{}",
@@ -1204,10 +1219,11 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
           } else
             source = physicalModel->bath->coupling.transpose() * inst.beads[j];
           const VectorXd &b = bathState.bathPositions[j];
-          fullEnergies[j] += o.energy_shift + source.dot(b) +
-                             0.5 * (physicalModel->bath->curvatures.array() *
-                                    b.array().square())
-                                       .sum();
+          fullEnergies[j] += o.energy_shift + source.dot(b);
+          if (physicalModel->bath->curvature)
+            fullEnergies[j] += .5*b.dot(physicalModel->bath->curvatureAt(inst.beads[j],0).value*b);
+          else
+            fullEnergies[j] += .5*(physicalModel->bath->curvatures.array()*b.array().square()).sum();
         }
       }
       Matter frame(reactant);

@@ -268,6 +268,9 @@ struct RateInstantonOptions {
   /// The potential callback supplies retained coordinates and the declared
   /// frozen-bath or relaxed potential of this model.
   std::shared_ptr<const PhysicalQuadraticBath> physicalBath;
+  /// Exact physical potential Hessian at a retained bead, excluding springs
+  /// and the eliminated bath. Empty selects finite differences and Bofill.
+  std::function<MatrixXd(const VectorXd &)> physicalHessian;
   long beads = 32;              ///< N, beads on the ring
   long maxIterations = 1000;    ///< translation steps
   double forceTolerance = 1e-3; ///< largest per-bead |dU_N/dq|,
