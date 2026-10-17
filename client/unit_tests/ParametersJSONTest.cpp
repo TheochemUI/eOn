@@ -10,10 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "eon/ParametersJSON.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Parameters.h"
+#include "eon/ParametersJSON.h"
 
 #include <filesystem>
 #include <fstream>
@@ -533,6 +533,41 @@ TEST_CASE("Physical Hessian displacement survives INI and JSON configuration",
       R"({"Instanton":{"physical_hessian_step":-0.001}})");
   REQUIRE(roundtrip.load_json(invalidStep.dump()) != 0);
   REQUIRE_THROWS_AS(eonc::config::from_json(invalidStep, roundtrip),
+                    std::invalid_argument);
+}
+
+TEST_CASE("Rate optimizer limit and reference Hessian paths round trip",
+          "[params][json][NewtonLimit]") {
+  Parameters defaults;
+  REQUIRE(defaults.instanton_options().newton_limit ==
+          std::numeric_limits<long>::max());
+  REQUIRE(defaults.instanton_options().reactant_hessian_filename.empty());
+  REQUIRE(defaults.instanton_options().saddle_hessian_filename.empty());
+  Parameters ini;
+  REQUIRE(ini.load_ini_text("[Instanton]\nnewton_limit = 0\n"
+                            "reactant_hessian_filename = reactant-hessian.dat\n"
+                            "saddle_hessian_filename = saddle-hessian.dat\n") ==
+          0);
+  REQUIRE(ini.instanton_options().newton_limit == 0);
+  REQUIRE(ini.instanton_options().reactant_hessian_filename ==
+          "reactant-hessian.dat");
+  REQUIRE(ini.instanton_options().saddle_hessian_filename ==
+          "saddle-hessian.dat");
+  Parameters roundtrip;
+  REQUIRE(roundtrip.load_json(ini.to_json()) == 0);
+  REQUIRE(roundtrip.instanton_options().newton_limit == 0);
+  REQUIRE(roundtrip.instanton_options().reactant_hessian_filename ==
+          "reactant-hessian.dat");
+  REQUIRE(roundtrip.instanton_options().saddle_hessian_filename ==
+          "saddle-hessian.dat");
+  REQUIRE(ini.load_ini_text("[Instanton]\nnewton_limit = 2048\n") == 0);
+  REQUIRE(ini.instanton_options().newton_limit == 2048);
+  REQUIRE_THROWS_AS(ini.load_ini_text("[Instanton]\nnewton_limit = -1\n"),
+                    std::invalid_argument);
+  const auto invalid =
+      nlohmann::json::parse(R"({"Instanton":{"newton_limit":-1}})");
+  REQUIRE(roundtrip.load_json(invalid.dump()) != 0);
+  REQUIRE_THROWS_AS(eonc::config::from_json(invalid, roundtrip),
                     std::invalid_argument);
 }
 
