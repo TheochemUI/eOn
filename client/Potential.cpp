@@ -111,11 +111,6 @@
 #include <limits>
 #include <stdexcept>
 
-void eonc::Potential::recordForceCall() noexcept {
-  forceCallCounter++;
-  registry_.on_force_call(ptype);
-}
-
 std::tuple<double, AtomMatrix> eonc::Potential::get_ef(const AtomMatrix &pos,
                                                        const VectorXi &atmnrs,
                                                        const Matrix3d &box) {
