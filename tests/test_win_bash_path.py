@@ -61,3 +61,23 @@ def test_filter_puts_msvc_link_ahead_of_git_sh():
     assert "ucrt64" not in ":".join(parts).lower()
     assert parts.index(msvc) < parts.index(git_sh)
     assert parts[parts.index(msvc) + 1] == git_sh
+
+
+def test_filter_puts_msys_usr_bin_after_msvc_link():
+    msvc = (
+        "/c/Program Files/Microsoft Visual Studio/2022/Enterprise"
+        "/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64"
+    )
+    raw = ":".join(
+        [
+            "/usr/bin",
+            "/ucrt64/bin",
+            "/mingw64/bin",
+            msvc,
+            "/c/Windows/system32",
+        ]
+    )
+    parts = _bash("eon_drop_cmake_poison", raw).split(":")
+    assert parts.index(msvc) < parts.index("/usr/bin")
+    assert "ucrt64" not in ":".join(parts).lower()
+    assert "mingw" not in ":".join(parts).lower()

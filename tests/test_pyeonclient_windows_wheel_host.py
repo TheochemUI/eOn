@@ -152,3 +152,4 @@ def test_workflow_installs_the_host_prefix_before_cibuildwheel():
     )
     assert 'rust = ">=1.88"' in host_toml
     assert 'flang = ">=19.1.7,<20"' in host_toml
+    assert 'capnproto = ">=1.0,<2"' in host_toml

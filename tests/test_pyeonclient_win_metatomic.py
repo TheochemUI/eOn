@@ -26,6 +26,7 @@ def test_win64_metatomic_wheel_is_in_the_matrix():
         / "pyeonclient_cibw_before_windows.py"
     ).read_text(encoding="utf-8")
     assert "numpy" in before
+    assert "meson>=1.10.1,<1.11" in before
     assert 'variant == "metatomic"' in before
     win = text.split("name: abi3-win-metatomic", 1)[1].split("steps:", 1)[0]
     assert "variant: metatomic" in win

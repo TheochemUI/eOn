@@ -11,6 +11,8 @@ version = "0.0.0"
 [dependencies]
 eigen = ">=3.4,<3.5"
 pkg-config = ">=0.29.2,<0.30"
+# The relax engine compiles schema/eon_relax_engine.capnp.
+capnproto = ">=1.0,<2"
 # flang 20 rejects -Werror=implicit-function-declaration, so rgpot's
 # find_library probes never see FortranRuntime. The Windows test job
 # uses the 19.1.7 pin from the main lock.

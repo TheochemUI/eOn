@@ -32,7 +32,9 @@ def main(argv: list[str]) -> int:
             "-U",
             "pip",
             "nanobind>=2.4,<3",
-            "meson",
+            # 1.12 adds -Werror=implicit-function-declaration to every flang
+            # probe. flang 19 rejects that flag, so FortranRuntime looks missing.
+            "meson>=1.10.1,<1.11",
             "ninja",
             "meson-python",
         ]

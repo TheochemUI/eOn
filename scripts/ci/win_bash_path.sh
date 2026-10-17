@@ -26,7 +26,8 @@ eon_drop_cmake_poison() {
       *mingw*|*strawberry*|*ucrt64*) continue ;;
     esac
     case "$low" in
-      */git/usr/bin)
+      */git/usr/bin|/usr/bin)
+        # Git bash mounts that directory as /usr/bin and prepends it.
         deferred+=("$p")
         continue
         ;;
