@@ -152,10 +152,10 @@ public:
   /// softest vibration, not whether the cell is periodic (a cluster in a box
   /// is periodic and still free to rotate).
   void markRotationZeroModes(const MatrixXd &hess, const MatrixXd &generators,
-                             std::array<bool, 3> &keep,
+                             double fraction, std::array<bool, 3> &keep,
                              std::array<double, 3> &residual) const {
     const tunneling::RotationZeroModes z =
-        tunneling::rotationZeroModes(hess, generators);
+        tunneling::rotationZeroModes(hess, generators, fraction);
     keep = z.zero;
     residual = z.residual;
   }
@@ -214,6 +214,47 @@ private:
   std::vector<long> free_;
   std::vector<double> sqrtMass_;
 };
+
+/// Cached path energies must describe the surface used by MassWeighted::place.
+bool cachedProfileMatchesSurface(const Matter &ref, const Matter &image) {
+  constexpr double inputTolerance = 1e-8; // Angstrom, including cell entries.
+  if (ref.numberOfAtoms() != image.numberOfAtoms() ||
+      ref.getPeriodic() != image.getPeriodic() || !ref.getCell().allFinite() ||
+      !image.getCell().allFinite() ||
+      (ref.getCell() - image.getCell()).cwiseAbs().maxCoeff() >
+          inputTolerance ||
+      !(ref.getAtomicNrs().array() == image.getAtomicNrs().array()).all()) {
+    return false;
+  }
+  const AtomMatrix delta = ref.pbc(image.getPositions() - ref.getPositions());
+  if (!delta.allFinite()) {
+    return false;
+  }
+  for (long i = 0; i < ref.numberOfAtoms(); ++i) {
+    if (ref.getFixedMask(i) != image.getFixedMask(i) ||
+        (ref.getFixed(i) &&
+         delta.row(i).cwiseAbs().maxCoeff() > inputTolerance)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/// Reference energies and derivatives share the ring's constraints and metric.
+void requireMatchingReferenceSurface(const Matter &ref, const Matter &image) {
+  if (!cachedProfileMatchesSurface(ref, image)) {
+    throw std::invalid_argument(
+        "instanton: reference surface differs in cell, species, constraints "
+        "or frozen positions");
+  }
+  for (long i = 0; i < ref.numberOfAtoms(); ++i) {
+    if (!(ref.getMass(i) > 0.0) || !std::isfinite(ref.getMass(i)) ||
+        ref.getMass(i) != image.getMass(i)) {
+      throw std::invalid_argument(
+          "instanton: reference surface differs in atomic masses");
+    }
+  }
+}
 
 /// With no atom fixed, removes the rigid part of m's displacement from
 /// ref: the mass-weighted mean (translation), and for a cluster the
@@ -431,6 +472,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   }
   // Highest first, so each ring can start the colder one.
   std::sort(temperatures.begin(), temperatures.end(), std::greater<>());
+  requireMatchingReferenceSurface(reactant, saddle);
   alignRigid(reactant, saddle);
   const long n = mw.dimension();
   const VectorXd qSaddle = mw.toQ(saddle);
@@ -510,7 +552,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   EONC_LOG_INFO("[Instanton] rotation curvatures over the softest vibration "
                 "{:.3g}, {:.3g}, {:.3g} (zero modes at or below {:.3g})",
                 rotationResidual[0], rotationResidual[1], rotationResidual[2],
-                tunneling::kRotationZeroFraction);
+                o.rotation_zero_fraction);
 
   std::vector<std::pair<std::string, double>> extras{
       {"instanton_crossover_K", tc},
@@ -571,7 +613,9 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       alignRigid(reactant, image);
       pathQ.push_back(mw.toQ(image));
       const auto energy = frame.energy_opt();
-      haveEnergies = haveEnergies && energy.has_value();
+      haveEnergies = haveEnergies && energy.has_value() &&
+                     std::isfinite(*energy) &&
+                     cachedProfileMatchesSurface(reactant, image);
       pathV.push_back(energy.value_or(0.0));
     }
     if (pathQ.size() < 3) {
@@ -775,6 +819,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     ro.frictionExplicit = o.friction == "explicit";
     ro.frictionEta = o.friction_eta;
     ro.frictionEtaBeads = o.friction_eta_beads;
+    ro.collapseFraction = o.collapse_fraction;
     if (static_cast<long>(mw.sqrtMasses().size()) == reactant.numberOfAtoms()) {
       ro.rigidSqrtMasses = mw.sqrtMasses();
       ro.rigidReference = mw.referenceFree();
@@ -914,7 +959,46 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         tunneling::instantonRate(
             inst, beadHessian, hReactant, vReactant - o.energy_shift, hSaddle,
             vSaddle - o.energy_shift, rigidModes, 4096, bodies);
-        rateOk = std::isfinite(inst.logRate) && inst.negativeModes == 1;
+        rateOk = inst.rateValid && std::isfinite(inst.logRate) &&
+                 inst.negativeModes == 1;
+        if (!inst.rateValid) {
+          EONC_LOG_ERROR("[Instanton] rate fluctuation validity: {}",
+                         inst.rateValidity);
+        }
+        if (!inst.bathSignedCurvatures.empty()) {
+          std::ostringstream name;
+          name << "instanton_fluctuations_" << std::setprecision(6)
+               << temperature << "K.dat";
+          std::ofstream spectrum(name.str());
+          if (!spectrum) {
+            throw std::runtime_error("instanton: cannot write " + name.str());
+          }
+          spectrum
+              << std::setprecision(17)
+              << "# Fixed quadratic bath; curvatures in eV/(amu Angstrom^2)\n"
+              << "# rate_valid " << (inst.rateValid ? 1 : 0) << '\n'
+              << "# validity " << inst.rateValidity << '\n'
+              << "# phase_zero_verified " << (inst.phaseZeroVerified ? 1 : 0)
+              << '\n'
+              << "# log_abs_det " << inst.bathLogAbsDet << '\n'
+              << "# reactant_log_abs_det " << inst.bathReactantLogAbsDet << '\n'
+              << "# operator_symmetry_residual " << inst.bathSymmetryResidual
+              << '\n'
+              << "# algebraic_roundoff_scale " << inst.bathRoundoffScale << '\n'
+              << "# phase_eigenpair_residual " << inst.phaseEigenResidual
+              << '\n'
+              << "# log_absolute_labelled_gaussian_weight "
+              << inst.logAbsoluteGaussianWeight << '\n'
+              << "# index signed_curvature\n";
+          for (size_t i = 0; i < inst.bathSignedCurvatures.size(); ++i) {
+            spectrum << i << ' ' << inst.bathSignedCurvatures[i] << '\n';
+          }
+          spectrum.flush();
+          if (!spectrum) {
+            throw std::runtime_error("instanton: cannot finish " + name.str());
+          }
+          returnFiles.push_back(name.str());
+        }
         if (inst.negativeModes != 1) {
           EONC_LOG_ERROR("[Instanton] the ring Hessian has {} negative modes, "
                          "not one: the ring is not a first-order saddle of U_N",
@@ -1007,6 +1091,9 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     extras.emplace_back("instanton_ring_potential", inst.ringPotential);
     extras.emplace_back("instanton_bN", inst.bN);
     extras.emplace_back("instanton_collapsed", inst.collapsed ? 1.0 : 0.0);
+    extras.emplace_back("instanton_rate_valid", rateOk ? 1.0 : 0.0);
+    extras.emplace_back("instanton_negative_modes",
+                        static_cast<double>(inst.negativeModes));
     extras.emplace_back("instanton_s_min", channel.sMin);
     extras.emplace_back("instanton_s_max", channel.sMax);
     extras.emplace_back("instanton_chord_overlap", channel.chordOverlap);
@@ -1020,8 +1107,6 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       extras.emplace_back("rate_htst", inst.classicalRate);
       extras.emplace_back("rate_htst_log", inst.classicalLogRate - logSecond);
       extras.emplace_back("barrier_effective_instanton", inst.effectiveBarrier);
-      extras.emplace_back("instanton_negative_modes",
-                          static_cast<double>(inst.negativeModes));
       extras.emplace_back("instanton_zero_mode", inst.zeroEigenvalue);
     } else {
       rateFailed = true;
@@ -1119,8 +1204,10 @@ std::vector<std::string> InstantonJob::run(void) {
       throw std::runtime_error("instanton: a bead Hessian failed");
     }
     if (!rotationsKnown) {
-      mw.markRotationZeroModes(out, mw.rigidGenerators(m), rotationZero,
-                               rotationResidual);
+      mw.markRotationZeroModes(
+          out, mw.rigidGenerators(m),
+          params.instanton_options().rotation_zero_fraction, rotationZero,
+          rotationResidual);
       rotationsKnown = true;
     }
     // A finite-difference Hessian of a free structure has small nonzero
@@ -1157,6 +1244,7 @@ std::vector<std::string> InstantonJob::run(void) {
   if (reactant->numberOfAtoms() != product->numberOfAtoms()) {
     throw std::runtime_error("instanton: the minima differ in atom count");
   }
+  requireMatchingReferenceSurface(*reactant, *product);
   alignRigid(*reactant, *product);
   const VectorXd qEnd = mw.toQ(*product);
 

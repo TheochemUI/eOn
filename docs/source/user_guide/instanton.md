@@ -98,6 +98,16 @@ hessian_stride = 4
 `springs = eco` is refused. The instanton is a Trotter discretisation of
 the ring.
 
+The reactant and product must have the same ordered species, masses, cell,
+and fixed-atom masks. With a frozen environment, its positions must also
+match within 1e-8 Å under the minimum image. The same requirements apply
+to `saddle_filename` in rate mode. A mismatch raises `instanton: reference
+surface differs` before reference energies or Hessians are evaluated.
+For example, independently relaxing frozen atoms in `saddle.con` changes
+the constrained potential: those coordinates cannot supply a saddle
+energy for a ring whose frozen atoms stay at the reactant positions.
+Generate and relax both references with the same frozen environment.
+
 `beta_hbar_omega` sets the imaginary time in units of {math}`1/\omega` of
 the stiffer minimum along the line between them. It must be long enough for
 the kink to relax into both wells. `results.dat` reports
@@ -173,6 +183,15 @@ are the eigenvalues of the mass-weighted ring Hessian, and the prime leaves
 out the cyclic zero mode and the rigid translations and rotations.
 {math}`Z_r` is the harmonic ring-polymer partition function of the reactant.
 {math}`U_N` is the ring-polymer potential, the bead potentials plus the springs.
+
+A ring of up to 4096 coordinates ({math}`N f`) uses the dense ring
+Hessian, with the cycle and the rigid modes lifted. Its eigenvalues give
+{math}`\det'`, the count of negative modes and the lowest eigenvalue.
+The block-chain determinant must agree with them; otherwise the log says
+so and that temperature gets no rate. A larger ring takes the determinant
+and the inertia from the block chain, and the lowest eigenvalue from
+Lanczos. A 16-bead ring of a 254-atom cell with every atom free has
+12192 coordinates.
 
 The crossover temperature is {math}`T_c = \hbar \omega_b / (2\pi k_B)`, with
 {math}`\omega_b` the imaginary frequency at the saddle. At or above {math}`T_c`
@@ -260,19 +279,26 @@ tridiagonal in the beads, and every solve, determinant and inertia count
 goes through a block LU of the open chain plus a low-rank Woodbury
 correction for the closure, the cycle, the rigid modes and each
 eigenvector-following flip: {math}`O(N f^3)` for {math}`f` degrees of
-freedom, and the {math}`Nf \times Nf` matrix is never formed, so the same
+freedom, and the search never forms the {math}`Nf \times Nf` matrix, so the same
 step serves a seven-atom cluster and a 254-atom cell. The lowest ring
 modes come from Lanczos on matrix-vector products. The bead curvature
 blocks start from the saddle Hessian (`initial_hessians = saddle`, no force
-calls) and follow accepted moves with a Bofill update, rebuilt from
-finite differences up to three times when the trust radius reaches its
-floor. Known rigid motions enter an explicit quotient and solve
+calls) and follow accepted moves with a Bofill update. Finite differences
+rebuild them up to three times when the trust radius reaches its floor.
+Known rigid motions enter an explicit quotient and solve
 stabilization. A small saddle curvature alone does not identify a rigid
 motion and is retained in the physical ring inertia. `initial_hessians = finite_difference` takes
 {math}`2f` gradient calls per
-bead first. The rate uses the bead Hessians chosen by `hessian_final`, not
+bead first. Between rebuilds each block keeps the number of negative
+curvatures its last finite-difference version had: a Bofill update that
+opens another one has its sign flipped, and when the
+ring model still shows more negative curvatures than the last exact
+blocks, the blocks are rebuilt (at most four times). The search stops
+when {math}`B_N` falls below `collapse_fraction` (default 1e-4) of the
+starting ring's, since the beads have then fallen onto one point; the
+job writes `instanton_collapsed = 1` and no rate. The rate uses the bead Hessians chosen by `hessian_final`, not
 that update. On the one-dimensional Eckart barrier the search converges
-in 4 to 7 steps from either seed.
+in 9 to 12 steps from the cosine seed and in 3 from a seed on the path.
 
 An unexpected negative-mode count can also trigger a complete physical
 Hessian refresh during optimization, including at iteration zero.
@@ -300,6 +326,20 @@ beads at a quarter of that count and doubles. `hessian_final` is
 On a rate calculation, `initial_path` is a band over the barrier. The ring
 starts on the closed orbit of that band whose period is {math}`\beta \hbar`,
 and the same band carries a one-dimensional WKB rate.
+With fixed atoms, each band frame is projected onto the reactant's frozen
+coordinates before its potential is evaluated. Stored frame energies are
+reused only if every frame has a finite energy and matches the reactant's
+cell, ordered species, constraint masks and frozen coordinates. Cell entries
+and frozen displacements use a tolerance of `1e-8` Angstrom; periodic frozen
+displacements are compared under the minimum image. A mismatch in any frame
+causes all band energies to be evaluated on the projected surface. Mobile
+coordinates still supply the path and ring seed.
+
+This geometry check does not establish external Hamiltonian provenance.
+Cached energies must also use the selected potential, electronic settings
+and pseudopotentials. When that provenance is uncertain, remove the stored
+energies from the input frames so the job evaluates the entire profile.
+
 `rate_instanton.dat` has one row per temperature, with columns `T_K`,
 `T_c_K`, `beads`, `converged`, `iterations`, `U_N_eV`, `negative_modes`,
 `ln_k_per_s`, `k_per_s`, `ln_k_htst_per_s`, `barrier_effective_eV`,
@@ -338,7 +378,8 @@ With no atom fixed, both the reactant and the instanton omit the three
 translations. A
 rotation is omitted when it is a zero mode of the reactant Hessian, which a
 free cluster has and a crystal does not: when its curvature r^T H r / r^T r
-is at most 0.1 of the softest vibration, the lowest eigenvalue of the
+is at most `rotation_zero_fraction` (default 0.1) of the softest
+vibration, the lowest eigenvalue of the
 Hessian once the translations and rotations are projected out. Both sides
 scale with the Hessian and neither grows with the atom count. A cluster in a large periodic cell
 is told apart by that Hessian, not by the periodic flag. The springs along
@@ -367,8 +408,14 @@ the change in the moments of inertia along the ring.
 | `instanton_zero_mode` | the eigenvalue left out |
 | `instanton_s_min`, `instanton_s_max` | the turning points along the saddle's unstable mode, amu^0.5 Angstrom from the saddle |
 | `instanton_chord_overlap` | cosine of the angle between the chord joining the turning points and the unstable mode |
-| `instanton_collapsed` | 1 when the search stopped because the beads fell onto one point (B_N below 1e-4 of the starting ring's) |
+| `instanton_collapsed` | 1 when the search stopped because the beads fell onto one point (B_N below `collapse_fraction` of the starting ring's) |
 | `instanton_crossing_offset` | largest distance from the saddle, across the mode, at which the ring crosses the dividing plane |
+
+A search stops at once when its beads fall onto one point, with
+{math}`B_N` below `collapse_fraction` of the starting ring's. That ring gets no rate.
+`results.dat` records `instanton_collapsed` 1 and `termination_reason` 1
+(`FAIL_MAX_ITERATIONS`). The log names where along the unstable mode the
+beads fell.
 
 A converged ring is given a rate only when it belongs to the seeded saddle:
 it straddles the plane through the saddle normal to the unstable mode,
@@ -669,3 +716,64 @@ labelprefix: INST_
 keyprefix: inst-
 ---
 ```
+
+
+## Fixed bath coefficients and physical units
+
+`friction = implicit` uses one nonnegative `friction_eta` coefficient.
+`friction = explicit` uses the comma-separated `friction_eta_beads`, one
+nonnegative coefficient per bead. These inputs define a **fixed quadratic
+bead operator**. Their numerical values retain their input convention.
+
+In mass-weighted coordinates {math}`q=\sqrt{m}\,r`, the implicit bath is
+
+```{math}
+ U_{\rm bath}=\frac12\sum_k
+       \eta_{\rm eff}\,2|\sin(\pi k/P)|\,|Q_k|^2.
+```
+
+The sine factor is dimensionless. Thus `friction_eta` is a curvature
+coefficient, in **eV/(amu Angstrom²)**, equivalently inverse internal time
+squared. It is not directly a damping frequency in inverse fs.
+For a physical scalar Ohmic damping {math}`\gamma` in mass-weighted coordinates,
+the mapping at the requested temperature and bead count is
+
+```{math}
+ \omega_P=\frac{1}{\beta_P\hbar_{\rm internal}},\qquad
+ \eta_{\rm eff}=\gamma_{\rm internal}\omega_P,\qquad
+ \beta_P=\beta/P.
+```
+
+The internal time unit is approximately 10.1805 fs. A damping specified in
+inverse fs converts as `gamma_internal = gamma_per_fs * time_unit_fs`.
+Cartesian scalar friction divided by the atom's mass gives the corresponding
+mass-weighted damping. The one-coefficient API applies that mass-weighted
+damping equally to all active coordinates.
+
+At fixed physical damping, changing temperature or bead count requires
+recomputing `eta_eff`. This also applies to a bead ladder: fixed raw input
+coefficients do not define a study at fixed physical damping. The code
+does not rescale existing input coefficients automatically.
+
+For explicit coefficients, the implemented map is
+
+```{math}
+ (Tq)_0=0,\qquad (Tq)_j=(Tq)_{j-1}
+ +\tfrac12(\sqrt{\eta_{j-1}}+\sqrt{\eta_j})(q_j-q_{j-1}),
+ \qquad K=T^T F^*\Omega F T,
+```
+
+where {math}`F` is unitary and {math}`\Omega_{kk}=2|\sin(\pi k/P)|`.
+The coefficients remain fixed while differentiating this quadratic form.
+A coordinate-dependent friction tensor or frequency-dependent spectral
+density requires additional coupling data and derivatives; a list of fixed
+bead coefficients alone does not specify either model.
+
+The physical-frequency mapping follows the uniform-coupling kernel in
+[Litman et al., Eqs. (16) and (20)](https://arxiv.org/html/2202.08668).
+Their Eq. (4) supplies the collective-coordinate normalization when its
+cyclic phase mode is a zero mode. For a nonzero bath, the rate calculation checks for one
+physical negative mode and a numerically null phase before using that
+factor. A resolved nonzero phase remains in the signed fluctuation
+diagnostics; the absolute Gaussian weight excludes contour and rate
+normalization. Its `rateValid = false` status must be retained by callers.

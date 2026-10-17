@@ -60,6 +60,10 @@ struct potential_options_t {
   std::string extPotPath{"./ext_pot"};
   std::string potentialsPath{
       ""}; // colon-separated dirs for Fortran potential .so files
+  /// Width (Angstrom) of the C^2 quintic switch that takes the lj,
+  /// ljcluster and morse_pt pair terms to zero at their cutoff. 0 keeps
+  /// the shifted truncation, whose force jumps at the cutoff.
+  double pairSwitchWidth{0.0};
   int MPIPotentialRank{-1};
   /// Opaque MPI_Comm bits. Read/write with ParametersMpi.h in MPI TUs.
   std::uintptr_t MPIClientComm{0};
@@ -850,6 +854,12 @@ struct instanton_options_t {
   std::string initial_hessians{"saddle"};
   // Central physical bead-Hessian displacement, sqrt(amu) Angstrom.
   double physical_hessian_step{1e-4};
+  // Mode rate: the search stops when B_N falls below this fraction of the
+  // starting ring's (the beads fell onto one point).
+  double collapse_fraction{1e-4};
+  // A reactant rotation is a zero mode when its curvature is at most this
+  // fraction of the softest vibration.
+  double rotation_zero_fraction{0.1};
   // Mode rate: start at a quarter of the beads and double. Off leaves the
   // requested count alone.
   bool bead_ladder{false};

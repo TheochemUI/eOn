@@ -768,6 +768,13 @@ CATALOG = {
           "ordinal": 7,
           "snake": "potentials_path",
           "type": "Text"
+        },
+        {
+          "capnp": "pairSwitchWidth",
+          "default": 0.0,
+          "ordinal": 8,
+          "snake": "pair_switch_width",
+          "type": "Float64"
         }
       ],
       "struct": "PotentialOptions"

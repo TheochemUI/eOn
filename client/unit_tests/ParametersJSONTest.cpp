@@ -393,6 +393,8 @@ TEST_CASE("JSON round-trips every Instanton and Hessian key",
   o.half_ring = false;
   o.initial_hessians = "finite_difference";
   o.energy_shift = -1.25;
+  o.collapse_fraction = 2e-5;
+  o.rotation_zero_fraction = 0.05;
   o.bead_ladder = true;
   o.hessian_final = "interpolated";
   o.springs = "trotter";
@@ -423,6 +425,8 @@ TEST_CASE("JSON round-trips every Instanton and Hessian key",
   REQUIRE_FALSE(l.half_ring);
   REQUIRE(l.initial_hessians == "finite_difference");
   REQUIRE(l.energy_shift == Catch::Approx(-1.25));
+  REQUIRE(l.collapse_fraction == Catch::Approx(2e-5));
+  REQUIRE(l.rotation_zero_fraction == Catch::Approx(0.05));
   REQUIRE(l.bead_ladder);
   REQUIRE(l.hessian_final == "interpolated");
   REQUIRE(l.springs == "trotter");
@@ -528,8 +532,11 @@ TEST_CASE("Physical Hessian displacement survives INI and JSON configuration",
   // load_json reports a rejected value as a status. It does not let the
   // invalid_argument out: the same function already catches that and
   // returns 1 for an unknown enum.
-  REQUIRE(roundtrip.load_json(
-              R"({"Instanton":{"physical_hessian_step":-0.001}})") != 0);
+  const auto invalidStep = nlohmann::json::parse(
+      R"({"Instanton":{"physical_hessian_step":-0.001}})");
+  REQUIRE(roundtrip.load_json(invalidStep.dump()) != 0);
+  REQUIRE_THROWS_AS(eonc::config::from_json(invalidStep, roundtrip),
+                    std::invalid_argument);
 }
 
 } /* namespace tests */

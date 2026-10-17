@@ -265,17 +265,15 @@ bool RgpotPot::evaluate(long N, const double *R, const int *atomicNrs,
 void RgpotPot::computeSingle(long N, const double *R, const int *atomicNrs,
                              double *F, double *U, const double *box,
                              int group) {
-  // Every calculator evaluates the structure, because the engine agrees
-  // on errors across MPI_COMM_WORLD after each call and a calculator that
-  // skipped the call would never join that agreement. The first rank of
-  // `group`, the one whose stored orbitals are nearest, sends its result
-  // to every rank.
+  // `group`, the one whose stored orbitals are nearest, computes; its
+  // first rank's result reaches every rank. rgpot keeps the engine's error
+  // agreement inside a calculator, so the other groups stay out of it.
   std::string error;
-  // Only that group's call counts toward the calculator usage report.
-  impl_->selectOrbitals(kSingleKey);
-  const bool ok = impl_->calculatorIndex() == group
-                      ? evaluate(N, R, atomicNrs, F, U, box, error)
-                      : try_force(*impl_, N, R, atomicNrs, F, U, box, error);
+  bool ok = true;
+  if (impl_->calculatorIndex() == group) {
+    impl_->selectOrbitals(kSingleKey);
+    ok = evaluate(N, R, atomicNrs, F, U, box, error);
+  }
   if (!impl_->shareResult(group, N, F, U, ok, error))
     raise_failure(0, group, error);
 }
@@ -286,7 +284,6 @@ void RgpotPot::computeBatch(long nSystems, long nAtoms,
                             double *energies, const double *const *boxes,
                             const std::int64_t *owners,
                             const std::int64_t *route) {
-  const int groups = impl_->calculatorGroups();
   const int mine = impl_->calculatorIndex();
   auto ownerOf = [&](long j) { return static_cast<int>(route[j]); };
   if (impl_->calculatorWorld() <= 1) {
@@ -299,35 +296,13 @@ void RgpotPot::computeBatch(long nSystems, long nAtoms,
   }
   std::vector<char> ok(static_cast<size_t>(nSystems), 1);
   std::vector<std::string> errors(static_cast<size_t>(nSystems));
-  std::vector<long> owned(static_cast<size_t>(groups), 0);
-  long last = -1;
   for (long j = 0; j < nSystems; j++) {
-    owned[static_cast<size_t>(ownerOf(j))]++;
     if (ownerOf(j) == mine) {
-      last = j;
       impl_->selectOrbitals(orbital_key(owners, j));
       ok[static_cast<size_t>(j)] =
           evaluate(nAtoms, positions[j], atomicNrs[j], forces[j], &energies[j],
                    boxes[j], errors[static_cast<size_t>(j)]);
     }
-  }
-  // Every calculator makes the same number of engine calls: the engine
-  // agrees on errors across MPI_COMM_WORLD after each one. A calculator
-  // that owns fewer systems repeats one into scratch buffers, its last
-  // own system or system 0 when it owns none. The repeat runs under that
-  // system's key, so a repeat of the last own system is the session's
-  // stored result and costs no SCF.
-  const long most = *std::max_element(owned.begin(), owned.end());
-  const long pad = most - owned[static_cast<size_t>(mine)];
-  if (pad > 0) {
-    const long j = last >= 0 ? last : 0;
-    impl_->selectOrbitals(orbital_key(owners, j));
-    std::vector<double> scratchF(static_cast<size_t>(3 * nAtoms));
-    double scratchU = 0.0;
-    std::string scratchError;
-    for (long k = 0; k < pad; k++)
-      try_force(*impl_, nAtoms, positions[j], atomicNrs[j], scratchF.data(),
-                &scratchU, boxes[j], scratchError);
   }
   // Every share runs before any rank raises, so all ranks leave together.
   long failed = -1;

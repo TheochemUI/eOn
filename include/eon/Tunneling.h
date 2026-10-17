@@ -286,6 +286,9 @@ struct RateInstantonOptions {
   /// gradient calls; the search then finishes on the whole ring. A cooling
   /// schedule probes only its last temperature.
   bool checkOddSector = true;
+  /// The search stops, with RateInstanton::collapsed set, when B_N falls
+  /// below this fraction of the starting ring's. 0 never stops.
+  double collapseFraction = 1e-4;
   double energyShift = 0.0; ///< subtracted from every bead potential, eV
   /// Empty keeps every spring equal. Otherwise one positive weight per
   /// bead: the spring from bead j to bead j + 1 is divided by that weight.
@@ -363,13 +366,30 @@ struct RateInstanton {
   double bN = 0.0;                 ///< sum_j |q_{j+1} - q_j|^2, amu Angstrom^2
   /// Empty keeps every spring equal. Otherwise one positive weight per bead.
   std::vector<double> discretization;
+  /// Resolved fixed bath coefficients: empty, one value or one per bead.
+  std::vector<double> bathEta;
+  /// Exact finite bath fluctuation diagnostics after declared rigid projection.
+  std::vector<double> bathSignedCurvatures;
+  double bathLogAbsDet = std::numeric_limits<double>::quiet_NaN();
+  double bathReactantLogAbsDet = std::numeric_limits<double>::quiet_NaN();
+  double bathSymmetryResidual = std::numeric_limits<double>::quiet_NaN();
+  double bathRoundoffScale = std::numeric_limits<double>::quiet_NaN();
+  double phaseEigenResidual = std::numeric_limits<double>::quiet_NaN();
+  /// Absolute labelled-saddle Gaussian weight, without contour/rate factors.
+  double logAbsoluteGaussianWeight = std::numeric_limits<double>::quiet_NaN();
+  bool phaseZeroVerified = false;
+  /// A physical rate requires a converged index-one stationary ring.
+  /// Numerical zero-bath prefactor diagnostics can be finite when false.
+  bool rateValid = false;
+  std::string rateValidity = "not_evaluated";
+
   double negativeEigenvalue = 0.0; ///< of the ring Hessian, 1 / time^2
   double zeroEigenvalue = 0.0;     ///< the eigenvalue left out
   long negativeModes = 0;          ///< eigenvalues below the zero mode
   long iterations = 0;
   bool converged = false;
-  /// The search stopped because B_N fell below 1e-4 of the starting
-  /// ring's: the beads fell together onto one point (a minimum or the
+  /// The search stopped because B_N fell below collapseFraction of the
+  /// starting ring's: the beads fell together onto one point (a minimum or the
   /// saddle), which is no instanton.
   bool collapsed = false;
   double logRateTimesZr = 0.0; ///< ln(k Z_r), k in 1 / time
@@ -429,7 +449,8 @@ RingChannel ringChannel(const std::vector<VectorXd> &beads,
 /// Hessian. `generators` holds three translations then three rotations as
 /// columns (a zero column for a rotation a linear molecule lacks). A
 /// rotation r is a zero mode when its Rayleigh quotient r^T H r / r^T r is
-/// at most kRotationZeroFraction of the softest vibration, the lowest
+/// at most `fraction` (default kRotationZeroFraction) of the softest
+/// vibration, the lowest
 /// eigenvalue of H on the complement of all six generators. Both sides
 /// scale with H and neither grows with the atom count, unlike a comparison
 /// with ||H||_F. The residual reported is that ratio; a structure with no
@@ -440,8 +461,17 @@ struct RotationZeroModes {
   std::array<double, 3> residual{{0.0, 0.0, 0.0}};
   double softestVibration = 0.0; ///< lowest eigenvalue on the complement
 };
-RotationZeroModes rotationZeroModes(const MatrixXd &hess,
-                                    const MatrixXd &generators);
+RotationZeroModes
+rotationZeroModes(const MatrixXd &hess, const MatrixXd &generators,
+                  double fraction = kRotationZeroFraction);
+
+/// The Bofill update of a bead block (Powell symmetric Broyden and SR1
+/// mixed by the angle between the secant residual and the step), then any
+/// negative eigenvalues beyond `allowedNegatives`, the count the block's
+/// last exact (finite-difference) version had, mirrored to their absolute
+/// value. A negative count applies the plain update.
+void bofillKeepingInertia(MatrixXd &h, const VectorXd &dq, const VectorXd &dg,
+                          long allowedNegatives);
 
 /// The mass-weighted Hessian d2V/dq2 at ring bead j (0..N-1).
 using RingBeadHessian = std::function<MatrixXd(long j, const VectorXd &q)>;
