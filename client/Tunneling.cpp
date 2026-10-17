@@ -3003,7 +3003,7 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
   inst.temperature = 1.0 / (kBoltzmann * beta);
   inst.crossover = crossoverTemperature(
       options.physicalBath
-          ? options.physicalBath->fullHessian(saddle, hessSaddle)
+          ? MatrixXd(options.physicalBath->fullHessian(saddle, hessSaddle))
           : hessSaddle);
   if (!(inst.temperature < inst.crossover)) {
     throw std::invalid_argument(
@@ -3628,7 +3628,7 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
   inst.temperature = 1.0 / (kBoltzmann * beta);
   inst.crossover = crossoverTemperature(
       options.physicalBath
-          ? options.physicalBath->fullHessian(saddle, hessSaddle)
+          ? MatrixXd(options.physicalBath->fullHessian(saddle, hessSaddle))
           : hessSaddle);
   if (!(inst.temperature < inst.crossover)) {
     throw std::invalid_argument(
@@ -4072,6 +4072,22 @@ void physicalBathFluctuations(RateInstanton &inst,
                                 .norm();
   inst.phaseZeroVerified = zeros == 1 && std::abs(values[phase]) <= zeroTol &&
                            overlap > 0.9 && inst.phaseEigenResidual <= zeroTol;
+  const long bathDimension=inst.physicalBath->curvatures.size();
+  double phaseMetric=1.0,fullBN=inst.bN;
+  const VectorXd retainedPhase=es.eigenvectors().col(phase);
+  for (long j=0;j<n;++j) {
+    VectorXd lifted=VectorXd::Zero(bathDimension);
+    for (long l=0;l<n;++l) {
+      const VectorXd sourceVariation=bath.sourceJacobians[l]*retainedPhase.segment(l*f,f);
+      lifted.array()-=bath.inverseBath[(j-l+n)%n].array()*sourceVariation.array();
+    }
+    phaseMetric+=lifted.squaredNorm();
+    fullBN+=(bath.bathPositions[(j+1)%n]-bath.bathPositions[j]).squaredNorm();
+  }
+  if (!(fullBN>0) || !std::isfinite(fullBN) || !std::isfinite(phaseMetric))
+    throw std::runtime_error("physical bath: invalid lifted phase measure");
+  EONC_LOG_INFO("[Instanton] physical bath phase measure: bN_full {:.17g}, bN_retained {:.17g}, lift_metric {:.17g}, effective_bN {:.17g}",
+      fullBN,inst.bN,phaseMetric,fullBN/phaseMetric);
   double logPrime = 0;
   for (long k = 0; k < dim; ++k)
     if (k != phase)
@@ -4079,17 +4095,17 @@ void physicalBathFluctuations(RateInstanton &inst,
   const double referenceDet = er.eigenvalues().array().log().sum();
   const double fullDimension = n * (f + inst.physicalBath->curvatures.size());
   const double logMeasure = fullDimension * std::log(inst.betaN * kHbar);
-  inst.bathLogAbsDet = logPrime + bath.bathLogDeterminant;
+  inst.bathLogAbsDet = logPrime + bath.bathLogDeterminant + std::log(phaseMetric);
   inst.bathReactantLogAbsDet = referenceDet + referenceBath.bathLogDeterminant;
   inst.logZr =
       -inst.beta * vReactant - logMeasure - 0.5 * inst.bathReactantLogAbsDet;
   // For an exact phase zero, det' H_full=det D_bath det' S times
-  // ||u_full||^2/||u_retained||^2. Its phase orbit has the square root
-  // of the same metric, so the reduced orbit and pseudodeterminant pair
-  // retain the complete Gaussian measure without a second metric factor.
+  // ||u_full||^2/||u_retained||^2. Use the full primitive link measure
+  // with this lifted pseudodeterminant. At finite N the link measure
+  // and the phase-eigenvector metric are distinct quadratures.
   inst.logRateTimesZr =
       -logMeasure +
-      0.5 * std::log(inst.bN /
+      0.5 * std::log(fullBN /
                      (2 * std::numbers::pi * inst.betaN * kHbar * kHbar)) -
       0.5 * inst.bathLogAbsDet - inst.betaN * inst.ringPotential;
   inst.rateValid =

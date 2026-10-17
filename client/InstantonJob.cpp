@@ -527,9 +527,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         gradient = (physicalModel->reactionBasis.transpose() * gradient).eval();
   };
   auto projectHessian = [&](const MatrixXd &h) -> MatrixXd {
-    return physicalModel ? (physicalModel->reactionBasis.transpose() * h *
-                            physicalModel->reactionBasis)
-                               .eval()
+    return physicalModel ? MatrixXd((physicalModel->reactionBasis.transpose() * h *
+                             physicalModel->reactionBasis).eval())
                          : h;
   };
   auto hessianAt = [&](const VectorXd &q, const std::string &file) -> MatrixXd {
@@ -637,7 +636,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
           .eigenvectors()
           .col(0);
   const double tc = tunneling::crossoverTemperature(
-      physicalModel ? physicalModel->bath->fullHessian(qSaddle, hSaddle)
+      physicalModel ? MatrixXd(physicalModel->bath->fullHessian(qSaddle, hSaddle))
                     : referenceSaddle);
   const long rigidModes =
       physicalModel ? 0 : mw.rigidBasis(reactant, rotationZero).cols();

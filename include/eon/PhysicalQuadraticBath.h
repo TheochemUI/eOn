@@ -31,6 +31,8 @@ struct PhysicalQuadraticBath {
     std::vector<Eigen::VectorXd> gradient;
     Eigen::MatrixXd hessian;
     std::vector<Eigen::VectorXd> bathPositions;
+    std::vector<Eigen::VectorXd> inverseBath;
+    std::vector<Eigen::MatrixXd> sourceJacobians;
     double bathLogDeterminant = 0.0;
   };
 
@@ -128,6 +130,10 @@ struct PhysicalQuadraticBath {
         }
         for (long a=0;a<b;++a) out.hessian.block(j*r,j*r,r,r).noalias()-=y[a]*second[j][a];
       }
+    }
+    if (needHessian) {
+      out.inverseBath=inverse;
+      out.sourceJacobians=jac;
     }
     return out;
   }
