@@ -2,15 +2,39 @@
 """Copy wrap-built librgpot into the install prefix.
 
 rgpot sets install: not meson.is_subproject(). eOn CI uses
-meson install --skip-subprojects. eonclient then looks for
-librgpot.3.dylib (soversion 3 in rgpot 3.2.0) next to the prefix.
+meson install --skip-subprojects. eonclient then looks for the
+SONAME (librgpot.so.4 from rgpot 3.5.1) next to the prefix.
 """
 from __future__ import annotations
 
 import os
 import shutil
+import subprocess
 import sys
 from pathlib import Path
+
+
+def elf_soname(path: Path) -> str | None:
+    """DT_SONAME of an ELF shared object.
+
+    rgpot 3.5.1 writes librgpot.so.3.5.1 and records librgpot.so.4.
+    The filename major is the project version, not the SONAME.
+    """
+    readelf = shutil.which("readelf")
+    if readelf is None:
+        return None
+    try:
+        out = subprocess.check_output(
+            [readelf, "-d", str(path)],
+            text=True,
+            stderr=subprocess.DEVNULL,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    for line in out.splitlines():
+        if "SONAME" in line and "[" in line:
+            return line.split("[", 1)[1].split("]", 1)[0]
+    return None
 
 
 def main() -> int:
@@ -53,9 +77,8 @@ def main() -> int:
                 dest.symlink_to(os.readlink(path))
             else:
                 shutil.copy2(path, dest)
-            # Wheel NEEDED is librgpot.so.3; wrap file is librgpot.so.3.2.0.
-            if ".so." in name:
-                soname = name.split(".so.")[0] + ".so." + name.split(".so.")[1].split(".")[0]
+            soname = elf_soname(dest if dest.is_file() else path)
+            if soname:
                 alias = dest_dir / soname
                 if alias != dest and not alias.exists():
                     try:
