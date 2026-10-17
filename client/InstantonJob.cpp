@@ -881,10 +881,6 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   for (size_t ti = 0; ti < temperatures.size(); ++ti) {
     const double temperature = temperatures[ti];
     const double beta = 1.0 / (tunneling::kBoltzmann * temperature);
-    if (physicalModel && !(temperature < tc))
-      throw std::invalid_argument(
-          "physical bath rate requires a below-crossover instanton; no reduced "
-          "parabolic rate is defined");
     const bool last = ti + 1 == temperatures.size();
     const double wkbLog = wkbAt(beta);
     if (!(temperature < tc)) {
@@ -895,8 +891,16 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       if (temperature > tc) {
         try {
           const double factor = tunneling::parabolicFactor(temperature, tc);
+          const MatrixXd harmonicReactant = physicalModel
+              ? MatrixXd(physicalModel->bath->fullHessian(VectorXd::Zero(n),
+                                                         hReactant))
+              : hReactant;
+          const MatrixXd harmonicSaddle = physicalModel
+              ? MatrixXd(physicalModel->bath->fullHessian(qSaddle, hSaddle))
+              : hSaddle;
           const double logQhtst = tunneling::quantumHarmonicTstLogRate(
-              hReactant, hSaddle, beta, vSaddle - vReactant, rigidModes);
+              harmonicReactant, harmonicSaddle, beta, vSaddle - vReactant,
+              rigidModes);
           const double logPar = logQhtst + std::log(factor);
           const double logPerSecond = logPar - logSecond;
           if (!std::isfinite(logPerSecond) ||
