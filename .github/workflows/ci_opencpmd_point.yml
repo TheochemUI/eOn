@@ -36,7 +36,7 @@ jobs:
         shell: pixi run bash -e {0}
         env:
           OPENCPMD_COMMIT: 062582b7cfd832d36f88f504cd08e4ead42eb404
-          CPMDC_COMMIT: 8439c25cf0bd5f4caefd6ed07bebf142e2b181f5
+          CPMDC_COMMIT: 95d779a839a2787e022148216baa331c2a6f412b
           PREFIX: /usr
           STACK: ${{ github.workspace }}/.stack-opencpmd
           KIT: ${{ github.workspace }}/kit
