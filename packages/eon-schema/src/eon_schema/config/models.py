@@ -11,6 +11,7 @@ Parity is enforced by tests/test_params_ssot.py.
 
 import math
 import random
+import struct
 from pathlib import Path
 from typing import Any, Optional, Union, get_args
 
@@ -2741,6 +2742,22 @@ class InstantonConfig(BaseModel):
             "Physical bead-Hessian central displacement in sqrt(amu) Angstrom;"
             " independent of directional Lanczos finite differences."
         ),
+    )
+    newton_limit: int = Field(
+        default=(1 << (8 * struct.calcsize("l") - 1)) - 1,
+        ge=0,
+        description=(
+            "Maximum active ring coordinates for dense Newton; zero selects"
+            " the matrix-free dimer search. The default is LONG_MAX."
+        ),
+    )
+    reactant_hessian_filename: str = Field(
+        default="",
+        description="Optional saved reactant Hessian; empty computes it.",
+    )
+    saddle_hessian_filename: str = Field(
+        default="",
+        description="Optional saved saddle Hessian; empty computes it.",
     )
     initial_hessians: Literal["saddle", "finite_difference"] = Field(
         default="saddle",

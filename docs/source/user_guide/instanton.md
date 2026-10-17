@@ -310,6 +310,35 @@ dimer independently of this limit. This setting changes the optimizer,
 not the force criterion or the reference-spectrum checks. Final rate
 prefactors still require the configured physical bead Hessians.
 
+Independent reference calculations can supply the two reference Hessians:
+
+```ini
+[Instanton]
+reactant_hessian_filename = reactant-hessian.dat
+saddle_hessian_filename = saddle-hessian.dat
+```
+
+Each file is a plain, whitespace-separated square matrix over the free
+atoms in their input order, three Cartesian coordinates per atom. Its
+entries are mass weighted, in eV/(amu Å²). For each matrix, provide the
+measured geometry as an ordinary CON file with `.con` appended to the
+matrix filename, for example `reactant-hessian.dat.con`. The job checks
+the complete geometry, cell, ordered species, atom IDs, masses and fixed
+masks, then checks matrix dimensions, finite entries and symmetry to
+roundoff. It retains every signed curvature for the reference-spectrum
+checks. An absent filename requests the physical finite-difference
+calculation.
+
+The CON sidecar cannot establish an external calculator's Hamiltonian.
+Supply a matrix only when the calculation has matching pseudopotentials,
+charge, functional, boundary conditions and converged force/displacement
+settings. Preserve that calculation's provenance with the matrix. A
+matching file avoids repeating its reference force displacements; it
+does not replace final physical bead Hessians or prove reference
+stationarity. The job still evaluates both reference energies and forces
+on the selected potential and applies its rigid-mode projection to the
+loaded matrices.
+
 An unexpected negative-mode count can also trigger a complete physical
 Hessian refresh during optimization, including at iteration zero.
 For a half ring with even bead count `P`, this evaluates `P/2 + 1`
