@@ -620,12 +620,24 @@ max_energy = 10.0
   REQUIRE(forceCalls_ <= 39);
 
   // Eigenvalue must be negative (true saddle point).
-  // SVN printed -1.014995. Dimer::rotate now updates the plane from the
-  // pre-rotation direction; the FD curvature on this fixture
-  // is -1.010564. Energy still matches the SVN saddle.
+  // final_eigenvalue is the pre-final estimate: the min-mode curvature at
+  // the geometry before the converged step, since convergence is judged on
+  // the forces alone. SVN printed -1.014995. Dimer::rotate now updates the
+  // plane from the pre-rotation direction; the host dimer's pre-final
+  // estimate on this fixture is -1.010564. Energy still matches the SVN
+  // saddle.
   double eigenvalue = std::stod(results["final_eigenvalue"]);
   REQUIRE(eigenvalue < 0.0);
+#ifdef WITH_RGSADDLE
+  // The rgsaddle dimer rotates to a slightly different mode from frame 6
+  // on, so the climb reaches the same saddle (6.2e-5 A apart) through a
+  // different pre-final geometry, where the curvature is -1.013461 by
+  // either estimator. At the returned saddle both measure about -1.0103,
+  // and the central-difference Hessian gives -1.0102.
+  REQUIRE(eigenvalue == Catch::Approx(-1.013461).epsilon(1e-3));
+#else
   REQUIRE(eigenvalue == Catch::Approx(-1.010564).epsilon(1e-3));
+#endif
 
   // Reactant energy must match
   double reactantE = std::stod(results["potential_energy_reactant"]);
