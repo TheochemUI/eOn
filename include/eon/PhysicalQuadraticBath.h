@@ -108,12 +108,18 @@ struct PhysicalQuadraticBath {
     }
     // inverse[lag] is diagonal in the fixed physical bath eigenbasis.
     std::vector<Eigen::VectorXd> inverse(n,Eigen::VectorXd::Zero(b));
-    for (long k=0;k<n;++k) {
-      const double sk=std::sin(std::numbers::pi*static_cast<double>(k)/n);
-      const Eigen::VectorXd lambda=(curvatures.array()+4*c*sk*sk).matrix();
-      out.bathLogDeterminant+=lambda.array().log().sum();
+    // The positive cyclic Green function solves (E+c*L)G=I. Its two
+    // decaying branches sum periodic images without Fourier cancellation.
+    const double rootSpring=std::sqrt(c);
+    for (long a=0;a<b;++a) {
+      const double frequency=std::sqrt(curvatures[a]);
+      double alpha=2*std::asinh(frequency/(2*rootSpring));
+      if (!std::isfinite(alpha)) alpha=std::log(curvatures[a])-std::log(c);
+      const double periodic=-std::expm1(-n*alpha);
+      const double scale=1/frequency/std::hypot(frequency,2*rootSpring)/periodic;
+      out.bathLogDeterminant+=n*(std::log(c)+alpha)+2*std::log(periodic);
       for (long lag=0;lag<n;++lag)
-        inverse[lag].array()+=std::cos(2*std::numbers::pi*k*static_cast<double>(lag)/n)/n/lambda.array();
+        inverse[lag][a]=scale*(std::exp(-lag*alpha)+std::exp(-(n-lag)*alpha));
     }
     for (long j=0;j<n;++j) {
       Eigen::VectorXd y=Eigen::VectorXd::Zero(b);
