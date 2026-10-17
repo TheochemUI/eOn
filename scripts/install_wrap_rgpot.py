@@ -37,6 +37,26 @@ def elf_soname(path: Path) -> str | None:
     return None
 
 
+def place_soname_alias(dest_dir: Path, soname: str, filename: str, src: Path) -> None:
+    """Link ``soname`` to ``filename``.
+
+    The alias comes from the regular file's DT_SONAME. A link already at
+    that name stays when it names ``filename``, and is replaced when it
+    names another path.
+    """
+    alias = dest_dir / soname
+    if alias.name == filename:
+        return
+    if alias.is_symlink() and os.readlink(alias) == filename:
+        return
+    if os.path.lexists(alias) or alias.is_symlink():
+        alias.unlink()
+    try:
+        alias.symlink_to(filename)
+    except OSError:
+        shutil.copy2(src, alias)
+
+
 def main() -> int:
     src = Path(sys.argv[1])
     prefix = Path(os.environ["MESON_INSTALL_DESTDIR_PREFIX"])
@@ -72,19 +92,16 @@ def main() -> int:
                 continue
             dest = dest_dir / name
             if path.is_symlink():
-                if dest.exists() or dest.is_symlink():
+                # os.path.lexists sees a dangling link and a link cycle.
+                # Path.exists follows the cycle and reports the path missing.
+                if os.path.lexists(dest) or dest.is_symlink():
                     dest.unlink()
                 dest.symlink_to(os.readlink(path))
             else:
                 shutil.copy2(path, dest)
-            soname = elf_soname(dest if dest.is_file() else path)
-            if soname:
-                alias = dest_dir / soname
-                if alias != dest and not alias.exists():
-                    try:
-                        alias.symlink_to(name)
-                    except OSError:
-                        shutil.copy2(path, alias)
+                soname = elf_soname(dest)
+                if soname:
+                    place_soname_alias(dest_dir, soname, name, path)
             copied += 1
     if copied == 0:
         print(f"install_wrap_rgpot: no librgpot next to {src}", file=sys.stderr)
