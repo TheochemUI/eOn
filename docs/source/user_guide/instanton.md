@@ -346,6 +346,14 @@ independent bead Hessians; central differences cost `2f` force geometries
 per bead for `f` free Cartesian coordinates. `hessian_stride` controls the
 final rate-prefactor Hessians and does not reduce this optimizer refresh.
 
+`lanczos_step = 0.0001` sets the central directional displacement for
+Lanczos Hessian-vector products in the dimer search. It must be finite and
+positive and has units **sqrt(amu) Angstrom**. It is independent of
+`physical_hessian_step`. Choose it by measuring directional-curvature
+convergence with displacement and electronic accuracy: a central gradient
+difference amplifies bounded gradient error eta by at most eta/h. An SCF
+residual alone does not establish that gradient-error bound.
+
 `physical_hessian_step = 0.0001` sets every central physical bead-Hessian
 displacement during Newton optimization, including initial and adaptive
 refreshes. Its units are **sqrt(amu) Angstrom**, so the Cartesian step for

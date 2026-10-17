@@ -1260,6 +1260,11 @@ Instanton:
             kind: int
             default: 9223372036854775807
 
+        # Directional Lanczos displacement, sqrt(amu) Angstrom.
+        lanczos_step:
+            kind: float
+            default: 0.0001
+
         reactant_hessian_filename:
             kind: string
             default: ""

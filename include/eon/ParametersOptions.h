@@ -854,6 +854,8 @@ struct instanton_options_t {
   std::string initial_hessians{"saddle"};
   // Maximum active coordinates for dense Newton; zero selects the dimer.
   long newton_limit{std::numeric_limits<long>::max()};
+  // Directional Lanczos displacement, sqrt(amu) Angstrom.
+  double lanczos_step{1e-4};
   std::string reactant_hessian_filename{};
   std::string saddle_hessian_filename{};
   // Central physical bead-Hessian displacement, sqrt(amu) Angstrom.

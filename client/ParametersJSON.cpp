@@ -327,6 +327,7 @@ json to_json(const Parameters &p) {
         {"half_ring", o.half_ring},
         {"initial_hessians", o.initial_hessians},
         {"newton_limit", o.newton_limit},
+        {"lanczos_step", o.lanczos_step},
         {"reactant_hessian_filename", o.reactant_hessian_filename},
         {"saddle_hessian_filename", o.saddle_hessian_filename},
         {"physical_hessian_step", o.physical_hessian_step},
@@ -808,10 +809,16 @@ void from_json(const json &j, Parameters &p) {
     }
     JSON_OPT(s, "newton_limit", o.newton_limit);
     if (o.newton_limit < 0) {
-      throw std::invalid_argument("[Instanton] newton_limit must be nonnegative");
+      throw std::invalid_argument(
+          "[Instanton] newton_limit must be nonnegative");
     }
     JSON_OPT(s, "reactant_hessian_filename", o.reactant_hessian_filename);
     JSON_OPT(s, "saddle_hessian_filename", o.saddle_hessian_filename);
+    JSON_OPT(s, "lanczos_step", o.lanczos_step);
+    if (!(o.lanczos_step > 0.0) || !std::isfinite(o.lanczos_step)) {
+      throw std::invalid_argument("[Instanton] lanczos_step must be finite and "
+                                  "positive in sqrt(amu) Angstrom");
+    }
     JSON_OPT(s, "physical_hessian_step", o.physical_hessian_step);
     if (!(o.physical_hessian_step > 0.0) ||
         !std::isfinite(o.physical_hessian_step)) {

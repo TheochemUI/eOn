@@ -2751,6 +2751,15 @@ class InstantonConfig(BaseModel):
             " the matrix-free dimer search. The default is LONG_MAX."
         ),
     )
+    lanczos_step: float = Field(
+        default=1e-4,
+        gt=0,
+        allow_inf_nan=False,
+        description=(
+            "Directional Lanczos displacement in sqrt(amu) Angstrom;"
+            " independent of physical_hessian_step."
+        ),
+    )
     reactant_hessian_filename: str = Field(
         default="",
         description="Optional saved reactant Hessian; empty computes it.",

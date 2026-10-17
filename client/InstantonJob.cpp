@@ -440,7 +440,8 @@ std::vector<std::string>
 runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         const Matter &reactant, const MassWeighted &mw,
         const tunneling::BatchPotential &evaluate,
-        const std::function<MatrixXd(const VectorXd &, const std::string &)> &hessianAt,
+        const std::function<MatrixXd(const VectorXd &, const std::string &)>
+            &hessianAt,
         const std::function<MatrixXd(const VectorXd &)> &beadHessianAt,
         const std::array<bool, 3> &rotationZero,
         const std::array<double, 3> &rotationResidual) {
@@ -512,7 +513,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   // stationarity diagnostics require no additional potential calls.
   const auto reactantForce = referenceForces("reactant", reactantReference);
   const auto saddleForce = referenceForces("saddle", saddle);
-  const MatrixXd hReactant = hessianAt(VectorXd::Zero(n), o.reactant_hessian_filename);
+  const MatrixXd hReactant =
+      hessianAt(VectorXd::Zero(n), o.reactant_hessian_filename);
   const MatrixXd hSaddle = hessianAt(qSaddle, o.saddle_hessian_filename);
   // Retain the projected, mass-weighted references used by the rate
   // calculation, including spectra that fail metastability validation.
@@ -814,6 +816,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     ro.halfRing = o.half_ring;
     ro.initialHessians = o.initial_hessians;
     ro.newtonLimit = o.newton_limit;
+    ro.lanczosStep = o.lanczos_step;
     ro.physicalHessianStep = o.physical_hessian_step;
     ro.energyShift = o.energy_shift;
     ro.discretization = o.discretization;
@@ -1207,7 +1210,8 @@ std::vector<std::string> InstantonJob::run(void) {
       out = h.getHessian(&m, mw.freeAtoms());
     } else {
       out = tunneling::readReferenceHessian(filename, m, n);
-      EONC_LOG_INFO("[Instanton] reference Hessian read from {} with matching geometry and mass metric",
+      EONC_LOG_INFO("[Instanton] reference Hessian read from {} with matching "
+                    "geometry and mass metric",
                     filename);
     }
     if (out.rows() != n) {
@@ -1243,7 +1247,8 @@ std::vector<std::string> InstantonJob::run(void) {
   };
 
   if (o.mode == "rate") {
-    auto referenceHessianAt = [&](const VectorXd &q, const std::string &filename) {
+    auto referenceHessianAt = [&](const VectorXd &q,
+                                  const std::string &filename) {
       return hessianWith(q, true, filename);
     };
     return runRate(params, pot, *reactant, mw, evaluate, referenceHessianAt,
