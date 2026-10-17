@@ -852,6 +852,10 @@ struct instanton_options_t {
   // saddle Hessian to every bead (no force calls); "finite_difference"
   // takes 2 f gradient calls per bead first.
   std::string initial_hessians{"saddle"};
+  // Maximum active coordinates for dense Newton; zero selects the dimer.
+  long newton_limit{std::numeric_limits<long>::max()};
+  std::string reactant_hessian_filename{};
+  std::string saddle_hessian_filename{};
   // Central physical bead-Hessian displacement, sqrt(amu) Angstrom.
   double physical_hessian_step{1e-4};
   // Mode rate: the search stops when B_N falls below this fraction of the

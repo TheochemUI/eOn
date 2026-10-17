@@ -1798,8 +1798,16 @@ int load_ini(const INIReader &ini, Parameters &params) {
                                   "or finite_difference, not " +
                                   o.initial_hessians);
     }
-    o.physical_hessian_step = ini.GetReal("Instanton", "physical_hessian_step",
-                                          o.physical_hessian_step);
+    o.newton_limit = ini.GetInteger("Instanton", "newton_limit", o.newton_limit);
+    if (o.newton_limit < 0) {
+      throw std::invalid_argument("[Instanton] newton_limit must be nonnegative");
+    }
+    o.reactant_hessian_filename = ini.Get(
+        "Instanton", "reactant_hessian_filename", o.reactant_hessian_filename);
+    o.saddle_hessian_filename = ini.Get(
+        "Instanton", "saddle_hessian_filename", o.saddle_hessian_filename);
+    o.physical_hessian_step = ini.GetReal(
+        "Instanton", "physical_hessian_step", o.physical_hessian_step);
     if (!(o.physical_hessian_step > 0.0) ||
         !std::isfinite(o.physical_hessian_step)) {
       throw std::invalid_argument(

@@ -326,6 +326,9 @@ json to_json(const Parameters &p) {
         {"temperatures", o.temperatures},
         {"half_ring", o.half_ring},
         {"initial_hessians", o.initial_hessians},
+        {"newton_limit", o.newton_limit},
+        {"reactant_hessian_filename", o.reactant_hessian_filename},
+        {"saddle_hessian_filename", o.saddle_hessian_filename},
         {"physical_hessian_step", o.physical_hessian_step},
         {"energy_shift", o.energy_shift},
         {"discretization", o.discretization},
@@ -803,6 +806,12 @@ void from_json(const json &j, Parameters &p) {
           "finite_difference, not " +
           o.initial_hessians);
     }
+    JSON_OPT(s, "newton_limit", o.newton_limit);
+    if (o.newton_limit < 0) {
+      throw std::invalid_argument("[Instanton] newton_limit must be nonnegative");
+    }
+    JSON_OPT(s, "reactant_hessian_filename", o.reactant_hessian_filename);
+    JSON_OPT(s, "saddle_hessian_filename", o.saddle_hessian_filename);
     JSON_OPT(s, "physical_hessian_step", o.physical_hessian_step);
     if (!(o.physical_hessian_step > 0.0) ||
         !std::isfinite(o.physical_hessian_step)) {
