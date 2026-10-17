@@ -1080,11 +1080,11 @@ std::vector<double> frictionEta(const RateInstantonOptions &options,
   return {options.frictionEta};
 }
 
-RingEval evaluateRing(const std::vector<VectorXd> &x, double c,
-                      const BatchPotential &potential, double energyShift = 0.0,
-                      const std::vector<double> &eta = {},
-                      const std::vector<double> &discretization = {},
-                      const std::shared_ptr<const PhysicalQuadraticBath> &physicalBath = {}) {
+RingEval evaluateRing(
+    const std::vector<VectorXd> &x, double c, const BatchPotential &potential,
+    double energyShift = 0.0, const std::vector<double> &eta = {},
+    const std::vector<double> &discretization = {},
+    const std::shared_ptr<const PhysicalQuadraticBath> &physicalBath = {}) {
   RingEval out;
   std::vector<VectorXd> gv;
   potential(x, out.v, gv);
@@ -1132,18 +1132,20 @@ RingEval evaluateRing(const std::vector<VectorXd> &x, double c,
     addFrictionBath(x, out.u, out.grad, eta);
   }
   if (physicalBath) {
-    const auto bath = physicalBath->evaluate(x,c);
+    const auto bath = physicalBath->evaluate(x, c);
     out.u += bath.energy;
-    for (size_t j=0;j<n;++j) out.grad[j] += bath.gradient[j];
+    for (size_t j = 0; j < n; ++j)
+      out.grad[j] += bath.gradient[j];
   }
   out.physicalGrad = std::move(gv);
   return out;
 }
 
 MatrixXd physicalStaticCurvature(const MatrixXd &h, const VectorXd &q,
-                                const RateInstantonOptions &options) {
-  if (!options.physicalBath) return h;
-  return h+options.physicalBath->evaluate({q},1.0,true).hessian;
+                                 const RateInstantonOptions &options) {
+  if (!options.physicalBath)
+    return h;
+  return h + options.physicalBath->evaluate({q}, 1.0, true).hessian;
 }
 
 // Lowest curvature of the ring Hessian over vectors odd under j -> N-j and
@@ -2007,8 +2009,9 @@ VectorXd chainIndexOneStep(const std::vector<RingMode> &ritz,
   auto applyShifted = [&](const std::vector<VectorXd> &x) {
     std::vector<VectorXd> out = applyDiagonal(diag, spring, closed, x, weight);
     if (physicalBathHessian.size()) {
-      const VectorXd added = physicalBathHessian*packBeads(x);
-      for (size_t j=0;j<out.size();++j) out[j] += added.segment(j*f,f);
+      const VectorXd added = physicalBathHessian * packBeads(x);
+      for (size_t j = 0; j < out.size(); ++j)
+        out[j] += added.segment(j * f, f);
     }
     if (!eta.empty()) {
       double energy = 0.0;
@@ -2257,8 +2260,8 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   // guess is seeded into that shape before this call.
   // The folded Newton objective contains no bath term. Friction uses the
   // full objective so its energy and residual include the requested bath.
-  bool half = options.halfRing && !options.friction && !options.physicalBath && nBeads % 2 == 0 &&
-              static_cast<long>(guess.size()) == nBeads;
+  bool half = options.halfRing && !options.friction && !options.physicalBath &&
+              nBeads % 2 == 0 && static_cast<long>(guess.size()) == nBeads;
   if (half) {
     const long m = nBeads / 2;
     for (long j = 1; j < m; ++j) {
@@ -2393,9 +2396,9 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       out.gradPot = std::move(gu);
       out.energies = std::move(vu);
     } else {
-      const RingEval ev =
-          evaluateRing(q, c, potential, options.energyShift,
-                       frictionEta(options, q.size()), options.discretization, options.physicalBath);
+      const RingEval ev = evaluateRing(
+          q, c, potential, options.energyShift, frictionEta(options, q.size()),
+          options.discretization, options.physicalBath);
       out.u = ev.u;
       out.grad = ev.grad;
       out.gradPot = ev.physicalGrad;
@@ -2432,7 +2435,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   std::vector<VectorXd> ritzStart(x.size(), VectorXd::Zero(f));
   VectorXd climbDir(f);
   {
-    const ColMajorXd hs0 = physicalStaticCurvature(hS,x.front(),options);
+    const ColMajorXd hs0 = physicalStaticCurvature(hS, x.front(), options);
     const Eigen::SelfAdjointEigenSolver<ColMajorXd> es0(hs0);
     climbDir = es0.eigenvectors().col(0);
     for (auto &v : ritzStart) {
@@ -2458,7 +2461,8 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     nullRing = ringRigid(x);
     View v;
     if (options.physicalBath)
-      v.physicalBathHessian = options.physicalBath->evaluate(x,c,true).hessian;
+      v.physicalBathHessian =
+          options.physicalBath->evaluate(x, c, true).hessian;
     const bool constantBath =
         eta.empty() || std::all_of(eta.begin(), eta.end(), [&](double value) {
           return value == eta.front();
@@ -2471,8 +2475,9 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       std::vector<VectorXd> out =
           applyDiagonal(v.diag, c, !half, vec, linkWeight);
       if (v.physicalBathHessian.size()) {
-        const VectorXd added=v.physicalBathHessian*packBeads(vec);
-        for (size_t j=0;j<out.size();++j) out[j]+=added.segment(j*f,f);
+        const VectorXd added = v.physicalBathHessian * packBeads(vec);
+        for (size_t j = 0; j < out.size(); ++j)
+          out[j] += added.segment(j * f, f);
       }
       if (!eta.empty()) {
         double energy = 0.0;
@@ -2798,8 +2803,9 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
         }
         auto model = applyDiagonal(v.diag, c, !half, dirRing, linkWeight);
         if (v.physicalBathHessian.size()) {
-          const VectorXd added=v.physicalBathHessian*packBeads(dirRing);
-          for (size_t j=0;j<model.size();++j) model[j]+=added.segment(j*f,f);
+          const VectorXd added = v.physicalBathHessian * packBeads(dirRing);
+          for (size_t j = 0; j < model.size(); ++j)
+            model[j] += added.segment(j * f, f);
         }
         if (!eta.empty()) {
           double energy = 0.0;
@@ -2995,7 +3001,8 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
   inst.beta = beta;
   inst.betaN = beta / static_cast<double>(nBeads);
   inst.temperature = 1.0 / (kBoltzmann * beta);
-  inst.crossover = crossoverTemperature(physicalStaticCurvature(hessSaddle,saddle,options));
+  inst.crossover = crossoverTemperature(
+      physicalStaticCurvature(hessSaddle, saddle, options));
   if (!(inst.temperature < inst.crossover)) {
     throw std::invalid_argument(
         "optimizeRateInstanton: T is at or above the crossover temperature; "
@@ -3011,7 +3018,8 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
   // starts from a curvature copied off the saddle.
   if (saddle.size() == 1 || !cool) {
     if (static_cast<long>(guess.size()) != nBeads) {
-      const ColMajorXd hS = physicalStaticCurvature(0.5*(hessSaddle+hessSaddle.transpose()),saddle,options);
+      const ColMajorXd hS = physicalStaticCurvature(
+          0.5 * (hessSaddle + hessSaddle.transpose()), saddle, options);
       const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(hS);
       guess = cosineSeed(saddle, es.eigenvectors().col(0), es.eigenvalues()(0),
                          inst.temperature, inst.crossover, nBeads, potential);
@@ -3042,7 +3050,8 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
     RateInstanton last;
     long used = 0;
     bool targetRan = false;
-    const ColMajorXd hS = physicalStaticCurvature(0.5*(hessSaddle+hessSaddle.transpose()),saddle,options);
+    const ColMajorXd hS = physicalStaticCurvature(
+        0.5 * (hessSaddle + hessSaddle.transpose()), saddle, options);
     const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(hS);
     for (size_t s = 0; s < temps.size(); ++s) {
       const long remain = options.maxIterations - used;
@@ -3084,7 +3093,8 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
   }
 
   if (static_cast<long>(guess.size()) != nBeads) {
-    const ColMajorXd hS = physicalStaticCurvature(0.5*(hessSaddle+hessSaddle.transpose()),saddle,options);
+    const ColMajorXd hS = physicalStaticCurvature(
+        0.5 * (hessSaddle + hessSaddle.transpose()), saddle, options);
     const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(hS);
     guess = cosineSeed(saddle, es.eigenvectors().col(0), es.eigenvalues()(0),
                        inst.temperature, inst.crossover, nBeads, potential);
@@ -3099,8 +3109,8 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
   // that mode.
   const long nGot = static_cast<long>(got.beads.size());
   bool mirrored = (got.converged || got.stalledHalf) && options.halfRing &&
-                  !options.friction && !options.physicalBath && options.checkOddSector &&
-                  nGot == nBeads && nGot % 2 == 0;
+                  !options.friction && !options.physicalBath &&
+                  options.checkOddSector && nGot == nBeads && nGot % 2 == 0;
   for (long j = 1; mirrored && j < nGot / 2; ++j) {
     mirrored = (got.beads[static_cast<size_t>(j)] -
                 got.beads[static_cast<size_t>(nGot - j)])
@@ -3591,7 +3601,9 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
     options.physicalBath->validate(saddle.size());
     if (options.friction || !options.discretization.empty() ||
         !options.rigidSqrtMasses.empty())
-      throw std::invalid_argument("physical quadratic bath requires uniform links and a retained coordinate basis without rigid generators");
+      throw std::invalid_argument(
+          "physical quadratic bath requires uniform links and a retained "
+          "coordinate basis without rigid generators");
   }
   if (!(options.physicalHessianStep > 0.0) ||
       !std::isfinite(options.physicalHessianStep)) {
@@ -3612,7 +3624,8 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
   inst.beta = beta;
   inst.betaN = beta / static_cast<double>(N);
   inst.temperature = 1.0 / (kBoltzmann * beta);
-  inst.crossover = crossoverTemperature(physicalStaticCurvature(hessSaddle,saddle,options));
+  inst.crossover = crossoverTemperature(
+      physicalStaticCurvature(hessSaddle, saddle, options));
   if (!(inst.temperature < inst.crossover)) {
     throw std::invalid_argument(
         "optimizeRateInstanton: T is at or above the crossover temperature; "
@@ -3620,7 +3633,8 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
         "parabolic barrier correction, of which classical transition-state "
         "theory is only the one-bead limit");
   }
-  bool mirror = options.halfRing && !options.friction && !options.physicalBath && N % 2 == 0;
+  bool mirror = options.halfRing && !options.friction &&
+                !options.physicalBath && N % 2 == 0;
   if (mirror && static_cast<long>(guess.size()) == N) {
     const long mid = N / 2;
     for (long j = 1; j < mid && mirror; ++j) {
@@ -3633,7 +3647,8 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
   const long active = mirror ? (N / 2 + 1) : N;
   // The nonlocal bath uses the dense Newton operator. Larger rings
   // use the dimer backend, whose products include the complete bath.
-  const bool denseBath = options.physicalBath || !frictionEta(options, N).empty();
+  const bool denseBath =
+      options.physicalBath || !frictionEta(options, N).empty();
   if (options.newtonLimit > 0 &&
       active * saddle.size() <= options.newtonLimit &&
       (!denseBath || active * saddle.size() <= kDenseRing)) {
@@ -3643,8 +3658,8 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
   const double bnh = inst.betaN * kHbar;
   const double c = 1.0 / (bnh * bnh);
 
-  const ColMajorXd saddleCurvature =
-      physicalStaticCurvature(0.5*(hessSaddle+hessSaddle.transpose()),saddle,options);
+  const ColMajorXd saddleCurvature = physicalStaticCurvature(
+      0.5 * (hessSaddle + hessSaddle.transpose()), saddle, options);
   const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(saddleCurvature);
   const VectorXd dir = es.eigenvectors().col(0);
 
@@ -3996,79 +4011,103 @@ void bathFluctuations(RateInstanton &inst,
 }
 
 void physicalBathFluctuations(RateInstanton &inst,
-                               const std::vector<MatrixXd> &physical,
-                               const MatrixXd &reactant, double vReactant,
-                               double c) {
-  const long n=inst.beads.size(), f=inst.beads.front().size(), dim=n*f;
-  const auto bath=inst.physicalBath->evaluate(inst.beads,c,true);
-  const std::vector<VectorXd> qr(n,VectorXd::Zero(f));
-  const auto referenceBath=inst.physicalBath->evaluate(qr,c,true);
-  ColMajorXd h=bath.hessian, hr=referenceBath.hessian;
-  const MatrixXd eye=MatrixXd::Identity(f,f);
-  for (long j=0;j<n;++j) {
-    const long next=(j+1)%n;
-    h.block(j*f,j*f,f,f)+=physical[j];
-    hr.block(j*f,j*f,f,f)+=reactant;
-    for (auto *matrix : {&h,&hr}) {
-      matrix->block(j*f,j*f,f,f)+=c*eye;
-      matrix->block(next*f,next*f,f,f)+=c*eye;
-      matrix->block(j*f,next*f,f,f)-=c*eye;
-      matrix->block(next*f,j*f,f,f)-=c*eye;
+                              const std::vector<MatrixXd> &physical,
+                              const MatrixXd &reactant, double vReactant,
+                              double c) {
+  const long n = inst.beads.size(), f = inst.beads.front().size(), dim = n * f;
+  const auto bath = inst.physicalBath->evaluate(inst.beads, c, true);
+  const std::vector<VectorXd> qr(n, VectorXd::Zero(f));
+  const auto referenceBath = inst.physicalBath->evaluate(qr, c, true);
+  ColMajorXd h = bath.hessian, hr = referenceBath.hessian;
+  const MatrixXd eye = MatrixXd::Identity(f, f);
+  for (long j = 0; j < n; ++j) {
+    const long next = (j + 1) % n;
+    h.block(j * f, j * f, f, f) += physical[j];
+    hr.block(j * f, j * f, f, f) += reactant;
+    for (auto *matrix : {&h, &hr}) {
+      matrix->block(j * f, j * f, f, f) += c * eye;
+      matrix->block(next * f, next * f, f, f) += c * eye;
+      matrix->block(j * f, next * f, f, f) -= c * eye;
+      matrix->block(next * f, j * f, f, f) -= c * eye;
     }
   }
-  const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(0.5*(h+h.transpose()));
-  const Eigen::SelfAdjointEigenSolver<ColMajorXd> er(0.5*(hr+hr.transpose()));
-  if (es.info()!=Eigen::Success || er.info()!=Eigen::Success ||
+  const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(0.5 * (h + h.transpose()));
+  const Eigen::SelfAdjointEigenSolver<ColMajorXd> er(0.5 *
+                                                     (hr + hr.transpose()));
+  if (es.info() != Eigen::Success || er.info() != Eigen::Success ||
       !es.eigenvalues().allFinite() || !er.eigenvalues().allFinite() ||
-      !(er.eigenvalues().minCoeff()>0))
-    throw std::runtime_error("physical bath: invalid fluctuation or reactant spectrum");
-  const VectorXd values=es.eigenvalues();
-  const double zeroTol=64*std::numeric_limits<double>::epsilon()*dim*values.cwiseAbs().maxCoeff();
-  inst.bathRoundoffScale=zeroTol;
-  inst.bathSignedCurvatures.assign(values.data(),values.data()+values.size());
-  inst.bathSymmetryResidual=(h-h.transpose()).cwiseAbs().maxCoeff();
-  inst.negativeModes=0;
-  long zeros=0,phase=-1;
-  double overlap=0;
-  const VectorXd tau=timeTranslation(inst.beads);
-  if (tau.size()!=dim) throw std::runtime_error("physical bath: collapsed ring");
-  for (long k=0;k<dim;++k) {
-    inst.negativeModes+=values[k]<-zeroTol;
-    zeros+=std::abs(values[k])<=zeroTol;
-    const double candidate=std::abs(es.eigenvectors().col(k).dot(tau));
-    if (candidate>overlap) { overlap=candidate; phase=k; }
+      !(er.eigenvalues().minCoeff() > 0))
+    throw std::runtime_error(
+        "physical bath: invalid fluctuation or reactant spectrum");
+  const VectorXd values = es.eigenvalues();
+  const double zeroTol = 64 * std::numeric_limits<double>::epsilon() * dim *
+                         values.cwiseAbs().maxCoeff();
+  inst.bathRoundoffScale = zeroTol;
+  inst.bathSignedCurvatures.assign(values.data(),
+                                   values.data() + values.size());
+  inst.bathSymmetryResidual = (h - h.transpose()).cwiseAbs().maxCoeff();
+  inst.negativeModes = 0;
+  long zeros = 0, phase = -1;
+  double overlap = 0;
+  const VectorXd tau = timeTranslation(inst.beads);
+  if (tau.size() != dim)
+    throw std::runtime_error("physical bath: collapsed ring");
+  for (long k = 0; k < dim; ++k) {
+    inst.negativeModes += values[k] < -zeroTol;
+    zeros += std::abs(values[k]) <= zeroTol;
+    const double candidate = std::abs(es.eigenvectors().col(k).dot(tau));
+    if (candidate > overlap) {
+      overlap = candidate;
+      phase = k;
+    }
   }
-  inst.negativeEigenvalue=values[0];
-  inst.zeroEigenvalue=values[phase];
-  inst.phaseEigenResidual=(h*es.eigenvectors().col(phase)-values[phase]*es.eigenvectors().col(phase)).norm();
-  inst.phaseZeroVerified=zeros==1 && std::abs(values[phase])<=zeroTol &&
-      overlap>0.9 && inst.phaseEigenResidual<=zeroTol;
-  double logPrime=0;
-  for (long k=0;k<dim;++k) if (k!=phase) logPrime+=std::log(std::abs(values[k]));
-  const double referenceDet=er.eigenvalues().array().log().sum();
-  const double fullDimension=n*(f+inst.physicalBath->curvatures.size());
-  const double logMeasure=fullDimension*std::log(inst.betaN*kHbar);
-  inst.bathLogAbsDet=logPrime+bath.bathLogDeterminant;
-  inst.bathReactantLogAbsDet=referenceDet+referenceBath.bathLogDeterminant;
-  inst.logZr=-inst.beta*(vReactant+referenceBath.energy/n)-logMeasure-0.5*inst.bathReactantLogAbsDet;
+  inst.negativeEigenvalue = values[0];
+  inst.zeroEigenvalue = values[phase];
+  inst.phaseEigenResidual = (h * es.eigenvectors().col(phase) -
+                             values[phase] * es.eigenvectors().col(phase))
+                                .norm();
+  inst.phaseZeroVerified = zeros == 1 && std::abs(values[phase]) <= zeroTol &&
+                           overlap > 0.9 && inst.phaseEigenResidual <= zeroTol;
+  double logPrime = 0;
+  for (long k = 0; k < dim; ++k)
+    if (k != phase)
+      logPrime += std::log(std::abs(values[k]));
+  const double referenceDet = er.eigenvalues().array().log().sum();
+  const double fullDimension = n * (f + inst.physicalBath->curvatures.size());
+  const double logMeasure = fullDimension * std::log(inst.betaN * kHbar);
+  inst.bathLogAbsDet = logPrime + bath.bathLogDeterminant;
+  inst.bathReactantLogAbsDet = referenceDet + referenceBath.bathLogDeterminant;
+  inst.logZr = -inst.beta * (vReactant + referenceBath.energy / n) -
+               logMeasure - 0.5 * inst.bathReactantLogAbsDet;
   // For an exact phase zero, det' H_full=det D_bath det' S times
   // ||u_full||^2/||u_retained||^2. Its phase orbit has the square root
   // of the same metric, so the reduced orbit and pseudodeterminant pair
   // retain the complete Gaussian measure without a second metric factor.
-  inst.logRateTimesZr=-logMeasure+0.5*std::log(inst.bN/(2*std::numbers::pi*inst.betaN*kHbar*kHbar))
-      -0.5*inst.bathLogAbsDet-inst.betaN*inst.ringPotential;
-  inst.rateValid=inst.converged && inst.phaseZeroVerified && inst.negativeModes==1;
-  inst.rateValidity=!inst.converged ? "unconverged_physical_bath_ring" :
-      (!inst.phaseZeroVerified ? "unverified_physical_bath_phase" :
-       (inst.negativeModes!=1 ? "non_index_one_physical_bath_ring" : "physical_quadratic_bath"));
+  inst.logRateTimesZr =
+      -logMeasure +
+      0.5 * std::log(inst.bN /
+                     (2 * std::numbers::pi * inst.betaN * kHbar * kHbar)) -
+      0.5 * inst.bathLogAbsDet - inst.betaN * inst.ringPotential;
+  inst.rateValid =
+      inst.converged && inst.phaseZeroVerified && inst.negativeModes == 1;
+  inst.rateValidity =
+      !inst.converged
+          ? "unconverged_physical_bath_ring"
+          : (!inst.phaseZeroVerified
+                 ? "unverified_physical_bath_phase"
+                 : (inst.negativeModes != 1 ? "non_index_one_physical_bath_ring"
+                                            : "physical_quadratic_bath"));
   if (!inst.rateValid) {
-    const double invalid=std::numeric_limits<double>::quiet_NaN();
-    inst.logRateTimesZr=inst.logRate=inst.rate=inst.effectiveBarrier=invalid;
+    const double invalid = std::numeric_limits<double>::quiet_NaN();
+    inst.logRateTimesZr = inst.logRate = inst.rate = inst.effectiveBarrier =
+        invalid;
     return;
   }
-  inst.logRate=inst.logRateTimesZr-inst.logZr;
-  inst.rate=std::exp(inst.logRate)/kTimeUnitSeconds;
-  inst.effectiveBarrier=-std::log(2*std::numbers::pi*kHbar*inst.beta)/inst.beta-inst.logRate/inst.beta;
+  inst.logRate = inst.logRateTimesZr - inst.logZr;
+  inst.rate = std::exp(inst.logRate) / kTimeUnitSeconds;
+  inst.effectiveBarrier =
+      -std::log(2 * std::numbers::pi * kHbar * inst.beta) / inst.beta -
+      inst.logRate / inst.beta;
 }
 
 } // namespace
@@ -4128,8 +4167,10 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
 
   if (inst.physicalBath) {
     if (rigidModes || !inst.discretization.empty() || !inst.bathEta.empty())
-      throw std::invalid_argument("physical bath fluctuations require retained coordinates and uniform links without scalar friction");
-    physicalBathFluctuations(inst,hBead,hessReactant,vReactant,c);
+      throw std::invalid_argument(
+          "physical bath fluctuations require retained coordinates and uniform "
+          "links without scalar friction");
+    physicalBathFluctuations(inst, hBead, hessReactant, vReactant, c);
     return;
   }
 
