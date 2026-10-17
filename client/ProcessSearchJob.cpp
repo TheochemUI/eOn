@@ -439,13 +439,19 @@ void ProcessSearchJob::saveData(int status) {
   const double disp = params.saddle_search_options().method == "min_mode"
                           ? displacement->perAtomNorm(*saddle)
                           : 0.0;
+  // The reactant energy that starts the search, and the endpoint energies
+  // written here, sit outside the stage windows. Read the registry after
+  // those single points. The stage counts stay on their own lines.
+  const double eSaddle = saddle->getPotentialEnergy();
+  const double eReactant = min1->getPotentialEnergy();
+  const double eProduct = min2->getPotentialEnergy();
+  const size_t totalCalls = pot->registryForceCalls();
   auto env = JobResultEnvelope::fromProcessSearch(
       status, std::string(saddleSearch->describeStatus(status)),
       params.potential_options().potential, params.main_options().randomSeed,
-      fCallsMin, fCallsSaddle, fCallsPrefactors, saddle->getPotentialEnergy(),
-      min1->getPotentialEnergy(), min2->getPotentialEnergy(), barriersValues[0],
-      barriersValues[1], disp, prefactorsValues[0], prefactorsValues[1],
-      dynamics, simTime, mdTemp);
+      totalCalls, fCallsMin, fCallsSaddle, fCallsPrefactors, eSaddle, eReactant,
+      eProduct, barriersValues[0], barriersValues[1], disp, prefactorsValues[0],
+      prefactorsValues[1], dynamics, simTime, mdTemp);
   env.provenance = provenanceForJob(params);
   env.reactant_frame = eonc::io::matterToConFrame(*min1);
   env.saddle_frame = eonc::io::matterToConFrame(*saddle);

@@ -264,10 +264,11 @@ struct JobResultEnvelope {
 
   static JobResultEnvelope fromProcessSearch(
       int status, std::string statusText, PotType pot, std::int64_t seed,
-      std::uint64_t fMin, std::uint64_t fSaddle, std::uint64_t fPref,
-      double eSaddle, double eReactant, double eProduct, double barrierFwd,
-      double barrierRev, double displacement, double prefFwd, double prefRev,
-      bool dynamics, double simTime, double mdTemp) {
+      std::uint64_t fTotal, std::uint64_t fMin, std::uint64_t fSaddle,
+      std::uint64_t fPref, double eSaddle, double eReactant, double eProduct,
+      double barrierFwd, double barrierRev, double displacement,
+      double prefFwd, double prefRev, bool dynamics, double simTime,
+      double mdTemp) {
     JobResultEnvelope e;
     e.process_search_layout = true;
     e.job_type = "process_search";
@@ -275,10 +276,10 @@ struct JobResultEnvelope {
     e.status_text = std::move(statusText);
     e.potential_type = std::string(magic_enum::enum_name<PotType>(pot));
     e.random_seed = seed;
+    e.force_calls = fTotal;
     e.force_calls_minimization = fMin;
     e.force_calls_saddle = fSaddle;
     e.force_calls_prefactors = fPref;
-    e.force_calls = fMin + fSaddle + fPref;
     e.has_saddle = true;
     e.has_reactant = true;
     e.has_product = true;

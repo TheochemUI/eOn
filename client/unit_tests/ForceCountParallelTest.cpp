@@ -347,13 +347,12 @@ void runProcess(bool parallelOff) {
                              : "process search parallel=default",
                  run, !parallelOff);
   const auto results = readResults("results.dat");
-  REQUIRE(results.count("total_force_calls") == 1);
-  const auto written = std::stoull(results.at("total_force_calls"));
-  const auto summed = std::stoull(results.at("force_calls_minimization")) +
-                      std::stoull(results.at("force_calls_saddle")) +
-                      std::stoull(results.at("force_calls_prefactors"));
-  REQUIRE(written == summed);
-  REQUIRE(run.rt.pots().total_force_calls() >= written);
+  REQUIRE(results.count("force_calls_minimization") == 1);
+  REQUIRE(results.count("force_calls_saddle") == 1);
+  REQUIRE(results.count("force_calls_prefactors") == 1);
+  expectReported(parallelOff ? "process search file parallel=false"
+                             : "process search file parallel=default",
+                 run, std::stoull(results.at("total_force_calls")));
 }
 
 void runPoint() {

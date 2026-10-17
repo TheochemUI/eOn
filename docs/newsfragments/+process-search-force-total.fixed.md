@@ -1,0 +1,1 @@
+Process search writes the owning registry as total_force_calls, including the reactant energy that starts the search and the endpoint energies stored with the result. The minimization, saddle, and prefactor counts remain separate fields.
