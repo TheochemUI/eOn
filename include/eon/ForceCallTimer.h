@@ -17,15 +17,19 @@ namespace eonc {
 /// RAII wrapper for tracking force calls over a scope.
 /// Usage: { ForceCallTimer timer(targetCounter); /* work */ }
 /// On destruction, adds the delta force calls to targetCounter.
+/// The delta is the change in the sum of every live registry.
 class ForceCallTimer {
   size_t &target_;
   size_t initial_;
 
 public:
   explicit ForceCallTimer(size_t &target)
-      : target_(target), initial_(PotRegistry::get().total_force_calls()) {}
+      : target_(target), initial_(PotRegistry::sum_force_calls()) {}
   ~ForceCallTimer() {
-    target_ += PotRegistry::get().total_force_calls() - initial_;
+    const size_t now = PotRegistry::sum_force_calls();
+    if (now >= initial_) {
+      target_ += now - initial_;
+    }
   }
 
   // Non-copyable, non-movable

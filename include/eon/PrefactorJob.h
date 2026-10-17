@@ -22,6 +22,9 @@ class PrefactorJob : public Job {
 public:
   PrefactorJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
       : Job(std::move(parameters), rt) {}
+  PrefactorJob(std::shared_ptr<Potential> potPassed,
+               const Parameters &parameters)
+      : Job(std::move(potPassed), parameters) {}
   ~PrefactorJob() = default;
   std::vector<std::string> run() override;
   static constexpr std::string_view PREFACTOR_REACTANT{"reactant"};

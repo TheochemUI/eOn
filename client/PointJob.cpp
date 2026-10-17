@@ -14,7 +14,6 @@
 #include "eon/HelperFunctions.h"
 #include "eon/JobResult.h"
 #include "eon/Matter.h"
-#include "eon/PotRegistry.h"
 
 #include <sstream>
 #include <stdexcept>
@@ -26,7 +25,14 @@ std::vector<std::string> PointJob::run() {
   std::string posInFilename = eonc::helpers::getRelevantFile("pos.con");
   std::string resultsFilename("results.dat");
 
-  auto pos = std::make_unique<Matter>(std::move(ownedPot), params);
+  std::unique_ptr<Matter> pos;
+  if (ownedPot) {
+    pos = std::make_unique<Matter>(std::move(ownedPot), params);
+  } else if (pot) {
+    pos = std::make_unique<Matter>(pot, params);
+  } else {
+    throw std::runtime_error("PointJob: no potential");
+  }
   if (!eonc::io::io_ok(pos->con2matter(posInFilename))) {
     QUILL_LOG_CRITICAL(log, "Failed to load {}", posInFilename);
     throw std::runtime_error("failed to load " + posInFilename);
@@ -35,22 +41,25 @@ std::vector<std::string> PointJob::run() {
   // A point job evaluates the selected potential even when the input
   // contains a saved energy and force evaluation.
   pos->setPositions(pos->getPositions());
-  QUILL_LOG_DEBUG(log, "Energy:         {:.12f}", pos->getPotentialEnergy());
+  const double energy = pos->getPotentialEnergy();
+  QUILL_LOG_DEBUG(log, "Energy:         {:.12f}", energy);
   std::stringstream freeForcesStream;
   freeForcesStream << pos->getForcesFree();
   QUILL_LOG_DEBUG(log, "(free) Forces:\n{}", freeForcesStream.str());
-  QUILL_LOG_DEBUG(log, "Max atom force: {:.12f}", pos->maxForce());
+  const double maxForce = pos->maxForce();
+  QUILL_LOG_DEBUG(log, "Max atom force: {:.12f}", maxForce);
+  const size_t calls = pos->getPotential()->registryForceCalls();
 
   // Energy and Max_Force are the SVN reference format (see
   // data/reference/point_*.dat); the rest is the key set every other job
   // writes and eon.explorer reads.
   auto env = JobResultEnvelope::fromMinimization(
-      RunStatus::GOOD, params.potential_options().potential,
-      PotRegistry::get().total_force_calls(), true, pos->getPotentialEnergy());
+      RunStatus::GOOD, params.potential_options().potential, calls, true,
+      energy);
   env.provenance = provenanceForJob(params);
   env.job_type = "point";
-  env.extras.emplace_back("Energy", pos->getPotentialEnergy());
-  env.extras.emplace_back("Max_Force", pos->maxForce());
+  env.extras.emplace_back("Energy", energy);
+  env.extras.emplace_back("Max_Force", maxForce);
   env.writeResultsDat(resultsFilename);
   returnFiles.push_back(resultsFilename);
 

@@ -19,6 +19,9 @@ class FiniteDifferenceJob : public Job {
 public:
   FiniteDifferenceJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
       : Job(std::move(parameters), rt) {}
+  FiniteDifferenceJob(std::shared_ptr<Potential> potPassed,
+                      const Parameters &parameters)
+      : Job(std::move(potPassed), parameters) {}
   ~FiniteDifferenceJob(void) = default;
   std::vector<std::string> run(void) override;
 };

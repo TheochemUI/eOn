@@ -181,13 +181,7 @@ void SaddleSearchJob::saveData(int status) {
     out << std::format(
         "{} potential_type\n",
         magic_enum::enum_name<PotType>(params.potential_options().potential));
-    const bool gprTotal =
-        params.saddle_search_options().method == "min_mode" &&
-        params.saddle_search_options().minmode_method ==
-            LowestEigenmode::MINMODE_GPRDIMER;
-    const size_t reportedCalls = gprTotal
-                                     ? this->pot->forceCallCounter.load()
-                                     : this->pot->registryForceCalls();
+    const size_t reportedCalls = this->pot->registryForceCalls();
     out << std::format("{} total_force_calls\n", reportedCalls);
     out << std::format("{} force_calls_saddle\n", fCallsSaddle);
     out << std::format("{} iterations\n", saddleSearch->getIterationCount());

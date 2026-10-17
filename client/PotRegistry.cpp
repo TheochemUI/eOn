@@ -10,9 +10,11 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/PotRegistry.h"
+#include <algorithm>
 #include <fstream>
 #include <iomanip>
 #include <memory>
+#include <mutex>
 #include <sstream>
 
 namespace eonc {
@@ -46,7 +48,38 @@ std::string json_escape(std::string_view sv) {
   }
   return out;
 }
+struct LiveRegistries {
+  std::mutex mu;
+  std::vector<PotRegistry *> items;
+};
+
+LiveRegistries &liveRegistries() {
+  static LiveRegistries live;
+  return live;
+}
+
+void registerLive(PotRegistry *registry) {
+  auto &live = liveRegistries();
+  std::lock_guard<std::mutex> lock(live.mu);
+  live.items.push_back(registry);
+}
+
+void unregisterLive(PotRegistry *registry) {
+  auto &live = liveRegistries();
+  std::lock_guard<std::mutex> lock(live.mu);
+  std::erase(live.items, registry);
+}
 } // namespace
+
+PotRegistry::PotRegistry() { registerLive(this); }
+
+PotRegistry::~PotRegistry() {
+  unregisterLive(this);
+  // Members are still intact. Mark the registry dead before they go,
+  // so a Potential destroyed from here does not lock a dead mutex.
+  if (lifetime_)
+    lifetime_->alive.store(false, std::memory_order_release);
+}
 
 PotRegistry &PotRegistry::get() noexcept {
   // Heap-allocated and never deleted. Potential destructors call
@@ -56,6 +89,16 @@ PotRegistry &PotRegistry::get() noexcept {
   // so on_destroyed would lock a destroyed mutex.
   static PotRegistry *instance = std::make_unique<PotRegistry>().release();
   return *instance;
+}
+
+size_t PotRegistry::sum_force_calls() noexcept {
+  auto &live = liveRegistries();
+  std::lock_guard<std::mutex> lock(live.mu);
+  size_t total = 0;
+  for (const PotRegistry *registry : live.items) {
+    total += registry->total_force_calls();
+  }
+  return total;
 }
 
 void PotRegistry::reset() {

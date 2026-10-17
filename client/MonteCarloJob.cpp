@@ -15,7 +15,6 @@
 #include "eon/JobResult.h"
 #include "eon/Matter.h"
 #include "eon/MonteCarlo.h"
-#include "eon/PotRegistry.h"
 
 #include <filesystem>
 #include <format>
@@ -58,10 +57,11 @@ std::vector<std::string> MonteCarloJob::run(void) {
   }
 
   std::string resultsFilename("results.dat");
+  const double energy = matter->getPotentialEnergy();
+  const size_t calls = matter->getPotential()->registryForceCalls();
   auto env = JobResultEnvelope::fromMinimization(
-      RunStatus::GOOD, params.potential_options().potential,
-      PotRegistry::get().total_force_calls(), true,
-      matter->getPotentialEnergy());
+      RunStatus::GOOD, params.potential_options().potential, calls, true,
+      energy);
   env.provenance = provenanceForJob(params);
   env.job_type = "monte_carlo";
   env.writeResultsDat(resultsFilename);

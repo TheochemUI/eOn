@@ -569,8 +569,10 @@ void bind_neb(nb::module_ &m) {
           out << std::format(
               "{} potential_type\n",
               magic_enum::enum_name(params.potential_options().potential));
-          out << std::format("{} total_force_calls\n",
-                             PotRegistry::get().total_force_calls());
+          const size_t totalCalls = neb.pot
+                                        ? neb.pot->registryForceCalls()
+                                        : PotRegistry::sum_force_calls();
+          out << std::format("{} total_force_calls\n", totalCalls);
           out << std::format("{} force_calls_neb\n", force_calls_neb);
           out << std::format("{:f} energy_reference\n", neb.reactantEnergy);
           out << std::format("{} number_of_images\n", neb.numImages);
@@ -670,8 +672,8 @@ void bind_neb(nb::module_ &m) {
 
   m.def(
       "pot_registry_total_force_calls",
-      []() { return PotRegistry::get().total_force_calls(); },
-      "Global PotRegistry force-call counter (for force_calls_neb deltas)");
+      []() { return PotRegistry::sum_force_calls(); },
+      "Sum of force calls across every live registry");
 }
 
 } // namespace eonc::pybind

@@ -96,12 +96,16 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
   atomic_dimer.initialize(p, init_observations, init_middle_point, orient_init,
                           atoms_config);
 
-  auto potential =
-      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
+  if (!pot) {
+    throw std::invalid_argument("AtomicGPDimer: null potential");
+  }
+  const size_t callsBefore = pot->forceCallCounter.load();
+  auto charged = pot;
   pot::PotentialWrapper wrapper(
-      [&potential](long N, const double *R, const int *atomicNrs, double *F,
-                   double *U, double *variance, const double *box) {
-        potential->force(N, R, atomicNrs, F, U, variance, box);
+      [charged](long N, const double *R, const int *atomicNrs, double *F,
+                double *U, double *variance, const double *box) {
+        charged->force(N, R, atomicNrs, F, U, variance, box);
+        charged->recordForceCall();
       });
   // Restore traps if execute throws. The saddle-search catch must not
   // leave later force calls running with traps still masked.
@@ -112,8 +116,8 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
   // Forcefully set the right positions
   matter->setPositionsFreeV(atomic_dimer.getFinalCoordOfMidPoint());
   this->totalIterations = atomic_dimer.getIterations();
-  this->totalForceCalls = atomic_dimer.getTotalForceCalls();
-  pot->forceCallCounter = atomic_dimer.getTotalForceCalls();
+  this->totalForceCalls =
+      static_cast<long>(pot->forceCallCounter.load() - callsBefore);
   return;
 }
 

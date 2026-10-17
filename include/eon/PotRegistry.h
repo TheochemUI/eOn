@@ -88,18 +88,15 @@ private:
   std::atomic<uint64_t> m_next_id{1};
 
 public:
-  PotRegistry() = default;
-  ~PotRegistry() override {
-    // Members are still intact. Mark the registry dead before they go,
-    // so a Potential destroyed from here does not lock a dead mutex.
-    if (lifetime_)
-      lifetime_->alive.store(false, std::memory_order_release);
-  }
+  PotRegistry();
+  ~PotRegistry() override;
 
   /// Process-lifetime singleton. The instance is allocated on the heap
   /// and never destroyed, so Potential destructors can still record
   /// teardown after C++ static destruction.
   static PotRegistry &get() noexcept;
+  /// Sum of force evaluations on every registry that is still alive.
+  [[nodiscard]] static size_t sum_force_calls() noexcept;
   void reset();
 
   // Lifecycle events

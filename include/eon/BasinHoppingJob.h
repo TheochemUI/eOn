@@ -25,6 +25,11 @@ public:
       : Job(std::move(parameters), rt),
         current{std::make_shared<Matter>(pot, params)},
         trial{std::make_shared<Matter>(pot, params)}, fcalls{0} {}
+  BasinHoppingJob(std::shared_ptr<Potential> potPassed,
+                  const Parameters &parameters)
+      : Job(std::move(potPassed), parameters),
+        current{std::make_shared<Matter>(pot, params)},
+        trial{std::make_shared<Matter>(pot, params)}, fcalls{0} {}
   ~BasinHoppingJob(void) = default;
 
   std::vector<std::string> run(void) override;
