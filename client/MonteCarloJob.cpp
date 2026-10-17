@@ -60,7 +60,7 @@ std::vector<std::string> MonteCarloJob::run(void) {
   std::string resultsFilename("results.dat");
   auto env = JobResultEnvelope::fromMinimization(
       RunStatus::GOOD, params.potential_options().potential,
-      PotRegistry::get().total_force_calls(), true,
+      pots().total_force_calls(), true,
       matter->getPotentialEnergy());
   env.provenance = provenanceForJob(params);
   env.job_type = "monte_carlo";
