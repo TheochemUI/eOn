@@ -55,6 +55,9 @@ struct PotentialOptions {
   # ljcluster and morse_pt pair terms (and those terms of expr) to zero
   # at their cutoff. 0 keeps the shifted truncation.
   pairSwitchWidth @8 :Float64 = 0.0;
+  # Cutoff in Angstrom of the lj, ljcluster and morse_pt pair terms (and
+  # those terms of expr). 0 keeps each potential's own cutoff.
+  pairCutoff @9 :Float64 = 0.0;
 }
 
 # ---------------------------------------------------------------------

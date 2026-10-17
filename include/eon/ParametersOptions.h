@@ -64,6 +64,9 @@ struct potential_options_t {
   /// ljcluster and morse_pt pair terms to zero at their cutoff. 0 keeps
   /// the shifted truncation, whose force jumps at the cutoff.
   double pairSwitchWidth{0.0};
+  /// Cutoff (Angstrom) of the lj, ljcluster and morse_pt pair terms. 0
+  /// keeps each potential's own cutoff (15 for LJ, 9.5 for Morse).
+  double pairCutoff{0.0};
   int MPIPotentialRank{-1};
   /// Opaque MPI_Comm bits. Read/write with ParametersMpi.h in MPI TUs.
   std::uintptr_t MPIClientComm{0};

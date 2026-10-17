@@ -565,6 +565,15 @@ class PotentialConfig(BaseModel):
             " force jumps at the cutoff."
         ),
     )
+    pair_cutoff: float = Field(
+        default=0.0,
+        ge=0.0,
+        description=(
+            "Cutoff in Angstrom of the lj, ljcluster and morse_pt pair terms,"
+            " and those terms of expr. 0 keeps each potential's own cutoff:"
+            " 15 for LJ, 9.5 for Morse."
+        ),
+    )
     potential: Literal[
         "ams",
         "ase_pot",

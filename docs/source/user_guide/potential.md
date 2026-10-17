@@ -150,6 +150,20 @@ The default 0 keeps the shifted truncation. A width must lie in
 `(0, cutoff]`; rgpot refuses any other. The switch changes the energy
 surface, so results with and without it do not compare directly.
 
+`pair_cutoff` sets that cutoff, in Angstrom, for the same potentials. The
+default 0 keeps each potential's own. A periodic cell finds pairs by the
+minimum image, so every cell width must exceed twice the cutoff; at 15
+Angstrom that rules out any cell narrower than 30 Angstrom. The Bain-path
+example in `examples/neb-bain-lj` cuts LJ at 2.2 Angstrom with a 0.2
+Angstrom switch:
+
+```{code-block} ini
+[Potential]
+potential = lj
+pair_cutoff = 2.2
+pair_switch_width = 0.2
+```
+
 ## Potential configurations
 
 Several potentials have additional configuration stanzas.

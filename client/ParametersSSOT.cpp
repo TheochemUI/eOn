@@ -142,6 +142,8 @@ void apply_ssot_defaults(Parameters &p) {
       std::string(GD::POTENTIAL_POTENTIALS_PATH);
   ParametersLoadAccess::potential_options(p).pairSwitchWidth =
       GD::POTENTIAL_PAIR_SWITCH_WIDTH;
+  ParametersLoadAccess::potential_options(p).pairCutoff =
+      GD::POTENTIAL_PAIR_CUTOFF;
 
   ParametersLoadAccess::structure_comparison_options(p).distance_difference =
       GD::STRUCTURE_COMPARISON_DISTANCE_DIFFERENCE;

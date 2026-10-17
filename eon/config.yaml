@@ -148,6 +148,12 @@ Potential:
             # below the cutoff of lj, ljcluster and morse_pt; 0 keeps the
             # shifted truncation.
 
+        pair_cutoff:
+            kind: float
+            default: 0.0
+            # Angstrom. Cutoff of lj, ljcluster and morse_pt; 0 keeps
+            # each potential's own (15 for LJ, 9.5 for Morse).
+
 
 ################################################################################
 

@@ -91,6 +91,7 @@ json to_json(const Parameters &p) {
        ParametersLoadAccess::potential_options(p).potentialsPath},
       {"pair_switch_width",
        ParametersLoadAccess::potential_options(p).pairSwitchWidth},
+      {"pair_cutoff", ParametersLoadAccess::potential_options(p).pairCutoff},
   };
 
   // [Structure Comparison]
@@ -513,6 +514,8 @@ void from_json(const json &j, Parameters &p) {
              ParametersLoadAccess::potential_options(p).potentialsPath);
     JSON_OPT(s, "pair_switch_width",
              ParametersLoadAccess::potential_options(p).pairSwitchWidth);
+    JSON_OPT(s, "pair_cutoff",
+             ParametersLoadAccess::potential_options(p).pairCutoff);
   }
 
   // [Structure Comparison]
