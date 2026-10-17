@@ -3,8 +3,8 @@
 ** SPDX-License-Identifier: BSD-3-Clause
 ** Copyright (c) 2010--present, eOn Development Team
 */
-#include "catch2/catch_amalgamated.hpp"
 #include "eon/CyclicBlockBath.h"
+#include "catch2/catch_amalgamated.hpp"
 
 using eonc::tunneling::CyclicBlockBath;
 
@@ -23,14 +23,10 @@ TEST_CASE("cyclic block bath solves the full noncommuting physical matrix",
       }
       for (int j = 0; j < count; ++j) {
         const int k = (j + 1) % count;
-        dense.block<2, 2>(2 * j, 2 * j) +=
-            spring * Eigen::Matrix2d::Identity();
-        dense.block<2, 2>(2 * k, 2 * k) +=
-            spring * Eigen::Matrix2d::Identity();
-        dense.block<2, 2>(2 * j, 2 * k) -=
-            spring * Eigen::Matrix2d::Identity();
-        dense.block<2, 2>(2 * k, 2 * j) -=
-            spring * Eigen::Matrix2d::Identity();
+        dense.block<2, 2>(2 * j, 2 * j) += spring * Eigen::Matrix2d::Identity();
+        dense.block<2, 2>(2 * k, 2 * k) += spring * Eigen::Matrix2d::Identity();
+        dense.block<2, 2>(2 * j, 2 * k) -= spring * Eigen::Matrix2d::Identity();
+        dense.block<2, 2>(2 * k, 2 * j) -= spring * Eigen::Matrix2d::Identity();
       }
       Eigen::MatrixXd rhs(2 * count, 3);
       for (Eigen::Index i = 0; i < rhs.rows(); ++i)
@@ -45,7 +41,8 @@ TEST_CASE("cyclic block bath solves the full noncommuting physical matrix",
       REQUIRE(std::abs(factor.logDeterminant() -
                        2 * lower.diagonal().array().log().sum()) < 2e-13);
       REQUIRE((factor.solve(Eigen::MatrixXd::Identity(2 * count, 2 * count)) -
-               dense.inverse()).norm() < 2e-13);
+               dense.inverse())
+                  .norm() < 2e-13);
     }
   }
 }

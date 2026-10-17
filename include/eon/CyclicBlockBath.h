@@ -18,18 +18,22 @@ namespace eonc::tunneling {
 class CyclicBlockBath {
 public:
   CyclicBlockBath(const std::vector<Eigen::MatrixXd> &blocks, double spring)
-      : count_(blocks.size()), width_(blocks.empty() ? 0 : blocks.front().rows()) {
+      : count_(blocks.size()),
+        width_(blocks.empty() ? 0 : blocks.front().rows()) {
     if (count_ == 0 || width_ == 0 || !std::isfinite(spring) || spring < 0)
       throw std::invalid_argument("invalid cyclic bath dimensions or spring");
     for (const auto &block : blocks) {
-      if (block.rows() != width_ || block.cols() != width_ || !block.allFinite() ||
+      if (block.rows() != width_ || block.cols() != width_ ||
+          !block.allFinite() ||
           (block - block.transpose()).norm() >
               64 * std::numeric_limits<double>::epsilon() *
                   std::max(1.0, block.norm()))
-        throw std::invalid_argument("invalid or nonsymmetric physical bath block");
+        throw std::invalid_argument(
+            "invalid or nonsymmetric physical bath block");
       Eigen::LLT<Eigen::MatrixXd> physical(block);
       if (physical.info() != Eigen::Success)
-        throw std::invalid_argument("physical bath block is not positive definite");
+        throw std::invalid_argument(
+            "physical bath block is not positive definite");
     }
     factors_.resize(count_);
     next_.resize(count_ - 1);
@@ -39,8 +43,7 @@ public:
     if (count_ > 1)
       for (auto &block : diagonal)
         block += 2 * spring * identity;
-    Eigen::MatrixXd coupling =
-        -(count_ == 2 ? 2 : 1) * spring * identity;
+    Eigen::MatrixXd coupling = -(count_ == 2 ? 2 : 1) * spring * identity;
     for (std::size_t j = 0; j + 1 < count_; ++j) {
       factor(j, diagonal[j]);
       boundary_[j] = factors_[j].solve(coupling);
@@ -70,7 +73,8 @@ public:
       const Eigen::Index row = static_cast<Eigen::Index>(j) * width_;
       const Eigen::MatrixXd current = result.middleRows(row, width_);
       if (j + 2 < count_)
-        result.middleRows(row + width_, width_) -= next_[j].transpose() * current;
+        result.middleRows(row + width_, width_) -=
+            next_[j].transpose() * current;
       result.middleRows(last, width_) -= boundary_[j].transpose() * current;
       result.middleRows(row, width_) = factors_[j].solve(current);
     }
@@ -93,7 +97,8 @@ private:
   void factor(std::size_t index, const Eigen::MatrixXd &matrix) {
     factors_[index].compute((matrix + matrix.transpose()) * 0.5);
     if (factors_[index].info() != Eigen::Success)
-      throw std::runtime_error("cyclic bath Schur block is not positive definite");
+      throw std::runtime_error(
+          "cyclic bath Schur block is not positive definite");
     const Eigen::MatrixXd lower = factors_[index].matrixL();
     logDeterminant_ += 2 * lower.diagonal().array().log().sum();
     if (!std::isfinite(logDeterminant_))
