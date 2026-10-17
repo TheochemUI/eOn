@@ -598,4 +598,19 @@ TEST_CASE("Directional Lanczos displacement is positive finite and independent",
   }
 }
 
+TEST_CASE("Closed ring seed filename round trips through INI and JSON",
+          "[params][json][InitialRing]") {
+  Parameters defaults;
+  REQUIRE(defaults.instanton_options().initial_ring.empty());
+  Parameters configured;
+  REQUIRE(configured.load_ini_text(
+              "[Instanton]\ninitial_ring = retained-ring.con\n") == 0);
+  REQUIRE(configured.instanton_options().initial_ring == "retained-ring.con");
+  REQUIRE(configured.instanton_options().initial_path.empty());
+  Parameters restored;
+  REQUIRE(restored.load_json(configured.to_json()) == 0);
+  REQUIRE(restored.instanton_options().initial_ring == "retained-ring.con");
+  REQUIRE(restored.instanton_options().initial_path.empty());
+}
+
 } /* namespace tests */
