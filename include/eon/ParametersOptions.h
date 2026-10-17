@@ -60,6 +60,10 @@ struct potential_options_t {
   std::string extPotPath{"./ext_pot"};
   std::string potentialsPath{
       ""}; // colon-separated dirs for Fortran potential .so files
+  /// Width (Angstrom) of the C^2 quintic switch that takes the lj,
+  /// ljcluster and morse_pt pair terms to zero at their cutoff. 0 keeps
+  /// the shifted truncation, whose force jumps at the cutoff.
+  double pairSwitchWidth{0.0};
   int MPIPotentialRank{-1};
   /// Opaque MPI_Comm bits. Read/write with ParametersMpi.h in MPI TUs.
   std::uintptr_t MPIClientComm{0};
@@ -820,6 +824,10 @@ struct instanton_options_t {
   // Optional band to start from (neb.con or any multi-frame con file whose
   // first and last frames are the two minima); empty is a straight line.
   std::string initial_path{""};
+  // Mode rate: a closed-ring geometry seed, with exactly beads frames.
+  std::string initial_ring{""};
+  // Mode rate: measured physical bath and retained-coordinate mapping.
+  std::string physical_bath_filename{""};
   long beads{256};              // P, segments from one minimum to the other
   double beta_hbar_omega{30.0}; // imaginary time, in units of 1 / omega
   long max_iterations{5000};    // L-BFGS iterations on the action
@@ -848,8 +856,20 @@ struct instanton_options_t {
   // saddle Hessian to every bead (no force calls); "finite_difference"
   // takes 2 f gradient calls per bead first.
   std::string initial_hessians{"saddle"};
+  // Maximum active coordinates for dense Newton; zero selects the dimer.
+  long newton_limit{std::numeric_limits<long>::max()};
+  // Directional Lanczos displacement, sqrt(amu) Angstrom.
+  double lanczos_step{1e-4};
+  std::string reactant_hessian_filename{};
+  std::string saddle_hessian_filename{};
   // Central physical bead-Hessian displacement, sqrt(amu) Angstrom.
   double physical_hessian_step{1e-4};
+  // Mode rate: the search stops when B_N falls below this fraction of the
+  // starting ring's (the beads fell onto one point).
+  double collapse_fraction{1e-4};
+  // A reactant rotation is a zero mode when its curvature is at most this
+  // fraction of the softest vibration.
+  double rotation_zero_fraction{0.1};
   // Mode rate: start at a quarter of the beads and double. Off leaves the
   // requested count alone.
   bool bead_ladder{false};

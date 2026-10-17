@@ -382,7 +382,8 @@ the printed CPMD table does not change what `fion` contains.
 ### CPMD on several MPI ranks
 
 `examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py` answers each call with a
-`cpmd.x` wavefunction optimisation on several MPI ranks. It reads its
+`cpmd.x` wavefunction optimisation on the MPI ranks that `CPMD_LAUNCH`
+starts. It reads its
 settings from the environment:
 
 | Variable | Meaning | Default |
@@ -396,6 +397,7 @@ settings from the environment:
 | `CPMD_CONVERGENCE` | `CONVERGENCE ORBITALS` | `1e-6` |
 | `CPMD_MAXITER` | `MAXITER` | `300` |
 | `CPMD_RESTART_POOL` | shared directory of converged `RESTART.1` files that seed a job's first call | unset |
+| `CPMDC_RESTART` | path to the `cpmdc-restart` tool; a pooled `RESTART.1` seeds a call only when `cpmdc-restart info` reports the same atom count, species counts and cutoff | unset, no check |
 
 A single point, a minimization or a nudged elastic band on one machine
 needs nothing else than the script as `ext_pot_path`:
@@ -418,7 +420,7 @@ eonclient
 Inside a Slurm job, ask for as many tasks as `CPMD_LAUNCH` starts ranks
 (`--ntasks=4`), or OpenMPI finds one slot and refuses `-np 4`.
 `--bind-to none` keeps it from refusing to bind when the allocation is
-hardware threads rather than whole cores.
+hardware threads rather than physical cores.
 
 `examples/akmc-cpmd-slurm` runs adaptive kinetic Monte Carlo on a silicon
 vacancy with the same script. The `cluster` communicator submits each
@@ -428,8 +430,8 @@ process; the ranks belong to CPMD alone.
 
 What the script hands CPMD and reads back:
 
-- The deck says `ANGSTROM`, so CPMD converts eOn's positions with its own
-  Bohr (0.529177210859 A). CPMD answers in Hartree and Hartree/Bohr, and the
+- The deck says `ANGSTROM`. CPMD then converts eOn's positions with its
+  own Bohr, 0.529177210859 A. CPMD answers in Hartree and Hartree/Bohr. The
   script converts with CODATA 2018 (27.211386245988 eV, 0.529177210903 A),
   as the in-process [RGPOT](project:rgpot_pot.md) route does. The two Bohr
   values differ by 8.3e-11 relative; `client/validation/cpmd_units.py`

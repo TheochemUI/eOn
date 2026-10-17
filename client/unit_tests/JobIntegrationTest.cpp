@@ -620,12 +620,24 @@ max_energy = 10.0
   REQUIRE(forceCalls_ <= 39);
 
   // Eigenvalue must be negative (true saddle point).
-  // SVN printed -1.014995. Dimer::rotate now updates the plane from the
-  // pre-rotation direction; the FD curvature on this fixture
-  // is -1.010564. Energy still matches the SVN saddle.
+  // final_eigenvalue is the pre-final estimate: the min-mode curvature at
+  // the geometry before the converged step, since convergence is judged on
+  // the forces alone. SVN printed -1.014995. Dimer::rotate now updates the
+  // plane from the pre-rotation direction; the host dimer's pre-final
+  // estimate on this fixture is -1.010564. Energy still matches the SVN
+  // saddle.
   double eigenvalue = std::stod(results["final_eigenvalue"]);
   REQUIRE(eigenvalue < 0.0);
+#ifdef WITH_RGSADDLE
+  // The rgsaddle dimer rotates to a slightly different mode from frame 6
+  // on, so the climb reaches the same saddle (6.2e-5 A apart) through a
+  // different pre-final geometry, where the curvature is -1.013461 by
+  // either estimator. At the returned saddle both measure about -1.0103,
+  // and the central-difference Hessian gives -1.0102.
+  REQUIRE(eigenvalue == Catch::Approx(-1.013461).epsilon(1e-3));
+#else
   REQUIRE(eigenvalue == Catch::Approx(-1.010564).epsilon(1e-3));
+#endif
 
   // Reactant energy must match
   double reactantE = std::stod(results["potential_energy_reactant"]);
@@ -743,8 +755,14 @@ max_move = 0.2
   int nImages = std::stoi(results["number_of_images"]);
   REQUIRE(nImages == 3);
 
-  // Force calls must be <= SVN (209)
-  REQUIRE(forceCalls_ <= 209);
+  // SVN recorded 209 force calls with the squared spring
+  // k (|d+|^2 - |d-|^2) tau and a finite-difference first L-BFGS step;
+  // geometric_spring = true with that probe reproduces its band and its
+  // 209 calls. The default Hooke spring k (|d+| - |d-|) tau of Jonsson,
+  // Mills and Jacobsen (1998) and Henkelman and Jonsson (2000) has the same
+  // fixed point (client/validation/neb_spring_fixed_point.py); its measured
+  // run on this fixture takes 236.
+  REQUIRE(forceCalls_ <= 236);
 
   // energy_reference must match SVN reactant energy
   double eRef = std::stod(results["energy_reference"]);
@@ -760,9 +778,12 @@ max_move = 0.2
   double eProduct =
       std::stod(results["image" + std::to_string(nImages + 1) + "_energy"]);
   REQUIRE(eProduct == Catch::Approx(631.805887).epsilon(1e-6));
+  // Converged image energies of the Hooke-spring run (SVN's squared
+  // spring gives 0.000135, 0.056816 and 1.800656 eV).
+  const double expected[] = {0.000049, 0.259018, 2.851935};
   for (int i = 1; i <= nImages; i++) {
     double ei = std::stod(results["image" + std::to_string(i) + "_energy"]);
-    REQUIRE(std::isfinite(ei));
+    REQUIRE(ei == Catch::Approx(expected[i - 1]).margin(1.0e-5));
   }
 
   REQUIRE(results.count("number_of_extrema") > 0);
@@ -3378,6 +3399,62 @@ TEST_CASE("Basin hopping swaps two elements", "[job][basin_hopping]") {
   REQUIRE_FALSE(before.isApprox(matter.getPositions(), 0.0));
   REQUIRE(matter.getAtomicNr(0) == 1);
   REQUIRE(matter.getAtomicNr(2) == 8);
+}
+
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "InstantonJob resumes closed ring geometry with fresh energies",
+    "[job][instanton][integration][InitialRing]") {
+  REQUIRE(copyTestData("neb_lj13"));
+  auto config = [](long iterations, const std::string &ring) {
+    std::ostringstream text;
+    text << "[Main]\njob = instanton\n[Potential]\npotential = lj\n"
+         << "[Instanton]\nmode = rate\ntemperature = 198\nbeads = 16\n"
+         << "force_tolerance = 1e-6\nmax_iterations = " << iterations << '\n';
+    if (!ring.empty()) {
+      text << "initial_ring = " << ring << '\n';
+    }
+    return text.str();
+  };
+  writeConfig(config(3000, ""));
+  const auto first = runJob();
+  REQUIRE(first.at("termination_reason") == "0");
+  const auto frames =
+      readcon::read_all_frames((workdir / "instanton.con").string());
+  REQUIRE(frames.size() == 16);
+  Parameters seedParams;
+  ParametersLoadAccess::potential_options(seedParams).potential = PotType::LJ;
+  auto potential = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, seedParams));
+  std::vector<AtomMatrix> positions;
+  std::vector<double> energies;
+  for (size_t bead = 0; bead < frames.size(); ++bead) {
+    Matter image(potential, seedParams);
+    REQUIRE(eonc::io::io_ok(image.con2matter(frames[bead])));
+    positions.push_back(image.getPositions());
+    REQUIRE(frames[bead].energy_opt().has_value());
+    energies.push_back(*frames[bead].energy_opt());
+    eonc::io::ConFrameMetadata metadata;
+    metadata.energy = 1e6 + bead;
+    REQUIRE(eonc::io::io_ok(image.matter2con(
+        (workdir / "retained-ring.con").string(), bead > 0, &metadata)));
+  }
+  writeConfig(config(0, "retained-ring.con"));
+  const auto resumed = runJob();
+  REQUIRE(std::stod(resumed.at("sd_path_force_calls")) == 0.0);
+  REQUIRE(std::stod(resumed.at("instanton_iterations")) == 0.0);
+  REQUIRE(forceCalls_ > 0);
+  const auto restored =
+      readcon::read_all_frames((workdir / "instanton.con").string());
+  REQUIRE(restored.size() == positions.size());
+  for (size_t bead = 0; bead < restored.size(); ++bead) {
+    Matter image(potential, seedParams);
+    REQUIRE(eonc::io::io_ok(image.con2matter(restored[bead])));
+    REQUIRE((image.getPositions() - positions[bead]).cwiseAbs().maxCoeff() <
+            1e-12);
+    REQUIRE(restored[bead].energy_opt().has_value());
+    REQUIRE(std::abs(*restored[bead].energy_opt() - energies[bead]) < 1e-8);
+  }
 }
 
 } /* namespace tests */

@@ -141,6 +141,13 @@ Potential:
             kind: string
             default: ext_pot
 
+        pair_switch_width:
+            kind: float
+            default: 0.0
+            # Angstrom. C^2 quintic switch over the last pair_switch_width
+            # below the cutoff of lj, ljcluster and morse_pt; 0 keeps the
+            # shifted truncation.
+
 
 ################################################################################
 
@@ -1199,6 +1206,16 @@ Instanton:
             kind: string
             default: ""
 
+        # Rate mode: exactly beads closed-ring CON frames; cached evaluations
+        # are ignored and all physical coordinates match the reference.
+        initial_ring:
+            kind: string
+            default: ""
+
+        physical_bath_filename:
+            kind: string
+            default: ""
+
         beads:
             kind: int
             default: 256
@@ -1247,6 +1264,25 @@ Instanton:
             kind: float
             default: 0.0001
 
+        # Maximum active ring coordinates for dense Newton; 0 selects
+        # the matrix-free dimer. Default LONG_MAX on the supported LP64 build.
+        newton_limit:
+            kind: int
+            default: 9223372036854775807
+
+        # Directional Lanczos displacement, sqrt(amu) Angstrom.
+        lanczos_step:
+            kind: float
+            default: 0.0001
+
+        reactant_hessian_filename:
+            kind: string
+            default: ""
+
+        saddle_hessian_filename:
+            kind: string
+            default: ""
+
         # Mode rate: where the bead Hessian blocks start. saddle copies the
         # saddle Hessian to every bead at no force calls; finite_difference
         # takes 2 f gradient calls per bead first.
@@ -1290,6 +1326,18 @@ Instanton:
         friction_eta_beads:
             kind: string
             default: ""
+
+        # Mode rate: the search stops, with instanton_collapsed = 1, when B_N
+        # falls below this fraction of the starting ring's. 0 never stops.
+        collapse_fraction:
+            kind: float
+            default: 0.0001
+
+        # A reactant rotation is a zero mode when its curvature r^T H r /
+        # r^T r is at most this fraction of the softest vibration.
+        rotation_zero_fraction:
+            kind: float
+            default: 0.1
 
         # Start at a quarter of the beads and double up to the requested
         # count. Off searches the requested count directly.

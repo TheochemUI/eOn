@@ -1,0 +1,1 @@
+The optimizer page lists which eOn keys set the rgsaddle min-mode session (`[Main] finite_difference`, `[Dimer] torque_min`, `converged_angle` and `rotations_max`, `[Hessian] fd_scheme`), and `eon_schema.HessianConfig` gains `fd_scheme`, which the client already read. The `converged_angle`, `rotations_max` and `torque_min` descriptions say what the xtsci min-mode does with them.

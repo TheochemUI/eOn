@@ -21,6 +21,7 @@
 // amu^0.5 Angstrom and hbar is kHbar.
 
 #include "Matter.h"
+#include "PhysicalQuadraticBath.h"
 
 #include <array>
 #include <functional>
@@ -263,6 +264,10 @@ double quantumHarmonicTstLogRate(const MatrixXd &hessReactant,
                                  double barrier, long rigidModes);
 
 struct RateInstantonOptions {
+  /// Fixed physical quadratic bath, eliminated on the same primitive ring.
+  /// The potential callback supplies retained coordinates and the declared
+  /// frozen-bath or relaxed potential of this model.
+  std::shared_ptr<const PhysicalQuadraticBath> physicalBath;
   long beads = 32;              ///< N, beads on the ring
   long maxIterations = 1000;    ///< translation steps
   double forceTolerance = 1e-3; ///< largest per-bead |dU_N/dq|,
@@ -286,6 +291,9 @@ struct RateInstantonOptions {
   /// gradient calls; the search then finishes on the whole ring. A cooling
   /// schedule probes only its last temperature.
   bool checkOddSector = true;
+  /// The search stops, with RateInstanton::collapsed set, when B_N falls
+  /// below this fraction of the starting ring's. 0 never stops.
+  double collapseFraction = 1e-4;
   double energyShift = 0.0; ///< subtracted from every bead potential, eV
   /// Empty keeps every spring equal. Otherwise one positive weight per
   /// bead: the spring from bead j to bead j + 1 is divided by that weight.
@@ -353,6 +361,7 @@ RingSpectrum ringSpectrum(const std::vector<MatrixXd> &beadHessians, double c,
                           const std::vector<VectorXd> &tau);
 
 struct RateInstanton {
+  std::shared_ptr<const PhysicalQuadraticBath> physicalBath;
   std::vector<VectorXd> beads;     ///< N beads, q_N = q_0 implied
   std::vector<double> energies;    ///< V at every bead, eV
   double beta = 0.0;               ///< 1 / (kB T), 1 / eV
@@ -385,8 +394,8 @@ struct RateInstanton {
   long negativeModes = 0;          ///< eigenvalues below the zero mode
   long iterations = 0;
   bool converged = false;
-  /// The search stopped because B_N fell below 1e-4 of the starting
-  /// ring's: the beads fell together onto one point (a minimum or the
+  /// The search stopped because B_N fell below collapseFraction of the
+  /// starting ring's: the beads fell together onto one point (a minimum or the
   /// saddle), which is no instanton.
   bool collapsed = false;
   double logRateTimesZr = 0.0; ///< ln(k Z_r), k in 1 / time
@@ -446,7 +455,8 @@ RingChannel ringChannel(const std::vector<VectorXd> &beads,
 /// Hessian. `generators` holds three translations then three rotations as
 /// columns (a zero column for a rotation a linear molecule lacks). A
 /// rotation r is a zero mode when its Rayleigh quotient r^T H r / r^T r is
-/// at most kRotationZeroFraction of the softest vibration, the lowest
+/// at most `fraction` (default kRotationZeroFraction) of the softest
+/// vibration, the lowest
 /// eigenvalue of H on the complement of all six generators. Both sides
 /// scale with H and neither grows with the atom count, unlike a comparison
 /// with ||H||_F. The residual reported is that ratio; a structure with no
@@ -457,8 +467,17 @@ struct RotationZeroModes {
   std::array<double, 3> residual{{0.0, 0.0, 0.0}};
   double softestVibration = 0.0; ///< lowest eigenvalue on the complement
 };
-RotationZeroModes rotationZeroModes(const MatrixXd &hess,
-                                    const MatrixXd &generators);
+RotationZeroModes
+rotationZeroModes(const MatrixXd &hess, const MatrixXd &generators,
+                  double fraction = kRotationZeroFraction);
+
+/// The Bofill update of a bead block (Powell symmetric Broyden and SR1
+/// mixed by the angle between the secant residual and the step), then any
+/// negative eigenvalues beyond `allowedNegatives`, the count the block's
+/// last exact (finite-difference) version had, mirrored to their absolute
+/// value. A negative count applies the plain update.
+void bofillKeepingInertia(MatrixXd &h, const VectorXd &dq, const VectorXd &dg,
+                          long allowedNegatives);
 
 /// The mass-weighted Hessian d2V/dq2 at ring bead j (0..N-1).
 using RingBeadHessian = std::function<MatrixXd(long j, const VectorXd &q)>;

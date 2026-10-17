@@ -2,7 +2,10 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Parameters.h"
+#include "eon/ParametersJSON.h"
+#include "eon/Potential.h"
 
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
@@ -405,4 +408,54 @@ TEST_CASE("Parameters INI reads the optional potential sections",
   REQUIRE(sections.saddle_search_options().confine_positive.min_active == 2);
 }
 
+TEST_CASE("pair_switch_width reaches the pair potentials",
+          "[params][ssot][potential]") {
+  Parameters defaults;
+  REQUIRE(defaults.potential_options().pairSwitchWidth == 0.0);
+  REQUIRE(eonc::config::ssot_has_field("Potential", "pair_switch_width"));
+
+  Parameters p;
+  REQUIRE(p.load_ini_text("[Potential]\npotential = morse_pt\n"
+                          "pair_switch_width = 1.0\n") == 0);
+  REQUIRE(p.potential_options().pairSwitchWidth == Catch::Approx(1.0));
+
+  Parameters round;
+  eonc::config::from_json(eonc::config::to_json(p), round);
+  REQUIRE(round.potential_options().pairSwitchWidth == Catch::Approx(1.0));
+
+  // Two atoms 9 Angstrom apart: halfway through the switch that runs from
+  // 8.5 to the 9.5 Angstrom Morse cutoff, where S = 1/2 and
+  // dS/dr = -30 t^2 (1 - t)^2 / width = -15/8 per Angstrom.
+  const double De = 0.7102, a = 1.6047, re = 2.8970, r = 9.0;
+  const double d = 1.0 - std::exp(-a * (r - re));
+  const double v = De * d * d - De;
+  const double dv = 2.0 * De * a * d * (1.0 - d);
+  const double s = 0.5, dsdr = -15.0 / 8.0;
+  const double energy = v * s;
+  const double fx0 = (v * dsdr + dv * s); // -dE/dx0 with x0 - x1 = -r
+
+  auto evaluate = [&](const Parameters &params) {
+    auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
+    AtomMatrix pos = AtomMatrix::Zero(2, 3);
+    pos(1, 0) = r;
+    Matrix3d cell = Matrix3d::Identity() * 30.0;
+    VectorXi z(2);
+    z << 78, 78;
+    return pot->get_ef(pos, z, cell);
+  };
+  const auto [switched_e, switched_f] = evaluate(p);
+  REQUIRE_THAT(switched_e, Catch::Matchers::WithinRel(energy, 1e-12));
+  REQUIRE_THAT(switched_f(0, 0), Catch::Matchers::WithinRel(fx0, 1e-10));
+  REQUIRE_THAT(switched_f(1, 0), Catch::Matchers::WithinRel(-fx0, 1e-10));
+
+  Parameters shifted;
+  REQUIRE(shifted.load_ini_text("[Potential]\npotential = morse_pt\n") == 0);
+  const auto [shifted_e, shifted_f] = evaluate(shifted);
+  REQUIRE(std::abs(shifted_e - switched_e) > 1e-6 * std::abs(energy));
+
+  Parameters negative;
+  REQUIRE(negative.load_ini_text("[Potential]\npotential = morse_pt\n"
+                                 "pair_switch_width = -1.0\n") == 0);
+  REQUIRE_THROWS(eonc::helpers::makePotential(PotType::MORSE_PT, negative));
+}
 } // namespace tests

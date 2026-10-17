@@ -104,6 +104,17 @@ void XtsciMinMode::compute(std::shared_ptr<Matter> matter,
   if (initialDirection.rows() != nAtoms || initialDirection.cols() != 3) {
     throw std::runtime_error("xtsci min-mode direction shape");
   }
+  // A direction without a norm names no mode. The host dimer normalizes it
+  // to zero and reports a zero curvature along it; rgsaddle refuses such a
+  // mode, so the estimate is the same here without a session call.
+  if (!(initialDirection.norm() > 1.0e-14)) {
+    m_eigenvector = AtomMatrix::Zero(nAtoms, 3);
+    m_eigenvalue = 0.0;
+    statsCurvature = 0.0;
+    statsRotations = 0;
+    totalIterations += 1;
+    return;
+  }
   const AtomMatrix saved = matter->getPositions();
   m_fixed = saved;
   const auto &dim = params.dimer_options();

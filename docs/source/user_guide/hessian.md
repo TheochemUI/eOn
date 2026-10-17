@@ -50,8 +50,10 @@ One-sided is preferred for classical EAM AKMC cost; central reduces \(O(h)\) bia
 when validating prefactors. Fourth-order cancels the \(O(h^2)\) term as well.
 The same `fd_scheme = fourth` value selects that stencil for Lanczos and
 Davidson Hessian-vector products. `one_sided` and `central` leave those
-products on the forward difference. Dimer rotation, conjugate gradients, and
-LBFGS keep their own real steps. Complex-step is not a scheme: cutoffs and
+products on the forward difference. The rgsaddle min-mode
+(`min_mode_method = xtsci`) takes forward differences for `one_sided` and
+central differences for `central` and `fourth`; see {doc}`optimizer`. Dimer
+rotation, conjugate gradients, and LBFGS keep their own real steps. Complex-step is not a scheme: cutoffs and
 external potentials are not holomorphic. The assembled matrix is symmetrized
 \((H+H^T)/2\) before diagonalization. Mass-weighting uses
 \(\tilde H_{ij} = H_{ij}/\sqrt{m_i m_j}\).

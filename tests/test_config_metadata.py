@@ -5,6 +5,7 @@ from __future__ import annotations
 import ast
 import importlib.util
 import re
+import struct
 from pathlib import Path
 import unittest
 from typing import Any
@@ -92,6 +93,19 @@ def _extract_schema_models() -> dict[str, dict[str, dict[str, Any]]]:
     }
 
 
+def _default_value(node: ast.expr) -> Any:
+    """A Field default: a literal, or an expression over the struct module.
+
+    InstantonConfig.newton_limit defaults to the platform LONG_MAX, written
+    as an expression of struct.calcsize("l") so it matches the C++ long.
+    """
+    try:
+        return ast.literal_eval(node)
+    except ValueError:
+        code = compile(ast.Expression(body=node), str(SCHEMA_PATH), "eval")
+        return eval(code, {"__builtins__": {}, "struct": struct})
+
+
 def _extract_fields(class_node: ast.ClassDef) -> dict[str, dict[str, Any]]:
     fields: dict[str, dict[str, Any]] = {}
     for node in class_node.body:
@@ -107,7 +121,7 @@ def _extract_fields(class_node: ast.ClassDef) -> dict[str, dict[str, Any]]:
         default = None
         for keyword in node.value.keywords:
             if keyword.arg == "default":
-                default = ast.literal_eval(keyword.value)
+                default = _default_value(keyword.value)
                 break
 
         fields[node.target.id] = {

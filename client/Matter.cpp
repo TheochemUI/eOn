@@ -706,8 +706,7 @@ void Matter::computePotential() const {
           std::span<double>(impl_->forces.data(), n * 3), &potentialEnergy,
           &var, std::span<const double>(force_cell.data(), 9));
       this->energyVariance = var;
-      livePotential()->forceCallCounter++;
-      PotRegistry::get().on_force_call(livePotential()->getType());
+      livePotential()->recordForceCall();
       captureStress();
     }
     if (!std::isfinite(potentialEnergy) || !impl_->forces.allFinite()) {
