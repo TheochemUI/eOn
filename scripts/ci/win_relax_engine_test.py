@@ -12,6 +12,13 @@ import os
 import sys
 
 
+def path_with_front(dirs: list[str], old: str) -> str:
+    """Directories that exist, then the previous PATH."""
+    kept = [d for d in dirs if d and os.path.isdir(d)]
+    parts = kept + ([old] if old else [])
+    return os.pathsep.join(parts)
+
+
 def main() -> int:
     if len(sys.argv) < 2:
         print(
@@ -20,10 +27,8 @@ def main() -> int:
         )
         return 2
     exe = sys.argv[1]
-    dirs = [d for d in sys.argv[2:] if d and os.path.isdir(d)]
     old = os.environ.get("PATH", "")
-    parts = dirs + ([old] if old else [])
-    os.environ["PATH"] = os.pathsep.join(parts)
+    os.environ["PATH"] = path_with_front(sys.argv[2:], old)
     os.execv(exe, [exe])
     return 127
 

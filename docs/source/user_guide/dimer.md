@@ -30,7 +30,7 @@ There is no point removing rotations for an extended system. Rotation removal ma
 ```
 
 ```{versionadded} 2.5
-The Gaussian Process Regression accelerated dimer in C++ from {cite:t}`dm-goswamiEfficientImplementationGaussian2025a`.
+The Gaussian Process Regression accelerated dimer in C++ from {cite:t}`dm-goswamiEfficientImplementationGaussian2025`.
 ```
 
 ## Rotation backends

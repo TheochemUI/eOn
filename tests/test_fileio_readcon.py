@@ -84,9 +84,9 @@ def test_readcon_version_and_chemfiles_status():
     """Record readcon pin; eOn server I/O does not require chemfiles extra."""
     ver = getattr(readcon, "__version__", None)
     assert ver is not None
-    # Lockstep with the C++ wrap: readcon-core 0.14.5 / spec 3.
+    # Lockstep with the C++ wrap: readcon-core 0.17.1 content / spec 3.
     parts = _version_tuple(ver)
-    assert parts >= (0, 14, 5), ver
+    assert parts >= (0, 17, 1), ver
     has_cf = readcon.has_chemfiles_support()
     # Default install (no [chemfiles] extra): False. Document either way.
     assert isinstance(has_cf, bool)

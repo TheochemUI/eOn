@@ -118,6 +118,7 @@ The C++ `client/` tree has a sibling [doxyYoda HTML site](https://eondocs.org/ap
 :caption: Contents
 
 team
+citing
 install/index
 tutorials/index
 user_guide/index

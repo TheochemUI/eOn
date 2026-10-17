@@ -39,8 +39,9 @@ namespace {
 using Matter = eonc::Matter;
 namespace fs = std::filesystem;
 
-constexpr uint8_t kConPrecision = 17;
-constexpr uint8_t kConvelPrecision = 6;
+// Pinned spelling of the eOn natural time unit. The 0.17 writer keeps
+// this byte for byte and rejects a velocity frame that omits it.
+constexpr const char *kNaturalTimeUnit = "(amu*angstrom^2/eV)^0.5";
 
 std::string strip_nl(const std::string &s) {
   std::string str(s);
@@ -120,12 +121,11 @@ void apply_frame_metadata(readcon::ConFrameBuilder &builder,
 }
 
 eonc::io::IoStatus write_frames(const fs::path &path,
-                                const std::vector<readcon::ConFrame> &frames,
-                                uint8_t precision) {
+                                const std::vector<readcon::ConFrame> &frames) {
   try {
     const auto compression =
         readcon::ConFrameWriter::compression_from_extension(path);
-    readcon::ConFrameWriter writer(path, compression, precision);
+    readcon::ConFrameWriter writer(path, compression);
     writer.extend(frames);
     return eonc::io::IoStatus::Ok;
   } catch (const std::exception &e) {
@@ -311,7 +311,7 @@ bool ends_with_newline(const fs::path &path) {
 /// keeps the file complete and parseable after every call.
 eonc::io::IoStatus append_frames(const fs::path &path,
                                  const std::vector<readcon::ConFrame> &frames,
-                                 uint8_t precision) {
+                                 std::string *serialized) {
   static std::atomic<uint64_t> scratch_counter{0};
   const auto scratch =
       path.parent_path() /
@@ -322,7 +322,7 @@ eonc::io::IoStatus append_frames(const fs::path &path,
   try {
     {
       readcon::ConFrameWriter writer(
-          scratch, readcon::ConFrameWriter::Compression::None, precision);
+          scratch, readcon::ConFrameWriter::Compression::None);
       writer.extend(frames);
     }
     std::ifstream in(scratch, std::ios::binary | std::ios::ate);
@@ -347,6 +347,9 @@ eonc::io::IoStatus append_frames(const fs::path &path,
   }
   std::error_code ec;
   fs::remove(scratch, ec);
+  if (serialized != nullptr) {
+    *serialized = bytes;
+  }
 
   std::ofstream out(path, std::ios::binary | std::ios::app);
   if (!out) {
@@ -382,10 +385,25 @@ readcon::ConFrameBuilder seed_builder(eonc::Matter &m,
   if (atom_ids.size() != static_cast<size_t>(n)) {
     throw std::invalid_argument("seed_builder: atom_ids size mismatch");
   }
+  // CON line 9 stores one mass per symbol. Later atoms of that symbol
+  // take the first mass. A collapse is logged so a mixed-mass input is
+  // visible, and build() does not fail with MassMismatch.
+  std::unordered_map<std::string, double> first_mass;
   for (long i = 0; i < n; ++i) {
+    const std::string symbol = symbol_for_z(m.getAtomicNr(i));
+    const double mass = m.getMass(i);
+    double use = mass;
+    const auto found = first_mass.find(symbol);
+    if (found == first_mass.end()) {
+      first_mass.emplace(symbol, mass);
+    } else if (found->second != mass) {
+      EONC_LOG_INFO("Collapsed mass of {} atom {} from {} to {}", symbol, i,
+                    mass, found->second);
+      use = found->second;
+    }
     const auto mask = m.getFixedMask(i);
-    builder.add_atom(symbol_for_z(m.getAtomicNr(i)), 0.0, 0.0, 0.0, mask,
-                     atom_ids[static_cast<size_t>(i)], m.getMass(i));
+    builder.add_atom(symbol, 0.0, 0.0, 0.0, mask,
+                     atom_ids[static_cast<size_t>(i)], use);
   }
   return builder;
 }
@@ -481,6 +499,14 @@ readcon::ConFrame frame_from_matter(Matter &m,
       auto_meta.energy = m.getPotentialEnergy();
       meta_ptr = &auto_meta;
     }
+  }
+  if (with_velocities) {
+    // set_metadata_json replaces the map, so this runs before energy and
+    // the other keys. The C++ header has no set_units wrapper.
+    builder.set_metadata_json(
+        std::string(
+            R"({"units":{"energy":"eV","length":"angstrom","mass":"amu","time":")") +
+        kNaturalTimeUnit + "\"}}");
   }
   apply_frame_metadata(builder, meta_ptr);
   apply_geometry(builder, m, with_velocities, meta_ptr);
@@ -606,11 +632,14 @@ IoStatus matter2con(Matter &m, std::string filename, bool append,
     return IoStatus::InvalidArgument;
   }
 
-  const auto status = concatenate ? append_frames(path, frames, kConPrecision)
-                                  : write_frames(path, frames, kConPrecision);
+  std::string appended;
+  const auto status = concatenate ? append_frames(path, frames, &appended)
+                                  : write_frames(path, frames);
   if (io_ok(status)) {
     remember_stamp(key, path);
-    if (!concatenate) {
+    if (concatenate) {
+      note_corpus_append(path.string(), appended);
+    } else {
       mirror_con_corpus(path.string());
     }
   } else {
@@ -769,19 +798,21 @@ IoStatus matter2convel(Matter &m, std::string filename) {
 
   m.applyPeriodicBoundaryIfEnabled();
 
+  std::vector<readcon::ConFrame> frames;
   try {
-    auto frame = frame_from_matter(m, nullptr, /*with_velocities=*/true);
-    std::vector<readcon::ConFrame> frames;
-    frames.push_back(std::move(frame));
-    const IoStatus status = write_frames(filename, frames, kConvelPrecision);
-    if (io_ok(status)) {
-      mirror_con_corpus(filename);
-    }
-    return status;
+    frames.push_back(frame_from_matter(m, nullptr, /*with_velocities=*/true));
   } catch (const std::exception &e) {
-    EONC_LOG_ERROR("Failed to write convel {}: {}", filename, e.what());
-    return IoStatus::WriteError;
+    // InvalidUnits from a velocity frame with a bad units object lands
+    // here, with the geometry writers' InvalidArgument catch.
+    EONC_LOG_ERROR("Failed to build convel {}: {}", filename, e.what());
+    return IoStatus::InvalidArgument;
   }
+
+  const IoStatus status = write_frames(filename, frames);
+  if (io_ok(status)) {
+    mirror_con_corpus(filename);
+  }
+  return status;
 }
 
 IoStatus convel2matter(Matter &m, std::string filename) {
@@ -962,7 +993,7 @@ IoStatus writeConFrames(std::string filename,
   const fs::path path(filename);
   const std::lock_guard<std::mutex> guard(append_mutex());
   const auto key = append_key(path);
-  const auto status = write_frames(path, frames, kConPrecision);
+  const auto status = write_frames(path, frames);
   if (io_ok(status)) {
     remember_stamp(key, path);
     mirror_con_corpus(path.string());

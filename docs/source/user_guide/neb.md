@@ -23,6 +23,9 @@ To run a nudged elastic band calculation, set **job** to
 *nudged_elastic_band* in the **[Main]** section. Details of the optimizer can be
 set as per the <project:optimizer.md> document.
 
+Please cite the eOn Zenodo record {cite:p}`neb-goswamiTheochemUIEOn2026` and
+{cite:t}`neb-goswamiEnhancedClimbingImage2026`.
+
 ```{tip}
 **Python API.** Prefer {doc}`pyeonclient` for in-process NEB: build a
 `list[Matter]` from ASE images, then `NudgedElasticBand(path, params, pot).compute()`
