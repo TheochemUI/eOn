@@ -3337,12 +3337,20 @@ TEST_CASE("instanton references share constraints and the mass metric",
     endpoint->setCell(cell);
   }
   SECTION("species") { endpoint->setAtomicNr(0, 2); }
-  SECTION("mass") { endpoint->setMass(0, 2.0 * reactant->getMass(0)); }
+  SECTION("mass") {
+    for (long i = 0; i < endpoint->numberOfAtoms(); ++i) {
+      if (endpoint->getAtomicNr(i) == reactant->getAtomicNr(0)) {
+        endpoint->setMass(i, 2.0 * reactant->getMass(i));
+      }
+    }
+  }
   SECTION("constraints") { endpoint->setFixed(1, 0); }
   REQUIRE(eonc::io::io_ok(endpoint->matter2con("saddle.con", false)));
   REQUIRE(eonc::io::io_ok(endpoint->matter2con("product.con", false)));
   ParametersLoadAccess::instanton_options(params).beads = 4;
   ParametersLoadAccess::instanton_options(params).max_iterations = 0;
+  ParametersLoadAccess::instanton_options(params).temperature = 100.0;
+  ParametersLoadAccess::instanton_options(params).temperatures = {100.0};
   for (const std::string mode : {"rate", "splitting"}) {
     INFO(mode);
     ParametersLoadAccess::instanton_options(params).mode = mode;
