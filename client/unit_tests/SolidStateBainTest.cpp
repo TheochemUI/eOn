@@ -246,24 +246,31 @@ TEST_CASE("the solid-state band climbs the Bain path of an LJ crystal",
   // No rotation, no shear drift, a square base, and no atom off its
   // site: up to the lattice translation that wrapping into the cell adds
   // and a rigid translation of the whole image, which costs no energy,
-  // every image keeps the reactant's fractional coordinates.
+  // every image keeps the reactant's fractional coordinates. The bound
+  // is the departure the force tolerance allows: a shear or a site
+  // offset of 1e-6 Angstrom on this cell costs a force of order 1e-4.
   const AtomMatrix s0 =
       reactant->getPositions() * reactant->getCell().inverse();
+  double upper = 0.0, shear = 0.0, square = 0.0, drift = 0.0;
   for (long i = 0; i <= band.numImages + 1; ++i) {
     const auto &image = *band.path[static_cast<size_t>(i)];
     const Matrix3d h = image.getCell();
-    REQUIRE(h(0, 1) == 0.0);
-    REQUIRE(h(0, 2) == 0.0);
-    REQUIRE(h(1, 2) == 0.0);
-    REQUIRE(std::abs(h(1, 0)) < 1e-10);
-    REQUIRE(std::abs(h(2, 0)) < 1e-10);
-    REQUIRE(std::abs(h(2, 1)) < 1e-10);
-    REQUIRE(std::abs(h(0, 0) - h(1, 1)) < 1e-10);
+    upper = std::max({upper, std::abs(h(0, 1)), std::abs(h(0, 2)),
+                      std::abs(h(1, 2))});
+    shear = std::max({shear, std::abs(h(1, 0)), std::abs(h(2, 0)),
+                      std::abs(h(2, 1))});
+    square = std::max(square, std::abs(h(0, 0) - h(1, 1)));
     AtomMatrix ds = image.getPositions() * h.inverse() - s0;
     ds = (ds.array() - ds.array().round()).matrix();
     ds.rowwise() -= ds.colwise().mean();
-    REQUIRE(ds.cwiseAbs().maxCoeff() < 1e-6);
+    drift = std::max(drift, ds.cwiseAbs().maxCoeff());
   }
+  std::printf("upper %.3e shear %.3e a-b %.3e fractional drift %.3e\n", upper,
+              shear, square, drift);
+  REQUIRE(upper == 0.0);
+  REQUIRE(shear < 1e-6);
+  REQUIRE(square < 1e-6);
+  REQUIRE(drift < 1e-6);
 }
 
 } // namespace
