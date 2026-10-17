@@ -129,6 +129,9 @@ int load_ini(const INIReader &ini, Parameters &params) {
   ParametersLoadAccess::potential_options(params).potentialsPath =
       ini.Get("Potential", "potentials_path",
               ParametersLoadAccess::potential_options(params).potentialsPath);
+  ParametersLoadAccess::potential_options(params).pairSwitchWidth = ini.GetReal(
+      "Potential", "pair_switch_width",
+      ParametersLoadAccess::potential_options(params).pairSwitchWidth);
 
   if (params.potential_options().potential == PotType::MPI ||
       params.potential_options().potential == PotType::VASP) {
@@ -1759,6 +1762,8 @@ int load_ini(const INIReader &ini, Parameters &params) {
     o.product_filename =
         ini.Get("Instanton", "product_filename", o.product_filename);
     o.initial_path = ini.Get("Instanton", "initial_path", o.initial_path);
+    o.initial_ring = ini.Get("Instanton", "initial_ring", o.initial_ring);
+    o.physical_bath_filename = ini.Get("Instanton", "physical_bath_filename", o.physical_bath_filename);
     o.beads = ini.GetInteger("Instanton", "beads", o.beads);
     o.beta_hbar_omega =
         ini.GetReal("Instanton", "beta_hbar_omega", o.beta_hbar_omega);
@@ -1801,6 +1806,21 @@ int load_ini(const INIReader &ini, Parameters &params) {
       throw std::invalid_argument("[Instanton] initial_hessians must be saddle "
                                   "or finite_difference, not " +
                                   o.initial_hessians);
+    }
+    o.newton_limit =
+        ini.GetInteger("Instanton", "newton_limit", o.newton_limit);
+    if (o.newton_limit < 0) {
+      throw std::invalid_argument(
+          "[Instanton] newton_limit must be nonnegative");
+    }
+    o.reactant_hessian_filename = ini.Get(
+        "Instanton", "reactant_hessian_filename", o.reactant_hessian_filename);
+    o.saddle_hessian_filename = ini.Get("Instanton", "saddle_hessian_filename",
+                                        o.saddle_hessian_filename);
+    o.lanczos_step = ini.GetReal("Instanton", "lanczos_step", o.lanczos_step);
+    if (!(o.lanczos_step > 0.0) || !std::isfinite(o.lanczos_step)) {
+      throw std::invalid_argument("[Instanton] lanczos_step must be finite and "
+                                  "positive in sqrt(amu) Angstrom");
     }
     o.physical_hessian_step = ini.GetReal("Instanton", "physical_hessian_step",
                                           o.physical_hessian_step);
@@ -1865,6 +1885,18 @@ int load_ini(const INIReader &ini, Parameters &params) {
         }
         start = comma + 1;
       }
+    }
+    o.collapse_fraction =
+        ini.GetReal("Instanton", "collapse_fraction", o.collapse_fraction);
+    if (!(o.collapse_fraction >= 0.0 && o.collapse_fraction < 1.0)) {
+      throw std::invalid_argument(
+          "[Instanton] collapse_fraction must be in [0, 1)");
+    }
+    o.rotation_zero_fraction = ini.GetReal(
+        "Instanton", "rotation_zero_fraction", o.rotation_zero_fraction);
+    if (!(o.rotation_zero_fraction > 0.0)) {
+      throw std::invalid_argument(
+          "[Instanton] rotation_zero_fraction must be positive");
     }
     o.bead_ladder = ini.GetBoolean("Instanton", "bead_ladder", o.bead_ladder);
     o.hessian_final = ini.Get("Instanton", "hessian_final", o.hessian_final);

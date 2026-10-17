@@ -99,6 +99,7 @@
     "Potential.lammps_threads",
     "Potential.log_potential",
     "Potential.mpi_poll_period",
+    "Potential.pair_switch_width",
     "Potential.potential",
     "Potential.potentials_path",
     "Process Search.minimization_offset",

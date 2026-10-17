@@ -56,6 +56,9 @@ private:
 public:
   std::atomic<size_t> forceCallCounter;
 
+  /// Charge one evaluated geometry to this potential and its owning registry.
+  void recordForceCall() noexcept;
+
   /// Production default: construction-scope registry, else PotRegistry::get().
   explicit Potential(PotType a_ptype);
 
@@ -233,8 +236,7 @@ public:
             boxes[i]);
       if (variances)
         variances[i] = var;
-      forceCallCounter++;
-      registry_.on_force_call(ptype);
+      recordForceCall();
     }
   }
 };

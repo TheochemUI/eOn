@@ -123,8 +123,7 @@ std::tuple<double, AtomMatrix> eonc::Potential::get_ef(const AtomMatrix &pos,
               std::span<const int>(atmnrs.data(), n),
               std::span<double>(forces.data(), n * 3), &energy, &var,
               std::span<const double>(box.data(), 9));
-  forceCallCounter++;
-  registry_.on_force_call(ptype);
+  recordForceCall();
   if (!std::isfinite(energy) || !forces.allFinite()) {
     throw std::runtime_error("Potential::get_ef: non-finite energy or forces");
   }
@@ -142,6 +141,21 @@ std::string lower_copy(std::string s) {
   return s;
 }
 
+// A pair config with [Potential] pair_switch_width applied. An rgpot older
+// than the C^2 switch has no switch_width member; it accepts only width 0.
+template <class Config> Config pair_config(const Parameters &params) {
+  Config cfg{};
+  const double width = params.potential_options().pairSwitchWidth;
+  if constexpr (requires { cfg.switch_width; }) {
+    cfg.switch_width = width;
+  } else if (width != 0.0) {
+    throw std::runtime_error(
+        "[Potential] pair_switch_width needs an rgpot whose pair configs "
+        "carry switch_width");
+  }
+  return cfg;
+}
+
 #ifdef RGPOT_HAS_EXPR
 #ifdef RGPOT_HAS_DFTD3
 rgpot::D3Damping d3_damping_from_params(const Parameters &params) {
@@ -157,13 +171,15 @@ std::unique_ptr<rgpot::PotentialBase> make_expr_term(const std::string &raw,
                                                      const Parameters &params) {
   const std::string name = lower_copy(raw);
   if (name == "lj") {
-    return std::make_unique<rgpot::LJPot>(rgpot::LJConfig{});
+    return std::make_unique<rgpot::LJPot>(pair_config<rgpot::LJConfig>(params));
   }
   if (name == "ljcluster") {
-    return std::make_unique<rgpot::LJClusterPot>(rgpot::LJClusterConfig{});
+    return std::make_unique<rgpot::LJClusterPot>(
+        pair_config<rgpot::LJClusterConfig>(params));
   }
   if (name == "morse" || name == "morse_pt") {
-    return std::make_unique<rgpot::MorsePot>(rgpot::MorseConfig{});
+    return std::make_unique<rgpot::MorsePot>(
+        pair_config<rgpot::MorseConfig>(params));
   }
   if (name == "zbl") {
     return std::make_unique<rgpot::ZBLPot>(rgpot::ZBLConfig{
@@ -267,17 +283,19 @@ std::unique_ptr<Potential> makePotential(PotType ptype,
     break;
   }
   case PotType::LJ: {
-    return makeRgpot<rgpot::LJPot>(PotType::LJ, params, rgpot::LJConfig{});
+    return makeRgpot<rgpot::LJPot>(PotType::LJ, params,
+                                   pair_config<rgpot::LJConfig>(params));
     break;
   }
   case PotType::LJCLUSTER: {
-    return makeRgpot<rgpot::LJClusterPot>(PotType::LJCLUSTER, params,
-                                          rgpot::LJClusterConfig{});
+    return makeRgpot<rgpot::LJClusterPot>(
+        PotType::LJCLUSTER, params,
+        pair_config<rgpot::LJClusterConfig>(params));
     break;
   }
   case PotType::MORSE_PT: {
     return makeRgpot<rgpot::MorsePot>(PotType::MORSE_PT, params,
-                                      rgpot::MorseConfig{});
+                                      pair_config<rgpot::MorseConfig>(params));
     break;
   }
 #ifdef CUH2_POT

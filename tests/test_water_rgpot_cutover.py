@@ -21,4 +21,4 @@ def test_water_family_uses_the_rgpot_adapters():
     assert "'with_water': get_option('with_water')" in meson
     assert "subdir('potentials/Water')" not in meson
     wrap = (ROOT / "subprojects" / "rgpot.wrap").read_text(encoding="utf-8")
-    assert "f92f2914738bfc122e6e7a05ebe1179ec728b2b9" in wrap
+    assert "e40fd175f5230098d56333bf2aff38cd839dc810" in wrap

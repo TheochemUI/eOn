@@ -9,12 +9,12 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "eon/Tunneling.h"
 #include "EckartBarrier.hpp"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Parameters.h"
 #include "eon/RingPolymerPotential.h"
+#include "eon/Tunneling.h"
 
 #include <Eigen/Eigenvalues>
 #include <cmath>
@@ -27,6 +27,54 @@
 using namespace eonc;
 using namespace eonc::tunneling;
 using Catch::Matchers::WithinRel;
+
+TEST_CASE("Configured Newton limit selects a converged matrix-free rate ring",
+          "[Tunneling][Instanton][NewtonLimit]") {
+  const eonc::testing::Eckart pes;
+  const MatrixXd hs = pes.hessian_at_top();
+  const double beta = 1.0 / (kBoltzmann * 0.5 * crossoverTemperature(hs));
+  Parameters parsed;
+  REQUIRE(parsed.load_ini_text("[Instanton]\nnewton_limit = 0\n") == 0);
+  RateInstantonOptions options;
+  options.beads = 32;
+  options.forceTolerance = 1e-8;
+  options.newtonLimit = parsed.instanton_options().newton_limit;
+  long dimerCalls = 0;
+  const BatchPotential dimerPotential = [&](const std::vector<VectorXd> &q,
+                                            std::vector<double> &v,
+                                            std::vector<VectorXd> &g) {
+    dimerCalls += static_cast<long>(q.size());
+    pes.batch()(q, v, g);
+  };
+  RateInstanton dimer = optimizeRateInstanton(VectorXd::Zero(1), hs, beta, {},
+                                              dimerPotential, options);
+  REQUIRE(dimer.converged);
+  Parameters defaults;
+  options.newtonLimit = defaults.instanton_options().newton_limit;
+  long newtonCalls = 0;
+  const BatchPotential newtonPotential = [&](const std::vector<VectorXd> &q,
+                                             std::vector<double> &v,
+                                             std::vector<VectorXd> &g) {
+    newtonCalls += static_cast<long>(q.size());
+    pes.batch()(q, v, g);
+  };
+  RateInstanton newton = optimizeRateInstanton(VectorXd::Zero(1), hs, beta, {},
+                                               newtonPotential, options);
+  REQUIRE(newton.converged);
+  const RingBeadHessian hessian = [&](long, const VectorXd &q) {
+    return pes.hessian_at(q);
+  };
+  instantonRate(dimer, hessian, MatrixXd::Identity(1, 1), 0.0, hs, 0.0);
+  instantonRate(newton, hessian, MatrixXd::Identity(1, 1), 0.0, hs, 0.0);
+  CAPTURE(dimerCalls, newtonCalls, dimer.iterations, newton.iterations,
+          dimer.logRate, newton.logRate);
+  REQUIRE(dimerCalls > 0);
+  REQUIRE(newtonCalls > 0);
+  REQUIRE(dimerCalls != newtonCalls);
+  REQUIRE(dimer.negativeModes == 1);
+  REQUIRE(newton.negativeModes == 1);
+  REQUIRE(std::abs(dimer.logRate - newton.logRate) < 1e-6);
+}
 
 namespace {
 
@@ -2841,4 +2889,96 @@ TEST_CASE("a stationary ring with a soft transverse negative direction is not "
                                             potential, options);
   CAPTURE(result.converged, result.iterations, residual, transverse);
   REQUIRE_FALSE(result.converged);
+}
+
+// A validation run, not part of the suite:
+//   test_tunneling "[validation]"
+// The quartic double well V0 (q^2 / a^2 - 1)^2 with the barrier (0.2057 eV)
+// and well curvature (0.00965 eV / (amu A^2)) of the Al adatom path of
+// examples/neb-al, unit mass in mass-weighted coordinates: a = 13.06, a
+// barrier curvature of -0.00483 and T_c = 8.30 K. At 0.6 and 0.85 T_c it
+// reports, for each bead count, whether a converged ring with one
+// negative mode appears, its cycle eigenvalue and its rate.
+TEST_CASE("Bead counts at which the Al-like double well has an index-1 ring",
+          "[.][validation][Tunneling]") {
+  const double v0 = 0.2057;
+  const double a = std::sqrt(8.0 * v0 / 0.00965);
+  const BatchPotential well = [&](const std::vector<VectorXd> &q,
+                                  std::vector<double> &v,
+                                  std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0);
+      const double u = x * x / (a * a) - 1.0;
+      v[j] = v0 * u * u;
+      g[j] = VectorXd::Constant(1, 4.0 * v0 * u * x / (a * a));
+    }
+  };
+  auto hess = [&](long, const VectorXd &q) {
+    const double x = q(0);
+    return MatrixXd::Constant(
+        1, 1, 4.0 * v0 * (3.0 * x * x / (a * a) - 1.0) / (a * a));
+  };
+  const VectorXd saddle = VectorXd::Zero(1);
+  const MatrixXd hs = hess(0, saddle);
+  const MatrixXd hr = hess(0, VectorXd::Constant(1, -a));
+  const double tc = crossoverTemperature(hs);
+  for (const double frac : {0.85, 0.6}) {
+    const double beta = 1.0 / (kBoltzmann * frac * tc);
+    for (const long n : {8L, 16L, 32L, 64L, 128L, 256L}) {
+      RateInstantonOptions opt;
+      opt.beads = n;
+      opt.forceTolerance = 1e-8;
+      opt.maxIterations = 3000;
+      RateInstanton inst =
+          optimizeRateInstanton(saddle, hs, beta, {}, well, opt);
+      double lo = 0.0, hi = 0.0;
+      for (const auto &q : inst.beads) {
+        lo = std::min(lo, q(0));
+        hi = std::max(hi, q(0));
+      }
+      std::string rate = "no rate";
+      if (inst.converged) {
+        try {
+          instantonRate(inst, hess, hr, 0.0, hs, v0);
+          rate = std::to_string(inst.logRate);
+        } catch (const std::exception &ex) {
+          rate = ex.what();
+        }
+      }
+      WARN("T/Tc " << frac << " (T_c " << tc << " K), N " << n << ": converged "
+                   << inst.converged << ", iterations " << inst.iterations
+                   << ", turning points " << lo << " " << hi << " (minima at +-"
+                   << a << "), negative modes " << inst.negativeModes
+                   << ", cycle eigenvalue " << inst.zeroEigenvalue << ", ln k "
+                   << rate);
+    }
+  }
+}
+
+// A secant pair whose gradient difference points against the step reads as
+// negative curvature: on the identity block, dq = e1 and dg = -e1 make the
+// plain Bofill update negative along e1. A block whose exact version had no
+// negative curvature keeps none, with the secant's magnitude.
+TEST_CASE("The bead-block update keeps the inertia of the last exact block",
+          "[Tunneling][Instanton]") {
+  VectorXd dq = VectorXd::Zero(3);
+  dq(0) = 1e-3;
+  const VectorXd dg = -dq;
+  MatrixXd plain = MatrixXd::Identity(3, 3);
+  bofillKeepingInertia(plain, dq, dg, -1);
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> ep(plain);
+  REQUIRE(ep.eigenvalues()(0) < 0.0);
+  MatrixXd kept = MatrixXd::Identity(3, 3);
+  bofillKeepingInertia(kept, dq, dg, 0);
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> ek(kept);
+  CAPTURE(ek.eigenvalues().transpose());
+  REQUIRE(ek.eigenvalues()(0) > 0.0);
+  REQUIRE_THAT(ek.eigenvalues()(0),
+               WithinRel(std::abs(ep.eigenvalues()(0)), 1e-12));
+  // One allowed negative keeps the plain update.
+  MatrixXd one = MatrixXd::Identity(3, 3);
+  bofillKeepingInertia(one, dq, dg, 1);
+  REQUIRE((one - plain).norm() < 1e-14);
 }

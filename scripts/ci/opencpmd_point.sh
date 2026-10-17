@@ -3,7 +3,7 @@
 # isomer 1 point job. The energy line must match -1396.269526 eV.
 set -euo pipefail
 OPENCPMD_COMMIT=${OPENCPMD_COMMIT:-062582b7cfd832d36f88f504cd08e4ead42eb404}
-CPMDC_COMMIT=${CPMDC_COMMIT:-8439c25cf0bd5f4caefd6ed07bebf142e2b181f5}
+CPMDC_COMMIT=${CPMDC_COMMIT:-95d779a839a2787e022148216baa331c2a6f412b}
 OPENCPMD_REPO=${OPENCPMD_REPO:-https://github.com/OpenCPMD/CPMD.git}
 CPMDC_REPO=${CPMDC_REPO:-https://github.com/OmniPotentRPC/cpmdc.git}
 PREFIX=${PREFIX:-/usr}

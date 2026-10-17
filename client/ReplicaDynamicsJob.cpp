@@ -51,7 +51,7 @@ ReplicaDynamicsJob::runFromMatter(std::shared_ptr<Matter> initial) {
 
   QUILL_LOG_DEBUG(log, "Minimizing initial reactant");
   {
-    eonc::ForceCallTimer timer(minimizeFCalls);
+    eonc::ForceCallTimer timer(minimizeFCalls, *pot);
     *reactant = *current;
     reactant->relax();
   }

@@ -11,6 +11,7 @@ Parity is enforced by tests/test_params_ssot.py.
 
 import math
 import random
+import struct
 from pathlib import Path
 from typing import Any, Optional, Union, get_args
 
@@ -553,6 +554,16 @@ class PotentialConfig(BaseModel):
     lammps_threads: int = Field(default=0, description="LAMMPS threads.")
     ext_pot_path: str = Field(
         default="ext_pot", description="Path for the external potential."
+    )
+    pair_switch_width: float = Field(
+        default=0.0,
+        ge=0.0,
+        description=(
+            "Width in Angstrom of the C^2 quintic switch that takes the lj,"
+            " ljcluster and morse_pt pair terms, and those terms of expr, to"
+            " zero at their cutoff. 0 keeps the shifted truncation, whose"
+            " force jumps at the cutoff."
+        ),
     )
     potential: Literal[
         "ams",
@@ -2158,11 +2169,19 @@ class DimerConfig(BaseModel):
 
     converged_angle: float = Field(
         default=5.0,
-        description="The dimer is considered converged if it will be rotated fewer degrees than this angle.",
+        description=(
+            "The dimer is considered converged if it will be rotated fewer"
+            " degrees than this angle. min_mode_method = xtsci passes it to"
+            " rgsaddle as rotation_angle_tol, in radians."
+        ),
     )
     rotations_max: int = Field(
         default=10,
-        description="This is the maximum number of rotations allowed for the dimer for each minimum mode estimation.",
+        description=(
+            "This is the maximum number of rotations allowed for the dimer for"
+            " each minimum mode estimation, and the rotation budget of"
+            " min_mode_method = xtsci."
+        ),
     )
 
     finite_angle: float = Field(
@@ -2179,7 +2198,11 @@ class DimerConfig(BaseModel):
         description="Minimum number of rotations for the dimer. [not improved]",
     )
     dimer_torque_min: float = Field(
-        default=0.1, description="Minimum torque for the dimer. [not improved]"
+        default=0.1,
+        description=(
+            "Minimum torque for the dimer. [not improved] min_mode_method ="
+            " xtsci passes it to rgsaddle as rotation_tol."
+        ),
     )
     dimer_torque_max: float = Field(
         default=1.0, description="Maximum torque for the dimer. [not improved]"
@@ -2603,6 +2626,18 @@ class HessianConfig(BaseModel):
     zero_freq_value: float = Field(
         default=1e-6, description="The value assigned to zero frequencies."
     )
+    fd_scheme: Literal[
+        "one_sided", "central", "fourth", "fourth_order", "central4"
+    ] = Field(
+        default="one_sided",
+        description=(
+            "Finite-difference stencil of the assembled Hessian and of the"
+            " Lanczos and Davidson Hessian-vector products: one_sided,"
+            " central, or fourth (fourth_order, central4). min_mode_method ="
+            " xtsci takes forward differences for one_sided and central"
+            " differences for central and fourth."
+        ),
+    )
     write_modes: bool = Field(
         default=True,
         description=(
@@ -2637,6 +2672,18 @@ class InstantonConfig(BaseModel):
             "A multi-frame con file (neb.con) to start the path from; empty"
             " starts from the straight line between the minima."
         ),
+    )
+    initial_ring: str = Field(
+        default="",
+        description=(
+            "Rate mode: closed-ring geometry seed with exactly beads CON frames. "
+            "Coordinates are checked against the reference surface; cached "
+            "energies and forces are ignored."
+        ),
+    )
+    physical_bath_filename: str = Field(
+        default="",
+        description="Rate mode: physical bath model and mass-weighted retained-coordinate mapping.",
     )
     beads: int = Field(
         default=256,
@@ -2708,6 +2755,31 @@ class InstantonConfig(BaseModel):
             " independent of directional Lanczos finite differences."
         ),
     )
+    newton_limit: int = Field(
+        default=(1 << (8 * struct.calcsize("l") - 1)) - 1,
+        ge=0,
+        description=(
+            "Maximum active ring coordinates for dense Newton; zero selects"
+            " the matrix-free dimer search. The default is LONG_MAX."
+        ),
+    )
+    lanczos_step: float = Field(
+        default=1e-4,
+        gt=0,
+        allow_inf_nan=False,
+        description=(
+            "Directional Lanczos displacement in sqrt(amu) Angstrom;"
+            " independent of physical_hessian_step."
+        ),
+    )
+    reactant_hessian_filename: str = Field(
+        default="",
+        description="Optional saved reactant Hessian; empty computes it.",
+    )
+    saddle_hessian_filename: str = Field(
+        default="",
+        description="Optional saved saddle Hessian; empty computes it.",
+    )
     initial_hessians: Literal["saddle", "finite_difference"] = Field(
         default="saddle",
         description=(
@@ -2749,6 +2821,25 @@ class InstantonConfig(BaseModel):
         description=(
             "Fixed bath curvatures in eV/(amu Angstrom^2), comma-separated, one per bead."
             " Values stay fixed while differentiating the quadratic bead operator."
+        ),
+    )
+    collapse_fraction: float = Field(
+        default=1e-4,
+        ge=0.0,
+        lt=1.0,
+        description=(
+            "Mode rate: the search stops, with instanton_collapsed = 1, when"
+            " B_N falls below this fraction of the starting ring's. 0 never"
+            " stops."
+        ),
+    )
+    rotation_zero_fraction: float = Field(
+        default=0.1,
+        gt=0.0,
+        description=(
+            "A reactant rotation is a zero mode when its curvature"
+            " r^T H r / r^T r is at most this fraction of the softest"
+            " vibration."
         ),
     )
     bead_ladder: bool = Field(
