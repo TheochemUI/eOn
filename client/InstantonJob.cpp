@@ -219,9 +219,10 @@ private:
 bool cachedProfileMatchesSurface(const Matter &ref, const Matter &image) {
   constexpr double inputTolerance = 1e-8; // Angstrom, including cell entries.
   if (ref.numberOfAtoms() != image.numberOfAtoms() ||
-      ref.getPeriodic() != image.getPeriodic() ||
-      !ref.getCell().allFinite() || !image.getCell().allFinite() ||
-      (ref.getCell() - image.getCell()).cwiseAbs().maxCoeff() > inputTolerance ||
+      ref.getPeriodic() != image.getPeriodic() || !ref.getCell().allFinite() ||
+      !image.getCell().allFinite() ||
+      (ref.getCell() - image.getCell()).cwiseAbs().maxCoeff() >
+          inputTolerance ||
       !(ref.getAtomicNrs().array() == image.getAtomicNrs().array()).all()) {
     return false;
   }

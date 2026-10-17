@@ -184,4 +184,3 @@ The session takes its settings from the dimer and Hessian keys:
 rgsaddle has no fourth-order stencil, so ``fd_scheme = fourth`` gives
 central differences here. ``[Dimer] rotation_angle`` is a trial angle
 of the host dimer and does not reach the session.
-

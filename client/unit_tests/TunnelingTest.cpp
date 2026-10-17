@@ -2843,7 +2843,6 @@ TEST_CASE("a stationary ring with a soft transverse negative direction is not "
   REQUIRE_FALSE(result.converged);
 }
 
-
 // A validation run, not part of the suite:
 //   test_tunneling "[validation]"
 // The quartic double well V0 (q^2 / a^2 - 1)^2 with the barrier (0.2057 eV)
@@ -2900,12 +2899,12 @@ TEST_CASE("Bead counts at which the Al-like double well has an index-1 ring",
           rate = ex.what();
         }
       }
-      WARN("T/Tc " << frac << " (T_c " << tc << " K), N " << n
-                   << ": converged " << inst.converged << ", iterations "
-                   << inst.iterations << ", turning points " << lo << " "
-                   << hi << " (minima at +-" << a << "), negative modes "
-                   << inst.negativeModes << ", cycle eigenvalue "
-                   << inst.zeroEigenvalue << ", ln k " << rate);
+      WARN("T/Tc " << frac << " (T_c " << tc << " K), N " << n << ": converged "
+                   << inst.converged << ", iterations " << inst.iterations
+                   << ", turning points " << lo << " " << hi << " (minima at +-"
+                   << a << "), negative modes " << inst.negativeModes
+                   << ", cycle eigenvalue " << inst.zeroEigenvalue << ", ln k "
+                   << rate);
     }
   }
 }

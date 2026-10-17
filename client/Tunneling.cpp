@@ -2229,7 +2229,6 @@ struct NewtonOut {
   bool collapsed = false;
 };
 
-
 // Index-1 Newton on one ring. `x` holds N beads. A half ring optimises beads
 // 0..N/2 and mirrors them. Trust is the largest bead displacement.
 NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,

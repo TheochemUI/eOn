@@ -295,9 +295,8 @@ std::unique_ptr<Potential> makePotential(PotType ptype,
     break;
   }
   case PotType::MORSE_PT: {
-    return makeRgpot<rgpot::MorsePot>(
-        PotType::MORSE_PT, params,
-        pair_config<rgpot::MorseConfig>(params));
+    return makeRgpot<rgpot::MorsePot>(PotType::MORSE_PT, params,
+                                      pair_config<rgpot::MorseConfig>(params));
     break;
   }
 #ifdef CUH2_POT

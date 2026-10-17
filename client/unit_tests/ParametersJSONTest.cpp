@@ -516,15 +516,19 @@ TEST_CASE("JSON RgpotPot omits xtb_charge resets it from charge",
 TEST_CASE("Physical Hessian displacement survives INI and JSON configuration",
           "[params][json][PhysicalHessianStep]") {
   Parameters defaults;
-  REQUIRE(defaults.instanton_options().physical_hessian_step == Catch::Approx(1e-4));
+  REQUIRE(defaults.instanton_options().physical_hessian_step ==
+          Catch::Approx(1e-4));
   Parameters ini;
-  REQUIRE(ini.load_ini_text("[Instanton]\nphysical_hessian_step = 0.0003\n") == 0);
+  REQUIRE(ini.load_ini_text("[Instanton]\nphysical_hessian_step = 0.0003\n") ==
+          0);
   REQUIRE(ini.instanton_options().physical_hessian_step == Catch::Approx(3e-4));
   Parameters roundtrip;
   roundtrip.load_json(ini.to_json());
-  REQUIRE(roundtrip.instanton_options().physical_hessian_step == Catch::Approx(3e-4));
-  REQUIRE_THROWS_AS(ini.load_ini_text("[Instanton]\nphysical_hessian_step = 0\n"),
-                    std::invalid_argument);
+  REQUIRE(roundtrip.instanton_options().physical_hessian_step ==
+          Catch::Approx(3e-4));
+  REQUIRE_THROWS_AS(
+      ini.load_ini_text("[Instanton]\nphysical_hessian_step = 0\n"),
+      std::invalid_argument);
   const auto invalidStep = nlohmann::json::parse(
       R"({"Instanton":{"physical_hessian_step":-0.001}})");
   REQUIRE(roundtrip.load_json(invalidStep.dump()) != 0);
