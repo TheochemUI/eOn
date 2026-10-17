@@ -2702,6 +2702,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   double trust = options.maxStep;
   long entries = 0;
   bool converged = false;
+  bool analyticPolishAttempted = false;
   bool stalledHalf = false;
   const double trustFloor = std::min(1e-4, options.maxStep);
   // Finite-difference rebuilds of the bead blocks when the search stalls.
@@ -2748,9 +2749,16 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
                    "trust {:.3e}",
                    it, half ? 2.0 * cur.u : cur.u, v.gmax, length,
                    v.climb.curvature, v.climb.negative, trust);
-    if (done(v)) {
+    const bool polishing = done(v) && options.physicalHessian &&
+                           !analyticPolishAttempted && v.gmax > 0.0;
+    if (done(v) && !polishing) {
       converged = true;
       break;
+    }
+    if (polishing) {
+      // An exact-curvature polish reduces residual-induced phase curvature.
+      // Its trial obeys the trust rules and cannot increase the residual.
+      analyticPolishAttempted = true;
     }
     // Bofill blocks copied from the saddle can grow negative curvatures the
     // surface does not have: on a 1203-coordinate Al slab the model's count
@@ -2857,6 +2865,8 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       if (!ratioOk) {
         return false;
       }
+      if (polishing && closedGmax(next) > closedGmax(cur))
+        return false;
       if (!options.physicalHessian)
         for (size_t k = 0; k < x.size(); ++k) {
           inertiaKeepingUpdate(physical[k], trial[k] - x[k],
@@ -2940,6 +2950,10 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       dir *= 0.5;
     }
     if (!moved) {
+      if (polishing) {
+        converged = true;
+        break;
+      }
       trust = std::max(0.5 * trust, trustFloor);
       // At the trust floor the Bofill blocks no longer model the ring and
       // every step is refused; rebuild them from finite differences, 2 f
