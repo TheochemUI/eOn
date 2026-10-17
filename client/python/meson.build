@@ -218,3 +218,23 @@ if not _rgpot_pkg.found()
         build_by_default: true,
     )
 endif
+
+# The extension imports readcon_db.dll. The subproject install is skipped,
+# so the wheel would otherwise ship an import with no DLL beside it.
+if host_system == 'windows' and _readcon_db_wheel_dll.length() > 0
+    custom_target(
+        'readcon-db-for-pyeonclient',
+        input: _readcon_db_wheel_dll,
+        output: 'readcon_db.dll',
+        command: [
+            py,
+            '-c',
+            'import shutil, sys; shutil.copy2(sys.argv[1], sys.argv[2])',
+            '@INPUT@',
+            '@OUTPUT@',
+        ],
+        install: true,
+        install_dir: py.get_install_dir() / 'pyeonclient',
+        build_by_default: true,
+    )
+endif

@@ -25,6 +25,52 @@ Docs: https://eondocs.org/user_guide/pyeonclient.html
 
 from __future__ import annotations
 
+
+def _extend_windows_dll_search() -> None:
+    """Put wheel DLLs on the Windows search path before ``_core`` loads.
+
+    Meson installs a DLL into bindir and its import library into libdir.
+    meson-python then stores the import library under
+    ``.pyeonclient.mesonpy.libs`` and the DLL beside the interpreter
+    scripts. CPython does not search PATH for those dependencies.
+    """
+    import importlib.util
+    import os
+    import sys
+
+    if os.name != "nt":
+        return
+    here = os.path.dirname(os.path.abspath(__file__))
+    site = os.path.dirname(here)
+    exe_dir = os.path.dirname(os.path.abspath(sys.executable))
+    candidates = [
+        here,
+        os.path.join(site, ".pyeonclient.mesonpy.libs"),
+        exe_dir,
+        os.path.join(exe_dir, "Scripts"),
+        os.path.join(exe_dir, "Library", "bin"),
+    ]
+    for package in ("torch", "metatensor", "metatomic"):
+        spec = importlib.util.find_spec(package)
+        if spec is None or not spec.origin:
+            continue
+        root = os.path.dirname(spec.origin)
+        candidates.append(root)
+        candidates.append(os.path.join(root, "lib"))
+    handles = []
+    for directory in candidates:
+        if not os.path.isdir(directory):
+            continue
+        try:
+            handles.append(os.add_dll_directory(directory))
+        except (OSError, AttributeError):
+            continue
+    global _DLL_DIR_HANDLES
+    _DLL_DIR_HANDLES = handles
+
+
+_extend_windows_dll_search()
+
 try:
     from pyeonclient._core import (  # type: ignore F401
         CancelToken,

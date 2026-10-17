@@ -70,3 +70,11 @@ def test_windows_pots_are_static_and_flang_runtime_is_a_file():
     assert "link_whole: [rgpot_core] + _linkto + _rpc_whole" in whole
     assert "_readcon_link_dep" in client
     assert "dependencies: _deps + [_readcon_link_dep]" in client
+    pyproject = (root / "pyproject-pyeonclient.toml").read_text(encoding="utf-8")
+    assert "allow-windows-internal-shared-libs = true" in pyproject
+    init = (
+        root / "client" / "python" / "pyeonclient" / "__init__.py"
+    ).read_text(encoding="utf-8")
+    assert "os.add_dll_directory" in init
+    assert ".pyeonclient.mesonpy.libs" in init
+    assert "output: 'readcon_db.dll'" in bindings

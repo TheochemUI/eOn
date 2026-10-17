@@ -825,6 +825,9 @@ endif
 # Directory of the readcon-db DLL this build produced. Empty when the
 # dependency came from pkg-config and the DLL is not in the build tree.
 _readcon_db_dll_dir = ''
+# Windows wheel: copy this cdylib next to _core.pyd. --skip-subprojects
+# drops the subproject install, and the extension still imports the DLL.
+_readcon_db_wheel_dll = []
 readcon_db_dep = dependency(
     'readcon-db',
     version: '>=0.1.6',
@@ -843,6 +846,9 @@ if not readcon_db_dep.found()
     _readcon_db_inner = readcon_db_proj.get_variable('readcon_dep')
     _readcon_db_so = readcon_db_proj.get_variable('readcon_cargo')[0]
     _readcon_db_dll_dir = fs.parent(_readcon_db_so.full_path())
+    if is_windows
+        _readcon_db_wheel_dll = [_readcon_db_so]
+    endif
     _readcon_db_version = _readcon_db_inner.version()
     _runtime_rpath += [fs.parent(_readcon_db_so.full_path())]
     # full_path() in link_args is a string, so ninja has no edge to the
