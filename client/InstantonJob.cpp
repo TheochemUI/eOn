@@ -891,13 +891,14 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       if (temperature > tc) {
         try {
           const double factor = tunneling::parabolicFactor(temperature, tc);
-          const MatrixXd harmonicReactant = physicalModel
-              ? MatrixXd(physicalModel->bath->fullHessian(VectorXd::Zero(n),
-                                                         hReactant))
-              : hReactant;
-          const MatrixXd harmonicSaddle = physicalModel
-              ? MatrixXd(physicalModel->bath->fullHessian(qSaddle, hSaddle))
-              : hSaddle;
+          const MatrixXd harmonicReactant =
+              physicalModel ? MatrixXd(physicalModel->bath->fullHessian(
+                                  VectorXd::Zero(n), hReactant))
+                            : hReactant;
+          const MatrixXd harmonicSaddle =
+              physicalModel
+                  ? MatrixXd(physicalModel->bath->fullHessian(qSaddle, hSaddle))
+                  : hSaddle;
           const double logQhtst = tunneling::quantumHarmonicTstLogRate(
               harmonicReactant, harmonicSaddle, beta, vSaddle - vReactant,
               rigidModes);
