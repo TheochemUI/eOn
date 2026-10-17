@@ -3380,9 +3380,10 @@ TEST_CASE("Basin hopping swaps two elements", "[job][basin_hopping]") {
   REQUIRE(matter.getAtomicNr(2) == 8);
 }
 
-TEST_CASE_METHOD(JobIntegrationFixture,
-                 "InstantonJob resumes closed ring geometry with fresh energies",
-                 "[job][instanton][integration][InitialRing]") {
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "InstantonJob resumes closed ring geometry with fresh energies",
+    "[job][instanton][integration][InitialRing]") {
   REQUIRE(copyTestData("neb_lj13"));
   auto config = [](long iterations, const std::string &ring) {
     std::ostringstream text;
@@ -3397,7 +3398,8 @@ TEST_CASE_METHOD(JobIntegrationFixture,
   writeConfig(config(3000, ""));
   const auto first = runJob();
   REQUIRE(first.at("termination_reason") == "0");
-  const auto frames = readcon::read_all_frames((workdir / "instanton.con").string());
+  const auto frames =
+      readcon::read_all_frames((workdir / "instanton.con").string());
   REQUIRE(frames.size() == 16);
   Parameters seedParams;
   ParametersLoadAccess::potential_options(seedParams).potential = PotType::LJ;
@@ -3421,12 +3423,14 @@ TEST_CASE_METHOD(JobIntegrationFixture,
   REQUIRE(std::stod(resumed.at("sd_path_force_calls")) == 0.0);
   REQUIRE(std::stod(resumed.at("instanton_iterations")) == 0.0);
   REQUIRE(forceCalls_ > 0);
-  const auto restored = readcon::read_all_frames((workdir / "instanton.con").string());
+  const auto restored =
+      readcon::read_all_frames((workdir / "instanton.con").string());
   REQUIRE(restored.size() == positions.size());
   for (size_t bead = 0; bead < restored.size(); ++bead) {
     Matter image(potential, seedParams);
     REQUIRE(eonc::io::io_ok(image.con2matter(restored[bead])));
-    REQUIRE((image.getPositions() - positions[bead]).cwiseAbs().maxCoeff() < 1e-12);
+    REQUIRE((image.getPositions() - positions[bead]).cwiseAbs().maxCoeff() <
+            1e-12);
     REQUIRE(restored[bead].energy_opt().has_value());
     REQUIRE(std::abs(*restored[bead].energy_opt() - energies[bead]) < 1e-8);
   }

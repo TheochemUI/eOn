@@ -4,10 +4,10 @@
 ** Copyright (c) 2010--present, eOn Development Team
 */
 #include "eon/ReferenceHessian.h"
-#include "eon/RateRingSeed.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Parameters.h"
+#include "eon/RateRingSeed.h"
 
 #include <chrono>
 #include <filesystem>
@@ -111,8 +111,9 @@ TEST_CASE(
         eonc::tunneling::readReferenceHessian(filename, reference, 3));
   }
 }
-TEST_CASE("closed ring seeds retain mobile geometry and reject a changed surface",
-          "[instanton][ring][reference]") {
+TEST_CASE(
+    "closed ring seeds retain mobile geometry and reject a changed surface",
+    "[instanton][ring][reference]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = eonc::helpers::sharePotential(
@@ -122,9 +123,11 @@ TEST_CASE("closed ring seeds retain mobile geometry and reject a changed surface
   for (long atom = 0; atom < reference.numberOfAtoms(); ++atom) {
     reference.setFixed(atom, atom == 0 ? 0 : 1);
   }
-  const auto directory = std::filesystem::temp_directory_path() /
-      ("eon-ring-seed-" + std::to_string(
-          std::chrono::steady_clock::now().time_since_epoch().count()));
+  const auto directory =
+      std::filesystem::temp_directory_path() /
+      ("eon-ring-seed-" +
+       std::to_string(
+           std::chrono::steady_clock::now().time_since_epoch().count()));
   std::filesystem::create_directories(directory);
   struct Cleanup {
     std::filesystem::path path;
@@ -137,10 +140,22 @@ TEST_CASE("closed ring seeds retain mobile geometry and reject a changed surface
   bool reject = false;
   std::string alteration;
   SECTION("geometry with poisoned cached energies") {}
-  SECTION("frozen position") { alteration = "position"; reject = true; }
-  SECTION("mass metric") { alteration = "mass"; reject = true; }
-  SECTION("constraints") { alteration = "constraints"; reject = true; }
-  SECTION("cell") { alteration = "cell"; reject = true; }
+  SECTION("frozen position") {
+    alteration = "position";
+    reject = true;
+  }
+  SECTION("mass metric") {
+    alteration = "mass";
+    reject = true;
+  }
+  SECTION("constraints") {
+    alteration = "constraints";
+    reject = true;
+  }
+  SECTION("cell") {
+    alteration = "cell";
+    reject = true;
+  }
   std::vector<AtomMatrix> expected;
   for (long bead = 0; bead < 4; ++bead) {
     Matter image(reference);
@@ -153,7 +168,7 @@ TEST_CASE("closed ring seeds retain mobile geometry and reject a changed surface
     expected.push_back(positions);
     if (bead == 2 && alteration == "mass") {
       for (long atom = 0; atom < image.numberOfAtoms(); ++atom) {
-        image.setMass(atom, reference.getMass(atom)*2.);
+        image.setMass(atom, reference.getMass(atom) * 2.);
       }
     }
     if (bead == 2 && alteration == "constraints") {
@@ -171,10 +186,11 @@ TEST_CASE("closed ring seeds retain mobile geometry and reject a changed surface
   if (reject) {
     REQUIRE_THROWS(eonc::tunneling::readRateRingSeed(filename, reference, 4));
   } else {
-    const auto restored = eonc::tunneling::readRateRingSeed(filename, reference, 4);
+    const auto restored =
+        eonc::tunneling::readRateRingSeed(filename, reference, 4);
     REQUIRE(restored.size() == 4);
     for (size_t bead = 0; bead < restored.size(); ++bead) {
-      REQUIRE((restored[bead]-expected[bead]).cwiseAbs().maxCoeff() < 1e-12);
+      REQUIRE((restored[bead] - expected[bead]).cwiseAbs().maxCoeff() < 1e-12);
     }
     REQUIRE_THROWS(eonc::tunneling::readRateRingSeed(filename, reference, 5));
     REQUIRE_THROWS(eonc::tunneling::readRateRingSeed(filename, reference, 3));

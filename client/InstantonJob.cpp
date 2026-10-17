@@ -19,8 +19,8 @@
 #include "eon/PathIntegral.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
-#include "eon/ReferenceHessian.h"
 #include "eon/RateRingSeed.h"
+#include "eon/ReferenceHessian.h"
 #include "eon/Tunneling.h"
 
 #include <Eigen/QR>
@@ -745,14 +745,16 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
 
   std::vector<VectorXd> ring;
   if (!o.initial_ring.empty()) {
-    const auto positions = tunneling::readRateRingSeed(o.initial_ring, reactant, o.beads);
+    const auto positions =
+        tunneling::readRateRingSeed(o.initial_ring, reactant, o.beads);
     for (const auto &xyz : positions) {
       Matter image(reactant);
       image.setPositions(xyz);
       ring.push_back(mw.toQ(image));
     }
     EONC_LOG_INFO("[Instanton] closed-ring geometry seed from {}; energies and "
-                  "forces are evaluated on the selected potential", o.initial_ring);
+                  "forces are evaluated on the selected potential",
+                  o.initial_ring);
   }
   RunStatus status = RunStatus::GOOD;
   bool rateFailed = false;
