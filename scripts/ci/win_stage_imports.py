@@ -1,10 +1,10 @@
 """Copy a Windows DLL's non-system imports beside it.
 
-The loader searches the executable directory before PATH. Torch's
-directory is on PATH ahead of the pixi prefix, so a same-named DLL
-from torch is missing the entry point the engine was linked against
-and the process exits 0xC0000139. Pot plugins already keep their
-runtime DLLs beside the loader. This does that for the engine DLL.
+The loader searches the executable directory before PATH. A pixi
+runtime DLL and a torch DLL can share a name and export different
+entry points; the process then exits 0xC0000139. Each copied DLL's
+own imports are taken from the directory that DLL came from, so
+torch's closure stays torch's and the pixi closure stays the pixi's.
 """
 
 from __future__ import annotations
@@ -84,13 +84,34 @@ def imported_dlls(path: Path) -> list[str]:
     return names
 
 
+def find_import(name: str, origin: Path | None, search: list[Path]) -> Path | None:
+    """Return the first ``name`` in ``origin`` or ``search``.
+
+    ``origin`` is the directory the importing DLL was copied from. A
+    torch DLL therefore keeps torch's copy of a shared name, and a
+    pixi DLL keeps the pixi copy.
+    """
+
+    dirs: list[Path] = []
+    if origin is not None:
+        dirs.append(origin)
+    dirs.extend(search)
+    for directory in dirs:
+        candidate = directory / name
+        if candidate.is_file():
+            return candidate
+    return None
+
+
 def stage(dll: Path, search: list[Path], stamp: Path) -> None:
     dest = dll.parent
     seen: set[str] = set()
-    queue = [dll]
+    # (dll path, directory it was copied from). The engine itself has
+    # no donor directory, so its direct imports use ``search`` order.
+    queue: list[tuple[Path, Path | None]] = [(dll, None)]
     copied: list[str] = []
     while queue:
-        current = queue.pop(0)
+        current, origin = queue.pop(0)
         key = str(current.resolve()).lower()
         if key in seen or not current.is_file():
             continue
@@ -101,16 +122,13 @@ def stage(dll: Path, search: list[Path], stamp: Path) -> None:
             target = dest / name
             if target.is_file():
                 continue
-            source = next(
-                (d / name for d in search if (d / name).is_file()),
-                None,
-            )
+            source = find_import(name, origin, search)
             if source is None:
                 print(f"win_stage_imports: {name} not in search path", file=sys.stderr)
                 continue
             shutil.copy2(source, target)
             copied.append(name)
-            queue.append(target)
+            queue.append((target, source.parent))
     stamp.write_text("\n".join(copied) + "\n", encoding="utf-8")
 
 

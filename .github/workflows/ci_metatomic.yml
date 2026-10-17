@@ -136,15 +136,17 @@ jobs:
           PIP_EXTRA_INDEX_URL: https://download.pytorch.org/whl/cpu
         run: |
           set -euo pipefail
-          # setup-python first
-          export PATH="${pythonLocation}:${pythonLocation}/Scripts:${PATH}"
-          # Drop: Git usr (shadows MSVC link), MinGW, Strawberry Perl (broken
-          # pkg-config / windres / ld that poison CMake Eigen detection).
-          export PATH=$(echo "$PATH" | tr ':' '\n' \
-            | grep -vE '/usr/bin$|[Mm]ingw|[Ss]trawberry' \
-            | paste -sd:)
+          # shellcheck source=scripts/ci/win_bash_path.sh
+          source scripts/ci/win_bash_path.sh
+          # setup-python first. pythonLocation is C:\...; bash would split
+          # that drive colon, so the prepend is a POSIX path.
+          _py=$(eon_posix_path "${pythonLocation}")
+          export PATH="${_py}:${_py}/Scripts:${PATH}"
+          # MinGW and Strawberry poison the CMake probe. Git usr/bin stays
+          # so sh.exe is still there for rgpot.
+          export PATH="$(eon_drop_cmake_poison "$PATH")"
           # C++ deps from pixi (eigen, quill, flang, …); do not use pixi python/torch
-          PIXI_PRE="${PIXI_PROJECT_ROOT:-$PWD}/.pixi/envs/dev-mta"
+          PIXI_PRE=$(eon_posix_path "${PIXI_PROJECT_ROOT:-$PWD}/.pixi/envs/dev-mta")
           if [ ! -d "$PIXI_PRE/Library" ]; then
             echo "pixi env missing: $PIXI_PRE" >&2
             ls -la .pixi/envs || true
@@ -239,19 +241,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # shellcheck source=scripts/ci/win_bash_path.sh
+          source scripts/ci/win_bash_path.sh
           # Same interpreter/meson as Install eon (pip meson in setup-python).
           # Do not prepend pixi Scripts — that puts a different meson first and
           # meson test then rejects build.dat from the pip meson configure.
-          export PATH="${pythonLocation}/Scripts:${pythonLocation}:${PATH}"
-          export PATH=$(echo "$PATH" | tr ':' '\n' \
-            | grep -vE '/usr/bin$|[Mm]ingw|[Ss]trawberry' \
-            | paste -sd:)
-          PIXI_PRE="${PIXI_PROJECT_ROOT:-$PWD}/.pixi/envs/dev-mta"
-          # Library/bin before torch. scripts/ci/win_msvc_path.sh appends
-          # MSVC so LoadLibrary prefers the prefix the engine was linked
-          # against. torch/lib first makes test_relax_engine exit
-          # 0xC0000139 on a same-named DLL.
-          export PATH="${PIXI_PRE}/Library/bin:${PIXI_PRE}/bin:${pythonLocation}/Lib/site-packages/torch/lib:${PATH}"
+          # POSIX form: a C:\ prefix is split on ':' inside Git bash and
+          # meson then looks for torch under the wrong drive.
+          _py=$(eon_posix_path "${pythonLocation}")
+          export PATH="${_py}/Scripts:${_py}:${PATH}"
+          export PATH="$(eon_drop_cmake_poison "$PATH")"
+          PIXI_PRE=$(eon_posix_path "${PIXI_PROJECT_ROOT:-$PWD}/.pixi/envs/dev-mta")
+          # Library/bin before torch so LoadLibrary prefers the prefix the
+          # engine was linked against. The import stager also copies torch's
+          # own DLLs beside test_relax_engine.exe; those win over PATH.
+          export PATH="${PIXI_PRE}/Library/bin:${PIXI_PRE}/bin:${_py}/Lib/site-packages/torch/lib:${PATH}"
           # shellcheck source=scripts/ci/win_flang_rt.sh
           source scripts/ci/win_flang_rt.sh
           eon_export_flang_rt "${PIXI_PRE}" --required

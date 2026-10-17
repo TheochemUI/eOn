@@ -1,1 +1,1 @@
-Windows wheels find Eigen through a host prefix that also provides pkg-config and flang. MinGW and Strawberry stay off PATH so the MSVC CMake probe can finish. The readcon-db mirror check follows the Windows stub, which does not load the library.
+Windows wheels find Eigen through a host prefix that also provides pkg-config and flang 19. MinGW and Strawberry stay off PATH so the MSVC CMake probe can finish, and Git's sh stays available for the rgpot configure. Metatomic tests copy torch's DLLs beside the relax engine so a pixi runtime cannot satisfy a torch import.

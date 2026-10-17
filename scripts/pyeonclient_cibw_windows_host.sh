@@ -13,10 +13,11 @@ if [ ! -d "${prefix}/Library" ]; then
   exit 1
 fi
 
-# Git usr/bin shadows MSVC link.exe. MinGW and Strawberry break the CMake
-# probe (ld, windres, gmake rewriting /nologo, Pure-Perl pkg-config).
+# MinGW and Strawberry break the CMake probe (ld, windres, gmake rewriting
+# /nologo, Pure-Perl pkg-config). Git usr/bin stays so sh.exe remains;
+# ilammy already put MSVC link.exe ahead of GNU link.
 PATH=$(printf '%s\n' "$PATH" | tr ':' '\n' \
-  | grep -vE '/usr/bin$|[Mm]ingw|[Ss]trawberry' \
+  | grep -vE '[Mm]ingw|[Ss]trawberry' \
   | paste -sd:)
 export PATH="${prefix}/Library/bin:${prefix}/bin:${PATH}"
 

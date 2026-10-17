@@ -35,16 +35,15 @@ def msys_to_windows(path: str, *, enable: bool) -> str:
 
 
 def is_poison_path(entry: str) -> bool:
-    """True for PATH entries that shadow MSVC or break CMake.
+    """True for PATH entries that break the MSVC CMake probe.
 
-    Git's ``usr\\bin`` ships a GNU ``link.exe``. MinGW supplies ``ld.exe``,
-    ``windres.exe``, and ``gfortran``. Strawberry supplies a Perl
-    pkg-config Meson refuses and an MSYS ``gmake`` that rewrites ``/nologo``.
+    MinGW supplies ``ld.exe``, ``windres.exe``, and ``gfortran``. Strawberry
+    supplies a Perl pkg-config Meson refuses and an MSYS ``gmake`` that
+    rewrites ``/nologo``. Git ``usr\\bin`` stays: ``sh.exe`` is there, and
+    the MSVC ``link.exe`` is already earlier on PATH.
     """
 
     norm = entry.replace("\\", "/").rstrip("/").lower()
-    if norm.endswith("/usr/bin"):
-        return True
     return "mingw" in norm or "strawberry" in norm
 
 

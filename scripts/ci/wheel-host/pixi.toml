@@ -11,7 +11,10 @@ version = "0.0.0"
 [dependencies]
 eigen = ">=3.4,<3.5"
 pkg-config = ">=0.29.2,<0.30"
-flang = ">=19,<21"
+# flang 20 rejects -Werror=implicit-function-declaration, so rgpot's
+# find_library probes never see FortranRuntime. The Windows test job
+# uses the 19.1.7 pin from the main lock.
+flang = ">=19.1.7,<20"
 quill = ">=11.0.2,<12"
 # readcon-core's wrap needs rustc >= 1.88. cbindgen is installed with cargo.
 rust = ">=1.88"

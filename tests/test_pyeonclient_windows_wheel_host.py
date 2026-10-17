@@ -28,7 +28,7 @@ def test_msys_prefix_becomes_a_windows_path():
 def test_poison_paths_are_the_cmake_probe_breakers():
     assert hostmod.is_poison_path(r"C:\mingw64\bin")
     assert hostmod.is_poison_path(r"C:\Strawberry\perl\bin")
-    assert hostmod.is_poison_path(r"C:\Program Files\Git\usr\bin")
+    assert not hostmod.is_poison_path(r"C:\Program Files\Git\usr\bin")
     assert not hostmod.is_poison_path(r"C:\Program Files\Git\bin")
     assert not hostmod.is_poison_path(
         r"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44\bin\HostX64\x64"
@@ -55,8 +55,7 @@ def test_cleaned_path_keeps_msvc_and_the_host_bins(tmp_path: Path):
     assert r"C:\Windows\System32" in cleaned
     assert "mingw" not in cleaned.lower()
     assert "strawberry" not in cleaned.lower()
-    assert not cleaned.replace("\\", "/").lower().rstrip("/").endswith("/usr/bin")
-    assert "/usr/bin" not in cleaned.replace("\\", "/").lower()
+    assert r"C:\Program Files\Git\usr\bin" in cleaned
 
 
 def test_host_environment_points_at_eigen_and_flang(tmp_path: Path):
@@ -125,6 +124,8 @@ def test_workflow_installs_the_host_prefix_before_cibuildwheel():
     assert "win_flang_rt.sh" in shell
     assert "flang-new" in shell
     assert "cargo install --root" in shell
-    assert 'rust = ">=1.88"' in (ROOT / "scripts" / "ci" / "wheel-host" / "pixi.toml").read_text(
+    host_toml = (ROOT / "scripts" / "ci" / "wheel-host" / "pixi.toml").read_text(
         encoding="utf-8"
     )
+    assert 'rust = ">=1.88"' in host_toml
+    assert 'flang = ">=19.1.7,<20"' in host_toml

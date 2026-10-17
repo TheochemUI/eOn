@@ -812,6 +812,9 @@ endif
 # readcon-db: corpus mirror. Resolve it the same way as readcon-core
 # (pkg-config, then the wrap). The shared library is not archived beside
 # the static readcon-core.
+# Directory of the readcon-db DLL this build produced. Empty when the
+# dependency came from pkg-config and the DLL is not in the build tree.
+_readcon_db_dll_dir = ''
 readcon_db_dep = dependency(
     'readcon-db',
     version: '>=0.1.6',
@@ -829,6 +832,7 @@ if not readcon_db_dep.found()
     )
     _readcon_db_inner = readcon_db_proj.get_variable('readcon_dep')
     _readcon_db_so = readcon_db_proj.get_variable('readcon_cargo')[0]
+    _readcon_db_dll_dir = fs.parent(_readcon_db_so.full_path())
     _readcon_db_version = _readcon_db_inner.version()
     _runtime_rpath += [fs.parent(_readcon_db_so.full_path())]
     # full_path() in link_args is a string, so ninja has no edge to the
@@ -2293,14 +2297,35 @@ if get_option('with_tests')
     endif
     # Windows loads a DLL's imports from the executable directory before
     # PATH. Stage the engine's non-system imports beside the test, the
-    # same place the Fortran pot DLLs sit. Torch on PATH cannot shadow
-    # them.
+    # same place the Fortran pot DLLs sit. Torch's own DLLs are in that
+    # set, so a pixi runtime of the same name cannot shadow them.
     _stage_engine_imports = []
     _have_staged_engine_imports = false
     if is_windows
+        # The build that was linked comes first, then torch, then the
+        # pixi prefix. A shared name such as libiomp5md.dll is copied
+        # from torch; capnp and the flang runtime still come from the
+        # prefix because torch does not ship them. PATH order cannot
+        # do this: meson puts every directory of a linked DLL on PATH,
+        # and the pixi bin then satisfies a torch import.
         _stage_search = []
         if _readcon_runtime_dir != ''
             _stage_search += _readcon_runtime_dir
+        endif
+        if _readcon_db_dll_dir != ''
+            _stage_search += _readcon_db_dll_dir
+        endif
+        if get_option('with_metatomic')
+            _stage_search += [LIB_TORCH_LIB_PATH, LIB_TORCH_BIN_PATH]
+            if get_option('pip_metatomic')
+                _stage_search += pip_metatomic_runtime_dirs
+                foreach _d : pip_metatomic_runtime_dirs
+                    _bin = fs.parent(_d) / 'bin'
+                    if fs.is_dir(_bin)
+                        _stage_search += _bin
+                    endif
+                endforeach
+            endif
         endif
         _lbin = get_option('prefix') / 'Library' / 'bin'
         _pbin = get_option('prefix') / 'bin'
