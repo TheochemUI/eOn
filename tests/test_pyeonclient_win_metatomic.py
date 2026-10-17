@@ -39,6 +39,36 @@ def test_win64_metatomic_wheel_is_in_the_matrix():
     assert "windows-2022" in win
 
 
+def test_metatomic_dll_dirs_use_only_the_installed_torch_minor(tmp_path):
+    text = (
+        Path(__file__).resolve().parents[1]
+        / "client"
+        / "python"
+        / "pyeonclient"
+        / "__init__.py"
+    ).read_text(encoding="utf-8")
+    start = text.index("def _metatomic_dll_directories")
+    end = text.index("\ndef _preload_windows_dlls")
+    namespace: dict[str, object] = {}
+    exec(text[start:end], namespace)
+    dirs_for = namespace["_metatomic_dll_directories"]
+    site = tmp_path
+    for rel in (
+        "torch/lib",
+        "metatensor/bin",
+        "metatensor_torch/torch-2.10/bin",
+        "metatensor_torch/torch-2.14/bin",
+        "metatomic/torch/torch-2.14/bin",
+        "vesin/bin",
+    ):
+        (site / rel).mkdir(parents=True)
+    found = dirs_for(str(site), "2.14")
+    assert str(site / "metatensor_torch" / "torch-2.14" / "bin") in found
+    assert str(site / "metatomic" / "torch" / "torch-2.14" / "bin") in found
+    assert str(site / "metatensor" / "bin") in found
+    assert all("torch-2.10" not in path for path in found)
+
+
 def test_windows_pots_are_static_and_flang_runtime_is_a_file():
     root = Path(__file__).resolve().parents[1]
     extpot = (root / "client" / "potentials" / "ExtPot" / "meson.build").read_text(
@@ -70,6 +100,10 @@ def test_windows_pots_are_static_and_flang_runtime_is_a_file():
     assert "link_whole: [rgpot_core] + _linkto + _rpc_whole" in whole
     assert "_readcon_link_dep" in client
     assert "dependencies: _deps + [_readcon_link_dep]" in client
+    assert "partial_dependency(sources: true)" in client
+    assert "_readcon_cargo_for_link" in client
+    assert "link_depends: _readcon_cargo_for_link" in client
+    assert "link_depends: _readcon_cargo_for_link" in bindings
     pyproject = (root / "pyproject-pyeonclient.toml").read_text(encoding="utf-8")
     assert "allow-windows-internal-shared-libs = true" in pyproject
     init = (
@@ -78,5 +112,6 @@ def test_windows_pots_are_static_and_flang_runtime_is_a_file():
     assert "os.add_dll_directory" in init
     assert ".pyeonclient.mesonpy.libs" in init
     assert "metatensor_torch" in init
-    assert "_dirs_with_dlls" in init
+    assert "ctypes.WinDLL" in init
+    assert 'f"torch-{torch_mm}"' in init
     assert "output: 'readcon_db.dll'" in bindings

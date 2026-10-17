@@ -751,6 +751,9 @@ readcon_dep = dependency(
     required: false,
 )
 readcon_order_srcs = []
+# Windows link edge to the readcon-core cargo target. Empty when readcon
+# came from pkg-config, and on every other host.
+_readcon_cargo_for_link = []
 # Directory of the readcon DLL this build linked. A pixi env can put
 # another readcon_core.dll earlier on PATH; Windows then starts the
 # test with STATUS_ENTRYPOINT_NOT_FOUND (0xC0000139).
@@ -771,6 +774,16 @@ if not readcon_dep.found()
     # drops declare_dependency.sources, so attach the stamp here. A
     # readcon-core without the stamp contributes no sources.
     readcon_order_srcs += readcon_proj.get_variable('readcon_order', [])
+    # full_path() of the staticlib is only a linker string. Without this
+    # edge ninja links eon_relax_engine.dll while cargo is still writing
+    # readcon_core.lib (LNK1181). The custom target's outputs are the
+    # DLL and the import/static lib from one cargo invocation.
+    if is_windows
+        # [1] is the static library. Depending on the whole target warns
+        # and records only the DLL, which is the other output of the same
+        # cargo rule. The linker opens the static library.
+        _readcon_cargo_for_link = [readcon_proj.get_variable('readcon_cargo')[1]]
+    endif
     if is_windows
         _readcon_dll = readcon_proj.get_variable('readcon_cargo')[0]
         _readcon_runtime_dir = fs.parent(_readcon_dll.full_path())
@@ -806,13 +819,19 @@ if is_windows
     )
     _deps += [readcon_compile_dep]
     # Executables and shared libraries that link the static eonclib.
-    # sources stay off: the cargo array holds the DLL, and link.exe
-    # rejects that as LNK1107.
-    _readcon_link_dep = readcon_dep.partial_dependency(
-        includes: true,
-        compile_args: true,
-        link_args: true,
-        links: true,
+    # The cargo target's sources are the order stamp (.c), not the DLL.
+    # link.exe rejects that DLL (LNK1107); the stamp is what makes ninja
+    # wait for readcon_core.lib.
+    _readcon_link_dep = declare_dependency(
+        dependencies: [
+            readcon_dep.partial_dependency(
+                includes: true,
+                compile_args: true,
+                link_args: true,
+                links: true,
+            ),
+            readcon_dep.partial_dependency(sources: true),
+        ],
     )
 else
     _deps += [readcon_dep]
@@ -1952,6 +1971,7 @@ if get_option('with_metatomic')
         dependencies: _deps + [_readcon_link_dep],
         cpp_args: _args,
         link_with: [eclib],
+        link_depends: _readcon_cargo_for_link,
         include_directories: _incdirs,
         build_rpath: ':'.join(_runtime_rpath),
         install_rpath: _lib_install_rpath,
@@ -2005,6 +2025,7 @@ eon_relax_engine = shared_library(
     dependencies: _engine_deps,
     cpp_args: _args + ['-DEON_RELAX_ENGINE_BUILD'],
     link_with: _linkto,
+    link_depends: _readcon_cargo_for_link,
     include_directories: _incdirs + [include_directories('.')],
     build_rpath: ':'.join(_runtime_rpath),
     install_rpath: _lib_install_rpath,
@@ -2024,6 +2045,7 @@ if get_option('with_metatomic')
         dependencies: mta_plugin_deps + [_readcon_link_dep],
         cpp_args: _args + ['-DRGPOT_MTA_ENGINE_BUILD'],
         link_with: [eclib, eoncbase],
+        link_depends: _readcon_cargo_for_link,
         include_directories: _incdirs,
         build_rpath: ':'.join(_runtime_rpath),
         install_rpath: _lib_install_rpath,
@@ -2095,6 +2117,7 @@ ec = executable(
     include_directories: _incdirs,
     dependencies: _exe_deps,
     link_with: _linkto,
+    link_depends: _readcon_cargo_for_link,
     cpp_args: [_args, '-w'],
     link_args: _linkargs,
     build_rpath: ':'.join(_runtime_rpath),

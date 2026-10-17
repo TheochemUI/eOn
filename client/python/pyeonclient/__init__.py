@@ -26,51 +26,70 @@ Docs: https://eondocs.org/user_guide/pyeonclient.html
 from __future__ import annotations
 
 
-def _windows_package_roots() -> list[str]:
-    """Install roots whose trees may hold DLLs the extension imports."""
-    import importlib.util
+# Load these before _core. Each name is the DLL the import lib records.
+# metatensor-torch and metatomic-torch ship one DLL per torch minor under
+# torch-X.Y/bin; an older tree exports a different set of symbols.
+_WINDOWS_DLL_PRELOAD = (
+    "libiomp5md.dll",
+    "uv.dll",
+    "c10.dll",
+    "torch_cpu.dll",
+    "torch.dll",
+    "metatensor.dll",
+    "metatensor_torch.dll",
+    "metatomic_torch.dll",
+    "vesin.dll",
+)
+
+
+def _metatomic_dll_directories(site: str, torch_mm: str) -> list[str]:
+    """DLL directories for one torch minor, not every ``torch-*`` tree."""
     import os
 
-    roots: list[str] = []
-    for name in (
-        "torch",
-        "metatensor",
-        "metatensor_torch",
-        "metatomic",
-        "vesin",
-    ):
-        spec = importlib.util.find_spec(name)
-        if spec is None:
-            continue
-        if spec.origin:
-            roots.append(os.path.dirname(spec.origin))
-        elif spec.submodule_search_locations:
-            roots.extend(spec.submodule_search_locations)
-    return roots
-
-
-def _dirs_with_dlls(root: str, max_depth: int = 4) -> list[str]:
-    """Directories at or under ``root`` that contain a DLL."""
-    import os
-
+    rels = (
+        ("torch", "lib"),
+        ("torch", "bin"),
+        ("metatensor", "bin"),
+        ("metatensor", "lib"),
+        ("metatensor_torch", f"torch-{torch_mm}", "bin"),
+        ("metatensor_torch", f"torch-{torch_mm}", "lib"),
+        ("metatensor", "torch", f"torch-{torch_mm}", "bin"),
+        ("metatensor", "torch", f"torch-{torch_mm}", "lib"),
+        ("metatomic", "torch", f"torch-{torch_mm}", "bin"),
+        ("metatomic", "torch", f"torch-{torch_mm}", "lib"),
+        ("vesin", "bin"),
+        ("vesin", "lib"),
+    )
     found: list[str] = []
-    root = os.path.abspath(root)
-    if not os.path.isdir(root):
-        return found
-    for current, subdirs, files in os.walk(root):
-        rel = os.path.relpath(current, root)
-        depth = 0 if rel == os.curdir else rel.count(os.sep) + 1
-        if depth > max_depth:
-            subdirs.clear()
-            continue
-        subdirs[:] = [
-            name
-            for name in subdirs
-            if name not in {"__pycache__", "include", "test", "tests", "share"}
-        ]
-        if any(name.lower().endswith(".dll") for name in files):
-            found.append(current)
+    for parts in rels:
+        path = os.path.join(site, *parts)
+        if os.path.isdir(path):
+            found.append(path)
     return found
+
+
+def _preload_windows_dlls(directories: list[str]) -> list[object]:
+    """Load the matching DLL by absolute path so a same-named file loses."""
+    import ctypes
+    import os
+
+    loaded: list[object] = []
+    seen: set[str] = set()
+    for name in _WINDOWS_DLL_PRELOAD:
+        for directory in directories:
+            path = os.path.join(directory, name)
+            if not os.path.isfile(path):
+                continue
+            key = os.path.normcase(os.path.abspath(path))
+            if key in seen:
+                break
+            seen.add(key)
+            try:
+                loaded.append(ctypes.WinDLL(key))
+            except OSError:
+                continue
+            break
+    return loaded
 
 
 def _extend_windows_dll_search() -> None:
@@ -80,8 +99,9 @@ def _extend_windows_dll_search() -> None:
     meson-python then stores the import library under
     ``.pyeonclient.mesonpy.libs`` and the DLL beside the interpreter
     scripts. CPython does not search PATH for those dependencies.
-    Metatomic wheels also import torch and the versioned metatensor
-    libraries (``torch-X.Y/lib``).
+    Metatomic wheels import torch plus the ``torch-X.Y/bin`` build of
+    metatensor and metatomic. Other ``torch-*`` directories in those
+    wheels export a different procedure set.
     """
     import os
     import sys
@@ -98,10 +118,17 @@ def _extend_windows_dll_search() -> None:
         os.path.join(exe_dir, "Scripts"),
         os.path.join(exe_dir, "Library", "bin"),
     ]
-    for root in _windows_package_roots():
-        candidates.extend(_dirs_with_dlls(root))
+    try:
+        import torch
+    except ImportError:
+        torch = None  # type: ignore[assignment]
+    if torch is not None:
+        torch_mm = ".".join(torch.__version__.split("+")[0].split(".")[:2])
+        torch_site = os.path.dirname(os.path.dirname(os.path.abspath(torch.__file__)))
+        candidates.extend(_metatomic_dll_directories(torch_site, torch_mm))
     handles = []
     seen: set[str] = set()
+    present: list[str] = []
     for directory in candidates:
         if not os.path.isdir(directory):
             continue
@@ -109,12 +136,15 @@ def _extend_windows_dll_search() -> None:
         if key in seen:
             continue
         seen.add(key)
+        present.append(key)
         try:
             handles.append(os.add_dll_directory(directory))
         except (OSError, AttributeError):
             continue
-    global _DLL_DIR_HANDLES
+    global _DLL_DIR_HANDLES, _DLL_PRELOADS
     _DLL_DIR_HANDLES = handles
+    # WinDLL drops the module when the object is collected.
+    _DLL_PRELOADS = _preload_windows_dlls(present)
 
 
 _extend_windows_dll_search()
