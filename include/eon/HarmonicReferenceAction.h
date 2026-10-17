@@ -13,7 +13,7 @@
 
 namespace eonc::tunneling {
 
-/// Exact positive harmonic-reference links in mass-weighted coordinates.
+/// Exact nonnegative harmonic-reference links in mass-weighted coordinates.
 /// tau = beta*hbar/N. Add correction(q) to the sum of physical bead energies;
 /// the physical energy zero is retained. The residual-potential splitting is
 /// second order, and is exact only when the residual commutes with the reference.
@@ -31,8 +31,8 @@ public:
     }
     h0_ = 0.5*h0+0.5*h0.transpose();
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(h0_);
-    if (eig.info() != Eigen::Success || !(eig.eigenvalues().minCoeff() > 0.0)) {
-      throw std::invalid_argument("harmonic reference requires strictly positive H0");
+    if (eig.info() != Eigen::Success || eig.eigenvalues().minCoeff() < 0.0) {
+      throw std::invalid_argument("harmonic reference requires nonnegative H0");
     }
     Eigen::VectorXd b(center.size()), d(center.size());
     logMeasurePerBead_ = 0.0;

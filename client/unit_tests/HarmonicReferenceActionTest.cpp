@@ -78,13 +78,30 @@ TEST_CASE("Mehler reference is covariant and retains the primitive limit",
   REQUIRE(std::isfinite(large.logMeasureCorrection(8)));
 }
 
-TEST_CASE("Mehler reference rejects nonpositive or malformed input",
+TEST_CASE("Mehler reference retains exact free modes without spectral flooring",
+          "[instanton][harmonic-reference]") {
+  Eigen::Matrix2d h = Eigen::Matrix2d::Zero();
+  h(1,1)=4.0;
+  const double tau=0.4;
+  HarmonicReferenceAction action(h,Eigen::Vector2d::Zero(),tau);
+  REQUIRE(action.link()(0,0) == 1.0/tau/tau);
+  REQUIRE(action.onsite()(0,0) == 0.0);
+  REQUIRE(action.link()(0,1) == 0.0);
+  const double z=2*tau;
+  REQUIRE(std::abs(action.logMeasureCorrection(3)-1.5*std::log(z/std::sinh(z))) < 1e-14);
+  HarmonicReferenceAction free(Eigen::Matrix2d::Zero(),Eigen::Vector2d::Zero(),tau);
+  REQUIRE(free.logMeasureCorrection(7) == 0.0);
+  REQUIRE(free.onsite().isZero());
+  REQUIRE(free.link().isApprox(Eigen::Matrix2d::Identity()/tau/tau,1e-15));
+  h(0,0)=-1e-15;
+  REQUIRE_THROWS_AS(HarmonicReferenceAction(h,Eigen::Vector2d::Zero(),tau), std::invalid_argument);
+}
+
+TEST_CASE("Mehler reference rejects negative or malformed input",
           "[instanton][harmonic-reference]") {
   Eigen::Matrix2d h = Eigen::Matrix2d::Identity();
   const Eigen::Vector2d center = Eigen::Vector2d::Zero();
   REQUIRE_THROWS_AS(HarmonicReferenceAction(h,center,0), std::invalid_argument);
-  h(0,0)=0;
-  REQUIRE_THROWS_AS(HarmonicReferenceAction(h,center,1), std::invalid_argument);
   h(0,0)=-1;
   REQUIRE_THROWS_AS(HarmonicReferenceAction(h,center,1), std::invalid_argument);
   h.setIdentity(); h(0,1)=0.1;
