@@ -41,6 +41,39 @@ struct PhysicalQuadraticBath {
       throw std::invalid_argument("physical bath requires finite coupling and positive bath curvature");
   }
 
+  /// Physical curvature at the conditional bath equilibrium. The negative
+  /// eigenvalue of this full operator sets the dynamical crossover frequency.
+  Eigen::MatrixXd fullHessian(const Eigen::VectorXd &q,
+                             const Eigen::MatrixXd &potentialHessian) const {
+    const long r=q.size(),b=curvatures.size();
+    validate(r);
+    if (potentialHessian.rows()!=r || potentialHessian.cols()!=r ||
+        !potentialHessian.allFinite())
+      throw std::invalid_argument("physical bath potential Hessian mismatch");
+    Eigen::VectorXd s;
+    Eigen::MatrixXd jac;
+    std::vector<Eigen::MatrixXd> second;
+    if (source) source(q,s,jac,second);
+    else { s=coupling.transpose()*q;jac=coupling.transpose();second.assign(b,Eigen::MatrixXd::Zero(r,r)); }
+    if (s.size()!=b || jac.rows()!=b || jac.cols()!=r || !s.allFinite() ||
+        !jac.allFinite() || second.size()!=static_cast<size_t>(b))
+      throw std::invalid_argument("physical bath source derivative mismatch");
+    for (const auto &h:second)
+      if (h.rows()!=r || h.cols()!=r || !h.allFinite() || !h.isApprox(h.transpose(),1e-12))
+        throw std::invalid_argument("physical bath source Hessian mismatch");
+    Eigen::MatrixXd out=Eigen::MatrixXd::Zero(r+b,r+b);
+    out.topLeftCorner(r,r)=potentialHessian;
+    if (relaxedPotential)
+      out.topLeftCorner(r,r).noalias()+=jac.transpose()*curvatures.cwiseInverse().asDiagonal()*jac;
+    else for (long k=0;k<b;++k) out.topLeftCorner(r,r).noalias()-=(s[k]/curvatures[k])*second[k];
+    out.topRightCorner(r,b)=jac.transpose();
+    out.bottomLeftCorner(b,r)=jac;
+    out.bottomRightCorner(b,b)=curvatures.asDiagonal();
+    if (!out.allFinite() || !out.isApprox(out.transpose(),1e-12))
+      throw std::invalid_argument("physical bath full Hessian is not finite and symmetric");
+    return out;
+  }
+
   /// Exact finite primitive-ring Gaussian elimination, with c=(beta_N*hbar)^-2.
   Evaluation evaluate(const std::vector<Eigen::VectorXd> &q, double c,
                       bool needHessian = false) const {

@@ -178,6 +178,10 @@ TEST_CASE("physical bath optimizes and normalizes a coupled quartic rate ring",
                                           MatrixXd::Constant(1, 1, -1), beta,
                                           guess, frozen, options);
   REQUIRE(ring.converged);
+  MatrixXd physicalSaddle(2,2);
+  physicalSaddle<<-1.0,coupling,coupling,e;
+  REQUIRE(std::abs(ring.crossover-crossoverTemperature(physicalSaddle))<1e-12);
+  REQUIRE(ring.crossover<crossoverTemperature(MatrixXd::Constant(1,1,-1-coupling*coupling/e)));
   const double spring = 1 / std::pow(beta / options.beads * kHbar, 2);
   const auto eliminated = bath->evaluate(ring.beads, spring);
   double fullEnergy = 0;
