@@ -1,7 +1,7 @@
 project(
     'readcon-core',
     'c',
-    version: '0.16.0',
+    version: '0.17.1',
     meson_version: '>=1.3.0',
     default_options: [
         'buildtype=debugoptimized',
@@ -29,8 +29,12 @@ cc = meson.get_compiler('c')
 cargo_prog = find_program('cargo', required: true)
 rustc_prog = find_program('rustc', required: true)
 _py = find_program('python3', 'python')
-_rv = run_command(rustc_prog, '--version', check: true).stdout().strip().split()
-if _rv.length() < 2 or not _rv[1].version_compare('>= 1.88.0')
+_rv = run_command(rustc_prog, '--version', check: false)
+if _rv.returncode() != 0
+    error('unsupported architecture')
+endif
+_rv_bits = _rv.stdout().strip().split()
+if _rv_bits.length() < 2 or not _rv_bits[1].version_compare('>= 1.88.0')
     error('readcon-core requires rustc >= 1.88.0')
 endif
 
@@ -95,6 +99,26 @@ readcon_cargo = custom_target(
     install: true,
     install_dir: [get_option('libdir'), get_option('libdir')],
 )
+
+# MSVC names the cdylib import library readcon_core.dll.lib. It survives
+# the staticlib build, which writes readcon_core.lib instead. A Windows
+# DLL that also imports torch must link this import library. The static
+# archive in that image binds a Rust runtime symbol to a torch DLL.
+if host_machine.system() == 'windows'
+    readcon_implib = custom_target(
+        'readcon-implib',
+        output: 'readcon_core.dll.lib',
+        command: [
+            _py,
+            files('scripts/copy_msvc_implib.py'),
+            _mbproot / 'cargo-target',
+            _profile,
+            '@OUTPUT@',
+        ],
+        depends: [readcon_cargo],
+        build_by_default: true,
+    )
+endif
 
 # Indexing readcon_cargo in declare_dependency.sources does not create a
 # ninja edge. Putting the cdylib in sources records NEEDED / LNK1107.

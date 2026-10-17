@@ -321,6 +321,9 @@ int DynamicsSaddleSearch::run() {
           const int last = static_cast<int>(neb.path.size()) - 1;
           const int from = std::clamp(img, 0, last);
           const int to = std::clamp(img + 1, 0, last);
+          // With linear_interpolation the band does not pass through the MD
+          // snapshot, so start from the image the tangent belongs to.
+          *saddle = *neb.path[from];
           mode = saddle->pbc(neb.path[to]->getPositions() -
                              neb.path[from]->getPositions());
           if (mode.norm() > 0.0) {
