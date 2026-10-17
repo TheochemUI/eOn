@@ -2139,6 +2139,7 @@ if get_option('with_tests')
         ['test_jobs', 'JobIntegrationTest.cpp', 'neb_morse', 1200],
         ['test_ohtst_scan', 'OHTSTScanTest.cpp', ''],
         ['test_hessian', 'HessianTest.cpp', 'neb_morse'],
+        ['test_reference_hessian', 'ReferenceHessianTest.cpp', 'neb_morse'],
         ['test_geom', 'GeometryAnalysisTest.cpp', 'neb_morse'],
         ['test_params_json', 'ParametersJSONTest.cpp', ''],
         ['test_params_ssot', 'ParametersSSOTTest.cpp', ''],

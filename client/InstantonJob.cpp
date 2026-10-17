@@ -19,6 +19,7 @@
 #include "eon/PathIntegral.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
+#include "eon/ReferenceHessian.h"
 #include "eon/Tunneling.h"
 
 #include <Eigen/QR>
@@ -439,7 +440,7 @@ std::vector<std::string>
 runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         const Matter &reactant, const MassWeighted &mw,
         const tunneling::BatchPotential &evaluate,
-        const std::function<MatrixXd(const VectorXd &)> &hessianAt,
+        const std::function<MatrixXd(const VectorXd &, const std::string &)> &hessianAt,
         const std::function<MatrixXd(const VectorXd &)> &beadHessianAt,
         const std::array<bool, 3> &rotationZero,
         const std::array<double, 3> &rotationResidual) {
@@ -511,8 +512,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   // stationarity diagnostics require no additional potential calls.
   const auto reactantForce = referenceForces("reactant", reactantReference);
   const auto saddleForce = referenceForces("saddle", saddle);
-  const MatrixXd hReactant = hessianAt(VectorXd::Zero(n));
-  const MatrixXd hSaddle = hessianAt(qSaddle);
+  const MatrixXd hReactant = hessianAt(VectorXd::Zero(n), o.reactant_hessian_filename);
+  const MatrixXd hSaddle = hessianAt(qSaddle, o.saddle_hessian_filename);
   // Retain the projected, mass-weighted references used by the rate
   // calculation, including spectra that fail metastability validation.
   auto saveReference = [&](const std::string &name, const MatrixXd &matrix) {
@@ -1195,12 +1196,20 @@ std::vector<std::string> InstantonJob::run(void) {
   std::array<bool, 3> rotationZero{{false, false, false}};
   std::array<double, 3> rotationResidual{{0.0, 0.0, 0.0}};
   bool rotationsKnown = false;
-  auto hessianWith = [&](const VectorXd &q, bool projectRotations) {
+  auto hessianWith = [&](const VectorXd &q, bool projectRotations,
+                         const std::string &filename = std::string{}) {
     Matter m(*reactant);
     mw.place(q, m);
-    Hessian h(params, &m);
-    h.writeHessianFile(false);
-    MatrixXd out = h.getHessian(&m, mw.freeAtoms());
+    MatrixXd out;
+    if (filename.empty()) {
+      Hessian h(params, &m);
+      h.writeHessianFile(false);
+      out = h.getHessian(&m, mw.freeAtoms());
+    } else {
+      out = tunneling::readReferenceHessian(filename, m, n);
+      EONC_LOG_INFO("[Instanton] reference Hessian read from {} with matching geometry and mass metric",
+                    filename);
+    }
     if (out.rows() != n) {
       throw std::runtime_error("instanton: a bead Hessian failed");
     }
@@ -1234,7 +1243,10 @@ std::vector<std::string> InstantonJob::run(void) {
   };
 
   if (o.mode == "rate") {
-    return runRate(params, pot, *reactant, mw, evaluate, hessianAt,
+    auto referenceHessianAt = [&](const VectorXd &q, const std::string &filename) {
+      return hessianWith(q, true, filename);
+    };
+    return runRate(params, pot, *reactant, mw, evaluate, referenceHessianAt,
                    beadHessianAt, rotationZero, rotationResidual);
   }
 
