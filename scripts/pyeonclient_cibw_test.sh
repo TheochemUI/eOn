@@ -31,6 +31,7 @@ python - <<'PY'
 import pathlib
 import shutil
 import subprocess
+import sys
 
 import pyeonclient as p
 
@@ -41,7 +42,11 @@ print(
     "rgpot",
     p.built_with_rgpot(),
 )
-assert p.built_with_rgpot()
+# WITH_RGPOT is the NWChem/CPMD dlopen path, which the Windows build skips.
+if sys.platform == "win32":
+    assert p.built_with_rgpot() is False
+else:
+    assert p.built_with_rgpot() is True
 assert hasattr(p.NudgedElasticBand, "path_frames")
 parent = pathlib.Path(p.__file__).parent
 cores = list(parent.glob("_core*.so")) + list(parent.glob("_core*.pyd"))

@@ -26,6 +26,53 @@ Docs: https://eondocs.org/user_guide/pyeonclient.html
 from __future__ import annotations
 
 
+def _windows_package_roots() -> list[str]:
+    """Install roots whose trees may hold DLLs the extension imports."""
+    import importlib.util
+    import os
+
+    roots: list[str] = []
+    for name in (
+        "torch",
+        "metatensor",
+        "metatensor_torch",
+        "metatomic",
+        "vesin",
+    ):
+        spec = importlib.util.find_spec(name)
+        if spec is None:
+            continue
+        if spec.origin:
+            roots.append(os.path.dirname(spec.origin))
+        elif spec.submodule_search_locations:
+            roots.extend(spec.submodule_search_locations)
+    return roots
+
+
+def _dirs_with_dlls(root: str, max_depth: int = 4) -> list[str]:
+    """Directories at or under ``root`` that contain a DLL."""
+    import os
+
+    found: list[str] = []
+    root = os.path.abspath(root)
+    if not os.path.isdir(root):
+        return found
+    for current, subdirs, files in os.walk(root):
+        rel = os.path.relpath(current, root)
+        depth = 0 if rel == os.curdir else rel.count(os.sep) + 1
+        if depth > max_depth:
+            subdirs.clear()
+            continue
+        subdirs[:] = [
+            name
+            for name in subdirs
+            if name not in {"__pycache__", "include", "test", "tests", "share"}
+        ]
+        if any(name.lower().endswith(".dll") for name in files):
+            found.append(current)
+    return found
+
+
 def _extend_windows_dll_search() -> None:
     """Put wheel DLLs on the Windows search path before ``_core`` loads.
 
@@ -33,8 +80,9 @@ def _extend_windows_dll_search() -> None:
     meson-python then stores the import library under
     ``.pyeonclient.mesonpy.libs`` and the DLL beside the interpreter
     scripts. CPython does not search PATH for those dependencies.
+    Metatomic wheels also import torch and the versioned metatensor
+    libraries (``torch-X.Y/lib``).
     """
-    import importlib.util
     import os
     import sys
 
@@ -50,17 +98,17 @@ def _extend_windows_dll_search() -> None:
         os.path.join(exe_dir, "Scripts"),
         os.path.join(exe_dir, "Library", "bin"),
     ]
-    for package in ("torch", "metatensor", "metatomic"):
-        spec = importlib.util.find_spec(package)
-        if spec is None or not spec.origin:
-            continue
-        root = os.path.dirname(spec.origin)
-        candidates.append(root)
-        candidates.append(os.path.join(root, "lib"))
+    for root in _windows_package_roots():
+        candidates.extend(_dirs_with_dlls(root))
     handles = []
+    seen: set[str] = set()
     for directory in candidates:
         if not os.path.isdir(directory):
             continue
+        key = os.path.normcase(os.path.abspath(directory))
+        if key in seen:
+            continue
+        seen.add(key)
         try:
             handles.append(os.add_dll_directory(directory))
         except (OSError, AttributeError):
@@ -154,6 +202,8 @@ try:
         built_with_gp_surrogate,
     )
 except ImportError as e:  # pragma: no cover
+    if "DLL load failed" in str(e):
+        raise
     raise ImportError(
         "pyeonclient._core is not built. Configure with "
         "-Dwith_pyeonclient=true (nanobind; stable ABI / free-threaded)."

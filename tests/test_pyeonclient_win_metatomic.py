@@ -77,4 +77,6 @@ def test_windows_pots_are_static_and_flang_runtime_is_a_file():
     ).read_text(encoding="utf-8")
     assert "os.add_dll_directory" in init
     assert ".pyeonclient.mesonpy.libs" in init
+    assert "metatensor_torch" in init
+    assert "_dirs_with_dlls" in init
     assert "output: 'readcon_db.dll'" in bindings
