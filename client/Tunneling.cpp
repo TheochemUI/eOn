@@ -4075,15 +4075,13 @@ void physicalBathFluctuations(RateInstanton &inst,
   const long bathDimension = inst.physicalBath->curvatures.size();
   double phaseMetric = 1.0, fullBN = inst.bN;
   const VectorXd retainedPhase = es.eigenvectors().col(phase);
+  Eigen::MatrixXd sourceVariation(n * bathDimension, 1);
+  for (long l = 0; l < n; ++l)
+    sourceVariation.middleRows(l * bathDimension, bathDimension) =
+        bath.sourceJacobians[l] * retainedPhase.segment(l * f, f);
+  const Eigen::MatrixXd lifted = -bath.solveBath(sourceVariation);
+  phaseMetric += lifted.squaredNorm();
   for (long j = 0; j < n; ++j) {
-    VectorXd lifted = VectorXd::Zero(bathDimension);
-    for (long l = 0; l < n; ++l) {
-      const VectorXd sourceVariation =
-          bath.sourceJacobians[l] * retainedPhase.segment(l * f, f);
-      lifted.array() -=
-          bath.inverseBath[(j - l + n) % n].array() * sourceVariation.array();
-    }
-    phaseMetric += lifted.squaredNorm();
     fullBN +=
         (bath.bathPositions[(j + 1) % n] - bath.bathPositions[j]).squaredNorm();
   }

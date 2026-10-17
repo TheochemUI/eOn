@@ -5,17 +5,19 @@
 */
 #pragma once
 
+#include "CyclicBlockBath.h"
 #include <Eigen/Dense>
 #include <cmath>
 #include <functional>
+#include <memory>
 #include <numbers>
 #include <stdexcept>
 #include <vector>
 
 namespace eonc::tunneling {
 
-/// V(q,b)=V_fixed(q)+source(q)^T b+b^T diag(curvatures)b/2.
-/// The bath is physical and constant, not an Ohmic ring thermostat.
+/// V(q,b)=V_fixed(q)+source(q)^T b+b^T E(q)b/2.
+/// The bath represents physical coordinates, not an Ohmic ring thermostat.
 struct PhysicalQuadraticBath {
   Eigen::MatrixXd coupling; ///< retained x bath, source=C^T q by default
   Eigen::VectorXd curvatures; ///< strictly positive physical bath eigenvalues
@@ -26,14 +28,40 @@ struct PhysicalQuadraticBath {
       Eigen::MatrixXd &, std::vector<Eigen::MatrixXd> &)>;
   Source source;
 
+  struct CurvatureDerivatives {
+    Eigen::MatrixXd value;
+    std::vector<Eigen::MatrixXd> first;
+    std::vector<std::vector<Eigen::MatrixXd>> second;
+  };
+  /// Full bath curvature in a fixed basis, with derivatives through order 0--2.
+  using Curvature = std::function<CurvatureDerivatives(const Eigen::VectorXd &,int)>;
+  Curvature curvature;
+
   struct Evaluation {
     double energy = 0.0;
     std::vector<Eigen::VectorXd> gradient;
     Eigen::MatrixXd hessian;
     std::vector<Eigen::VectorXd> bathPositions;
     std::vector<Eigen::VectorXd> inverseBath;
+    /// Mixed bath/retained Hessians, including E_i*y for variable curvature.
     std::vector<Eigen::MatrixXd> sourceJacobians;
+    std::shared_ptr<const CyclicBlockBath> blockBath;
     double bathLogDeterminant = 0.0;
+
+    Eigen::MatrixXd solveBath(const Eigen::MatrixXd &rhs) const {
+      if (blockBath) return blockBath->solve(rhs);
+      if (inverseBath.empty())
+        throw std::logic_error("bath inverse requires a Hessian evaluation");
+      const long n=inverseBath.size(),b=inverseBath.front().size();
+      if (rhs.rows()!=n*b || !rhs.allFinite())
+        throw std::invalid_argument("physical bath right hand side mismatch");
+      Eigen::MatrixXd result=Eigen::MatrixXd::Zero(n*b,rhs.cols());
+      for (long j=0;j<n;++j)
+        for (long l=0;l<n;++l)
+          result.middleRows(j*b,b).noalias()+=
+              inverseBath[(j-l+n)%n].asDiagonal()*rhs.middleRows(l*b,b);
+      return result;
+    }
   };
 
   void validate(long dof) const {
@@ -41,6 +69,40 @@ struct PhysicalQuadraticBath {
         !coupling.allFinite() || !curvatures.allFinite() ||
         (curvatures.array()<=0).any())
       throw std::invalid_argument("physical bath requires finite coupling and positive bath curvature");
+    if (curvature && relaxedPotential)
+      throw std::invalid_argument("variable physical bath requires a frozen potential callback");
+  }
+
+  CurvatureDerivatives curvatureAt(const Eigen::VectorXd &q,int order) const {
+    const long r=q.size(),b=curvatures.size();
+    if (!curvature || order<0 || order>2 || b<1)
+      throw std::invalid_argument("invalid physical bath curvature request");
+    auto out=curvature(q,order);
+    auto valid=[&](const Eigen::MatrixXd &matrix) {
+      return matrix.rows()==b && matrix.cols()==b && matrix.allFinite() &&
+             matrix.isApprox(matrix.transpose(),1e-12);
+    };
+    if (!valid(out.value) || (order>=1 && out.first.size()!=static_cast<size_t>(r)) ||
+        (order>=2 && out.second.size()!=static_cast<size_t>(r)))
+      throw std::invalid_argument("physical bath curvature derivative mismatch");
+    if (order>=1)
+      for (const auto &matrix:out.first)
+        if (!valid(matrix))
+          throw std::invalid_argument("invalid physical bath curvature gradient");
+    if (order>=2) {
+      for (long i=0;i<r;++i) {
+        if (out.second[i].size()!=static_cast<size_t>(r))
+          throw std::invalid_argument("physical bath curvature Hessian mismatch");
+        for (long j=0;j<r;++j)
+          if (!valid(out.second[i][j]))
+            throw std::invalid_argument("invalid physical bath curvature Hessian");
+      }
+      for (long i=0;i<r;++i)
+        for (long j=0;j<i;++j)
+          if (!out.second[i][j].isApprox(out.second[j][i],1e-12))
+            throw std::invalid_argument("asymmetric physical bath curvature Hessian");
+    }
+    return out;
   }
 
   /// Physical curvature at the conditional bath equilibrium. The negative
@@ -65,6 +127,24 @@ struct PhysicalQuadraticBath {
         throw std::invalid_argument("physical bath source Hessian mismatch");
     Eigen::MatrixXd out=Eigen::MatrixXd::Zero(r+b,r+b);
     out.topLeftCorner(r,r)=potentialHessian;
+    if (curvature) {
+      const auto state=curvatureAt(q,2);
+      const CyclicBlockBath factor({state.value},1.0);
+      const Eigen::VectorXd y=-factor.solve(s).col(0);
+      Eigen::MatrixXd mixed=jac;
+      for (long a=0;a<b;++a) out.topLeftCorner(r,r).noalias()+=y[a]*second[a];
+      for (long i=0;i<r;++i) {
+        mixed.col(i).noalias()+=state.first[i]*y;
+        for (long j=0;j<r;++j)
+          out(i,j)+=0.5*y.dot(state.second[i][j]*y);
+      }
+      out.topRightCorner(r,b)=mixed.transpose();
+      out.bottomLeftCorner(b,r)=mixed;
+      out.bottomRightCorner(b,b)=state.value;
+      if (!out.allFinite() || !out.isApprox(out.transpose(),1e-12))
+        throw std::invalid_argument("physical bath full Hessian is not finite and symmetric");
+      return out;
+    }
     if (relaxedPotential)
       out.topLeftCorner(r,r).noalias()+=jac.transpose()*curvatures.cwiseInverse().asDiagonal()*jac;
     else for (long k=0;k<b;++k) out.topLeftCorner(r,r).noalias()-=(s[k]/curvatures[k])*second[k];
@@ -106,14 +186,68 @@ struct PhysicalQuadraticBath {
         if (h.rows()!=r || h.cols()!=r || !h.allFinite() || !h.isApprox(h.transpose(),1e-12))
           throw std::invalid_argument("physical bath source Hessian mismatch");
     }
+    if (curvature) {
+      std::vector<Eigen::MatrixXd> blocks;
+      blocks.reserve(n);
+      Eigen::MatrixXd flatSource(n*b,1);
+      for (long j=0;j<n;++j) {
+        blocks.push_back(curvatureAt(q[j],0).value);
+        flatSource.middleRows(j*b,b)=s[j];
+      }
+      auto factor=std::make_shared<CyclicBlockBath>(blocks,c);
+      const Eigen::MatrixXd flatY=-factor->solve(flatSource);
+      out.bathLogDeterminant=factor->logDeterminant();
+      if (needHessian) {
+        out.blockBath=factor;
+        out.sourceJacobians.resize(n);
+      }
+      for (long j=0;j<n;++j) {
+        const Eigen::VectorXd y=flatY.middleRows(j*b,b).col(0);
+        out.bathPositions[j]=y;
+        out.energy+=0.5*s[j].dot(y);
+        out.gradient[j].noalias()+=jac[j].transpose()*y;
+        const auto state=curvatureAt(q[j],needHessian ? 2 : 1);
+        Eigen::MatrixXd mixed=jac[j];
+        for (long i=0;i<r;++i) {
+          out.gradient[j][i]+=0.5*y.dot(state.first[i]*y);
+          if (needHessian) {
+            mixed.col(i).noalias()+=state.first[i]*y;
+            for (long k=0;k<r;++k)
+              out.hessian(j*r+i,j*r+k)+=0.5*y.dot(state.second[i][k]*y);
+          }
+        }
+        if (needHessian) {
+          for (long a=0;a<b;++a)
+            out.hessian.block(j*r,j*r,r,r).noalias()+=y[a]*second[j][a];
+          out.sourceJacobians[j]=std::move(mixed);
+        }
+      }
+      if (needHessian) {
+        for (long l=0;l<n;++l) {
+          Eigen::MatrixXd rhs=Eigen::MatrixXd::Zero(n*b,r);
+          rhs.middleRows(l*b,b)=out.sourceJacobians[l];
+          const Eigen::MatrixXd response=factor->solve(rhs);
+          for (long j=0;j<n;++j)
+            out.hessian.block(j*r,l*r,r,r).noalias()-=
+                out.sourceJacobians[j].transpose()*response.middleRows(j*b,b);
+        }
+      }
+      return out;
+    }
     // inverse[lag] is diagonal in the fixed physical bath eigenbasis.
     std::vector<Eigen::VectorXd> inverse(n,Eigen::VectorXd::Zero(b));
-    for (long k=0;k<n;++k) {
-      const double sk=std::sin(std::numbers::pi*static_cast<double>(k)/n);
-      const Eigen::VectorXd lambda=(curvatures.array()+4*c*sk*sk).matrix();
-      out.bathLogDeterminant+=lambda.array().log().sum();
+    // The positive cyclic Green function solves (E+c*L)G=I. Its two
+    // decaying branches sum periodic images without Fourier cancellation.
+    const double rootSpring=std::sqrt(c);
+    for (long a=0;a<b;++a) {
+      const double frequency=std::sqrt(curvatures[a]);
+      double alpha=2*std::asinh(frequency/(2*rootSpring));
+      if (!std::isfinite(alpha)) alpha=std::log(curvatures[a])-std::log(c);
+      const double periodic=-std::expm1(-n*alpha);
+      const double scale=1/frequency/std::hypot(frequency,2*rootSpring)/periodic;
+      out.bathLogDeterminant+=n*(std::log(c)+alpha)+2*std::log(periodic);
       for (long lag=0;lag<n;++lag)
-        inverse[lag].array()+=std::cos(2*std::numbers::pi*k*static_cast<double>(lag)/n)/n/lambda.array();
+        inverse[lag][a]=scale*(std::exp(-lag*alpha)+std::exp(-(n-lag)*alpha));
     }
     for (long j=0;j<n;++j) {
       Eigen::VectorXd y=Eigen::VectorXd::Zero(b);
