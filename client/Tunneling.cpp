@@ -4361,8 +4361,24 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
         "instantonRate: the ring Hessian is singular and the zero mode was "
         "not removed with the rigid modes");
   }
-  inst.zeroEigenvalue =
-      dot(cycle, applyDiagonal(diag, c, true, cycle, linkWeight));
+  const auto phaseProduct = applyDiagonal(diag, c, true, cycle, linkWeight);
+  inst.zeroEigenvalue = dot(cycle, phaseProduct);
+  double phaseResidualSquared = 0.0, phaseOperatorBound = 0.0;
+  for (long j = 0; j < N; ++j) {
+    phaseResidualSquared +=
+        (phaseProduct[j] - inst.zeroEigenvalue * cycle[j]).squaredNorm();
+    const double offDiagonal = linkWeight
+        ? c / (*linkWeight)[j] + c / (*linkWeight)[(j + N - 1) % N]
+        : 2.0 * c;
+    phaseOperatorBound = std::max(phaseOperatorBound,
+        diag[j].cwiseAbs().rowwise().sum().maxCoeff() + offDiagonal);
+  }
+  inst.phaseEigenResidual = std::sqrt(phaseResidualSquared);
+  const double phaseRoundoff = 64.0 * std::numeric_limits<double>::epsilon() *
+      N * f * phaseOperatorBound;
+  inst.phaseZeroVerified =
+      std::abs(inst.zeroEigenvalue) <= phaseRoundoff &&
+      inst.phaseEigenResidual <= phaseRoundoff;
   inst.negativeModes = ring.negative();
   double logAbsDet = ring.logAbsDet();
   const long dim = N * f;
