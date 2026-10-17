@@ -176,13 +176,28 @@ def _missing(path: Path, needed: list[str]) -> list[str]:
     return [sym for sym in needed if not sym.startswith("#") and sym not in have]
 
 
-def pick_source(name: str, needed: list[str], search: list[Path]) -> Path | None:
-    """First search hit that exports every named import.
+def pick_source(
+    name: str,
+    needed: list[str],
+    search: list[Path],
+    preferred: Path | None = None,
+) -> Path | None:
+    """First candidate that exports every named import.
 
-    A same-named DLL earlier on the path can lack the entry point the
-    import lib was linked against. Loading that copy exits 0xC0000139.
+    The directory the importing DLL came from is first, so a pixi copy
+    of the same name stays behind torch's matching dependency when that
+    copy exports the symbols. A candidate that lacks an imported symbol
+    is skipped. Loading that copy exits 0xC0000139.
     """
-    found = [d / name for d in search if (d / name).is_file()]
+    found: list[Path] = []
+    if preferred is not None:
+        sibling = preferred / name
+        if sibling.is_file():
+            found.append(sibling)
+    for directory in search:
+        cand = directory / name
+        if cand.is_file() and cand not in found:
+            found.append(cand)
     if not found:
         return None
     for cand in found:
@@ -194,10 +209,15 @@ def pick_source(name: str, needed: list[str], search: list[Path]) -> Path | None
 def stage(dll: Path, search: list[Path], stamp: Path) -> None:
     dest = dll.parent
     seen: set[str] = set()
-    queue = [dll]
+    # Second item is the directory preferred for this DLL's imports.
+    queue: list[tuple[Path, Path]] = [(dll, dll.parent)]
     copied: list[str] = []
+    print(
+        f"win_stage_imports: imports of {dll.name}: {', '.join(imported_dlls(dll))}",
+        flush=True,
+    )
     while queue:
-        current = queue.pop(0)
+        current, preferred = queue.pop(0)
         key = str(current.resolve()).lower()
         if key in seen or not current.is_file():
             continue
@@ -207,8 +227,10 @@ def stage(dll: Path, search: list[Path], stamp: Path) -> None:
                 continue
             target = dest / name
             if target.is_file() and not _missing(target, syms):
+                if str(target.resolve()).lower() not in seen:
+                    queue.append((target, target.parent))
                 continue
-            source = pick_source(name, syms, search)
+            source = pick_source(name, syms, search, preferred)
             if source is None:
                 print(f"win_stage_imports: {name} not in search path", file=sys.stderr)
                 continue
@@ -229,7 +251,8 @@ def stage(dll: Path, search: list[Path], stamp: Path) -> None:
             if replaced:
                 seen.discard(str(target.resolve()).lower())
             copied.append(name)
-            queue.append(target)
+            queue.append((target, source.parent))
+    print("win_stage_imports: copied " + ", ".join(copied), flush=True)
     stamp.write_text("\n".join(copied) + "\n", encoding="utf-8")
 
 

@@ -242,10 +242,43 @@ if get_option('buildtype') == 'release' or get_option('buildtype') == 'debugopti
         _args += cppc.get_supported_arguments(['-march=native'])
     endif
     if get_option('fast_math')
+        # Leaves contraction to the compiler. Bit-identical results across
+        # CPUs are not guaranteed once this option is on.
         _args += cppc.get_supported_arguments(['-ffast-math'])
         if cppc.get_id() == 'msvc'
             _args += cppc.get_supported_arguments(['/fp:fast'])
         endif
+    endif
+endif
+
+# Contraction off on every eOn target unless fast_math is on.
+# GCC defaults to -ffp-contract=fast (Optimize Options), and Highway
+# compiles each per-target copy with FMA enabled, so separate Mul and
+# Add become vfmadd. Clang defaults to -ffp-contract=on. icpx defaults
+# to -fp-model=fast, so it also needs -fp-model=precise. nvc++ needs
+# -Mnofma. get_supported_arguments drops a flag the compiler rejects.
+# MSVC: CI is Visual Studio 2022 (windows-2022, msvc-dev-cmd vsversion
+# 2022). Under the default /fp:precise, contractions are not generated.
+# That default is new in Visual Studio 2022. /fp:contract is the opt-in
+# that turns contraction on, and the msvc-170 syntax list has no
+# /fp:contract- form, so this build does not pass one.
+# https://learn.microsoft.com/en-us/cpp/build/reference/fp-specify-floating-point-behavior?view=msvc-170
+if not get_option('fast_math')
+    _fp_off = ['-ffp-contract=off']
+    if cppc.get_id() in ['intel', 'intel-llvm', 'intel-cl', 'intel-llvm-cl']
+        _fp_off += ['-fp-model=precise']
+    elif cppc.get_id() in ['nvidia_hpc', 'pgi']
+        _fp_off += ['-Mnofma']
+    endif
+    _args += cppc.get_supported_arguments(_fp_off)
+    if use_fortran
+        _ffp_off = ['-ffp-contract=off']
+        if fc.get_id() in ['intel', 'intel-llvm', 'intel-cl', 'intel-llvm-cl']
+            _ffp_off += ['-fp-model=precise']
+        elif fc.get_id() in ['nvidia_hpc', 'pgi']
+            _ffp_off += ['-Mnofma']
+        endif
+        _fargs += fc.get_supported_arguments(_ffp_off)
     endif
 endif
 
@@ -643,12 +676,12 @@ _linkto += eoncbase
 # later _deps += readcon_dep does not reach libsocket_nwchem.so.
 # Prefer cargo-c / pkg-config install (conda-forge host package); fall back
 # to the meson subproject when the system package is not available.
-# ConFileIO needs 0.16 for set_spreads_from_flat, on top of 0.15's
-# displacements section (Hessian modes.con) and 0.13's clone, bulk
-# set_*_from_flat and compression_from_extension.
+# ConFileIO needs 0.17.1 for the round-trip writer, on top of 0.16's
+# set_spreads_from_flat, 0.15's displacements section (Hessian modes.con),
+# and 0.13's clone, bulk set_*_from_flat and compression_from_extension.
 readcon_dep = dependency(
     'readcon-core',
-    version: '>=0.16.0',
+    version: '>=0.17.1',
     method: 'pkg-config',
     required: false,
 )
@@ -658,10 +691,11 @@ readcon_order_srcs = []
 # test with STATUS_ENTRYPOINT_NOT_FOUND (0xC0000139).
 _readcon_runtime_dir = ''
 _have_readcon_dll_beside = false
+_have_readcon_implib = false
 if not readcon_dep.found()
     readcon_proj = subproject(
         'readcon-core',
-        version: '>=0.16.0',
+        version: '>=0.17.1',
         default_options: {
             'with_tests': false,
             'with_examples': false,
@@ -694,6 +728,8 @@ if not readcon_dep.found()
             build_by_default: true,
         )
         _have_readcon_dll_beside = true
+        _readcon_implib = readcon_proj.get_variable('readcon_implib')
+        _have_readcon_implib = true
     endif
 endif
 if is_windows
@@ -786,12 +822,6 @@ else
             + 'Reconfigure with -Drgpot:with_fortran_pots=enabled, '
             + 'or wipe the build directory.',
         )
-    endif
-    # pkg-config puts RGPOT_HAS_* in the .pc cflags. The wrap dependency
-    # does not, so the expression potential is compiled out and
-    # makePotential throws "Terminating".
-    if _rgpot_proj.get_variable('has_expr')
-        _args += ['-DRGPOT_HAS_EXPR']
     endif
     if get_option('with_serve')
         ptlrpc_dep = _rgpot_proj.get_variable('ptlrpc_dep')
@@ -1204,6 +1234,10 @@ if get_option('with_ase_nwchem')
     _args += ['-DWITH_ASE_NWCHEM']
 endif
 
+# Windows test_relax_engine delay-loads the engine and searches these
+# directories before PATH. A same-named DLL from torch is otherwise
+# missing the entry point and the process exits 0xC0000139.
+_win_mta_dll_dirs = []
 if get_option('with_metatomic')
     if get_option('torch_path') != ''
         # Setting up Torch..
@@ -1302,7 +1336,24 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
             _mta_lib,
             _vesin_lib,
         ]
-        if not is_windows
+        if is_windows
+            # Wheels put the DLLs in bin next to lib. The loader must see
+            # those bins, not an earlier same-named DLL on PATH.
+            _win_mta_dll_dirs += [
+                LIB_TORCH_LIB_PATH,
+                LIB_TORCH_BIN_PATH,
+                fs.parent(_mts_core_lib) / 'bin',
+                fs.parent(_mts_torch_lib_new) / 'bin',
+                fs.parent(_mts_torch_lib_old) / 'bin',
+                fs.parent(_mta_lib) / 'bin',
+                fs.parent(_vesin_lib) / 'bin',
+                _mts_core_lib,
+                _mts_torch_lib_new,
+                _mts_torch_lib_old,
+                _mta_lib,
+                _vesin_lib,
+            ]
+        else
             _runtime_rpath += pip_metatomic_runtime_dirs
         endif
         mts_inc_args = []
@@ -1681,10 +1732,24 @@ eon_relax_capnp = custom_target(
 # LoadLibrary returns null. default_library=static must not apply here.
 # Windows puts only readcon headers on _deps. The import library stays
 # off eonclib because llvm-ar and link reject the cargo DLL. This DLL
-# pulls eonclib in, so it needs the same import library the executables
-# get, without the cargo sources that contain the DLL.
+# pulls eonclib in, so it needs readcon on the link line, without the
+# cargo sources that contain the DLL.
+# The static archive plus torch in this DLL binds a Rust runtime import
+# to a torch DLL that does not export it. test_relax_engine then exits
+# 0xC0000139 before main. Link the cdylib import library instead so that
+# runtime stays in readcon_core.dll, which is copied beside the test.
 _engine_deps = _deps + _gprd_extra_deps + [capnp_dep]
-if is_windows
+_engine_link_depends = []
+if is_windows and _have_readcon_implib
+    _engine_deps += readcon_dep.partial_dependency(
+        includes: true,
+        compile_args: true,
+    )
+    _engine_deps += declare_dependency(
+        link_args: [_readcon_implib.full_path()],
+    )
+    _engine_link_depends += [_readcon_implib]
+elif is_windows
     _engine_deps += readcon_dep.partial_dependency(
         includes: true,
         compile_args: true,
@@ -1703,6 +1768,7 @@ eon_relax_engine = shared_library(
     install_rpath: _lib_install_rpath,
     install: true,
     gnu_symbol_visibility: 'inlineshidden',
+    link_depends: _engine_link_depends,
 )
 
 # RGPOT-metatomic engine (slow path); fat pot already in potentials above.
@@ -1851,6 +1917,7 @@ endif
 # ------------------------ Tests
 
 if get_option('with_tests')
+    # test_args is _args, so unit tests use the same contraction mode.
     test_args = _args
     test_deps = _exe_deps
     testMain = library(
@@ -1898,6 +1965,7 @@ if get_option('with_tests')
         ['test_saddle', 'SaddleSearchTest.cpp', 'neb_morse'],
         ['test_confileio', 'ConFileIOTest.cpp', 'neb_morse'],
         ['test_approve_confileio', 'ApproveConFileIO.cpp', 'neb_morse'],
+        ['test_con_restart_exact', 'ConRestartExact.cpp', 'neb_morse'],
         ['test_minimization', 'MinimizationTest.cpp', 'neb_morse'],
         ['test_optimizer', 'OptimizerTest.cpp', ''],
         ['test_fpe_handler', 'FPEHandlerTest.cpp', ''],
@@ -2003,6 +2071,30 @@ if get_option('with_tests')
     if _readcon_runtime_dir != ''
         _test_env.prepend('PATH', _readcon_runtime_dir)
     endif
+    # Delay-load reads EON_WIN_DLL_DIRS before the first eon_relax_* call.
+    # Semicolon-separated. These are the DLLs the engine was linked against.
+    # SetDefaultDllDirectories then ignores PATH, so torch cannot shadow them.
+    if is_windows
+        _win_dll_dirs = []
+        if _readcon_runtime_dir != ''
+            _win_dll_dirs += _readcon_runtime_dir
+        endif
+        _pbin = get_option('prefix') / 'bin'
+        _lbin = get_option('prefix') / 'Library' / 'bin'
+        if fs.is_dir(_lbin)
+            _win_dll_dirs += _lbin
+        endif
+        if fs.is_dir(_pbin)
+            _win_dll_dirs += _pbin
+        endif
+        foreach _extra : _win_mta_dll_dirs
+            if fs.is_dir(_extra)
+                _win_dll_dirs += _extra
+            endif
+        endforeach
+        _win_dll_dirs += fs.parent(eon_relax_engine.full_path())
+        _test_env.set('EON_WIN_DLL_DIRS', ';'.join(_win_dll_dirs))
+    endif
     # Windows loads a DLL's imports from the executable directory before
     # PATH. Stage the engine's non-system imports beside the test, the
     # same place the Fortran pot DLLs sit. Torch on PATH cannot shadow
@@ -2022,24 +2114,13 @@ if get_option('with_tests')
         if fs.is_dir(_pbin)
             _stage_search += _pbin
         endif
-        # Prefix DLLs stay first. A later directory is used only when the
-        # earlier copy does not export the imported symbol. Torch's c10
+        # Prefix bins stay first. A later directory is used only when
+        # the earlier copy does not export the imported symbol. Torch
         # and the metatensor bins are those later directories. The DLLs
         # live in lib for torch and in the sibling bin for the wheels.
-        _runtime_dirs = []
-        if is_variable('pip_metatomic_runtime_dirs')
-            _runtime_dirs += pip_metatomic_runtime_dirs
-        endif
-        if is_variable('LIB_TORCH_LIB_PATH')
-            _runtime_dirs += [LIB_TORCH_LIB_PATH]
-        endif
-        foreach _rd : _runtime_dirs
-            if fs.is_dir(_rd)
-                _stage_search += _rd
-            endif
-            _sib = fs.parent(_rd) / 'bin'
-            if fs.is_dir(_sib)
-                _stage_search += _sib
+        foreach _extra : _win_mta_dll_dirs
+            if fs.is_dir(_extra)
+                _stage_search += _extra
             endif
         endforeach
         _stage_engine_imports = custom_target(
@@ -2066,6 +2147,10 @@ if get_option('with_tests')
         )
     endif
 
+    _delayimp_dep = []
+    if is_windows
+        _delayimp_dep = [cppc.find_library('delayimp', required: true)]
+    endif
     foreach test : test_array
         test_timeout = test.get(3, 30)
         _case_env = _test_env
@@ -2100,9 +2185,13 @@ if get_option('with_tests')
                 cpp_args: test_args,
                 # Include /STACK:16M (Windows) so EAM Al Fortran pots do not
                 # SIGSEGV with STATUS_STACK_OVERFLOW (default stack is 1 MB).
-                link_args: _linkargs,
+                link_args: (
+                    test.get(0) == 'test_relax_engine' and is_windows
+                )
+                ? _linkargs + ['/DELAYLOAD:eon_relax_engine.dll']
+                : _linkargs,
                 dependencies: test.get(0) == 'test_relax_engine'
-                ? test_deps + [capnp_dep]
+                ? test_deps + [capnp_dep] + _delayimp_dep
                 : test_deps,
                 link_with: test.get(0) == 'test_relax_engine'
                 ? test_link + [eon_relax_engine]
@@ -2307,6 +2396,45 @@ if get_option('with_tests')
             )
         endif
     endif
+
+    # Compile the kernels into this binary. libhwy is static and hidden
+    # inside libeonclib, so a test that only links the shared library
+    # cannot switch Highway targets with SetSupportedTargetsForTest.
+    _force_norm_deps = []
+    if _hwy_use
+        _force_norm_deps += [hwy_dep]
+    endif
+    test(
+        'test_force_norm_targets',
+        executable(
+            'test_force_norm_targets',
+            sources: [
+                'unit_tests/ForceNormHighwayTest.cpp',
+                'ForceNorm.cpp',
+                'PbcSimd.cpp',
+                'thirdparty/catch2/catch_amalgamated.cpp',
+            ],
+            include_directories: _incdirs,
+            cpp_args: test_args,
+            dependencies: _force_norm_deps,
+        ),
+        suite: ['eon'],
+        timeout: 60,
+    )
+
+    # Highway kernels must not contain a fused multiply-add. The script
+    # skips on Windows and when objdump or Highway is missing.
+    test(
+        'fp_contract_kernels',
+        py,
+        args: [
+            meson.project_source_root() / 'scripts' / 'check_fp_contract.py',
+            eclib.full_path(),
+        ],
+        depends: [eclib],
+        suite: ['eon'],
+        timeout: 180,
+    )
 
     # Benchmarks (not in default test suite -- run via: meson test --benchmark)
     bench_pot_exe = executable('bench_pot',

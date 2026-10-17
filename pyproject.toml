@@ -7,8 +7,8 @@ authors = [
 ]
 dependencies = [
     "numpy>=1.26.4",
-    "readcon>=0.15.0",
-    "readcon-db>=0.1.6",
+    "readcon @ git+https://github.com/lode-org/readcon-core.git@694e808080c49979ee3099afcfa18e5420c40433",
+    "readcon-db>=0.1.8",
     "vesin>=0.6.1",
     "eon-schema>=0.2.4",
     "xxhash>=3.4.0",

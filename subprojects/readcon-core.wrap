@@ -1,8 +1,10 @@
 [wrap-git]
 directory = readcon-core
 url = https://github.com/lode-org/readcon-core.git
-revision = v0.16.0
-depth = 1
+# Cargo.toml on this commit already says 0.17.1. There is no v0.17.1 tag yet.
+# depth covers that commit even after a few later commits land on main.
+revision = 694e808080c49979ee3099afcfa18e5420c40433
+depth = 50
 patch_directory = readcon-core
 
 [provide]

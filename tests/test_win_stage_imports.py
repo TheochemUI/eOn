@@ -75,3 +75,7 @@ def test_pick_source_skips_a_dll_that_lacks_the_symbol(tmp_path: Path):
     mod._missing = fake_missing
     assert mod.pick_source("c10.dll", ["MissingSym"], [bad_dir, good_dir]) == good
     assert mod.pick_source("c10.dll", ["MissingSym"], [bad_dir]) == bad
+    # The importing DLL's directory is first. It wins when it exports the
+    # symbol, and a later search hit is kept when it does not.
+    assert mod.pick_source("c10.dll", ["MissingSym"], [bad_dir], good_dir) == good
+    assert mod.pick_source("c10.dll", ["MissingSym"], [good_dir], bad_dir) == good
