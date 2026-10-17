@@ -62,3 +62,6 @@ def test_missing_library_leaves_iostatus_and_fails_the_check():
     assert "readcon_db_mirror_ok()" in case
     assert "/no/such/libreadcon_db.so" in case
     assert _python_pin() in case
+    # Windows has no dlopen mirror. The version check stays on POSIX.
+    assert "#ifdef _WIN32" in case
+    assert "REQUIRE_FALSE(eonc::io::readcon_db_mirror_ok());" in case

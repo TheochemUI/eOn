@@ -27,12 +27,18 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 TEST_CASE("loaded rkrdb_open matches the python package version",
           "[readcon-db]") {
-#ifndef _WIN32
+#ifdef _WIN32
+  // dlopen is POSIX. The Windows mirror is a stub, so the check stays
+  // false and the loaded version stays empty.
+  eonc::io::readcon_db_mirror_reset();
+  REQUIRE_FALSE(eonc::io::readcon_db_mirror_ok());
+  REQUIRE(std::string(eonc::io::readcon_db_loaded_version()).empty());
+#else
   unsetenv("EON_READCON_DB_LIBRARY");
-#endif
   eonc::io::readcon_db_mirror_reset();
   REQUIRE(eonc::io::readcon_db_mirror_ok());
   REQUIRE(std::string(eonc::io::readcon_db_loaded_version()) == "0.1.6");
+#endif
 }
 
 TEST_CASE("missing readcon-db leaves IoStatus unchanged", "[readcon-db]") {
