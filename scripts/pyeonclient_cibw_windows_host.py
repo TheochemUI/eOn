@@ -37,14 +37,55 @@ def msys_to_windows(path: str, *, enable: bool) -> str:
 def is_poison_path(entry: str) -> bool:
     """True for PATH entries that break the MSVC CMake probe.
 
-    MinGW supplies ``ld.exe``, ``windres.exe``, and ``gfortran``. Strawberry
-    supplies a Perl pkg-config Meson refuses and an MSYS ``gmake`` that
-    rewrites ``/nologo``. Git ``usr\\bin`` stays: ``sh.exe`` is there, and
-    the MSVC ``link.exe`` is already earlier on PATH.
+    MinGW supplies ``ld.exe``, ``windres.exe``, and ``gfortran``. Git's
+    ``ucrt64`` directory is that same toolchain under another name.
+    Strawberry supplies a Perl pkg-config Meson refuses and an MSYS
+    ``gmake`` that rewrites ``/nologo``. Git ``usr\\bin`` is not poison:
+    ``sh.exe`` is there. Its GNU ``link.exe`` is moved behind MSVC instead
+    of deleting the directory.
     """
 
     norm = entry.replace("\\", "/").rstrip("/").lower()
-    return "mingw" in norm or "strawberry" in norm
+    return "mingw" in norm or "strawberry" in norm or "ucrt64" in norm
+
+
+def _norm_path(entry: str) -> str:
+    return entry.replace("\\", "/").rstrip("/").lower()
+
+
+def is_git_usr_bin(entry: str) -> bool:
+    """True for Git's ``usr\\bin``, which holds both ``sh.exe`` and GNU link."""
+
+    return _norm_path(entry).endswith("/git/usr/bin")
+
+
+def is_msvc_link_dir(entry: str) -> bool:
+    """True for the MSVC ``HostX64\\x64`` directory that contains ``link.exe``."""
+
+    norm = _norm_path(entry)
+    return "vc/tools/msvc" in norm and norm.endswith("/bin/hostx64/x64")
+
+
+def place_git_sh_after_msvc(entries: list[str]) -> list[str]:
+    """Keep Git ``usr\\bin`` on PATH, immediately after MSVC's linker.
+
+    Git bash prepends ``usr\\bin``. Meson uses the first ``link.exe`` it
+    finds and rejects the GNU one. ``sh.exe`` still has to stay reachable
+    for the rgpot configure.
+    """
+
+    git_at = [i for i, entry in enumerate(entries) if is_git_usr_bin(entry)]
+    msvc_at = [i for i, entry in enumerate(entries) if is_msvc_link_dir(entry)]
+    if not git_at or not msvc_at:
+        return entries
+    first_msvc = msvc_at[0]
+    if all(i > first_msvc for i in git_at):
+        return entries
+    git_entries = [entries[i] for i in git_at]
+    rest = [entry for i, entry in enumerate(entries) if i not in set(git_at)]
+    removed_before = sum(1 for i in git_at if i < first_msvc)
+    insert_at = first_msvc - removed_before + 1
+    return rest[:insert_at] + git_entries + rest[insert_at:]
 
 
 def split_path(value: str) -> list[str]:
@@ -79,7 +120,7 @@ def cleaned_path(value: str, prefix: Path) -> str:
             continue
         seen.add(key)
         entries.append(entry)
-    return ";".join(entries)
+    return ";".join(place_git_sh_after_msvc(entries))
 
 
 def _first_file(candidates: list[Path]) -> Path | None:

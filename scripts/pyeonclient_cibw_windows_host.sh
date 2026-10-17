@@ -13,12 +13,12 @@ if [ ! -d "${prefix}/Library" ]; then
   exit 1
 fi
 
-# MinGW and Strawberry break the CMake probe (ld, windres, gmake rewriting
-# /nologo, Pure-Perl pkg-config). Git usr/bin stays so sh.exe remains;
-# ilammy already put MSVC link.exe ahead of GNU link.
-PATH=$(printf '%s\n' "$PATH" | tr ':' '\n' \
-  | grep -vE '[Mm]ingw|[Ss]trawberry' \
-  | paste -sd:)
+# MinGW, Git ucrt64, and Strawberry break the CMake probe. Git usr/bin
+# stays so sh.exe remains, and the helper places it after MSVC link.exe
+# (Git bash prepends the GNU one).
+# shellcheck source=scripts/ci/win_bash_path.sh
+source "${root}/scripts/ci/win_bash_path.sh"
+PATH="$(eon_drop_cmake_poison "$PATH")"
 export PATH="${prefix}/Library/bin:${prefix}/bin:${PATH}"
 
 if ! command -v flang-new >/dev/null 2>&1; then

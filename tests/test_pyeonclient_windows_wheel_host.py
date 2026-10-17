@@ -28,6 +28,7 @@ def test_msys_prefix_becomes_a_windows_path():
 def test_poison_paths_are_the_cmake_probe_breakers():
     assert hostmod.is_poison_path(r"C:\mingw64\bin")
     assert hostmod.is_poison_path(r"C:\Strawberry\perl\bin")
+    assert hostmod.is_poison_path(r"C:\Program Files\Git\ucrt64\bin")
     assert not hostmod.is_poison_path(r"C:\Program Files\Git\usr\bin")
     assert not hostmod.is_poison_path(r"C:\Program Files\Git\bin")
     assert not hostmod.is_poison_path(
@@ -56,6 +57,28 @@ def test_cleaned_path_keeps_msvc_and_the_host_bins(tmp_path: Path):
     assert "mingw" not in cleaned.lower()
     assert "strawberry" not in cleaned.lower()
     assert r"C:\Program Files\Git\usr\bin" in cleaned
+
+
+def test_cleaned_path_puts_msvc_link_ahead_of_git_sh(tmp_path: Path):
+    prefix = tmp_path / "env"
+    msvc = (
+        r"C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
+        r"\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64"
+    )
+    git_sh = r"C:\Program Files\Git\usr\bin"
+    raw = ";".join(
+        [
+            r"C:\Program Files\Git\ucrt64\bin",
+            git_sh,
+            r"C:\Users\runneradmin\bin",
+            msvc,
+            r"C:\Windows\System32",
+        ]
+    )
+    parts = hostmod.cleaned_path(raw, prefix).split(";")
+    assert "ucrt64" not in hostmod.cleaned_path(raw, prefix).lower()
+    assert parts.index(msvc) < parts.index(git_sh)
+    assert parts.index(str(prefix / "Library" / "bin")) < parts.index(msvc)
 
 
 def test_host_environment_points_at_eigen_and_flang(tmp_path: Path):
@@ -119,8 +142,8 @@ def test_workflow_installs_the_host_prefix_before_cibuildwheel():
     assert "activate-environment: false" in text
     host = text.split("pyeonclient_cibw_windows_host.sh", 1)[0]
     assert "ilammy/msvc-dev-cmd" in host
-    assert shell.index("grep -vE") < shell.index("eon_export_flang_rt")
-    assert "[Mm]ingw|[Ss]trawberry" in shell
+    assert shell.index("eon_drop_cmake_poison") < shell.index("eon_export_flang_rt")
+    assert "win_bash_path.sh" in shell
     assert "win_flang_rt.sh" in shell
     assert "flang-new" in shell
     assert "cargo install --root" in shell

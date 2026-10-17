@@ -142,8 +142,8 @@ jobs:
           # that drive colon, so the prepend is a POSIX path.
           _py=$(eon_posix_path "${pythonLocation}")
           export PATH="${_py}:${_py}/Scripts:${PATH}"
-          # MinGW and Strawberry poison the CMake probe. Git usr/bin stays
-          # so sh.exe is still there for rgpot.
+          # MinGW, Git ucrt64, and Strawberry poison the CMake probe.
+          # Git usr/bin stays so sh.exe is still there, after MSVC link.exe.
           export PATH="$(eon_drop_cmake_poison "$PATH")"
           # C++ deps from pixi (eigen, quill, flang, …); do not use pixi python/torch
           PIXI_PRE=$(eon_posix_path "${PIXI_PROJECT_ROOT:-$PWD}/.pixi/envs/dev-mta")
