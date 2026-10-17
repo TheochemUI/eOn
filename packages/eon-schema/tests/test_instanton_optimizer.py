@@ -29,3 +29,17 @@ def test_instanton_optimizer_defaults_and_roundtrip():
 def test_instanton_optimizer_rejects_negative_limit(limit):
     with pytest.raises(ValidationError):
         InstantonConfig(newton_limit=limit)
+
+
+def test_lanczos_step_is_independent_and_roundtrips():
+    assert InstantonConfig().lanczos_step == 1e-4
+    configured = InstantonConfig(lanczos_step=0.002)
+    assert configured.physical_hessian_step == 1e-4
+    restored = InstantonConfig.model_validate_json(configured.model_dump_json())
+    assert restored.lanczos_step == 0.002
+
+
+@pytest.mark.parametrize("step", [0, -0.001, float("inf"), float("nan")])
+def test_lanczos_step_rejects_nonpositive_and_nonfinite(step):
+    with pytest.raises(ValidationError):
+        InstantonConfig(lanczos_step=step)

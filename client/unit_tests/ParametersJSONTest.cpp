@@ -10,10 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 
+#include "eon/ParametersJSON.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Parameters.h"
-#include "eon/ParametersJSON.h"
 
 #include <filesystem>
 #include <fstream>
@@ -569,6 +569,33 @@ TEST_CASE("Rate optimizer limit and reference Hessian paths round trip",
   REQUIRE(roundtrip.load_json(invalid.dump()) != 0);
   REQUIRE_THROWS_AS(eonc::config::from_json(invalid, roundtrip),
                     std::invalid_argument);
+}
+
+TEST_CASE("Directional Lanczos displacement is positive finite and independent",
+          "[params][json][LanczosStep]") {
+  Parameters defaults;
+  REQUIRE(defaults.instanton_options().lanczos_step == Catch::Approx(1e-4));
+  Parameters configured;
+  REQUIRE(configured.load_ini_text("[Instanton]\nlanczos_step = 0.002\n") == 0);
+  REQUIRE(configured.instanton_options().lanczos_step == Catch::Approx(0.002));
+  REQUIRE(configured.instanton_options().physical_hessian_step ==
+          Catch::Approx(1e-4));
+  Parameters restored;
+  REQUIRE(restored.load_json(configured.to_json()) == 0);
+  REQUIRE(restored.instanton_options().lanczos_step == Catch::Approx(0.002));
+  REQUIRE_THROWS_AS(configured.load_ini_text("[Instanton]\nlanczos_step = 0\n"),
+                    std::invalid_argument);
+  REQUIRE_THROWS_AS(
+      configured.load_ini_text("[Instanton]\nlanczos_step = -0.001\n"),
+      std::invalid_argument);
+  for (const double step :
+       {0.0, -0.001, std::numeric_limits<double>::infinity(),
+        std::numeric_limits<double>::quiet_NaN()}) {
+    const nlohmann::json invalid = {{"Instanton", {{"lanczos_step", step}}}};
+    REQUIRE(restored.load_json(invalid.dump()) != 0);
+    REQUIRE_THROWS_AS(eonc::config::from_json(invalid, restored),
+                      std::invalid_argument);
+  }
 }
 
 } /* namespace tests */
