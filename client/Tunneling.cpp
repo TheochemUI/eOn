@@ -4072,22 +4072,27 @@ void physicalBathFluctuations(RateInstanton &inst,
                                 .norm();
   inst.phaseZeroVerified = zeros == 1 && std::abs(values[phase]) <= zeroTol &&
                            overlap > 0.9 && inst.phaseEigenResidual <= zeroTol;
-  const long bathDimension=inst.physicalBath->curvatures.size();
-  double phaseMetric=1.0,fullBN=inst.bN;
-  const VectorXd retainedPhase=es.eigenvectors().col(phase);
-  for (long j=0;j<n;++j) {
-    VectorXd lifted=VectorXd::Zero(bathDimension);
-    for (long l=0;l<n;++l) {
-      const VectorXd sourceVariation=bath.sourceJacobians[l]*retainedPhase.segment(l*f,f);
-      lifted.array()-=bath.inverseBath[(j-l+n)%n].array()*sourceVariation.array();
+  const long bathDimension = inst.physicalBath->curvatures.size();
+  double phaseMetric = 1.0, fullBN = inst.bN;
+  const VectorXd retainedPhase = es.eigenvectors().col(phase);
+  for (long j = 0; j < n; ++j) {
+    VectorXd lifted = VectorXd::Zero(bathDimension);
+    for (long l = 0; l < n; ++l) {
+      const VectorXd sourceVariation =
+          bath.sourceJacobians[l] * retainedPhase.segment(l * f, f);
+      lifted.array() -=
+          bath.inverseBath[(j - l + n) % n].array() * sourceVariation.array();
     }
-    phaseMetric+=lifted.squaredNorm();
-    fullBN+=(bath.bathPositions[(j+1)%n]-bath.bathPositions[j]).squaredNorm();
+    phaseMetric += lifted.squaredNorm();
+    fullBN +=
+        (bath.bathPositions[(j + 1) % n] - bath.bathPositions[j]).squaredNorm();
   }
-  if (!(fullBN>0) || !std::isfinite(fullBN) || !std::isfinite(phaseMetric))
+  if (!(fullBN > 0) || !std::isfinite(fullBN) || !std::isfinite(phaseMetric))
     throw std::runtime_error("physical bath: invalid lifted phase measure");
-  EONC_LOG_INFO("[Instanton] physical bath phase measure: bN_full {:.17g}, bN_retained {:.17g}, lift_metric {:.17g}, effective_bN {:.17g}",
-      fullBN,inst.bN,phaseMetric,fullBN/phaseMetric);
+  EONC_LOG_INFO(
+      "[Instanton] physical bath phase measure: bN_full {:.17g}, bN_retained "
+      "{:.17g}, lift_metric {:.17g}, effective_bN {:.17g}",
+      fullBN, inst.bN, phaseMetric, fullBN / phaseMetric);
   double logPrime = 0;
   for (long k = 0; k < dim; ++k)
     if (k != phase)
@@ -4095,7 +4100,8 @@ void physicalBathFluctuations(RateInstanton &inst,
   const double referenceDet = er.eigenvalues().array().log().sum();
   const double fullDimension = n * (f + inst.physicalBath->curvatures.size());
   const double logMeasure = fullDimension * std::log(inst.betaN * kHbar);
-  inst.bathLogAbsDet = logPrime + bath.bathLogDeterminant + std::log(phaseMetric);
+  inst.bathLogAbsDet =
+      logPrime + bath.bathLogDeterminant + std::log(phaseMetric);
   inst.bathReactantLogAbsDet = referenceDet + referenceBath.bathLogDeterminant;
   inst.logZr =
       -inst.beta * vReactant - logMeasure - 0.5 * inst.bathReactantLogAbsDet;

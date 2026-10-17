@@ -207,33 +207,42 @@ TEST_CASE("physical bath optimizes and normalizes a coupled quartic rate ring",
   REQUIRE(rate.phaseZeroVerified);
   REQUIRE(rate.rateValid);
   REQUIRE(std::isfinite(rate.logRate));
-  const long n=options.beads;
-  MatrixXd fullKI=MatrixXd::Zero(2*n,2*n),fullKR=MatrixXd::Zero(2*n,2*n);
-  double fullBN=0;
-  for (long j=0;j<n;++j) {
-    const long next=(j+1)%n;
-    const double r=ring.beads[j][0],x=xr+r;
-    MatrixXd local(2,2),reference(2,2);
-    local<<3*x*x-1,coupling,coupling,e;
-    reference<<3*xr*xr-1,coupling,coupling,e;
-    fullKI.block<2,2>(2*j,2*j)+=local;
-    fullKR.block<2,2>(2*j,2*j)+=reference;
-    for (auto *matrix:{&fullKI,&fullKR}) {
-      matrix->block<2,2>(2*j,2*j)+=spring*MatrixXd::Identity(2,2);
-      matrix->block<2,2>(2*next,2*next)+=spring*MatrixXd::Identity(2,2);
-      matrix->block<2,2>(2*j,2*next)-=spring*MatrixXd::Identity(2,2);
-      matrix->block<2,2>(2*next,2*j)-=spring*MatrixXd::Identity(2,2);
+  const long n = options.beads;
+  MatrixXd fullKI = MatrixXd::Zero(2 * n, 2 * n),
+           fullKR = MatrixXd::Zero(2 * n, 2 * n);
+  double fullBN = 0;
+  for (long j = 0; j < n; ++j) {
+    const long next = (j + 1) % n;
+    const double r = ring.beads[j][0], x = xr + r;
+    MatrixXd local(2, 2), reference(2, 2);
+    local << 3 * x * x - 1, coupling, coupling, e;
+    reference << 3 * xr * xr - 1, coupling, coupling, e;
+    fullKI.block<2, 2>(2 * j, 2 * j) += local;
+    fullKR.block<2, 2>(2 * j, 2 * j) += reference;
+    for (auto *matrix : {&fullKI, &fullKR}) {
+      matrix->block<2, 2>(2 * j, 2 * j) += spring * MatrixXd::Identity(2, 2);
+      matrix->block<2, 2>(2 * next, 2 * next) +=
+          spring * MatrixXd::Identity(2, 2);
+      matrix->block<2, 2>(2 * j, 2 * next) -= spring * MatrixXd::Identity(2, 2);
+      matrix->block<2, 2>(2 * next, 2 * j) -= spring * MatrixXd::Identity(2, 2);
     }
-    fullBN+=std::pow(ring.beads[next][0]-r,2)
-        +std::pow(eliminated.bathPositions[next][0]-eliminated.bathPositions[j][0],2);
+    fullBN += std::pow(ring.beads[next][0] - r, 2) +
+              std::pow(eliminated.bathPositions[next][0] -
+                           eliminated.bathPositions[j][0],
+                       2);
   }
-  REQUIRE(fullBN>ring.bN);
-  Eigen::SelfAdjointEigenSolver<MatrixXd> ei(fullKI),er(fullKR);
-  Eigen::Index phase=0;
+  REQUIRE(fullBN > ring.bN);
+  Eigen::SelfAdjointEigenSolver<MatrixXd> ei(fullKI), er(fullKR);
+  Eigen::Index phase = 0;
   ei.eigenvalues().cwiseAbs().minCoeff(&phase);
-  double logPrime=0;
-  for (long k=0;k<2*n;++k) if(k!=phase) logPrime+=std::log(std::abs(ei.eigenvalues()[k]));
-  const double oracle=0.5*std::log(fullBN/(2*std::numbers::pi*ring.betaN*kHbar*kHbar))
-      +0.5*(er.eigenvalues().array().log().sum()-logPrime)-ring.betaN*fullEnergy;
-  REQUIRE(std::abs(rate.logRate-oracle)<1e-8);
+  double logPrime = 0;
+  for (long k = 0; k < 2 * n; ++k)
+    if (k != phase)
+      logPrime += std::log(std::abs(ei.eigenvalues()[k]));
+  const double oracle =
+      0.5 * std::log(fullBN /
+                     (2 * std::numbers::pi * ring.betaN * kHbar * kHbar)) +
+      0.5 * (er.eigenvalues().array().log().sum() - logPrime) -
+      ring.betaN * fullEnergy;
+  REQUIRE(std::abs(rate.logRate - oracle) < 1e-8);
 }
