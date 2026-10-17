@@ -41,6 +41,9 @@ public:
 
 private:
   friend int xtsciBandSurface(void *user, void *request);
+  friend int xtsciSolidBandSurface(void *user, void *request);
+  // Solid-state step (rgsaddle ABI minor 17): positions and cells move.
+  void stepSolid();
   // True when the session's band is the host path, bit for bit.
   bool sessionMatchesPath() const;
 
@@ -50,6 +53,8 @@ private:
   std::vector<double> m_cell;
   std::vector<AtomMatrix> m_fixed;
   double m_maxMove{0.2};
+  // The band carries one cell per image (NEB solid_state).
+  bool m_solid{false};
 };
 
 } // namespace eonc
