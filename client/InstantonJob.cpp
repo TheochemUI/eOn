@@ -568,7 +568,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   auto write = [&](RunStatus status) {
     auto env = JobResultEnvelope::fromMinimization(
         status, params.potential_options().potential,
-        PotRegistry::get().total_force_calls(), false, 0.0);
+        pot->forceCallCounter.load(), false, 0.0);
     env.provenance = provenanceForJob(params);
     env.job_type = "instanton";
     env.extras.emplace_back("force_calls",
@@ -630,10 +630,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       return returnFiles;
     }
     if (!haveEnergies) {
-      const long before = PotRegistry::get().total_force_calls();
+      const long before = pot->forceCallCounter.load();
       std::vector<VectorXd> grads;
       evaluate(pathQ, pathV, grads);
-      sdPathForceCalls = PotRegistry::get().total_force_calls() - before;
+      sdPathForceCalls = pot->forceCallCounter.load() - before;
     } else {
       sdPathForceCalls = 0;
     }
@@ -666,10 +666,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   if (!profile && o.initial_ring.empty()) {
     pathQ.clear();
     pathV.clear();
-    const long before = PotRegistry::get().total_force_calls();
+    const long before = pot->forceCallCounter.load();
     steepestDescentPath(qSaddle, vSaddle, hSaddle, mw.sqrtMasses(), evaluate,
                         pathQ, pathV);
-    sdPathForceCalls = PotRegistry::get().total_force_calls() - before;
+    sdPathForceCalls = pot->forceCallCounter.load() - before;
     std::vector<double> arc(pathQ.size(), 0.0);
     for (size_t k = 1; k < pathQ.size(); ++k) {
       arc[k] = arc[k - 1] + (pathQ[k] - pathQ[k - 1]).norm();
@@ -702,7 +702,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       EONC_LOG_INFO("[Instanton] steepest-descent path of {} points, {} "
                     "force calls",
                     pathQ.size(),
-                    PotRegistry::get().total_force_calls() - before);
+                    pot->forceCallCounter.load() - before);
       for (size_t k = 0; k < pathQ.size(); ++k) {
         EONC_LOG_DEBUG("[Instanton] path {} s {:.6f} V - V_reactant {:.8f}", k,
                        profile->s()[k], pathV[k] - vReactant);
@@ -1412,7 +1412,7 @@ std::vector<std::string> InstantonJob::run(void) {
                                              : RunStatus::FAIL_MAX_ITERATIONS);
   auto env = JobResultEnvelope::fromMinimization(
       status, params.potential_options().potential,
-      PotRegistry::get().total_force_calls(), false, 0.0);
+      pot->forceCallCounter.load(), false, 0.0);
   env.provenance = provenanceForJob(params);
   env.job_type = "instanton";
   env.extras.emplace_back("force_calls", static_cast<double>(env.force_calls));
