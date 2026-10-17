@@ -2140,6 +2140,7 @@ if get_option('with_tests')
         ['test_ohtst_scan', 'OHTSTScanTest.cpp', ''],
         ['test_hessian', 'HessianTest.cpp', 'neb_morse'],
         ['test_reference_hessian', 'ReferenceHessianTest.cpp', 'neb_morse'],
+        ['test_harmonic_reference', 'HarmonicReferenceActionTest.cpp', ''],
         ['test_geom', 'GeometryAnalysisTest.cpp', 'neb_morse'],
         ['test_params_json', 'ParametersJSONTest.cpp', ''],
         ['test_params_ssot', 'ParametersSSOTTest.cpp', ''],
