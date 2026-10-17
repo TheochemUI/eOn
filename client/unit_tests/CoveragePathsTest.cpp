@@ -3368,12 +3368,25 @@ TEST_CASE("instanton references share constraints and the mass metric",
     endpoint->setCell(cell);
   }
   SECTION("species") { endpoint->setAtomicNr(0, 2); }
-  SECTION("mass") { endpoint->setMass(0, 2.0 * reactant->getMass(0)); }
+  SECTION("mass") {
+    // CON stores one mass per element. Scaling every atom of this symbol
+    // keeps the frame writable and still changes the mass metric.
+    const long z = endpoint->getAtomicNr(0);
+    const double scaled = 2.0 * reactant->getMass(0);
+    for (long i = 0; i < endpoint->numberOfAtoms(); ++i) {
+      if (endpoint->getAtomicNr(i) == z) {
+        endpoint->setMass(i, scaled);
+      }
+    }
+  }
   SECTION("constraints") { endpoint->setFixed(1, 0); }
   REQUIRE(eonc::io::io_ok(endpoint->matter2con("saddle.con", false)));
   REQUIRE(eonc::io::io_ok(endpoint->matter2con("product.con", false)));
   ParametersLoadAccess::instanton_options(params).beads = 4;
   ParametersLoadAccess::instanton_options(params).max_iterations = 0;
+  // Rate mode rejects a non-positive temperature before it compares
+  // reference surfaces. A positive value lets that comparison run.
+  ParametersLoadAccess::instanton_options(params).temperature = 300.0;
   for (const std::string mode : {"rate", "splitting"}) {
     INFO(mode);
     ParametersLoadAccess::instanton_options(params).mode = mode;
