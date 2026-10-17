@@ -133,6 +133,11 @@ Hooke's law converges with chords from 0.093 to 0.289 A and image energies
 SVN's first-step finite-difference L-BFGS scaling converges to SVN's band,
 0.000135, 0.056816 and 1.800656 eV, in 209.
 
+For a climbing-image band the spacing carries no answer: the climbing
+image does, the barrier and the saddle geometry, and both laws give the
+same climbing image. Unequal spacing at convergence is acceptable there;
+spacing matters for a plain NEB.
+
 On a well-posed path the two laws agree. For the LJ13 reactant and product
 in `client/unit_tests/data/systems/neb_lj13`, with the climbing image on
 and 3, 7, 15 and 31 images, the climbing image lies within 5e-6 eV and
