@@ -1193,8 +1193,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         for (size_t j = 0; j < inst.beads.size(); ++j) {
           VectorXd source;
           if (physicalModel->bath->source) {
-            MatrixXd jac;
-            std::vector<MatrixXd> hess;
+            Eigen::MatrixXd jac;
+            std::vector<Eigen::MatrixXd> hess;
             physicalModel->bath->source(inst.beads[j], source, jac, hess);
           } else
             source = physicalModel->bath->coupling.transpose() * inst.beads[j];
