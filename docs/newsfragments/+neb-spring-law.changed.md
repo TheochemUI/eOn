@@ -1,0 +1,1 @@
+Document the two NEB spring laws, Hooke's (the default) and the squared form behind `geometric_spring`, with their shared fixed point, and pin the SVN parity NEB case to the Hooke-spring run (236 force calls and its converged image energies).

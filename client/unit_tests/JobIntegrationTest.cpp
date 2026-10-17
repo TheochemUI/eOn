@@ -620,12 +620,24 @@ max_energy = 10.0
   REQUIRE(forceCalls_ <= 39);
 
   // Eigenvalue must be negative (true saddle point).
-  // SVN printed -1.014995. Dimer::rotate now updates the plane from the
-  // pre-rotation direction; the FD curvature on this fixture
-  // is -1.010564. Energy still matches the SVN saddle.
+  // final_eigenvalue is the pre-final estimate: the min-mode curvature at
+  // the geometry before the converged step, since convergence is judged on
+  // the forces alone. SVN printed -1.014995. Dimer::rotate now updates the
+  // plane from the pre-rotation direction; the host dimer's pre-final
+  // estimate on this fixture is -1.010564. Energy still matches the SVN
+  // saddle.
   double eigenvalue = std::stod(results["final_eigenvalue"]);
   REQUIRE(eigenvalue < 0.0);
+#ifdef WITH_RGSADDLE
+  // The rgsaddle dimer rotates to a slightly different mode from frame 6
+  // on, so the climb reaches the same saddle (6.2e-5 A apart) through a
+  // different pre-final geometry, where the curvature is -1.013461 by
+  // either estimator. At the returned saddle both measure about -1.0103,
+  // and the central-difference Hessian gives -1.0102.
+  REQUIRE(eigenvalue == Catch::Approx(-1.013461).epsilon(1e-3));
+#else
   REQUIRE(eigenvalue == Catch::Approx(-1.010564).epsilon(1e-3));
+#endif
 
   // Reactant energy must match
   double reactantE = std::stod(results["potential_energy_reactant"]);
@@ -743,8 +755,14 @@ max_move = 0.2
   int nImages = std::stoi(results["number_of_images"]);
   REQUIRE(nImages == 3);
 
-  // Force calls must be <= SVN (209)
-  REQUIRE(forceCalls_ <= 209);
+  // SVN recorded 209 force calls with the squared spring
+  // k (|d+|^2 - |d-|^2) tau and a finite-difference first L-BFGS step;
+  // geometric_spring = true with that probe reproduces its band and its
+  // 209 calls. The default Hooke spring k (|d+| - |d-|) tau of Jonsson,
+  // Mills and Jacobsen (1998) and Henkelman and Jonsson (2000) has the same
+  // fixed point (client/validation/neb_spring_fixed_point.py); its measured
+  // run on this fixture takes 236.
+  REQUIRE(forceCalls_ <= 236);
 
   // energy_reference must match SVN reactant energy
   double eRef = std::stod(results["energy_reference"]);
@@ -760,9 +778,12 @@ max_move = 0.2
   double eProduct =
       std::stod(results["image" + std::to_string(nImages + 1) + "_energy"]);
   REQUIRE(eProduct == Catch::Approx(631.805887).epsilon(1e-6));
+  // Converged image energies of the Hooke-spring run (SVN's squared
+  // spring gives 0.000135, 0.056816 and 1.800656 eV).
+  const double expected[] = {0.000049, 0.259018, 2.851935};
   for (int i = 1; i <= nImages; i++) {
     double ei = std::stod(results["image" + std::to_string(i) + "_energy"]);
-    REQUIRE(std::isfinite(ei));
+    REQUIRE(ei == Catch::Approx(expected[i - 1]).margin(1.0e-5));
   }
 
   REQUIRE(results.count("number_of_extrema") > 0);

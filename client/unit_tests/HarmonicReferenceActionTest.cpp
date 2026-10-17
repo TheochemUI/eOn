@@ -29,8 +29,12 @@ TEST_CASE("Mehler reference has the exact harmonic trace at every bead count",
       k.block<2, 2>(2 * j, 2 * j) += h;
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> modes(k);
     REQUIRE(modes.eigenvalues().minCoeff() > 0);
+    // Each bead and mass-weighted coordinate carries the free-particle
+    // factor (2 pi hbar tau)^(-1/2) and its Gaussian integral
+    // (2 pi hbar / tau)^(1/2): one 1/tau per coordinate, tau = betaN*hbar.
+    const double tau = betaN * hbar;
     const double logZ = -beta * offset + action.logMeasureCorrection(n) -
-                        n * std::log(betaN * hbar * hbar) -
+                        n * h.rows() * std::log(tau) -
                         0.5 * modes.eigenvalues().array().log().sum();
     REQUIRE(std::abs(logZ - exact) < 2e-12);
   }

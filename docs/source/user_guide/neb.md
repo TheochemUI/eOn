@@ -91,12 +91,56 @@ Via the surrogate potential interface, a native C++ implementation of the Gaussi
 - Modular strategy pattern for tangent, projection, and spring force components.
 ```
 
-### Geometric spring
+### Spring law
 
-`geometric_spring = true` replaces the Hookean parallel spring with
-`k` times the difference of the squared neighbour distances. A step
-perpendicular to the band does not change that force, and the
-stiffness falls in proportion to the image spacing.
+The default parallel spring force on image $i$ is Hooke's law,
+
+$$
+F_i^{s\parallel} = k\left(|R_{i+1} - R_i| - |R_i - R_{i-1}|\right)\hat\tau_i ,
+$$
+
+as {cite:t}`neb-henkelmanImprovedTangentEstimate2000` write it with the
+improved tangent and {cite:t}`neb-henkelmanClimbingImageNudged2000` use it
+for the climbing image. {cite:t}`neb-jonssonNudgedElasticBand1998` project
+the spring difference $(R_{i+1} - R_i) - (R_i - R_{i-1})$ onto the tangent,
+which is linear in the distances as well.
+It vanishes when the two neighbour distances are equal, and its stiffness
+there is `k` whatever the image spacing.
+
+`geometric_spring = true` selects
+
+$$
+F_i^{s\parallel} = k\left(|R_{i+1} - R_i|^2 - |R_i - R_{i-1}|^2\right)\hat\tau_i ,
+$$
+
+the form of the SVN client (tag `svn-Jul_01_2024`, where both distances are
+`squaredNorm()`), and the default until 6a89efd32 moved to Hooke's law (gh-210).
+It is Hooke's law times $|R_{i+1} - R_i| + |R_i - R_{i-1}|$, so it has the
+same fixed point, equal neighbour distances, with a stiffness of
+$2k|R_{i+1} - R_i|$ there: it softens as the band gets denser.
+`client/validation/neb_spring_fixed_point.py` derives both fixed points,
+shows that on a curved path equal chords are equal arc lengths, and shows
+the effect described below.
+
+With every atom free the client removes the net translation from each
+projected force. When the tangent itself carries a translation, as it does
+when the endpoints differ by the motion of one atom, a band converges with
+its perpendicular force and spring cancelling up to a common translation,
+so the converged spacing is unequal and depends on the spring law. On the
+LJ13 pair with atom 0 displaced 0.5 A (the SVN parity case, 3 images),
+Hooke's law converges with chords from 0.093 to 0.289 A and image energies
+0.000049, 0.259018 and 2.851935 eV in 236 force calls; the squared law with
+SVN's first-step finite-difference L-BFGS scaling converges to SVN's band,
+0.000135, 0.056816 and 1.800656 eV, in 209.
+
+On a well-posed path the two laws agree. For the LJ13 reactant and product
+in `client/unit_tests/data/systems/neb_lj13`, with the climbing image on
+and 3, 7, 15 and 31 images, the climbing image lies within 5e-6 eV and
+7e-4 A (RMSD) of the eonclient dimer saddle (-38.963676 eV) under both
+laws, and the largest distance of an image from the steepest-descent path
+off that saddle falls from 0.032 to 0.010 A. Hooke's law keeps the
+spacing closer to even: the longest over the shortest chord is 1.12,
+1.18, 1.30 and 1.48, against 1.12, 1.25, 2.53 and 1.77 for the squared law.
 
 ### Onsager-Machlup NEB
 
