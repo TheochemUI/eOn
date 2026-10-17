@@ -300,12 +300,59 @@ job writes `instanton_collapsed = 1` and no rate. The rate uses the bead Hessian
 that update. On the one-dimensional Eckart barrier the search converges
 in 9 to 12 steps from the cosine seed and in 3 from a seed on the path.
 
+`newton_limit` is the maximum number of active ring coordinates for the
+dense Newton route. Its default is the largest representable `long`,
+which preserves dense Newton selection. Set `newton_limit = 0` to select
+the existing matrix-free minimum-mode dimer search; negative values are
+rejected. For a frictionless even half ring, the active count is
+`(P/2 + 1) * f`; a full ring uses `P * f`. A nonlocal bath can select the
+dimer independently of this limit. This setting changes the optimizer,
+not the force criterion or the reference-spectrum checks. Final rate
+prefactors still require the configured physical bead Hessians.
+
+Independent reference calculations can supply the two reference Hessians:
+
+```ini
+[Instanton]
+reactant_hessian_filename = reactant-hessian.dat
+saddle_hessian_filename = saddle-hessian.dat
+```
+
+Each file is a plain, whitespace-separated square matrix over the free
+atoms in their input order, three Cartesian coordinates per atom. Its
+entries are mass weighted, in eV/(amu Å²). For each matrix, provide the
+measured geometry as an ordinary CON file with `.con` appended to the
+matrix filename, for example `reactant-hessian.dat.con`. The job checks
+the complete geometry, cell, ordered species, atom IDs, masses and fixed
+masks, then checks matrix dimensions, finite entries and symmetry to
+roundoff. It retains every signed curvature for the reference-spectrum
+checks. An absent filename requests the physical finite-difference
+calculation.
+
+The CON sidecar cannot establish an external calculator's Hamiltonian.
+Supply a matrix only when the calculation has matching pseudopotentials,
+charge, functional, boundary conditions and converged force/displacement
+settings. Preserve that calculation's provenance with the matrix. A
+matching file avoids repeating its reference force displacements; it
+does not replace final physical bead Hessians or prove reference
+stationarity. The job still evaluates both reference energies and forces
+on the selected potential and applies its rigid-mode projection to the
+loaded matrices.
+
 An unexpected negative-mode count can also trigger a complete physical
 Hessian refresh during optimization, including at iteration zero.
 For a half ring with even bead count `P`, this evaluates `P/2 + 1`
 independent bead Hessians; central differences cost `2f` force geometries
 per bead for `f` free Cartesian coordinates. `hessian_stride` controls the
 final rate-prefactor Hessians and does not reduce this optimizer refresh.
+
+`lanczos_step = 0.0001` sets the central directional displacement for
+Lanczos Hessian-vector products in the dimer search. It must be finite and
+positive and has units **sqrt(amu) Angstrom**. It is independent of
+`physical_hessian_step`. Choose it by measuring directional-curvature
+convergence with displacement and electronic accuracy: a central gradient
+difference amplifies bounded gradient error eta by at most eta/h. An SCF
+residual alone does not establish that gradient-error bound.
 
 `physical_hessian_step = 0.0001` sets every central physical bead-Hessian
 displacement during Newton optimization, including initial and adaptive
@@ -322,6 +369,29 @@ the highest and each ring starts the next, colder one. An empty list uses
 `temperature`. `bead_ladder` (default off) starts a ring of at least 16
 beads at a quarter of that count and doubles. `hessian_final` is
 `recomputed`: the rate takes a Hessian on every stride-th bead.
+
+For a geometry warm start of a rate calculation, set `initial_ring` to a
+saved `instanton.con`. The file contains exactly `beads` frames of the closed
+ring, without an extra copy of the first frame at the end. Every frame must
+have the reference cell, ordered species, atom IDs, masses, constraints and
+frozen coordinates. Cached energies and forces are ignored. The selected
+potential evaluates the ring again; optimizer history is not restored.
+
+For example, copy a saved 32-bead ring to `seed-ring.con` in a separate run
+directory, retain the same reference and potential files, and set:
+
+```ini
+[Instanton]
+mode = rate
+beads = 32
+initial_ring = seed-ring.con
+```
+
+The seed can also start a calculation at a different temperature. Without
+`initial_path`, a supplied ring skips construction of the steepest-descent
+seed path. `initial_path` can be supplied as well when its separate WKB path
+estimate is wanted. A saved unconverged ring remains a geometry seed; it does
+not establish a rate or convergence.
 
 On a rate calculation, `initial_path` is a band over the barrier. The ring
 starts on the closed orbit of that band whose period is {math}`\beta \hbar`,

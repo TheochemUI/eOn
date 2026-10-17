@@ -19,6 +19,8 @@
 #include "eon/PathIntegral.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
+#include "eon/RateRingSeed.h"
+#include "eon/ReferenceHessian.h"
 #include "eon/Tunneling.h"
 
 #include <Eigen/QR>
@@ -439,7 +441,8 @@ std::vector<std::string>
 runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         const Matter &reactant, const MassWeighted &mw,
         const tunneling::BatchPotential &evaluate,
-        const std::function<MatrixXd(const VectorXd &)> &hessianAt,
+        const std::function<MatrixXd(const VectorXd &, const std::string &)>
+            &hessianAt,
         const std::function<MatrixXd(const VectorXd &)> &beadHessianAt,
         const std::array<bool, 3> &rotationZero,
         const std::array<double, 3> &rotationResidual) {
@@ -511,8 +514,9 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   // stationarity diagnostics require no additional potential calls.
   const auto reactantForce = referenceForces("reactant", reactantReference);
   const auto saddleForce = referenceForces("saddle", saddle);
-  const MatrixXd hReactant = hessianAt(VectorXd::Zero(n));
-  const MatrixXd hSaddle = hessianAt(qSaddle);
+  const MatrixXd hReactant =
+      hessianAt(VectorXd::Zero(n), o.reactant_hessian_filename);
+  const MatrixXd hSaddle = hessianAt(qSaddle, o.saddle_hessian_filename);
   // Retain the projected, mass-weighted references used by the rate
   // calculation, including spectra that fail metastability validation.
   auto saveReference = [&](const std::string &name, const MatrixXd &matrix) {
@@ -564,7 +568,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   auto write = [&](RunStatus status) {
     auto env = JobResultEnvelope::fromMinimization(
         status, params.potential_options().potential,
-        PotRegistry::get().total_force_calls(), false, 0.0);
+        pot->forceCallCounter.load(), false, 0.0);
     env.provenance = provenanceForJob(params);
     env.job_type = "instanton";
     env.extras.emplace_back("force_calls",
@@ -626,10 +630,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       return returnFiles;
     }
     if (!haveEnergies) {
-      const long before = PotRegistry::get().total_force_calls();
+      const long before = pot->forceCallCounter.load();
       std::vector<VectorXd> grads;
       evaluate(pathQ, pathV, grads);
-      sdPathForceCalls = PotRegistry::get().total_force_calls() - before;
+      sdPathForceCalls = pot->forceCallCounter.load() - before;
     } else {
       sdPathForceCalls = 0;
     }
@@ -659,13 +663,13 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   // seed by the period condition. Cooling a cosine from the crossover finds
   // the ring only where it grows continuously out of the saddle; where it
   // does not, the search walks to a neighbouring saddle.
-  if (!profile) {
+  if (!profile && o.initial_ring.empty()) {
     pathQ.clear();
     pathV.clear();
-    const long before = PotRegistry::get().total_force_calls();
+    const long before = pot->forceCallCounter.load();
     steepestDescentPath(qSaddle, vSaddle, hSaddle, mw.sqrtMasses(), evaluate,
                         pathQ, pathV);
-    sdPathForceCalls = PotRegistry::get().total_force_calls() - before;
+    sdPathForceCalls = pot->forceCallCounter.load() - before;
     std::vector<double> arc(pathQ.size(), 0.0);
     for (size_t k = 1; k < pathQ.size(); ++k) {
       arc[k] = arc[k - 1] + (pathQ[k] - pathQ[k - 1]).norm();
@@ -697,8 +701,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       hwPath = tunneling::hbarOmega(tunneling::wellCurvature(*profile, true));
       EONC_LOG_INFO("[Instanton] steepest-descent path of {} points, {} "
                     "force calls",
-                    pathQ.size(),
-                    PotRegistry::get().total_force_calls() - before);
+                    pathQ.size(), pot->forceCallCounter.load() - before);
       for (size_t k = 0; k < pathQ.size(); ++k) {
         EONC_LOG_DEBUG("[Instanton] path {} s {:.6f} V - V_reactant {:.8f}", k,
                        profile->s()[k], pathV[k] - vReactant);
@@ -740,6 +743,18 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   };
 
   std::vector<VectorXd> ring;
+  if (!o.initial_ring.empty()) {
+    const auto positions =
+        tunneling::readRateRingSeed(o.initial_ring, reactant, o.beads);
+    for (const auto &xyz : positions) {
+      Matter image(reactant);
+      image.setPositions(xyz);
+      ring.push_back(mw.toQ(image));
+    }
+    EONC_LOG_INFO("[Instanton] closed-ring geometry seed from {}; energies and "
+                  "forces are evaluated on the selected potential",
+                  o.initial_ring);
+  }
   RunStatus status = RunStatus::GOOD;
   bool rateFailed = false;
   for (size_t ti = 0; ti < temperatures.size(); ++ti) {
@@ -812,6 +827,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     ro.forceTolerance = o.force_tolerance;
     ro.halfRing = o.half_ring;
     ro.initialHessians = o.initial_hessians;
+    ro.newtonLimit = o.newton_limit;
+    ro.lanczosStep = o.lanczos_step;
     ro.physicalHessianStep = o.physical_hessian_step;
     ro.energyShift = o.energy_shift;
     ro.discretization = o.discretization;
@@ -1130,6 +1147,9 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
 
 std::vector<std::string> InstantonJob::run(void) {
   const auto &o = params.instanton_options();
+  if (o.mode != "rate" && !o.initial_ring.empty()) {
+    throw std::invalid_argument("instanton: initial_ring requires mode rate");
+  }
   pathintegral::requireTrotterSprings(o.springs, "instanton");
   std::vector<std::string> returnFiles;
   const std::string resultsFile = "results.dat";
@@ -1194,12 +1214,21 @@ std::vector<std::string> InstantonJob::run(void) {
   std::array<bool, 3> rotationZero{{false, false, false}};
   std::array<double, 3> rotationResidual{{0.0, 0.0, 0.0}};
   bool rotationsKnown = false;
-  auto hessianWith = [&](const VectorXd &q, bool projectRotations) {
+  auto hessianWith = [&](const VectorXd &q, bool projectRotations,
+                         const std::string &filename = std::string{}) {
     Matter m(*reactant);
     mw.place(q, m);
-    Hessian h(params, &m);
-    h.writeHessianFile(false);
-    MatrixXd out = h.getHessian(&m, mw.freeAtoms());
+    MatrixXd out;
+    if (filename.empty()) {
+      Hessian h(params, &m);
+      h.writeHessianFile(false);
+      out = h.getHessian(&m, mw.freeAtoms());
+    } else {
+      out = tunneling::readReferenceHessian(filename, m, n);
+      EONC_LOG_INFO("[Instanton] reference Hessian read from {} with matching "
+                    "geometry and mass metric",
+                    filename);
+    }
     if (out.rows() != n) {
       throw std::runtime_error("instanton: a bead Hessian failed");
     }
@@ -1233,7 +1262,11 @@ std::vector<std::string> InstantonJob::run(void) {
   };
 
   if (o.mode == "rate") {
-    return runRate(params, pot, *reactant, mw, evaluate, hessianAt,
+    auto referenceHessianAt = [&](const VectorXd &q,
+                                  const std::string &filename) {
+      return hessianWith(q, true, filename);
+    };
+    return runRate(params, pot, *reactant, mw, evaluate, referenceHessianAt,
                    beadHessianAt, rotationZero, rotationResidual);
   }
 
@@ -1378,7 +1411,7 @@ std::vector<std::string> InstantonJob::run(void) {
                                              : RunStatus::FAIL_MAX_ITERATIONS);
   auto env = JobResultEnvelope::fromMinimization(
       status, params.potential_options().potential,
-      PotRegistry::get().total_force_calls(), false, 0.0);
+      pot->forceCallCounter.load(), false, 0.0);
   env.provenance = provenanceForJob(params);
   env.job_type = "instanton";
   env.extras.emplace_back("force_calls", static_cast<double>(env.force_calls));

@@ -1206,6 +1206,12 @@ Instanton:
             kind: string
             default: ""
 
+        # Rate mode: exactly beads closed-ring CON frames; cached evaluations
+        # are ignored and all physical coordinates match the reference.
+        initial_ring:
+            kind: string
+            default: ""
+
         beads:
             kind: int
             default: 256
@@ -1253,6 +1259,25 @@ Instanton:
         physical_hessian_step:
             kind: float
             default: 0.0001
+
+        # Maximum active ring coordinates for dense Newton; 0 selects
+        # the matrix-free dimer. Default LONG_MAX on the supported LP64 build.
+        newton_limit:
+            kind: int
+            default: 9223372036854775807
+
+        # Directional Lanczos displacement, sqrt(amu) Angstrom.
+        lanczos_step:
+            kind: float
+            default: 0.0001
+
+        reactant_hessian_filename:
+            kind: string
+            default: ""
+
+        saddle_hessian_filename:
+            kind: string
+            default: ""
 
         # Mode rate: where the bead Hessian blocks start. saddle copies the
         # saddle Hessian to every bead at no force calls; finite_difference

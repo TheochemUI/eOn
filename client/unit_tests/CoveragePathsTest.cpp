@@ -3385,8 +3385,9 @@ TEST_CASE("instanton references share constraints and the mass metric",
   ParametersLoadAccess::instanton_options(params).beads = 4;
   ParametersLoadAccess::instanton_options(params).max_iterations = 0;
   // Rate mode rejects a non-positive temperature before it compares
-  // reference surfaces. A positive value lets that comparison run.
-  ParametersLoadAccess::instanton_options(params).temperature = 300.0;
+  // reference surfaces. The temperatures list is what that mode reads.
+  ParametersLoadAccess::instanton_options(params).temperature = 100.0;
+  ParametersLoadAccess::instanton_options(params).temperatures = {100.0};
   for (const std::string mode : {"rate", "splitting"}) {
     INFO(mode);
     ParametersLoadAccess::instanton_options(params).mode = mode;

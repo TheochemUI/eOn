@@ -2672,6 +2672,14 @@ class InstantonConfig(BaseModel):
             " starts from the straight line between the minima."
         ),
     )
+    initial_ring: str = Field(
+        default="",
+        description=(
+            "Rate mode: closed-ring geometry seed with exactly beads CON frames. "
+            "Coordinates are checked against the reference surface; cached "
+            "energies and forces are ignored."
+        ),
+    )
     beads: int = Field(
         default=256,
         ge=4,
@@ -2741,6 +2749,33 @@ class InstantonConfig(BaseModel):
             "Physical bead-Hessian central displacement in sqrt(amu) Angstrom;"
             " independent of directional Lanczos finite differences."
         ),
+    )
+    newton_limit: int = Field(
+        # LP64 LONG_MAX. A C long is 32 bits on Windows, and the config
+        # file records this 64-bit value on every platform.
+        default=9223372036854775807,
+        ge=0,
+        description=(
+            "Maximum active ring coordinates for dense Newton; zero selects"
+            " the matrix-free dimer search. The default is the LP64 LONG_MAX."
+        ),
+    )
+    lanczos_step: float = Field(
+        default=1e-4,
+        gt=0,
+        allow_inf_nan=False,
+        description=(
+            "Directional Lanczos displacement in sqrt(amu) Angstrom;"
+            " independent of physical_hessian_step."
+        ),
+    )
+    reactant_hessian_filename: str = Field(
+        default="",
+        description="Optional saved reactant Hessian; empty computes it.",
+    )
+    saddle_hessian_filename: str = Field(
+        default="",
+        description="Optional saved saddle Hessian; empty computes it.",
     )
     initial_hessians: Literal["saddle", "finite_difference"] = Field(
         default="saddle",

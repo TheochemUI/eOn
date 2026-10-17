@@ -488,7 +488,6 @@ void RgpotPot::forceBatchOwned(long nSystems, long nAtoms,
   for (long j = 0; j < nSystems; j++) {
     if (variances)
       variances[j] = 0.0;
-    forceCallCounter++;
-    eonc::PotRegistry::get().on_force_call(ptype);
+    recordForceCall();
   }
 }

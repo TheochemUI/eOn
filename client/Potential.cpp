@@ -123,8 +123,7 @@ std::tuple<double, AtomMatrix> eonc::Potential::get_ef(const AtomMatrix &pos,
               std::span<const int>(atmnrs.data(), n),
               std::span<double>(forces.data(), n * 3), &energy, &var,
               std::span<const double>(box.data(), 9));
-  forceCallCounter++;
-  registry_.on_force_call(ptype);
+  recordForceCall();
   if (!std::isfinite(energy) || !forces.allFinite()) {
     throw std::runtime_error("Potential::get_ef: non-finite energy or forces");
   }

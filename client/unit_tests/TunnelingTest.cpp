@@ -28,6 +28,54 @@ using namespace eonc;
 using namespace eonc::tunneling;
 using Catch::Matchers::WithinRel;
 
+TEST_CASE("Configured Newton limit selects a converged matrix-free rate ring",
+          "[Tunneling][Instanton][NewtonLimit]") {
+  const eonc::testing::Eckart pes;
+  const MatrixXd hs = pes.hessian_at_top();
+  const double beta = 1.0 / (kBoltzmann * 0.5 * crossoverTemperature(hs));
+  Parameters parsed;
+  REQUIRE(parsed.load_ini_text("[Instanton]\nnewton_limit = 0\n") == 0);
+  RateInstantonOptions options;
+  options.beads = 32;
+  options.forceTolerance = 1e-8;
+  options.newtonLimit = parsed.instanton_options().newton_limit;
+  long dimerCalls = 0;
+  const BatchPotential dimerPotential = [&](const std::vector<VectorXd> &q,
+                                            std::vector<double> &v,
+                                            std::vector<VectorXd> &g) {
+    dimerCalls += static_cast<long>(q.size());
+    pes.batch()(q, v, g);
+  };
+  RateInstanton dimer = optimizeRateInstanton(VectorXd::Zero(1), hs, beta, {},
+                                              dimerPotential, options);
+  REQUIRE(dimer.converged);
+  Parameters defaults;
+  options.newtonLimit = defaults.instanton_options().newton_limit;
+  long newtonCalls = 0;
+  const BatchPotential newtonPotential = [&](const std::vector<VectorXd> &q,
+                                             std::vector<double> &v,
+                                             std::vector<VectorXd> &g) {
+    newtonCalls += static_cast<long>(q.size());
+    pes.batch()(q, v, g);
+  };
+  RateInstanton newton = optimizeRateInstanton(VectorXd::Zero(1), hs, beta, {},
+                                               newtonPotential, options);
+  REQUIRE(newton.converged);
+  const RingBeadHessian hessian = [&](long, const VectorXd &q) {
+    return pes.hessian_at(q);
+  };
+  instantonRate(dimer, hessian, MatrixXd::Identity(1, 1), 0.0, hs, 0.0);
+  instantonRate(newton, hessian, MatrixXd::Identity(1, 1), 0.0, hs, 0.0);
+  CAPTURE(dimerCalls, newtonCalls, dimer.iterations, newton.iterations,
+          dimer.logRate, newton.logRate);
+  REQUIRE(dimerCalls > 0);
+  REQUIRE(newtonCalls > 0);
+  REQUIRE(dimerCalls != newtonCalls);
+  REQUIRE(dimer.negativeModes == 1);
+  REQUIRE(newton.negativeModes == 1);
+  REQUIRE(std::abs(dimer.logRate - newton.logRate) < 1e-6);
+}
+
 namespace {
 
 // V(x) = V0 (x^2 / a^2 - 1)^2 on a mass-weighted coordinate, sampled as a
