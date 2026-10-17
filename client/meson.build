@@ -2142,6 +2142,7 @@ if get_option('with_tests')
         ['test_reference_hessian', 'ReferenceHessianTest.cpp', 'neb_morse'],
         ['test_harmonic_reference', 'HarmonicReferenceActionTest.cpp', ''],
         ['test_quadratic_bath', 'QuadraticBathTest.cpp', ''],
+        ['test_physical_quadratic_bath', 'PhysicalQuadraticBathTest.cpp', '', 300],
         ['test_geom', 'GeometryAnalysisTest.cpp', 'neb_morse'],
         ['test_params_json', 'ParametersJSONTest.cpp', ''],
         ['test_params_ssot', 'ParametersSSOTTest.cpp', ''],
