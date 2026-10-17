@@ -48,6 +48,8 @@ public:
   virtual void on_destroyed(uint64_t id, PotType t, size_t force_calls,
                             TimePoint created_at) = 0;
   virtual void on_force_call(PotType t) noexcept = 0;
+  /// Sum of force evaluations recorded on this registry.
+  [[nodiscard]] virtual size_t total_force_calls() const noexcept { return 0; }
 
   IPotRegistry(const IPotRegistry &) = delete;
   IPotRegistry &operator=(const IPotRegistry &) = delete;
@@ -108,7 +110,7 @@ public:
 
   // Per-type queries
   [[nodiscard]] size_t type_force_calls(PotType t) const noexcept;
-  [[nodiscard]] size_t total_force_calls() const noexcept;
+  [[nodiscard]] size_t total_force_calls() const noexcept override;
   [[nodiscard]] size_t type_alive(PotType t) const noexcept;
 
   // JSON output

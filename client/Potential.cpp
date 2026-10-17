@@ -131,6 +131,18 @@ std::tuple<double, AtomMatrix> eonc::Potential::get_ef(const AtomMatrix &pos,
   return std::make_tuple(energy, forces);
 }
 
+std::shared_ptr<eonc::Potential>
+eonc::Potential::siblingPotential(const eonc::Parameters &params,
+                                  bool cloneFirst) const {
+  PotentialConstructionScope scope(registry_);
+  if (cloneFirst) {
+    if (auto cloned = clonePotential()) {
+      return cloned;
+    }
+  }
+  return helpers::sharePotential(helpers::makePotential(params));
+}
+
 namespace eonc::helpers {
 namespace {
 

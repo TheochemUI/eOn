@@ -138,8 +138,7 @@ std::shared_ptr<Matter> SaddleSearchJob::runPrepared(const AtomMatrix &mode) {
 
 int SaddleSearchJob::doSaddleSearch() {
   long status;
-  int f1{0};
-  f1 = this->pot->forceCallCounter;
+  const size_t callsBefore = this->pot->registryForceCalls();
   try {
     status = saddleSearch->run();
   } catch (int e) {
@@ -161,7 +160,8 @@ int SaddleSearchJob::doSaddleSearch() {
   } else if (params.saddle_search_options().method == "artn") {
     fCallsSaddle = saddleSearch->getForceCalls();
   } else {
-    fCallsSaddle += this->pot->forceCallCounter - f1;
+    fCallsSaddle +=
+        static_cast<int>(this->pot->registryForceCalls() - callsBefore);
   }
 
   return status;
@@ -181,8 +181,14 @@ void SaddleSearchJob::saveData(int status) {
     out << std::format(
         "{} potential_type\n",
         magic_enum::enum_name<PotType>(params.potential_options().potential));
-    out << std::format("{} total_force_calls\n",
-                       this->pot->forceCallCounter.load());
+    const bool gprTotal =
+        params.saddle_search_options().method == "min_mode" &&
+        params.saddle_search_options().minmode_method ==
+            LowestEigenmode::MINMODE_GPRDIMER;
+    const size_t reportedCalls = gprTotal
+                                     ? this->pot->forceCallCounter.load()
+                                     : this->pot->registryForceCalls();
+    out << std::format("{} total_force_calls\n", reportedCalls);
     out << std::format("{} force_calls_saddle\n", fCallsSaddle);
     out << std::format("{} iterations\n", saddleSearch->getIterationCount());
     if (status != MinModeSaddleSearch::STATUS_POTENTIAL_FAILED) {

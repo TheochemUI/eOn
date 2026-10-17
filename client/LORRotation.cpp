@@ -32,12 +32,13 @@ LORRotation::LORRotation(std::shared_ptr<Matter> matter,
     : LowestEigenmode(pot, params) {
   auto x1Pot =
       (pot->needsPerImageInstance() && params.main_options().parallel)
-          ? eonc::helpers::sharePotential(eonc::helpers::makePotential(params))
+          ? pot->siblingPotential(params)
           : pot;
   x0 = std::make_shared<Matter>(pot, params);
   x1 = std::make_shared<Matter>(x1Pot, params);
   *x0 = *matter;
   *x1 = *matter;
+  x1->setPotential(x1Pot);
   totalForceCalls = 0;
   statsRotations = 0;
   eigenvector.resize(3 * matter->numberOfAtoms());
@@ -88,8 +89,12 @@ void LORRotation::compute(std::shared_ptr<Matter> matter,
   }
   N.normalize();
 
+  // Matter's copy assignment copies the potential. Restore the per-image
+  // instance so its evaluations stay on this potential's registry.
+  auto x1Pot = x1->getPotential();
   *x0 = *matter;
   *x1 = *matter;
+  x1->setPotential(x1Pot);
   const VectorXd x0_r = x0->getPositionsV();
   const double delta = params.main_options().finiteDifference;
 

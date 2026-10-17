@@ -16,7 +16,6 @@
 #include "eon/JobResult.h"
 #include "eon/NEBInitialPaths.hpp"
 #include "eon/NEBSplineExtrema.h"
-#include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 #include "eon/QuantumFreeEnergy.h"
 
@@ -174,9 +173,9 @@ std::vector<std::string> NudgedElasticBandJob::run() {
     }
   }
 
-  f1 = PotRegistry::get().total_force_calls();
+  f1 = pot->registryForceCalls();
   status = neb->compute();
-  fCallsNEB += PotRegistry::get().total_force_calls() - f1;
+  fCallsNEB += pot->registryForceCalls() - f1;
 
   if (status == NudgedElasticBand::NEBStatus::GOOD) {
     neb->printImageData();
@@ -200,7 +199,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
             ? RunStatus::GOOD
             : RunStatus::FAIL_MAX_ITERATIONS,
         params.potential_options().potential,
-        PotRegistry::get().total_force_calls(), true, neb->reactantEnergy);
+        pot->registryForceCalls(), true, neb->reactantEnergy);
     env.provenance = provenanceForJob(params);
     env.job_type = "neb";
     env.extras.emplace_back("force_calls_neb", static_cast<double>(fCallsNEB));

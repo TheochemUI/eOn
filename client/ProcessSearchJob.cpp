@@ -56,10 +56,7 @@ std::vector<std::string> ProcessSearchJob::run() {
   // configuration and is the fallback for backends that cannot clone.
   std::shared_ptr<Potential> min2Pot = pot;
   if (pot->needsPerImageInstance() && params.main_options().parallel) {
-    auto cloned = pot->clonePotential();
-    min2Pot = cloned ? cloned
-                     : eonc::helpers::sharePotential(
-                           eonc::helpers::makePotential(params));
+    min2Pot = pot->siblingPotential(params);
   }
   min1 = std::make_shared<Matter>(pot, params);
   min2 = std::make_shared<Matter>(min2Pot, params);
@@ -194,10 +191,7 @@ ProcessSearchJob::runFromMatter(std::shared_ptr<Matter> seed) {
   // configuration and is the fallback for backends that cannot clone.
   std::shared_ptr<Potential> min2Pot = pot;
   if (pot->needsPerImageInstance() && params.main_options().parallel) {
-    auto cloned = pot->clonePotential();
-    min2Pot = cloned ? cloned
-                     : eonc::helpers::sharePotential(
-                           eonc::helpers::makePotential(params));
+    min2Pot = pot->siblingPotential(params);
   }
   displacement = std::make_shared<Matter>(pot, params);
   saddle = std::make_shared<Matter>(pot, params);
@@ -247,7 +241,7 @@ int ProcessSearchJob::doProcessSearch() {
   long status;
   size_t fctmp{0};
 
-  fctmp = pot->forceCallCounter;
+  fctmp = pot->registryForceCalls();
   status = saddleSearch->run();
   if (params.saddle_search_options().method == "min_mode" &&
       params.saddle_search_options().minmode_method ==
@@ -256,7 +250,7 @@ int ProcessSearchJob::doProcessSearch() {
   } else if (params.saddle_search_options().method == "artn") {
     fCallsSaddle += saddleSearch->getForceCalls();
   } else {
-    fCallsSaddle += pot->forceCallCounter - fctmp;
+    fCallsSaddle += pot->registryForceCalls() - fctmp;
   }
   EONC_LOG_DEBUG("Got {} calls in the saddle search, with previous {}",
                  fCallsSaddle, fctmp);
@@ -292,6 +286,7 @@ int ProcessSearchJob::doProcessSearch() {
   // potential instance.
   QUILL_LOG_DEBUG(log, "Starting Minimization 1 & 2");
   bool converged1{false}, converged2{false};
+  const size_t registryBefore = pot->registryForceCalls();
   long fc1_before = min1->getPotentialCalls();
   long fc2_before = min2->getPotentialCalls();
 
@@ -330,12 +325,7 @@ int ProcessSearchJob::doProcessSearch() {
         min2->relax(false, params.debug_options().write_movies, false, "min2");
   }
 
-  if (min1->getPotential().get() == min2->getPotential().get()) {
-    fCallsMin += min1->getPotentialCalls() - fc1_before;
-  } else {
-    fCallsMin += (min1->getPotentialCalls() - fc1_before) +
-                 (min2->getPotentialCalls() - fc2_before);
-  }
+  fCallsMin += pot->registryForceCalls() - registryBefore;
   QUILL_LOG_DEBUG(log, "Min1: {} fcalls, Min2: {} fcalls",
                   min1->getPotentialCalls() - fc1_before,
                   min2->getPotentialCalls() - fc2_before);
@@ -403,7 +393,7 @@ int ProcessSearchJob::doProcessSearch() {
   }
 
   if (!params.prefactor_options().default_value) {
-    fctmp = min1->getPotentialCalls();
+    fctmp = pot->registryForceCalls();
     int prefStatus;
     double pref1, pref2;
     prefStatus = eonc::Prefactor::getPrefactors(
@@ -412,7 +402,7 @@ int ProcessSearchJob::doProcessSearch() {
       EONC_LOG_ERROR("Prefactor: bad calculation");
       return MinModeSaddleSearch::STATUS_FAILED_PREFACTOR;
     }
-    fCallsPrefactors += min1->getPotentialCalls() - fctmp;
+    fCallsPrefactors += pot->registryForceCalls() - fctmp;
 
     if ((pref1 > params.prefactor_options().max_value) ||
         (pref1 < params.prefactor_options().min_value)) {

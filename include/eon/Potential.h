@@ -59,6 +59,9 @@ public:
   /// Charge one evaluated geometry to this potential and its owning registry.
   void recordForceCall() noexcept;
 
+  /// Force calls recorded on the registry that owns this potential.
+  [[nodiscard]] size_t registryForceCalls() const noexcept;
+
   /// Production default: construction-scope registry, else PotRegistry::get().
   explicit Potential(PotType a_ptype);
 
@@ -178,6 +181,12 @@ public:
   [[nodiscard]] virtual std::shared_ptr<Potential> clonePotential() const {
     return nullptr;
   }
+
+  /// Second instance on this potential's registry. When cloneFirst is
+  /// true, clonePotential supplies the instance when the backend has one.
+  /// Otherwise the instance is rebuilt from params.
+  [[nodiscard]] std::shared_ptr<Potential>
+  siblingPotential(const Parameters &params, bool cloneFirst = true) const;
 
   /// Whether this potential supports batched evaluation of N systems in a
   /// single call. When true, callers (NEB, Dimer) should use forceBatch()

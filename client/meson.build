@@ -2367,6 +2367,25 @@ if get_option('with_tests')
             depends: _case_depends,
         )
     endforeach
+    test(
+        'test_force_count_parallel',
+        executable(
+            'test_force_count_parallel',
+            sources: [
+                'unit_tests/ForceCountParallelTest.cpp',
+                'thirdparty/catch2/catch_amalgamated.cpp',
+            ],
+            include_directories: _incdirs,
+            cpp_args: test_args,
+            link_args: _linkargs,
+            dependencies: test_deps,
+            link_with: test_link,
+            build_rpath: ':'.join(_runtime_rpath),
+        ),
+        timeout: 120,
+        env: _test_env,
+        suite: ['eon'],
+    )
     if get_option('with_water')
         test(
             'test_water_cutover',

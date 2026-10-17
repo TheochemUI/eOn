@@ -44,15 +44,18 @@ void rejectNonFiniteBatch(long nAtoms, const double *forces, double energy) {
 Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
              std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
-  // Give matterDimer its own potential for parallel force evaluation
+  // Give matterDimer its own potential for parallel force evaluation.
+  // Matter's copy assignment copies the potential. Restore the per-image
+  // instance so its evaluations stay on this potential's registry.
   auto dimerPot =
       (pot->needsPerImageInstance() && params.main_options().parallel)
-          ? eonc::helpers::sharePotential(eonc::helpers::makePotential(params))
+          ? pot->siblingPotential(params)
           : pot;
   matterCenter = std::make_shared<Matter>(pot, params);
   matterDimer = std::make_shared<Matter>(dimerPot, params);
   *matterCenter = *matter;
   *matterDimer = *matter;
+  matterDimer->setPotential(dimerPot);
   nAtoms = matter->numberOfAtoms();
 
   direction.resize(nAtoms, 3);

@@ -37,10 +37,7 @@ ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
   // configuration and is the fallback for backends that cannot clone.
   std::shared_ptr<Potential> x1Pot = pot;
   if (pot->needsPerImageInstance() && params.main_options().parallel) {
-    auto cloned = pot->clonePotential();
-    x1Pot = cloned ? cloned
-                   : eonc::helpers::sharePotential(
-                         eonc::helpers::makePotential(params));
+    x1Pot = pot->siblingPotential(params);
   }
   x0 = std::make_shared<Matter>(pot, params);
   x1 = std::make_shared<Matter>(x1Pot, params);

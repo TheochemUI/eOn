@@ -1,0 +1,1 @@
+The second potential used by a dimer, min-mode search, NEB, process search, or replica exchange records its force calls on the job potential's registry. total_force_calls includes those calls when Main.parallel is left at its default and when parallel is false. Dynamics results read that same registry.

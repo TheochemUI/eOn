@@ -78,7 +78,7 @@ ReplicaExchangeJob::runFromMatter(std::shared_ptr<Matter> initial) {
 
   QUILL_LOG_DEBUG(log, "Running Replica Exchange");
 
-  long refForceCalls = PotRegistry::get().total_force_calls();
+  const size_t refForceCalls = pot->registryForceCalls();
 
   const long nReplicas = params.replica_exchange_options().replicas;
   std::vector<std::shared_ptr<Matter>> replica(nReplicas);
@@ -88,9 +88,8 @@ ReplicaExchangeJob::runFromMatter(std::shared_ptr<Matter> initial) {
   // the potential requires it (e.g. ML potentials with internal state)
   const bool perImage = pot->needsPerImageInstance();
   for (long i = 0; i < nReplicas; i++) {
-    auto replicaPot = perImage ? eonc::helpers::sharePotential(
-                                     eonc::helpers::makePotential(params))
-                               : pot;
+    auto replicaPot =
+        perImage ? pot->siblingPotential(params, false) : pot;
     replica[i] = std::make_shared<Matter>(replicaPot, params);
     *replica[i] = *pos;
     replica[i]->setPotential(replicaPot);
@@ -205,7 +204,7 @@ ReplicaExchangeJob::runFromMatter(std::shared_ptr<Matter> initial) {
     }
   }
 
-  forceCalls = PotRegistry::get().total_force_calls() - refForceCalls;
+  forceCalls = pot->registryForceCalls() - refForceCalls;
   if (!replica.empty()) {
     *pos = *replica[0];
   }

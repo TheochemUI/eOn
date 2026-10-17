@@ -43,4 +43,8 @@ void Potential::recordForceCall() noexcept {
   registry_.on_force_call(ptype);
 }
 
+size_t Potential::registryForceCalls() const noexcept {
+  return registry_.total_force_calls();
+}
+
 } // namespace eonc
