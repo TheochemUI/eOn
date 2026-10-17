@@ -851,6 +851,18 @@ void NudgedElasticBand::updateForces(bool ci_active) {
     posDiffNext = path[i]->pbc(posDiffNext);
     posDiffPrev.noalias() = pos - posPrev;
     posDiffPrev = path[i]->pbc(posDiffPrev);
+    // With every atom free the projected force loses its net translation
+    // below. The tangent and the spring distances drop it here as well, so
+    // the band lives in one translation-free space: a converged image then
+    // has no perpendicular force and equal neighbour distances, the fixed
+    // point of the Hooke and the squared springs alike. Removing the
+    // translation from the projected force alone leaves a converged band
+    // whose perpendicular force and spring cancel only up to a common
+    // translation.
+    eonc::neb::zeroTranslation(posDiffNext, path[i]->numberOfFreeAtoms(),
+                               path[i]->numberOfAtoms());
+    eonc::neb::zeroTranslation(posDiffPrev, path[i]->numberOfFreeAtoms(),
+                               path[i]->numberOfAtoms());
     double distNext = posDiffNext.norm();
     double distPrev = posDiffPrev.norm();
 
