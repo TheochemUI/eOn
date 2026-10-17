@@ -805,8 +805,18 @@ if is_windows
         compile_args: true,
     )
     _deps += [readcon_compile_dep]
+    # Executables and shared libraries that link the static eonclib.
+    # sources stay off: the cargo array holds the DLL, and link.exe
+    # rejects that as LNK1107.
+    _readcon_link_dep = readcon_dep.partial_dependency(
+        includes: true,
+        compile_args: true,
+        link_args: true,
+        links: true,
+    )
 else
     _deps += [readcon_dep]
+    _readcon_link_dep = declare_dependency()
 endif
 
 # readcon-db: corpus mirror. Resolve it the same way as readcon-core
@@ -1933,7 +1943,7 @@ if get_option('with_metatomic')
         [
             'potentials/Metatomic/MetatomicCAbi.cpp',
         ],
-        dependencies: _deps,
+        dependencies: _deps + [_readcon_link_dep],
         cpp_args: _args,
         link_with: [eclib],
         include_directories: _incdirs,
@@ -1982,15 +1992,7 @@ eon_relax_capnp = custom_target(
 # off eonclib because llvm-ar and link reject the cargo DLL. This DLL
 # pulls eonclib in, so it needs the same import library the executables
 # get, without the cargo sources that contain the DLL.
-_engine_deps = _deps + _gprd_extra_deps + [capnp_dep]
-if is_windows
-    _engine_deps += readcon_dep.partial_dependency(
-        includes: true,
-        compile_args: true,
-        link_args: true,
-        links: true,
-    )
-endif
+_engine_deps = _deps + _gprd_extra_deps + [capnp_dep, _readcon_link_dep]
 eon_relax_engine = shared_library(
     'eon_relax_engine',
     ['relax/RelaxEngineAbi.cpp', eon_relax_capnp],
@@ -2013,7 +2015,7 @@ if get_option('with_metatomic')
             'potentials/Metatomic/MetatomicEngineAbi.cpp',
         ]
         + readcon_order_srcs,
-        dependencies: mta_plugin_deps,
+        dependencies: mta_plugin_deps + [_readcon_link_dep],
         cpp_args: _args + ['-DRGPOT_MTA_ENGINE_BUILD'],
         link_with: [eclib, eoncbase],
         include_directories: _incdirs,
@@ -2050,28 +2052,8 @@ if get_option('with_metatomic')
 endif
 
 # Full deps including readcon link_args (for executables and tests only)
-_exe_deps = _deps + _gprd_extra_deps
-if is_windows
-    # _deps carries only readcon's partial dependency there (see the
-    # partial_dependency block above); executables need the link_args too.
-    # Elsewhere _deps already holds the full readcon_dep.
-    #
-    # Everything except sources. readcon-core declares
-    # `sources: readcon_cargo`, and on Windows that array holds the DLL
-    # alongside the import library. Meson hands a dependency's sources to
-    # the linker, and link rejects a DLL as input:
-    #   readcon_core.dll : fatal error LNK1107: invalid or corrupt file
-    # link_args already names the import library by full path, which is the
-    # half MSVC wants.
-    _exe_deps += [
-        readcon_dep.partial_dependency(
-            includes: true,
-            compile_args: true,
-            link_args: true,
-            links: true,
-        ),
-    ]
-endif
+# _readcon_link_dep is empty off Windows, where _deps already links readcon.
+_exe_deps = _deps + _gprd_extra_deps + [_readcon_link_dep]
 
 # Export variable
 eclib_dep = declare_dependency(

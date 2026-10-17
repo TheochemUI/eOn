@@ -63,3 +63,10 @@ def test_windows_pots_are_static_and_flang_runtime_is_a_file():
     assert "FortranRuntime.dynamic.lib" in patch
     assert "FortranDecimal.dynamic.lib" in patch
     assert "find_library never sees the runtime" in patch
+    whole = (
+        root / "subprojects" / "packagefiles" / "rgpot-windows-link-whole.patch"
+    ).read_text(encoding="utf-8")
+    assert "rgpot-windows-link-whole.patch" in wrap
+    assert "link_whole: [rgpot_core] + _linkto + _rpc_whole" in whole
+    assert "_readcon_link_dep" in client
+    assert "dependencies: _deps + [_readcon_link_dep]" in client
