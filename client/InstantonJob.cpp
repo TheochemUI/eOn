@@ -636,8 +636,9 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
           0.5 * (referenceSaddle + referenceSaddle.transpose()))
           .eigenvectors()
           .col(0);
-  const double tc = tunneling::crossoverTemperature(physicalModel ?
-      physicalModel->bath->fullHessian(qSaddle,hSaddle) : referenceSaddle);
+  const double tc = tunneling::crossoverTemperature(
+      physicalModel ? physicalModel->bath->fullHessian(qSaddle, hSaddle)
+                    : referenceSaddle);
   const long rigidModes =
       physicalModel ? 0 : mw.rigidBasis(reactant, rotationZero).cols();
   if (temperatures.size() == 1) {

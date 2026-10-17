@@ -3001,8 +3001,10 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
   inst.beta = beta;
   inst.betaN = beta / static_cast<double>(nBeads);
   inst.temperature = 1.0 / (kBoltzmann * beta);
-  inst.crossover = crossoverTemperature(options.physicalBath ?
-      options.physicalBath->fullHessian(saddle,hessSaddle) : hessSaddle);
+  inst.crossover = crossoverTemperature(
+      options.physicalBath
+          ? options.physicalBath->fullHessian(saddle, hessSaddle)
+          : hessSaddle);
   if (!(inst.temperature < inst.crossover)) {
     throw std::invalid_argument(
         "optimizeRateInstanton: T is at or above the crossover temperature; "
@@ -3624,8 +3626,10 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
   inst.beta = beta;
   inst.betaN = beta / static_cast<double>(N);
   inst.temperature = 1.0 / (kBoltzmann * beta);
-  inst.crossover = crossoverTemperature(options.physicalBath ?
-      options.physicalBath->fullHessian(saddle,hessSaddle) : hessSaddle);
+  inst.crossover = crossoverTemperature(
+      options.physicalBath
+          ? options.physicalBath->fullHessian(saddle, hessSaddle)
+          : hessSaddle);
   if (!(inst.temperature < inst.crossover)) {
     throw std::invalid_argument(
         "optimizeRateInstanton: T is at or above the crossover temperature; "
