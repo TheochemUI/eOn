@@ -17,7 +17,6 @@
 #include "eon/JobResult.h"
 #include "eon/Matter.h"
 #include "eon/MobileAtoms.h"
-#include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 
 #include <filesystem>
@@ -67,8 +66,8 @@ std::vector<std::string> HessianJob::run(void) {
   const auto status =
       freqs_ok ? RunStatus::GOOD : RunStatus::FAIL_POTENTIAL_FAILED;
   auto env = JobResultEnvelope::fromMinimization(
-      status, params.potential_options().potential,
-      PotRegistry::get().total_force_calls(), false, 0.0);
+      status, params.potential_options().potential, pots().total_force_calls(),
+      false, 0.0);
   env.provenance = provenanceForJob(params);
   env.job_type = "hessian";
   env.extras.emplace_back("force_calls", static_cast<double>(env.force_calls));
