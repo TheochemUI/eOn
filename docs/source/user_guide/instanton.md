@@ -393,6 +393,11 @@ seed path. `initial_path` can be supplied as well when its separate WKB path
 estimate is wanted. A saved unconverged ring remains a geometry seed; it does
 not establish a rate or convergence.
 
+The optional `physical_bath_filename` selects the physical-bath model for
+rate mode. Its coordinate mapping and callback convention must match the
+selected potential. A fitted potential is identified as a fitted calculation;
+its native validation and bead convergence require separate checks.
+
 On a rate calculation, `initial_path` is a band over the barrier. The ring
 starts on the closed orbit of that band whose period is {math}`\beta \hbar`,
 and the same band carries a one-dimensional WKB rate.
