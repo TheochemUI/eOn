@@ -89,8 +89,7 @@ struct LatticeLJ final : eonc::Potential {
     const Matrix3d inv = h.inverse();
     int reach[3];
     for (int k = 0; k < 3; ++k) {
-      reach[k] =
-          static_cast<int>(std::ceil(kCutoff * inv.col(k).norm() + 0.5));
+      reach[k] = static_cast<int>(std::ceil(kCutoff * inv.col(k).norm() + 0.5));
       if (reach[k] > 64) {
         throw std::runtime_error("LatticeLJ: the cell has collapsed");
       }
@@ -255,10 +254,10 @@ TEST_CASE("the solid-state band climbs the Bain path of an LJ crystal",
   for (long i = 0; i <= band.numImages + 1; ++i) {
     const auto &image = *band.path[static_cast<size_t>(i)];
     const Matrix3d h = image.getCell();
-    upper = std::max({upper, std::abs(h(0, 1)), std::abs(h(0, 2)),
-                      std::abs(h(1, 2))});
-    shear = std::max({shear, std::abs(h(1, 0)), std::abs(h(2, 0)),
-                      std::abs(h(2, 1))});
+    upper = std::max(
+        {upper, std::abs(h(0, 1)), std::abs(h(0, 2)), std::abs(h(1, 2))});
+    shear = std::max(
+        {shear, std::abs(h(1, 0)), std::abs(h(2, 0)), std::abs(h(2, 1))});
     square = std::max(square, std::abs(h(0, 0) - h(1, 1)));
     AtomMatrix ds = image.getPositions() * h.inverse() - s0;
     ds = (ds.array() - ds.array().round()).matrix();
