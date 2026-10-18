@@ -273,6 +273,13 @@ on the physical potential finds the classical saddle. A dimer on the
 ring-polymer potential is the instanton, so it is not a step of this band.
 The transmission coefficient is not a band iteration.
 
+With `-Dwith_rgsaddle=true`, `opt_method` lbfgs, fire and xtsci step the
+band on rgsaddle's solid-state band (rgsaddle ABI minor 17 or newer). The
+image cells move with the atoms, rgsaddle reads each image's Cauchy stress
+from the same force call, and eOn rebuilds its own joint projection for
+the convergence test after every step. An older rgsaddle refuses a
+solid-state band instead of stepping it with the cells fixed.
+
 `ci_mmf`, `zoom_neb`, `onsager_machlup`, `neb_doubly_nudged`, and
 `neb_elastic_band` are refused. The climbing image itself is the joint-space
 reflection of the force. Peak files still carry the atomic block of the tangent.
