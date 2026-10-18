@@ -711,12 +711,28 @@ else
 endif
 _deps += [vesin_dep]
 
+minimage_dep = dependency(
+    'minimage', version: '>=0.1.4',
+    fallback: ['minimage', 'minimage_dep'],
+    default_options: ['with_tests=false', 'with_examples=false'],
+)
+_deps += [minimage_dep]
+
+linkcell_dep = dependency(
+    'linkcell', version: '>=0.3.11',
+    fallback: ['linkcell', 'linkcell_dep'],
+    default_options: ['with_tests=false', 'with_examples=false', 'with_gpulite=disabled'],
+)
+_deps += [linkcell_dep]
+
 eoncbase_sources = [
     'fpe_handler.cpp',
     'PotRegistry.cpp',
     'ParametersAccess.cpp',
     'PotentialParams.cpp',
     'VesinNeighbors.cpp',
+    'MinimumImage.cpp',
+    'LinkCellNeighbors.cpp',
     'potentials/PluginLoader.cpp',
 ]
 
@@ -2142,6 +2158,9 @@ if get_option('with_tests')
         ['test_reference_hessian', 'ReferenceHessianTest.cpp', 'neb_morse'],
         ['test_harmonic_reference', 'HarmonicReferenceActionTest.cpp', ''],
         ['test_quadratic_bath', 'QuadraticBathTest.cpp', ''],
+        ['test_cyclic_block_bath', 'CyclicBlockBathTest.cpp', ''],
+        ['test_variable_physical_bath', 'VariablePhysicalBathTest.cpp', ''],
+        ['test_physical_quadratic_bath', 'PhysicalQuadraticBathTest.cpp', '', 300],
         ['test_geom', 'GeometryAnalysisTest.cpp', 'neb_morse'],
         ['test_params_json', 'ParametersJSONTest.cpp', ''],
         ['test_params_ssot', 'ParametersSSOTTest.cpp', ''],

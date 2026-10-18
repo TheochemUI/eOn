@@ -21,4 +21,9 @@ namespace eonc::pbc {
 void wrapMinimumImage(double *data, size_t n);
 void wrapLegacyUnit(double *data, size_t n);
 
+// Euclidean closest images of packed Cartesian triples in a row-major cell.
+// Orthogonal half-cell ties retain the negative half-cell representative.
+void closestDisplacements(double *data, size_t coordinates,
+                          const double *rowMajorCell);
+
 } // namespace eonc::pbc

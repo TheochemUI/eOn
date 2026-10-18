@@ -54,6 +54,11 @@ public:
 
   [[nodiscard]] long structureAtoms() const { return nAtoms_; }
   [[nodiscard]] long activeBeads() const { return nActive_; }
+  void setPhysicalBath(std::shared_ptr<const PhysicalQuadraticBath> bath) {
+    if (bath && fold_) throw std::invalid_argument("physical bath uses the full ring");
+    if (bath) bath->validate(dof_);
+    physicalBath_ = std::move(bath);
+  }
 
   void setDiscretization(std::vector<double> weights) {
     if (!weights.empty()) {
@@ -90,6 +95,7 @@ private:
   double energyShift_{0.0};
   std::vector<double> eta_;
   std::vector<double> discretization_;
+  std::shared_ptr<const PhysicalQuadraticBath> physicalBath_;
   bool fold_{false};
   VectorXd modeDir_;
 };

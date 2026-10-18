@@ -1212,6 +1212,10 @@ Instanton:
             kind: string
             default: ""
 
+        physical_bath_filename:
+            kind: string
+            default: ""
+
         beads:
             kind: int
             default: 256
