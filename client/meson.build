@@ -932,6 +932,21 @@ if not readcon_db_dep.found()
             / (get_option('buildtype') == 'debug' ? 'debug' : 'release')
             / 'readcon_db.dll.lib',
         ]
+        # The loader looks beside the executable first; the tests run from
+        # this directory, as with readcon_core.dll above.
+        custom_target(
+            'readcon-db-dll-beside-tests',
+            input: _readcon_db_so,
+            output: 'readcon_db.dll',
+            command: [
+                py,
+                '-c',
+                'import shutil, sys; shutil.copyfile(sys.argv[1], sys.argv[2])',
+                '@INPUT@',
+                '@OUTPUT@',
+            ],
+            build_by_default: true,
+        )
         _readcon_db_sources = [
             custom_target(
                 'readcon-db-order',
