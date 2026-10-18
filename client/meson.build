@@ -2370,10 +2370,23 @@ if get_option('with_tests')
         # the first search hit is the file that gets copied.
         _stage_search = []
         if get_option('with_metatomic') and get_option('pip_metatomic')
+            # These are strings (the torch prefix comes from python). A
+            # meson path's .name() is not available on that string.
             foreach _d : pip_metatomic_runtime_dirs
                 _stage_search += _d
-                if _d.name() == 'lib'
-                    _stage_search += _d.parent() / 'bin'
+                _norm = _d.replace('\\', '/')
+                _parts = _norm.split('/')
+                _n = _parts.length()
+                if _n > 1 and _parts[_n - 1] == 'lib'
+                    _parent = []
+                    _i = 0
+                    foreach _p : _parts
+                        if _i < _n - 1
+                            _parent += _p
+                        endif
+                        _i += 1
+                    endforeach
+                    _stage_search += '/'.join(_parent) + '/bin'
                 endif
             endforeach
         endif
