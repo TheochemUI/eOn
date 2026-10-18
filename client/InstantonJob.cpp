@@ -562,6 +562,27 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   reactantReference.setPositions(reactantReference.getPositions());
   saddle.setPositions(saddle.getPositions());
   const bool fittedPotential = physicalModel && physicalModel->potentialModel;
+  if (!fittedPotential && pot->supportsBatchEvaluation()) {
+    const VectorXi rNumbers = reactantReference.getAtomicNrs();
+    const VectorXi sNumbers = saddle.getAtomicNrs();
+    const Matrix3d rBox = reactantReference.getPeriodic()
+                             ? reactantReference.getCell()
+                             : Matrix3d::Zero().eval();
+    const Matrix3d sBox = saddle.getPeriodic()
+                             ? saddle.getCell()
+                             : Matrix3d::Zero().eval();
+    const double *positions[] = {reactantReference.getPositions().data(),
+                                 saddle.getPositions().data()};
+    const int *numbers[] = {rNumbers.data(), sNumbers.data()};
+    const double *boxes[] = {rBox.data(), sBox.data()};
+    double *forces[] = {reactantReference.forcesData(), saddle.forcesData()};
+    double energies[2], variances[2];
+    const long owners[] = {potential_owner::reactant, potential_owner::saddle};
+    pot->forceBatchOwned(2, reactantReference.numberOfAtoms(), positions,
+                         numbers, forces, energies, variances, boxes, owners);
+    reactantReference.setComputedPotential(energies[0], variances[0]);
+    saddle.setComputedPotential(energies[1], variances[1]);
+  }
   double vReactant =
       fittedPotential
           ? physicalModel->potentialModel->evaluate(VectorXd::Zero(n)).value[0]

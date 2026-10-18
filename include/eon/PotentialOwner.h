@@ -8,4 +8,6 @@ namespace eonc::potential_owner {
 // stencils each reuse one scratch slot, bounding retained electronic states.
 inline constexpr long auxiliary = std::numeric_limits<long>::max() - 1;
 inline constexpr long derivative = std::numeric_limits<long>::max();
+inline constexpr long reactant = std::numeric_limits<long>::max() - 2;
+inline constexpr long saddle = std::numeric_limits<long>::max() - 3;
 } // namespace eonc::potential_owner
