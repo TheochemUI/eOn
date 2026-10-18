@@ -288,10 +288,10 @@ struct RateInstantonOptions {
   /// Central physical bead-Hessian displacement in sqrt(amu) Angstrom.
   /// Independent of the Lanczos directional finite-difference step.
   double physicalHessianStep = 1e-4;
-  double lanczosStep = 1e-4;    ///< finite-difference step, amu^0.5 Angstrom
-  double maxStep = 0.05;        ///< largest bead move per step,
-                                ///< amu^0.5 Angstrom
-  long memory = 10;             ///< L-BFGS correction pairs
+  double lanczosStep = 1e-4; ///< finite-difference step, amu^0.5 Angstrom
+  double maxStep = 0.05;     ///< largest bead move per step,
+                             ///< amu^0.5 Angstrom
+  long memory = 10;          ///< L-BFGS correction pairs
   /// Even N, when the guess already matches under j -> N - j: evaluate
   /// the potential from one turning point to the other and copy it.
   /// An odd N, or a guess without that symmetry, evaluates every bead.
@@ -373,14 +373,14 @@ RingSpectrum ringSpectrum(const std::vector<MatrixXd> &beadHessians, double c,
 
 struct RateInstanton {
   std::shared_ptr<const PhysicalQuadraticBath> physicalBath;
-  std::vector<VectorXd> beads;     ///< N beads, q_N = q_0 implied
-  std::vector<double> energies;    ///< V at every bead, eV
-  double beta = 0.0;               ///< 1 / (kB T), 1 / eV
-  double betaN = 0.0;              ///< beta / N
-  double temperature = 0.0;        ///< K
-  double crossover = 0.0;          ///< T_c, K
-  double ringPotential = 0.0;      ///< U_N, eV
-  double bN = 0.0;                 ///< sum_j |q_{j+1} - q_j|^2, amu Angstrom^2
+  std::vector<VectorXd> beads;  ///< N beads, q_N = q_0 implied
+  std::vector<double> energies; ///< V at every bead, eV
+  double beta = 0.0;            ///< 1 / (kB T), 1 / eV
+  double betaN = 0.0;           ///< beta / N
+  double temperature = 0.0;     ///< K
+  double crossover = 0.0;       ///< T_c, K
+  double ringPotential = 0.0;   ///< U_N, eV
+  double bN = 0.0;              ///< sum_j |q_{j+1} - q_j|^2, amu Angstrom^2
   /// Empty keeps every spring equal. Otherwise one positive weight per bead.
   std::vector<double> discretization;
   /// Resolved fixed bath coefficients: empty, one value or one per bead.
@@ -478,9 +478,9 @@ struct RotationZeroModes {
   std::array<double, 3> residual{{0.0, 0.0, 0.0}};
   double softestVibration = 0.0; ///< lowest eigenvalue on the complement
 };
-RotationZeroModes
-rotationZeroModes(const MatrixXd &hess, const MatrixXd &generators,
-                  double fraction = kRotationZeroFraction);
+RotationZeroModes rotationZeroModes(const MatrixXd &hess,
+                                    const MatrixXd &generators,
+                                    double fraction = kRotationZeroFraction);
 
 /// The Bofill update of a bead block (Powell symmetric Broyden and SR1
 /// mixed by the angle between the secant residual and the step), then any

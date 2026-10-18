@@ -733,8 +733,8 @@ void Matter::computePotential() const {
 }
 
 // Transform coordinates into the cell using the selected PBC convention (#176).
-// Legacy: fractional [0,1) via fmod (historical). MinimumImage: fractional
-// [-0.5,0.5) via floor (same MIC as eonc::pbc::apply for differences).
+// Legacy selects fractional [0,1); MinimumImage selects fractional [-0.5,0.5).
+// Closest-image displacement vectors use the independent Euclidean operation.
 void Matter::applyPeriodicBoundary() {
   assertIsolatedMoleculeLayoutSafe();
   // Unset / singular cell (default after Matter construct is Zero) — do not

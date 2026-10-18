@@ -16,11 +16,11 @@
 ** Friction bath: J. Chem. Phys. 156, 194106 (2022).
 */
 #include "eon/Tunneling.h"
-#include "eon/PotentialOwner.h"
 #include "eon/EonLogger.h"
 #include "eon/LowestEigenmode.h"
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/Parameters.h"
+#include "eon/PotentialOwner.h"
 #include "eon/RingPolymerPotential.h"
 
 #include <Eigen/Eigenvalues>
@@ -43,10 +43,11 @@ namespace {
 BatchPotential ownedEvaluation(const BatchPotential &fallback,
                                const RateInstantonOptions &options,
                                long scratch, long beadCount = 0) {
-  if (!options.ownedPotential) return fallback;
-  return [owned = options.ownedPotential, scratch, beadCount](
-             const std::vector<VectorXd> &q, std::vector<double> &v,
-             std::vector<VectorXd> &g) {
+  if (!options.ownedPotential)
+    return fallback;
+  return [owned = options.ownedPotential, scratch,
+          beadCount](const std::vector<VectorXd> &q, std::vector<double> &v,
+                     std::vector<VectorXd> &g) {
     std::vector<long> owners(q.size(), scratch);
     if (beadCount > 0)
       for (size_t j = 0; j < q.size(); ++j)
@@ -2327,23 +2328,25 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   // dimensions the turning points are not the saddle, so each bead starts
   // from its own curvature and the Bofill update carries it.
   std::vector<MatrixXd> physical;
-  const auto beadPotential = ownedEvaluation(potential, options, 0,
-                                             static_cast<long>(x.size()));
-  const auto derivativePotential = ownedEvaluation(
-      potential, options, potential_owner::derivative);
+  const auto beadPotential =
+      ownedEvaluation(potential, options, 0, static_cast<long>(x.size()));
+  const auto derivativePotential =
+      ownedEvaluation(potential, options, potential_owner::derivative);
   auto physicalAt = [&](const VectorXd &q) -> MatrixXd {
     if (!options.physicalHessian)
       return fdPhysicalHessian(q, derivativePotential,
-                                options.physicalHessianStep);
+                               options.physicalHessianStep);
     const MatrixXd h = options.physicalHessian(q);
     if (h.rows() != f || h.cols() != f || !h.allFinite() ||
         !h.isApprox(h.transpose(), 1e-12))
-      throw std::invalid_argument("rate instanton: invalid analytic physical Hessian");
+      throw std::invalid_argument(
+          "rate instanton: invalid analytic physical Hessian");
     return h;
   };
   if (options.physicalHessian) {
     physical.resize(x.size());
-    for (size_t j = 0; j < x.size(); ++j) physical[j] = physicalAt(x[j]);
+    for (size_t j = 0; j < x.size(); ++j)
+      physical[j] = physicalAt(x[j]);
   } else if (f == 1 || options.initialHessians != "finite_difference") {
     physical.assign(x.size(), hS);
   } else {
@@ -2430,9 +2433,10 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       out.gradPot = std::move(gu);
       out.energies = std::move(vu);
     } else {
-      const RingEval ev = evaluateRing(
-          q, c, beadPotential, options.energyShift, frictionEta(options, q.size()),
-          options.discretization, options.physicalBath);
+      const RingEval ev =
+          evaluateRing(q, c, beadPotential, options.energyShift,
+                       frictionEta(options, q.size()), options.discretization,
+                       options.physicalBath);
       out.u = ev.u;
       out.grad = ev.grad;
       out.gradPot = ev.physicalGrad;
@@ -2493,7 +2497,8 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   }
   auto viewOf = [&](const Obj &ev) {
     if (options.physicalHessian) {
-      for (size_t j = 0; j < x.size(); ++j) physical[j] = physicalAt(x[j]);
+      for (size_t j = 0; j < x.size(); ++j)
+        physical[j] = physicalAt(x[j]);
       recountNegatives();
     }
     nullRing = ringRigid(x);
@@ -2763,14 +2768,13 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       break;
     }
     if (f == 1) {
-        for (size_t j = 0; j < x.size(); ++j) {
+      for (size_t j = 0; j < x.size(); ++j) {
         physical[j] = physicalAt(x[j]);
       }
     }
     const View v = viewOf(cur);
-    const bool modeledCountGrew =
-        previousModeledNegatives >= 0 &&
-        v.climb.negative > previousModeledNegatives;
+    const bool modeledCountGrew = previousModeledNegatives >= 0 &&
+                                  v.climb.negative > previousModeledNegatives;
     if (v.ok)
       previousModeledNegatives = v.climb.negative;
     EONC_LOG_DEBUG("[Instanton] Newton {}: U_N {:.10g} eV, largest residual "
@@ -2801,7 +2805,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
                  v.climb.negative > std::max(1L, exactNegatives) &&
                  driftRefreshes < kMaxDriftRefreshes) {
         ++driftRefreshes;
-            for (size_t j = 0; j < x.size(); ++j) {
+        for (size_t j = 0; j < x.size(); ++j) {
           physical[j] = physicalAt(x[j]);
         }
         recountNegatives();
@@ -2920,7 +2924,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     // that mode leaves it.
     if (v.ok && v.gmax < options.forceTolerance && v.climb.negative != 1 &&
         !exactAtX) {
-        for (size_t j = 0; j < x.size(); ++j) {
+      for (size_t j = 0; j < x.size(); ++j) {
         physical[j] = physicalAt(x[j]);
       }
       recountNegatives();
@@ -2991,7 +2995,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       // region again.
       if (trust <= trustFloor && refreshes < kMaxHessianRefreshes) {
         ++refreshes;
-            for (size_t j = 0; j < x.size(); ++j) {
+        for (size_t j = 0; j < x.size(); ++j) {
           physical[j] = physicalAt(x[j]);
         }
         recountNegatives();
@@ -3525,8 +3529,7 @@ SearchedRing oneDimerSearch(const std::vector<VectorXd> &full, double c,
   auto pot = std::make_shared<RingPolymerPotential>(
       ownedEvaluation(potential, options, 0,
                       fold ? options.beads / 2 + 1 : options.beads),
-      options.beads, dir.size(), c, options.energyShift, eta, fold,
-      dir);
+      options.beads, dir.size(), c, options.energyShift, eta, fold, dir);
   pot->setDiscretization(options.discretization);
   pot->setPhysicalBath(options.physicalBath);
   Parameters params;
@@ -4413,18 +4416,18 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
   for (long j = 0; j < N; ++j) {
     phaseResidualSquared +=
         (phaseProduct[j] - inst.zeroEigenvalue * cycle[j]).squaredNorm();
-    const double offDiagonal = linkWeight
-        ? c / (*linkWeight)[j] + c / (*linkWeight)[(j + N - 1) % N]
-        : 2.0 * c;
-    phaseOperatorBound = std::max(phaseOperatorBound,
-        diag[j].cwiseAbs().rowwise().sum().maxCoeff() + offDiagonal);
+    const double offDiagonal =
+        linkWeight ? c / (*linkWeight)[j] + c / (*linkWeight)[(j + N - 1) % N]
+                   : 2.0 * c;
+    phaseOperatorBound =
+        std::max(phaseOperatorBound,
+                 diag[j].cwiseAbs().rowwise().sum().maxCoeff() + offDiagonal);
   }
   inst.phaseEigenResidual = std::sqrt(phaseResidualSquared);
   const double phaseRoundoff = 64.0 * std::numeric_limits<double>::epsilon() *
-      N * f * phaseOperatorBound;
-  inst.phaseZeroVerified =
-      std::abs(inst.zeroEigenvalue) <= phaseRoundoff &&
-      inst.phaseEigenResidual <= phaseRoundoff;
+                               N * f * phaseOperatorBound;
+  inst.phaseZeroVerified = std::abs(inst.zeroEigenvalue) <= phaseRoundoff &&
+                           inst.phaseEigenResidual <= phaseRoundoff;
   inst.negativeModes = ring.negative();
   double logAbsDet = ring.logAbsDet();
   const long dim = N * f;
