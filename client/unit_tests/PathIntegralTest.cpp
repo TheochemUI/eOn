@@ -473,8 +473,7 @@ TEST_CASE("Complete centroid GLE follows the coupled Gaussian propagator",
     const double time = step * options.dt;
     // exp(-[[a,w],[-w,a]] t) has physical diagonal exp(-a t) cos(w t).
     const double exact = 2.0 * std::exp(-1.3 * time) * std::cos(2.1 * time);
-    REQUIRE(ring.centroidVelocity()[0] ==
-            Catch::Approx(exact).margin(2e-12));
+    REQUIRE(ring.centroidVelocity()[0] == Catch::Approx(exact).margin(2e-12));
     REQUIRE(otherTau.centroidVelocity()[0] ==
             Catch::Approx(exact).margin(2e-12));
   }
@@ -486,8 +485,8 @@ TEST_CASE("Internal-only GLE and empty one-bead GLE retain a Langevin centroid",
   const long beads = GENERATE(1L, 4L);
   Options options = baseOptions(beads);
   RingPolymer pile = makePolymer(options);
-  const auto path = std::filesystem::temp_directory_path() /
-                    "eon-centroid-internal-only.txt";
+  const auto path =
+      std::filesystem::temp_directory_path() / "eon-centroid-internal-only.txt";
   options.thermostat = Thermostat::Piglet;
   if (beads > 1) {
     writeGle(path, beads - 1, 0.0);
@@ -501,7 +500,8 @@ TEST_CASE("Internal-only GLE and empty one-bead GLE retain a Langevin centroid",
     for (long step = 0; step < 12; ++step) {
       pile.step(potential, nullptr);
       legacy.step(potential, nullptr);
-      REQUIRE(legacy.centroidVelocity().isApprox(pile.centroidVelocity(), 1e-12));
+      REQUIRE(
+          legacy.centroidVelocity().isApprox(pile.centroidVelocity(), 1e-12));
     }
   } else {
     std::filesystem::remove(path);

@@ -790,8 +790,8 @@ void RingPolymer::thermostat(double h) {
             mode.extended(0, col) * std::sqrt(mass_[static_cast<size_t>(a)]);
       }
     } else {
-      const double tau = k == 0 ? opt_.pileTau
-                               : 1.0 / (2.0 * opt_.pileScale * omegaK_[k]);
+      const double tau =
+          k == 0 ? opt_.pileTau : 1.0 / (2.0 * opt_.pileScale * omegaK_[k]);
       langevin(k, tau);
     }
   }
