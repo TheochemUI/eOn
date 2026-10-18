@@ -2713,6 +2713,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   // Negative curvatures the last finite-difference blocks showed, and the
   // rebuilds a growing Bofill count has asked for.
   long exactNegatives = -1;
+  long previousModeledNegatives = -1;
   constexpr int kMaxDriftRefreshes = 4;
   int driftRefreshes = 0;
   // B_N of the closed ring the beads describe.
@@ -2744,6 +2745,11 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       }
     }
     const View v = viewOf(cur);
+    const bool modeledCountGrew =
+        previousModeledNegatives >= 0 &&
+        v.climb.negative > previousModeledNegatives;
+    if (v.ok)
+      previousModeledNegatives = v.climb.negative;
     EONC_LOG_DEBUG("[Instanton] Newton {}: U_N {:.10g} eV, largest residual "
                    "{:.3e}, B_N {:.6e}, climb curvature {:.4e}, {} negative, "
                    "trust {:.3e}",
@@ -2768,7 +2774,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     if (f > 1 && v.ok) {
       if (exactAtX) {
         exactNegatives = v.climb.negative;
-      } else if (v.gmax < options.forceTolerance &&
+      } else if ((v.gmax < options.forceTolerance || modeledCountGrew) &&
                  v.climb.negative > std::max(1L, exactNegatives) &&
                  driftRefreshes < kMaxDriftRefreshes) {
         ++driftRefreshes;
