@@ -2982,3 +2982,52 @@ TEST_CASE("The bead-block update keeps the inertia of the last exact block",
   bofillKeepingInertia(one, dq, dg, 1);
   REQUIRE((one - plain).norm() < 1e-14);
 }
+
+TEST_CASE("Copied saddle curvature does not rebuild nonstationary bead Hessians",
+          "[Tunneling][Instanton][NativeForceCost]") {
+  const bool stationary = GENERATE(false, true);
+  constexpr long dimension = 6, beads = 8, active = beads / 2 + 1;
+  long geometries = 0, fdBatches = 0;
+  const BatchPotential potential = [&](const std::vector<VectorXd> &q,
+                                        std::vector<double> &v,
+                                        std::vector<VectorXd> &g) {
+    geometries += static_cast<long>(q.size());
+    fdBatches += q.size() == 2 * dimension;
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0);
+      v[j] = .25 * std::pow(x * x - 1.0, 2) + q[j].tail(dimension - 1).squaredNorm();
+      g[j] = 2.0 * q[j];
+      g[j](0) = x * (x * x - 1.0);
+    }
+  };
+  MatrixXd hs = 2.0 * MatrixXd::Identity(dimension, dimension);
+  hs(0, 0) = -1.0;
+  std::vector<VectorXd> seed(beads, VectorXd::Zero(dimension));
+  if (!stationary)
+    for (long j = 0; j < beads; ++j) {
+      seed[j](0) = .1 * std::cos(2.0 * std::acos(-1.0) * j / beads);
+      seed[j](1) = .2;
+    }
+  RateInstantonOptions options;
+  options.beads = beads;
+  options.halfRing = true;
+  options.checkOddSector = false;
+  options.initialHessians = "saddle";
+  options.maxIterations = 1;
+  options.forceTolerance = 1e-7;
+  const auto result = optimizeRateInstanton(VectorXd::Zero(dimension), hs,
+                                            7.0 / kHbar, seed, potential, options);
+  REQUIRE_FALSE(result.converged);
+  REQUIRE(result.iterations == 1);
+  if (stationary) {
+    REQUIRE(fdBatches == active);
+    REQUIRE(geometries == active + active * 2 * dimension);
+  } else {
+    REQUIRE(fdBatches == 0);
+    REQUIRE(geometries >= 2 * active);
+    REQUIRE(geometries < active * 2 * dimension);
+    REQUIRE((result.beads.front() - seed.front()).norm() > 1e-8);
+  }
+}
