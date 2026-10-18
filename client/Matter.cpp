@@ -973,11 +973,14 @@ bool canComputeConcurrently(std::span<Matter *const> systems) {
 }
 
 void evaluateTogether(Potential &pot, std::span<Matter *const> systems,
-                      bool threads) {
+                      bool threads, std::span<const long> owners) {
   std::vector<Matter *> dirty;
-  for (Matter *m : systems) {
+  std::vector<long> dirtyOwners;
+  for (size_t i = 0; i < systems.size(); ++i) {
+    Matter *m = systems[i];
     if (m != nullptr && m->needsForceUpdate()) {
       dirty.push_back(m);
+      dirtyOwners.push_back(i < owners.size() ? owners[i] : -1);
     }
   }
   if (dirty.empty()) {
@@ -1022,8 +1025,14 @@ void evaluateTogether(Potential &pot, std::span<Matter *const> systems,
     boxPtr.push_back(boxes[j].data());
   }
   std::vector<double> energies(n), variances(n);
-  pot.forceBatch(n, atoms, posPtr.data(), nrsPtr.data(), frcPtr.data(),
-                 energies.data(), variances.data(), boxPtr.data());
+  if (owners.empty()) {
+    pot.forceBatch(n, atoms, posPtr.data(), nrsPtr.data(), frcPtr.data(),
+                   energies.data(), variances.data(), boxPtr.data());
+  } else {
+    pot.forceBatchOwned(n, atoms, posPtr.data(), nrsPtr.data(), frcPtr.data(),
+                        energies.data(), variances.data(), boxPtr.data(),
+                        dirtyOwners.data());
+  }
   for (long j = 0; j < n; ++j) {
     dirty[j]->setComputedPotential(energies[j], variances[j]);
   }

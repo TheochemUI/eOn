@@ -171,9 +171,13 @@ int xtsciBandSurface(void *user, void *request) {
     }
     const auto dof = static_cast<Eigen::Index>(3 * nAtoms);
     std::vector<Matter *> carried;
+    std::vector<long> owners;
     carried.reserve(static_cast<size_t>(rows));
+    owners.reserve(static_cast<size_t>(rows));
     for (int64_t r = 0; r < rows; ++r) {
-      carried.push_back(neb->path[static_cast<size_t>(first + r)].get());
+      const auto i = static_cast<size_t>(first + r);
+      carried.push_back(neb->path[i].get());
+      owners.push_back(neb->imageOwner(i));
     }
     // Row r: the session's coordinates onto its image. The fixed endpoints
     // and a start point the band already evaluated come back from the
@@ -214,8 +218,9 @@ int xtsciBandSurface(void *user, void *request) {
         place(r);
       }
       // One batch for every carried image, so calculator groups or a
-      // batched model take them together; otherwise in turn.
-      eonc::evaluateTogether(pot, carried);
+      // batched model take them together; otherwise in turn. Each image
+      // carries its band identity, as in the classic update.
+      eonc::evaluateTogether(pot, carried, false, owners);
       for (int64_t r = 0; r < rows; ++r) {
         report(r);
       }

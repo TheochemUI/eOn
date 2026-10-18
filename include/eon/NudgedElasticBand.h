@@ -91,6 +91,16 @@ public:
 
   std::vector<std::shared_ptr<EigenmodeStrategy>> eigenmode_solvers;
 
+  /// The identity band image i carries in a batch (forceBatchOwned):
+  /// interior image i is i - 1, the reactant numImages and the product
+  /// numImages + 1, so no image shares a key with an endpoint.
+  [[nodiscard]] long imageOwner(std::size_t i) const noexcept {
+    const auto idx = static_cast<long>(i);
+    if (idx == 0)
+      return numImages;
+    return idx == numImages + 1 ? numImages + 1 : idx - 1;
+  }
+
   int atoms{0};
   long numImages{0}, climbingImage{0}, numExtrema{0};
   // Reactant energy at construction. Zoom moves path[0] to the start of its
