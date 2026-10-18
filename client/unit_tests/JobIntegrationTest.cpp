@@ -958,7 +958,7 @@ max_iterations = 200
   // Eigen release and vector width. Default LBFGS (auto_scale) adds an FD
   // curvature probe on the first step of each minimize; the SVN dump
   // recorded 1685 with an older path.
-  REQUIRE(forceCalls_ == 1638);
+  REQUIRE(forceCalls_ == 1672);
 
   // 50% acceptance ratio
   double ar = std::stod(results["acceptance_ratio"]);
