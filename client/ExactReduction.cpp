@@ -24,6 +24,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstring>
+#include <limits>
 
 #if defined(_MSC_VER) && !defined(__SIZEOF_INT128__) && defined(_M_X64)
 #include <intrin.h>
@@ -277,7 +278,143 @@ private:
 // the split invisible in the result.
 constexpr std::size_t kLanes = 4;
 
+namespace {
+
+// Error-free transformations (Dekker 1971; Knuth's TwoSum). Exact in
+// round to nearest when nothing overflows and, for twoProduct, the
+// product's error does not underflow; certifiedDot checks both.
+inline void twoSum(double a, double b, double &s, double &e) {
+  s = a + b;
+  const double bb = s - a;
+  e = (a - (s - bb)) + (b - bb);
+}
+
+inline void twoProduct(double a, double b, double &p, double &e) {
+  p = a * b;
+#if defined(__FMA__) || defined(__ARM_FEATURE_FMA)
+  e = std::fma(a, b, -p);
+#else
+  constexpr double kSplitter = 134217729.0; // 2^27 + 1, Veltkamp
+  const double ca = kSplitter * a;
+  const double ah = ca - (ca - a);
+  const double al = a - ah;
+  const double cb = kSplitter * b;
+  const double bh = cb - (cb - b);
+  const double bl = b - bh;
+  e = ((ah * bh - p) + ah * bl + al * bh) + al * bl;
+#endif
+}
+
+// Fast path: a compensated dot product (Ogita, Rump and Oishi 2005, Dot2)
+// in four lanes, s + c with the exact sum = s + c_exact, and an a
+// posteriori bound E >= |c - c_exact| from the recursive-summation bound
+// gamma_N * sum |t_i|. If [s + c - E, s + c + E] lies strictly between the
+// midpoints around r = RN(s + c), then r is the correctly rounded exact
+// sum. Otherwise, or when a range guard fails, returns false and the
+// integer accumulator decides. Both paths return RN(exact), so the choice
+// never shows in the bits.
+bool certifiedDot(const double *x, const double *y, std::size_t n,
+                  double &out) {
+  constexpr double u = 0x1p-53;
+  if (n == 0 || static_cast<double>(n) > 0x1p30) {
+    return false;
+  }
+  double s[kLanes] = {0.0, 0.0, 0.0, 0.0};
+  double c[kLanes] = {0.0, 0.0, 0.0, 0.0};
+  double b[kLanes] = {0.0, 0.0, 0.0, 0.0};
+  double maxAbs[kLanes] = {0.0, 0.0, 0.0, 0.0};
+  double minProd[kLanes] = {1.0, 1.0, 1.0, 1.0};
+  const auto term = [&](std::size_t k, double xi, double yi) {
+    double p;
+    double e;
+    twoProduct(xi, yi, p, e);
+    double q;
+    twoSum(s[k], p, s[k], q);
+    c[k] += q + e;
+    b[k] += std::fabs(q) + std::fabs(e);
+    const double ax = std::fabs(xi);
+    const double ay = std::fabs(yi);
+    const double m = ax > ay ? ax : ay;
+    maxAbs[k] = m > maxAbs[k] ? m : maxAbs[k];
+    // A nonzero pair whose product underflowed to zero must fail the
+    // guard too, so the test is on the inputs, not on p.
+    const double ap = std::fabs(p);
+    if (xi != 0.0 && yi != 0.0 && ap < minProd[k]) {
+      minProd[k] = ap;
+    }
+  };
+  std::size_t i = 0;
+  for (; i + kLanes <= n; i += kLanes) {
+    for (std::size_t k = 0; k < kLanes; ++k) {
+      term(k, x[i + k], y[i + k]);
+    }
+  }
+  for (std::size_t k = 0; i + k < n; ++k) {
+    term(k, x[i + k], y[i + k]);
+  }
+  // Guards: no overflow anywhere (every |x_i|, |y_i| < 2^480, so every
+  // product and partial sum stays below 2^991), no non-finite input (the
+  // first guard fails on infinity, a NaN makes r NaN below), and no
+  // nonzero pair with a product below 2^-960, so each product error is
+  // representable.
+  double mx = maxAbs[0];
+  double mp = minProd[0];
+  for (std::size_t k = 1; k < kLanes; ++k) {
+    mx = maxAbs[k] > mx ? maxAbs[k] : mx;
+    mp = minProd[k] < mp ? minProd[k] : mp;
+  }
+  if (!(mx < 0x1p480) || !(mp >= 0x1p-960)) {
+    return false;
+  }
+  double s01;
+  double q1;
+  double s23;
+  double q2;
+  double sAll;
+  double q3;
+  twoSum(s[0], s[1], s01, q1);
+  twoSum(s[2], s[3], s23, q2);
+  twoSum(s01, s23, sAll, q3);
+  const double cAll = ((c[0] + c[1]) + (c[2] + c[3])) + ((q1 + q2) + q3);
+  const double bAll = ((b[0] + b[1]) + (b[2] + b[3])) +
+                      ((std::fabs(q1) + std::fabs(q2)) + std::fabs(q3));
+  // Every t = q + e (or a combining q) passes through at most N roundings
+  // on its way into cAll, so |cAll - c_exact| <= gamma_N * sum |t|, and
+  // bAll underestimates sum |t| by at most the same factor. Twice gamma_N
+  // * bAll covers both, and the slack covers gradual underflow.
+  const double N = static_cast<double>(n) + 8.0;
+  const double gamma = (N * u) / (1.0 - N * u);
+  const double E = 2.0 * gamma * bAll + N * 0x1p-1070;
+  double r;
+  double d;
+  twoSum(sAll, cAll, r, d);
+  const double ar = std::fabs(r);
+  if (!(ar >= 0x1p-1000) || !(ar < 0x1p1000)) {
+    if (sAll == 0.0 && cAll == 0.0 && bAll == 0.0) {
+      out = 0.0; // every product and every error is zero
+      return true;
+    }
+    return false;
+  }
+  const double hUp =
+      0.5 * (std::nextafter(r, std::numeric_limits<double>::infinity()) - r);
+  const double hDn =
+      0.5 * (r - std::nextafter(r, -std::numeric_limits<double>::infinity()));
+  constexpr double kMargin = 1.0 - 0x1p-30;
+  if (d + E < hUp * kMargin && d - E > -hDn * kMargin) {
+    out = r;
+    return true;
+  }
+  return false;
+}
+
+} // namespace
+
 double dot(const double *x, const double *y, std::size_t n) {
+  double certified;
+  if (certifiedDot(x, y, n, certified)) {
+    return certified;
+  }
   std::array<Accumulator, kLanes> acc;
   for (std::size_t i = 0; i < n; ++i) {
     Decoded a;
