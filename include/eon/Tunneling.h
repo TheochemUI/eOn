@@ -165,6 +165,11 @@ using BatchPotential =
     std::function<void(const std::vector<VectorXd> &q, std::vector<double> &v,
                        std::vector<VectorXd> &grad)>;
 
+/// Explicit electronic-state owners for each evaluated geometry.
+using OwnedBatchPotential = std::function<void(
+    const std::vector<VectorXd> &q, std::vector<double> &v,
+    std::vector<VectorXd> &grad, const std::vector<long> &owners)>;
+
 /// The mass-weighted Hessian d2V/dq2 at interior bead j (1..P-1).
 using BeadHessian = std::function<MatrixXd(long j, const VectorXd &q)>;
 
@@ -264,6 +269,9 @@ double quantumHarmonicTstLogRate(const MatrixXd &hessReactant,
                                  double barrier, long rigidModes);
 
 struct RateInstantonOptions {
+  /// Stable bead identities and bounded derivative scratch slots. Empty
+  /// preserves the BatchPotential callback contract.
+  OwnedBatchPotential ownedPotential;
   /// Fixed physical quadratic bath, eliminated on the same primitive ring.
   /// The potential callback supplies retained coordinates and the declared
   /// frozen-bath or relaxed potential of this model.

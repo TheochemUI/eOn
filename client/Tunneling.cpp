@@ -16,6 +16,7 @@
 ** Friction bath: J. Chem. Phys. 156, 194106 (2022).
 */
 #include "eon/Tunneling.h"
+#include "eon/PotentialOwner.h"
 #include "eon/EonLogger.h"
 #include "eon/LowestEigenmode.h"
 #include "eon/MinModeSaddleSearch.h"
@@ -37,6 +38,23 @@
 #include <utility>
 
 namespace eonc::tunneling {
+
+namespace {
+BatchPotential ownedEvaluation(const BatchPotential &fallback,
+                               const RateInstantonOptions &options,
+                               long scratch, long beadCount = 0) {
+  if (!options.ownedPotential) return fallback;
+  return [owned = options.ownedPotential, scratch, beadCount](
+             const std::vector<VectorXd> &q, std::vector<double> &v,
+             std::vector<VectorXd> &g) {
+    std::vector<long> owners(q.size(), scratch);
+    if (beadCount > 0)
+      for (size_t j = 0; j < q.size(); ++j)
+        owners[j] = static_cast<long>(j % static_cast<size_t>(beadCount));
+    owned(q, v, g, owners);
+  };
+}
+} // namespace
 
 double massWeightedDistance(const Matter &a, const Matter &b) {
   if (a.numberOfAtoms() != b.numberOfAtoms()) {
@@ -2309,9 +2327,14 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   // dimensions the turning points are not the saddle, so each bead starts
   // from its own curvature and the Bofill update carries it.
   std::vector<MatrixXd> physical;
+  const auto beadPotential = ownedEvaluation(potential, options, 0,
+                                             static_cast<long>(x.size()));
+  const auto derivativePotential = ownedEvaluation(
+      potential, options, potential_owner::derivative);
   auto physicalAt = [&](const VectorXd &q) -> MatrixXd {
     if (!options.physicalHessian)
-      return fdPhysicalHessian(q, potential, options.physicalHessianStep);
+      return fdPhysicalHessian(q, derivativePotential,
+                                options.physicalHessianStep);
     const MatrixXd h = options.physicalHessian(q);
     if (h.rows() != f || h.cols() != f || !h.allFinite() ||
         !h.isApprox(h.transpose(), 1e-12))
@@ -2357,7 +2380,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       const long n = 2 * m;
       std::vector<double> vu;
       std::vector<VectorXd> gu;
-      potential(q, vu, gu);
+      beadPotential(q, vu, gu);
       for (double &vj : vu) {
         vj -= options.energyShift;
       }
@@ -2408,7 +2431,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       out.energies = std::move(vu);
     } else {
       const RingEval ev = evaluateRing(
-          q, c, potential, options.energyShift, frictionEta(options, q.size()),
+          q, c, beadPotential, options.energyShift, frictionEta(options, q.size()),
           options.discretization, options.physicalBath);
       out.u = ev.u;
       out.grad = ev.grad;
@@ -2713,6 +2736,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   // Negative curvatures the last finite-difference blocks showed, and the
   // rebuilds a growing Bofill count has asked for.
   long exactNegatives = -1;
+  long previousModeledNegatives = -1;
   constexpr int kMaxDriftRefreshes = 4;
   int driftRefreshes = 0;
   // B_N of the closed ring the beads describe.
@@ -2744,6 +2768,11 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       }
     }
     const View v = viewOf(cur);
+    const bool modeledCountGrew =
+        previousModeledNegatives >= 0 &&
+        v.climb.negative > previousModeledNegatives;
+    if (v.ok)
+      previousModeledNegatives = v.climb.negative;
     EONC_LOG_DEBUG("[Instanton] Newton {}: U_N {:.10g} eV, largest residual "
                    "{:.3e}, B_N {:.6e}, climb curvature {:.4e}, {} negative, "
                    "trust {:.3e}",
@@ -2768,7 +2797,8 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     if (f > 1 && v.ok) {
       if (exactAtX) {
         exactNegatives = v.climb.negative;
-      } else if (v.climb.negative > std::max(1L, exactNegatives) &&
+      } else if ((v.gmax < options.forceTolerance || modeledCountGrew) &&
+                 v.climb.negative > std::max(1L, exactNegatives) &&
                  driftRefreshes < kMaxDriftRefreshes) {
         ++driftRefreshes;
             for (size_t j = 0; j < x.size(); ++j) {
@@ -3493,7 +3523,9 @@ SearchedRing oneDimerSearch(const std::vector<VectorXd> &full, double c,
                             const VectorXd &dir, bool fold,
                             const std::vector<double> &eta) {
   auto pot = std::make_shared<RingPolymerPotential>(
-      potential, options.beads, dir.size(), c, options.energyShift, eta, fold,
+      ownedEvaluation(potential, options, 0,
+                      fold ? options.beads / 2 + 1 : options.beads),
+      options.beads, dir.size(), c, options.energyShift, eta, fold,
       dir);
   pot->setDiscretization(options.discretization);
   pot->setPhysicalBath(options.physicalBath);
