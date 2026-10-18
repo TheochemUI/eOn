@@ -30,6 +30,16 @@ def test_wrap_revision_matches_the_python_package():
     # staticlib, so the client never links libreadcon_core.a.
     assert "readcon_dep = _rkr_pc" in meson
     assert "readcon_dep = subproject(" in meson
+    # The wheel sets wrap_mode=forcefallback. Without this, the
+    # headers-only overlays satisfy the probe and the umbrella is skipped.
+    mi = meson.split("_mi_pc = dependency(", 1)[1].split("_lc_pc = dependency(", 1)[0]
+    lc = meson.split("_lc_pc = dependency(", 1)[1].split("_rkr_pc = dependency(", 1)[0]
+    rkr = meson.split("_rkr_pc = dependency(", 1)[1].split(
+        "if _mi_pc.found()", 1
+    )[0]
+    assert "allow_fallback: false" in mi
+    assert "allow_fallback: false" in lc
+    assert "allow_fallback: false" in rkr
     assert "'readcon-core'" in meson
     assert "version: '>=0.16.0'" in meson
     assert "eon_rust_abi" in meson
@@ -38,6 +48,7 @@ def test_wrap_revision_matches_the_python_package():
         "if not readcon_db_dep.found()", 1
     )[0]
     assert "'readcon-db'" in db
+    assert "allow_fallback: false" in db
     assert f"version: '>={pin}'" in db
     assert "subproject(\n        'readcon-db'" in meson
     assert f"'readcon-db',\n        version: '>={pin}'" in meson

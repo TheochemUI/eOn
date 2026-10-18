@@ -27,4 +27,35 @@ if [ -n "${EXTRA_LIBS}" ]; then
   export LD_LIBRARY_PATH="${EXTRA_LIBS}:${LD_LIBRARY_PATH:-}"
   echo "cibw-test EXTRA_LIBS=${EXTRA_LIBS}"
 fi
-python -c "import pyeonclient as p, pathlib, subprocess; print(p.__version__, 'mta', p.built_with_metatomic(), 'rgpot', p.built_with_rgpot()); assert p.built_with_rgpot(); core=next(pathlib.Path(p.__file__).parent.glob('_core*.so')); out=subprocess.check_output(['readelf','-d',str(core)],text=True); assert 'libtorch' not in out or p.built_with_metatomic(); print('NEEDED_OK'); assert hasattr(p.NudgedElasticBand, 'path_frames')"
+python - <<'PY'
+import pathlib
+import shutil
+import subprocess
+import sys
+
+import pyeonclient as p
+
+print(
+    p.__version__,
+    "mta",
+    p.built_with_metatomic(),
+    "rgpot",
+    p.built_with_rgpot(),
+)
+# WITH_RGPOT is the NWChem/CPMD dlopen path, which the Windows build skips.
+if sys.platform == "win32":
+    assert p.built_with_rgpot() is False
+else:
+    assert p.built_with_rgpot() is True
+assert hasattr(p.NudgedElasticBand, "path_frames")
+parent = pathlib.Path(p.__file__).parent
+cores = list(parent.glob("_core*.so")) + list(parent.glob("_core*.pyd"))
+if not cores:
+    raise SystemExit(f"no _core extension in {parent}")
+core = cores[0]
+if core.suffix == ".so" and shutil.which("readelf"):
+    out = subprocess.check_output(["readelf", "-d", str(core)], text=True)
+    if "libtorch" in out and not p.built_with_metatomic():
+        raise SystemExit(out)
+    print("NEEDED_OK")
+PY

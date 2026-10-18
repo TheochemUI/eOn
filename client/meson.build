@@ -750,6 +750,10 @@ _deps += [vesin_dep]
 # three crates as rlibs and is the only Rust archive on the link line.
 # Installed pkg-config copies are used only when all three are present,
 # so a partial install cannot mix one system archive with two wraps.
+# allow_fallback is false: the wheel sets wrap_mode=forcefallback, and
+# that mode would treat the headers-only overlays as a found dependency
+# and skip the umbrella. MinimumImage.cpp would then have no mi_* at
+# link time.
 readcon_order_srcs = []
 _readcon_runtime_dir = ''
 _have_readcon_dll_beside = false
@@ -760,18 +764,21 @@ _mi_pc = dependency(
     version: '>=0.1.4',
     method: 'pkg-config',
     required: false,
+    allow_fallback: false,
 )
 _lc_pc = dependency(
     'linkcell',
     version: '>=0.3.11',
     method: 'pkg-config',
     required: false,
+    allow_fallback: false,
 )
 _rkr_pc = dependency(
     'readcon-core',
     version: '>=0.16.0',
     method: 'pkg-config',
     required: false,
+    allow_fallback: false,
 )
 if _mi_pc.found() and _lc_pc.found() and _rkr_pc.found()
     minimage_dep = _mi_pc
@@ -917,11 +924,16 @@ _linkto += eoncbase
 # library. The client dlopens it. GNU --as-needed and ld64
 # -dead_strip_dylibs drop a library with no link-time use, and only
 # those linkers get a keep flag. Resolve pkg-config, then the wrap.
+# allow_fallback: false. forcefallback would take the wrap's own
+# dependency, which link_with's the DLL. link.exe rejects that DLL.
+# The branch below links the import library rustc writes beside it.
+_readcon_db_wheel_dll = []
 readcon_db_dep = dependency(
     'readcon-db',
     version: '>=0.1.6',
     method: 'pkg-config',
     required: false,
+    allow_fallback: false,
 )
 if not readcon_db_dep.found()
     readcon_db_proj = subproject(
@@ -962,6 +974,8 @@ if not readcon_db_dep.found()
         _readcon_db_link_args = [_readcon_db_implib[0].full_path()]
         _readcon_db_sources = [_readcon_db_implib[1]]
         _readcon_runtime_dir = fs.parent(_db_path)
+        # The wheel skips subproject install. The extension dlopens this DLL.
+        _readcon_db_wheel_dll = [_readcon_db_so]
     else
         _readcon_db_link_with = [_readcon_db_so]
         _readcon_db_sources = [_readcon_db_so]
@@ -1999,18 +2013,35 @@ _bin_to_lib = '$ORIGIN/' + fs.relative_to(_libdir, _bindir)
 _lib_install_rpath = ':'.join(['$ORIGIN'] + _runtime_rpath)
 _exe_install_rpath = ':'.join([_bin_to_lib] + _runtime_rpath)
 
-eclib = library(
-    'eonclib',
-    sources: eonclib_sources + readcon_order_srcs,
-    include_directories: _incdirs,
-    dependencies: _deps + _gprd_extra_deps,
-    link_with: _linkto,
-    cpp_args: _args,
-    link_args: _linkargs,
-    build_rpath: ':'.join(_runtime_rpath),
-    install_rpath: _lib_install_rpath,
-    install: true,
-)
+# MSVC writes no import library for a DLL that exports nothing. The
+# Python extension and the relax engine link this target, so Windows
+# keeps an archive. Skip installing it when the project default is
+# shared: that is the wheel, and meson-python cannot map libdir_static.
+# The extension still receives _linkargs (/STACK, the flang runtime).
+if is_windows
+    eclib = static_library(
+        'eonclib',
+        sources: eonclib_sources + readcon_order_srcs,
+        include_directories: _incdirs,
+        dependencies: _deps + _gprd_extra_deps,
+        link_with: _linkto,
+        cpp_args: _args,
+        install: get_option('default_library') != 'shared',
+    )
+else
+    eclib = library(
+        'eonclib',
+        sources: eonclib_sources + readcon_order_srcs,
+        include_directories: _incdirs,
+        dependencies: _deps + _gprd_extra_deps,
+        link_with: _linkto,
+        cpp_args: _args,
+        link_args: _linkargs,
+        build_rpath: ':'.join(_runtime_rpath),
+        install_rpath: _lib_install_rpath,
+        install: true,
+    )
+endif
 
 # MSVC scans static libraries once, left to right. eonclib references
 # the potential archives, so it has to precede them.

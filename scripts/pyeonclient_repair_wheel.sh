@@ -136,7 +136,7 @@ repair_one() {
               resolved="$d/$needed"
               break
             fi
-            # SONAME librgpot.so.3 vs file librgpot.so.3.2.0
+            # SONAME librgpot.so.N vs file librgpot.so.N.M.P
             local cand
             cand="$(ls -1 "$d/$needed".[0-9]* 2>/dev/null | head -1 || true)"
             if [[ -n "$cand" && -f "$cand" ]]; then
@@ -234,13 +234,14 @@ repair_one() {
 
   # The vendored librgpot is the wrap build, without the potentials the pip
   # rgpot wheel carries (D3Pot and others). Under the shared SONAME
-  # librgpot.so.3 the copy loaded first serves both, so `import rgpot` after
+  # librgpot.so.N the copy loaded first serves both, so `import rgpot` after
   # `import pyeonclient` failed with an undefined rgpot::D3Pot typeinfo.
   # pyeonclient bundles librgpot. It does not link the pip rgpot wheel.
   # The bundled copy takes one private SONAME so both packages can load.
+  # N is kCxxSoversion in rgpot's CxxLayout.hpp (4 on the current pin).
   local old_soname new_soname so
   declare -A soname_map=(
-    [librgpot.so.3]=libeon_rgpot.so.3
+    [librgpot.so.4]=libeon_rgpot.so.4
   )
   local src
   for old_soname in "${!soname_map[@]}"; do
@@ -271,8 +272,8 @@ repair_one() {
   done < <(find "$work" -type f \( -name '*.so' -o -name '*.so.*' \) -print0)
 
   # Copies under the other librgpot names, here or next to _core in the
-  # package directory, are unused once .so.3 is renamed; left in place they
-  # would still carry the colliding SONAME on _core's $ORIGIN RUNPATH.
+  # package directory, are unused once the SONAME is renamed; left in place
+  # they would still carry the colliding SONAME on _core's $ORIGIN RUNPATH.
   local extra
   while IFS= read -r -d '' extra; do
     rm -f "$extra"

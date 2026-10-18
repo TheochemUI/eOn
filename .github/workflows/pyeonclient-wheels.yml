@@ -160,6 +160,28 @@ jobs:
           arch: x64
           vsversion: "2022"
 
+      # Eigen's CMake probe fails on the runner image: MinGW gfortran is
+      # paired with MSVC /machine:x64, and Strawberry gmake rewrites
+      # /nologo. The Windows test job already builds with pixi's eigen,
+      # pkg-config, and flang-new. This prefix is only those host tools.
+      - name: Install Windows wheel host tools
+        if: steps.gate.outputs.skip != 'true' && runner.os == 'Windows'
+        uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4
+        with:
+          pixi-version: v0.82.0
+          manifest-path: scripts/ci/wheel-host/pixi.toml
+          cache: true
+          cache-write: true
+          activate-environment: false
+
+      - name: Export Windows wheel host environment
+        if: steps.gate.outputs.skip != 'true' && runner.os == 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          prefix="$PWD/scripts/ci/wheel-host/.pixi/envs/default"
+          bash scripts/pyeonclient_cibw_windows_host.sh "$prefix" >> "$GITHUB_ENV"
+
       - name: Meson config-settings for variant
         if: steps.gate.outputs.skip != 'true'
         id: cfg
@@ -223,13 +245,9 @@ jobs:
               echo "TORCH_LIB=${TORCH_LIB}"
               ls "${TORCH_LIB}"/libc10* "${TORCH_LIB}"/libtorch* 2>/dev/null | head
             fi
-          CIBW_BEFORE_BUILD_WINDOWS: |
-            python -m pip install -U pip "nanobind>=2.4,<3" meson ninja meson-python
-            python -m pip install --only-binary=:all: numpy
-            if "${{ matrix.variant }}"=="metatomic" (
-              python -m pip install --only-binary=:all: torch --index-url https://download.pytorch.org/whl/cpu
-              python -m pip install metatensor metatensor-torch metatomic-torch vesin
-            )
+          # One command. cmd.exe runs only the first line of a multiline
+          # before-build, so numpy never landed in the no-isolation env.
+          CIBW_BEFORE_BUILD_WINDOWS: python scripts/pyeonclient_cibw_before_windows.py ${{ matrix.variant }}
           # The private-SONAME step first (it renames librgpot and rewrites
           # RECORD), then auditwheel, which vendors the Fortran, OpenMP and
           # Cap'n Proto runtimes and sets the manylinux tag. A failed repair
