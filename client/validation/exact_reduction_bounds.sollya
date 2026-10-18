@@ -1,0 +1,66 @@
+// Error bounds and exactness conditions for client/ExactReduction.cpp.
+//
+// Run with:  sollya client/validation/exact_reduction_bounds.sollya
+//
+// 1. Forward error of a plain recursive dot product in binary64
+//    (Higham, Accuracy and Stability, eq. 3.5): |fl - exact| <=
+//    gamma_n sum |x_i y_i|, gamma_n = n u / (1 - n u), u = 2^-53. Any two
+//    summation orders can differ by up to twice that; eonc::exact::dot is
+//    within u |exact| (half an ulp) and the same for every order.
+// 2. eonc::exact::norm = RN(sqrt(RN(s))): relative error at most
+//    sqrt(1 + u) (1 + u) - 1, about 1.5 u, and reproducible because both
+//    roundings are correctly rounded IEEE operations.
+// 3. Accumulator range: products of finite doubles lie in
+//    [2^-2148, 2^2048); 135 words of 32 bits hold n products for every
+//    n below 2^123, and a word absorbs 2^30 pieces below 2^32 before the
+//    periodic carry normalisation.
+// 4. The final ldexp is exact: the rounded significand m <= 2^53 and the
+//    exponent of its last bit lies in [-1074, 2048 - 52].
+
+prec = 300!;
+display = decimal!;
+u = 2^(-53);
+
+procedure gamma(n) { return n * u / (1 - n * u); };
+
+print("1. gamma_n / u (plain recursive dot product):");
+for n in [|3, 39, 1008, 30000|] do {
+  g = gamma(n);
+  print("   n =", n, " gamma_n / u =", round(g / u, 24, RN),
+        " two orders differ by <=", round(2 * g / u, 24, RN), "u");
+};
+
+// 2. sqrt(1 + d1) (1 + d2) - 1 is monotone in both roundings, so the
+//    corners of the box |d1|, |d2| <= u bound it.
+hi = (sqrt(1 + u) * (1 + u) - 1) / u;
+lo = (sqrt(1 - u) * (1 - u) - 1) / u;
+print("2. norm relative error in units of u: [", round(lo, 24, RN), ",",
+      round(hi, 24, RN), "]");
+if (hi < 1.5 + 2^(-40) && lo > -1.5 - 2^(-40)) then
+  print("   |error| <= 1.5 u (+ O(u^2))")
+else
+  print("   BOUND FAILED");
+
+// 3. Accumulator capacity.
+kBase = 2148;
+kTopBit = 1942 + 106 + kBase;
+kChunks = floor(kTopBit / 32) + 4;
+print("3. kChunks =", kChunks, " capacity bits =", 32 * kChunks - 1,
+      " product bits =", kTopBit);
+maxlogn = 32 * kChunks - 1 - kTopBit;
+print("   holds every n < 2^" @ maxlogn);
+if (2^32 + 2^30 * 2^32 < 2^63) then
+  print("   word after 2^30 pieces < 2^63: yes")
+else
+  print("   WORD OVERFLOW");
+
+// 4. Exponent of the last kept bit after rounding.
+lsbmin = (kBase - 1074) - kBase;
+lsbmax = (kTopBit - 52 + 1) - kBase;
+print("4. last-bit exponent in [", lsbmin, ",", lsbmax, "]; ldexp(m, e) with",
+      "m <= 2^53 is exact for e + 53 <= 1024 and rounds to inf above");
+if (2^52 * 2^(lsbmin) == 2^(-1022)) then
+  print("   a subnormal significand that rounds up to 2^52 is the smallest normal 2^-1022")
+else
+  print("   SUBNORMAL BOUNDARY MISMATCH");
+quit;
