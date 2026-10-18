@@ -25,6 +25,11 @@ grid lemma that makes the Ozaki splitting error-free.
   even.
 * `word_capacity`: a signed 64-bit word that receives at most `2^30`
   pieces below `2^32` stays below `2^63`.
+* `certified_nearest`: the certificate of the compensated fast path. If
+  the exact value lies strictly between the midpoints `r - hDn` and
+  `r + hUp` (half the spacings to the neighbours of `r`), every other
+  float is strictly farther away,
+  so round to nearest returns `r` in any tie-breaking rule.
 -/
 
 namespace EonFormal
@@ -278,6 +283,19 @@ theorem word_capacity (w : ℤ) (pieces : List ℤ) (hw : |w| < 2 ^ 32)
   calc |w + pieces.sum| ≤ |w| + |pieces.sum| := abs_add_le _ _
     _ < 2 ^ 32 + 2 ^ 30 * 2 ^ 32 := by linarith
     _ ≤ 2 ^ 63 := by norm_num
+
+/-- The fast-path certificate: inside the open midpoint interval around
+`r`, `r` is strictly nearer than every other float `f`, which lies at or
+beyond a neighbour. -/
+theorem certified_nearest (x r hUp hDn f : ℝ) (hu : 0 < hUp) (hd : 0 < hDn)
+    (hlo : r - hDn < x) (hhi : x < r + hUp)
+    (hf : r + 2 * hUp ≤ f ∨ f ≤ r - 2 * hDn) :
+    |x - r| < |x - f| := by
+  rcases hf with hf | hf
+  · rw [abs_lt, abs_of_neg (by linarith)]
+    constructor <;> linarith
+  · rw [abs_lt, abs_of_pos (by linarith)]
+    constructor <;> linarith
 
 end
 

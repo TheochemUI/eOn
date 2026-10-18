@@ -7,11 +7,18 @@ myst:
 
 # Exact reductions
 
-`include/eon/ExactReduction.h` provides `eonc::exact::dot`, `sum`,
-`squaredNorm`, `norm` and `normalized`. Each returns the exact value rounded
-once to the nearest double, ties to even. The optimizers (L-BFGS, CG, FIRE,
-Quickmin, steepest descent), the per-atom step caps, push-apart and the `norm`
-and `rms` convergence tests call them wherever a reduction decides something.
+`include/eon/ExactReduction.h` provides two kinds of reduction.
+
+- `eonc::exact::dot`, `sum`, `squaredNorm`, `norm` and `normalized` return the
+  exact value rounded once to the nearest double, ties to even. The
+  optimizers (L-BFGS, CG, FIRE, Quickmin, steepest descent) and the `norm`
+  and `rms` convergence tests use them for every scalar they branch on.
+- `eonc::exact::orderedDot` and `orderedNorm` add rounded products in a tree
+  fixed in the source: four lanes, then `(l0 + l1) + (l2 + l3)`, compiled
+  without contraction. They are not exact, but their bits do not depend on
+  the compiler, the Eigen release or the CPU. The L-BFGS two-loop recursion
+  (which sets the step vector) and the per-atom lengths of the step caps and
+  push-apart use them.
 
 ## Why
 
@@ -49,6 +56,15 @@ sums are exact in any order. Compensated algorithms such as `Dot2`
 accuracy but stay order-dependent. Reproducible summation in the sense of
 [Demmel and Nguyen 2015](https://doi.org/10.1109/TC.2014.2345391) is
 order-independent without being exact. A correctly rounded result is both.
+
+`dot` first tries a faster route to the same number. It runs a compensated
+dot product (`Dot2`) in four lanes, with TwoProduct by FMA where the CPU has
+it and Veltkamp-Dekker splitting where it does not; both give the same exact
+error term. It also bounds the error of the compensation sum a posteriori.
+When the exact value then lies strictly between the two midpoints around
+`r = RN(s + c)`, `r` is the correctly rounded result. Near a tie, or when a
+range guard fails, the integer accumulator decides. Both routes return
+`RN(sum x_i y_i)`, so the route never shows in the bits.
 
 Non-finite inputs fall back to the plain IEEE sum, so NaN and infinity
 propagate unchanged. An exact zero returns `+0`.
