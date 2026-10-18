@@ -46,6 +46,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <filesystem>
+#include <system_error>
 #include <fstream>
 #include <iterator>
 #include <memory>
@@ -154,9 +155,13 @@ protected:
   }
 
   ~JobIntegrationFixture() {
-    // Always restore CWD before cleanup
+    // Always restore CWD before cleanup. remove_all throws when Windows
+    // still has the job's readcon.db mapped, and an exception leaving this
+    // destructor calls terminate. The error-code overload leaves those
+    // files behind and lets the process exit.
     std::filesystem::current_path(originalDir);
-    std::filesystem::remove_all(workdir);
+    std::error_code ec;
+    std::filesystem::remove_all(workdir, ec);
   }
 
   void writeConfig(const std::string &content) {
@@ -1009,13 +1014,14 @@ max_iterations = 200
   const double lj13 = -44.326801 - 78.0 * 4.0 * (rc6 * rc6 - rc6);
   REQUIRE(minEnergy == Catch::Approx(lj13).margin(1e-6));
 
-  // The optimizer decides on correctly rounded reductions (eonc::exact), the
-  // mean force removed from each evaluation is an exact column sum, and the
-  // L-BFGS vector updates are a multiply followed by an add, so the
-  // trajectory, and with it the count, is the same for every compiler,
-  // Eigen release and vector width. Default LBFGS (auto_scale) adds an FD
-  // curvature probe on the first step of each minimize; the SVN dump
-  // recorded 1685 with an older path.
+  // The optimizer decides on correctly rounded reductions (eonc::exact) and
+  // the mean force removed from each evaluation is an exact column sum.
+  // The LJ pair loop rounds the distance square and the 12-6 products with
+  // contraction off, and fuses only the explicit force update, on every
+  // ISA. The count is then the same for every compiler, Eigen release and
+  // vector width. Default LBFGS (auto_scale) adds an FD curvature probe on
+  // the first step of each minimize; the SVN dump recorded 1685 with an
+  // older path.
   REQUIRE(forceCalls_ == 1640);
 
   // 50% acceptance ratio

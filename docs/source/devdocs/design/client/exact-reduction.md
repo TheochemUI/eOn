@@ -43,10 +43,18 @@ The mean force removed when `removeNetForce` is set is that same exact sum
 of each column, divided by the atom count. Eigen's `colwise().sum()` follows
 the packet width, so the mean differed between x86 and NEON and the LJ13
 basin hop took 1671 force calls on Apple clang instead of 1640. An exact
-mean left 1658 calls: the L-BFGS curvature probe and two-loop step were
-still Eigen saxpys, which are an fma on NEON and a multiply followed by an
-add on the nocona unit the Linux build uses. Those updates now use the
-multiply-then-add form.
+mean left 1658. Rewriting the L-BFGS curvature probe and the two-loop step
+as a multiply followed by an add left the count at 1658, so that step was
+not the remaining gap.
+
+The gap is the LJ pair evaluation. On x86 without FMA in the compile ISA,
+rgpot compiles the pair loop and the inlined kernel in `accumulateHw`:
+contraction off, and an explicit fma only for the force update. ARM has FMA
+in the base ISA, so that clone is not built. Apple clang's default
+contraction then fuses `dx*dx + dy*dy + dz*dz` and the 12-6 products
+(`b*(a-1) - shift`, `2*a - 1`). The LJ objects are compiled with contraction
+off, the same flag the minimum-image objects already use, and the force
+update stays `__builtin_fma`. That is the rounding of the Linux clone.
 
 ## How
 

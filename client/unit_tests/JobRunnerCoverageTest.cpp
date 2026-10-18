@@ -17,6 +17,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <system_error>
 #include <map>
 #include <sstream>
 #include <string>
@@ -63,8 +64,11 @@ protected:
   }
 
   ~JobIntegrationFixture() {
+    // See JobIntegrationTest: a throwing remove_all terminates the process
+    // on Windows while readcon.db is still mapped.
     std::filesystem::current_path(originalDir);
-    std::filesystem::remove_all(workdir);
+    std::error_code ec;
+    std::filesystem::remove_all(workdir, ec);
   }
 
   void writeConfig(const std::string &content) {

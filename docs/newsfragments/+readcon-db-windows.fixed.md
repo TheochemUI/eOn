@@ -1,1 +1,1 @@
-The readcon-db mirror loads `readcon_db.dll` on Windows, so a con file is copied into the corpus there as it is on Linux and macOS.
+The readcon-db mirror loads `readcon_db.dll` on Windows, so a con file is copied into the corpus there as it is on Linux and macOS. A job test that deletes its work directory does not abort when that corpus file is still mapped.
