@@ -9,13 +9,13 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#include "eon/Tunneling.h"
 #include "EckartBarrier.hpp"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Parameters.h"
-#include "eon/RingPolymerPotential.h"
-#include "eon/Tunneling.h"
 #include "eon/PotentialOwner.h"
+#include "eon/RingPolymerPotential.h"
 
 #include <Eigen/Eigenvalues>
 #include <cmath>
@@ -2984,21 +2984,23 @@ TEST_CASE("The bead-block update keeps the inertia of the last exact block",
   REQUIRE((one - plain).norm() < 1e-14);
 }
 
-TEST_CASE("Copied saddle curvature does not rebuild nonstationary bead Hessians",
-          "[Tunneling][Instanton][NativeForceCost]") {
+TEST_CASE(
+    "Copied saddle curvature does not rebuild nonstationary bead Hessians",
+    "[Tunneling][Instanton][NativeForceCost]") {
   const bool stationary = GENERATE(false, true);
   constexpr long dimension = 6, beads = 8, active = beads / 2 + 1;
   long geometries = 0, fdBatches = 0;
   const BatchPotential potential = [&](const std::vector<VectorXd> &q,
-                                        std::vector<double> &v,
-                                        std::vector<VectorXd> &g) {
+                                       std::vector<double> &v,
+                                       std::vector<VectorXd> &g) {
     geometries += static_cast<long>(q.size());
     fdBatches += q.size() == 2 * dimension;
     v.resize(q.size());
     g.resize(q.size());
     for (size_t j = 0; j < q.size(); ++j) {
       const double x = q[j](0);
-      v[j] = .25 * std::pow(x * x - 1.0, 2) + q[j].tail(dimension - 1).squaredNorm();
+      v[j] = .25 * std::pow(x * x - 1.0, 2) +
+             q[j].tail(dimension - 1).squaredNorm();
       g[j] = 2.0 * q[j];
       g[j](0) = x * (x * x - 1.0);
     }
@@ -3018,8 +3020,8 @@ TEST_CASE("Copied saddle curvature does not rebuild nonstationary bead Hessians"
   options.initialHessians = "saddle";
   options.maxIterations = 1;
   options.forceTolerance = 1e-7;
-  const auto result = optimizeRateInstanton(VectorXd::Zero(dimension), hs,
-                                            7.0 / kHbar, seed, potential, options);
+  const auto result = optimizeRateInstanton(
+      VectorXd::Zero(dimension), hs, 7.0 / kHbar, seed, potential, options);
   REQUIRE_FALSE(result.converged);
   REQUIRE(result.iterations == 1);
   if (stationary) {
@@ -3039,32 +3041,34 @@ TEST_CASE("Rate beads retain owners while derivatives share bounded scratch",
   constexpr long dimension = 6, beads = 8, active = 5;
   long beadBatches = 0, derivativeBatches = 0, fallbackCalls = 0;
   const BatchPotential fallback = [&](const std::vector<VectorXd> &,
-                                     std::vector<double> &,
-                                     std::vector<VectorXd> &) {
+                                      std::vector<double> &,
+                                      std::vector<VectorXd> &) {
     ++fallbackCalls;
     FAIL("an explicitly owned force evaluation lost its owner hints");
   };
   RateInstantonOptions options;
   options.ownedPotential = [&](const std::vector<VectorXd> &q,
-                               std::vector<double> &v,
-                               std::vector<VectorXd> &g,
+                               std::vector<double> &v, std::vector<VectorXd> &g,
                                const std::vector<long> &owners) {
     REQUIRE(owners.size() == q.size());
     REQUIRE_FALSE(owners.empty());
     if (owners.front() == potential_owner::derivative) {
       ++derivativeBatches;
       REQUIRE(q.size() == 2 * dimension);
-      for (long owner : owners) REQUIRE(owner == potential_owner::derivative);
+      for (long owner : owners)
+        REQUIRE(owner == potential_owner::derivative);
     } else {
       ++beadBatches;
       REQUIRE(q.size() == active);
-      for (long j = 0; j < active; ++j) REQUIRE(owners[j] == j);
+      for (long j = 0; j < active; ++j)
+        REQUIRE(owners[j] == j);
     }
     v.resize(q.size());
     g.resize(q.size());
     for (size_t j = 0; j < q.size(); ++j) {
       const double x = q[j](0);
-      v[j] = .25 * std::pow(x * x - 1.0, 2) + q[j].tail(dimension - 1).squaredNorm();
+      v[j] = .25 * std::pow(x * x - 1.0, 2) +
+             q[j].tail(dimension - 1).squaredNorm();
       g[j] = 2.0 * q[j];
       g[j](0) = x * (x * x - 1.0);
     }
@@ -3083,8 +3087,8 @@ TEST_CASE("Rate beads retain owners while derivatives share bounded scratch",
       seed[j](0) = .1 * std::cos(2.0 * std::acos(-1.0) * j / beads);
       seed[j](1) = .2;
     }
-  const auto result = optimizeRateInstanton(VectorXd::Zero(dimension), hs,
-      7.0 / kHbar, seed, fallback, options);
+  const auto result = optimizeRateInstanton(
+      VectorXd::Zero(dimension), hs, 7.0 / kHbar, seed, fallback, options);
   REQUIRE_FALSE(result.converged);
   REQUIRE(result.iterations == 1);
   REQUIRE(fallbackCalls == 0);

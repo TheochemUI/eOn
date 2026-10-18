@@ -22,8 +22,8 @@
 #include "eon/Bundling.h"
 #include "eon/ConFileIO.h"
 #include "eon/GlobalOptimizationJob.h"
-#include "eon/Job.h"
 #include "eon/InstantonJob.h"
+#include "eon/Job.h"
 #include "eon/Matter.h"
 #include "eon/OHTSTJob.h"
 #include "eon/ParallelReplicaJob.h"
@@ -3598,13 +3598,15 @@ TEST_CASE_METHOD(
   REQUIRE(forceCalls_ == 0);
 }
 
-TEST_CASE_METHOD(JobIntegrationFixture,
-                 "Above crossover rates use only measured references without a seed",
-                 "[job][instanton][integration][NativeForceCost]") {
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "Above crossover rates use only measured references without a seed",
+    "[job][instanton][integration][NativeForceCost]") {
   class CountedPotential : public eonc::Potential {
   public:
     long calls = 0;
-    explicit CountedPotential(const Parameters &p) : eonc::Potential(p) {}
+    explicit CountedPotential(const Parameters &p)
+        : eonc::Potential(p) {}
     void force(long atoms, const double *positions, const int *, double *forces,
                double *energy, double *variance, const double *) override {
       REQUIRE(atoms == 2);
@@ -3662,24 +3664,28 @@ TEST_CASE_METHOD(JobIntegrationFixture,
   hs(0, 0) = -1.0;
   using namespace eonc::tunneling;
   const double beta = 1.0 / (kBoltzmann * 300.0);
-  const double expected = quantumHarmonicTstLogRate(hr, hs, beta, .25, 0) +
-                          std::log(parabolicFactor(300.0, crossoverTemperature(hs))) -
-                          std::log(kTimeUnitSeconds);
+  const double expected =
+      quantumHarmonicTstLogRate(hr, hs, beta, .25, 0) +
+      std::log(parabolicFactor(300.0, crossoverTemperature(hs))) -
+      std::log(kTimeUnitSeconds);
   REQUIRE_THAT(std::stod(results.at("rate_parabolic_log")),
                Catch::Matchers::WithinAbs(expected, 1e-8));
 }
 
-TEST_CASE_METHOD(JobIntegrationFixture,
-                 "Instanton job forwards explicit auxiliary owners to its native potential",
-                 "[job][instanton][integration][OrbitalOwners]") {
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "Instanton job forwards explicit auxiliary owners to its native potential",
+    "[job][instanton][integration][OrbitalOwners]") {
   class CountedPotential : public eonc::Potential {
   public:
     long calls = 0;
     std::vector<long> receivedOwners;
     bool supportsBatchEvaluation() const noexcept override { return true; }
     void forceBatchOwned(long count, long atoms, const double *const *positions,
-        const int *const *numbers, double *const *forces, double *energies,
-        double *variances, const double *const *boxes, const long *owners) override {
+                         const int *const *numbers, double *const *forces,
+                         double *energies, double *variances,
+                         const double *const *boxes,
+                         const long *owners) override {
       REQUIRE(owners != nullptr);
       for (long j = 0; j < count; ++j) {
         receivedOwners.push_back(owners[j]);
@@ -3687,7 +3693,8 @@ TEST_CASE_METHOD(JobIntegrationFixture,
               variances ? variances + j : nullptr, boxes[j]);
       }
     }
-    explicit CountedPotential(const Parameters &p) : eonc::Potential(p) {}
+    explicit CountedPotential(const Parameters &p)
+        : eonc::Potential(p) {}
     void force(long atoms, const double *positions, const int *, double *forces,
                double *energy, double *variance, const double *) override {
       REQUIRE(atoms == 2);
@@ -3748,9 +3755,10 @@ TEST_CASE_METHOD(JobIntegrationFixture,
   hs(0, 0) = -1.0;
   using namespace eonc::tunneling;
   const double beta = 1.0 / (kBoltzmann * 300.0);
-  const double expected = quantumHarmonicTstLogRate(hr, hs, beta, .25, 0) +
-                          std::log(parabolicFactor(300.0, crossoverTemperature(hs))) -
-                          std::log(kTimeUnitSeconds);
+  const double expected =
+      quantumHarmonicTstLogRate(hr, hs, beta, .25, 0) +
+      std::log(parabolicFactor(300.0, crossoverTemperature(hs))) -
+      std::log(kTimeUnitSeconds);
   REQUIRE_THAT(std::stod(results.at("rate_parabolic_log")),
                Catch::Matchers::WithinAbs(expected, 1e-8));
 }

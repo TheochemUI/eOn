@@ -816,14 +816,15 @@ TEST_CASE("Matter differences select the Euclidean image in skew cells",
   for (long a = -5; a <= 5; ++a)
     for (long b = -5; b <= 5; ++b)
       for (long c = -5; c <= 5; ++c) {
-        const Eigen::RowVector3d shifted = difference.row(0) -
-            a * cell.row(0) - b * cell.row(1) - c * cell.row(2);
+        const Eigen::RowVector3d shifted = difference.row(0) - a * cell.row(0) -
+                                           b * cell.row(1) - c * cell.row(2);
         exhaustive = std::min(exhaustive, shifted.squaredNorm());
       }
   REQUIRE(image.squaredNorm() == Catch::Approx(exhaustive).margin(1e-14));
   AtomMatrix shifted = difference;
   shifted.row(0) += 4 * cell.row(0) - 3 * cell.row(1) + 2 * cell.row(2);
-  REQUIRE((eonc::pbc::apply(shifted, cell, cell.inverse()) - image).norm() < 1e-13);
+  REQUIRE((eonc::pbc::apply(shifted, cell, cell.inverse()) - image).norm() <
+          1e-13);
   const auto legacy = eonc::pbc::applyPositions(
       difference, cell, cell.inverse(), eonc::PbcConvention::Legacy);
   REQUIRE((legacy - difference).norm() < 1e-14);
