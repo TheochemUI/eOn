@@ -4,6 +4,7 @@ exclude: |
   (?x)(
   thirdparty| # vendored
   subprojects/gpr_optim/| # vendored gpr_optim pin, patches keep their whitespace
+  subprojects/packagefiles/.*\.patch$| # wrap patches keep their context lines
   xtb.h| # vendored
   mastereqn| # legacy (?)
   libqd| # vendored / legacy (?)
