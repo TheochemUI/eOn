@@ -316,7 +316,14 @@ XtsciBand::XtsciBand(NudgedElasticBand &neb, const Parameters &params)
   }
   rgsaddle_band_config_t config{};
   config.version = RGSADDLE_VERSION_INIT;
+  // eOn removes the mean force of an image only when every atom is free
+  // (eonc::neb::zeroTranslation). With a fixed atom the mean stays, so the
+  // session never pushes fixed atoms that the host pins back after the step.
   config.flags = 0;
+  if (!neb.path.empty() &&
+      neb.path[0]->numberOfFreeAtoms() < neb.path[0]->numberOfAtoms()) {
+    config.flags |= RGSADDLE_BAND_KEEP_TRANSLATION;
+  }
   config.tangent = tangentKind(nebOpt);
   config.spring = springKind(nebOpt);
   config.projection = projectionKind(nebOpt);
@@ -454,9 +461,9 @@ void XtsciBand::step(double maxMove) {
   std::vector<double> positions(m_fixed.size() * static_cast<size_t>(dof), 0.0);
   checkStatus(rgsaddle_band_positions(m_band, positions.data()),
               "rgsaddle_band_positions");
-  if (report.ci_index >= 0) {
-    m_neb->climbingImage = report.ci_index;
-  }
+  // The session reports -1 until an image climbs; the host then holds no
+  // climbing image either, so its convergence test reads the whole band.
+  m_neb->climbingImage = report.ci_index > 0 ? report.ci_index : 0;
   const int64_t interior = nImages - 2;
 #if RGSADDLE_ABI_MINOR >= 5
   // The session's evaluation of the accepted band and its projected force.
@@ -501,7 +508,10 @@ void XtsciBand::step(double maxMove) {
 #if RGSADDLE_ABI_MINOR >= 5
   if (haveProjection) {
     // The session already projected the force. The host convergence
-    // check reads that force and does not rebuild it.
+    // check reads that force and does not rebuild it, so the highest
+    // image (sp.con), the climbing image and the tangents (neb.dat) are
+    // refreshed here from the accepted band.
+    m_neb->adoptSessionProjection(report.ci_index);
     m_neb->movedAfterForceCall = false;
     return;
   }
