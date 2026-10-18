@@ -782,7 +782,11 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   // seed by the period condition. Cooling a cosine from the crossover finds
   // the ring only where it grows continuously out of the saddle; where it
   // does not, the search walks to a neighbouring saddle.
-  if (!profile && o.initial_ring.empty() && !physicalModel) {
+  const bool needsSampledPath =
+      o.pi_planes > 0 ||
+      std::any_of(temperatures.begin(), temperatures.end(),
+                  [tc](double temperature) { return temperature < tc; });
+  if (!profile && o.initial_ring.empty() && !physicalModel && needsSampledPath) {
     pathQ.clear();
     pathV.clear();
     const long before = pot->forceCallCounter.load();
