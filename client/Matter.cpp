@@ -955,11 +955,7 @@ void Matter::restoreFileForces(const AtomMatrix &fileForces, bool trustEnergy,
   }
 }
 
-namespace {
-
-// True when the systems can compute at the same time: every instance that
-// two of them share is safe to share between threads.
-bool concurrentSafe(const std::vector<Matter *> &systems) {
+bool canComputeConcurrently(std::span<Matter *const> systems) {
   std::vector<const Potential *> seen;
   seen.reserve(systems.size());
   for (Matter *m : systems) {
@@ -976,8 +972,6 @@ bool concurrentSafe(const std::vector<Matter *> &systems) {
   return true;
 }
 
-} // namespace
-
 void evaluateTogether(Potential &pot, std::span<Matter *const> systems,
                       bool threads) {
   std::vector<Matter *> dirty;
@@ -990,7 +984,7 @@ void evaluateTogether(Potential &pot, std::span<Matter *const> systems,
     return;
   }
   if (dirty.size() == 1 || !pot.supportsBatchEvaluation()) {
-    if (threads && dirty.size() > 1 && concurrentSafe(dirty)) {
+    if (threads && dirty.size() > 1 && canComputeConcurrently(dirty)) {
       eonc::forEachImage(static_cast<long>(dirty.size()), [&dirty](long i) {
         dirty[static_cast<size_t>(i - 1)]->getForcesRaw();
       });

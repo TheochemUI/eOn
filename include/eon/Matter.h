@@ -419,4 +419,8 @@ private:
 void evaluateTogether(Potential &pot, std::span<Matter *const> systems,
                       bool threads = false);
 
+/// True when the systems can compute on separate threads at once: every
+/// potential instance that two of them share is safe to share.
+[[nodiscard]] bool canComputeConcurrently(std::span<Matter *const> systems);
+
 } // namespace eonc

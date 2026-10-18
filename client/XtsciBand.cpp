@@ -13,6 +13,8 @@
 
 #include "eon/NudgedElasticBand.h"
 
+#include "ForEachImage.h"
+
 #include <rgsaddle.h>
 
 #include <algorithm>
@@ -139,29 +141,51 @@ int xtsciBandSurface(void *user, void *request) {
     std::vector<Matter *> carried;
     carried.reserve(static_cast<size_t>(rows));
     for (int64_t r = 0; r < rows; ++r) {
+      carried.push_back(neb->path[static_cast<size_t>(first + r)].get());
+    }
+    // Row r: the session's coordinates onto its image. The fixed endpoints
+    // and a start point the band already evaluated come back from the
+    // image's own cache.
+    auto place = [&](int64_t r) {
       const auto i = static_cast<size_t>(first + r);
       AtomMatrix pos = AtomMatrix::Map(req->positions + r * dof, nAtoms, 3);
       if (i < self->m_fixed.size()) {
         pinRows(self->m_fixed[i], *neb->path[i], &pos);
       }
-      // The fixed endpoints and a start point the band already evaluated
-      // come back from the image's own cache.
       moveTo(*neb->path[i], pos);
-      carried.push_back(neb->path[i].get());
-    }
-    // One batch for every carried image, so calculator groups or a batched
-    // model take them together. Otherwise the images compute on the image
-    // pool with [Main] parallel, else in turn.
-    eonc::evaluateTogether(*carried.front()->getPotential(), carried,
-                           self->m_threads);
-    for (int64_t r = 0; r < rows; ++r) {
+    };
+    auto report = [&](int64_t r) {
       Matter &image = *carried[static_cast<size_t>(r)];
       req->energies[r] = image.getPotentialEnergy();
-      const AtomMatrix &force = image.getForces();
+      const double *src = image.getForces().data();
       double *grad = req->gradients + r * dof;
-      const double *src = force.data();
       for (Eigen::Index k = 0; k < dof; ++k) {
         grad[k] = -src[k];
+      }
+    };
+    Potential &pot = *carried.front()->getPotential();
+    if (self->m_threads && rows > 1 && !pot.supportsBatchEvaluation() &&
+        eonc::canComputeConcurrently(carried)) {
+      // One pass on the image pool: each row is placed, evaluated and
+      // read back on the thread that took it.
+      eonc::forEachImage(static_cast<long>(rows), [&](long k) {
+        const auto r = static_cast<int64_t>(k - 1);
+        place(r);
+        Matter &image = *carried[static_cast<size_t>(r)];
+        if (image.needsForceUpdate()) {
+          image.getForcesRaw();
+        }
+        report(r);
+      });
+    } else {
+      for (int64_t r = 0; r < rows; ++r) {
+        place(r);
+      }
+      // One batch for every carried image, so calculator groups or a
+      // batched model take them together; otherwise in turn.
+      eonc::evaluateTogether(pot, carried);
+      for (int64_t r = 0; r < rows; ++r) {
+        report(r);
       }
     }
     return RGSADDLE_OK;
@@ -231,15 +255,25 @@ XtsciBand::XtsciBand(NudgedElasticBand &neb, const Parameters &params)
 
 XtsciBand::~XtsciBand() { rgsaddle_band_free(m_band); }
 
+template <typename Work> void XtsciBand::forImages(int64_t n, Work &&work) {
+  if (m_threads && n > 1) {
+    eonc::forEachImage(static_cast<long>(n),
+                       [&](long k) { work(static_cast<int64_t>(k - 1)); });
+    return;
+  }
+  for (int64_t i = 0; i < n; ++i) {
+    work(i);
+  }
+}
+
 void XtsciBand::syncFromPath() {
   const auto nImages = static_cast<int64_t>(m_neb->numImages + 2);
-  const auto nAtoms = static_cast<int64_t>(m_neb->atoms);
-  std::vector<double> positions(static_cast<size_t>(nImages * 3 * nAtoms), 0.0);
-  for (int64_t i = 0; i < nImages; ++i) {
-    const AtomMatrix &pos = m_neb->path[i]->getPositions();
-    std::copy(pos.data(), pos.data() + pos.size(),
-              positions.begin() + static_cast<std::ptrdiff_t>(i * pos.size()));
-  }
+  const auto dof = static_cast<std::ptrdiff_t>(3 * m_neb->atoms);
+  std::vector<double> positions(static_cast<size_t>(nImages * dof), 0.0);
+  forImages(nImages, [&](int64_t i) {
+    const AtomMatrix &pos = m_neb->path[static_cast<size_t>(i)]->getPositions();
+    std::copy(pos.data(), pos.data() + dof, positions.begin() + i * dof);
+  });
   checkStatus(rgsaddle_band_set_positions(m_band, positions.data()),
               "rgsaddle_band_set_positions");
 }
@@ -260,9 +294,10 @@ void XtsciBand::step(double maxMove) {
   }
   const auto nImages = static_cast<int64_t>(m_neb->numImages + 2);
   m_fixed.resize(static_cast<size_t>(nImages));
-  for (int64_t i = 0; i < nImages; ++i) {
-    m_fixed[static_cast<size_t>(i)] = m_neb->path[i]->getPositions();
-  }
+  forImages(nImages, [&](int64_t i) {
+    m_fixed[static_cast<size_t>(i)] =
+        m_neb->path[static_cast<size_t>(i)]->getPositions();
+  });
   // The session holds the band of the last step. Resending it drops the
   // session's cached endpoint and start-point evaluations, so only a band
   // moved outside the session (a reparameterization) is resent.
@@ -277,55 +312,56 @@ void XtsciBand::step(double maxMove) {
   rgsaddle_report_t report{};
   checkStatus(xts_band_step(m_band, surfaceCallback, this, &report),
               "xts_band_step");
-  std::vector<double> positions(m_fixed.size() * m_fixed[0].size(), 0.0);
+  const auto dof = static_cast<std::ptrdiff_t>(m_fixed[0].size());
+  std::vector<double> positions(m_fixed.size() * static_cast<size_t>(dof), 0.0);
   checkStatus(rgsaddle_band_positions(m_band, positions.data()),
               "rgsaddle_band_positions");
-  const auto dof = m_fixed[0].size();
-  for (size_t i = 0; i < m_fixed.size(); ++i) {
-    AtomMatrix pos =
-        AtomMatrix::Map(positions.data() + static_cast<std::ptrdiff_t>(i * dof),
-                        m_neb->atoms, 3);
-    // Endpoints are fixed by the session. Interior fixed atoms stay put.
-    if (i == 0 || i + 1 == m_fixed.size()) {
-      continue;
-    }
-    pinRows(m_fixed[i], *m_neb->path[i], &pos);
-    // The accepted point is usually the band's last evaluation, which the
-    // image still holds; the band update after the step then costs nothing.
-    moveTo(*m_neb->path[i], pos);
-  }
   if (report.ci_index >= 0) {
     m_neb->climbingImage = report.ci_index;
   }
+  const int64_t interior = nImages - 2;
 #if RGSADDLE_ABI_MINOR >= 5
+  // The session's evaluation of the accepted band and its projected force.
   // An image whose last evaluation was elsewhere (the solver backed off to
-  // a point it evaluated earlier) takes the session's evaluation of the
-  // accepted band instead of a fresh force call.
+  // a point it evaluated earlier) takes that evaluation instead of a fresh
+  // force call, and the host convergence check reads the session's force.
   std::vector<double> energies(m_fixed.size());
-  std::vector<double> gradients(m_fixed.size() * dof);
-  if (rgsaddle_band_evaluation(m_band, energies.data(), gradients.data(),
-                               nullptr) == RGSADDLE_OK) {
-    for (size_t i = 1; i + 1 < m_fixed.size(); ++i) {
-      Matter &image = *m_neb->path[i];
-      if (!image.needsForceUpdate()) {
-        continue;
-      }
+  std::vector<double> gradients(m_fixed.size() * static_cast<size_t>(dof));
+  const bool evaluated =
+      rgsaddle_band_evaluation(m_band, energies.data(), gradients.data(),
+                               nullptr) == RGSADDLE_OK;
+  std::vector<double> projected(static_cast<size_t>(interior * dof));
+  const bool haveProjection =
+      rgsaddle_band_evaluation(m_band, nullptr, nullptr, projected.data()) ==
+      RGSADDLE_OK;
+#endif
+  // Endpoints are fixed by the session. Each interior image takes the
+  // accepted point; interior fixed atoms stay put. The accepted point is
+  // usually the band's last evaluation, which the image still holds.
+  forImages(interior, [&](int64_t k) {
+    const auto i = static_cast<size_t>(k + 1);
+    Matter &image = *m_neb->path[i];
+    AtomMatrix pos =
+        AtomMatrix::Map(positions.data() + static_cast<std::ptrdiff_t>(i) * dof,
+                        m_neb->atoms, 3);
+    pinRows(m_fixed[i], image, &pos);
+    moveTo(image, pos);
+#if RGSADDLE_ABI_MINOR >= 5
+    if (evaluated && image.needsForceUpdate()) {
       const AtomMatrix grad = AtomMatrix::Map(
-          gradients.data() + static_cast<std::ptrdiff_t>(i * dof), m_neb->atoms,
+          gradients.data() + static_cast<std::ptrdiff_t>(i) * dof, m_neb->atoms,
           3);
       image.setEvaluation(-grad, energies[i]);
     }
-  }
-  const auto interior = static_cast<size_t>(nImages - 2);
-  std::vector<double> projected(interior * static_cast<size_t>(dof));
-  if (rgsaddle_band_evaluation(m_band, nullptr, nullptr, projected.data()) ==
-      RGSADDLE_OK) {
-    for (int64_t i = 1; i + 1 < nImages; ++i) {
-      const AtomMatrix force = AtomMatrix::Map(
-          projected.data() + static_cast<std::ptrdiff_t>((i - 1) * dof),
-          m_neb->atoms, 3);
-      *m_neb->projectedForce[static_cast<size_t>(i)] = force;
+    if (haveProjection) {
+      *m_neb->projectedForce[i] = AtomMatrix::Map(
+          projected.data() + static_cast<std::ptrdiff_t>(k) * dof, m_neb->atoms,
+          3);
     }
+#endif
+  });
+#if RGSADDLE_ABI_MINOR >= 5
+  if (haveProjection) {
     // The session already projected the force. The host convergence
     // check reads that force and does not rebuild it.
     m_neb->movedAfterForceCall = false;

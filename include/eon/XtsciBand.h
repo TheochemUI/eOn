@@ -14,6 +14,7 @@
 #include "Eigen.h"
 #include "Parameters.h"
 
+#include <cstdint>
 #include <vector>
 
 struct RgsaddleBand;
@@ -43,6 +44,8 @@ private:
   friend int xtsciBandSurface(void *user, void *request);
   // True when the session's band is the host path, bit for bit.
   bool sessionMatchesPath() const;
+  // work(0) .. work(n - 1), on the image pool with [Main] parallel.
+  template <typename Work> void forImages(int64_t n, Work &&work);
 
   NudgedElasticBand *m_neb;
   RgsaddleBand *m_band{nullptr};
