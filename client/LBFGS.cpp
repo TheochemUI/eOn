@@ -222,7 +222,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
     const int i = idx[static_cast<size_t>(k)];
     a[static_cast<size_t>(k)] =
         m_rho[static_cast<size_t>(i)] *
-        eonc::exact::dot(m_s[static_cast<size_t>(i)], q);
+        eonc::exact::orderedDot(m_s[static_cast<size_t>(i)], q);
     q -= a[static_cast<size_t>(k)] * m_y[static_cast<size_t>(i)];
   }
 
@@ -231,7 +231,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
   for (int k = 0; k < loopmax; k++) {
     const int i = idx[static_cast<size_t>(k)];
     const double b = m_rho[static_cast<size_t>(i)] *
-                     eonc::exact::dot(m_y[static_cast<size_t>(i)], z);
+                     eonc::exact::orderedDot(m_y[static_cast<size_t>(i)], z);
     z += m_s[static_cast<size_t>(i)] * (a[static_cast<size_t>(k)] - b);
   }
 

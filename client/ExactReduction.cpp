@@ -11,6 +11,14 @@
 */
 #include "eon/ExactReduction.h"
 
+// orderedDot promises one rounding per multiply and per add; a fused
+// multiply-add would change its bits on FMA hardware only.
+#if defined(__clang__)
+#pragma clang fp contract(off)
+#elif defined(__GNUC__)
+#pragma GCC optimize("fp-contract=off")
+#endif
+
 #include <array>
 #include <bit>
 #include <cmath>
@@ -80,7 +88,9 @@ inline void mul64(uint64_t a, uint64_t b, uint64_t &hi, uint64_t &lo) {
 
 class Accumulator {
 public:
-  Accumulator() { m_w.fill(0); }
+  // Words are cleared when a product first reaches them, so a short
+  // vector clears a handful of words, not all of them. Every read stays
+  // inside [m_lo, m_hi), the cleared window.
 
   // Adds +-(hi, lo) * 2^e.
   void add(uint64_t hi, uint64_t lo, int e, bool neg) {
@@ -94,6 +104,9 @@ public:
     const uint64_t t0 = lo << s;
     const uint64_t t1 = (hi << s) | (s != 0 ? lo >> (64 - s) : 0);
     const uint64_t t2 = s != 0 ? hi >> (64 - s) : 0;
+    if (c < m_lo || c + 5 > m_hi) [[unlikely]] {
+      clear(c, c + 5);
+    }
     const int64_t sg = neg ? -1 : 1;
     int64_t *w = m_w.data() + c;
     w[0] += sg * static_cast<int64_t>(t0 & kMask32);
@@ -101,8 +114,6 @@ public:
     w[2] += sg * static_cast<int64_t>(t1 & kMask32);
     w[3] += sg * static_cast<int64_t>(t1 >> 32);
     w[4] += sg * static_cast<int64_t>(t2 & kMask32);
-    m_lo = c < m_lo ? c : m_lo;
-    m_hi = c + 5 > m_hi ? c + 5 : m_hi;
   }
 
   // Folds the carries back into words in [0, 2^32), keeping the sign in
@@ -189,33 +200,55 @@ private:
     return carry;
   }
 
-  bool bit(int k) const { return ((m_w[k >> 5] >> (k & 31)) & 1) != 0; }
+  void clear(int lo, int hi) {
+    if (m_lo >= m_hi) {
+      for (int k = lo; k < hi; ++k) {
+        m_w[static_cast<std::size_t>(k)] = 0;
+      }
+      m_lo = lo;
+      m_hi = hi;
+      return;
+    }
+    for (int k = lo; k < m_lo; ++k) {
+      m_w[static_cast<std::size_t>(k)] = 0;
+    }
+    for (int k = m_hi; k < hi; ++k) {
+      m_w[static_cast<std::size_t>(k)] = 0;
+    }
+    m_lo = lo < m_lo ? lo : m_lo;
+    m_hi = hi > m_hi ? hi : m_hi;
+  }
+
+  int64_t word(int k) const {
+    return (k >= m_lo && k < m_hi) ? m_w[static_cast<std::size_t>(k)] : 0;
+  }
+
+  bool bit(int k) const { return ((word(k >> 5) >> (k & 31)) & 1) != 0; }
 
   // Any set bit strictly below bit k.
   bool below(int k) const {
     const int c = k >> 5;
-    for (int j = m_lo; j < c; ++j) {
-      if (m_w[j] != 0) {
+    for (int j = m_lo; j < c && j < m_hi; ++j) {
+      if (m_w[static_cast<std::size_t>(j)] != 0) {
         return true;
       }
     }
     const uint64_t partMask = (uint64_t{1} << (k & 31)) - 1;
-    return (static_cast<uint64_t>(m_w[c]) & partMask) != 0;
+    return (static_cast<uint64_t>(word(c)) & partMask) != 0;
   }
 
   // Bits [k, k + width) for width <= 53.
   uint64_t bits(int k, int width) const {
     const int c = k >> 5;
     const int off = k & 31;
-    const uint64_t low = static_cast<uint64_t>(m_w[c]) |
-                         (static_cast<uint64_t>(m_w[c + 1]) << 32);
-    const uint64_t high = static_cast<uint64_t>(m_w[c + 2]);
+    const uint64_t low = static_cast<uint64_t>(word(c)) |
+                         (static_cast<uint64_t>(word(c + 1)) << 32);
+    const uint64_t high = static_cast<uint64_t>(word(c + 2));
     const uint64_t v = (low >> off) | (off != 0 ? high << (64 - off) : 0);
     return v & ((uint64_t{1} << width) - 1);
   }
 
-  // Two spare words keep the three-word reads in bits() in bounds.
-  std::array<int64_t, kChunks + 2> m_w;
+  std::array<int64_t, kChunks> m_w; // valid inside [m_lo, m_hi) only
   int m_lo = kChunks;
   int m_hi = 0;
 };
@@ -243,6 +276,37 @@ double dot(const double *x, const double *y, std::size_t n) {
     }
   }
   return acc.round();
+}
+
+double orderedDot(const double *x, const double *y, std::size_t n) {
+  double l0 = 0.0;
+  double l1 = 0.0;
+  double l2 = 0.0;
+  double l3 = 0.0;
+  std::size_t i = 0;
+  for (; i + 4 <= n; i += 4) {
+    const double p0 = x[i] * y[i];
+    const double p1 = x[i + 1] * y[i + 1];
+    const double p2 = x[i + 2] * y[i + 2];
+    const double p3 = x[i + 3] * y[i + 3];
+    l0 += p0;
+    l1 += p1;
+    l2 += p2;
+    l3 += p3;
+  }
+  if (i < n) {
+    const double p = x[i] * y[i];
+    l0 += p;
+  }
+  if (i + 1 < n) {
+    const double p = x[i + 1] * y[i + 1];
+    l1 += p;
+  }
+  if (i + 2 < n) {
+    const double p = x[i + 2] * y[i + 2];
+    l2 += p;
+  }
+  return (l0 + l1) + (l2 + l3);
 }
 
 double sum(const double *x, std::size_t n) {

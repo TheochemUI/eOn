@@ -146,3 +146,29 @@ TEST_CASE("exact norm and normalized agree with their definitions", "[exact]") {
   // A segment and a strided expression go through a contiguous copy.
   CHECK(eonc::exact::dot(v.head(2), v.tail(2)) == 3.0 * 12.0 + 4.0 * 84.0);
 }
+
+TEST_CASE("orderedDot follows its fixed four-lane tree", "[exact]") {
+  std::mt19937_64 gen(7);
+  std::normal_distribution<double> nd(0.0, 1.0);
+  for (std::size_t n : {0U, 1U, 2U, 3U, 4U, 5U, 7U, 39U, 1008U}) {
+    std::vector<double> x(n);
+    std::vector<double> y(n);
+    for (std::size_t i = 0; i < n; ++i) {
+      x[i] = nd(gen) * std::ldexp(1.0, static_cast<int>(i % 40) - 20);
+      y[i] = nd(gen);
+    }
+    // Volatile products cannot be fused into the adds, whatever the
+    // contraction setting of this test.
+    double lane[4] = {0.0, 0.0, 0.0, 0.0};
+    for (std::size_t i = 0; i < n; ++i) {
+      volatile double p = x[i] * y[i];
+      lane[i % 4] += p;
+    }
+    volatile double left = lane[0] + lane[1];
+    volatile double right = lane[2] + lane[3];
+    const double expected = left + right;
+    INFO("n=" << n);
+    CHECK(bitsOf(eonc::exact::orderedDot(x.data(), y.data(), n)) ==
+          bitsOf(expected));
+  }
+}

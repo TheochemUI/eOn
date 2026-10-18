@@ -46,6 +46,15 @@ namespace eonc::exact {
 /// Round-to-nearest-even value of the exact sum of x[i].
 [[nodiscard]] double sum(const double *x, std::size_t n);
 
+/// A fixed summation tree: four lanes (term i goes to lane i mod 4, each
+/// lane a left-to-right sum of rounded products), then (l0 + l1) + (l2 +
+/// l3). Not exact, but every operation is a single IEEE multiply or add in
+/// an order this translation unit fixes (it is compiled without
+/// contraction), so the bits match on every compiler, Eigen release and
+/// CPU. For bulk products that set a vector, not a branch.
+[[nodiscard]] double orderedDot(const double *x, const double *y,
+                                std::size_t n);
+
 // Eigen front ends. A plain object or a contiguous block is read in place;
 // any other expression is evaluated into a plain temporary first. The
 // result does not depend on the storage order or the stride.
@@ -56,6 +65,15 @@ template <typename A, typename B>
   const auto &xe = x.derived().eval();
   const auto &ye = y.derived().eval();
   return dot(xe.data(), ye.data(), static_cast<std::size_t>(xe.size()));
+}
+
+template <typename A, typename B>
+[[nodiscard]] double orderedDot(const Eigen::MatrixBase<A> &x,
+                                const Eigen::MatrixBase<B> &y) {
+  eigen_assert(x.size() == y.size());
+  const auto &xe = x.derived().eval();
+  const auto &ye = y.derived().eval();
+  return orderedDot(xe.data(), ye.data(), static_cast<std::size_t>(xe.size()));
 }
 
 template <typename A>
