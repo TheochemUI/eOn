@@ -9,10 +9,11 @@ myst:
 
 `include/eon/ExactReduction.h` provides two kinds of reduction.
 
-- `eonc::exact::dot`, `sum`, `squaredNorm`, `norm` and `normalized` return the
-  exact value rounded once to the nearest double, ties to even. The
-  optimizers (L-BFGS, CG, FIRE, Quickmin, steepest descent) and the `norm`
-  and `rms` convergence tests use them for every scalar they branch on.
+- `eonc::exact::dot`, `sum`, `sumStrided`, `squaredNorm`, `norm` and
+  `normalized` return the exact value rounded once to the nearest double,
+  ties to even. The optimizers (L-BFGS, CG, FIRE, Quickmin, steepest descent)
+  and the `norm` and `rms` convergence tests use them for every scalar they
+  branch on. `sumStrided` is `sum` for a column of a row-major atom matrix.
 - `eonc::exact::orderedDot` and `orderedNorm` add rounded products in a tree
   fixed in the source: four lanes, then `(l0 + l1) + (l2 + l3)`, compiled
   without contraction. They are not exact, but their bits do not depend on
@@ -37,6 +38,11 @@ gcc 15 alike. A plain dot product of length `n` carries an error of up to
 `n u sum |x_i y_i|` (`u = 2^-53`), so two orders can differ by twice that;
 near a convergence threshold or an L-BFGS curvature test, that difference
 flips a decision.
+
+The mean force removed when `removeNetForce` is set is that same exact sum
+of each column, divided by the atom count. Eigen's `colwise().sum()` follows
+the packet width, so the mean differed between x86 and NEON and the LJ13
+basin hop took 1671 force calls on Apple clang instead of 1640.
 
 ## How
 

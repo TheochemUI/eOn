@@ -46,6 +46,11 @@ namespace eonc::exact {
 /// Round-to-nearest-even value of the exact sum of x[i].
 [[nodiscard]] double sum(const double *x, std::size_t n);
 
+/// Same sum for x[i * stride]. A row-major atom matrix stores one column
+/// this way. stride 1 is sum().
+[[nodiscard]] double sumStrided(const double *x, std::size_t n,
+                                std::size_t stride);
+
 /// A fixed summation tree: four lanes (term i goes to lane i mod 4, each
 /// lane a left-to-right sum of rounded products), then (l0 + l1) + (l2 +
 /// l3). Not exact, but every operation is a single IEEE multiply or add in

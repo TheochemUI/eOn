@@ -135,6 +135,23 @@ TEST_CASE("exact reductions pass non-finite inputs through as IEEE sums",
   CHECK(!std::signbit(eonc::exact::sum(nullptr, 0)));
 }
 
+TEST_CASE("exact column sum matches the contiguous sum of that column",
+          "[exact]") {
+  Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> forces(4, 3);
+  forces << 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 0.5, -1.5, 2.5;
+  for (int axis = 0; axis < 3; ++axis) {
+    std::vector<double> col(static_cast<std::size_t>(forces.rows()));
+    for (int i = 0; i < forces.rows(); ++i) {
+      col[static_cast<std::size_t>(i)] = forces(i, axis);
+    }
+    const auto column = forces.col(axis);
+    CHECK(bitsOf(eonc::exact::sumStrided(
+              column.data(), col.size(),
+              static_cast<std::size_t>(column.innerStride()))) ==
+          bitsOf(eonc::exact::sum(col.data(), col.size())));
+  }
+}
+
 TEST_CASE("exact norm and normalized agree with their definitions", "[exact]") {
   Eigen::VectorXd v(4);
   v << 3.0, 4.0, 12.0, 84.0;

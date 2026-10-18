@@ -12,6 +12,7 @@
 #include "eon/Matter.h"
 #include "eon/BaseStructures.h"
 #include "eon/BondBoost.h"
+#include "eon/ExactReduction.h"
 #include "eon/ForceNorm.h"
 #include "eon/GeometryAnalysis.h"
 #include "eon/HelperFunctions.h"
@@ -30,6 +31,25 @@
 #include <vector>
 
 namespace eonc {
+namespace {
+
+// Eigen's column sum follows the packet width, so the mean subtracted here
+// differed between x86 and NEON and the minimizer took another path.
+Vector3d exactMeanForce(const AtomMatrix &forces) {
+  const auto n = static_cast<std::size_t>(forces.rows());
+  const double inv = 1.0 / static_cast<double>(forces.rows());
+  Vector3d mean;
+  for (int axis = 0; axis < 3; ++axis) {
+    const auto column = forces.col(axis);
+    mean[axis] =
+        eonc::exact::sumStrided(
+            column.data(), n, static_cast<std::size_t>(column.innerStride())) *
+        inv;
+  }
+  return mean;
+}
+
+} // namespace
 
 struct Matter::Impl {
   AtomMatrix positions{AtomMatrix::Zero(0, 3)};
@@ -724,7 +744,7 @@ void Matter::computePotential() const {
     // One free atom: subtracting the mean force is identically zero,
     // and NEB would then report immediate GOOD.
     if (impl_->isFixed.maxCoeff() < 0.5 && removeNetForce && nAtoms > 1) {
-      Vector3d tempForce = impl_->forces.colwise().sum() / nAtoms;
+      const Vector3d tempForce = exactMeanForce(impl_->forces);
       for (long int i = 0; i < nAtoms; i++) {
         impl_->forces.row(i) -= tempForce.transpose();
       }
@@ -855,7 +875,7 @@ void Matter::setComputedPotential(double energy, double variance) {
 
   // Apply the same net force removal as computePotential()
   if (impl_->isFixed.maxCoeff() < 0.5 && removeNetForce && nAtoms > 1) {
-    Vector3d tempForce = impl_->forces.colwise().sum() / nAtoms;
+    const Vector3d tempForce = exactMeanForce(impl_->forces);
     for (long int i = 0; i < nAtoms; i++) {
       impl_->forces.row(i) -= tempForce.transpose();
     }

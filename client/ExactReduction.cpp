@@ -511,14 +511,16 @@ double orderedDot(const double *x, const double *y, std::size_t n) {
   return (l0 + l1) + (l2 + l3);
 }
 
-double sum(const double *x, std::size_t n) {
+double sum(const double *x, std::size_t n) { return sumStrided(x, n, 1); }
+
+double sumStrided(const double *x, std::size_t n, std::size_t stride) {
   Accumulator acc;
   for (std::size_t i = 0; i < n; ++i) {
     Decoded a;
-    if (!decode(x[i], a)) [[unlikely]] {
+    if (!decode(x[i * stride], a)) [[unlikely]] {
       double plain = 0.0;
       for (std::size_t j = 0; j < n; ++j) {
-        plain += x[j];
+        plain += x[j * stride];
       }
       return plain;
     }
