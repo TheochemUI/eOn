@@ -300,6 +300,20 @@ def test_pair_switch_width_defaults_agree():
     assert float(opts["pair_switch_width"]["default"]) == 0.0
 
 
+def test_pair_cutoff_defaults_agree():
+    from eon import params_ssot
+
+    assert params_ssot.defaults_for("Potential")["pair_cutoff"] == 0.0
+    m = re.search(
+        r"pair_cutoff:\s*float\s*=\s*Field\(\s*default=([0-9.]+)",
+        SCHEMA_MODELS.read_text(),
+    )
+    assert m, "PotentialConfig.pair_cutoff not found"
+    assert float(m.group(1)) == 0.0
+    opts = _load_yaml_options("Potential")
+    assert float(opts["pair_cutoff"]["default"]) == 0.0
+
+
 def test_parity_parameters_json_main_keys():
     from eon import params_ssot
 

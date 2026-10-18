@@ -1,0 +1,1 @@
+A nudged elastic band gives each interior image its own potential instance whenever the potential asks for one, also with `[Main] parallel = false`. The rgpot `PerInstance` kernels (EAM Al among them), LAMMPS, ASE and external programs ask. Each neighbour table then follows one image.

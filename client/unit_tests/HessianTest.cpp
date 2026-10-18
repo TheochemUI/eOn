@@ -15,6 +15,7 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/AtomicFile.h"
 #include "eon/ConFileIO.h"
+#include "eon/CutoffNeighbors.h"
 #include "eon/Davidson.h"
 #include "eon/FiniteDifference.h"
 #include "eon/Lanczos.h"
@@ -22,8 +23,11 @@
 #include "eon/Parameters.h"
 #include "eon/SafeMath.h"
 #include "eon/Tunneling.h"
+#include "eon/VesinNeighbors.h"
 #include "eon/potentials/RgpotAdapter/RgpotAdapter.h"
 #include "rgpot/LennardJones/LJPot.hpp"
+#include <array>
+#include <map>
 #include <nlohmann/json.hpp>
 
 #include <algorithm>
@@ -898,4 +902,66 @@ TEST_CASE_METHOD(HessianScratch,
     }
   }
 }
+TEST_CASE("Linkcell cutoff rows preserve periodic atom-image semantics",
+          "[Hessian][Linkcell][MinimumImageLibrary]") {
+  const bool skew = GENERATE(false, true);
+  const bool full = GENERATE(false, true);
+  Matrix3d cell = Matrix3d::Identity();
+  if (skew)
+    cell << 1, 0, 0, .35, 1, 0, .1, .2, 1.1;
+  AtomMatrix positions(3, 3);
+  positions << .02, .03, .04, .93, .04, .05, .4, .7, .2;
+  constexpr double cutoff = 1.35;
+  using Key = std::array<int, 5>;
+  auto canonical = [&](Key key) {
+    if (full)
+      return key;
+    const Key reverse{key[1], key[0], -key[2], -key[3], -key[4]};
+    return std::min(key, reverse);
+  };
+  std::map<Key, double> expected, actual, reference;
+  for (int i = 0; i < 3; ++i)
+    for (int j = 0; j < 3; ++j)
+      for (int a = -4; a <= 4; ++a)
+        for (int b = -4; b <= 4; ++b)
+          for (int c = -4; c <= 4; ++c) {
+            if (i == j && a == 0 && b == 0 && c == 0)
+              continue;
+            const Eigen::RowVector3d d = positions.row(j) - positions.row(i) +
+                                         a * cell.row(0) + b * cell.row(1) +
+                                         c * cell.row(2);
+            if (d.squaredNorm() < cutoff * cutoff)
+              expected[canonical({i, j, a, b, c})] = d.squaredNorm();
+          }
+  const auto rows = eonc::periodicCutoffNeighbors(positions.data(), 3,
+                                                  cell.data(), cutoff, full);
+  for (const auto &pair : rows) {
+    const Key key = canonical(
+        {pair.first, pair.second, pair.shift[0], pair.shift[1], pair.shift[2]});
+    REQUIRE(actual.emplace(key, pair.distanceSquared).second);
+  }
+  eonc::VesinNeighbors vesin;
+  eonc::VesinNeighbors::Options options;
+  options.cutoff = cutoff;
+  options.full = full;
+  options.return_shifts = true;
+  options.return_distances = true;
+  vesin.compute(positions.data(), 3, cell.data(), options);
+  for (size_t p = 0; p < vesin.size(); ++p) {
+    const auto shift = vesin.shift(p);
+    const Key key =
+        canonical({static_cast<int>(vesin.i(p)), static_cast<int>(vesin.j(p)),
+                   shift[0], shift[1], shift[2]});
+    REQUIRE(reference.emplace(key, std::pow(vesin.distance(p), 2)).second);
+  }
+  REQUIRE(actual.size() == expected.size());
+  REQUIRE(reference.size() == expected.size());
+  for (const auto &[key, d2] : expected) {
+    REQUIRE(actual.count(key) == 1);
+    REQUIRE(reference.count(key) == 1);
+    REQUIRE_THAT(actual.at(key), Catch::Matchers::WithinAbs(d2, 1e-12));
+    REQUIRE_THAT(reference.at(key), Catch::Matchers::WithinAbs(d2, 1e-12));
+  }
+}
+
 } // namespace tests

@@ -31,6 +31,7 @@
 #include "eon/PhysicalBathModel.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
+#include "eon/PotentialOwner.h"
 #include "eon/RandomNumbers.h"
 #include "eon/Tunneling.h"
 #include "eon/fpe_handler.h"
@@ -782,7 +783,10 @@ max_move = 0.2
       std::stod(results["image" + std::to_string(nImages + 1) + "_energy"]);
   REQUIRE(eProduct == Catch::Approx(631.805887).epsilon(1e-6));
   // Converged image energies of the Hooke-spring run (SVN's squared
-  // spring gives 0.000135, 0.056816 and 1.800656 eV).
+  // spring gives 0.000135, 0.056816 and 1.800656 eV). The climbing image
+  // is enabled by default but never engages here: the highest image is
+  // the product endpoint, so this is a plain NEB and its image energies
+  // are the band's answer.
   const double expected[] = {0.000049, 0.259018, 2.851935};
   for (int i = 1; i <= nImages; i++) {
     double ei = std::stod(results["image" + std::to_string(i) + "_energy"]);
@@ -790,6 +794,58 @@ max_move = 0.2
   }
 
   REQUIRE(results.count("number_of_extrema") > 0);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "CI-NEB climbing image matches the dimer saddle of LJ13",
+                 "[job][neb][climbing_image][integration]") {
+  // For a climbing-image band only the climbing image carries the answer,
+  // the barrier and the saddle geometry; interior spacing is free. Both
+  // spring laws are checked against saddle.con, the eonclient dimer saddle
+  // of this pair (-38.963676 eV, max |F| 4e-6 eV/A). The force-call
+  // ceilings are the measured counts of each run.
+  struct Case {
+    long images;
+    bool geometric;
+    long calls;
+  };
+  const Case cases[] = {
+      {3, false, 134}, {7, false, 317}, {3, true, 137}, {7, true, 310}};
+  for (const Case &c : cases) {
+    INFO("images " << c.images << " geometric " << c.geometric);
+    REQUIRE(copyTestData("neb_lj13"));
+    writeConfig(std::string("[Main]\njob = nudged_elastic_band\n"
+                            "random_seed = 42\n\n[Potential]\npotential = "
+                            "lj\n\n[Nudged Elastic Band]\nimages = ") +
+                std::to_string(c.images) +
+                "\nspring = 5.0\nmax_iterations = 3000\n"
+                "minimize_endpoints = false\n" +
+                (c.geometric ? "geometric_spring = true\n" : "") +
+                "\n[Optimizer]\nopt_method = lbfgs\nconverged_force = "
+                "0.01\nmax_iterations = 3000\nmax_move = 0.2\n");
+    auto results = runJob();
+    REQUIRE(std::stoi(results.at("termination_reason")) == 0);
+    REQUIRE(forceCalls_ <= c.calls);
+
+    Parameters p;
+    ParametersLoadAccess::potential_options(p).potential = PotType::LJ;
+    auto pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, p));
+    Matter saddle(pot, p), climbing(pot, p);
+    REQUIRE(
+        eonc::io::io_ok(saddle.con2matter((workdir / "saddle.con").string())));
+    REQUIRE(
+        eonc::io::io_ok(climbing.con2matter((workdir / "sp.con").string())));
+    REQUIRE(climbing.getPotentialEnergy() ==
+            Catch::Approx(saddle.getPotentialEnergy()).margin(1.0e-4));
+    AtomMatrix a = saddle.getPositions();
+    AtomMatrix b = climbing.getPositions();
+    a.rowwise() -= a.colwise().mean();
+    b.rowwise() -= b.colwise().mean();
+    const double rmsd =
+        std::sqrt((a - b).rowwise().squaredNorm().sum() / a.rows());
+    REQUIRE(rmsd < 2.0e-3);
+  }
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
@@ -3664,6 +3720,97 @@ TEST_CASE_METHOD(
   const auto results = parseResultsDat("results.dat");
   REQUIRE(results.at("termination_reason") == "0");
   REQUIRE(potential->calls == 2);
+  REQUIRE(std::stod(results.at("sd_path_force_calls")) == 0.0);
+  REQUIRE_FALSE(std::filesystem::exists("instanton_sd_path.con"));
+  REQUIRE_FALSE(std::filesystem::exists("instanton.con"));
+  MatrixXd hr = MatrixXd::Identity(3, 3), hs = hr;
+  hr(0, 0) = 2.0;
+  hs(0, 0) = -1.0;
+  using namespace eonc::tunneling;
+  const double beta = 1.0 / (kBoltzmann * 300.0);
+  const double expected =
+      quantumHarmonicTstLogRate(hr, hs, beta, .25, 0) +
+      std::log(parabolicFactor(300.0, crossoverTemperature(hs))) -
+      std::log(kTimeUnitSeconds);
+  REQUIRE_THAT(std::stod(results.at("rate_parabolic_log")),
+               Catch::Matchers::WithinAbs(expected, 1e-8));
+}
+
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "Instanton job forwards explicit auxiliary owners to its native potential",
+    "[job][instanton][integration][OrbitalOwners]") {
+  class CountedPotential : public eonc::Potential {
+  public:
+    long calls = 0;
+    std::vector<long> receivedOwners;
+    bool supportsBatchEvaluation() const noexcept override { return true; }
+    void forceBatchOwned(long count, long atoms, const double *const *positions,
+                         const int *const *numbers, double *const *forces,
+                         double *energies, double *variances,
+                         const double *const *boxes,
+                         const long *owners) override {
+      REQUIRE(owners != nullptr);
+      for (long j = 0; j < count; ++j) {
+        receivedOwners.push_back(owners[j]);
+        force(atoms, positions[j], numbers[j], forces[j], energies + j,
+              variances ? variances + j : nullptr, boxes[j]);
+      }
+    }
+    explicit CountedPotential(const Parameters &p)
+        : eonc::Potential(p) {}
+    void force(long atoms, const double *positions, const int *, double *forces,
+               double *energy, double *variance, const double *) override {
+      REQUIRE(atoms == 2);
+      ++calls;
+      std::fill(forces, forces + 3 * atoms, 0.0);
+      const double x = positions[0] - 2.0, y = positions[1], z = positions[2];
+      *energy = .25 * std::pow(x * x - 1.0, 2) + .5 * (y * y + z * z);
+      forces[0] = -x * (x * x - 1.0);
+      forces[1] = -y;
+      forces[2] = -z;
+      if (variance)
+        *variance = 0.0;
+    }
+  };
+  writeConfig("[Main]\njob=instanton\nremove_net_force=false\n"
+              "[Potential]\npotential=lj\n[Instanton]\nmode=rate\n"
+              "temperature=300\nbeads=8\n"
+              "reactant_hessian_filename=reactant-hessian.dat\n"
+              "saddle_hessian_filename=saddle-hessian.dat\n");
+  std::filesystem::current_path(workdir);
+  Parameters configuration;
+  configuration.load("config.ini");
+  auto potential = std::make_shared<CountedPotential>(configuration);
+  Matter matter(potential, configuration);
+  matter.resize(2);
+  matter.setCell(100.0 * Matrix3d::Identity());
+  for (long atom = 0; atom < 2; ++atom) {
+    matter.setAtomicNr(atom, 1);
+    matter.setMass(atom, 1.0);
+    matter.setFixed(atom, atom == 1);
+  }
+  for (const bool saddle : {false, true}) {
+    AtomMatrix positions = AtomMatrix::Zero(2, 3);
+    positions(0, 0) = saddle ? 2.0 : 1.0;
+    positions(1, 0) = 4.0;
+    matter.setPositions(positions);
+    const std::string name = saddle ? "saddle" : "reactant";
+    REQUIRE(eonc::io::io_ok(matter.matter2con(name + ".con")));
+    REQUIRE(eonc::io::io_ok(matter.matter2con(name + "-hessian.dat.con")));
+    MatrixXd matrix = MatrixXd::Identity(3, 3);
+    matrix(0, 0) = saddle ? -1.0 : 2.0;
+    std::ofstream output(name + "-hessian.dat");
+    output << matrix << '\n';
+  }
+  eonc::InstantonJob job(potential, configuration);
+  job.run();
+  const auto results = parseResultsDat("results.dat");
+  REQUIRE(results.at("termination_reason") == "0");
+  REQUIRE(potential->calls == 2);
+  REQUIRE(potential->receivedOwners.size() == 2);
+  REQUIRE(potential->receivedOwners[0] == eonc::potential_owner::reactant);
+  REQUIRE(potential->receivedOwners[1] == eonc::potential_owner::saddle);
   REQUIRE(std::stod(results.at("sd_path_force_calls")) == 0.0);
   REQUIRE_FALSE(std::filesystem::exists("instanton_sd_path.con"));
   REQUIRE_FALSE(std::filesystem::exists("instanton.con"));

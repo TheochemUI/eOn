@@ -41,8 +41,8 @@ namespace eonc::pathintegral {
 /// arXiv:2607.06414).
 enum class Springs { Trotter, Eco };
 
-/// PILE-L, or a normal-mode GLE on the internal modes with a separate
-/// Langevin thermostat on the centroid.
+/// PILE-L, or a normal-mode GLE. A complete set of GLE blocks includes
+/// the centroid; an internal-mode-only set retains a Langevin centroid.
 enum class Thermostat { Pile, Piglet };
 
 struct Options {
@@ -59,8 +59,8 @@ struct Options {
   double pileScale{1.0};
   /// Highest physical frequency the economised springs reproduce.
   double ecoOmegaMax{0.0};
-  /// Normal-mode GLE matrices. One block per internal mode, or one
-  /// block per bead with the centroid block ignored.
+  /// Normal-mode GLE matrices in normal-mode order. One block per bead
+  /// includes the centroid; one block per internal mode omits it.
   std::string gleFile;
   std::uint64_t seed{1};
 };

@@ -11,8 +11,10 @@
 */
 #include "eon/Hessian.h"
 #include "eon/AtomicFile.h"
+#include "eon/CutoffNeighbors.h"
 #include "eon/EonLogger.h"
 #include "eon/HelperFunctions.h"
+#include "eon/PotentialOwner.h"
 #include "eon/SafeMath.h"
 #include "eon/Tunneling.h"
 #include "eon/VesinNeighbors.h"
@@ -199,28 +201,32 @@ MobileColoring buildMobileColoring(const Matter &matter, const VectorXi &atoms,
   }
 
   const AtomMatrix &pos = matter.getPositions();
-  VesinNeighbors nl;
-  VesinNeighbors::Options opt;
-  opt.cutoff = cutoff;
-  opt.full = true;
-  opt.return_distances = false;
-  opt.return_vectors = false;
-  opt.periodic = {matter.getPeriodic(), matter.getPeriodic(),
-                  matter.getPeriodic()};
+  std::vector<std::vector<int>> nbs(static_cast<std::size_t>(nAtoms));
+  auto add = [&](int i, int j) {
+    if (i != j && i >= 0 && j >= 0 && i < nAtoms && j < nAtoms)
+      nbs[static_cast<std::size_t>(i)].push_back(j);
+  };
   try {
-    nl.compute(pos.data(), static_cast<std::size_t>(nAtoms), cell.data(), opt);
+    if (matter.getPeriodic()) {
+      for (const auto &pair :
+           periodicCutoffNeighbors(pos.data(), static_cast<std::size_t>(nAtoms),
+                                   cell.data(), cutoff))
+        add(pair.first, pair.second);
+    } else {
+      VesinNeighbors nl;
+      VesinNeighbors::Options opt;
+      opt.cutoff = cutoff;
+      opt.full = true;
+      opt.return_distances = false;
+      opt.return_vectors = false;
+      opt.periodic = {false, false, false};
+      nl.compute(pos.data(), static_cast<std::size_t>(nAtoms), cell.data(),
+                 opt);
+      for (size_t p = 0; p < nl.size(); ++p)
+        add(static_cast<int>(nl.i(p)), static_cast<int>(nl.j(p)));
+    }
   } catch (const std::exception &) {
     return {};
-  }
-
-  std::vector<std::vector<int>> nbs(static_cast<std::size_t>(nAtoms));
-  for (std::size_t p = 0; p < nl.size(); ++p) {
-    const int i = static_cast<int>(nl.i(p));
-    const int j = static_cast<int>(nl.j(p));
-    if (i == j || i < 0 || j < 0 || i >= nAtoms || j >= nAtoms) {
-      continue;
-    }
-    nbs[static_cast<std::size_t>(i)].push_back(j);
   }
   for (auto &row : nbs) {
     std::sort(row.begin(), row.end());
@@ -444,8 +450,11 @@ bool Hessian::calculateBatched(double dr, FdScheme scheme) {
     }
     std::vector<double> energies(static_cast<size_t>(n)),
         variances(static_cast<size_t>(n));
-    pot->forceBatch(n, nAtoms, posPtr.data(), nrsPtr.data(), frcPtr.data(),
-                    energies.data(), variances.data(), boxPtr.data());
+    const std::vector<long> owners(static_cast<size_t>(n),
+                                   potential_owner::derivative);
+    pot->forceBatchOwned(n, nAtoms, posPtr.data(), nrsPtr.data(), frcPtr.data(),
+                         energies.data(), variances.data(), boxPtr.data(),
+                         owners.data());
     for (long j = 0; j < n; ++j) {
       displaced[static_cast<size_t>(j)].setComputedPotential(
           energies[static_cast<size_t>(j)], variances[static_cast<size_t>(j)]);

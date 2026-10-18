@@ -31,10 +31,9 @@ namespace eonc {
 class BondBoost;
 class Parameters;
 
-// Position / difference MIC conventions (issue #176). Legacy matches historical
-// applyPeriodicBoundary (fmod to [0,1) fractional). MinimumImage matches the
-// existing eonc::pbc::apply path used for interatomic distances (frac in
-// [-0.5,0.5)).
+// Absolute positions use either fractional [0,1) or centered [-0.5,0.5)
+// representatives. Euclidean closest-image differences are independent of
+// this position convention.
 enum class PbcConvention {
   Legacy = 0,
   MinimumImage = 1,
@@ -42,14 +41,14 @@ enum class PbcConvention {
 
 namespace pbc {
 
-// Minimum-image on a difference vector (fractional in [-0.5, 0.5)).
+// Euclidean closest image of each Cartesian difference.
 inline AtomMatrix apply(const AtomMatrix &diff, const Matrix3d &cell,
                         const Matrix3d &cellInverse) {
-  // Fractional coordinates, minimum-image wrap to [-0.5, 0.5), back to
-  // Cartesian. x - floor(x + 0.5), Highway when the build has it.
-  AtomMatrix frac = diff * cellInverse;
-  wrapMinimumImage(frac.data(), static_cast<size_t>(frac.size()));
-  return frac * cell;
+  static_cast<void>(cellInverse);
+  AtomMatrix image = diff;
+  closestDisplacements(image.data(), static_cast<size_t>(image.size()),
+                       cell.data());
+  return image;
 }
 
 // Legacy position wrap: fractional coords into [0, 1) via fmod (historical
@@ -67,7 +66,9 @@ inline AtomMatrix applyPositions(const AtomMatrix &coords, const Matrix3d &cell,
                                  const Matrix3d &cellInverse,
                                  PbcConvention convention) {
   if (convention == PbcConvention::MinimumImage) {
-    return apply(coords, cell, cellInverse);
+    AtomMatrix frac = coords * cellInverse;
+    wrapMinimumImage(frac.data(), static_cast<size_t>(frac.size()));
+    return frac * cell;
   }
   return applyLegacy(coords, cell, cellInverse);
 }
@@ -411,6 +412,21 @@ private:
 /// that batches, the dirty systems go through forceBatch in one call, so
 /// calculator groups take them together; otherwise each computes on its
 /// own. Systems that are current are left alone.
-void evaluateTogether(Potential &pot, std::span<Matter *const> systems);
+///
+/// With ``threads`` set, systems that compute on their own run on the
+/// image pool (eonc::forEachImage) when no two of them share an instance
+/// that is unsafe to share. Each system's result is the one its own
+/// serial evaluation gives.
+///
+/// ``owners``, when given, holds one identity per system (a NEB image),
+/// which a batch passes to forceBatchOwned so the potential keeps
+/// per-system state (stored orbitals) under it; empty, the batch carries
+/// no owners.
+void evaluateTogether(Potential &pot, std::span<Matter *const> systems,
+                      bool threads = false, std::span<const long> owners = {});
+
+/// True when the systems can compute on separate threads at once: every
+/// potential instance that two of them share is safe to share.
+[[nodiscard]] bool canComputeConcurrently(std::span<Matter *const> systems);
 
 } // namespace eonc

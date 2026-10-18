@@ -75,6 +75,12 @@ public:
     }
   }
   double convergenceForce(void);
+  /// Host bookkeeping for a band whose projected force came from the
+  /// rgsaddle session: the highest interior image, the climbing image
+  /// (`ciIndex`, or none when it is not an interior image) and the
+  /// tangents, from the images' current energies and positions. The
+  /// projected force stays as the session assembled it.
+  void adoptSessionProjection(long ciIndex);
   void findExtrema(void);
   void printImageData(bool writeToFile = false, size_t idx = 0);
 
@@ -84,6 +90,16 @@ public:
   pathFrames(std::optional<size_t> bandIndex = std::nullopt);
 
   std::vector<std::shared_ptr<EigenmodeStrategy>> eigenmode_solvers;
+
+  /// The identity band image i carries in a batch (forceBatchOwned):
+  /// interior image i is i - 1, the reactant numImages and the product
+  /// numImages + 1, so no image shares a key with an endpoint.
+  [[nodiscard]] long imageOwner(std::size_t i) const noexcept {
+    const auto idx = static_cast<long>(i);
+    if (idx == 0)
+      return numImages;
+    return idx == numImages + 1 ? numImages + 1 : idx - 1;
+  }
 
   int atoms{0};
   long numImages{0}, climbingImage{0}, numExtrema{0};

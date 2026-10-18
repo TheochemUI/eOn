@@ -16,14 +16,18 @@
 #include "eon/GeometryAnalysis.h"
 #include "eon/HelperFunctions.h"
 #include "eon/Parameters.h"
+#include "eon/PotCapabilities.h"
 #include "eon/SurrogatePotential.h"
 
+#include "ForEachImage.h"
 #include "eon/EonLogger.h"
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <span>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace eonc {
 
@@ -729,8 +733,8 @@ void Matter::computePotential() const {
 }
 
 // Transform coordinates into the cell using the selected PBC convention (#176).
-// Legacy: fractional [0,1) via fmod (historical). MinimumImage: fractional
-// [-0.5,0.5) via floor (same MIC as eonc::pbc::apply for differences).
+// Legacy selects fractional [0,1); MinimumImage selects fractional [-0.5,0.5).
+// Closest-image displacement vectors use the independent Euclidean operation.
 void Matter::applyPeriodicBoundary() {
   assertIsolatedMoleculeLayoutSafe();
   // Unset / singular cell (default after Matter construct is Zero) — do not
@@ -951,17 +955,44 @@ void Matter::restoreFileForces(const AtomMatrix &fileForces, bool trustEnergy,
   }
 }
 
-void evaluateTogether(Potential &pot, std::span<Matter *const> systems) {
-  std::vector<Matter *> dirty;
+bool canComputeConcurrently(std::span<Matter *const> systems) {
+  std::vector<const Potential *> seen;
+  seen.reserve(systems.size());
   for (Matter *m : systems) {
+    const Potential *p = m->getPotential().get();
+    if (p == nullptr) {
+      return false;
+    }
+    if (std::find(seen.begin(), seen.end(), p) == seen.end()) {
+      seen.push_back(p);
+    } else if (!eonc::potAllowsSharedInstance(*p)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void evaluateTogether(Potential &pot, std::span<Matter *const> systems,
+                      bool threads, std::span<const long> owners) {
+  std::vector<Matter *> dirty;
+  std::vector<long> dirtyOwners;
+  for (size_t i = 0; i < systems.size(); ++i) {
+    Matter *m = systems[i];
     if (m != nullptr && m->needsForceUpdate()) {
       dirty.push_back(m);
+      dirtyOwners.push_back(i < owners.size() ? owners[i] : -1);
     }
   }
   if (dirty.empty()) {
     return;
   }
   if (dirty.size() == 1 || !pot.supportsBatchEvaluation()) {
+    if (threads && dirty.size() > 1 && canComputeConcurrently(dirty)) {
+      eonc::forEachImage(static_cast<long>(dirty.size()), [&dirty](long i) {
+        dirty[static_cast<size_t>(i - 1)]->getForcesRaw();
+      });
+      return;
+    }
     for (Matter *m : dirty) {
       m->getForcesRaw();
     }
@@ -994,8 +1025,14 @@ void evaluateTogether(Potential &pot, std::span<Matter *const> systems) {
     boxPtr.push_back(boxes[j].data());
   }
   std::vector<double> energies(n), variances(n);
-  pot.forceBatch(n, atoms, posPtr.data(), nrsPtr.data(), frcPtr.data(),
-                 energies.data(), variances.data(), boxPtr.data());
+  if (owners.empty()) {
+    pot.forceBatch(n, atoms, posPtr.data(), nrsPtr.data(), frcPtr.data(),
+                   energies.data(), variances.data(), boxPtr.data());
+  } else {
+    pot.forceBatchOwned(n, atoms, posPtr.data(), nrsPtr.data(), frcPtr.data(),
+                        energies.data(), variances.data(), boxPtr.data(),
+                        dirtyOwners.data());
+  }
   for (long j = 0; j < n; ++j) {
     dirty[j]->setComputedPotential(energies[j], variances[j]);
   }

@@ -219,27 +219,24 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
   extremumCurvature.resize(2 * (numImages + 1));
   numExtrema = 0;
 
-  // Create per-image potentials if needed for true parallel force evaluation
-  perImagePotentials_ =
-      pot->needsPerImageInstance() && params.main_options().parallel;
+  // A potential that keeps per-geometry state (a neighbour table, a
+  // working directory) gets one instance per interior image, threads or
+  // not: a shared instance would rebuild that state for every image of
+  // every step. [Main] parallel only decides whether the images run on
+  // the image pool.
+  perImagePotentials_ = pot->needsPerImageInstance();
   if (perImagePotentials_) {
-    QUILL_LOG_INFO(log,
-                   "NEB: Creating per-image potential instances for "
-                   "parallel force evaluation ({} images)",
-                   numImages + 2);
+    QUILL_LOG_INFO(log, "NEB: one potential instance per image ({} images)",
+                   numImages);
   }
 
   for (long i = 0; i <= numImages + 1; i++) {
     path[i] = std::make_shared<Matter>(std::move(initPath[i]));
 
-    // Give each INTERMEDIATE image its own potential for true parallelism.
-    // Endpoints (i=0, i=numImages+1) keep the shared pot -- they are only
-    // evaluated once during initialization and never in parallel.
+    // Each interior image gets its own instance. The endpoints keep the
+    // shared one: they are evaluated once, before the band moves.
     if (perImagePotentials_ && i > 0 && i <= numImages) {
-      auto cloned = pot->clonePotential();
-      path[i]->setPotential(cloned ? cloned
-                                   : eonc::helpers::sharePotential(
-                                         eonc::helpers::makePotential(params)));
+      path[i]->setPotential(eonc::helpers::makeImagePotential(*pot, params));
     }
 
     tangent[i] = std::make_shared<AtomMatrix>();
@@ -261,7 +258,8 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
   // Both endpoints in one call, so two calculator groups take one each.
   {
     Matter *const ends[] = {path[0].get(), path[numImages + 1].get()};
-    eonc::evaluateTogether(*pot, ends);
+    const long owners[] = {imageOwner(0), imageOwner(numImages + 1)};
+    eonc::evaluateTogether(*pot, ends, false, owners);
   }
   reactantEnergy = path[0]->getPotentialEnergy();
   climbingImage = 0;
@@ -729,11 +727,12 @@ void NudgedElasticBand::updateForces(bool ci_active) {
       }
 
       std::vector<double> energies(nDirty), variances(nDirty);
-      // Image i is system i - 1 to the potential's router, whether or not
-      // the images before it are dirty.
+      // Image i is system i - 1 to the potential's router (imageOwner),
+      // whether or not the images before it are dirty.
       std::vector<long> owners(static_cast<size_t>(nDirty));
       for (long j = 0; j < nDirty; j++) {
-        owners[static_cast<size_t>(j)] = dirty[static_cast<size_t>(j)] - 1;
+        owners[static_cast<size_t>(j)] =
+            imageOwner(static_cast<size_t>(dirty[static_cast<size_t>(j)]));
       }
       pot->forceBatchOwned(nDirty, atoms, posVec.data(), nrsVec.data(),
                            frcVec.data(), energies.data(), variances.data(),
@@ -923,6 +922,33 @@ void NudgedElasticBand::updateForces(bool ci_active) {
   }
 
   movedAfterForceCall = ci_active != ci_enabled_;
+}
+
+void NudgedElasticBand::adoptSessionProjection(long ciIndex) {
+  long highest = 1;
+  for (long i = 2; i <= numImages; ++i) {
+    if (path[i]->getPotentialEnergy() > path[highest]->getPotentialEnergy()) {
+      highest = i;
+    }
+  }
+  maxEnergyImage = static_cast<size_t>(highest);
+  climbingImage = (ciIndex > 0 && ciIndex <= numImages) ? ciIndex : 0;
+  for (long i = 1; i <= numImages; ++i) {
+    const AtomMatrix &pos = path[i]->getPositions();
+    const AtomMatrix posDiffNext =
+        path[i]->pbc(path[i + 1]->getPositions() - pos);
+    const AtomMatrix posDiffPrev =
+        path[i]->pbc(pos - path[i - 1]->getPositions());
+    const double energy = path[i]->getPotentialEnergy();
+    const double energyPrev = path[i - 1]->getPotentialEnergy();
+    const double energyNext = path[i + 1]->getPotentialEnergy();
+    *tangent[i] = std::visit(
+        [&](auto &t) {
+          return t.compute(posDiffNext, posDiffPrev, energy, energyPrev,
+                           energyNext);
+        },
+        tangentStrat_);
+  }
 }
 
 // Thin wrappers delegating to eonc::neb:: free functions

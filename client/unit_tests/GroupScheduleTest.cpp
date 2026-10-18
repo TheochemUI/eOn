@@ -1,3 +1,5 @@
+#include "eon/PotentialOwner.h"
+#include <set>
 /*
 ** This file is part of eOn.
 **
@@ -94,4 +96,48 @@ TEST_CASE("Keys without an owner fall back to the batch position",
   REQUIRE(s.defaultHome(5, 0) == 1);
   REQUIRE(s.assign(std::vector<std::int64_t>{-2, -3}) ==
           std::vector<int>{0, 1});
+}
+
+TEST_CASE("Derivative scratch stays bounded while all calculator groups work",
+          "[GroupSchedule][OrbitalOwners]") {
+  eonc::GroupSchedule scheduler(8);
+  const std::vector<std::int64_t> owners(270,
+                                         eonc::potential_owner::derivative);
+  for (int repeat = 0; repeat < 3; ++repeat) {
+    const auto route = scheduler.assign(owners);
+    std::vector<long> load(8, 0);
+    std::vector<std::set<std::int64_t>> retained(8);
+    for (size_t j = 0; j < route.size(); ++j) {
+      REQUIRE(route[j] >= 0);
+      REQUIRE(route[j] < 8);
+      ++load[route[j]];
+      retained[route[j]].insert(owners[j]);
+    }
+    for (long group = 0; group < 8; ++group) {
+      REQUIRE(load[group] >= 33);
+      REQUIRE(load[group] <= 34);
+      REQUIRE(retained[group].size() == 1);
+    }
+  }
+}
+
+TEST_CASE("Warm groups compare periodic closest images in the supplied cell",
+          "[GroupSchedule][MinimumImageLibrary]") {
+  const bool skew = GENERATE(false, true);
+  const double ortho[9] = {10, 0, 0, 0, 10, 0, 0, 0, 10};
+  const double sheared[9] = {1, 0, 0, .9, .2, 0, 0, 0, 1};
+  const double *cell = skew ? sheared : ortho;
+  const double query[3] = {0, 0, 0};
+  const double farRaw[3] = {skew ? .931 : 9.9, skew ? .098 : 0, 0};
+  const double nearRaw[3] = {skew ? .2 : 2.0, 0, 0};
+  GroupSchedule scheduler(2);
+  scheduler.settle(0, 0);
+  scheduler.settle(1, 1);
+  scheduler.record(0, farRaw, 3, cell);
+  scheduler.record(1, nearRaw, 3, cell);
+  REQUIRE(scheduler.nearest(query, 3) == 1);
+  REQUIRE(scheduler.nearest(query, 3, cell) == 0);
+  double changedCell[9] = {20, 0, 0, 0, 20, 0, 0, 0, 20};
+  scheduler.record(0, query, 3, changedCell);
+  REQUIRE(scheduler.nearest(query, 3, cell) == 1);
 }
