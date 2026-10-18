@@ -3609,7 +3609,7 @@ TEST_CASE_METHOD(JobIntegrationFixture,
       REQUIRE(atoms == 2);
       ++calls;
       std::fill(forces, forces + 3 * atoms, 0.0);
-      const double x = positions[0], y = positions[1], z = positions[2];
+      const double x = positions[0] - 2.0, y = positions[1], z = positions[2];
       *energy = .25 * std::pow(x * x - 1.0, 2) + .5 * (y * y + z * z);
       forces[0] = -x * (x * x - 1.0);
       forces[1] = -y;
@@ -3637,7 +3637,7 @@ TEST_CASE_METHOD(JobIntegrationFixture,
   }
   for (const bool saddle : {false, true}) {
     AtomMatrix positions = AtomMatrix::Zero(2, 3);
-    positions(0, 0) = saddle ? 0.0 : -1.0;
+    positions(0, 0) = saddle ? 2.0 : 1.0;
     positions(1, 0) = 4.0;
     matter.setPositions(positions);
     const std::string name = saddle ? "saddle" : "reactant";
