@@ -1,0 +1,56 @@
+diff --git i/meson.build w/meson.build
+index fb60afe..7d3a597 100644
+--- i/meson.build
++++ w/meson.build
+@@ -113,7 +113,21 @@ linkcell_built_h = custom_target(
+ # That consumer's default_library does not change this option, so a
+ # shared default here would leave the module needing liblinkcell.so
+ # at import time. Subprojects always take the static archive.
+-_use_static = meson.is_subproject() or get_option('default_library') == 'static'
++# link_mode=shared overrides that for a consumer that links another Rust
++# static library: each archive carries its own Rust standard library and
++# compiler_builtins, and two of them in one program define the same
++# symbols. The cdylib keeps both internal. Windows keeps the archive.
++_link_mode = get_option('link_mode')
++if _link_mode == 'auto'
++  _use_static = meson.is_subproject() or get_option('default_library') == 'static'
++else
++  _use_static = _link_mode == 'static' or host_machine.system() == 'windows'
++endif
++_rpath_args = []
++if not _use_static and meson.is_subproject()
++  # The cdylib stays in the build tree of a subproject.
++  _rpath_args = ['-Wl,-rpath,' + _mbproot]
++endif
+ if _use_static
+   _link_idx = 1
+ elif host_machine.system() == 'windows'
+@@ -157,7 +171,7 @@ if _gpu_on
+   endif
+   linkcell_gpu_dep = declare_dependency(
+     link_with: linkcell_gpu,
+-    link_args: [linkcell_cargo[_link_idx].full_path()],
++    link_args: [linkcell_cargo[_link_idx].full_path()] + _rpath_args,
+     sources: linkcell_built_h,
+     include_directories: include_directories('include'),
+     compile_args: _gpu_args,
+@@ -167,7 +181,7 @@ if _gpu_on
+ endif
+ 
+ linkcell_dep = declare_dependency(
+-  link_args: [linkcell_cargo[_link_idx].full_path()],
++  link_args: [linkcell_cargo[_link_idx].full_path()] + _rpath_args,
+   sources: linkcell_built_h,
+   include_directories: include_directories('include'),
+   dependencies: rust_sys + _gpu_deps,
+diff --git i/meson_options.txt w/meson_options.txt
+index 3bdcebd..fa87ca0 100644
+--- i/meson_options.txt
++++ w/meson_options.txt
+@@ -6,3 +6,6 @@ option('with_examples', type: 'boolean', value: true,
+   description: 'Build C and C++ example programs')
+ option('with_gpulite', type: 'feature', value: 'auto',
+   description: 'Device k-nearest via gpulite (NVRTC, no CUDA SDK)')
++option('link_mode', type: 'combo', choices: ['auto', 'static', 'shared'],
++  value: 'auto',
++  description: 'auto: the archive as a subproject or with default_library=static, else the shared library. shared: the cdylib, also as a subproject (not on Windows)')

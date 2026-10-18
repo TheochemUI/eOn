@@ -711,11 +711,14 @@ else
 endif
 _deps += [vesin_dep]
 
-# linkcell is a Rust static library too. Each Rust archive carries its
-# own copy of the Rust standard library, so a second one on the link line
-# defines the same std symbols twice (GNU ld: multiple definition of
-# __rustc::rust_panic). The subproject links its shared library instead;
-# the wrap patch adds link_mode and keeps the archive on Windows.
+# minimage, linkcell and readcon-core are Rust libraries. A Rust archive
+# carries its own Rust standard library and compiler_builtins; two in one
+# ELF define the same std symbols (GNU ld: multiple definition of
+# __rustc::rust_panic), and compiler_builtins also defines cbrt, floor,
+# sqrt, fma and __udivti3 ahead of libm and libgcc, so eOn's own calls
+# bound to the Rust copies. Off Windows each subproject links its cdylib,
+# which keeps that runtime internal: one Rust runtime per shared object.
+# The wrap patches add link_mode; Windows keeps the archives.
 minimage_dep = dependency(
     'minimage', version: '>=0.1.4',
     fallback: ['minimage', 'minimage_dep'],
@@ -730,7 +733,12 @@ _deps += [minimage_dep]
 linkcell_dep = dependency(
     'linkcell', version: '>=0.3.11',
     fallback: ['linkcell', 'linkcell_dep'],
-    default_options: ['with_tests=false', 'with_examples=false', 'with_gpulite=disabled'],
+    default_options: [
+        'with_tests=false',
+        'with_examples=false',
+        'with_gpulite=disabled',
+        'link_mode=shared',
+    ],
 )
 _deps += [linkcell_dep]
 
