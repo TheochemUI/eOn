@@ -468,8 +468,8 @@ TEST_CASE("Complete centroid GLE follows the coupled Gaussian propagator",
   Harmonic potential;
   potential.omega = 0.0;
   for (long step = 1; step <= 12; ++step) {
-    ring.step(potential, nullptr);
-    otherTau.step(potential, nullptr);
+    ring.step(potential, nullptr, false);
+    otherTau.step(potential, nullptr, false);
     const double time = step * options.dt;
     // exp(-[[a,w],[-w,a]] t) has physical diagonal exp(-a t) cos(w t).
     const double exact = 2.0 * std::exp(-1.3 * time) * std::cos(2.1 * time);
@@ -498,8 +498,8 @@ TEST_CASE("Internal-only GLE and empty one-bead GLE retain a Langevin centroid",
     Harmonic potential;
     potential.omega = 0.0;
     for (long step = 0; step < 12; ++step) {
-      pile.step(potential, nullptr);
-      legacy.step(potential, nullptr);
+      pile.step(potential, nullptr, false);
+      legacy.step(potential, nullptr, false);
       REQUIRE(
           legacy.centroidVelocity().isApprox(pile.centroidVelocity(), 1e-12));
     }
