@@ -15,6 +15,7 @@
 #include "eon/NudgedElasticBand.h"
 #include "eon/Potential.h"
 #include "eon/XtsciBand.h"
+#include <algorithm>
 #include <memory>
 #include <rgsaddle.h>
 #include <vector>
@@ -141,6 +142,56 @@ TEST_CASE("rgsaddle band evaluates each moved image once per step",
   // step carries exactly the interior images once.
   REQUIRE(calls <= 2 + interior + steps * interior);
 #endif
+}
+
+TEST_CASE("rgsaddle band keeps a zero force on fixed atoms",
+          "[neb][rgsaddle]") {
+  // eOn drops the mean force of an image only when every atom is free.
+  // Removing it with fixed atoms present pushes those atoms; the host pins
+  // them back after every step, and the L-BFGS band then records that
+  // correction as a curvature pair and cycles at max_move.
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::neb_options(params).opt_method = OptType::LBFGS;
+  ParametersLoadAccess::neb_options(params).image_count = 3;
+  ParametersLoadAccess::neb_options(params).max_iterations = 3;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 1e-12;
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = false;
+  ParametersLoadAccess::neb_options(params).climbing_image.ocineb.use_mmf =
+      false;
+  ParametersLoadAccess::neb_options(params).initialization.method =
+      NEBInit::LINEAR;
+  ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = std::make_shared<Matter>(pot, params);
+  auto product = std::make_shared<Matter>(pot, params);
+  reactant->con2matter(std::string("reactant.con"));
+  product->con2matter(std::string("reactant.con"));
+  const long nAtoms = reactant->numberOfAtoms();
+  for (long j = nAtoms / 2; j < nAtoms; ++j) {
+    reactant->setFixed(j, 1);
+    product->setFixed(j, 1);
+  }
+  auto shifted = product->getPositions();
+  shifted(0, 0) += 0.5;
+  product->setPositions(shifted);
+  NudgedElasticBand neb(reactant, product, params, pot);
+  static_cast<void>(neb.compute());
+  double freeForce = 0.0;
+  for (long i = 1; i <= neb.numImages; ++i) {
+    const AtomMatrix &force = *neb.projectedForce[static_cast<size_t>(i)];
+    for (long j = 0; j < nAtoms; ++j) {
+      CAPTURE(i, j);
+      if (neb.path[static_cast<size_t>(i)]->getFixed(j)) {
+        REQUIRE(force.row(j).cwiseAbs().maxCoeff() == 0.0);
+      } else {
+        freeForce = std::max(freeForce, force.row(j).cwiseAbs().maxCoeff());
+      }
+    }
+  }
+  REQUIRE(freeForce > 0.0);
 }
 
 TEST_CASE("rgsaddle band surface serves whole, interior and one-image "

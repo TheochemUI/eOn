@@ -187,7 +187,14 @@ XtsciBand::XtsciBand(NudgedElasticBand &neb, const Parameters &params)
   }
   rgsaddle_band_config_t config{};
   config.version = RGSADDLE_VERSION_INIT;
+  // eOn removes the mean force of an image only when every atom is free
+  // (eonc::neb::zeroTranslation). With a fixed atom the mean stays, so the
+  // session never pushes fixed atoms that the host pins back after the step.
   config.flags = 0;
+  if (!neb.path.empty() &&
+      neb.path[0]->numberOfFreeAtoms() < neb.path[0]->numberOfAtoms()) {
+    config.flags |= RGSADDLE_BAND_KEEP_TRANSLATION;
+  }
   config.tangent = tangentKind(nebOpt);
   config.spring = springKind(nebOpt);
   config.projection = projectionKind(nebOpt);
