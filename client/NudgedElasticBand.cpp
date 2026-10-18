@@ -219,27 +219,24 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
   extremumCurvature.resize(2 * (numImages + 1));
   numExtrema = 0;
 
-  // Create per-image potentials if needed for true parallel force evaluation
-  perImagePotentials_ =
-      pot->needsPerImageInstance() && params.main_options().parallel;
+  // A potential that keeps per-geometry state (a neighbour table, a
+  // working directory) gets one instance per interior image, threads or
+  // not: a shared instance would rebuild that state for every image of
+  // every step. [Main] parallel only decides whether the images run on
+  // the image pool.
+  perImagePotentials_ = pot->needsPerImageInstance();
   if (perImagePotentials_) {
-    QUILL_LOG_INFO(log,
-                   "NEB: Creating per-image potential instances for "
-                   "parallel force evaluation ({} images)",
-                   numImages + 2);
+    QUILL_LOG_INFO(log, "NEB: one potential instance per image ({} images)",
+                   numImages);
   }
 
   for (long i = 0; i <= numImages + 1; i++) {
     path[i] = std::make_shared<Matter>(std::move(initPath[i]));
 
-    // Give each INTERMEDIATE image its own potential for true parallelism.
-    // Endpoints (i=0, i=numImages+1) keep the shared pot -- they are only
-    // evaluated once during initialization and never in parallel.
+    // Each interior image gets its own instance. The endpoints keep the
+    // shared one: they are evaluated once, before the band moves.
     if (perImagePotentials_ && i > 0 && i <= numImages) {
-      auto cloned = pot->clonePotential();
-      path[i]->setPotential(cloned ? cloned
-                                   : eonc::helpers::sharePotential(
-                                         eonc::helpers::makePotential(params)));
+      path[i]->setPotential(eonc::helpers::makeImagePotential(*pot, params));
     }
 
     tangent[i] = std::make_shared<AtomMatrix>();
