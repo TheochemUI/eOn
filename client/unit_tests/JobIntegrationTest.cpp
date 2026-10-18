@@ -3676,7 +3676,7 @@ TEST_CASE_METHOD(JobIntegrationFixture,
   public:
     long calls = 0;
     std::vector<long> receivedOwners;
-    bool supportsBatchEvaluation() const override { return true; }
+    bool supportsBatchEvaluation() const noexcept override { return true; }
     void forceBatchOwned(long count, long atoms, const double *const *positions,
         const int *const *numbers, double *const *forces, double *energies,
         double *variances, const double *const *boxes, const long *owners) override {
