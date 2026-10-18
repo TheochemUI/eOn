@@ -245,12 +245,20 @@ TEST_CASE("the solid-state band climbs the Bain path of an LJ crystal",
   // No rotation, no shear drift, a square base, and no atom off its
   // site: up to the lattice translation that wrapping into the cell adds
   // and a rigid translation of the whole image, which costs no energy,
-  // every image keeps the reactant's fractional coordinates. The bound
-  // is the departure the force tolerance allows: a shear or a site
-  // offset of 1e-6 Angstrom on this cell costs a force of order 1e-4.
+  // the climbing image keeps the reactant's fractional coordinates,
+  // within the departure the force tolerance allows. The band converges
+  // on the climbing image (climbing_image.converged_only), and for a
+  // climbing band only that image carries the answer (9335e341e); the
+  // other images stop under band_slack times the tolerance in the
+  // projected force, which bounds no site offset. A relative site offset
+  // u along axis k costs each atom a force K_k u, so a climbing image
+  // whose force components stay under the tolerance F moves its atoms by
+  // at most F / (2 K_k L_k) in fractional units (L_k the cell length).
+  // K_k is measured on that image by a finite difference of LatticeLJ.
   const AtomMatrix s0 =
       reactant->getPositions() * reactant->getCell().inverse();
-  double upper = 0.0, shear = 0.0, square = 0.0, drift = 0.0;
+  const double tolerance = neb.force_tolerance;
+  double upper = 0.0, shear = 0.0, square = 0.0, drift = 0.0, excess = 0.0;
   for (long i = 0; i <= band.numImages + 1; ++i) {
     const auto &image = *band.path[static_cast<size_t>(i)];
     const Matrix3d h = image.getCell();
@@ -263,13 +271,32 @@ TEST_CASE("the solid-state band climbs the Bain path of an LJ crystal",
     ds = (ds.array() - ds.array().round()).matrix();
     ds.rowwise() -= ds.colwise().mean();
     drift = std::max(drift, ds.cwiseAbs().maxCoeff());
+    if (i != ci) {
+      continue;
+    }
+    VectorXi z(2);
+    z << 18, 18;
+    const AtomMatrix x = image.getPositions();
+    for (int k = 0; k < 3; ++k) {
+      constexpr double du = 1e-6;
+      AtomMatrix up = x, down = x;
+      up(1, k) += du;
+      down(1, k) -= du;
+      const double fUp = std::get<1>(pot->get_ef(up, z, h))(1, k);
+      const double fDown = std::get<1>(pot->get_ef(down, z, h))(1, k);
+      const double stiffness = -(fUp - fDown) / (2.0 * du);
+      REQUIRE(stiffness > 0.0);
+      const double bound = tolerance / (2.0 * stiffness * h(k, k));
+      excess = std::max(excess, ds.col(k).cwiseAbs().maxCoeff() / bound);
+    }
   }
-  std::printf("upper %.3e shear %.3e a-b %.3e fractional drift %.3e\n", upper,
-              shear, square, drift);
+  std::printf("upper %.3e shear %.3e a-b %.3e fractional drift %.3e, "
+              "climbing image at %.2e of its force bound\n",
+              upper, shear, square, drift, excess);
   REQUIRE(upper == 0.0);
   REQUIRE(shear < 1e-6);
   REQUIRE(square < 1e-6);
-  REQUIRE(drift < 1e-6);
+  REQUIRE(excess <= 1.0);
 }
 
 } // namespace
