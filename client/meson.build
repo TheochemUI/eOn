@@ -826,6 +826,25 @@ if not readcon_dep.found()
     if is_windows
         _readcon_dll = readcon_proj.get_variable('readcon_cargo')[0]
         _readcon_runtime_dir = fs.parent(_readcon_dll.full_path())
+        # readcon-db's DLL re-exports readcon-core's C ABI. Next to the
+        # static readcon_core.lib, whose one LTO object defines all of it,
+        # link.exe reports every shared name twice (LNK2005). Both
+        # libraries link through their import libraries, which cargo
+        # writes beside each DLL.
+        readcon_dep = declare_dependency(
+            link_args: [
+                _readcon_runtime_dir / 'cargo-target'
+                / (get_option('buildtype') == 'debug' ? 'debug' : 'release')
+                / 'readcon_core.dll.lib',
+            ],
+            dependencies: [
+                readcon_dep.partial_dependency(
+                    includes: true,
+                    compile_args: true,
+                ),
+            ],
+            version: readcon_dep.version(),
+        )
         # The loader searches the executable directory before PATH.
         # A pixi readcon_core.dll on PATH is a different build and the
         # process exits 0xC0000139 before main. The copy sits next to
