@@ -129,6 +129,10 @@ def test_windows_client_stays_an_archive_and_ships_wheel_dlls():
     assert "os.add_dll_directory" in init
     project = PYPROJECT.read_text(encoding="utf-8")
     assert "allow-windows-internal-shared-libs = true" in project
+    py_meson = (ROOT / "client" / "python" / "meson.build").read_text(
+        encoding="utf-8"
+    )
+    assert "cppc.get_supported_arguments(['-Wno-unused-parameter'])" in py_meson
     wrap = WRAP.read_text(encoding="utf-8")
     assert "rgpot-windows-link-whole.patch" in wrap
     assert "rgpot-windows-flang-rt.patch" in wrap

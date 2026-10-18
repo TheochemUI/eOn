@@ -109,8 +109,10 @@ message('pyeonclient: version @0@'.format(_pyec_version))
 _nb_cpp_args = _args + [
     '-DNB_DOMAIN=pyeonclient',
     '-DPYEONCLIENT_VERSION="' + _pyec_version + '"',
-    '-Wno-unused-parameter',
 ]
+# cl rejects -Wno-unused-parameter (D8021). Keep it only where the
+# compiler accepts it; MSVC does not treat an unused parameter as an error.
+_nb_cpp_args += cppc.get_supported_arguments(['-Wno-unused-parameter'])
 
 if _nb_free_threaded
     # Free-threaded nanobind ABI (no abi3 until PEP 803)
