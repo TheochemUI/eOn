@@ -711,12 +711,11 @@ else
 endif
 _deps += [vesin_dep]
 
-# readcon-core and linkcell are Rust static libraries too. Each Rust
-# archive carries its own copy of the Rust standard library, so a second
-# one on the link line defines the same std symbols twice (GNU ld: multiple
-# definition of __rustc::rust_panic). The subproject links its shared
-# library instead; the wrap patch adds link_mode and keeps the archive on
-# Windows, where the readcon-core DLL leaves one Rust archive.
+# linkcell is a Rust static library too. Each Rust archive carries its
+# own copy of the Rust standard library, so a second one on the link line
+# defines the same std symbols twice (GNU ld: multiple definition of
+# __rustc::rust_panic). The subproject links its shared library instead;
+# the wrap patch adds link_mode and keeps the archive on Windows.
 minimage_dep = dependency(
     'minimage', version: '>=0.1.4',
     fallback: ['minimage', 'minimage_dep'],
@@ -793,6 +792,25 @@ if not readcon_dep.found()
         },
     )
     readcon_dep = readcon_proj.get_variable('readcon_dep')
+    if not is_windows
+        # The archive's thin LTO object defines the Rust standard library
+        # with readcon-core's own symbols, and linkcell is a second Rust
+        # archive with its own copy, so GNU ld reports every std symbol
+        # twice. The cdylib keeps its std internal. Windows already links
+        # the DLL (below).
+        _readcon_so = readcon_proj.get_variable('readcon_cargo')[0]
+        _runtime_rpath += [fs.parent(_readcon_so.full_path())]
+        readcon_dep = declare_dependency(
+            link_with: [_readcon_so],
+            dependencies: [
+                readcon_dep.partial_dependency(
+                    includes: true,
+                    compile_args: true,
+                ),
+            ],
+            version: readcon_dep.version(),
+        )
+    endif
     # Order stamp: cargo still emits cdylib+staticlib. partial_dependency
     # drops declare_dependency.sources, so attach the stamp here. A
     # readcon-core without the stamp contributes no sources.
