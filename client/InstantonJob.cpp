@@ -566,11 +566,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     const VectorXi rNumbers = reactantReference.getAtomicNrs();
     const VectorXi sNumbers = saddle.getAtomicNrs();
     const Matrix3d rBox = reactantReference.getPeriodic()
-                             ? reactantReference.getCell()
-                             : Matrix3d::Zero().eval();
-    const Matrix3d sBox = saddle.getPeriodic()
-                             ? saddle.getCell()
-                             : Matrix3d::Zero().eval();
+                              ? reactantReference.getCell()
+                              : Matrix3d::Zero().eval();
+    const Matrix3d sBox =
+        saddle.getPeriodic() ? saddle.getCell() : Matrix3d::Zero().eval();
     const double *positions[] = {reactantReference.getPositions().data(),
                                  saddle.getPositions().data()};
     const int *numbers[] = {rNumbers.data(), sNumbers.data()};
@@ -809,7 +808,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       o.pi_planes > 0 ||
       std::any_of(temperatures.begin(), temperatures.end(),
                   [tc](double temperature) { return temperature < tc; });
-  if (!profile && o.initial_ring.empty() && !physicalModel && needsSampledPath) {
+  if (!profile && o.initial_ring.empty() && !physicalModel &&
+      needsSampledPath) {
     pathQ.clear();
     pathV.clear();
     const long before = pot->forceCallCounter.load();
@@ -994,11 +994,11 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     ro.energyShift = fittedPotential ? 0.0 : o.energy_shift;
     if (!fittedPotential) {
       ro.ownedPotential = [&](const std::vector<VectorXd> &q,
-                              std::vector<double> &v,
-                              std::vector<VectorXd> &g,
+                              std::vector<double> &v, std::vector<VectorXd> &g,
                               const std::vector<long> &owners) {
         std::vector<VectorXd> full(q.size());
-        for (size_t j = 0; j < q.size(); ++j) full[j] = frozen(q[j]);
+        for (size_t j = 0; j < q.size(); ++j)
+          full[j] = frozen(q[j]);
         evaluateFullOwned(full, v, g, owners);
         if (physicalModel)
           for (auto &gradient : g)
@@ -1009,15 +1009,19 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     tunneling::BatchPotential optimizerEvaluate = evaluate;
     if (fittedPotential) {
       const auto model = physicalModel->potentialModel;
-      optimizerEvaluate = [model, shift=o.energy_shift](const std::vector<VectorXd> &q,
-          std::vector<double> &v, std::vector<VectorXd> &g) {
-        v.resize(q.size()); g.resize(q.size());
-        for (size_t j=0;j<q.size();++j) {
-          const auto value=model->evaluate(q[j],shift);
-          v[j]=value.value[0]; g[j]=value.jacobian.row(0).transpose();
-        }
-      };
-      ro.physicalHessian = [model](const VectorXd &q)->MatrixXd {
+      optimizerEvaluate =
+          [model, shift = o.energy_shift](const std::vector<VectorXd> &q,
+                                          std::vector<double> &v,
+                                          std::vector<VectorXd> &g) {
+            v.resize(q.size());
+            g.resize(q.size());
+            for (size_t j = 0; j < q.size(); ++j) {
+              const auto value = model->evaluate(q[j], shift);
+              v[j] = value.value[0];
+              g[j] = value.jacobian.row(0).transpose();
+            }
+          };
+      ro.physicalHessian = [model](const VectorXd &q) -> MatrixXd {
         return model->evaluate(q).hessians[0];
       };
     }
@@ -1264,9 +1268,14 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
           const VectorXd &b = bathState.bathPositions[j];
           fullEnergies[j] += o.energy_shift + source.dot(b);
           if (physicalModel->bath->curvature)
-            fullEnergies[j] += .5*b.dot(physicalModel->bath->curvatureAt(inst.beads[j],0).value*b);
+            fullEnergies[j] +=
+                .5 *
+                b.dot(physicalModel->bath->curvatureAt(inst.beads[j], 0).value *
+                      b);
           else
-            fullEnergies[j] += .5*(physicalModel->bath->curvatures.array()*b.array().square()).sum();
+            fullEnergies[j] += .5 * (physicalModel->bath->curvatures.array() *
+                                     b.array().square())
+                                        .sum();
         }
       }
       Matter frame(reactant);
@@ -1387,51 +1396,53 @@ std::vector<std::string> InstantonJob::run(void) {
   tunneling::OwnedBatchPotential evaluateOwned =
       [&](const std::vector<VectorXd> &q, std::vector<double> &v,
           std::vector<VectorXd> &grad, const std::vector<long> &owners) {
-    if (owners.size() != q.size())
-      throw std::invalid_argument("instanton: potential owner count mismatch");
-    while (pool.size() < q.size()) {
-      pool.push_back(std::make_unique<Matter>(*reactant));
-    }
-    for (size_t j = 0; j < q.size(); ++j) {
-      mw.place(q[j], *pool[j]);
-    }
-    v.resize(q.size());
-    grad.resize(q.size());
-    if (pot->supportsBatchEvaluation() && !q.empty()) {
-      const long atoms = reactant->numberOfAtoms();
-      std::vector<VectorXi> nrs(q.size());
-      std::vector<Matrix3d> boxes(q.size());
-      std::vector<const double *> posPtr, boxPtr;
-      std::vector<const int *> nrsPtr;
-      std::vector<double *> frcPtr;
-      for (size_t j = 0; j < q.size(); ++j) {
-        nrs[j] = pool[j]->getAtomicNrs();
-        boxes[j] = pool[j]->getPeriodic() ? pool[j]->getCell()
-                                          : Matrix3d::Zero().eval();
-      }
-      for (size_t j = 0; j < q.size(); ++j) {
-        posPtr.push_back(pool[j]->getPositions().data());
-        nrsPtr.push_back(nrs[j].data());
-        frcPtr.push_back(pool[j]->forcesData());
-        boxPtr.push_back(boxes[j].data());
-      }
-      std::vector<double> energies(q.size()), variances(q.size());
-      pot->forceBatchOwned(static_cast<long>(q.size()), atoms, posPtr.data(),
-                      nrsPtr.data(), frcPtr.data(), energies.data(),
-                      variances.data(), boxPtr.data(), owners.data());
-      for (size_t j = 0; j < q.size(); ++j) {
-        pool[j]->setComputedPotential(energies[j], variances[j]);
-      }
-    }
-    for (size_t j = 0; j < q.size(); ++j) {
-      v[j] = pool[j]->getPotentialEnergy();
-      grad[j] = mw.gradient(pool[j]->getForces());
-    }
-  };
+        if (owners.size() != q.size())
+          throw std::invalid_argument(
+              "instanton: potential owner count mismatch");
+        while (pool.size() < q.size()) {
+          pool.push_back(std::make_unique<Matter>(*reactant));
+        }
+        for (size_t j = 0; j < q.size(); ++j) {
+          mw.place(q[j], *pool[j]);
+        }
+        v.resize(q.size());
+        grad.resize(q.size());
+        if (pot->supportsBatchEvaluation() && !q.empty()) {
+          const long atoms = reactant->numberOfAtoms();
+          std::vector<VectorXi> nrs(q.size());
+          std::vector<Matrix3d> boxes(q.size());
+          std::vector<const double *> posPtr, boxPtr;
+          std::vector<const int *> nrsPtr;
+          std::vector<double *> frcPtr;
+          for (size_t j = 0; j < q.size(); ++j) {
+            nrs[j] = pool[j]->getAtomicNrs();
+            boxes[j] = pool[j]->getPeriodic() ? pool[j]->getCell()
+                                              : Matrix3d::Zero().eval();
+          }
+          for (size_t j = 0; j < q.size(); ++j) {
+            posPtr.push_back(pool[j]->getPositions().data());
+            nrsPtr.push_back(nrs[j].data());
+            frcPtr.push_back(pool[j]->forcesData());
+            boxPtr.push_back(boxes[j].data());
+          }
+          std::vector<double> energies(q.size()), variances(q.size());
+          pot->forceBatchOwned(static_cast<long>(q.size()), atoms,
+                               posPtr.data(), nrsPtr.data(), frcPtr.data(),
+                               energies.data(), variances.data(), boxPtr.data(),
+                               owners.data());
+          for (size_t j = 0; j < q.size(); ++j) {
+            pool[j]->setComputedPotential(energies[j], variances[j]);
+          }
+        }
+        for (size_t j = 0; j < q.size(); ++j) {
+          v[j] = pool[j]->getPotentialEnergy();
+          grad[j] = mw.gradient(pool[j]->getForces());
+        }
+      };
 
-  tunneling::BatchPotential evaluate =
-      [&](const std::vector<VectorXd> &q, std::vector<double> &v,
-          std::vector<VectorXd> &grad) {
+  tunneling::BatchPotential evaluate = [&](const std::vector<VectorXd> &q,
+                                           std::vector<double> &v,
+                                           std::vector<VectorXd> &grad) {
     evaluateOwned(q, v, grad,
                   std::vector<long>(q.size(), potential_owner::auxiliary));
   };
@@ -1494,8 +1505,8 @@ std::vector<std::string> InstantonJob::run(void) {
       return hessianWith(q, true, filename);
     };
     return runRate(params, pot, *reactant, mw, evaluate, evaluateOwned,
-                   referenceHessianAt,
-                   beadHessianAt, rotationZero, rotationResidual);
+                   referenceHessianAt, beadHessianAt, rotationZero,
+                   rotationResidual);
   }
 
   auto product = std::make_unique<Matter>(pot, params);
