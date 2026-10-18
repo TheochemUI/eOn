@@ -11,7 +11,6 @@ Parity is enforced by tests/test_params_ssot.py.
 
 import math
 import random
-import struct
 from pathlib import Path
 from typing import Any, Optional, Union, get_args
 
@@ -2765,11 +2764,11 @@ class InstantonConfig(BaseModel):
         ),
     )
     newton_limit: int = Field(
-        default=(1 << (8 * struct.calcsize("l") - 1)) - 1,
+        default=(1 << 63) - 1,
         ge=0,
         description=(
             "Maximum active ring coordinates for dense Newton; zero selects"
-            " the matrix-free dimer search. The default is LONG_MAX."
+            " the matrix-free dimer search. The default is INT64_MAX."
         ),
     )
     lanczos_step: float = Field(

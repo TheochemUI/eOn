@@ -301,7 +301,7 @@ that update. On the one-dimensional Eckart barrier the search converges
 in 9 to 12 steps from the cosine seed and in 3 from a seed on the path.
 
 `newton_limit` is the maximum number of active ring coordinates for the
-dense Newton route. Its default is the largest representable `long`,
+dense Newton route. Its default is the largest 64-bit integer,
 which preserves dense Newton selection. Set `newton_limit = 0` to select
 the existing matrix-free minimum-mode dimer search; negative values are
 rejected. For a frictionless even half ring, the active count is

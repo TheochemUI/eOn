@@ -1,7 +1,5 @@
 """Rate optimizer selection and saved-reference paths retain their values."""
 
-import struct
-
 import pytest
 from pydantic import ValidationError
 
@@ -10,7 +8,7 @@ from eon_schema.config.models import InstantonConfig
 
 def test_instanton_optimizer_defaults_and_roundtrip():
     defaults = InstantonConfig()
-    assert defaults.newton_limit == (1 << (8 * struct.calcsize("l") - 1)) - 1
+    assert defaults.newton_limit == (1 << 63) - 1
     assert defaults.reactant_hessian_filename == ""
     assert defaults.saddle_hessian_filename == ""
     configured = InstantonConfig(
