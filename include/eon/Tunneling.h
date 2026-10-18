@@ -21,6 +21,7 @@
 // amu^0.5 Angstrom and hbar is kHbar.
 
 #include "Matter.h"
+#include "PhysicalQuadraticBath.h"
 
 #include <array>
 #include <functional>
@@ -263,6 +264,13 @@ double quantumHarmonicTstLogRate(const MatrixXd &hessReactant,
                                  double barrier, long rigidModes);
 
 struct RateInstantonOptions {
+  /// Fixed physical quadratic bath, eliminated on the same primitive ring.
+  /// The potential callback supplies retained coordinates and the declared
+  /// frozen-bath or relaxed potential of this model.
+  std::shared_ptr<const PhysicalQuadraticBath> physicalBath;
+  /// Exact physical potential Hessian at a retained bead, excluding springs
+  /// and the eliminated bath. Empty selects finite differences and Bofill.
+  std::function<MatrixXd(const VectorXd &)> physicalHessian;
   long beads = 32;              ///< N, beads on the ring
   long maxIterations = 1000;    ///< translation steps
   double forceTolerance = 1e-3; ///< largest per-bead |dU_N/dq|,
@@ -356,6 +364,7 @@ RingSpectrum ringSpectrum(const std::vector<MatrixXd> &beadHessians, double c,
                           const std::vector<VectorXd> &tau);
 
 struct RateInstanton {
+  std::shared_ptr<const PhysicalQuadraticBath> physicalBath;
   std::vector<VectorXd> beads;     ///< N beads, q_N = q_0 implied
   std::vector<double> energies;    ///< V at every bead, eV
   double beta = 0.0;               ///< 1 / (kB T), 1 / eV
