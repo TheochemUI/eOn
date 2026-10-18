@@ -20,6 +20,15 @@
 #include "eon/PairHessian.h"
 #include "eon/SafeMath.h"
 
+// Eigen's packet saxpy is an fma on NEON and a multiply followed by an add
+// on a nocona x86 unit. The curvature probe and the two-loop step follow
+// the multiply-then-add form.
+#if defined(__clang__)
+#pragma clang fp contract(off)
+#elif defined(__GNUC__)
+#pragma GCC optimize("fp-contract=off")
+#endif
+
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -27,6 +36,23 @@
 
 namespace {
 constexpr double kLbfgsEps = 1e-30;
+
+// y <- y + a * x, one rounding for the product and one for the add.
+void mulAddInto(Eigen::VectorXd &y, double a, const Eigen::VectorXd &x) {
+  const Eigen::Index n = y.size();
+  double *yd = y.data();
+  const double *xd = x.data();
+  for (Eigen::Index i = 0; i < n; ++i) {
+    yd[i] = yd[i] + a * xd[i];
+  }
+}
+
+[[nodiscard]] Eigen::VectorXd mulAdd(const Eigen::VectorXd &y, double a,
+                                     const Eigen::VectorXd &x) {
+  Eigen::VectorXd out = y;
+  mulAddInto(out, a, x);
+  return out;
+}
 
 void maybeProjectRigid(Eigen::VectorXd &vec, const Eigen::VectorXd &pos,
                        bool enabled) {
@@ -193,7 +219,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
   } else if (m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale &&
              m_objf->supportsFiniteDifferenceCurvature()) {
     const Eigen::VectorXd fhat = eonc::exact::normalized(a_f);
-    m_objf->setPositions(r + m_optConfig.finiteDifference * fhat);
+    m_objf->setPositions(mulAdd(r, m_optConfig.finiteDifference, fhat));
     Eigen::VectorXd dg = m_objf->getGradient(true) + a_f;
     const double C = eonc::exact::dot(dg, fhat) / m_optConfig.finiteDifference;
     H0 = eonc::safemath::safe_recip(C, -1.0);
@@ -223,7 +249,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
     a[static_cast<size_t>(k)] =
         m_rho[static_cast<size_t>(i)] *
         eonc::exact::orderedDot(m_s[static_cast<size_t>(i)], q);
-    q -= a[static_cast<size_t>(k)] * m_y[static_cast<size_t>(i)];
+    mulAddInto(q, -a[static_cast<size_t>(k)], m_y[static_cast<size_t>(i)]);
   }
 
   Eigen::VectorXd z = applyH0(q, H0, r);
@@ -232,7 +258,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
     const int i = idx[static_cast<size_t>(k)];
     const double b = m_rho[static_cast<size_t>(i)] *
                      eonc::exact::orderedDot(m_y[static_cast<size_t>(i)], z);
-    z += m_s[static_cast<size_t>(i)] * (a[static_cast<size_t>(k)] - b);
+    mulAddInto(z, a[static_cast<size_t>(k)] - b, m_s[static_cast<size_t>(i)]);
   }
 
   Eigen::VectorXd d = -z;
@@ -293,7 +319,7 @@ int LBFGS::update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
     const double t =
         6.0 * (a_e0 - a_e1) - 3.0 * eonc::exact::dot(a_f0 + a_f1, s0);
     const double theta = t - sy;
-    y0 += (theta / ss) * s0;
+    mulAddInto(y0, theta / ss, s0);
     sy = eonc::exact::dot(s0, y0);
     QUILL_LOG_DEBUG(m_log, "[LBFGS] Zhang-Xu θ={:.4e} s·ŷ={:.4e}", theta, sy);
   }
@@ -392,7 +418,7 @@ int LBFGS::step(double a_maxMove) {
     bool accepted = false;
     double e_acc = e0;
     for (int dec = 0; dec < 10; ++dec) {
-      m_objf->setPositions(r + alpha * dr);
+      m_objf->setPositions(mulAdd(r, alpha, dr));
       e_acc = m_objf->getEnergy();
       if (e_acc - ref <= max_erise) {
         accepted = true;

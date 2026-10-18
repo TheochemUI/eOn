@@ -42,7 +42,11 @@ flips a decision.
 The mean force removed when `removeNetForce` is set is that same exact sum
 of each column, divided by the atom count. Eigen's `colwise().sum()` follows
 the packet width, so the mean differed between x86 and NEON and the LJ13
-basin hop took 1671 force calls on Apple clang instead of 1640.
+basin hop took 1671 force calls on Apple clang instead of 1640. An exact
+mean left 1658 calls: the L-BFGS curvature probe and two-loop step were
+still Eigen saxpys, which are an fma on NEON and a multiply followed by an
+add on the nocona unit the Linux build uses. Those updates now use the
+multiply-then-add form.
 
 ## How
 

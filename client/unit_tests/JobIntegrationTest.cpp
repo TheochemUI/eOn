@@ -1009,9 +1009,10 @@ max_iterations = 200
   const double lj13 = -44.326801 - 78.0 * 4.0 * (rc6 * rc6 - rc6);
   REQUIRE(minEnergy == Catch::Approx(lj13).margin(1e-6));
 
-  // The optimizer decides on correctly rounded reductions (eonc::exact), and
-  // the mean force removed from each evaluation is an exact column sum, so
-  // the trajectory, and with it the count, is the same for every compiler,
+  // The optimizer decides on correctly rounded reductions (eonc::exact), the
+  // mean force removed from each evaluation is an exact column sum, and the
+  // L-BFGS vector updates are a multiply followed by an add, so the
+  // trajectory, and with it the count, is the same for every compiler,
   // Eigen release and vector width. Default LBFGS (auto_scale) adds an FD
   // curvature probe on the first step of each minimize; the SVN dump
   // recorded 1685 with an older path.
