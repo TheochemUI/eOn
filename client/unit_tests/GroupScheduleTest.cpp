@@ -1,3 +1,5 @@
+#include "eon/PotentialOwner.h"
+#include <set>
 /*
 ** This file is part of eOn.
 **
@@ -94,4 +96,27 @@ TEST_CASE("Keys without an owner fall back to the batch position",
   REQUIRE(s.defaultHome(5, 0) == 1);
   REQUIRE(s.assign(std::vector<std::int64_t>{-2, -3}) ==
           std::vector<int>{0, 1});
+}
+
+TEST_CASE("Derivative scratch stays bounded while all calculator groups work",
+          "[GroupSchedule][OrbitalOwners]") {
+  eonc::GroupSchedule scheduler(8);
+  const std::vector<std::int64_t> owners(270,
+                                        eonc::potential_owner::derivative);
+  for (int repeat = 0; repeat < 3; ++repeat) {
+    const auto route = scheduler.assign(owners);
+    std::vector<long> load(8, 0);
+    std::vector<std::set<std::int64_t>> retained(8);
+    for (size_t j = 0; j < route.size(); ++j) {
+      REQUIRE(route[j] >= 0);
+      REQUIRE(route[j] < 8);
+      ++load[route[j]];
+      retained[route[j]].insert(owners[j]);
+    }
+    for (long group = 0; group < 8; ++group) {
+      REQUIRE(load[group] >= 33);
+      REQUIRE(load[group] <= 34);
+      REQUIRE(retained[group].size() == 1);
+    }
+  }
 }
