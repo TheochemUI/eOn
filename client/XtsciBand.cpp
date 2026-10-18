@@ -298,9 +298,9 @@ void XtsciBand::step(double maxMove) {
     // image still holds; the band update after the step then costs nothing.
     moveTo(*m_neb->path[i], pos);
   }
-  if (report.ci_index >= 0) {
-    m_neb->climbingImage = report.ci_index;
-  }
+  // The session reports -1 until an image climbs; the host then holds no
+  // climbing image either, so its convergence test reads the whole band.
+  m_neb->climbingImage = report.ci_index > 0 ? report.ci_index : 0;
 #if RGSADDLE_ABI_MINOR >= 5
   // An image whose last evaluation was elsewhere (the solver backed off to
   // a point it evaluated earlier) takes the session's evaluation of the
@@ -331,7 +331,10 @@ void XtsciBand::step(double maxMove) {
       *m_neb->projectedForce[static_cast<size_t>(i)] = force;
     }
     // The session already projected the force. The host convergence
-    // check reads that force and does not rebuild it.
+    // check reads that force and does not rebuild it, so the highest
+    // image (sp.con), the climbing image and the tangents (neb.dat) are
+    // refreshed here from the accepted band.
+    m_neb->adoptSessionProjection(report.ci_index);
     m_neb->movedAfterForceCall = false;
     return;
   }

@@ -194,6 +194,64 @@ TEST_CASE("rgsaddle band keeps a zero force on fixed atoms",
   REQUIRE(freeForce > 0.0);
 }
 
+TEST_CASE("rgsaddle band hands its highest image and tangents to the host",
+          "[neb][rgsaddle][climbing_image]") {
+  // The session projects the force, so the host never runs its own
+  // projection while the band steps; sp.con (the highest image), the
+  // climbing image and neb.dat (the tangents) must still describe the
+  // accepted band, not the first one.
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::neb_options(params).opt_method = OptType::LBFGS;
+  ParametersLoadAccess::neb_options(params).image_count = 5;
+  ParametersLoadAccess::neb_options(params).max_iterations = 15;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 1e-12;
+  ParametersLoadAccess::neb_options(params).climbing_image.ocineb.use_mmf =
+      false;
+  ParametersLoadAccess::neb_options(params).initialization.method =
+      NEBInit::LINEAR;
+  ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = std::make_shared<Matter>(pot, params);
+  auto product = std::make_shared<Matter>(pot, params);
+  reactant->con2matter(std::string("reactant.con"));
+  product->con2matter(std::string("reactant.con"));
+  auto shifted = product->getPositions();
+  shifted(0, 0) += 0.5;
+  product->setPositions(shifted);
+  NudgedElasticBand neb(reactant, product, params, pot);
+  static_cast<void>(neb.compute());
+  REQUIRE(neb.lastIteration() > 1);
+
+  long highest = 1;
+  for (long i = 2; i <= neb.numImages; ++i) {
+    if (neb.path[static_cast<size_t>(i)]->getPotentialEnergy() >
+        neb.path[static_cast<size_t>(highest)]->getPotentialEnergy()) {
+      highest = i;
+    }
+  }
+  REQUIRE(static_cast<long>(neb.maxEnergyImage) == highest);
+  REQUIRE(neb.climbingImage >= 0);
+  REQUIRE(neb.climbingImage <= neb.numImages);
+
+  std::vector<AtomMatrix> held;
+  for (long i = 1; i <= neb.numImages; ++i) {
+    held.push_back(*neb.tangent[static_cast<size_t>(i)]);
+  }
+  // Every image holds its evaluation, so this projection costs no force
+  // call and rebuilds the tangents from the final band.
+  const size_t before = pot->forceCallCounter;
+  neb.updateForces();
+  REQUIRE(pot->forceCallCounter == before);
+  for (long i = 1; i <= neb.numImages; ++i) {
+    CAPTURE(i);
+    REQUIRE(held[static_cast<size_t>(i - 1)].isApprox(
+        *neb.tangent[static_cast<size_t>(i)], 1e-12));
+  }
+}
+
 TEST_CASE("rgsaddle band surface serves whole, interior and one-image "
           "requests",
           "[neb][rgsaddle]") {
