@@ -12,7 +12,9 @@ struct CutoffPair {
   double distanceSquared;
 };
 // Fully periodic atom-image rows; d = R_j - R_i + shift * cell.
-std::vector<CutoffPair> periodicCutoffNeighbors(
-    const double *positions, size_t atoms, const double *rowMajorCell,
-    double cutoff, bool full = true);
+std::vector<CutoffPair> periodicCutoffNeighbors(const double *positions,
+                                                size_t atoms,
+                                                const double *rowMajorCell,
+                                                double cutoff,
+                                                bool full = true);
 } // namespace eonc
