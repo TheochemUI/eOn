@@ -840,6 +840,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     }
   }
 
+  extras.emplace_back("sd_path_force_calls",
+                      static_cast<double>(sdPathForceCalls));
   const std::string tableFile = "rate_instanton.dat";
   std::ofstream table(tableFile);
   if (!table) {
@@ -1281,8 +1283,6 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       continue;
     }
     extras.emplace_back("instanton_temperature_K", temperature);
-    extras.emplace_back("sd_path_force_calls",
-                        static_cast<double>(sdPathForceCalls));
     extras.emplace_back("instanton_iterations",
                         static_cast<double>(inst.iterations));
     extras.emplace_back("instanton_ring_potential", inst.ringPotential);
