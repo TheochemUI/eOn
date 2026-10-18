@@ -25,6 +25,7 @@
 #include <cmath>
 #include <filesystem>
 #include <fstream>
+#include <set>
 #include <stdexcept>
 #include <thread>
 #include <vector>
@@ -1106,6 +1107,76 @@ TEST_CASE_METHOD(NEBLJFixture,
   for (const auto &box : batch->seen) {
     REQUIRE(box.isApprox(cell, 1e-12));
   }
+}
+
+// --- Per-image potential instances ---
+
+TEST_CASE_METHOD(
+    NEBLJFixture,
+    "NEB gives each image its own instance without [Main] parallel",
+    "[neb][parallel][force_calls]") {
+  ParametersLoadAccess::main_options(params).parallel = false;
+  PotRegistry local;
+  auto threads = std::make_shared<eonc::helpers::test::PerImageLJ::Threads>();
+  auto perImage =
+      std::make_shared<eonc::helpers::test::PerImageLJ>(threads, local);
+  reactant->setPotential(perImage);
+  product->setPotential(perImage);
+  pot = perImage;
+
+  auto neb = makeNEB();
+  REQUIRE(neb->path[0]->getPotential() == pot);
+  REQUIRE(neb->path[neb->numImages + 1]->getPotential() == pot);
+  std::set<const Potential *> instances;
+  for (long i = 1; i <= neb->numImages; ++i) {
+    const Potential *image = neb->path[i]->getPotential().get();
+    REQUIRE(image != pot.get());
+    instances.insert(image);
+  }
+  REQUIRE(instances.size() == static_cast<size_t>(neb->numImages));
+
+  // Every instance charges the registry that counts the job's potential:
+  // two endpoints, then one call per interior image.
+  REQUIRE(local.total_force_calls() == 2);
+  neb->updateForces();
+  REQUIRE(local.total_force_calls() == 2 + static_cast<size_t>(neb->numImages));
+}
+
+TEST_CASE("makeImagePotential charges the registry of the potential it copies",
+          "[potential][force_calls]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto &proc = PotRegistry::get();
+  const size_t procBefore = proc.total_force_calls();
+  PotRegistry local;
+  AtomMatrix pos(2, 3);
+  pos << 0.0, 0.0, 0.0, 1.5, 0.0, 0.0;
+  VectorXi atmnrs(2);
+  atmnrs << 1, 1;
+  const Matrix3d box = Matrix3d::Identity() * 10.0;
+
+  SECTION("a clone") {
+    auto threads = std::make_shared<eonc::helpers::test::PerImageLJ::Threads>();
+    eonc::helpers::test::PerImageLJ base(threads, local);
+    auto image = eonc::helpers::makeImagePotential(base, params);
+    REQUIRE(&image->registry() == &local);
+    image->get_ef(pos, atmnrs, box);
+  }
+  SECTION("a backend without a clone, rebuilt from the parameters") {
+    std::shared_ptr<Potential> base;
+    {
+      PotentialConstructionScope scope(local);
+      base = eonc::helpers::sharePotential(
+          eonc::helpers::makePotential(PotType::LJ, params));
+    }
+    REQUIRE(base->clonePotential() == nullptr);
+    auto image = eonc::helpers::makeImagePotential(*base, params);
+    REQUIRE(image != base);
+    REQUIRE(&image->registry() == &local);
+    image->get_ef(pos, atmnrs, box);
+  }
+  REQUIRE(local.total_force_calls() == 1);
+  REQUIRE(proc.total_force_calls() == procBefore);
 }
 
 } /* namespace tests */
