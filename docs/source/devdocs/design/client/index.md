@@ -15,6 +15,7 @@ Guidelines and rationale for the `C++` core of eOn.
 
 types
 safemath
+exact-reduction
 parameters
 neb-modularization
 confile

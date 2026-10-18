@@ -1,0 +1,81 @@
+---
+myst:
+  html_meta:
+    "description": "Why eOn computes the dot products and norms behind optimizer decisions with correctly rounded reductions, and what the exact path guarantees."
+    "keywords": "eOn reproducibility, exact dot product, correctly rounded, Ozaki scheme, Eigen reduction order, bitwise reproducible"
+---
+
+# Exact reductions
+
+`include/eon/ExactReduction.h` provides `eonc::exact::dot`, `sum`,
+`squaredNorm`, `norm` and `normalized`. Each returns the exact value rounded
+once to the nearest double, ties to even. The optimizers (L-BFGS, CG, FIRE,
+Quickmin, steepest descent), the per-atom step caps, push-apart and the `norm`
+and `rms` convergence tests call them wherever a reduction decides something.
+
+## Why
+
+Floating-point addition does not associate, so a sum depends on the order of
+its terms. Eigen chooses that order, and the order changes with the release
+and the SIMD width: for `dot` and `squaredNorm`, Eigen 3.4 adds two packet
+accumulators and Eigen 5.0 four (`Eigen/src/Core/InnerProduct.h`). With 39
+coordinates (LJ13) under SSE2 the two releases build different summation
+trees.
+
+Optimizers amplify a one-ulp difference. The basin-hopping LJ13 case in
+`test_jobs` first diverged at the finite-difference curvature of the first
+L-BFGS step (`C` in `LBFGS::getStep` differed by one ulp). The run then ended
+at 1640 force calls with Eigen 3.4 and 1700 with Eigen 5.0, under gcc 14 and
+gcc 15 alike. A plain dot product of length `n` carries an error of up to
+`n u sum |x_i y_i|` (`u = 2^-53`), so two orders can differ by twice that;
+near a convergence threshold or an L-BFGS curvature test, that difference
+flips a decision.
+
+## How
+
+Every finite double is an integer significand `m < 2^53` times `2^e`.
+`x_i y_i` is therefore the 106-bit integer `m_x m_y` times `2^(e_x + e_y)`,
+with no rounding. The products go into a fixed-point integer accumulator
+that spans the whole exponent range, 135 words of 32 bits in signed 64-bit
+storage. Integer addition associates, so the accumulator contains the same
+exact sum for any order. One final rounding gives `RN(sum x_i y_i)`.
+
+This is the integer form of the error-free splitting of the Ozaki scheme
+([Ozaki, Ogita, Oishi and Rump 2012](https://doi.org/10.1007/s11075-011-9478-1);
+[Ozaki, Uchino and Imamura 2025](https://doi.org/10.48550/arXiv.2504.08009)).
+There, each operand splits into slices whose products are exact and whose
+sums are exact in any order. Compensated algorithms such as `Dot2`
+([Ogita, Rump and Oishi 2005](https://doi.org/10.1137/030601818)) improve
+accuracy but stay order-dependent. Reproducible summation in the sense of
+[Demmel and Nguyen 2015](https://doi.org/10.1109/TC.2014.2345391) is
+order-independent without being exact. A correctly rounded result is both.
+
+Non-finite inputs fall back to the plain IEEE sum, so NaN and infinity
+propagate unchanged. An exact zero returns `+0`.
+
+## Cost
+
+The accumulator touches five words per product and clears only the words
+it uses. The overhead on the LJ basin-hopping, Al NEB and Pt dimer workloads
+is measured in the change that introduced it (see the changelog). The exact
+path covers only reductions that feed a decision; elementwise vector updates
+and Eigen's matrix products stay as they are.
+
+## Checks
+
+- `client/validation/exact_reduction_cases.py` writes reference cases from
+  exact rational arithmetic: cancellation, ties, sticky bits, subnormal
+  results, the overflow threshold, and optimizer-shaped vectors.
+  `test_exact_reduction` checks each case bitwise and under 16 permutations.
+- `client/validation/exact_reduction_derivations.py` (sympy) derives the Ozaki
+  slice condition `beta >= (p + log2 n) / 2`, the portable 128-bit product
+  and the accumulator piece split. It also lists the Eigen 3.4 and 5.0 trees
+  for `n = 39`.
+- `client/validation/exact_reduction_bounds.sollya` bounds the plain-sum
+  error, the `norm` error (`1.5 u`) and the accumulator range.
+- `formal/` (Lean 4 and Mathlib, `lake build`) checks four contracts. First,
+  floating-point sums on a common grid are exact in every parenthesisation
+  within the exponent range, so any two orders agree. Second, the Ozaki
+  slice-product condition. Third, the final rounding step is round to
+  nearest, ties to even. Fourth, accumulator words cannot overflow between
+  carry normalisations.
