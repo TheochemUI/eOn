@@ -2,6 +2,7 @@
 ** This file is part of eOn.
 */
 #include "eon/potentials/Rgpot/RgpotPot.h"
+#include "eon/Matter.h"
 #include "eon/Parameters.h"
 #include "eon/PotRegistry.h"
 #include "eon/potentials/Rgpot/RGPotEngine.h"
@@ -423,13 +424,36 @@ bool RgpotPot::supportsBatchEvaluation() const noexcept {
          (impl_->calculatorGroups() > 1 || impl_->keepsOrbitalsPerKey());
 }
 
+void RgpotPot::bindBand(
+    const std::vector<std::shared_ptr<eonc::Matter>> &path) {
+  band_.assign(path.begin(), path.end());
+}
+
 void RgpotPot::forceBatch(long nSystems, long nAtoms,
                           const double *const *positions,
                           const int *const *atomicNrs, double *const *forces,
                           double *energies, double *variances,
                           const double *const *boxes) {
+  if (band_.size() < 2) {
+    forceBatchOwned(nSystems, nAtoms, positions, atomicNrs, forces, energies,
+                    variances, boxes, nullptr);
+    return;
+  }
+  const long images = static_cast<long>(band_.size()) - 2;
+  std::vector<long> owners(static_cast<size_t>(nSystems), -1);
+  for (long j = 0; j < nSystems; j++) {
+    for (size_t i = 0; i < band_.size(); i++) {
+      const auto image = band_[i].lock();
+      if (!image || image->getPositions().data() != positions[j])
+        continue;
+      const long idx = static_cast<long>(i);
+      owners[static_cast<size_t>(j)] =
+          idx == 0 ? images : (idx == images + 1 ? images + 1 : idx - 1);
+      break;
+    }
+  }
   forceBatchOwned(nSystems, nAtoms, positions, atomicNrs, forces, energies,
-                  variances, boxes, nullptr);
+                  variances, boxes, owners.data());
 }
 
 void RgpotPot::forceBatchOwned(long nSystems, long nAtoms,
