@@ -924,42 +924,15 @@ if not readcon_db_dep.found()
     endif
     _readcon_db_sources = [_readcon_db_so]
     if is_windows
-        # link.exe takes the cdylib's import library, which cargo leaves in
-        # its target directory, not the DLL (LNK1181/LNK1107). A generated
-        # source that depends on the cargo target orders the link after it.
-        _readcon_db_link = [
-            fs.parent(_readcon_db_so.full_path()) / 'cargo-target'
-            / (get_option('buildtype') == 'debug' ? 'debug' : 'release')
-            / 'readcon_db.dll.lib',
-        ]
-        # The loader looks beside the executable first; the tests run from
-        # this directory, as with readcon_core.dll above.
-        custom_target(
-            'readcon-db-dll-beside-tests',
-            input: _readcon_db_so,
-            output: 'readcon_db.dll',
-            command: [
-                py,
-                '-c',
-                'import shutil, sys; shutil.copyfile(sys.argv[1], sys.argv[2])',
-                '@INPUT@',
-                '@OUTPUT@',
-            ],
-            build_by_default: true,
-        )
-        _readcon_db_sources = [
-            custom_target(
-                'readcon-db-order',
-                output: 'readcon_db_order.c',
-                command: [
-                    py,
-                    meson.project_source_root() / 'scripts' / 'meson_order_stamp.py',
-                    '@OUTPUT@',
-                    'eon_readcon_db_order',
-                ],
-                depends: [readcon_db_proj.get_variable('readcon_cargo')],
-            ),
-        ]
+        # The mirror is POSIX-only: ReadconDbMirror.cpp names rkrdb_open and
+        # dlopens the library only off _WIN32, so Windows links no
+        # readcon-db. Its DLL re-exports readcon-core's C ABI; on the link
+        # line beside readcon-core it bound those names to a second copy
+        # (LNK2005 against the static archive, crashes on frames passed
+        # between the two DLLs).
+        _readcon_db_order = []
+        _readcon_db_link = []
+        _readcon_db_sources = []
     endif
     readcon_db_dep = declare_dependency(
         link_with: _readcon_db_order,
@@ -2220,7 +2193,6 @@ if get_option('with_tests')
         ['test_piqtst', 'PIQTSTTest.cpp', '', 120],
         ['strparse_run', 'StringHelpersTest.cpp', ''],
         ['test_matter', 'MatterTest.cpp', 'neb_morse'],
-        ['test_readcon_db_mirror', 'ReadconDbMirrorTest.cpp', 'neb_morse'],
         # The cubic rate at 600 beads, and its half-ring comparison, run
         # past the default 30s.
         ['test_tunneling', 'TunnelingTest.cpp', '', 1200],
@@ -2287,6 +2259,10 @@ if get_option('with_tests')
         # BSD sockets (arpa/inet.h); SocketNWChem is not built on Windows.
         test_array += [
             ['test_socket_nwchem_listen', 'SocketNWChemListenTest.cpp', ''],
+        ]
+        # The readcon-db mirror is POSIX-only (ReadconDbMirror.cpp).
+        test_array += [
+            ['test_readcon_db_mirror', 'ReadconDbMirrorTest.cpp', 'neb_morse'],
         ]
     endif
     # Fortran potential tests: require Fortran shared libs at runtime
