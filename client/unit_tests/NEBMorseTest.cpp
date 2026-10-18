@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
+#include "../ForEachImage.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/ConFileIO.h"
@@ -28,6 +29,7 @@
 #include <set>
 #include <stdexcept>
 #include <thread>
+#include <tuple>
 #include <vector>
 
 namespace tests {
@@ -1177,6 +1179,52 @@ TEST_CASE("makeImagePotential charges the registry of the potential it copies",
   }
   REQUIRE(local.total_force_calls() == 1);
   REQUIRE(proc.total_force_calls() == procBefore);
+}
+
+TEST_CASE_METHOD(NEBLJFixture,
+                 "NEB on the image pool reproduces the serial band bit for bit",
+                 "[neb][parallel][regression]") {
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 30;
+  ParametersLoadAccess::neb_options(params).max_iterations = 30;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 1e-12;
+  auto run =
+      [&](bool parallel,
+          std::shared_ptr<eonc::helpers::test::PerImageLJ::Threads> threads) {
+        ParametersLoadAccess::main_options(params).parallel = parallel;
+        PotRegistry local;
+        auto perImage =
+            std::make_shared<eonc::helpers::test::PerImageLJ>(threads, local);
+        auto r = std::make_shared<Matter>(*reactant);
+        auto p = std::make_shared<Matter>(*product);
+        r->setPotential(perImage);
+        p->setPotential(perImage);
+        NudgedElasticBand neb(r, p, params, perImage);
+        static_cast<void>(neb.compute());
+        std::vector<AtomMatrix> positions;
+        std::vector<double> energies;
+        for (long i = 0; i <= neb.numImages + 1; ++i) {
+          positions.push_back(neb.path[i]->getPositions());
+          energies.push_back(neb.path[i]->getPotentialEnergy());
+        }
+        return std::make_tuple(positions, energies, local.total_force_calls(),
+                               neb.lastIteration());
+      };
+  auto serialThreads =
+      std::make_shared<eonc::helpers::test::PerImageLJ::Threads>();
+  auto poolThreads =
+      std::make_shared<eonc::helpers::test::PerImageLJ::Threads>();
+  const auto [sPos, sE, sCalls, sIter] = run(false, serialThreads);
+  const auto [pPos, pE, pCalls, pIter] = run(true, poolThreads);
+  REQUIRE(sIter == pIter);
+  REQUIRE(sCalls == pCalls);
+  for (size_t i = 0; i < sPos.size(); ++i) {
+    REQUIRE(sPos[i] == pPos[i]);
+    REQUIRE(sE[i] == pE[i]);
+  }
+  REQUIRE(serialThreads->ids.size() == 1);
+  if (eonc::detail::ImagePool::instance().threads() > 0) {
+    REQUIRE(poolThreads->ids.size() > 1);
+  }
 }
 
 } /* namespace tests */

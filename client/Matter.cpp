@@ -16,14 +16,18 @@
 #include "eon/GeometryAnalysis.h"
 #include "eon/HelperFunctions.h"
 #include "eon/Parameters.h"
+#include "eon/PotCapabilities.h"
 #include "eon/SurrogatePotential.h"
 
+#include "ForEachImage.h"
 #include "eon/EonLogger.h"
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <span>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace eonc {
 
@@ -951,7 +955,31 @@ void Matter::restoreFileForces(const AtomMatrix &fileForces, bool trustEnergy,
   }
 }
 
-void evaluateTogether(Potential &pot, std::span<Matter *const> systems) {
+namespace {
+
+// True when the systems can compute at the same time: every instance that
+// two of them share is safe to share between threads.
+bool concurrentSafe(const std::vector<Matter *> &systems) {
+  std::vector<const Potential *> seen;
+  seen.reserve(systems.size());
+  for (Matter *m : systems) {
+    const Potential *p = m->getPotential().get();
+    if (p == nullptr) {
+      return false;
+    }
+    if (std::find(seen.begin(), seen.end(), p) == seen.end()) {
+      seen.push_back(p);
+    } else if (!eonc::potAllowsSharedInstance(*p)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+} // namespace
+
+void evaluateTogether(Potential &pot, std::span<Matter *const> systems,
+                      bool threads) {
   std::vector<Matter *> dirty;
   for (Matter *m : systems) {
     if (m != nullptr && m->needsForceUpdate()) {
@@ -962,6 +990,12 @@ void evaluateTogether(Potential &pot, std::span<Matter *const> systems) {
     return;
   }
   if (dirty.size() == 1 || !pot.supportsBatchEvaluation()) {
+    if (threads && dirty.size() > 1 && concurrentSafe(dirty)) {
+      eonc::forEachImage(static_cast<long>(dirty.size()), [&dirty](long i) {
+        dirty[static_cast<size_t>(i - 1)]->getForcesRaw();
+      });
+      return;
+    }
     for (Matter *m : dirty) {
       m->getForcesRaw();
     }

@@ -13,11 +13,13 @@
 #include "TestUtils.hpp"
 #include "eon/HelperFunctions.h"
 
+#include "../ForEachImage.h"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/ForceNorm.h"
 #include "eon/MonteCarlo.h"
 #include "eon/OHTSTJob.h"
 #include "eon/Parameters.h"
+#include "eon/PotCapabilities.h"
 #include "eon/Potential.h"
 #include "eon/Prefactor.h"
 #include <algorithm>
@@ -26,6 +28,7 @@
 #include <limits>
 #include <memory>
 #include <stdexcept>
+#include <thread>
 #include <vector>
 
 using namespace Catch::Matchers;
@@ -801,6 +804,83 @@ TEST_CASE("maxForce skips fully fixed atoms and keeps partial atoms",
   REQUIRE(m1->maxFreeAtomForce(raw) == Catch::Approx(1.0).margin(1e-12));
   AtomMatrix bad(n + 1, 3);
   REQUIRE_THROWS_AS(m1->maxFreeAtomForce(bad), std::invalid_argument);
+}
+
+namespace {
+
+std::vector<std::shared_ptr<Matter>>
+ljPairs(const std::vector<std::shared_ptr<Potential>> &pots,
+        const Parameters &params) {
+  std::vector<std::shared_ptr<Matter>> systems;
+  for (size_t k = 0; k < pots.size(); ++k) {
+    auto m = std::make_shared<Matter>(pots[k], params);
+    m->resize(2);
+    m->setAtomicNrs(Eigen::VectorXi::Constant(2, 1));
+    m->setPeriodic(false);
+    AtomMatrix pos = AtomMatrix::Zero(2, 3);
+    pos(1, 0) = 1.0 + 0.05 * static_cast<double>(k);
+    pos(1, 1) = 0.1 * static_cast<double>(k);
+    m->setPositions(pos);
+    systems.push_back(std::move(m));
+  }
+  return systems;
+}
+
+std::vector<Matter *> raw(const std::vector<std::shared_ptr<Matter>> &v) {
+  std::vector<Matter *> out;
+  for (const auto &m : v) {
+    out.push_back(m.get());
+  }
+  return out;
+}
+
+} // namespace
+
+TEST_CASE("evaluateTogether on the image pool gives each system its serial "
+          "result",
+          "[MatterTest][parallel]") {
+  using eonc::helpers::test::PerImageLJ;
+  Parameters params;
+  auto serialThreads = std::make_shared<PerImageLJ::Threads>();
+  auto poolThreads = std::make_shared<PerImageLJ::Threads>();
+  std::vector<std::shared_ptr<Potential>> serialPots, poolPots;
+  for (int k = 0; k < 8; ++k) {
+    serialPots.push_back(std::make_shared<PerImageLJ>(serialThreads));
+    poolPots.push_back(std::make_shared<PerImageLJ>(poolThreads));
+  }
+  auto serial = ljPairs(serialPots, params);
+  auto pooled = ljPairs(poolPots, params);
+  const auto serialRaw = raw(serial);
+  const auto pooledRaw = raw(pooled);
+  eonc::evaluateTogether(*serialPots.front(), serialRaw, false);
+  eonc::evaluateTogether(*poolPots.front(), pooledRaw, true);
+  for (size_t k = 0; k < serial.size(); ++k) {
+    REQUIRE_FALSE(pooled[k]->needsForceUpdate());
+    REQUIRE(pooled[k]->getForceCalls() == 1);
+    REQUIRE(pooled[k]->getPotentialEnergy() == serial[k]->getPotentialEnergy());
+    REQUIRE(pooled[k]->getForces() == serial[k]->getForces());
+  }
+  REQUIRE(serialThreads->ids.size() == 1);
+  if (eonc::detail::ImagePool::instance().threads() > 0) {
+    REQUIRE(poolThreads->ids.size() > 1);
+  }
+}
+
+TEST_CASE("evaluateTogether keeps an instance unsafe to share on one thread",
+          "[MatterTest][parallel]") {
+  using eonc::helpers::test::PerImageLJ;
+  Parameters params;
+  auto threads = std::make_shared<PerImageLJ::Threads>();
+  auto shared = std::make_shared<PerImageLJ>(threads);
+  REQUIRE_FALSE(eonc::potAllowsSharedInstance(*shared));
+  std::vector<std::shared_ptr<Potential>> pots(8, shared);
+  auto systems = ljPairs(pots, params);
+  eonc::evaluateTogether(*shared, raw(systems), true);
+  for (const auto &m : systems) {
+    REQUIRE_FALSE(m->needsForceUpdate());
+  }
+  REQUIRE(threads->ids.size() == 1);
+  REQUIRE(*threads->ids.begin() == std::this_thread::get_id());
 }
 
 } /* namespace tests */

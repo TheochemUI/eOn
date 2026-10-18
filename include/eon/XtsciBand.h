@@ -50,6 +50,8 @@ private:
   std::vector<double> m_cell;
   std::vector<AtomMatrix> m_fixed;
   double m_maxMove{0.2};
+  // [Main] parallel: the surface evaluates its images on the image pool.
+  bool m_threads{false};
 };
 
 } // namespace eonc

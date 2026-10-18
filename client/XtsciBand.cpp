@@ -150,8 +150,10 @@ int xtsciBandSurface(void *user, void *request) {
       carried.push_back(neb->path[i].get());
     }
     // One batch for every carried image, so calculator groups or a batched
-    // model take them together; a serial potential evaluates them in turn.
-    eonc::evaluateTogether(*carried.front()->getPotential(), carried);
+    // model take them together. Otherwise the images compute on the image
+    // pool with [Main] parallel, else in turn.
+    eonc::evaluateTogether(*carried.front()->getPotential(), carried,
+                           self->m_threads);
     for (int64_t r = 0; r < rows; ++r) {
       Matter &image = *carried[static_cast<size_t>(r)];
       req->energies[r] = image.getPotentialEnergy();
@@ -170,7 +172,8 @@ int xtsciBandSurface(void *user, void *request) {
 
 XtsciBand::XtsciBand(NudgedElasticBand &neb, const Parameters &params)
     : m_neb{&neb},
-      m_maxMove{params.optimizer_options().max_move} {
+      m_maxMove{params.optimizer_options().max_move},
+      m_threads{params.main_options().parallel} {
   rgsaddle_version_t stamp{};
   checkStatus(rgsaddle_abi_stamp(&stamp), "rgsaddle_abi_stamp");
   if (stamp.major != RGSADDLE_ABI_MAJOR) {
