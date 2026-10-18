@@ -125,6 +125,22 @@ public:
     }
   }
 
+  // Adds another accumulator's exact value to this one. Both are folded
+  // first, so every word stays far inside 64 bits.
+  void absorb(Accumulator &o) {
+    if (o.m_hi <= o.m_lo) {
+      return;
+    }
+    fold();
+    o.fold();
+    if (o.m_lo < m_lo || o.m_hi > m_hi) {
+      clear(o.m_lo, o.m_hi);
+    }
+    for (int k = o.m_lo; k < o.m_hi; ++k) {
+      m_w[static_cast<std::size_t>(k)] += o.m_w[static_cast<std::size_t>(k)];
+    }
+  }
+
   double round() {
     const int64_t sign = normalize();
     if (m_hi <= m_lo) {
@@ -255,8 +271,14 @@ private:
 
 } // namespace
 
+// Consecutive products usually land on the same words, so one accumulator
+// chains a read-modify-write through memory per product. Four accumulators
+// take the products in turn and break that chain; integer addition makes
+// the split invisible in the result.
+constexpr std::size_t kLanes = 4;
+
 double dot(const double *x, const double *y, std::size_t n) {
-  Accumulator acc;
+  std::array<Accumulator, kLanes> acc;
   for (std::size_t i = 0; i < n; ++i) {
     Decoded a;
     Decoded b;
@@ -270,12 +292,17 @@ double dot(const double *x, const double *y, std::size_t n) {
     uint64_t hi;
     uint64_t lo;
     mul64(a.m, b.m, hi, lo);
-    acc.add(hi, lo, a.e + b.e, a.neg != b.neg);
+    acc[i % kLanes].add(hi, lo, a.e + b.e, a.neg != b.neg);
     if ((i + 1) % kNormalizeEvery == 0) [[unlikely]] {
-      acc.fold();
+      for (auto &lane : acc) {
+        lane.fold();
+      }
     }
   }
-  return acc.round();
+  for (std::size_t k = 1; k < kLanes; ++k) {
+    acc[0].absorb(acc[k]);
+  }
+  return acc[0].round();
 }
 
 double orderedDot(const double *x, const double *y, std::size_t n) {
