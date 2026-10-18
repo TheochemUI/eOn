@@ -32,10 +32,9 @@ namespace eonc {
 class BondBoost;
 class Parameters;
 
-// Position / difference MIC conventions (issue #176). Legacy matches historical
-// applyPeriodicBoundary (fmod to [0,1) fractional). MinimumImage matches the
-// existing eonc::pbc::apply path used for interatomic distances (frac in
-// [-0.5,0.5)).
+// Absolute positions use either fractional [0,1) or centered [-0.5,0.5)
+// representatives. Euclidean closest-image differences are independent of
+// this position convention.
 enum class PbcConvention {
   Legacy = 0,
   MinimumImage = 1,
@@ -43,14 +42,14 @@ enum class PbcConvention {
 
 namespace pbc {
 
-// Minimum-image on a difference vector (fractional in [-0.5, 0.5)).
+// Euclidean closest image of each Cartesian difference.
 inline AtomMatrix apply(const AtomMatrix &diff, const Matrix3d &cell,
                         const Matrix3d &cellInverse) {
-  // Fractional coordinates, minimum-image wrap to [-0.5, 0.5), back to
-  // Cartesian. x - floor(x + 0.5), Highway when the build has it.
-  AtomMatrix frac = diff * cellInverse;
-  wrapMinimumImage(frac.data(), static_cast<size_t>(frac.size()));
-  return frac * cell;
+  static_cast<void>(cellInverse);
+  AtomMatrix image = diff;
+  closestDisplacements(image.data(), static_cast<size_t>(image.size()),
+                       cell.data());
+  return image;
 }
 
 // Legacy position wrap: fractional coords into [0, 1) via fmod (historical
@@ -68,7 +67,9 @@ inline AtomMatrix applyPositions(const AtomMatrix &coords, const Matrix3d &cell,
                                  const Matrix3d &cellInverse,
                                  PbcConvention convention) {
   if (convention == PbcConvention::MinimumImage) {
-    return apply(coords, cell, cellInverse);
+    AtomMatrix frac = coords * cellInverse;
+    wrapMinimumImage(frac.data(), static_cast<size_t>(frac.size()));
+    return frac * cell;
   }
   return applyLegacy(coords, cell, cellInverse);
 }
