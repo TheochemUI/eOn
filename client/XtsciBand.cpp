@@ -26,8 +26,40 @@
 namespace eonc {
 
 int xtsciBandSurface(void *user, void *request);
+int xtsciSolidBandSurface(void *user, void *request);
 
 namespace {
+
+#if RGSADDLE_ABI_MINOR >= 17
+// Forward from the C callback to the friend that reads the band.
+rgsaddle_status_t solidSurfaceCallback(void *user,
+                                       rgsaddle_solid_surface_request_t *req) {
+  auto *self = static_cast<XtsciBand *>(user);
+  return static_cast<rgsaddle_status_t>(
+      self == nullptr ? RGSADDLE_SURFACE_FAILED
+                      : xtsciSolidBandSurface(self, req));
+}
+
+// rgsaddle cells are row-major with rows the lattice vectors, as eOn's
+// cell rows are; Eigen stores a Matrix3d column-major.
+void cellToRowMajor(const Matrix3d &cell, double *out) {
+  for (int r = 0; r < 3; ++r) {
+    for (int c = 0; c < 3; ++c) {
+      out[3 * r + c] = cell(r, c);
+    }
+  }
+}
+
+Matrix3d cellFromRowMajor(const double *in) {
+  Matrix3d cell;
+  for (int r = 0; r < 3; ++r) {
+    for (int c = 0; c < 3; ++c) {
+      cell(r, c) = in[3 * r + c];
+    }
+  }
+  return cell;
+}
+#endif
 
 rgsaddle_status_t surfaceCallback(void *user, rgsaddle_surface_request_t *req) {
   auto *self = static_cast<XtsciBand *>(user);
@@ -194,6 +226,76 @@ int xtsciBandSurface(void *user, void *request) {
   }
 }
 
+int xtsciSolidBandSurface(void *user, void *request) {
+#if RGSADDLE_ABI_MINOR >= 17
+  auto *self = static_cast<XtsciBand *>(user);
+  auto *req = static_cast<rgsaddle_solid_surface_request_t *>(request);
+  if (self == nullptr || req == nullptr || req->positions == nullptr ||
+      req->cells == nullptr || req->energies == nullptr ||
+      req->gradients == nullptr || req->stresses == nullptr) {
+    return RGSADDLE_SURFACE_FAILED;
+  }
+  try {
+    auto *neb = self->m_neb;
+    const auto band = static_cast<int64_t>(neb->numImages + 2);
+    const auto nAtoms = static_cast<int64_t>(neb->atoms);
+    if (req->version.major != RGSADDLE_ABI_MAJOR) {
+      return RGSADDLE_ABI_MISMATCH;
+    }
+    if (req->n_atoms != nAtoms) {
+      return RGSADDLE_SHAPE;
+    }
+    int64_t rows = 0;
+    int64_t first = 0;
+    if ((req->flags & RGSADDLE_REQ_ONE_IMAGE) != 0) {
+      if (req->n_images != band || req->image < 0 || req->image >= band) {
+        return RGSADDLE_SHAPE;
+      }
+      rows = 1;
+      first = req->image;
+    } else if (req->n_images == band) {
+      rows = band;
+    } else if (req->n_images == band - 2) {
+      rows = band - 2;
+      first = 1;
+    } else {
+      return RGSADDLE_SHAPE;
+    }
+    const auto dof = static_cast<Eigen::Index>(3 * nAtoms);
+    for (int64_t r = 0; r < rows; ++r) {
+      const auto i = static_cast<size_t>(first + r);
+      Matter &image = *neb->path[i];
+      const Matrix3d cell = cellFromRowMajor(req->cells + 9 * r);
+      AtomMatrix pos = AtomMatrix::Map(req->positions + r * dof, nAtoms, 3);
+      if (i < self->m_fixed.size()) {
+        pinRows(self->m_fixed[i], image, &pos);
+      }
+      if (image.getCell() != cell) {
+        image.setCell(cell);
+      }
+      moveTo(image, pos);
+      // One image at a time: Matter keeps the stress that came with its
+      // own force call, so the stress read below costs no second call.
+      const AtomMatrix &force = image.getForces();
+      req->energies[r] = image.getPotentialEnergy();
+      double *grad = req->gradients + r * dof;
+      const double *src = force.data();
+      for (Eigen::Index k = 0; k < dof; ++k) {
+        grad[k] = -src[k];
+      }
+      cellToRowMajor(image.cauchyStress(), req->stresses + 9 * r);
+    }
+    return RGSADDLE_OK;
+  } catch (...) {
+    return RGSADDLE_SURFACE_FAILED;
+  }
+#else
+  (void)user;
+  (void)request;
+  return RGSADDLE_SURFACE_FAILED;
+#endif
+}
+
 XtsciBand::XtsciBand(NudgedElasticBand &neb, const Parameters &params)
     : m_neb{&neb},
       m_maxMove{params.optimizer_options().max_move},
@@ -214,7 +316,14 @@ XtsciBand::XtsciBand(NudgedElasticBand &neb, const Parameters &params)
   }
   rgsaddle_band_config_t config{};
   config.version = RGSADDLE_VERSION_INIT;
+  // eOn removes the mean force of an image only when every atom is free
+  // (eonc::neb::zeroTranslation). With a fixed atom the mean stays, so the
+  // session never pushes fixed atoms that the host pins back after the step.
   config.flags = 0;
+  if (!neb.path.empty() &&
+      neb.path[0]->numberOfFreeAtoms() < neb.path[0]->numberOfAtoms()) {
+    config.flags |= RGSADDLE_BAND_KEEP_TRANSLATION;
+  }
   config.tangent = tangentKind(nebOpt);
   config.spring = springKind(nebOpt);
   config.projection = projectionKind(nebOpt);
@@ -224,15 +333,22 @@ XtsciBand::XtsciBand(NudgedElasticBand &neb, const Parameters &params)
                         : nebOpt.spring.constant;
   config.spring_ks = m_springKs.empty() ? nullptr : m_springKs.data();
   if (nebOpt.climbing_image.enabled) {
+#if RGSADDLE_ABI_MINOR >= 17
+    // eOn's ci_after and ci_after_rel as given; either may be 0.
+    config.flags |= RGSADDLE_BAND_CI_AFTER;
+    config.ci_trigger_factor = nebOpt.climbing_image.trigger_factor;
+#else
     config.ci_trigger_factor = nebOpt.climbing_image.trigger_factor > 0.0
                                    ? nebOpt.climbing_image.trigger_factor
                                    : 1.0e-300;
+#endif
     config.ci_trigger_force = nebOpt.climbing_image.trigger_force;
   } else {
     config.ci_trigger_factor = 0.0;
     config.ci_trigger_force = 0.0;
   }
-  if (!neb.path.empty() && neb.path[0]->getPeriodic()) {
+  m_solid = neb.solidState();
+  if (!m_solid && !neb.path.empty() && neb.path[0]->getPeriodic()) {
     const Matrix3d cell = neb.path[0]->getCell();
     m_cell.assign(cell.data(), cell.data() + 9);
     config.cell = m_cell.data();
@@ -246,6 +362,31 @@ XtsciBand::XtsciBand(NudgedElasticBand &neb, const Parameters &params)
     const AtomMatrix &pos = neb.path[i]->getPositions();
     std::copy(pos.data(), pos.data() + pos.size(),
               positions.begin() + static_cast<std::ptrdiff_t>(i * pos.size()));
+  }
+  if (m_solid) {
+#if RGSADDLE_ABI_MINOR >= 17
+    // Each image keeps its cell; prepareSolidState already put every cell
+    // in lower-triangular form, which rgsaddle requires.
+    std::vector<double> cells(static_cast<size_t>(nImages * 9), 0.0);
+    for (int64_t i = 0; i < nImages; ++i) {
+      cellToRowMajor(neb.path[i]->getCell(), cells.data() + 9 * i);
+    }
+    const auto &solid = nebOpt.solid_state;
+    m_band = rgsaddle_band_create_solid(&config, nImages, nAtoms,
+                                        positions.data(), cells.data(),
+                                        solid.pressure, solid.weight);
+    if (m_band == nullptr) {
+      throw std::runtime_error("rgsaddle_band_create_solid failed");
+    }
+    return;
+#else
+    throw std::runtime_error(
+        "solid_state NEB on the rgsaddle band needs rgsaddle ABI minor 17 "
+        "or newer (built against minor " +
+        std::to_string(RGSADDLE_ABI_MINOR) +
+        "); the older band keeps every cell fixed. Use a newer rgsaddle or "
+        "an eOn optimizer for opt_method");
+#endif
   }
   m_band = rgsaddle_band_create(&config, nImages, nAtoms, positions.data());
   if (m_band == nullptr) {
@@ -292,6 +433,10 @@ void XtsciBand::step(double maxMove) {
   if (maxMove > 0.0) {
     m_maxMove = maxMove;
   }
+  if (m_solid) {
+    stepSolid();
+    return;
+  }
   const auto nImages = static_cast<int64_t>(m_neb->numImages + 2);
   m_fixed.resize(static_cast<size_t>(nImages));
   forImages(nImages, [&](int64_t i) {
@@ -316,9 +461,9 @@ void XtsciBand::step(double maxMove) {
   std::vector<double> positions(m_fixed.size() * static_cast<size_t>(dof), 0.0);
   checkStatus(rgsaddle_band_positions(m_band, positions.data()),
               "rgsaddle_band_positions");
-  if (report.ci_index >= 0) {
-    m_neb->climbingImage = report.ci_index;
-  }
+  // The session reports -1 until an image climbs; the host then holds no
+  // climbing image either, so its convergence test reads the whole band.
+  m_neb->climbingImage = report.ci_index > 0 ? report.ci_index : 0;
   const int64_t interior = nImages - 2;
 #if RGSADDLE_ABI_MINOR >= 5
   // The session's evaluation of the accepted band and its projected force.
@@ -363,12 +508,53 @@ void XtsciBand::step(double maxMove) {
 #if RGSADDLE_ABI_MINOR >= 5
   if (haveProjection) {
     // The session already projected the force. The host convergence
-    // check reads that force and does not rebuild it.
+    // check reads that force and does not rebuild it, so the highest
+    // image (sp.con), the climbing image and the tangents (neb.dat) are
+    // refreshed here from the accepted band.
+    m_neb->adoptSessionProjection(report.ci_index);
     m_neb->movedAfterForceCall = false;
     return;
   }
 #endif
   m_neb->movedAfterForceCall = true;
+}
+
+void XtsciBand::stepSolid() {
+#if RGSADDLE_ABI_MINOR >= 17
+  const auto nImages = static_cast<int64_t>(m_neb->numImages + 2);
+  const auto nAtoms = static_cast<int64_t>(m_neb->atoms);
+  m_fixed.resize(static_cast<size_t>(nImages));
+  for (int64_t i = 0; i < nImages; ++i) {
+    m_fixed[static_cast<size_t>(i)] = m_neb->path[i]->getPositions();
+  }
+  rgsaddle_report_t report{};
+  checkStatus(rgsaddle_band_step_solid(m_band, solidSurfaceCallback, this,
+                                       &report),
+              "rgsaddle_band_step_solid");
+  const auto dof = static_cast<std::ptrdiff_t>(3 * nAtoms);
+  std::vector<double> positions(static_cast<size_t>(nImages * dof));
+  std::vector<double> cells(static_cast<size_t>(nImages * 9));
+  checkStatus(rgsaddle_band_positions(m_band, positions.data()),
+              "rgsaddle_band_positions");
+  checkStatus(rgsaddle_band_cells(m_band, cells.data()), "rgsaddle_band_cells");
+  for (int64_t i = 1; i + 1 < nImages; ++i) {
+    Matter &image = *m_neb->path[static_cast<size_t>(i)];
+    AtomMatrix pos =
+        AtomMatrix::Map(positions.data() + i * dof, m_neb->atoms, 3);
+    pinRows(m_fixed[static_cast<size_t>(i)], image, &pos);
+    const Matrix3d cell = cellFromRowMajor(cells.data() + 9 * i);
+    if (image.getCell() != cell) {
+      image.setCell(cell);
+    }
+    moveTo(image, pos);
+  }
+  if (report.ci_index >= 0) {
+    m_neb->climbingImage = report.ci_index;
+  }
+  // eOn's convergence force reads its own joint projection of the moved
+  // band (projectedForce and projectedCellForce); rebuild it there.
+  m_neb->movedAfterForceCall = true;
+#endif
 }
 
 bool XtsciBand::sessionMatchesPath() const {
