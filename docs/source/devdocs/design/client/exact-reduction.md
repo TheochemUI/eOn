@@ -71,11 +71,23 @@ propagate unchanged. An exact zero returns `+0`.
 
 ## Cost
 
-The accumulator touches five words per product and clears only the words
-it uses. The overhead on the LJ basin-hopping, Al NEB and Pt dimer workloads
-is measured in the change that introduced it (see the changelog). The exact
-path covers only reductions that feed a decision; elementwise vector updates
-and Eigen's matrix products stay as they are.
+Measured on one Xeon Platinum 8358 node (Elja, gcc 15.3, Eigen 5.0.1), with
+run directories on local disk, one warm-up run, then five interleaved runs;
+the table gives medians.
+
+| workload                           | before (s) | after (s) | change |
+|------------------------------------|-----------:|----------:|-------:|
+| LJ13 basin hopping, L-BFGS, 200 steps |      0.221 |     0.241 |   +9 % |
+| basin-hopping example, CG          |      2.58  |     2.18  | within noise |
+| Al NEB, 7 images, L-BFGS           |      0.957 |     0.998 |   +4 % |
+| Pt saddle search, dimer            |      0.267 |     0.269 |   +1 % |
+
+LJ13 has the cheapest force call of the four, so it shows the largest
+relative cost. The trajectories differ from the old ones (14469 against
+14348 force calls for LJ13), so part of each change is a different path,
+not overhead. In isolation, `dot` costs 3.4 ns per term at n = 39 and 1.0 ns
+per term at n = 1008, against 0.6 and 0.2 ns for Eigen; `orderedDot` matches
+Eigen at n = 39 and costs 1.9 times as much at n = 1008.
 
 ## Checks
 
