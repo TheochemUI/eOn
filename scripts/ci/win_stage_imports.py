@@ -31,6 +31,7 @@ _SYSTEM = {
     "msvcrt.dll",
     "ucrtbase.dll",
     "ntdll.dll",
+    "bcryptprimitives.dll",
 }
 
 
@@ -99,17 +100,21 @@ def stage(dll: Path, search: list[Path], stamp: Path) -> None:
             if _system(name):
                 continue
             target = dest / name
-            if target.is_file():
-                continue
-            source = next(
-                (d / name for d in search if (d / name).is_file()),
-                None,
-            )
-            if source is None:
-                print(f"win_stage_imports: {name} not in search path", file=sys.stderr)
-                continue
-            shutil.copy2(source, target)
-            copied.append(name)
+            # An import that is already beside the engine still has its own
+            # imports. Walking only newly copied files leaves those behind.
+            if not target.is_file():
+                source = next(
+                    (d / name for d in search if (d / name).is_file()),
+                    None,
+                )
+                if source is None:
+                    print(
+                        f"win_stage_imports: {name} not in search path",
+                        file=sys.stderr,
+                    )
+                    continue
+                shutil.copy2(source, target)
+                copied.append(name)
             queue.append(target)
     stamp.write_text("\n".join(copied) + "\n", encoding="utf-8")
 

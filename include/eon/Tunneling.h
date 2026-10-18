@@ -24,6 +24,7 @@
 #include "PhysicalQuadraticBath.h"
 
 #include <array>
+#include <cstdint>
 #include <functional>
 #include <limits>
 #include <memory>
@@ -313,7 +314,8 @@ struct RateInstantonOptions {
   /// Active coordinates at or below this take the Newton step. Zero keeps
   /// minimum-mode following. The step solves through the block chain, so
   /// the default admits every size a batch potential can evaluate.
-  long newtonLimit = std::numeric_limits<long>::max();
+  /// int64, not long, so the Windows default matches the 64-bit maximum.
+  std::int64_t newtonLimit = std::numeric_limits<std::int64_t>::max();
   /// Where the bead Hessian blocks start: "saddle" copies the saddle's
   /// Hessian to every bead and lets the Bofill update carry it, at no force
   /// calls; "finite_difference" takes 2 f gradient calls per bead first.

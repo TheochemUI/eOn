@@ -1271,7 +1271,8 @@ Instanton:
             default: 0.0001
 
         # Maximum active ring coordinates for dense Newton; 0 selects
-        # the matrix-free dimer. Default LONG_MAX on the supported LP64 build.
+        # the matrix-free dimer. The default is the 64-bit maximum.
+        # Windows long is 32 bits, so this is not LONG_MAX there.
         newton_limit:
             kind: int
             default: 9223372036854775807

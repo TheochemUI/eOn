@@ -96,8 +96,8 @@ def _extract_schema_models() -> dict[str, dict[str, dict[str, Any]]]:
 def _default_value(node: ast.expr) -> Any:
     """A Field default: a literal, or an expression over the struct module.
 
-    InstantonConfig.newton_limit defaults to the platform LONG_MAX, written
-    as an expression of struct.calcsize("l") so it matches the C++ long.
+    InstantonConfig.newton_limit is the 64-bit maximum. Windows long is
+    32 bits, so the default is not struct.calcsize("l").
     """
     try:
         return ast.literal_eval(node)

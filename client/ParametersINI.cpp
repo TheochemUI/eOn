@@ -1804,7 +1804,7 @@ int load_ini(const INIReader &ini, Parameters &params) {
                                   o.initial_hessians);
     }
     o.newton_limit =
-        ini.GetInteger("Instanton", "newton_limit", o.newton_limit);
+        ini.GetInteger64("Instanton", "newton_limit", o.newton_limit);
     if (o.newton_limit < 0) {
       throw std::invalid_argument(
           "[Instanton] newton_limit must be nonnegative");

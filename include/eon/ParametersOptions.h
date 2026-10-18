@@ -860,7 +860,9 @@ struct instanton_options_t {
   // takes 2 f gradient calls per bead first.
   std::string initial_hessians{"saddle"};
   // Maximum active coordinates for dense Newton; zero selects the dimer.
-  long newton_limit{std::numeric_limits<long>::max()};
+  // int64, not long: Windows long is 32 bits, and this default is the
+  // 64-bit maximum on every platform.
+  std::int64_t newton_limit{std::numeric_limits<std::int64_t>::max()};
   // Directional Lanczos displacement, sqrt(amu) Angstrom.
   double lanczos_step{1e-4};
   std::string reactant_hessian_filename{};

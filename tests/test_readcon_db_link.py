@@ -25,18 +25,28 @@ def test_wrap_revision_matches_the_python_package():
     assert f"revision = v{pin}" in text
     assert "https://github.com/lode-org/readcon-db.git" in text
     meson = MESON.read_text(encoding="utf-8")
-    core = meson.split("readcon_dep = dependency(", 1)[1].split("if not readcon_dep.found()", 1)[0]
+    # readcon-core is resolved with minimage and linkcell: all three
+    # pkg-config deps, or all three wraps. The C ABI is one umbrella
+    # staticlib, so the client never links libreadcon_core.a.
+    assert "readcon_dep = _rkr_pc" in meson
+    assert "readcon_dep = subproject(" in meson
+    assert "'readcon-core'" in meson
+    assert "version: '>=0.16.0'" in meson
+    assert "eon_rust_abi" in meson
+    assert "libreadcon_core" not in meson
     db = meson.split("readcon_db_dep = dependency(", 1)[1].split(
         "if not readcon_db_dep.found()", 1
     )[0]
-    assert "'readcon-core'" in core
     assert "'readcon-db'" in db
-    assert "subproject(\n        'readcon-db'" in meson or "subproject(\n    'readcon-db'" in meson
-    assert f"'readcon-db',\n    version: '>={pin}'" in meson
+    assert f"version: '>={pin}'" in db
+    assert "subproject(\n        'readcon-db'" in meson
+    assert f"'readcon-db',\n        version: '>={pin}'" in meson
     assert "'-lreadcon_db'" not in meson
-    fallback = meson.split("if not readcon_db_dep.found()", 1)[1].split("else", 1)[0]
-    assert "link_with: _readcon_db_order" in fallback
-    assert "_readcon_db_order = [_readcon_db_so]" in fallback
+    # The wrap fallback keeps the cdylib. MSVC links the import library
+    # rustc writes beside the DLL, not the DLL itself.
+    assert "_readcon_db_link_with = [_readcon_db_so]" in meson
+    assert "link_with: _readcon_db_link_with" in meson
+    assert "readcon_db.dll.lib" in meson
 
 
 def test_missing_library_leaves_iostatus_and_fails_the_check():

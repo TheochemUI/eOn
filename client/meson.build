@@ -2340,11 +2340,13 @@ if get_option('with_tests')
     _test_env.set('EON_TEST_SYSTEMS_DIR', _systems_dir)
     _test_env.set('EONCLIENT', ec.full_path())
     _test_env.set('EON_RELAX_ENGINE', eon_relax_engine.full_path())
-    # The Metatomic job puts torch/lib ahead of the pixi prefix. The
-    # engine DLL was linked against the prefix's capnp, kj, and flang
-    # runtimes. A same-named DLL from torch is missing those entry
-    # points and the process exits 0xC0000139. The prefix bins, then
-    # the built readcon DLL, come first.
+    # The prefix stays ahead of torch on PATH so the engine loads the
+    # capnp, kj, and flang runtimes it was linked against. Torch's
+    # libuv is also named uv.dll, and the prefix ships that name too.
+    # With the prefix first, torch_cpu loads the prefix uv.dll and the
+    # process exits 0xC0000139. The copies staged beside the test are
+    # the ones the loader uses, so torch's own uv.dll and OpenMP
+    # runtime have to be in that set.
     if is_windows
         _prefix_bin = get_option('prefix') / 'bin'
         _prefix_lbin = get_option('prefix') / 'Library' / 'bin'
@@ -2360,12 +2362,21 @@ if get_option('with_tests')
     endif
     # Windows loads a DLL's imports from the executable directory before
     # PATH. Stage the engine's non-system imports beside the test, the
-    # same place the Fortran pot DLLs sit. Torch on PATH cannot shadow
-    # them.
+    # same place the Fortran pot DLLs sit.
     _stage_engine_imports = []
     _have_staged_engine_imports = false
     if is_windows
+        # Torch directories come first. The prefix also has uv.dll, and
+        # the first search hit is the file that gets copied.
         _stage_search = []
+        if get_option('with_metatomic') and get_option('pip_metatomic')
+            foreach _d : pip_metatomic_runtime_dirs
+                _stage_search += _d
+                if _d.name() == 'lib'
+                    _stage_search += _d.parent() / 'bin'
+                endif
+            endforeach
+        endif
         if _readcon_runtime_dir != ''
             _stage_search += _readcon_runtime_dir
         endif
