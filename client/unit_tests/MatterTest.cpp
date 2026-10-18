@@ -481,7 +481,7 @@ TEST_CASE("isolated molecule pot hard-fails if PBC re-enabled (#188)",
   REQUIRE_THROWS_AS(m.getPotentialEnergy(), std::runtime_error);
 }
 
-TEST_CASE("PBC wrap matches floor and fmod on a wide matrix",
+TEST_CASE("PBC displacements match Euclidean images and positions match fmod",
           "[MatterTest][pbc][simd]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
@@ -513,10 +513,63 @@ TEST_CASE("PBC wrap matches floor and fmod on a wide matrix",
   diff(2, 2) = -2.3 * cell(2, 2);
 
   const Matrix3d inv = cell.inverse();
-  AtomMatrix frac = diff * inv;
-  frac.array() -= (frac.array() + 0.5).floor();
-  const AtomMatrix expect = frac * cell;
-  REQUIRE(m.pbc(diff).isApprox(expect, 1e-12));
+  const AtomMatrix frac = diff * inv;
+  AtomMatrix expect(n, 3);
+  std::vector<std::vector<Eigen::RowVector3d>> closest(n);
+  for (long i = 0; i < n; ++i) {
+    // Fractional wrapping supplies an independent valid radius. Every
+    // shorter lattice image lies inside the inverse-column norm bounds.
+    Eigen::RowVector3d candidate = frac.row(i);
+    candidate.array() -= (candidate.array() + 0.5).floor();
+    candidate *= cell;
+    double bestSquared = candidate.squaredNorm();
+    closest[i].push_back(candidate);
+    const double radius = std::sqrt(bestSquared);
+    Eigen::Vector3i lower, upper;
+    for (int axis = 0; axis < 3; ++axis) {
+      const double bound = radius * inv.col(axis).norm();
+      lower(axis) = static_cast<int>(std::ceil(frac(i, axis) - bound));
+      upper(axis) = static_cast<int>(std::floor(frac(i, axis) + bound));
+    }
+    for (int a = lower(0); a <= upper(0); ++a)
+      for (int b = lower(1); b <= upper(1); ++b)
+        for (int c = lower(2); c <= upper(2); ++c) {
+          const Eigen::RowVector3d image =
+              diff.row(i) - Eigen::RowVector3d(a, b, c) * cell;
+          const double squared = image.squaredNorm();
+          const double tieRoundoff =
+              32.0 * std::numeric_limits<double>::epsilon() *
+              std::max(1.0, std::max(squared, bestSquared));
+          if (squared < bestSquared - tieRoundoff) {
+            bestSquared = squared;
+            candidate = image;
+            closest[i] = {image};
+          } else if (std::abs(squared - bestSquared) <= tieRoundoff &&
+                     std::none_of(closest[i].begin(), closest[i].end(),
+                                  [&](const auto &other) {
+                                    return image.isApprox(other, 1e-12);
+                                  })) {
+            closest[i].push_back(image);
+          }
+        }
+    expect.row(i) = candidate;
+  }
+  const AtomMatrix actual = m.pbc(diff);
+  AtomMatrix canonicalActual = actual;
+  for (long i = 0; i < n; ++i) {
+    REQUIRE(actual.row(i).squaredNorm() ==
+            Catch::Approx(expect.row(i).squaredNorm()).margin(1e-12));
+    if (closest[i].size() > 1) {
+      REQUIRE(std::any_of(closest[i].begin(), closest[i].end(),
+                          [&](const auto &image) {
+                            return actual.row(i).isApprox(image, 1e-12);
+                          }));
+      canonicalActual.row(i) = expect.row(i);
+    }
+  }
+  REQUIRE(canonicalActual.isApprox(expect, 1e-12));
+  const AtomMatrix translations = (actual - diff) * inv;
+  REQUIRE(translations.isApprox(translations.array().round().matrix(), 1e-12));
 
   m.setPbcConvention(eonc::PbcConvention::Legacy);
   m.setPositions(diff);
