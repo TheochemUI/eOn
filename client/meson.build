@@ -949,29 +949,18 @@ if not readcon_db_dep.found()
         _readcon_db_implib = custom_target(
             'readcon-db-implib',
             input: _readcon_db_so,
-            output: 'readcon_db.dll.lib',
+            output: ['readcon_db.dll.lib', 'readcon_db_order.c'],
             command: [
                 py,
                 files('rust/copy_msvc_implib.py'),
                 '@INPUT@',
-                '@OUTPUT@',
+                '@OUTPUT0@',
+                '@OUTPUT1@',
             ],
             build_by_default: true,
         )
-        _readcon_db_stamp = custom_target(
-            'readcon-db-order',
-            output: 'readcon_db_order.c',
-            command: [
-                py,
-                '-c',
-                'import pathlib, sys; pathlib.Path(sys.argv[1]).write_text("typedef int readcon_db_order;\\n")',
-                '@OUTPUT@',
-            ],
-            depends: [_readcon_db_implib],
-            build_by_default: true,
-        )
-        _readcon_db_link_args = [_readcon_db_implib.full_path()]
-        _readcon_db_sources = [_readcon_db_stamp]
+        _readcon_db_link_args = [_readcon_db_implib[0].full_path()]
+        _readcon_db_sources = [_readcon_db_implib[1]]
         _readcon_runtime_dir = fs.parent(_db_path)
     else
         _readcon_db_link_with = [_readcon_db_so]

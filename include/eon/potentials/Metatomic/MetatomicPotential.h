@@ -105,7 +105,9 @@ public:
   MetatomicPotential(const eonc::Parameters &params);
   // The dlopen'd plugin cannot call Parameters::Parameters(): that
   // constructor lives in the client library, which is linked later.
-  MetatomicPotential(const eonc::Parameters::metatomic_options_t &opts);
+  // random_seed is main.randomSeed; 0 and negative leave the torch RNG alone.
+  MetatomicPotential(const eonc::Parameters::metatomic_options_t &opts,
+                     long random_seed = 0);
 
   /**
    * @brief Destructor.

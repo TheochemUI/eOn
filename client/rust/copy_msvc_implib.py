@@ -14,8 +14,11 @@ from pathlib import Path
 
 
 def main(argv: list[str]) -> int:
-    if len(argv) != 3:
-        print("usage: copy_msvc_implib.py DLL OUT_IMPLIB", file=sys.stderr)
+    if len(argv) not in (3, 4):
+        print(
+            "usage: copy_msvc_implib.py DLL OUT_IMPLIB [OUT_STAMP]",
+            file=sys.stderr,
+        )
         return 2
     dll = Path(argv[1]).resolve()
     out = Path(argv[2])
@@ -29,6 +32,10 @@ def main(argv: list[str]) -> int:
         return 1
     cands.sort(key=lambda p: (0 if "cargo-target" in p.parts else 1, len(p.parts)))
     shutil.copy2(cands[0], out)
+    # A python -c stamp in meson is rewritten by cmd.exe on Windows, so the
+    # C file starts with a stray slash and cl reports C2059.
+    if len(argv) == 4:
+        Path(argv[3]).write_text("typedef int readcon_db_order;\n")
     return 0
 
 

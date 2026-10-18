@@ -55,10 +55,11 @@ static torch::optional<std::string> normalize_variant(const std::string &s) {
 }
 
 MetatomicPotential::MetatomicPotential(const eonc::Parameters &params)
-    : MetatomicPotential(params.metatomic_options()) {}
+    : MetatomicPotential(params.metatomic_options(),
+                         params.main_options().randomSeed) {}
 
 MetatomicPotential::MetatomicPotential(
-    const eonc::Parameters::metatomic_options_t &opts)
+    const eonc::Parameters::metatomic_options_t &opts, long random_seed)
     : eonc::Potential(eonc::PotType::METATOMIC),
       m_metatomic_opts{opts},
       model_(torch::jit::Module()),
@@ -200,12 +201,12 @@ MetatomicPotential::MetatomicPotential(
         m_log, "[MetatomicPotential] Per-call random SO(3) rotation enabled");
   }
   if ((this->random_rotation_ || this->n_symmetry_rotations_ > 0) &&
-      params.main_options().randomSeed > 0) {
-    torch::manual_seed(static_cast<uint64_t>(params.main_options().randomSeed));
+      random_seed > 0) {
+    torch::manual_seed(static_cast<uint64_t>(random_seed));
     QUILL_LOG_INFO(m_log,
                    "[MetatomicPotential] torch RNG seeded from "
                    "main.randomSeed={}",
-                   params.main_options().randomSeed);
+                   random_seed);
   }
 
   if (!outputs.contains(this->energy_key_)) {

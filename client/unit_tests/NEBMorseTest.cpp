@@ -23,9 +23,13 @@
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 #include "eon/api.h"
+#include <chrono>
 #include <cmath>
+#include <condition_variable>
 #include <filesystem>
 #include <fstream>
+#include <functional>
+#include <mutex>
 #include <set>
 #include <stdexcept>
 #include <thread>
@@ -1187,13 +1191,38 @@ TEST_CASE_METHOD(NEBLJFixture,
   ParametersLoadAccess::optimizer_options(params).max_iterations = 30;
   ParametersLoadAccess::neb_options(params).max_iterations = 30;
   ParametersLoadAccess::neb_options(params).force_tolerance = 1e-12;
+  if (std::thread::hardware_concurrency() == 1) {
+    SKIP("image pool needs two hardware threads");
+  }
+  eonc::detail::ImagePool::instance().ensureThreads(2);
+  if (eonc::detail::ImagePool::instance().threads() < 2) {
+    SKIP("image pool could not start two worker threads");
+  }
+  // The Morse forces return before a helper is scheduled, so the caller
+  // can be the only thread in the set even though the pool has workers.
+  struct Arrival {
+    std::mutex mu;
+    std::condition_variable cv;
+    std::set<std::thread::id> ids;
+    void operator()() {
+      std::unique_lock<std::mutex> lock(mu);
+      ids.insert(std::this_thread::get_id());
+      cv.notify_all();
+      cv.wait_for(lock, std::chrono::seconds(5),
+                  [&] { return ids.size() >= 2; });
+    }
+  };
+  auto arrival = std::make_shared<Arrival>();
   auto run =
       [&](bool parallel,
-          std::shared_ptr<eonc::helpers::test::PerImageLJ::Threads> threads) {
+          std::shared_ptr<eonc::helpers::test::PerImageLJ::Threads> threads,
+          bool hold) {
         ParametersLoadAccess::main_options(params).parallel = parallel;
         PotRegistry local;
-        auto perImage =
-            std::make_shared<eonc::helpers::test::PerImageLJ>(threads, local);
+        auto perImage = std::make_shared<eonc::helpers::test::PerImageLJ>(
+            threads, local,
+            hold ? std::function<void()>{[arrival] { (*arrival)(); }}
+                 : std::function<void()>{});
         auto r = std::make_shared<Matter>(*reactant);
         auto p = std::make_shared<Matter>(*product);
         r->setPotential(perImage);
@@ -1213,8 +1242,8 @@ TEST_CASE_METHOD(NEBLJFixture,
       std::make_shared<eonc::helpers::test::PerImageLJ::Threads>();
   auto poolThreads =
       std::make_shared<eonc::helpers::test::PerImageLJ::Threads>();
-  const auto [sPos, sE, sCalls, sIter] = run(false, serialThreads);
-  const auto [pPos, pE, pCalls, pIter] = run(true, poolThreads);
+  const auto [sPos, sE, sCalls, sIter] = run(false, serialThreads, false);
+  const auto [pPos, pE, pCalls, pIter] = run(true, poolThreads, true);
   REQUIRE(sIter == pIter);
   REQUIRE(sCalls == pCalls);
   for (size_t i = 0; i < sPos.size(); ++i) {
@@ -1222,9 +1251,7 @@ TEST_CASE_METHOD(NEBLJFixture,
     REQUIRE(sE[i] == pE[i]);
   }
   REQUIRE(serialThreads->ids.size() == 1);
-  if (eonc::detail::ImagePool::instance().threads() > 0) {
-    REQUIRE(poolThreads->ids.size() > 1);
-  }
+  REQUIRE(poolThreads->ids.size() > 1);
 }
 
 } /* namespace tests */
