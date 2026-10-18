@@ -775,6 +775,13 @@ CATALOG = {
           "ordinal": 8,
           "snake": "pair_switch_width",
           "type": "Float64"
+        },
+        {
+          "capnp": "pairCutoff",
+          "default": 0.0,
+          "ordinal": 9,
+          "snake": "pair_cutoff",
+          "type": "Float64"
         }
       ],
       "struct": "PotentialOptions"

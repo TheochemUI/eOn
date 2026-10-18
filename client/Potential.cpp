@@ -141,10 +141,20 @@ std::string lower_copy(std::string s) {
   return s;
 }
 
-// A pair config with [Potential] pair_switch_width applied. An rgpot older
-// than the C^2 switch has no switch_width member; it accepts only width 0.
+// A pair config with [Potential] pair_cutoff and pair_switch_width applied.
+// A cutoff of 0 keeps the config's own. An rgpot older than the C^2 switch
+// has no switch_width member; it accepts only width 0.
 template <class Config> Config pair_config(const Parameters &params) {
   Config cfg{};
+  const double cutoff = params.potential_options().pairCutoff;
+  if (!(cutoff >= 0.0) || !std::isfinite(cutoff)) {
+    throw std::runtime_error(
+        "[Potential] pair_cutoff must be a finite length, or 0 for the "
+        "potential's own cutoff");
+  }
+  if (cutoff > 0.0) {
+    cfg.cutoff = cutoff;
+  }
   const double width = params.potential_options().pairSwitchWidth;
   if constexpr (requires { cfg.switch_width; }) {
     cfg.switch_width = width;

@@ -265,6 +265,29 @@ reads the stress the potential returned with each image's force call, so an
 iteration costs one call per moved image. A potential that does not report
 the Cauchy stress is refused. The band does not estimate that tensor.
 
+#### A reference case, and why its cell has two atoms
+
+`client/unit_tests/SolidStateBainTest.cpp` runs the band on a transformation
+whose saddle is known without a band. The case is the Bain path from bcc to
+fcc of LJ (u0 1 eV, psi 1 Angstrom), switched to zero over [2.0, 2.2]
+Angstrom. Both atoms of the body-centred tetragonal cell diag(a, a, c) sit on
+inversion centres, so the atomic force vanishes at any cell. A relaxed scan of
+the energy over c/a (`validation/bain_lj_reference.py` in rgsaddle, spacing
+2.5e-4) puts the saddle at c/a 1.09331985, 0.0590356373 eV/atom above bcc.
+The band reaches c/a 1.09331984 and the same barrier to ten digits, in 187
+iterations and 1311 force calls.
+
+That saddle is unstable to the k = (1/2, 0, 1/2) phonon, which shuffles
+alternate planes (eigenvalue -51.5 eV/Angstrom^2). The two-atom cell has no
+wave vector but k = 0, so its saddle is the scan's. A supercell does carry
+the shuffle. A 5 x 5 x 4 supercell (200 atoms, `pair_cutoff = 2.2`,
+`pair_switch_width = 0.2`) has k = (2/5, 0, 1/2) with eigenvalue -38.4. Its
+band first settles on the tetragonal saddle. Rounding then seeds the shuffle,
+the cells shear, and the band moves to a lower path near 0.026 eV/atom. That
+path is a correct NEB answer for the supercell, but the scan does not
+describe it. A solid-state test should use a cell whose only soft mode is the
+strain it studies.
+
 A ring on this band is one centroid and one cell. The force and the stress
 the band follows are the averages of that image's beads. The band spring
 stays on the centroids, and the ring springs stay inside the image. The
