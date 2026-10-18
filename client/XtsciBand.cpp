@@ -35,9 +35,9 @@ namespace {
 rgsaddle_status_t solidSurfaceCallback(void *user,
                                        rgsaddle_solid_surface_request_t *req) {
   auto *self = static_cast<XtsciBand *>(user);
-  return static_cast<rgsaddle_status_t>(
-      self == nullptr ? RGSADDLE_SURFACE_FAILED
-                      : xtsciSolidBandSurface(self, req));
+  return static_cast<rgsaddle_status_t>(self == nullptr
+                                            ? RGSADDLE_SURFACE_FAILED
+                                            : xtsciSolidBandSurface(self, req));
 }
 
 // rgsaddle cells are row-major with rows the lattice vectors, as eOn's
@@ -377,9 +377,9 @@ XtsciBand::XtsciBand(NudgedElasticBand &neb, const Parameters &params)
       cellToRowMajor(neb.path[i]->getCell(), cells.data() + 9 * i);
     }
     const auto &solid = nebOpt.solid_state;
-    m_band = rgsaddle_band_create_solid(&config, nImages, nAtoms,
-                                        positions.data(), cells.data(),
-                                        solid.pressure, solid.weight);
+    m_band =
+        rgsaddle_band_create_solid(&config, nImages, nAtoms, positions.data(),
+                                   cells.data(), solid.pressure, solid.weight);
     if (m_band == nullptr) {
       throw std::runtime_error("rgsaddle_band_create_solid failed");
     }
@@ -533,9 +533,9 @@ void XtsciBand::stepSolid() {
     m_fixed[static_cast<size_t>(i)] = m_neb->path[i]->getPositions();
   }
   rgsaddle_report_t report{};
-  checkStatus(rgsaddle_band_step_solid(m_band, solidSurfaceCallback, this,
-                                       &report),
-              "rgsaddle_band_step_solid");
+  checkStatus(
+      rgsaddle_band_step_solid(m_band, solidSurfaceCallback, this, &report),
+      "rgsaddle_band_step_solid");
   const auto dof = static_cast<std::ptrdiff_t>(3 * nAtoms);
   std::vector<double> positions(static_cast<size_t>(nImages * dof));
   std::vector<double> cells(static_cast<size_t>(nImages * 9));
