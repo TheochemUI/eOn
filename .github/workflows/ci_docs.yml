@@ -8,9 +8,9 @@ concurrency:
 
 on:
   push:
-    # fix/develop-link-rust-std is included so this branch's push runs the
-    # docs job. Push to other feature branches still does not.
-    branches: [main, develop, fix/develop-link-rust-std]
+    # These branches are included so their pushes run the docs job.
+    # Push to other feature branches still does not.
+    branches: [main, develop, fix/develop-link-rust-std, fix/develop-green]
     tags: ["*"]
   pull_request:
     # Check all PR
