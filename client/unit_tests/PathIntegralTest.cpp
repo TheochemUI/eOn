@@ -148,6 +148,19 @@ void writeGle(const std::filesystem::path &path, long nModes, double tk) {
   }
 }
 
+void writeZeroCovarianceGle(const std::filesystem::path &path, long beads) {
+  std::ofstream out(path);
+  REQUIRE(out);
+  out.precision(17);
+  out << beads << " 2\n";
+  for (long mode = 0; mode < beads; ++mode) {
+    const double a = mode == 0 ? 1.3 : 3.7;
+    const double w = mode == 0 ? 2.1 : 0.8;
+    out << a << ' ' << w << '\n' << -w << ' ' << a << '\n';
+    out << "0 0\n0 0\n";
+  }
+}
+
 } // namespace
 
 TEST_CASE("GLE white-noise drift takes one half-step", "[gle]") {
@@ -413,5 +426,84 @@ TEST_CASE("PILE samples the N-bead kinetic energy of a harmonic oscillator",
       REQUIRE(order < 2.2);
     }
     previous = gap;
+  }
+}
+
+TEST_CASE("Complete GLE covariance includes the centroid and one-bead limit",
+          "[path-integral][CentroidGLE]") {
+  const long beads = GENERATE(1L, 4L);
+  const auto path = std::filesystem::temp_directory_path() /
+                    ("eon-centroid-zero-" + std::to_string(beads) + ".txt");
+  writeZeroCovarianceGle(path, beads);
+  Options options = baseOptions(beads);
+  options.thermostat = Thermostat::Piglet;
+  options.gleFile = path.string();
+  RingPolymer ring = makePolymer(options);
+  for (const auto &momentum : ring.momenta()) {
+    REQUIRE(momentum.norm() == 0.0);
+  }
+  std::filesystem::remove(path);
+}
+
+TEST_CASE("Complete centroid GLE follows the coupled Gaussian propagator",
+          "[path-integral][CentroidGLE]") {
+  const long beads = GENERATE(1L, 4L);
+  const auto path = std::filesystem::temp_directory_path() /
+                    ("eon-centroid-drift-" + std::to_string(beads) + ".txt");
+  writeZeroCovarianceGle(path, beads);
+  Options options = baseOptions(beads);
+  options.thermostat = Thermostat::Piglet;
+  options.gleFile = path.string();
+  options.dt = 0.01;
+  options.pileTau = 0.02;
+  RingPolymer ring = makePolymer(options);
+  options.pileTau = 20.0;
+  RingPolymer otherTau = makePolymer(options);
+  std::vector<Eigen::VectorXd> momentum(beads, Eigen::VectorXd::Zero(3));
+  for (auto &p : momentum) {
+    p[0] = 2.0;
+  }
+  ring.setMomenta(momentum);
+  otherTau.setMomenta(momentum);
+  Harmonic potential;
+  potential.omega = 0.0;
+  for (long step = 1; step <= 12; ++step) {
+    ring.step(potential, nullptr);
+    otherTau.step(potential, nullptr);
+    const double time = step * options.dt;
+    // exp(-[[a,w],[-w,a]] t) has physical diagonal exp(-a t) cos(w t).
+    const double exact = 2.0 * std::exp(-1.3 * time) * std::cos(2.1 * time);
+    REQUIRE(ring.centroidVelocity()[0] ==
+            Catch::Approx(exact).margin(2e-12));
+    REQUIRE(otherTau.centroidVelocity()[0] ==
+            Catch::Approx(exact).margin(2e-12));
+  }
+  std::filesystem::remove(path);
+}
+
+TEST_CASE("Internal-only GLE and empty one-bead GLE retain a Langevin centroid",
+          "[path-integral][CentroidGLE]") {
+  const long beads = GENERATE(1L, 4L);
+  Options options = baseOptions(beads);
+  RingPolymer pile = makePolymer(options);
+  const auto path = std::filesystem::temp_directory_path() /
+                    "eon-centroid-internal-only.txt";
+  options.thermostat = Thermostat::Piglet;
+  if (beads > 1) {
+    writeGle(path, beads - 1, 0.0);
+    options.gleFile = path.string();
+  }
+  RingPolymer legacy = makePolymer(options);
+  REQUIRE(legacy.centroidVelocity().isApprox(pile.centroidVelocity(), 1e-12));
+  if (beads == 1) {
+    Harmonic potential;
+    potential.omega = 0.0;
+    for (long step = 0; step < 12; ++step) {
+      pile.step(potential, nullptr);
+      legacy.step(potential, nullptr);
+      REQUIRE(legacy.centroidVelocity().isApprox(pile.centroidVelocity(), 1e-12));
+    }
+  } else {
+    std::filesystem::remove(path);
   }
 }
