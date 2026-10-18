@@ -179,6 +179,8 @@ The full listing of options is found in the `meson_options.txt` file. These can
 all be turned on and off at the command line. As an example see the [LAMMPS
 integration instructions](project:../user_guide/lammps_pot.md).
 
+`native_arch` (`-march=native`) and `fast_math` (`-ffast-math`) are off by default. With `fast_math` left off, C++ is compiled with floating-point contraction disabled, so results stay bit-identical across CPUs, and turning `fast_math` on leaves contraction to the compiler and gives up that guarantee.
+
 For an optional wrapped dependency, download the subproject sources before configuring:
 
 ```{code-block} bash
