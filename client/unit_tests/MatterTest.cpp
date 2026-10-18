@@ -478,8 +478,9 @@ TEST_CASE("isolated molecule pot hard-fails if PBC re-enabled (#188)",
   REQUIRE_THROWS_AS(m.getPotentialEnergy(), std::runtime_error);
 }
 
-TEST_CASE("PBC wrap matches floor and fmod on a wide matrix",
-          "[MatterTest][pbc][simd]") {
+TEST_CASE(
+    "Wide skew-cell differences are Euclidean and legacy positions use fmod",
+    "[MatterTest][pbc][simd]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = eonc::helpers::sharePotential(
@@ -510,10 +511,19 @@ TEST_CASE("PBC wrap matches floor and fmod on a wide matrix",
   diff(2, 2) = -2.3 * cell(2, 2);
 
   const Matrix3d inv = cell.inverse();
-  AtomMatrix frac = diff * inv;
-  frac.array() -= (frac.array() + 0.5).floor();
-  const AtomMatrix expect = frac * cell;
-  REQUIRE(m.pbc(diff).isApprox(expect, 1e-12));
+  const AtomMatrix image = m.pbc(diff);
+  for (long i = 0; i < n; ++i) {
+    double exhaustive = std::numeric_limits<double>::infinity();
+    for (long a = -8; a <= 8; ++a)
+      for (long b = -8; b <= 8; ++b)
+        for (long c = -8; c <= 8; ++c) {
+          const Eigen::RowVector3d shifted =
+              diff.row(i) - a * cell.row(0) - b * cell.row(1) - c * cell.row(2);
+          exhaustive = std::min(exhaustive, shifted.squaredNorm());
+        }
+    REQUIRE(image.row(i).squaredNorm() ==
+            Catch::Approx(exhaustive).margin(1e-12));
+  }
 
   m.setPbcConvention(eonc::PbcConvention::Legacy);
   m.setPositions(diff);

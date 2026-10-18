@@ -950,10 +950,6 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
             extras.emplace_back("parabolic_factor", factor);
             extras.emplace_back("rate_parabolic", kPar);
             extras.emplace_back("rate_parabolic_log", logPar - logSecond);
-            // The ring audit below is skipped on this path. The count is
-            // still the steepest-descent sampling, which did not run.
-            extras.emplace_back("sd_path_force_calls",
-                                static_cast<double>(sdPathForceCalls));
             if (std::isfinite(wkbLog)) {
               extras.emplace_back("rate_wkb_path_log", wkbLog);
             }
@@ -975,8 +971,6 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         status = RunStatus::FAIL_POTENTIAL_FAILED;
         if (last) {
           extras.emplace_back("instanton_temperature_K", temperature);
-          extras.emplace_back("sd_path_force_calls",
-                              static_cast<double>(sdPathForceCalls));
           if (std::isfinite(wkbLog)) {
             extras.emplace_back("rate_wkb_path_log", wkbLog);
           }
