@@ -1,0 +1,1 @@
+`total_force_calls` includes the calls of per-image potential instances: band images, the dimer image, and the second minimization of a process search. A `parallel = true` EAM band reported 2, the two endpoint calls.

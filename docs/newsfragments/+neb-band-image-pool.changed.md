@@ -1,0 +1,1 @@
+In a `-Dwith_rgsaddle=true` build, the nudged elastic band steps LBFGS and FIRE through the rgsaddle band. With `[Main] parallel`, that band now evaluates its images on the image pool, as the host optimizers do. Energies, forces, and iteration counts stay the same at any thread count.
