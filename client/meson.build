@@ -751,12 +751,28 @@ else
 endif
 _deps += [vesin_dep]
 
+minimage_dep = dependency(
+    'minimage', version: '>=0.1.4',
+    fallback: ['minimage', 'minimage_dep'],
+    default_options: ['with_tests=false', 'with_examples=false'],
+)
+_deps += [minimage_dep]
+
+linkcell_dep = dependency(
+    'linkcell', version: '>=0.3.11',
+    fallback: ['linkcell', 'linkcell_dep'],
+    default_options: ['with_tests=false', 'with_examples=false', 'with_gpulite=disabled'],
+)
+_deps += [linkcell_dep]
+
 eoncbase_sources = [
     'fpe_handler.cpp',
     'PotRegistry.cpp',
     'ParametersAccess.cpp',
     'PotentialParams.cpp',
     'VesinNeighbors.cpp',
+    'MinimumImage.cpp',
+    'LinkCellNeighbors.cpp',
     'potentials/PluginLoader.cpp',
 ]
 
