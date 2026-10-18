@@ -783,7 +783,10 @@ max_move = 0.2
       std::stod(results["image" + std::to_string(nImages + 1) + "_energy"]);
   REQUIRE(eProduct == Catch::Approx(631.805887).epsilon(1e-6));
   // Converged image energies of the Hooke-spring run (SVN's squared
-  // spring gives 0.000135, 0.056816 and 1.800656 eV).
+  // spring gives 0.000135, 0.056816 and 1.800656 eV). The climbing image
+  // is enabled by default but never engages here: the highest image is
+  // the product endpoint, so this is a plain NEB and its image energies
+  // are the band's answer.
   const double expected[] = {0.000049, 0.259018, 2.851935};
   for (int i = 1; i <= nImages; i++) {
     double ei = std::stod(results["image" + std::to_string(i) + "_energy"]);
@@ -791,6 +794,58 @@ max_move = 0.2
   }
 
   REQUIRE(results.count("number_of_extrema") > 0);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "CI-NEB climbing image matches the dimer saddle of LJ13",
+                 "[job][neb][climbing_image][integration]") {
+  // For a climbing-image band only the climbing image carries the answer,
+  // the barrier and the saddle geometry; interior spacing is free. Both
+  // spring laws are checked against saddle.con, the eonclient dimer saddle
+  // of this pair (-38.963676 eV, max |F| 4e-6 eV/A). The force-call
+  // ceilings are the measured counts of each run.
+  struct Case {
+    long images;
+    bool geometric;
+    long calls;
+  };
+  const Case cases[] = {
+      {3, false, 134}, {7, false, 317}, {3, true, 137}, {7, true, 310}};
+  for (const Case &c : cases) {
+    INFO("images " << c.images << " geometric " << c.geometric);
+    REQUIRE(copyTestData("neb_lj13"));
+    writeConfig(std::string("[Main]\njob = nudged_elastic_band\n"
+                            "random_seed = 42\n\n[Potential]\npotential = "
+                            "lj\n\n[Nudged Elastic Band]\nimages = ") +
+                std::to_string(c.images) +
+                "\nspring = 5.0\nmax_iterations = 3000\n"
+                "minimize_endpoints = false\n" +
+                (c.geometric ? "geometric_spring = true\n" : "") +
+                "\n[Optimizer]\nopt_method = lbfgs\nconverged_force = "
+                "0.01\nmax_iterations = 3000\nmax_move = 0.2\n");
+    auto results = runJob();
+    REQUIRE(std::stoi(results.at("termination_reason")) == 0);
+    REQUIRE(forceCalls_ <= c.calls);
+
+    Parameters p;
+    ParametersLoadAccess::potential_options(p).potential = PotType::LJ;
+    auto pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, p));
+    Matter saddle(pot, p), climbing(pot, p);
+    REQUIRE(
+        eonc::io::io_ok(saddle.con2matter((workdir / "saddle.con").string())));
+    REQUIRE(
+        eonc::io::io_ok(climbing.con2matter((workdir / "sp.con").string())));
+    REQUIRE(climbing.getPotentialEnergy() ==
+            Catch::Approx(saddle.getPotentialEnergy()).margin(1.0e-4));
+    AtomMatrix a = saddle.getPositions();
+    AtomMatrix b = climbing.getPositions();
+    a.rowwise() -= a.colwise().mean();
+    b.rowwise() -= b.colwise().mean();
+    const double rmsd =
+        std::sqrt((a - b).rowwise().squaredNorm().sum() / a.rows());
+    REQUIRE(rmsd < 2.0e-3);
+  }
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
