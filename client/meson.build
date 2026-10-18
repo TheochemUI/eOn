@@ -903,10 +903,34 @@ if not readcon_db_dep.found()
             '-Wl,--as-needed',
         ]
     endif
+    _readcon_db_sources = [_readcon_db_so]
+    if is_windows
+        # link.exe takes the cdylib's import library, which cargo leaves in
+        # its target directory, not the DLL (LNK1181/LNK1107). A generated
+        # source that depends on the cargo target orders the link after it.
+        _readcon_db_link = [
+            fs.parent(_readcon_db_so.full_path()) / 'cargo-target'
+            / (get_option('buildtype') == 'debug' ? 'debug' : 'release')
+            / 'readcon_db.dll.lib',
+        ]
+        _readcon_db_sources = [
+            custom_target(
+                'readcon-db-order',
+                output: 'readcon_db_order.c',
+                command: [
+                    py,
+                    '-c',
+                    'import sys; open(sys.argv[1], "w").write("typedef int eon_readcon_db_order;\\n")',
+                    '@OUTPUT@',
+                ],
+                depends: [readcon_db_proj.get_variable('readcon_cargo')],
+            ),
+        ]
+    endif
     readcon_db_dep = declare_dependency(
         link_with: _readcon_db_order,
         link_args: _readcon_db_link,
-        sources: [_readcon_db_so],
+        sources: _readcon_db_sources,
         compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
     )
 else
