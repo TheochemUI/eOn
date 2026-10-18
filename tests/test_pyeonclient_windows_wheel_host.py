@@ -122,6 +122,7 @@ def test_windows_client_stays_an_archive_and_ships_wheel_dlls():
     py = (ROOT / "client" / "python" / "meson.build").read_text(encoding="utf-8")
     assert "_rgpot_wheel_name = 'rgpot.dll'" in py
     assert "output: 'readcon_db.dll'" in py
+    assert "_readcon_db_wheel_name = 'libreadcon_db.so'" in py
     init = INIT.read_text(encoding="utf-8")
     assert init.index("_extend_windows_dll_search()") < init.index(
         "from pyeonclient._core import"
@@ -144,3 +145,9 @@ def test_windows_client_stays_an_archive_and_ships_wheel_dlls():
         ROOT / "subprojects" / "packagefiles" / "rgpot-windows-flang-rt.patch"
     ).read_text(encoding="utf-8")
     assert "FortranRuntime.dynamic.lib" in flang
+    header = (
+        ROOT / "include" / "eon" / "potentials" / "Metatomic" / "MetatomicPotential.h"
+    ).read_text(encoding="utf-8")
+    assert "EON_MTA_POT_API MetatomicPotential(const eonc::Parameters &params);" in header
+    assert "__declspec(dllexport)" in header
+    assert meson.count("-DEON_MTA_POT_BUILD") == 2

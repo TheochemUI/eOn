@@ -139,6 +139,82 @@ def test_repair_vendors_readcon_db_from_the_build_tree(tmp_path: Path):
     assert ".pyeonclient.mesonpy.libs/libreadcon_db.so" in names
 
 
+def test_repair_vendors_hashed_readcon_db_soname(tmp_path: Path):
+    """Cargo deps names the cdylib libreadcon_db-<hash>.so; NEEDED is the SONAME."""
+    gcc = shutil.which("gcc")
+    patchelf = shutil.which("patchelf")
+    if gcc is None or patchelf is None:
+        pytest.skip("gcc and patchelf are required")
+    build = tmp_path / "cargo-out"
+    build.mkdir()
+    hashed = build / "libreadcon_db-deadbeef.so"
+    subprocess.run(
+        [
+            gcc,
+            "-shared",
+            "-fPIC",
+            "-o",
+            str(hashed),
+            "-Wl,-soname,libreadcon_db.so",
+            "-x",
+            "c",
+            "-",
+        ],
+        input=b"void readcon_db_open(void) {}\n",
+        check=True,
+    )
+    core = tmp_path / "src" / "pyeonclient" / "_core.abi3.so"
+    core.parent.mkdir(parents=True)
+    subprocess.run(
+        [
+            gcc,
+            "-shared",
+            "-fPIC",
+            "-o",
+            str(core),
+            "-x",
+            "c",
+            "-",
+            "-x",
+            "none",
+            "-Wl,--no-as-needed",
+            str(hashed),
+            "-Wl,--as-needed",
+            "-Wl,-rpath,$ORIGIN",
+        ],
+        input=(
+            b"void readcon_db_open(void);\n"
+            b"void eon_core(void) { readcon_db_open(); }\n"
+        ),
+        check=True,
+    )
+    whl = tmp_path / "pyeonclient-0.0.0-py3-none-linux_x86_64.whl"
+    record = "pyeonclient-0.0.0.dist-info/RECORD"
+    import zipfile
+
+    with zipfile.ZipFile(whl, "w") as archive:
+        archive.write(core, "pyeonclient/_core.abi3.so")
+        archive.writestr(record, "")
+    env = os.environ.copy()
+    env["PYEONCLIENT_BUILD_ROOT"] = str(build)
+    env["PYEONCLIENT_VENDOR_SEARCH_PATHS"] = str(tmp_path / "nowhere")
+    env["LD_LIBRARY_PATH"] = ""
+    (tmp_path / "nowhere").mkdir()
+    proc = subprocess.run(
+        ["bash", str(ROOT / "scripts" / "pyeonclient_repair_wheel.sh"), str(whl)],
+        cwd=tmp_path / "src",
+        env=env,
+        capture_output=True,
+        text=True,
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "seed-readcon-db:" in proc.stdout
+    assert "libreadcon_db-deadbeef.so" in proc.stdout
+    with zipfile.ZipFile(whl) as archive:
+        names = archive.namelist()
+    assert ".pyeonclient.mesonpy.libs/libreadcon_db.so" in names
+
+
 def test_workflow_publish_excludes_metatomic_local_version():
     wf = ROOT / ".github" / "workflows" / "pyeonclient-wheels.yml"
     assert wf.is_file()

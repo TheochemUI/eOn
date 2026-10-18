@@ -221,13 +221,35 @@ if not _rgpot_pkg.found()
     )
 endif
 
-# The extension imports readcon_db.dll. The subproject install is skipped,
-# so the wheel would otherwise ship an import with no DLL beside it.
+# The extension imports readcon_db.dll / NEEDs libreadcon_db.so. The
+# subproject install is skipped, and the repair step runs after
+# meson-python has removed the build tree, so the wheel copies the
+# cdylib beside the extension.
 if host_system == 'windows' and _readcon_db_wheel_dll.length() > 0
     custom_target(
         'readcon-db-for-pyeonclient',
         input: _readcon_db_wheel_dll,
         output: 'readcon_db.dll',
+        command: [
+            py,
+            '-c',
+            'import shutil, sys; shutil.copy2(sys.argv[1], sys.argv[2])',
+            '@INPUT@',
+            '@OUTPUT@',
+        ],
+        install: true,
+        install_dir: py.get_install_dir() / 'pyeonclient',
+        build_by_default: true,
+    )
+elif _readcon_db_wheel_so.length() > 0
+    _readcon_db_wheel_name = 'libreadcon_db.so'
+    if host_system == 'darwin'
+        _readcon_db_wheel_name = 'libreadcon_db.dylib'
+    endif
+    custom_target(
+        'readcon-db-for-pyeonclient',
+        input: _readcon_db_wheel_so,
+        output: _readcon_db_wheel_name,
         command: [
             py,
             '-c',

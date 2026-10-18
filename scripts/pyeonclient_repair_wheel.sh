@@ -57,13 +57,14 @@ repair_one() {
   fi
   # meson-python leaves wrap cdylibs under .mesonpy-*/ or cargo-target/.
   # readcon-core is inside the umbrella staticlib. The extension NEEDs
-  # libreadcon_db.so, the readcon-db cdylib, which is not installed.
+  # libreadcon_db.so. Cargo's deps directory names that file
+  # libreadcon_db-<hash>.so; the wheel copy uses the SONAME.
   local found
   while IFS= read -r found; do
     [[ -z "$found" ]] && continue
     search="${search}:$(dirname "$found")"
     case "$(basename "$found")" in
-      libreadcon_db.so|libreadcon_db.so.*)
+      libreadcon_db.so|libreadcon_db.so.*|libreadcon_db-*.so|libreadcon_db.dylib)
         if [[ ! -f "$libs_dir/libreadcon_db.so" ]]; then
           echo "seed-readcon-db: $found"
           cp -aL "$found" "$libs_dir/libreadcon_db.so"
@@ -74,8 +75,13 @@ repair_one() {
   done < <(
     find "$work" "${PYEONCLIENT_BUILD_ROOT:-$PWD}" /project \
       \( -name 'libreadcon_db.so' -o -name 'libreadcon_db.so.*' \
-         -o -name 'libreadcon_core.so' -o -name 'libreadcon_core.so.*' \) \
-      2>/dev/null | head -20
+         -o -name 'libreadcon_db-*.so' -o -name 'libreadcon_db.dylib' \) \
+      2>/dev/null
+  )
+  while IFS= read -r found; do
+    [[ -z "$found" ]] && continue
+    search="${search}:$(dirname "$found")"
+  done < <(
     find "$work" "${PYEONCLIENT_BUILD_ROOT:-$PWD}" /project \
       \( -name 'librgpot.so' -o -name 'librgpot.so.*' \) \
       2>/dev/null | head -40

@@ -928,6 +928,7 @@ _linkto += eoncbase
 # dependency, which link_with's the DLL. link.exe rejects that DLL.
 # The branch below links the import library rustc writes beside it.
 _readcon_db_wheel_dll = []
+_readcon_db_wheel_so = []
 readcon_db_dep = dependency(
     'readcon-db',
     version: '>=0.1.6',
@@ -979,6 +980,9 @@ if not readcon_db_dep.found()
     else
         _readcon_db_link_with = [_readcon_db_so]
         _readcon_db_sources = [_readcon_db_so]
+        # meson-python does not install the wrap cdylib. The wheel copies
+        # it beside the extension; the repair step vendors that copy.
+        _readcon_db_wheel_so = [_readcon_db_so]
         if cc.get_linker_id() in _gnu_linkers
             _readcon_db_link_args = [
                 '-Wl,--no-as-needed',
@@ -1760,7 +1764,7 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
             'potentials/Metatomic/MetatomicCAbi.cpp',
         ],
         dependencies: _deps,
-        cpp_args: _args,
+        cpp_args: _args + ['-DEON_MTA_POT_BUILD'],
         link_with: _linkto,
         include_directories: _incdirs,
         install: true,
@@ -2105,7 +2109,7 @@ if get_option('with_metatomic')
         ]
         + readcon_order_srcs,
         dependencies: mta_plugin_deps,
-        cpp_args: _args + ['-DRGPOT_MTA_ENGINE_BUILD'],
+        cpp_args: _args + ['-DRGPOT_MTA_ENGINE_BUILD', '-DEON_MTA_POT_BUILD'],
         link_with: [eclib, eoncbase],
         include_directories: _incdirs,
         build_rpath: ':'.join(_runtime_rpath),
