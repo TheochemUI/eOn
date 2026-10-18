@@ -50,8 +50,7 @@ public:
   }
 
   /// Groups for a batch of systems with these keys.
-  [[nodiscard]] std::vector<int>
-  assign(const std::vector<std::int64_t> &keys) {
+  [[nodiscard]] std::vector<int> assign(const std::vector<std::int64_t> &keys) {
     const long m = static_cast<long>(keys.size());
     const long cap = (m + groups_ - 1) / groups_;
     std::vector<long> load(static_cast<size_t>(groups_), 0);
@@ -81,8 +80,10 @@ public:
               const double *cell = nullptr) {
     auto &stored = last_[key];
     stored.assign(positions, positions + n3);
-    if (cell) cells_[key].assign(cell, cell + 9);
-    else cells_.erase(key);
+    if (cell)
+      cells_[key].assign(cell, cell + 9);
+    else
+      cells_.erase(key);
   }
 
   /// The group for a single request: the home of the recorded geometry
@@ -97,17 +98,20 @@ public:
         continue;
       const auto recordedCell = cells_.find(key);
       if (cell && recordedCell != cells_.end() &&
-          !std::equal(recordedCell->second.begin(), recordedCell->second.end(), cell))
+          !std::equal(recordedCell->second.begin(), recordedCell->second.end(),
+                      cell))
         continue;
       std::vector<double> differences(static_cast<size_t>(n3));
       for (long i = 0; i < n3; ++i) {
         differences[static_cast<size_t>(i)] =
             stored[static_cast<size_t>(i)] - positions[i];
       }
-      if (cell && std::any_of(cell, cell + 9, [](double x) { return x != 0.0; }))
+      if (cell &&
+          std::any_of(cell, cell + 9, [](double x) { return x != 0.0; }))
         pbc::closestDisplacements(differences.data(), differences.size(), cell);
       double d2 = 0.0;
-      for (double d : differences) d2 += d * d;
+      for (double d : differences)
+        d2 += d * d;
       const auto home = home_.find(key);
       if (d2 < best && home != home_.end()) {
         best = d2;

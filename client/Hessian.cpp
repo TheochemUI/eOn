@@ -10,11 +10,11 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/Hessian.h"
-#include "eon/PotentialOwner.h"
-#include "eon/CutoffNeighbors.h"
 #include "eon/AtomicFile.h"
+#include "eon/CutoffNeighbors.h"
 #include "eon/EonLogger.h"
 #include "eon/HelperFunctions.h"
+#include "eon/PotentialOwner.h"
 #include "eon/SafeMath.h"
 #include "eon/Tunneling.h"
 #include "eon/VesinNeighbors.h"
@@ -208,8 +208,9 @@ MobileColoring buildMobileColoring(const Matter &matter, const VectorXi &atoms,
   };
   try {
     if (matter.getPeriodic()) {
-      for (const auto &pair : periodicCutoffNeighbors(
-               pos.data(), static_cast<std::size_t>(nAtoms), cell.data(), cutoff))
+      for (const auto &pair :
+           periodicCutoffNeighbors(pos.data(), static_cast<std::size_t>(nAtoms),
+                                   cell.data(), cutoff))
         add(pair.first, pair.second);
     } else {
       VesinNeighbors nl;
@@ -219,7 +220,8 @@ MobileColoring buildMobileColoring(const Matter &matter, const VectorXi &atoms,
       opt.return_distances = false;
       opt.return_vectors = false;
       opt.periodic = {false, false, false};
-      nl.compute(pos.data(), static_cast<std::size_t>(nAtoms), cell.data(), opt);
+      nl.compute(pos.data(), static_cast<std::size_t>(nAtoms), cell.data(),
+                 opt);
       for (size_t p = 0; p < nl.size(); ++p)
         add(static_cast<int>(nl.i(p)), static_cast<int>(nl.j(p)));
     }

@@ -457,7 +457,7 @@ void RgpotPot::forceBatchOwned(long nSystems, long nAtoms,
     for (long j = 0; j < nSystems; j++) {
       route[static_cast<size_t>(j)] = groupOf[static_cast<size_t>(j)];
       schedule_->record(keys[static_cast<size_t>(j)], positions[j], 3 * nAtoms,
-                         boxes[j]);
+                        boxes[j]);
     }
     std::int64_t hdr[4] = {kBatch, nAtoms, nSystems, 0};
     impl_->broadcastFromDriver(hdr, sizeof(hdr));

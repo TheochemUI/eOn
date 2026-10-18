@@ -47,7 +47,7 @@ inline AtomMatrix apply(const AtomMatrix &diff, const Matrix3d &cell,
   static_cast<void>(cellInverse);
   AtomMatrix image = diff;
   closestDisplacements(image.data(), static_cast<size_t>(image.size()),
-                        cell.data());
+                       cell.data());
   return image;
 }
 
