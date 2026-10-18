@@ -32,8 +32,9 @@ namespace eonc::log {
 namespace detail {
 inline constexpr std::string_view kDefaultLoggerName{"combi"};
 inline constexpr std::string_view kTracebackLoggerName{"_traceback"};
+/// Idle sleep of the client's logging backend thread.
+inline constexpr std::chrono::milliseconds kBackendSleep{1};
 } // namespace detail
-
 
 /// \brief Start the client backend and the combi / traceback loggers once.
 ///
@@ -47,7 +48,11 @@ inline constexpr std::string_view kTracebackLoggerName{"_traceback"};
     }
     try {
       quill::BackendOptions backend_options;
-      backend_options.sleep_duration = std::chrono::microseconds{10};
+      // The backend thread sleeps this long when its queues are empty. At
+      // 10 us it woke about 13,000 times a second beside the force loop;
+      // at 1 ms a line reaches its sink at most 1 ms late. Order is kept
+      // either way, and Backend::stop and flush_log drain the queues.
+      backend_options.sleep_duration = detail::kBackendSleep;
       backend_options.transit_event_buffer_initial_capacity = 2048;
       backend_options.log_timestamp_ordering_grace_period =
           std::chrono::microseconds{0};
