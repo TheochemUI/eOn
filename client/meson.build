@@ -711,12 +711,20 @@ else
 endif
 _deps += [vesin_dep]
 
+minimage_dep = dependency(
+    'minimage', version: '>=0.1.4',
+    fallback: ['minimage', 'minimage_dep'],
+    default_options: ['with_tests=false', 'with_examples=false'],
+)
+_deps += [minimage_dep]
+
 eoncbase_sources = [
     'fpe_handler.cpp',
     'PotRegistry.cpp',
     'ParametersAccess.cpp',
     'PotentialParams.cpp',
     'VesinNeighbors.cpp',
+    'MinimumImage.cpp',
     'potentials/PluginLoader.cpp',
 ]
 
