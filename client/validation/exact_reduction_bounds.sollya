@@ -14,6 +14,10 @@
 //    [2^-2148, 2^2048); 135 words of 32 bits hold n products for every
 //    n below 2^123, and a word absorbs 2^30 pieces below 2^32 before the
 //    periodic carry normalisation.
+// 5. Certified fast path: the computed bound E = 2 gamma_N bAll must cover
+//    gamma_N * sum|t| with sum|t| <= bAll / (1 - gamma_N), after the
+//    roundings of gamma (two operations) and of 2 gamma bAll (one), for
+//    every N up to 2^30 + 8.
 // 4. The final ldexp is exact: the rounded significand m <= 2^53 and the
 //    exponent of its last bit lies in [-1074, 2048 - 52].
 
@@ -63,4 +67,11 @@ if (2^52 * 2^(lsbmin) == 2^(-1022)) then
   print("   a subnormal significand that rounds up to 2^52 is the smallest normal 2^-1022")
 else
   print("   SUBNORMAL BOUNDARY MISMATCH");
+Nmax = 2^30 + 8;
+gN = Nmax * u / (1 - Nmax * u);
+need = gN / (1 - gN);
+have = 2 * gN * (1 - u)^3;
+print("5. certificate: need", round(need / gN, 24, RN), "gamma_N bAll, have",
+      round(have / gN, 24, RN), "gamma_N bAll at N = 2^30 + 8");
+if (have > need) then print("   bound covers the compensation error") else print("   CERTIFICATE BOUND FAILS");
 quit;
