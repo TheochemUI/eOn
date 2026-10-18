@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/Hessian.h"
+#include "eon/PotentialOwner.h"
 #include "eon/AtomicFile.h"
 #include "eon/EonLogger.h"
 #include "eon/HelperFunctions.h"
@@ -444,8 +445,11 @@ bool Hessian::calculateBatched(double dr, FdScheme scheme) {
     }
     std::vector<double> energies(static_cast<size_t>(n)),
         variances(static_cast<size_t>(n));
-    pot->forceBatch(n, nAtoms, posPtr.data(), nrsPtr.data(), frcPtr.data(),
-                    energies.data(), variances.data(), boxPtr.data());
+    const std::vector<long> owners(static_cast<size_t>(n),
+                                   potential_owner::derivative);
+    pot->forceBatchOwned(n, nAtoms, posPtr.data(), nrsPtr.data(), frcPtr.data(),
+                         energies.data(), variances.data(), boxPtr.data(),
+                         owners.data());
     for (long j = 0; j < n; ++j) {
       displaced[static_cast<size_t>(j)].setComputedPotential(
           energies[static_cast<size_t>(j)], variances[static_cast<size_t>(j)]);
