@@ -14,6 +14,7 @@
 #include "Eigen.h"
 #include "Parameters.h"
 
+#include <cstdint>
 #include <vector>
 
 struct RgsaddleBand;
@@ -46,6 +47,8 @@ private:
   void stepSolid();
   // True when the session's band is the host path, bit for bit.
   bool sessionMatchesPath() const;
+  // work(0) .. work(n - 1), on the image pool with [Main] parallel.
+  template <typename Work> void forImages(int64_t n, Work &&work);
 
   NudgedElasticBand *m_neb;
   RgsaddleBand *m_band{nullptr};
@@ -55,6 +58,8 @@ private:
   double m_maxMove{0.2};
   // The band carries one cell per image (NEB solid_state).
   bool m_solid{false};
+  // [Main] parallel: the surface evaluates its images on the image pool.
+  bool m_threads{false};
 };
 
 } // namespace eonc

@@ -412,6 +412,16 @@ private:
 /// that batches, the dirty systems go through forceBatch in one call, so
 /// calculator groups take them together; otherwise each computes on its
 /// own. Systems that are current are left alone.
-void evaluateTogether(Potential &pot, std::span<Matter *const> systems);
+///
+/// With ``threads`` set, systems that compute on their own run on the
+/// image pool (eonc::forEachImage) when no two of them share an instance
+/// that is unsafe to share. Each system's result is the one its own
+/// serial evaluation gives.
+void evaluateTogether(Potential &pot, std::span<Matter *const> systems,
+                      bool threads = false);
+
+/// True when the systems can compute on separate threads at once: every
+/// potential instance that two of them share is safe to share.
+[[nodiscard]] bool canComputeConcurrently(std::span<Matter *const> systems);
 
 } // namespace eonc
