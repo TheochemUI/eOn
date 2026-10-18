@@ -919,9 +919,9 @@ if not readcon_db_dep.found()
                 output: 'readcon_db_order.c',
                 command: [
                     py,
-                    '-c',
-                    'import sys; open(sys.argv[1], "w").write("typedef int eon_readcon_db_order;\\n")',
+                    meson.project_source_root() / 'scripts' / 'meson_order_stamp.py',
                     '@OUTPUT@',
+                    'eon_readcon_db_order',
                 ],
                 depends: [readcon_db_proj.get_variable('readcon_cargo')],
             ),
