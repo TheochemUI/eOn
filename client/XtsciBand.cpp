@@ -290,8 +290,8 @@ int xtsciSolidBandSurface(void *user, void *request) {
     return RGSADDLE_SURFACE_FAILED;
   }
 #else
-  (void)user;
-  (void)request;
+  static_cast<void>(user);
+  static_cast<void>(request);
   return RGSADDLE_SURFACE_FAILED;
 #endif
 }
