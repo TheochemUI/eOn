@@ -22,14 +22,18 @@
 #include "eon/Bundling.h"
 #include "eon/ConFileIO.h"
 #include "eon/GlobalOptimizationJob.h"
+#include "eon/InstantonJob.h"
 #include "eon/Job.h"
 #include "eon/Matter.h"
 #include "eon/OHTSTJob.h"
 #include "eon/ParallelReplicaJob.h"
 #include "eon/Parameters.h"
+#include "eon/PhysicalBathModel.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
+#include "eon/PotentialOwner.h"
 #include "eon/RandomNumbers.h"
+#include "eon/Tunneling.h"
 #include "eon/fpe_handler.h"
 #ifdef WITH_ARTN
 #include "eon/ARTnSaddleSearch.h"
@@ -3455,6 +3459,308 @@ TEST_CASE_METHOD(
     REQUIRE(restored[bead].energy_opt().has_value());
     REQUIRE(std::abs(*restored[bead].energy_opt() - energies[bead]) < 1e-8);
   }
+}
+
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "Physical bath parabolic rate retains all conditional modes",
+    "[job][instanton][physical-bath][integration][PhysicalBathHighT]") {
+  using namespace eonc::tunneling;
+  Parameters stored;
+  ParametersLoadAccess::potential_options(stored).potential = PotType::LJ;
+  auto potential = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, stored));
+  Matter matter(potential, stored);
+  matter.resize(2);
+  matter.setCell(100 * Matrix3d::Identity());
+  for (long atom = 0; atom < 2; ++atom) {
+    matter.setAtomicNr(atom, 1);
+    matter.setMass(atom, 1.0);
+    matter.setFixed(atom, 0);
+  }
+  AtomMatrix positions = AtomMatrix::Zero(2, 3);
+  positions(0, 0) = -1;
+  positions(1, 0) = 1;
+  matter.setPositions(positions);
+  REQUIRE(
+      eonc::io::io_ok(matter.matter2con((workdir / "reactant.con").string())));
+  positions *= 1.5;
+  matter.setPositions(positions);
+  REQUIRE(
+      eonc::io::io_ok(matter.matter2con((workdir / "saddle.con").string())));
+  const double length = std::sqrt(.5);
+  auto hermiteModel = [&](int order, const Eigen::MatrixXd &targets) {
+    const long count = 2 * (order + 1);
+    nlohmann::json sites = nlohmann::json::array(), orders = sites;
+    for (double point : {0.0, length})
+      for (int derivative = 0; derivative <= order; ++derivative) {
+        sites.push_back({point});
+        orders.push_back({derivative});
+      }
+    nlohmann::json spec = {{"kind", "derivative_rbf"},
+                           {"length_scales", {.6}},
+                           {"constant", std::vector<double>(targets.cols(), 0)},
+                           {"sites", sites},
+                           {"derivative_orders", orders}};
+    Eigen::MatrixXd interpolation(count, count);
+    for (long column = 0; column < count; ++column) {
+      spec["weights"] = nlohmann::json::array();
+      for (long row = 0; row < count; ++row)
+        spec["weights"].push_back({row == column ? 1.0 : 0.0});
+      spec["constant"] = {0.0};
+      const auto kernel = DerivativeRbfModel::fromJson(spec);
+      for (long row = 0; row < count; ++row) {
+        const auto value = kernel.evaluate(
+            Eigen::VectorXd::Constant(1, row < order + 1 ? 0.0 : length));
+        const int derivative = row % (order + 1);
+        interpolation(row, column) = derivative == 0 ? value.value[0]
+                                     : derivative == 1
+                                         ? value.jacobian(0, 0)
+                                         : value.hessians[0](0, 0);
+      }
+    }
+    const Eigen::MatrixXd weights = interpolation.fullPivLu().solve(targets);
+    REQUIRE((interpolation * weights - targets).norm() < 1e-10);
+    spec["weights"] = nlohmann::json::array();
+    for (long row = 0; row < count; ++row) {
+      std::vector<double> output(weights.cols());
+      for (long column = 0; column < weights.cols(); ++column)
+        output[column] = weights(row, column);
+      spec["weights"].push_back(output);
+    }
+    spec["constant"] = std::vector<double>(targets.cols(), 0);
+    return spec;
+  };
+  Eigen::MatrixXd energies(6, 1);
+  energies << 0, 0, 2, .2, 0, -1;
+  Eigen::MatrixXd source = Eigen::MatrixXd::Zero(4, 5);
+  source(1, 0) = .2;
+  source(3, 0) = -.2;
+  const double unit = 1 / std::sqrt(2.0);
+  nlohmann::json model = {
+      {"format", "eon.physical_quadratic_bath.v1"},
+      {"callback", "frozen"},
+      {"center", {0, 0, 0, 0, 0, 0}},
+      {"reaction_basis", {{-unit}, {0}, {0}, {unit}, {0}, {0}}},
+      {"bath_basis",
+       {{unit, 0, 0, 0, 0},
+        {0, 1, 0, 0, 0},
+        {0, 0, 1, 0, 0},
+        {unit, 0, 0, 0, 0},
+        {0, 0, 0, 1, 0},
+        {0, 0, 0, 0, 1}}},
+      {"coupling", {{.2, 0, 0, 0, 0}}},
+      {"curvatures", {1, 2, 3, 4, 5}},
+      {"qualification", "coupled quadratic reference regression"},
+      {"stationary_tolerance", 1e-7},
+      {"potential_model", hermiteModel(2, energies)},
+      {"source_model", hermiteModel(1, source)},
+      {"curvature_model",
+       {{"kind", "convex_endpoint_blend"},
+        {"coordinate", {1 / length}},
+        {"endpoint",
+         {{2, 0, 0, 0, 0},
+          {0, 2, 0, 0, 0},
+          {0, 0, 3, 0, 0},
+          {0, 0, 0, 4, 0},
+          {0, 0, 0, 0, 5}}}}}};
+  const auto filename = workdir / "physical-bath.json";
+  {
+    std::ofstream output(filename);
+    output << model;
+  }
+  const auto physical = PhysicalBathModel::read(filename.string(), 6);
+  const auto atR = physical.potentialModel->evaluate(Eigen::VectorXd::Zero(1));
+  const auto atS =
+      physical.potentialModel->evaluate(Eigen::VectorXd::Constant(1, length));
+  const MatrixXd hr =
+      physical.bath->fullHessian(Eigen::VectorXd::Zero(1), atR.hessians[0]);
+  const MatrixXd hs = physical.bath->fullHessian(
+      Eigen::VectorXd::Constant(1, length), atS.hessians[0]);
+  const double temperature = 400, beta = 1 / (kBoltzmann * temperature);
+  const double tc = crossoverTemperature(hs);
+  REQUIRE(temperature > tc);
+  const double expected = quantumHarmonicTstLogRate(hr, hs, beta, .2, 0) +
+                          std::log(parabolicFactor(temperature, tc)) -
+                          std::log(kTimeUnitSeconds);
+  const double bare =
+      quantumHarmonicTstLogRate(atR.hessians[0], atS.hessians[0], beta, .2, 0) +
+      std::log(parabolicFactor(temperature, tc)) - std::log(kTimeUnitSeconds);
+  REQUIRE(std::abs(expected - bare) > .01);
+  writeConfig("[Main]\njob=instanton\n[Potential]\npotential=lj\n[Instanton]\n"
+              "mode=rate\ntemperature=400\nbeads=8\nphysical_bath_filename="
+              "physical-bath.json\n");
+  const auto result = runJob();
+  REQUIRE(result.at("termination_reason") == "0");
+  REQUIRE(std::abs(std::stod(result.at("rate_parabolic_log")) - expected) <
+          1e-7);
+  REQUIRE(std::abs(std::stod(result.at("instanton_crossover_K")) - tc) < 1e-7);
+  REQUIRE(forceCalls_ == 0);
+}
+
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "Above crossover rates use only measured references without a seed",
+    "[job][instanton][integration][NativeForceCost]") {
+  class CountedPotential : public eonc::Potential {
+  public:
+    long calls = 0;
+    explicit CountedPotential(const Parameters &p)
+        : eonc::Potential(p) {}
+    void force(long atoms, const double *positions, const int *, double *forces,
+               double *energy, double *variance, const double *) override {
+      REQUIRE(atoms == 2);
+      ++calls;
+      std::fill(forces, forces + 3 * atoms, 0.0);
+      const double x = positions[0] - 2.0, y = positions[1], z = positions[2];
+      *energy = .25 * std::pow(x * x - 1.0, 2) + .5 * (y * y + z * z);
+      forces[0] = -x * (x * x - 1.0);
+      forces[1] = -y;
+      forces[2] = -z;
+      if (variance)
+        *variance = 0.0;
+    }
+  };
+  writeConfig("[Main]\njob=instanton\nremove_net_force=false\n"
+              "[Potential]\npotential=lj\n[Instanton]\nmode=rate\n"
+              "temperature=300\nbeads=8\n"
+              "reactant_hessian_filename=reactant-hessian.dat\n"
+              "saddle_hessian_filename=saddle-hessian.dat\n");
+  std::filesystem::current_path(workdir);
+  Parameters configuration;
+  configuration.load("config.ini");
+  auto potential = std::make_shared<CountedPotential>(configuration);
+  Matter matter(potential, configuration);
+  matter.resize(2);
+  matter.setCell(100.0 * Matrix3d::Identity());
+  for (long atom = 0; atom < 2; ++atom) {
+    matter.setAtomicNr(atom, 1);
+    matter.setMass(atom, 1.0);
+    matter.setFixed(atom, atom == 1);
+  }
+  for (const bool saddle : {false, true}) {
+    AtomMatrix positions = AtomMatrix::Zero(2, 3);
+    positions(0, 0) = saddle ? 2.0 : 1.0;
+    positions(1, 0) = 4.0;
+    matter.setPositions(positions);
+    const std::string name = saddle ? "saddle" : "reactant";
+    REQUIRE(eonc::io::io_ok(matter.matter2con(name + ".con")));
+    REQUIRE(eonc::io::io_ok(matter.matter2con(name + "-hessian.dat.con")));
+    MatrixXd matrix = MatrixXd::Identity(3, 3);
+    matrix(0, 0) = saddle ? -1.0 : 2.0;
+    std::ofstream output(name + "-hessian.dat");
+    output << matrix << '\n';
+  }
+  eonc::InstantonJob job(potential, configuration);
+  job.run();
+  const auto results = parseResultsDat("results.dat");
+  REQUIRE(results.at("termination_reason") == "0");
+  REQUIRE(potential->calls == 2);
+  REQUIRE(std::stod(results.at("sd_path_force_calls")) == 0.0);
+  REQUIRE_FALSE(std::filesystem::exists("instanton_sd_path.con"));
+  REQUIRE_FALSE(std::filesystem::exists("instanton.con"));
+  MatrixXd hr = MatrixXd::Identity(3, 3), hs = hr;
+  hr(0, 0) = 2.0;
+  hs(0, 0) = -1.0;
+  using namespace eonc::tunneling;
+  const double beta = 1.0 / (kBoltzmann * 300.0);
+  const double expected =
+      quantumHarmonicTstLogRate(hr, hs, beta, .25, 0) +
+      std::log(parabolicFactor(300.0, crossoverTemperature(hs))) -
+      std::log(kTimeUnitSeconds);
+  REQUIRE_THAT(std::stod(results.at("rate_parabolic_log")),
+               Catch::Matchers::WithinAbs(expected, 1e-8));
+}
+
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "Instanton job forwards explicit auxiliary owners to its native potential",
+    "[job][instanton][integration][OrbitalOwners]") {
+  class CountedPotential : public eonc::Potential {
+  public:
+    long calls = 0;
+    std::vector<long> receivedOwners;
+    bool supportsBatchEvaluation() const noexcept override { return true; }
+    void forceBatchOwned(long count, long atoms, const double *const *positions,
+                         const int *const *numbers, double *const *forces,
+                         double *energies, double *variances,
+                         const double *const *boxes,
+                         const long *owners) override {
+      REQUIRE(owners != nullptr);
+      for (long j = 0; j < count; ++j) {
+        receivedOwners.push_back(owners[j]);
+        force(atoms, positions[j], numbers[j], forces[j], energies + j,
+              variances ? variances + j : nullptr, boxes[j]);
+      }
+    }
+    explicit CountedPotential(const Parameters &p)
+        : eonc::Potential(p) {}
+    void force(long atoms, const double *positions, const int *, double *forces,
+               double *energy, double *variance, const double *) override {
+      REQUIRE(atoms == 2);
+      ++calls;
+      std::fill(forces, forces + 3 * atoms, 0.0);
+      const double x = positions[0] - 2.0, y = positions[1], z = positions[2];
+      *energy = .25 * std::pow(x * x - 1.0, 2) + .5 * (y * y + z * z);
+      forces[0] = -x * (x * x - 1.0);
+      forces[1] = -y;
+      forces[2] = -z;
+      if (variance)
+        *variance = 0.0;
+    }
+  };
+  writeConfig("[Main]\njob=instanton\nremove_net_force=false\n"
+              "[Potential]\npotential=lj\n[Instanton]\nmode=rate\n"
+              "temperature=300\nbeads=8\n"
+              "reactant_hessian_filename=reactant-hessian.dat\n"
+              "saddle_hessian_filename=saddle-hessian.dat\n");
+  std::filesystem::current_path(workdir);
+  Parameters configuration;
+  configuration.load("config.ini");
+  auto potential = std::make_shared<CountedPotential>(configuration);
+  Matter matter(potential, configuration);
+  matter.resize(2);
+  matter.setCell(100.0 * Matrix3d::Identity());
+  for (long atom = 0; atom < 2; ++atom) {
+    matter.setAtomicNr(atom, 1);
+    matter.setMass(atom, 1.0);
+    matter.setFixed(atom, atom == 1);
+  }
+  for (const bool saddle : {false, true}) {
+    AtomMatrix positions = AtomMatrix::Zero(2, 3);
+    positions(0, 0) = saddle ? 2.0 : 1.0;
+    positions(1, 0) = 4.0;
+    matter.setPositions(positions);
+    const std::string name = saddle ? "saddle" : "reactant";
+    REQUIRE(eonc::io::io_ok(matter.matter2con(name + ".con")));
+    REQUIRE(eonc::io::io_ok(matter.matter2con(name + "-hessian.dat.con")));
+    MatrixXd matrix = MatrixXd::Identity(3, 3);
+    matrix(0, 0) = saddle ? -1.0 : 2.0;
+    std::ofstream output(name + "-hessian.dat");
+    output << matrix << '\n';
+  }
+  eonc::InstantonJob job(potential, configuration);
+  job.run();
+  const auto results = parseResultsDat("results.dat");
+  REQUIRE(results.at("termination_reason") == "0");
+  REQUIRE(potential->calls == 2);
+  REQUIRE(potential->receivedOwners.size() == 2);
+  for (long owner : potential->receivedOwners)
+    REQUIRE(owner == eonc::potential_owner::auxiliary);
+  REQUIRE(std::stod(results.at("sd_path_force_calls")) == 0.0);
+  REQUIRE_FALSE(std::filesystem::exists("instanton_sd_path.con"));
+  REQUIRE_FALSE(std::filesystem::exists("instanton.con"));
+  MatrixXd hr = MatrixXd::Identity(3, 3), hs = hr;
+  hr(0, 0) = 2.0;
+  hs(0, 0) = -1.0;
+  using namespace eonc::tunneling;
+  const double beta = 1.0 / (kBoltzmann * 300.0);
+  const double expected =
+      quantumHarmonicTstLogRate(hr, hs, beta, .25, 0) +
+      std::log(parabolicFactor(300.0, crossoverTemperature(hs))) -
+      std::log(kTimeUnitSeconds);
+  REQUIRE_THAT(std::stod(results.at("rate_parabolic_log")),
+               Catch::Matchers::WithinAbs(expected, 1e-8));
 }
 
 } /* namespace tests */

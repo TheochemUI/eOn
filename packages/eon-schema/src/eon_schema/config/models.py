@@ -2690,6 +2690,10 @@ class InstantonConfig(BaseModel):
             "energies and forces are ignored."
         ),
     )
+    physical_bath_filename: str = Field(
+        default="",
+        description="Rate mode: physical bath model and mass-weighted retained-coordinate mapping.",
+    )
     beads: int = Field(
         default=256,
         ge=4,

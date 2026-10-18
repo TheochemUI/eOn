@@ -829,6 +829,8 @@ struct instanton_options_t {
   std::string initial_path{""};
   // Mode rate: a closed-ring geometry seed, with exactly beads frames.
   std::string initial_ring{""};
+  // Mode rate: measured physical bath and retained-coordinate mapping.
+  std::string physical_bath_filename{""};
   long beads{256};              // P, segments from one minimum to the other
   double beta_hbar_omega{30.0}; // imaginary time, in units of 1 / omega
   long max_iterations{5000};    // L-BFGS iterations on the action
