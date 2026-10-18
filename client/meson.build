@@ -2226,7 +2226,6 @@ if get_option('with_tests')
         ['test_xtsci_eindir', 'XtsciEindirTest.cpp', ''],
         ['test_lammps_loader', 'LammpsLoaderTest.cpp', ''],
         ['test_coverage_paths', 'CoveragePathsTest.cpp', 'neb_morse', 180],
-        ['test_socket_nwchem_listen', 'SocketNWChemListenTest.cpp', ''],
         ['test_plugin_loader', 'PluginLoaderTest.cpp', ''],
         ['test_ira_resource', 'IRAResourceTest.cpp', ''],
         ['test_artn_resource', 'ARTnResourceTest.cpp', ''],
@@ -2270,6 +2269,10 @@ if get_option('with_tests')
     # posix_spawn. On Windows the only case is skipped and Catch2 exits 4.
     if not is_windows
         test_array += [['test_client_timing', 'ClientTimingTest.cpp', '', 60]]
+        # BSD sockets (arpa/inet.h); SocketNWChem is not built on Windows.
+        test_array += [
+            ['test_socket_nwchem_listen', 'SocketNWChemListenTest.cpp', ''],
+        ]
     endif
     # Fortran potential tests: require Fortran shared libs at runtime
     if get_option('with_fortran')
