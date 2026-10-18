@@ -22,8 +22,8 @@
 #include "eon/Bundling.h"
 #include "eon/ConFileIO.h"
 #include "eon/GlobalOptimizationJob.h"
-#include "eon/Job.h"
 #include "eon/InstantonJob.h"
+#include "eon/Job.h"
 #include "eon/Matter.h"
 #include "eon/OHTSTJob.h"
 #include "eon/ParallelReplicaJob.h"
@@ -944,12 +944,21 @@ max_iterations = 200
   // minimum_energy = -44.326774; acceptance_ratio = 0.500
   double minEnergy = std::stod(results["minimum_energy"]);
   REQUIRE(minEnergy == Catch::Approx(-44.326774).epsilon(1e-4));
+  // The LJ13 global minimum (icosahedron) is -44.326801 epsilon in the
+  // Cambridge Cluster Database (Wales and Doye, J. Phys. Chem. A 101, 5111,
+  // 1997). The LJ potential shifts each pair by its value at the 15 A
+  // cutoff, 4 (15^-12 - 15^-6), and all 78 pairs of the cluster are inside
+  // it. The table gives six decimals.
+  const double rc6 = std::pow(15.0, -6.0);
+  const double lj13 = -44.326801 - 78.0 * 4.0 * (rc6 * rc6 - rc6);
+  REQUIRE(minEnergy == Catch::Approx(lj13).margin(1e-6));
 
-  // Force-call budget under default LBFGS (auto_scale=true SSOT). The legacy
-  // SVN dump recorded 1685 with an older path; default auto_scale adds an FD
-  // curvature probe on the first step of each minimize. Measured 1692 is the
-  // correct default-path total; keep a hard ceiling as a regression check.
-  REQUIRE(forceCalls_ <= 1692);
+  // The optimizer decides on correctly rounded reductions (eonc::exact), so
+  // the trajectory, and with it the count, is the same for every compiler,
+  // Eigen release and vector width. Default LBFGS (auto_scale) adds an FD
+  // curvature probe on the first step of each minimize; the SVN dump
+  // recorded 1685 with an older path.
+  REQUIRE(forceCalls_ == 1638);
 
   // 50% acceptance ratio
   double ar = std::stod(results["acceptance_ratio"]);
@@ -3597,13 +3606,15 @@ TEST_CASE_METHOD(
   REQUIRE(forceCalls_ == 0);
 }
 
-TEST_CASE_METHOD(JobIntegrationFixture,
-                 "Above crossover rates use only measured references without a seed",
-                 "[job][instanton][integration][NativeForceCost]") {
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "Above crossover rates use only measured references without a seed",
+    "[job][instanton][integration][NativeForceCost]") {
   class CountedPotential : public eonc::Potential {
   public:
     long calls = 0;
-    explicit CountedPotential(const Parameters &p) : eonc::Potential(p) {}
+    explicit CountedPotential(const Parameters &p)
+        : eonc::Potential(p) {}
     void force(long atoms, const double *positions, const int *, double *forces,
                double *energy, double *variance, const double *) override {
       REQUIRE(atoms == 2);
@@ -3661,9 +3672,10 @@ TEST_CASE_METHOD(JobIntegrationFixture,
   hs(0, 0) = -1.0;
   using namespace eonc::tunneling;
   const double beta = 1.0 / (kBoltzmann * 300.0);
-  const double expected = quantumHarmonicTstLogRate(hr, hs, beta, .25, 0) +
-                          std::log(parabolicFactor(300.0, crossoverTemperature(hs))) -
-                          std::log(kTimeUnitSeconds);
+  const double expected =
+      quantumHarmonicTstLogRate(hr, hs, beta, .25, 0) +
+      std::log(parabolicFactor(300.0, crossoverTemperature(hs))) -
+      std::log(kTimeUnitSeconds);
   REQUIRE_THAT(std::stod(results.at("rate_parabolic_log")),
                Catch::Matchers::WithinAbs(expected, 1e-8));
 }
