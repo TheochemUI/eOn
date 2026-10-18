@@ -1763,7 +1763,8 @@ int load_ini(const INIReader &ini, Parameters &params) {
         ini.Get("Instanton", "product_filename", o.product_filename);
     o.initial_path = ini.Get("Instanton", "initial_path", o.initial_path);
     o.initial_ring = ini.Get("Instanton", "initial_ring", o.initial_ring);
-    o.physical_bath_filename = ini.Get("Instanton", "physical_bath_filename", o.physical_bath_filename);
+    o.physical_bath_filename = ini.Get("Instanton", "physical_bath_filename",
+                                       o.physical_bath_filename);
     o.beads = ini.GetInteger("Instanton", "beads", o.beads);
     o.beta_hbar_omega =
         ini.GetReal("Instanton", "beta_hbar_omega", o.beta_hbar_omega);
