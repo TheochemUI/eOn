@@ -786,7 +786,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       o.pi_planes > 0 ||
       std::any_of(temperatures.begin(), temperatures.end(),
                   [tc](double temperature) { return temperature < tc; });
-  if (!profile && o.initial_ring.empty() && !physicalModel && needsSampledPath) {
+  if (!profile && o.initial_ring.empty() && !physicalModel &&
+      needsSampledPath) {
     pathQ.clear();
     pathV.clear();
     const long before = pot->forceCallCounter.load();
@@ -925,6 +926,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
             extras.emplace_back("parabolic_factor", factor);
             extras.emplace_back("rate_parabolic", kPar);
             extras.emplace_back("rate_parabolic_log", logPar - logSecond);
+            // The ring audit below is skipped on this path. The count is
+            // still the steepest-descent sampling, which did not run.
+            extras.emplace_back("sd_path_force_calls",
+                                static_cast<double>(sdPathForceCalls));
             if (std::isfinite(wkbLog)) {
               extras.emplace_back("rate_wkb_path_log", wkbLog);
             }
@@ -946,6 +951,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         status = RunStatus::FAIL_POTENTIAL_FAILED;
         if (last) {
           extras.emplace_back("instanton_temperature_K", temperature);
+          extras.emplace_back("sd_path_force_calls",
+                              static_cast<double>(sdPathForceCalls));
           if (std::isfinite(wkbLog)) {
             extras.emplace_back("rate_wkb_path_log", wkbLog);
           }
@@ -970,15 +977,19 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     tunneling::BatchPotential optimizerEvaluate = evaluate;
     if (fittedPotential) {
       const auto model = physicalModel->potentialModel;
-      optimizerEvaluate = [model, shift=o.energy_shift](const std::vector<VectorXd> &q,
-          std::vector<double> &v, std::vector<VectorXd> &g) {
-        v.resize(q.size()); g.resize(q.size());
-        for (size_t j=0;j<q.size();++j) {
-          const auto value=model->evaluate(q[j],shift);
-          v[j]=value.value[0]; g[j]=value.jacobian.row(0).transpose();
-        }
-      };
-      ro.physicalHessian = [model](const VectorXd &q)->MatrixXd {
+      optimizerEvaluate =
+          [model, shift = o.energy_shift](const std::vector<VectorXd> &q,
+                                          std::vector<double> &v,
+                                          std::vector<VectorXd> &g) {
+            v.resize(q.size());
+            g.resize(q.size());
+            for (size_t j = 0; j < q.size(); ++j) {
+              const auto value = model->evaluate(q[j], shift);
+              v[j] = value.value[0];
+              g[j] = value.jacobian.row(0).transpose();
+            }
+          };
+      ro.physicalHessian = [model](const VectorXd &q) -> MatrixXd {
         return model->evaluate(q).hessians[0];
       };
     }
@@ -1225,9 +1236,14 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
           const VectorXd &b = bathState.bathPositions[j];
           fullEnergies[j] += o.energy_shift + source.dot(b);
           if (physicalModel->bath->curvature)
-            fullEnergies[j] += .5*b.dot(physicalModel->bath->curvatureAt(inst.beads[j],0).value*b);
+            fullEnergies[j] +=
+                .5 *
+                b.dot(physicalModel->bath->curvatureAt(inst.beads[j], 0).value *
+                      b);
           else
-            fullEnergies[j] += .5*(physicalModel->bath->curvatures.array()*b.array().square()).sum();
+            fullEnergies[j] += .5 * (physicalModel->bath->curvatures.array() *
+                                     b.array().square())
+                                        .sum();
         }
       }
       Matter frame(reactant);
