@@ -478,7 +478,7 @@ TEST_CASE("isolated molecule pot hard-fails if PBC re-enabled (#188)",
   REQUIRE_THROWS_AS(m.getPotentialEnergy(), std::runtime_error);
 }
 
-TEST_CASE("PBC wrap matches floor and fmod on a wide matrix",
+TEST_CASE("PBC displacements match Euclidean images and positions match fmod",
           "[MatterTest][pbc][simd]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
@@ -510,10 +510,39 @@ TEST_CASE("PBC wrap matches floor and fmod on a wide matrix",
   diff(2, 2) = -2.3 * cell(2, 2);
 
   const Matrix3d inv = cell.inverse();
-  AtomMatrix frac = diff * inv;
-  frac.array() -= (frac.array() + 0.5).floor();
-  const AtomMatrix expect = frac * cell;
-  REQUIRE(m.pbc(diff).isApprox(expect, 1e-12));
+  const AtomMatrix frac = diff * inv;
+  AtomMatrix expect(n, 3);
+  for (long i = 0; i < n; ++i) {
+    // Fractional wrapping supplies an independent valid radius. Every
+    // shorter lattice image lies inside the inverse-column norm bounds.
+    Eigen::RowVector3d candidate = frac.row(i);
+    candidate.array() -= (candidate.array() + 0.5).floor();
+    candidate *= cell;
+    double bestSquared = candidate.squaredNorm();
+    const double radius = std::sqrt(bestSquared);
+    Eigen::Vector3i lower, upper;
+    for (int axis = 0; axis < 3; ++axis) {
+      const double bound = radius * inv.col(axis).norm();
+      lower(axis) = static_cast<int>(std::ceil(frac(i, axis) - bound));
+      upper(axis) = static_cast<int>(std::floor(frac(i, axis) + bound));
+    }
+    for (int a = lower(0); a <= upper(0); ++a)
+      for (int b = lower(1); b <= upper(1); ++b)
+        for (int c = lower(2); c <= upper(2); ++c) {
+          const Eigen::RowVector3d image =
+              diff.row(i) - Eigen::RowVector3d(a, b, c) * cell;
+          const double squared = image.squaredNorm();
+          if (squared < bestSquared - 1e-12) {
+            bestSquared = squared;
+            candidate = image;
+          }
+        }
+    expect.row(i) = candidate;
+  }
+  const AtomMatrix actual = m.pbc(diff);
+  REQUIRE(actual.isApprox(expect, 1e-12));
+  const AtomMatrix translations = (actual - diff) * inv;
+  REQUIRE(translations.isApprox(translations.array().round().matrix(), 1e-12));
 
   m.setPbcConvention(eonc::PbcConvention::Legacy);
   m.setPositions(diff);
