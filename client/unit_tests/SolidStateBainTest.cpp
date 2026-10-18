@@ -198,6 +198,11 @@ TEST_CASE("the solid-state band climbs the Bain path of an LJ crystal",
   // Arm the climbing image once the band force is under 0.5 eV/Angstrom
   // (ci_after), rgsaddle's default.
   neb.climbing_image.trigger_force = 0.5;
+  // The fractional-drift bound below is the departure a 1e-4 force
+  // tolerance allows. The default band slack (10x) stops while a side
+  // image still carries several times that force, which walks the basis
+  // off the inversion centre. Hold every image to the same tolerance.
+  neb.climbing_image.band_slack = 1.0;
   auto &opt = ParametersLoadAccess::optimizer_options(params);
   opt.method = eonc::OptType::FIRE;
   opt.max_move = 0.1;

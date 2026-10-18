@@ -2,6 +2,7 @@
 url = https://github.com/lode-org/minimage.git
 revision = v0.1.4
 depth = 1
+patch_directory = minimage
 
 [provide]
 minimage = minimage_dep

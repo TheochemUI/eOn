@@ -103,6 +103,9 @@ public:
    * This object should contain the settings needed for the metatomic model.
    */
   MetatomicPotential(const eonc::Parameters &params);
+  // The dlopen'd plugin cannot call Parameters::Parameters(): that
+  // constructor lives in the client library, which is linked later.
+  MetatomicPotential(const eonc::Parameters::metatomic_options_t &opts);
 
   /**
    * @brief Destructor.

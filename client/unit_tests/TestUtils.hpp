@@ -19,6 +19,7 @@
 #include "quill/Backend.h"
 #include "quill/Frontend.h"
 #include "quill/sinks/NullSink.h"
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <set>
@@ -96,13 +97,17 @@ public:
     std::set<std::thread::id> ids;
   };
 
-  explicit PerImageLJ(std::shared_ptr<Threads> threads)
+  explicit PerImageLJ(std::shared_ptr<Threads> threads,
+                      std::function<void()> on_force = {})
       : Potential(PotType::LJ),
         threads_{std::move(threads)},
+        on_force_{std::move(on_force)},
         lj_{makeLJ()} {}
-  PerImageLJ(std::shared_ptr<Threads> threads, eonc::IPotRegistry &registry)
+  PerImageLJ(std::shared_ptr<Threads> threads, eonc::IPotRegistry &registry,
+             std::function<void()> on_force = {})
       : Potential(PotType::LJ, registry),
         threads_{std::move(threads)},
+        on_force_{std::move(on_force)},
         lj_{makeLJ()} {}
 
   [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
@@ -111,7 +116,7 @@ public:
   }
   [[nodiscard]] std::shared_ptr<eonc::Potential>
   clonePotential() const override {
-    return std::make_shared<PerImageLJ>(threads_);
+    return std::make_shared<PerImageLJ>(threads_, on_force_);
   }
 
   void force(long nAtoms, const double *positions, const int *atomicNrs,
@@ -120,6 +125,9 @@ public:
     {
       std::lock_guard<std::mutex> lock(threads_->mu);
       threads_->ids.insert(std::this_thread::get_id());
+    }
+    if (on_force_) {
+      on_force_();
     }
     lj_->force(nAtoms, positions, atomicNrs, forces, energy, variance, box);
   }
@@ -131,6 +139,7 @@ private:
   }
 
   std::shared_ptr<Threads> threads_;
+  std::function<void()> on_force_;
   std::unique_ptr<eonc::Potential> lj_;
 };
 

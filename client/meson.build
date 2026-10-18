@@ -744,19 +744,148 @@ else
 endif
 _deps += [vesin_dep]
 
-minimage_dep = dependency(
-    'minimage', version: '>=0.1.4',
-    fallback: ['minimage', 'minimage_dep'],
-    default_options: ['with_tests=false', 'with_examples=false'],
-)
-_deps += [minimage_dep]
+# readcon-core, linkcell, and minimage each ship a Rust staticlib, and
+# each staticlib contains its own std/alloc. Linking more than one into
+# the client defines alloc twice. One umbrella staticlib depends on the
+# three crates as rlibs and is the only Rust archive on the link line.
+# Installed pkg-config copies are used only when all three are present,
+# so a partial install cannot mix one system archive with two wraps.
+readcon_order_srcs = []
+_readcon_runtime_dir = ''
+_have_readcon_dll_beside = false
+_gnu_linkers = ['ld.bfd', 'ld.gold', 'ld.lld', 'ld.mold']
 
-linkcell_dep = dependency(
-    'linkcell', version: '>=0.3.11',
-    fallback: ['linkcell', 'linkcell_dep'],
-    default_options: ['with_tests=false', 'with_examples=false', 'with_gpulite=disabled'],
+_mi_pc = dependency(
+    'minimage',
+    version: '>=0.1.4',
+    method: 'pkg-config',
+    required: false,
 )
-_deps += [linkcell_dep]
+_lc_pc = dependency(
+    'linkcell',
+    version: '>=0.3.11',
+    method: 'pkg-config',
+    required: false,
+)
+_rkr_pc = dependency(
+    'readcon-core',
+    version: '>=0.16.0',
+    method: 'pkg-config',
+    required: false,
+)
+if _mi_pc.found() and _lc_pc.found() and _rkr_pc.found()
+    minimage_dep = _mi_pc
+    linkcell_dep = _lc_pc
+    readcon_dep = _rkr_pc
+    _deps += [minimage_dep, linkcell_dep, readcon_dep]
+else
+    minimage_dep = subproject(
+        'minimage',
+        version: '>=0.1.4',
+        default_options: {
+            'with_tests': false,
+            'with_examples': false,
+        },
+    ).get_variable('minimage_dep')
+    linkcell_dep = subproject(
+        'linkcell',
+        version: '>=0.3.11',
+        default_options: {
+            'with_tests': false,
+            'with_examples': false,
+            'with_gpulite': 'disabled',
+        },
+    ).get_variable('linkcell_dep')
+    readcon_dep = subproject(
+        'readcon-core',
+        version: '>=0.16.0',
+        default_options: {
+            'with_tests': false,
+            'with_examples': false,
+            'default_library': 'static',
+        },
+    ).get_variable('readcon_dep')
+    _deps += [minimage_dep, linkcell_dep, readcon_dep]
+
+    cargo_prog = find_program('cargo', required: true)
+    rustc_prog = find_program('rustc', required: true)
+    _rust_ver = run_command(rustc_prog, '--version', check: true).stdout().strip().split()
+    if _rust_ver.length() < 2 or not _rust_ver[1].version_compare('>=1.88.0')
+        error('eon-rust-abi requires rustc >= 1.88 (readcon-core is edition 2024)')
+    endif
+    _rust_host = ''
+    foreach line : run_command(rustc_prog, '-vV', check: true).stdout().split('\n')
+        if line.startswith('host: ')
+            _rust_host = line.substring(6).strip()
+        endif
+    endforeach
+    if _rust_host == ''
+        error('rustc did not report its host target')
+    endif
+    # rustc on MSVC must drive link.exe. CARGO_TARGET_*_LINKER=cl fails
+    # the build script: LNK2001 memcpy, mainCRTStartup, __CxxFrameHandler3.
+    _rust_linker_key = '-'
+    _rust_linker = '-'
+    if cc.get_argument_syntax() != 'msvc'
+        _rust_linker_key = 'CARGO_TARGET_' + _rust_host.to_upper().replace('-', '_') + '_LINKER'
+        _rust_linker = cc.cmd_array()[-1]
+    endif
+    _eon_rust_profile = get_option('buildtype') == 'debug' ? 'debug' : 'release'
+    _eon_rust_lib = is_windows ? 'eon_rust_abi.lib' : 'libeon_rust_abi.a'
+    _abi_depfiles = [
+        'rust/eon-rust-abi/Cargo.toml',
+        'rust/eon-rust-abi/src/lib.rs',
+        'rust/eon-rust-abi/cargo_staticlib.py',
+    ]
+    if fs.is_file(meson.current_source_dir() / 'rust/eon-rust-abi/Cargo.lock')
+        _abi_depfiles += ['rust/eon-rust-abi/Cargo.lock']
+    endif
+    eon_rust_abi = custom_target(
+        'eon-rust-abi',
+        output: [_eon_rust_lib, 'eon_rust_abi_order.c'],
+        command: [
+            py,
+            files('rust/eon-rust-abi/cargo_staticlib.py'),
+            cargo_prog.full_path(),
+            meson.current_source_dir() / 'rust/eon-rust-abi/Cargo.toml',
+            meson.current_build_dir() / 'eon-rust-abi-target',
+            _eon_rust_profile,
+            '@OUTPUT0@',
+            '@OUTPUT1@',
+            _rust_linker_key,
+            _rust_linker,
+        ],
+        depend_files: files(_abi_depfiles),
+        build_by_default: true,
+    )
+    _rust_sys = []
+    if host_system == 'linux'
+        _rust_sys = [
+            dependency('threads'),
+            cc.find_library('dl', required: true),
+            cc.find_library('m', required: true),
+        ]
+    elif host_system == 'darwin'
+        _rust_sys = [
+            dependency('threads'),
+            cc.find_library('m', required: true),
+        ]
+    elif is_windows
+        _rust_sys = [
+            cc.find_library('ws2_32', required: true),
+            cc.find_library('userenv', required: true),
+            cc.find_library('bcrypt', required: true),
+            cc.find_library('ntdll', required: true),
+        ]
+    endif
+    _deps += [
+        declare_dependency(
+            link_args: [eon_rust_abi[0].full_path()],
+            sources: [eon_rust_abi[1]],
+            dependencies: _rust_sys,
+        ),
+    ]
+endif
 
 eoncbase_sources = [
     'fpe_handler.cpp',
@@ -784,83 +913,10 @@ eoncbase = static_library(
 
 _linkto += eoncbase
 
-# readcon-core: Rust-based .con file I/O (required).
-# Resolve before plugin subdirs. SocketNWChem includes <readcon-core.hpp>
-# and links rkr_*; library() snapshots dependencies at call time, so a
-# later _deps += readcon_dep does not reach libsocket_nwchem.so.
-# Prefer cargo-c / pkg-config install (conda-forge host package); fall back
-# to the meson subproject when the system package is not available.
-# ConFileIO needs 0.16 for set_spreads_from_flat, on top of 0.15's
-# displacements section (Hessian modes.con) and 0.13's clone, bulk
-# set_*_from_flat and compression_from_extension.
-readcon_dep = dependency(
-    'readcon-core',
-    version: '>=0.16.0',
-    method: 'pkg-config',
-    required: false,
-)
-readcon_order_srcs = []
-# Directory of the readcon DLL this build linked. A pixi env can put
-# another readcon_core.dll earlier on PATH; Windows then starts the
-# test with STATUS_ENTRYPOINT_NOT_FOUND (0xC0000139).
-_readcon_runtime_dir = ''
-_have_readcon_dll_beside = false
-if not readcon_dep.found()
-    readcon_proj = subproject(
-        'readcon-core',
-        version: '>=0.16.0',
-        default_options: {
-            'with_tests': false,
-            'with_examples': false,
-            'default_library': 'static',
-        },
-    )
-    readcon_dep = readcon_proj.get_variable('readcon_dep')
-    # Order stamp: cargo still emits cdylib+staticlib. partial_dependency
-    # drops declare_dependency.sources, so attach the stamp here. A
-    # readcon-core without the stamp contributes no sources.
-    readcon_order_srcs += readcon_proj.get_variable('readcon_order', [])
-    if is_windows
-        _readcon_dll = readcon_proj.get_variable('readcon_cargo')[0]
-        _readcon_runtime_dir = fs.parent(_readcon_dll.full_path())
-        # The loader searches the executable directory before PATH.
-        # A pixi readcon_core.dll on PATH is a different build and the
-        # process exits 0xC0000139 before main. The copy sits next to
-        # test_relax_engine.exe and eon_relax_engine.dll.
-        _readcon_dll_beside = custom_target(
-            'readcon-dll-beside-tests',
-            input: _readcon_dll,
-            output: 'readcon_core.dll',
-            command: [
-                py,
-                '-c',
-                'import shutil, sys; shutil.copyfile(sys.argv[1], sys.argv[2])',
-                '@INPUT@',
-                '@OUTPUT@',
-            ],
-            build_by_default: true,
-        )
-        _have_readcon_dll_beside = true
-    endif
-endif
-if is_windows
-    # On Windows, do not put cargo .lib/.dll on eonclib: llvm-ar treats
-    # the .lib as an archive name, and link rejects the DLL (LNK1107).
-    # The order stamp is attached on eclib sources; link_args stay on
-    # executables via _exe_deps. cargo-c/pkg-config has no custom_target.
-    # SocketNWChem is not built on Windows.
-    readcon_compile_dep = readcon_dep.partial_dependency(
-        includes: true,
-        compile_args: true,
-    )
-    _deps += [readcon_compile_dep]
-else
-    _deps += [readcon_dep]
-endif
-
-# readcon-db: corpus mirror. Resolve it the same way as readcon-core
-# (pkg-config, then the wrap). The shared library is not archived beside
-# the static readcon-core.
+# readcon-db stays a cdylib, so its Rust std stays inside that shared
+# library. The client dlopens it. GNU --as-needed and ld64
+# -dead_strip_dylibs drop a library with no link-time use, and only
+# those linkers get a keep flag. Resolve pkg-config, then the wrap.
 readcon_db_dep = dependency(
     'readcon-db',
     version: '>=0.1.6',
@@ -882,22 +938,60 @@ if not readcon_db_dep.found()
     _runtime_rpath += [fs.parent(_readcon_db_so.full_path())]
     # full_path() in link_args is a string, so ninja has no edge to the
     # cargo target and a parallel link runs while that library is absent.
-    # link_with is the order edge. The --no-as-needed path stays: the
-    # mirror resolves rkrdb_open at load time, and --as-needed drops a
-    # library with no link-time use. Windows keeps the DLL off link_with
-    # because link.exe rejects a DLL input (LNK1107).
-    _readcon_db_order = []
-    if not is_windows
-        _readcon_db_order = [_readcon_db_so]
+    # link_with is that edge on Unix. link.exe rejects a DLL (LNK1181 /
+    # LNK1107) and rejects -Wl (LNK4044); the MSVC input is the import
+    # library rustc writes beside the DLL.
+    _readcon_db_link_with = []
+    _readcon_db_sources = []
+    _readcon_db_link_args = []
+    _db_path = _readcon_db_so.full_path()
+    if cc.get_argument_syntax() == 'msvc'
+        _readcon_db_implib = custom_target(
+            'readcon-db-implib',
+            input: _readcon_db_so,
+            output: 'readcon_db.dll.lib',
+            command: [
+                py,
+                files('rust/copy_msvc_implib.py'),
+                '@INPUT@',
+                '@OUTPUT@',
+            ],
+            build_by_default: true,
+        )
+        _readcon_db_stamp = custom_target(
+            'readcon-db-order',
+            output: 'readcon_db_order.c',
+            command: [
+                py,
+                '-c',
+                'import pathlib, sys; pathlib.Path(sys.argv[1]).write_text("typedef int readcon_db_order;\\n")',
+                '@OUTPUT@',
+            ],
+            depends: [_readcon_db_implib],
+            build_by_default: true,
+        )
+        _readcon_db_link_args = [_readcon_db_implib.full_path()]
+        _readcon_db_sources = [_readcon_db_stamp]
+        _readcon_runtime_dir = fs.parent(_db_path)
+    else
+        _readcon_db_link_with = [_readcon_db_so]
+        _readcon_db_sources = [_readcon_db_so]
+        if cc.get_linker_id() in _gnu_linkers
+            _readcon_db_link_args = [
+                '-Wl,--no-as-needed',
+                _db_path,
+                '-Wl,--as-needed',
+            ]
+        elif cc.get_linker_id() == 'ld64'
+            _readcon_db_link_args = ['-Wl,-needed_library,' + _db_path]
+        else
+            _readcon_db_link_args = [_db_path]
+        endif
     endif
     readcon_db_dep = declare_dependency(
-        link_with: _readcon_db_order,
-        link_args: [
-            '-Wl,--no-as-needed',
-            _readcon_db_so.full_path(),
-            '-Wl,--as-needed',
-        ],
-        sources: [_readcon_db_so],
+        link_with: _readcon_db_link_with,
+        link_args: _readcon_db_link_args,
+        sources: _readcon_db_sources,
         compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
     )
 else
@@ -915,14 +1009,23 @@ else
         default_value: '',
     )
     if _pc_libdir != ''
-        foreach _name : ['libreadcon_db.so', 'libreadcon_db.dylib']
+        _db_names = ['libreadcon_db.so', 'libreadcon_db.dylib', 'readcon_db.dll.lib']
+        foreach _name : _db_names
             _cand = _pc_libdir / _name
             if fs.exists(_cand)
-                _readcon_db_keep = [
-                    '-Wl,--no-as-needed',
-                    _cand,
-                    '-Wl,--as-needed',
-                ]
+                if cc.get_argument_syntax() == 'msvc'
+                    _readcon_db_keep = [_cand]
+                elif cc.get_linker_id() in _gnu_linkers
+                    _readcon_db_keep = [
+                        '-Wl,--no-as-needed',
+                        _cand,
+                        '-Wl,--as-needed',
+                    ]
+                elif cc.get_linker_id() == 'ld64'
+                    _readcon_db_keep = ['-Wl,-needed_library,' + _cand]
+                else
+                    _readcon_db_keep = [_cand]
+                endif
                 break
             endif
         endforeach
@@ -1958,19 +2061,7 @@ eon_relax_capnp = custom_target(
 # with dlopen/LoadLibrary. A static archive is not a loadable module:
 # Windows CI sets EON_RELAX_ENGINE to libeon_relax_engine.a and
 # LoadLibrary returns null. default_library=static must not apply here.
-# Windows puts only readcon headers on _deps. The import library stays
-# off eonclib because llvm-ar and link reject the cargo DLL. This DLL
-# pulls eonclib in, so it needs the same import library the executables
-# get, without the cargo sources that contain the DLL.
 _engine_deps = _deps + _gprd_extra_deps + [capnp_dep]
-if is_windows
-    _engine_deps += readcon_dep.partial_dependency(
-        includes: true,
-        compile_args: true,
-        link_args: true,
-        links: true,
-    )
-endif
 eon_relax_engine = shared_library(
     'eon_relax_engine',
     ['relax/RelaxEngineAbi.cpp', eon_relax_capnp],
@@ -2029,29 +2120,7 @@ if get_option('with_metatomic')
     endif
 endif
 
-# Full deps including readcon link_args (for executables and tests only)
 _exe_deps = _deps + _gprd_extra_deps
-if is_windows
-    # _deps carries only readcon's partial dependency there (see the
-    # partial_dependency block above); executables need the link_args too.
-    # Elsewhere _deps already holds the full readcon_dep.
-    #
-    # Everything except sources. readcon-core declares
-    # `sources: readcon_cargo`, and on Windows that array holds the DLL
-    # alongside the import library. Meson hands a dependency's sources to
-    # the linker, and link rejects a DLL as input:
-    #   readcon_core.dll : fatal error LNK1107: invalid or corrupt file
-    # link_args already names the import library by full path, which is the
-    # half MSVC wants.
-    _exe_deps += [
-        readcon_dep.partial_dependency(
-            includes: true,
-            compile_args: true,
-            link_args: true,
-            links: true,
-        ),
-    ]
-endif
 
 # Export variable
 eclib_dep = declare_dependency(

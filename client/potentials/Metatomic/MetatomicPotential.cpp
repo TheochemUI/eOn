@@ -55,8 +55,12 @@ static torch::optional<std::string> normalize_variant(const std::string &s) {
 }
 
 MetatomicPotential::MetatomicPotential(const eonc::Parameters &params)
+    : MetatomicPotential(params.metatomic_options()) {}
+
+MetatomicPotential::MetatomicPotential(
+    const eonc::Parameters::metatomic_options_t &opts)
     : eonc::Potential(eonc::PotType::METATOMIC),
-      m_metatomic_opts{params.metatomic_options()},
+      m_metatomic_opts{opts},
       model_(torch::jit::Module()),
       device_type_(c10::DeviceType::CPU),
       device_(torch::Device(device_type_)) {

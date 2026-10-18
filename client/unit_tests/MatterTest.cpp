@@ -23,10 +23,14 @@
 #include "eon/Potential.h"
 #include "eon/Prefactor.h"
 #include <algorithm>
+#include <chrono>
 #include <cmath>
+#include <condition_variable>
 #include <filesystem>
 #include <limits>
 #include <memory>
+#include <mutex>
+#include <set>
 #include <stdexcept>
 #include <thread>
 #include <vector>
@@ -893,13 +897,37 @@ TEST_CASE("evaluateTogether on the image pool gives each system its serial "
           "result",
           "[MatterTest][parallel]") {
   using eonc::helpers::test::PerImageLJ;
+  if (std::thread::hardware_concurrency() == 1) {
+    SKIP("image pool needs two hardware threads");
+  }
+  eonc::detail::ImagePool::instance().ensureThreads(2);
+  if (eonc::detail::ImagePool::instance().threads() < 2) {
+    SKIP("image pool could not start two worker threads");
+  }
+  // A short LJ force finishes before a helper wakes, so the caller can
+  // record the only id even when the pool has workers. Hold the first
+  // arrivals until two distinct threads have entered force().
+  struct Arrival {
+    std::mutex mu;
+    std::condition_variable cv;
+    std::set<std::thread::id> ids;
+    void operator()() {
+      std::unique_lock<std::mutex> lock(mu);
+      ids.insert(std::this_thread::get_id());
+      cv.notify_all();
+      cv.wait_for(lock, std::chrono::seconds(5),
+                  [&] { return ids.size() >= 2; });
+    }
+  };
+  auto arrival = std::make_shared<Arrival>();
   Parameters params;
   auto serialThreads = std::make_shared<PerImageLJ::Threads>();
   auto poolThreads = std::make_shared<PerImageLJ::Threads>();
   std::vector<std::shared_ptr<Potential>> serialPots, poolPots;
   for (int k = 0; k < 8; ++k) {
     serialPots.push_back(std::make_shared<PerImageLJ>(serialThreads));
-    poolPots.push_back(std::make_shared<PerImageLJ>(poolThreads));
+    poolPots.push_back(
+        std::make_shared<PerImageLJ>(poolThreads, [arrival] { (*arrival)(); }));
   }
   auto serial = ljPairs(serialPots, params);
   auto pooled = ljPairs(poolPots, params);
@@ -914,9 +942,7 @@ TEST_CASE("evaluateTogether on the image pool gives each system its serial "
     REQUIRE(pooled[k]->getForces() == serial[k]->getForces());
   }
   REQUIRE(serialThreads->ids.size() == 1);
-  if (eonc::detail::ImagePool::instance().threads() > 0) {
-    REQUIRE(poolThreads->ids.size() > 1);
-  }
+  REQUIRE(poolThreads->ids.size() > 1);
 }
 
 TEST_CASE("evaluateTogether keeps an instance unsafe to share on one thread",
