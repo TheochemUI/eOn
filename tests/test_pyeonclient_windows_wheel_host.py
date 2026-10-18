@@ -150,4 +150,5 @@ def test_windows_client_stays_an_archive_and_ships_wheel_dlls():
     ).read_text(encoding="utf-8")
     assert "EON_MTA_POT_API MetatomicPotential(const eonc::Parameters &params);" in header
     assert "__declspec(dllexport)" in header
+    assert "__declspec(dllimport)" not in header
     assert meson.count("-DEON_MTA_POT_BUILD") == 2

@@ -40,15 +40,12 @@
 
 #pragma GCC diagnostic pop
 
-// A Windows DLL exports nothing unless asked. Potential.cpp calls this
-// constructor from the static client library, so the pot DLL has to
-// export it. The units that define the constructor set EON_MTA_POT_BUILD.
-#if defined(_WIN32)
-#if defined(EON_MTA_POT_BUILD)
+// A Windows DLL exports nothing unless asked. The units that define this
+// constructor set EON_MTA_POT_BUILD so the shared pot exports it. Callers
+// stay undecorated: the Windows metatomic CI links a static archive, and
+// dllimport would look for an __imp_ symbol that archive does not have.
+#if defined(_WIN32) && defined(EON_MTA_POT_BUILD)
 #define EON_MTA_POT_API __declspec(dllexport)
-#else
-#define EON_MTA_POT_API __declspec(dllimport)
-#endif
 #else
 #define EON_MTA_POT_API
 #endif
