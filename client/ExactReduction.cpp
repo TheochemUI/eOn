@@ -24,7 +24,6 @@
 #include <cmath>
 #include <cstdint>
 #include <cstring>
-#include <limits>
 
 #if defined(_MSC_VER) && !defined(__SIZEOF_INT128__) && defined(_M_X64)
 #include <intrin.h>
@@ -396,10 +395,13 @@ bool certifiedDot(const double *x, const double *y, std::size_t n,
     }
     return false;
   }
-  const double hUp =
-      0.5 * (std::nextafter(r, std::numeric_limits<double>::infinity()) - r);
-  const double hDn =
-      0.5 * (r - std::nextafter(r, -std::numeric_limits<double>::infinity()));
+  // Neighbours of the normal double r by stepping its bit pattern; their
+  // distances to r are exact, and so are the halves.
+  const auto rb = std::bit_cast<uint64_t>(r);
+  const double above = std::bit_cast<double>(r > 0.0 ? rb + 1 : rb - 1);
+  const double below = std::bit_cast<double>(r > 0.0 ? rb - 1 : rb + 1);
+  const double hUp = 0.5 * (above - r);
+  const double hDn = 0.5 * (r - below);
   constexpr double kMargin = 1.0 - 0x1p-30;
   if (d + E < hUp * kMargin && d - E > -hDn * kMargin) {
     out = r;

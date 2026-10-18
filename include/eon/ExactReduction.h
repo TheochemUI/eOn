@@ -89,6 +89,14 @@ template <typename A>
   return std::sqrt(squaredNorm(x));
 }
 
+/// sqrt of orderedDot(x, x): reproducible, not correctly rounded. For the
+/// per-atom lengths of a step, where an exact sum per atom costs more than
+/// the step.
+template <typename A>
+[[nodiscard]] double orderedNorm(const Eigen::MatrixBase<A> &x) {
+  return std::sqrt(orderedDot(x, x));
+}
+
 /// x / norm(x), or zero below min_norm (the safemath convention).
 template <typename A>
 [[nodiscard]] typename A::PlainObject

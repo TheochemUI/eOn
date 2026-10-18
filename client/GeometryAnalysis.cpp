@@ -270,7 +270,7 @@ void eonc::geometry::translationRemove(Matter &m1, const Matter &m2) {
 double eonc::geometry::maxAtomMotion(const AtomMatrix v1) {
   double max = 0.0;
   for (Eigen::Index i = 0; i < v1.rows(); ++i) {
-    max = std::max(max, eonc::exact::norm(v1.row(i)));
+    max = std::max(max, eonc::exact::orderedNorm(v1.row(i)));
   }
   return max;
 }
@@ -283,7 +283,7 @@ double eonc::geometry::maxAtomMotionV(const VectorXd v1) {
     return eonc::exact::norm(v1);
   }
   for (long i = 0; i + 3 <= n; i += 3) {
-    double norm = eonc::exact::norm(v1.segment<3>(i));
+    double norm = eonc::exact::orderedNorm(v1.segment<3>(i));
     if (max < norm) {
       max = norm;
     }
@@ -291,7 +291,7 @@ double eonc::geometry::maxAtomMotionV(const VectorXd v1) {
   // Handle trailing elements (vector size not multiple of 3)
   long rem = n % 3;
   if (rem > 0) {
-    double norm = eonc::exact::norm(v1.tail(rem));
+    double norm = eonc::exact::orderedNorm(v1.tail(rem));
     if (max < norm) {
       max = norm;
     }
@@ -529,7 +529,7 @@ void eonc::geometry::pushApart(std::shared_ptr<Matter> m1, double minDistance) {
         AtomMatrix delta(1, 3);
         delta.row(0) = r1.row(i) - r1.row(j);
         delta = m1->pbc(delta);
-        const double d = eonc::exact::norm(delta);
+        const double d = eonc::exact::orderedNorm(delta);
         if (!(d < cut)) {
           continue;
         }
