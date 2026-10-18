@@ -3266,9 +3266,13 @@ TEST_CASE("a dynamics search keeps the barrier after one step",
 #ifndef _WIN32
 TEST_CASE("the client rejects an unknown flag and a missing structure",
           "[client][args]") {
+  // meson test exports EONCLIENT; /proc/self/exe exists only on Linux.
+  const char *fromEnv = std::getenv("EONCLIENT");
   const auto client =
-      std::filesystem::read_symlink("/proc/self/exe").parent_path() /
-      "eonclient";
+      fromEnv != nullptr
+          ? std::filesystem::path(fromEnv)
+          : std::filesystem::read_symlink("/proc/self/exe").parent_path() /
+                "eonclient";
   if (!std::filesystem::exists(client)) {
     return;
   }
