@@ -123,11 +123,13 @@ RGPOT_ENGINE_API void rgpot_engine_destroy(RgpotEnginePot *pot);
  * Energy + forces. transform (with transform_user) may be NULL;
  * variance may be NULL. Returns 0 on success.
  */
-RGPOT_ENGINE_API int rgpot_engine_force(
-    RgpotEnginePot *pot, long nAtoms, const double *positions,
-    const int *atomicNrs, double *forces, double *energy, double *variance,
-    const double *box, rgpot_engine_coord_transform transform,
-    void *transform_user);
+RGPOT_ENGINE_API int rgpot_engine_force(RgpotEnginePot *pot, long nAtoms,
+                                        const double *positions,
+                                        const int *atomicNrs, double *forces,
+                                        double *energy, double *variance,
+                                        const double *box,
+                                        rgpot_engine_coord_transform transform,
+                                        void *transform_user);
 
 /* ------------------------------------------------------------------ */
 /* Optional symbols: probe with dlsym; absence means unsupported.     */
@@ -156,8 +158,8 @@ RGPOT_ENGINE_API int rgpot_engine_force_batch(
  * valid only while the value is unchanged. Static engines omit the
  * symbol (equivalent to a counter frozen at 0).
  */
-RGPOT_ENGINE_API unsigned long long rgpot_engine_model_state(
-    const RgpotEnginePot *pot);
+RGPOT_ENGINE_API unsigned long long
+rgpot_engine_model_state(const RgpotEnginePot *pot);
 
 /** Why a learning engine delegated a point to the oracle. */
 typedef enum {
@@ -193,8 +195,9 @@ typedef struct {
  * require an oracle before the first evaluation and fail create-time
  * validation without one.
  */
-RGPOT_ENGINE_API int rgpot_engine_set_callbacks(
-    RgpotEnginePot *pot, const RgpotEngineCallbacks *callbacks);
+RGPOT_ENGINE_API int
+rgpot_engine_set_callbacks(RgpotEnginePot *pot,
+                           const RgpotEngineCallbacks *callbacks);
 
 /**
  * Runtime hint/tunable message: a Cap'n Proto flat-array whose root is
@@ -215,9 +218,9 @@ RGPOT_ENGINE_API int rgpot_engine_hint(RgpotEnginePot *pot, const void *msg,
  * builds its own complete graph). strict zero permits over-inclusion.
  */
 typedef struct {
-  double cutoff;  /**< Angstrom */
-  int full_list;  /**< 1 full, 0 half */
-  int strict;     /**< 0: over-inclusion tolerated */
+  double cutoff; /**< Angstrom */
+  int full_list; /**< 1 full, 0 half */
+  int strict;    /**< 0: over-inclusion tolerated */
 } RgpotEngineNeighborOptions;
 
 /**
@@ -225,9 +228,9 @@ typedef struct {
  * count (call with capacity 0 to size). Declarations may change after
  * on_model_update; hosts re-query on that boundary.
  */
-RGPOT_ENGINE_API long rgpot_engine_neighbor_options(
-    const RgpotEnginePot *pot, RgpotEngineNeighborOptions *opts,
-    long capacity);
+RGPOT_ENGINE_API long
+rgpot_engine_neighbor_options(const RgpotEnginePot *pot,
+                              RgpotEngineNeighborOptions *opts, long capacity);
 
 #ifdef __cplusplus
 }

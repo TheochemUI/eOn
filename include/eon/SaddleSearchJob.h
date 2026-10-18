@@ -50,8 +50,7 @@ public:
    * \param rt process runtime
    */
   SaddleSearchJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
-      : Job(std::move(parameters), rt),
-        fCallsSaddle{0} {}
+      : Job(std::move(parameters), rt), fCallsSaddle{0} {}
   //! Saddle Search Job Deconstructor
   ~SaddleSearchJob(void) = default;
   //! Kicks off the Saddle Search

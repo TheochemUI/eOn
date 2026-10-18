@@ -22,14 +22,18 @@ namespace eonc::tunneling {
 inline MatrixXd readReferenceHessian(const std::string &filename,
                                      const Matter &reference, long dimension) {
   if (dimension <= 0 || reference.numberOfAtoms() <= 0) {
-    throw std::invalid_argument("instanton: empty reference Hessian coordinates");
+    throw std::invalid_argument(
+        "instanton: empty reference Hessian coordinates");
   }
   Matter recorded(reference);
   if (!io::io_ok(recorded.con2matter(filename + ".con"))) {
-    throw std::runtime_error("instanton: cannot read Hessian geometry " + filename + ".con");
+    throw std::runtime_error("instanton: cannot read Hessian geometry " +
+                             filename + ".con");
   }
   auto mismatch = [&]() {
-    throw std::invalid_argument("instanton: Hessian reference geometry or mass metric differs: " + filename);
+    throw std::invalid_argument(
+        "instanton: Hessian reference geometry or mass metric differs: " +
+        filename);
   };
   if (recorded.numberOfAtoms() != reference.numberOfAtoms() ||
       recorded.getPeriodic() != reference.getPeriodic() ||
@@ -37,7 +41,8 @@ inline MatrixXd readReferenceHessian(const std::string &filename,
       (recorded.getCell() - reference.getCell()).cwiseAbs().maxCoeff() > 1e-8) {
     mismatch();
   }
-  const AtomMatrix delta = reference.pbc(recorded.getPositions() - reference.getPositions());
+  const AtomMatrix delta =
+      reference.pbc(recorded.getPositions() - reference.getPositions());
   if (!delta.allFinite() || delta.cwiseAbs().maxCoeff() > 1e-8) {
     mismatch();
   }
@@ -55,25 +60,30 @@ inline MatrixXd readReferenceHessian(const std::string &filename,
     }
   }
   if (dimension <= 0 || dimension != coordinates) {
-    throw std::invalid_argument("instanton: Hessian coordinate dimension differs: " + filename);
+    throw std::invalid_argument(
+        "instanton: Hessian coordinate dimension differs: " + filename);
   }
   std::ifstream stream(filename);
   MatrixXd matrix(dimension, dimension);
   for (long i = 0; i < dimension; ++i) {
     for (long j = 0; j < dimension; ++j) {
       if (!(stream >> matrix(i, j)) || !std::isfinite(matrix(i, j))) {
-        throw std::runtime_error("instanton: incomplete or non-finite reference Hessian: " + filename);
+        throw std::runtime_error(
+            "instanton: incomplete or non-finite reference Hessian: " +
+            filename);
       }
     }
   }
   std::string extra;
   if (stream >> extra) {
-    throw std::runtime_error("instanton: extra reference Hessian data: " + filename);
+    throw std::runtime_error("instanton: extra reference Hessian data: " +
+                             filename);
   }
   const double scale = std::max(1.0, matrix.cwiseAbs().maxCoeff());
   if ((matrix - matrix.transpose()).cwiseAbs().maxCoeff() >
       128.0 * std::numeric_limits<double>::epsilon() * scale) {
-    throw std::invalid_argument("instanton: reference Hessian is asymmetric: " + filename);
+    throw std::invalid_argument("instanton: reference Hessian is asymmetric: " +
+                                filename);
   }
   return (0.5 * (matrix + matrix.transpose())).eval();
 }

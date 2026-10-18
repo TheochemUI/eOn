@@ -89,8 +89,7 @@ template <typename A>
 
 /// sqrt of the correctly rounded squared norm; IEEE sqrt is itself
 /// correctly rounded, so this is reproducible as well.
-template <typename A>
-[[nodiscard]] double norm(const Eigen::MatrixBase<A> &x) {
+template <typename A> [[nodiscard]] double norm(const Eigen::MatrixBase<A> &x) {
   return std::sqrt(squaredNorm(x));
 }
 
@@ -104,8 +103,8 @@ template <typename A>
 
 /// x / norm(x), or zero below min_norm (the safemath convention).
 template <typename A>
-[[nodiscard]] typename A::PlainObject
-normalized(const Eigen::MatrixBase<A> &x, double min_norm = 1e-300) {
+[[nodiscard]] typename A::PlainObject normalized(const Eigen::MatrixBase<A> &x,
+                                                 double min_norm = 1e-300) {
   const double n = norm(x);
   if (n < min_norm) [[unlikely]] {
     return A::PlainObject::Zero(x.rows(), x.cols());

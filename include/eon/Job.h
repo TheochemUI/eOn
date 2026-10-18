@@ -69,10 +69,8 @@ protected:
   struct ExclusivePotential {};
 
   Job(std::unique_ptr<Parameters> parameters, Runtime &rt, ExclusivePotential)
-      : jtype{parameters->main_options().job},
-        params{*std::move(parameters)},
-        owned_runtime_{},
-        runtime_{&rt},
+      : jtype{parameters->main_options().job}, params{*std::move(parameters)},
+        owned_runtime_{}, runtime_{&rt},
         ownedPot{helpers::makePotential(params.potential_options().potential,
                                         params, rt)} {}
 
@@ -101,11 +99,9 @@ public:
   explicit Job(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters), std::make_unique<Runtime>()) {}
   Job(std::shared_ptr<Potential> potPassed, const Parameters &parameters)
-      : jtype{parameters.main_options().job},
-        params{parameters},
+      : jtype{parameters.main_options().job}, params{parameters},
         owned_runtime_{std::make_unique<Runtime>()},
-        runtime_{owned_runtime_.get()},
-        pot{std::move(potPassed)} {}
+        runtime_{owned_runtime_.get()}, pot{std::move(potPassed)} {}
   virtual ~Job() = default;
   //! Virtual run; used solely for dynamic dispatch
   virtual std::vector<std::string> run() = 0;

@@ -116,7 +116,6 @@ public:
   explicit IRAResource(Key);
 
 private:
-
   bool m_loaded{false};
   dynlib::Handle m_handle{};
 
