@@ -75,15 +75,18 @@ public:
       std::lock_guard<std::mutex> lock(mutex_);
       work_ = &work;
       n_ = n;
-      next_.store(1);
       failure_ = nullptr;
       // Only as many helpers as there are images beyond the caller's.
       helpers_ = std::min<long>(static_cast<long>(threads_.size()), n - 1);
+      // The caller owns image 1 and helper t image t + 2; the rest go to
+      // whoever is free. Without the reserved image a caller that drains
+      // short images before a helper wakes runs the whole band itself.
+      next_.store(helpers_ + 2);
       active_ = helpers_;
       ++generation_;
     }
     wake_.notify_all();
-    drain();
+    drain(1);
     std::unique_lock<std::mutex> lock(mutex_);
     done_.wait(lock, [this] { return active_ == 0; });
     work_ = nullptr;
@@ -119,8 +122,8 @@ private:
       std::rethrow_exception(failure);
   }
 
-  void drain() {
-    for (long i = next_.fetch_add(1); i <= n_; i = next_.fetch_add(1)) {
+  void drain(long first) {
+    for (long i = first; i <= n_; i = next_.fetch_add(1)) {
       try {
         (*work_)(i);
       } catch (...) {
@@ -143,7 +146,7 @@ private:
           return;
         seen = generation_;
       }
-      drain();
+      drain(index + 2);
       {
         std::lock_guard<std::mutex> lock(mutex_);
         if (--active_ == 0)
