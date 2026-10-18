@@ -2768,7 +2768,8 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     if (f > 1 && v.ok) {
       if (exactAtX) {
         exactNegatives = v.climb.negative;
-      } else if (v.climb.negative > std::max(1L, exactNegatives) &&
+      } else if (v.gmax < options.forceTolerance &&
+                 v.climb.negative > std::max(1L, exactNegatives) &&
                  driftRefreshes < kMaxDriftRefreshes) {
         ++driftRefreshes;
             for (size_t j = 0; j < x.size(); ++j) {
