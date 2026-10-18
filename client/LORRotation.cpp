@@ -30,10 +30,9 @@ LORRotation::LORRotation(std::shared_ptr<Matter> matter,
                          const Parameters &params,
                          std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
-  auto x1Pot =
-      (pot->needsPerImageInstance() && params.main_options().parallel)
-          ? eonc::helpers::sharePotential(eonc::helpers::makePotential(params))
-          : pot;
+  auto x1Pot = (pot->needsPerImageInstance() && params.main_options().parallel)
+                   ? eonc::helpers::makeImagePotential(*pot, params)
+                   : pot;
   x0 = std::make_shared<Matter>(pot, params);
   x1 = std::make_shared<Matter>(x1Pot, params);
   *x0 = *matter;

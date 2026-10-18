@@ -10,13 +10,17 @@
 ** https://github.com/TheochemUI/eOn
 */
 
+#include "../ForEachImage.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/NudgedElasticBand.h"
+#include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 #include "eon/XtsciBand.h"
+#include <algorithm>
 #include <memory>
 #include <rgsaddle.h>
+#include <tuple>
 #include <vector>
 
 #include <cmath>
@@ -143,6 +147,114 @@ TEST_CASE("rgsaddle band evaluates each moved image once per step",
 #endif
 }
 
+TEST_CASE("rgsaddle band keeps a zero force on fixed atoms",
+          "[neb][rgsaddle]") {
+  // eOn drops the mean force of an image only when every atom is free.
+  // Removing it with fixed atoms present pushes those atoms; the host pins
+  // them back after every step, and the L-BFGS band then records that
+  // correction as a curvature pair and cycles at max_move.
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::neb_options(params).opt_method = OptType::LBFGS;
+  ParametersLoadAccess::neb_options(params).image_count = 3;
+  ParametersLoadAccess::neb_options(params).max_iterations = 3;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 1e-12;
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = false;
+  ParametersLoadAccess::neb_options(params).climbing_image.ocineb.use_mmf =
+      false;
+  ParametersLoadAccess::neb_options(params).initialization.method =
+      NEBInit::LINEAR;
+  ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = std::make_shared<Matter>(pot, params);
+  auto product = std::make_shared<Matter>(pot, params);
+  reactant->con2matter(std::string("reactant.con"));
+  product->con2matter(std::string("reactant.con"));
+  const long nAtoms = reactant->numberOfAtoms();
+  for (long j = nAtoms / 2; j < nAtoms; ++j) {
+    reactant->setFixed(j, 1);
+    product->setFixed(j, 1);
+  }
+  auto shifted = product->getPositions();
+  shifted(0, 0) += 0.5;
+  product->setPositions(shifted);
+  NudgedElasticBand neb(reactant, product, params, pot);
+  static_cast<void>(neb.compute());
+  double freeForce = 0.0;
+  for (long i = 1; i <= neb.numImages; ++i) {
+    const AtomMatrix &force = *neb.projectedForce[static_cast<size_t>(i)];
+    for (long j = 0; j < nAtoms; ++j) {
+      CAPTURE(i, j);
+      if (neb.path[static_cast<size_t>(i)]->getFixed(j)) {
+        REQUIRE(force.row(j).cwiseAbs().maxCoeff() == 0.0);
+      } else {
+        freeForce = std::max(freeForce, force.row(j).cwiseAbs().maxCoeff());
+      }
+    }
+  }
+  REQUIRE(freeForce > 0.0);
+}
+
+TEST_CASE("rgsaddle band hands its highest image and tangents to the host",
+          "[neb][rgsaddle][climbing_image]") {
+  // The session projects the force, so the host never runs its own
+  // projection while the band steps; sp.con (the highest image), the
+  // climbing image and neb.dat (the tangents) must still describe the
+  // accepted band, not the first one.
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::neb_options(params).opt_method = OptType::LBFGS;
+  ParametersLoadAccess::neb_options(params).image_count = 5;
+  ParametersLoadAccess::neb_options(params).max_iterations = 15;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 1e-12;
+  ParametersLoadAccess::neb_options(params).climbing_image.ocineb.use_mmf =
+      false;
+  ParametersLoadAccess::neb_options(params).initialization.method =
+      NEBInit::LINEAR;
+  ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = std::make_shared<Matter>(pot, params);
+  auto product = std::make_shared<Matter>(pot, params);
+  reactant->con2matter(std::string("reactant.con"));
+  product->con2matter(std::string("reactant.con"));
+  auto shifted = product->getPositions();
+  shifted(0, 0) += 0.5;
+  product->setPositions(shifted);
+  NudgedElasticBand neb(reactant, product, params, pot);
+  static_cast<void>(neb.compute());
+  REQUIRE(neb.lastIteration() > 1);
+
+  long highest = 1;
+  for (long i = 2; i <= neb.numImages; ++i) {
+    if (neb.path[static_cast<size_t>(i)]->getPotentialEnergy() >
+        neb.path[static_cast<size_t>(highest)]->getPotentialEnergy()) {
+      highest = i;
+    }
+  }
+  REQUIRE(static_cast<long>(neb.maxEnergyImage) == highest);
+  REQUIRE(neb.climbingImage >= 0);
+  REQUIRE(neb.climbingImage <= neb.numImages);
+
+  std::vector<AtomMatrix> held;
+  for (long i = 1; i <= neb.numImages; ++i) {
+    held.push_back(*neb.tangent[static_cast<size_t>(i)]);
+  }
+  // Every image holds its evaluation, so this projection costs no force
+  // call and rebuilds the tangents from the final band.
+  const size_t before = pot->forceCallCounter;
+  neb.updateForces();
+  REQUIRE(pot->forceCallCounter == before);
+  for (long i = 1; i <= neb.numImages; ++i) {
+    CAPTURE(i);
+    REQUIRE(held[static_cast<size_t>(i - 1)].isApprox(
+        *neb.tangent[static_cast<size_t>(i)], 1e-12));
+  }
+}
+
 TEST_CASE("rgsaddle band surface serves whole, interior and one-image "
           "requests",
           "[neb][rgsaddle]") {
@@ -219,6 +331,64 @@ TEST_CASE("rgsaddle band surface serves whole, interior and one-image "
   // Any other row count is a shape error, not a silent mismatch.
   auto [rcBad, eBad] = request(band_n - 1, 0, 0, -1);
   REQUIRE(rcBad == RGSADDLE_SHAPE);
+}
+
+TEST_CASE("rgsaddle band surface evaluates its images on the image pool",
+          "[neb][rgsaddle][parallel]") {
+  using eonc::helpers::test::PerImageLJ;
+  auto run = [](bool parallel, std::shared_ptr<PerImageLJ::Threads> threads) {
+    Parameters params;
+    ParametersLoadAccess::main_options(params).parallel = parallel;
+    ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+    ParametersLoadAccess::neb_options(params).opt_method = OptType::FIRE;
+    ParametersLoadAccess::neb_options(params).image_count = 7;
+    ParametersLoadAccess::neb_options(params).max_iterations = 20;
+    ParametersLoadAccess::neb_options(params).force_tolerance = 1e-12;
+    ParametersLoadAccess::neb_options(params).climbing_image.enabled = true;
+    ParametersLoadAccess::neb_options(params).initialization.method =
+        NEBInit::LINEAR;
+    ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+    ParametersLoadAccess::optimizer_options(params).max_move = 0.05;
+    PotRegistry local;
+    auto pot = std::make_shared<PerImageLJ>(threads, local);
+    auto reactant = std::make_shared<Matter>(pot, params);
+    auto product = std::make_shared<Matter>(pot, params);
+    reactant->con2matter(std::string("reactant.con"));
+    product->con2matter(std::string("reactant.con"));
+    auto shifted = product->getPositions();
+    shifted(0, 0) += 0.5;
+    shifted(0, 1) -= 0.3;
+    product->setPositions(shifted);
+    NudgedElasticBand neb(reactant, product, params, pot);
+    static_cast<void>(neb.compute());
+    std::vector<AtomMatrix> positions;
+    std::vector<double> energies;
+    for (long i = 0; i <= neb.numImages + 1; ++i) {
+      positions.push_back(neb.path[static_cast<size_t>(i)]->getPositions());
+      energies.push_back(
+          neb.path[static_cast<size_t>(i)]->getPotentialEnergy());
+    }
+    return std::make_tuple(positions, energies, local.total_force_calls(),
+                           neb.lastIteration());
+  };
+  auto serialThreads = std::make_shared<PerImageLJ::Threads>();
+  auto poolThreads = std::make_shared<PerImageLJ::Threads>();
+  const auto [sPos, sE, sCalls, sIter] = run(false, serialThreads);
+  const auto [pPos, pE, pCalls, pIter] = run(true, poolThreads);
+  REQUIRE(sIter == pIter);
+  REQUIRE(sIter > 0);
+  // Two endpoints, then at least the interior once per step: the
+  // registry of the job's potential sees every per-image instance.
+  REQUIRE(sCalls == pCalls);
+  REQUIRE(sCalls >= 2 + 7 * static_cast<size_t>(sIter));
+  for (size_t i = 0; i < sPos.size(); ++i) {
+    REQUIRE(sPos[i] == pPos[i]);
+    REQUIRE(sE[i] == pE[i]);
+  }
+  REQUIRE(serialThreads->ids.size() == 1);
+  if (eonc::detail::ImagePool::instance().threads() > 0) {
+    REQUIRE(poolThreads->ids.size() > 1);
+  }
 }
 
 } // namespace tests

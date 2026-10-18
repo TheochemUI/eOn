@@ -2168,6 +2168,7 @@ if get_option('with_tests')
         ['test_epicenters', 'EpiCentersTest.cpp', 'Pt_Heptamer_FrozenLayers'],
         ['test_storage_order', 'StorageOrderTest.cpp', ''],
         ['test_for_each_image', 'ForEachImageTest.cpp', ''],
+        ['test_logger_backend', 'LoggerBackendTest.cpp', ''],
         # neb_morse workdir: displacement synth test needs reactant.con (#189)
         ['test_helpers', 'HelperFunctionsTest.cpp', 'neb_morse'],
         ['test_bundling', 'BundlingTest.cpp', ''],
@@ -2184,6 +2185,7 @@ if get_option('with_tests')
         ['test_neb_lj', 'NEBMorseTest.cpp', 'neb_morse'],
         ['test_relax_engine', 'RelaxEngineAbiTest.cpp', 'neb_morse'],
         ['test_solid_state_neb', 'SolidStateNEBTest.cpp', ''],
+        ['test_solid_state_bain', 'SolidStateBainTest.cpp', ''],
         ['test_neb_regression', 'NEBRegressionTest.cpp', 'neb_lj13'],
         ['test_dimer', 'DimerTest.cpp', 'neb_morse'],
         ['test_saddle', 'SaddleSearchTest.cpp', 'neb_morse'],
