@@ -13,6 +13,10 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/NudgedElasticBand.h"
+#ifdef WITH_RGSADDLE
+#include "eon/XtsciBand.h"
+#include <rgsaddle.h>
+#endif
 
 #include <cmath>
 #include <memory>
@@ -358,6 +362,47 @@ TEST_CASE("the interior cell lengthens where the path prefers it",
     REQUIRE(cell(2, 2) == Catch::Approx(4.0).margin(1e-6));
   }
 }
+
+#ifdef WITH_RGSADDLE
+// With rgsaddle linked, opt_method lbfgs runs the band through
+// XtsciBand. A solid-state band there must move the cells and refresh
+// eOn's joint convergence force every step (an older band kept the
+// cells fixed and the force at its first value).
+TEST_CASE("the rgsaddle band moves the cells and refreshes the force",
+          "[neb][solid_state][rgsaddle]") {
+  Band solid(true, 0.4);
+  ParametersLoadAccess::neb_options(solid.params).opt_method =
+      eonc::OptType::LBFGS;
+  auto neb = solid.neb();
+  const double reactantL = neb->path.front()->getCell()(0, 0);
+#if RGSADDLE_ABI_MINOR >= 17
+  neb->updateForces();
+  std::vector<double> force{neb->convergenceForce()};
+  {
+    eonc::XtsciBand band(*neb, solid.params);
+    for (int k = 0; k < 4; ++k) {
+      band.step(0.15);
+      force.push_back(neb->convergenceForce());
+    }
+  }
+  for (size_t k = 1; k < force.size(); ++k) {
+    INFO("step " << k << " force " << force[k]);
+    REQUIRE(force[k] != force[k - 1]);
+  }
+  REQUIRE(force.back() < force.front());
+  const auto status = neb->compute();
+  REQUIRE(status == eonc::NudgedElasticBand::NEBStatus::GOOD);
+  REQUIRE(neb->path[2]->getCell()(0, 0) > reactantL + 0.05);
+  for (long i = 1; i <= neb->numImages; ++i) {
+    const Matrix3d cell = neb->path[static_cast<size_t>(i)]->getCell();
+    REQUIRE(cell(0, 1) == Catch::Approx(0.0).margin(1e-12));
+    REQUIRE(cell(1, 2) == Catch::Approx(0.0).margin(1e-12));
+  }
+#else
+  REQUIRE_THROWS_AS(neb->compute(), std::runtime_error);
+#endif
+}
+#endif
 
 TEST_CASE("solid_state refuses a potential that does not report stress",
           "[neb][solid_state]") {

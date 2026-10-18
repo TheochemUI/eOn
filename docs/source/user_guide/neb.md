@@ -133,6 +133,11 @@ Hooke's law converges with chords from 0.093 to 0.289 A and image energies
 SVN's first-step finite-difference L-BFGS scaling converges to SVN's band,
 0.000135, 0.056816 and 1.800656 eV, in 209.
 
+For a climbing-image band the spacing carries no answer: the climbing
+image does, the barrier and the saddle geometry, and both laws give the
+same climbing image. Unequal spacing at convergence is acceptable there;
+spacing matters for a plain NEB.
+
 On a well-posed path the two laws agree. For the LJ13 reactant and product
 in `client/unit_tests/data/systems/neb_lj13`, with the climbing image on
 and 3, 7, 15 and 31 images, the climbing image lies within 5e-6 eV and
@@ -267,6 +272,13 @@ Jacobian remains the fixed factor from the two endpoint volumes. The dimer
 on the physical potential finds the classical saddle. A dimer on the
 ring-polymer potential is the instanton, so it is not a step of this band.
 The transmission coefficient is not a band iteration.
+
+With `-Dwith_rgsaddle=true`, `opt_method` lbfgs, fire and xtsci step the
+band on rgsaddle's solid-state band (rgsaddle ABI minor 17 or newer). The
+image cells move with the atoms, rgsaddle reads each image's Cauchy stress
+from the same force call, and eOn rebuilds its own joint projection for
+the convergence test after every step. An older rgsaddle refuses a
+solid-state band instead of stepping it with the cells fixed.
 
 `ci_mmf`, `zoom_neb`, `onsager_machlup`, `neb_doubly_nudged`, and
 `neb_elastic_band` are refused. The climbing image itself is the joint-space

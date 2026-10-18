@@ -75,6 +75,12 @@ public:
     }
   }
   double convergenceForce(void);
+  /// Host bookkeeping for a band whose projected force came from the
+  /// rgsaddle session: the highest interior image, the climbing image
+  /// (`ciIndex`, or none when it is not an interior image) and the
+  /// tangents, from the images' current energies and positions. The
+  /// projected force stays as the session assembled it.
+  void adoptSessionProjection(long ciIndex);
   void findExtrema(void);
   void printImageData(bool writeToFile = false, size_t idx = 0);
 
