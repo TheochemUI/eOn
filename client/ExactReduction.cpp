@@ -27,8 +27,8 @@ namespace {
 // A finite double is M * 2^e with M < 2^53 and e >= -1074, so a product of
 // two is P * 2^E with P < 2^106 and E in [-2148, 1942]. Bit k of the
 // accumulator weighs 2^(k - kBase). Chunks of 32 bits sit in signed 64-bit
-// words: every addend piece is below 2^32, so a word absorbs 2^31 pieces
-// before it can overflow, and signs need no borrow chains.
+// words: every addend piece is below 2^32, so a word absorbs 2^30 pieces
+// between carry normalisations, and signs need no borrow chains.
 constexpr int kBase = 2148;
 constexpr int kTopBit = 1942 + 106 + kBase; // one past the highest product bit
 constexpr int kChunks = kTopBit / 32 + 4;   // headroom for carries and sign
@@ -80,8 +80,9 @@ inline void mul64(uint64_t a, uint64_t b, uint64_t &hi, uint64_t &lo) {
 
 class Accumulator {
 public:
-  // Words outside [m_lo, m_hi) are never read before they are cleared, so
-  // a short vector touches a few words, not all ~130.
+  Accumulator() { m_w.fill(0); }
+
+  // Adds +-(hi, lo) * 2^e.
   void add(uint64_t hi, uint64_t lo, int e, bool neg) {
     if ((hi | lo) == 0) {
       return;
@@ -93,56 +94,47 @@ public:
     const uint64_t t0 = lo << s;
     const uint64_t t1 = (hi << s) | (s != 0 ? lo >> (64 - s) : 0);
     const uint64_t t2 = s != 0 ? hi >> (64 - s) : 0;
-    const std::array<int64_t, 5> piece{
-        static_cast<int64_t>(t0 & kMask32), static_cast<int64_t>(t0 >> 32),
-        static_cast<int64_t>(t1 & kMask32), static_cast<int64_t>(t1 >> 32),
-        static_cast<int64_t>(t2 & kMask32)};
-    cover(c, c + 5);
-    if (neg) {
-      for (int k = 0; k < 5; ++k) {
-        m_w[c + k] -= piece[k];
-      }
-    } else {
-      for (int k = 0; k < 5; ++k) {
-        m_w[c + k] += piece[k];
-      }
-    }
+    const int64_t sg = neg ? -1 : 1;
+    int64_t *w = m_w.data() + c;
+    w[0] += sg * static_cast<int64_t>(t0 & kMask32);
+    w[1] += sg * static_cast<int64_t>(t0 >> 32);
+    w[2] += sg * static_cast<int64_t>(t1 & kMask32);
+    w[3] += sg * static_cast<int64_t>(t1 >> 32);
+    w[4] += sg * static_cast<int64_t>(t2 & kMask32);
+    m_lo = c < m_lo ? c : m_lo;
+    m_hi = c + 5 > m_hi ? c + 5 : m_hi;
   }
 
-  // Carry every word into [0, 2^32); the carry out of the top word is the
-  // sign (0 or -1).
-  int64_t normalize() {
-    if (m_lo >= m_hi) {
-      return 0;
+  // Folds the carries back into words in [0, 2^32), keeping the sign in
+  // the top word, so another 2^30 pieces fit.
+  void fold() {
+    const int64_t sign = normalize();
+    if (m_hi > m_lo) {
+      m_w[static_cast<std::size_t>(m_hi - 1)] += sign * (int64_t{1} << 32);
     }
-    cover(m_lo, kChunks);
-    int64_t carry = 0;
-    for (int k = m_lo; k < kChunks; ++k) {
-      const int64_t v = m_w[k] + carry;
-      m_w[k] = v & static_cast<int64_t>(kMask32);
-      carry = v >> 32; // arithmetic shift: floor division
-    }
-    m_hi = kChunks;
-    return carry;
   }
 
   double round() {
     const int64_t sign = normalize();
-    if (m_lo >= m_hi) {
+    if (m_hi <= m_lo) {
       return 0.0;
     }
     const bool neg = sign < 0;
     if (neg) {
-      // Two's complement over the covered words; the words below m_lo are
-      // zero and stay zero.
+      // Value = W - 2^(32 m_hi); its magnitude is the two's complement of W
+      // over the words [m_lo, m_hi), whose lower words are zero.
       int64_t carry = 1;
-      for (int k = m_lo; k < kChunks; ++k) {
+      for (int k = m_lo; k < m_hi; ++k) {
         const int64_t v = ((~m_w[k]) & static_cast<int64_t>(kMask32)) + carry;
         m_w[k] = v & static_cast<int64_t>(kMask32);
         carry = v >> 32;
       }
+      if (carry != 0) {
+        m_w[static_cast<std::size_t>(m_hi)] = carry;
+        ++m_hi;
+      }
     }
-    int h = kChunks - 1;
+    int h = m_hi - 1;
     while (h >= m_lo && m_w[h] == 0) {
       --h;
     }
@@ -166,81 +158,65 @@ public:
         ++lsb;
       }
     }
-    // m < 2^53 times a power of two in range is exact; past 2^1024 it is
+    // m <= 2^53 times a power of two in range is exact; past 2^1024 it is
     // the correctly rounded infinity.
     const double r = std::ldexp(static_cast<double>(m), lsb - kBase);
     return neg ? -r : r;
   }
 
-  void maybeNormalize(std::size_t count) {
-    if (count % kNormalizeEvery == 0) {
-      // Fold the carries back; the sign word stays in range because the
-      // true sum is far below 2^(32 * kChunks - 1).
-      const int64_t sign = normalize();
-      m_w[kChunks - 1] += sign * (int64_t{1} << 32);
-    }
-  }
-
 private:
-  void cover(int lo, int hi) {
-    if (m_lo >= m_hi) {
-      for (int k = lo; k < hi; ++k) {
-        m_w[k] = 0;
-      }
-      m_lo = lo;
-      m_hi = hi;
-      return;
+  // Carries every word of [m_lo, m_hi) into [0, 2^32) and returns the sign
+  // (0 or -1) that the carry out of the top word leaves.
+  int64_t normalize() {
+    if (m_hi <= m_lo) {
+      return 0;
     }
-    for (int k = lo; k < m_lo; ++k) {
-      m_w[k] = 0;
+    int64_t carry = 0;
+    int k = m_lo;
+    for (; k < m_hi; ++k) {
+      const int64_t v = m_w[k] + carry;
+      m_w[k] = v & static_cast<int64_t>(kMask32);
+      carry = v >> 32; // arithmetic shift: floor division
     }
-    for (int k = m_hi; k < hi; ++k) {
-      m_w[k] = 0;
+    // A positive carry, or a negative one below -1, spills into the zero
+    // words above.
+    while (carry != 0 && carry != -1) {
+      m_w[static_cast<std::size_t>(k)] = carry & static_cast<int64_t>(kMask32);
+      carry >>= 32;
+      ++k;
     }
-    m_lo = lo < m_lo ? lo : m_lo;
-    m_hi = hi > m_hi ? hi : m_hi;
+    m_hi = k;
+    return carry;
   }
 
-  bool bit(int k) const {
-    if (k < 0 || (k >> 5) < m_lo) {
-      return false;
-    }
-    return ((m_w[k >> 5] >> (k & 31)) & 1) != 0;
-  }
+  bool bit(int k) const { return ((m_w[k >> 5] >> (k & 31)) & 1) != 0; }
 
   // Any set bit strictly below bit k.
   bool below(int k) const {
-    if (k <= 0) {
-      return false;
-    }
     const int c = k >> 5;
     for (int j = m_lo; j < c; ++j) {
       if (m_w[j] != 0) {
         return true;
       }
     }
-    if (c < m_lo) {
-      return false;
-    }
     const uint64_t partMask = (uint64_t{1} << (k & 31)) - 1;
     return (static_cast<uint64_t>(m_w[c]) & partMask) != 0;
   }
 
-  // Bits [k, k + width) for width <= 53; k >= 0.
+  // Bits [k, k + width) for width <= 53.
   uint64_t bits(int k, int width) const {
     const int c = k >> 5;
     const int off = k & 31;
-    const auto word = [&](int w) -> uint64_t {
-      return (w >= m_lo && w < kChunks) ? static_cast<uint64_t>(m_w[w]) : 0;
-    };
-    const uint64_t low = word(c) | (word(c + 1) << 32);
-    const uint64_t high = word(c + 2);
+    const uint64_t low = static_cast<uint64_t>(m_w[c]) |
+                         (static_cast<uint64_t>(m_w[c + 1]) << 32);
+    const uint64_t high = static_cast<uint64_t>(m_w[c + 2]);
     const uint64_t v = (low >> off) | (off != 0 ? high << (64 - off) : 0);
     return v & ((uint64_t{1} << width) - 1);
   }
 
-  std::array<int64_t, kChunks> m_w; // left uninitialised; see cover()
-  int m_lo = 0;
+  // Two spare words keep the three-word reads in bits() in bounds.
+  std::array<int64_t, kChunks + 2> m_w;
+  int m_lo = kChunks;
   int m_hi = 0;
 };
 
@@ -262,7 +238,9 @@ double dot(const double *x, const double *y, std::size_t n) {
     uint64_t lo;
     mul64(a.m, b.m, hi, lo);
     acc.add(hi, lo, a.e + b.e, a.neg != b.neg);
-    acc.maybeNormalize(i + 1);
+    if ((i + 1) % kNormalizeEvery == 0) [[unlikely]] {
+      acc.fold();
+    }
   }
   return acc.round();
 }
@@ -279,7 +257,9 @@ double sum(const double *x, std::size_t n) {
       return plain;
     }
     acc.add(0, a.m, a.e, a.neg);
-    acc.maybeNormalize(i + 1);
+    if ((i + 1) % kNormalizeEvery == 0) [[unlikely]] {
+      acc.fold();
+    }
   }
   return acc.round();
 }
