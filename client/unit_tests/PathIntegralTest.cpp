@@ -507,3 +507,37 @@ TEST_CASE("Internal-only GLE and empty one-bead GLE retain a Langevin centroid",
     std::filesystem::remove(path);
   }
 }
+
+TEST_CASE("Complete centroid covariance uses supplied kB and bead scaling once",
+          "[path-integral][CentroidGLE]") {
+  const auto path = std::filesystem::temp_directory_path() /
+                    "eon-centroid-covariance-scale.txt";
+  auto make = [&](long beads, double scale, double kB) {
+    std::ofstream out(path);
+    REQUIRE(out);
+    out.precision(17);
+    out << beads << " 1\n";
+    for (long mode = 0; mode < beads; ++mode) {
+      out << "2.4\n" << (mode == 0 ? beads * scale : 0.0) << '\n';
+    }
+    out.close();
+    Options options = baseOptions(beads);
+    options.thermostat = Thermostat::Piglet;
+    options.gleFile = path.string();
+    options.temperature = 19.0;
+    options.kB = kB;
+    return makePolymer(options);
+  };
+  const RingPolymer one = make(1, 3.0, 2.5);
+  const RingPolymer four = make(4, 3.0, 2.5);
+  const RingPolymer hotterMatrix = make(4, 12.0, 2.5);
+  const RingPolymer largerKB = make(4, 3.0, 10.0);
+  const double reference = one.centroidVelocity()[0];
+  REQUIRE(reference != 0.0);
+  REQUIRE(four.centroidVelocity()[0] == Catch::Approx(reference).margin(1e-12));
+  REQUIRE(hotterMatrix.centroidVelocity()[0] ==
+          Catch::Approx(2.0 * reference).margin(1e-12));
+  REQUIRE(largerKB.centroidVelocity()[0] ==
+          Catch::Approx(2.0 * reference).margin(1e-12));
+  std::filesystem::remove(path);
+}
