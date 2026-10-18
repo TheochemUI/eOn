@@ -1,0 +1,58 @@
+diff --git i/meson.build w/meson.build
+index 9f5aeeb..1179d9c 100644
+--- i/meson.build
++++ w/meson.build
+@@ -43,7 +43,12 @@ if _rust_host == ''
+   error('rustc did not report its host target')
+ endif
+ _rust_linker_key = 'CARGO_TARGET_' + _rust_host.to_upper().replace('-', '_') + '_LINKER'
+-_cargo_env = {_rust_linker_key: cc.cmd_array()[-1]}
++# rustc drives an MSVC-style target through link.exe. cl takes none of
++# the link.exe arguments rustc passes, so the build script fails to link.
++_cargo_env = {}
++if cc.get_argument_syntax() != 'msvc'
++  _cargo_env = {_rust_linker_key: cc.cmd_array()[-1]}
++endif
+ _rust_sources = run_command(
+   py, '-c',
+   'from pathlib import Path; print("\\n".join(str(p) for p in sorted(Path("src").rglob("*.rs"))))',
+@@ -121,11 +126,26 @@ minimage_built_h = custom_target(
+   build_by_default: true,
+ )
+ 
+-_use_static = meson.is_subproject() or get_option('default_library') == 'static'
++# A Rust staticlib carries its own copy of the Rust standard library. A
++# consumer that links a second Rust staticlib gets two definitions of the
++# same std symbols; link_mode=shared links the cdylib instead, whose std
++# stays internal. Windows always links the archive: the cdylib's import
++# library is not among the outputs.
++_link_mode = get_option('link_mode')
++if _link_mode == 'auto'
++  _use_static = meson.is_subproject() or get_option('default_library') == 'static'
++else
++  _use_static = _link_mode == 'static' or host_machine.system() == 'windows'
++endif
+ _link_idx = _use_static ? 1 : 0
++_link_args = [minimage_cargo[_link_idx].full_path()]
++if not _use_static and meson.is_subproject()
++  # The cdylib stays in the build tree of a subproject.
++  _link_args += ['-Wl,-rpath,' + _mbproot]
++endif
+ 
+ minimage_dep = declare_dependency(
+-  link_args: [minimage_cargo[_link_idx].full_path()],
++  link_args: _link_args,
+   sources: minimage_built_h,
+   include_directories: include_directories('include'),
+   dependencies: rust_sys,
+diff --git i/meson_options.txt w/meson_options.txt
+index a2400ec..8b5acbe 100644
+--- i/meson_options.txt
++++ w/meson_options.txt
+@@ -4,3 +4,6 @@ option('with_tests', type: 'boolean', value: true,
+   description: 'Run cargo test from meson test')
+ option('with_examples', type: 'boolean', value: true,
+   description: 'Build C and C++ example programs')
++option('link_mode', type: 'combo', choices: ['auto', 'static', 'shared'],
++  value: 'auto',
++  description: 'auto: the archive as a subproject or with default_library=static, else the shared library. shared: the cdylib, also as a subproject (not on Windows)')

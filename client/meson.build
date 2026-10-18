@@ -711,10 +711,20 @@ else
 endif
 _deps += [vesin_dep]
 
+# readcon-core and linkcell are Rust static libraries too. Each Rust
+# archive carries its own copy of the Rust standard library, so a second
+# one on the link line defines the same std symbols twice (GNU ld: multiple
+# definition of __rustc::rust_panic). The subproject links its shared
+# library instead; the wrap patch adds link_mode and keeps the archive on
+# Windows, where the readcon-core DLL leaves one Rust archive.
 minimage_dep = dependency(
     'minimage', version: '>=0.1.4',
     fallback: ['minimage', 'minimage_dep'],
-    default_options: ['with_tests=false', 'with_examples=false'],
+    default_options: [
+        'with_tests=false',
+        'with_examples=false',
+        'link_mode=shared',
+    ],
 )
 _deps += [minimage_dep]
 
@@ -857,13 +867,19 @@ if not readcon_db_dep.found()
     if not is_windows
         _readcon_db_order = [_readcon_db_so]
     endif
-    readcon_db_dep = declare_dependency(
-        link_with: _readcon_db_order,
-        link_args: [
+    # --no-as-needed is a GNU ld option; ld64 keeps every dylib it is
+    # given and rejects the flag.
+    _readcon_db_link = [_readcon_db_so.full_path()]
+    if host_system != 'darwin'
+        _readcon_db_link = [
             '-Wl,--no-as-needed',
             _readcon_db_so.full_path(),
             '-Wl,--as-needed',
-        ],
+        ]
+    endif
+    readcon_db_dep = declare_dependency(
+        link_with: _readcon_db_order,
+        link_args: _readcon_db_link,
         sources: [_readcon_db_so],
         compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
     )
@@ -885,11 +901,14 @@ else
         foreach _name : ['libreadcon_db.so', 'libreadcon_db.dylib']
             _cand = _pc_libdir / _name
             if fs.exists(_cand)
-                _readcon_db_keep = [
-                    '-Wl,--no-as-needed',
-                    _cand,
-                    '-Wl,--as-needed',
-                ]
+                _readcon_db_keep = [_cand]
+                if host_system != 'darwin'
+                    _readcon_db_keep = [
+                        '-Wl,--no-as-needed',
+                        _cand,
+                        '-Wl,--as-needed',
+                    ]
+                endif
                 break
             endif
         endforeach
@@ -1613,6 +1632,10 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
     # _deps stops growing.
     _deps += [mts_dep, torch_deps]
     _args += ['-DWITH_METATOMIC']
+    # The C ABI (MetatomicCAbi.cpp, loaded by MetatomicLoader) builds a
+    # default eonc::Parameters. Its constructor applies the schema defaults
+    # in eonclib, which links this library, so the symbol resolves from the
+    # host process at load time and the link may leave it undefined.
     metatomic_pot = library(
         'metatomic_pot',
         [
@@ -1623,6 +1646,7 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
         cpp_args: _args,
         link_with: _linkto,
         include_directories: _incdirs,
+        override_options: ['b_lundef=false'],
         install: true,
     )
     potentials += [metatomic_pot]
