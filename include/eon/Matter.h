@@ -31,10 +31,9 @@ namespace eonc {
 class BondBoost;
 class Parameters;
 
-// Position / difference MIC conventions (issue #176). Legacy matches historical
-// applyPeriodicBoundary (fmod to [0,1) fractional). MinimumImage matches the
-// existing eonc::pbc::apply path used for interatomic distances (frac in
-// [-0.5,0.5)).
+// Absolute positions use either fractional [0,1) or centered [-0.5,0.5)
+// representatives. Euclidean closest-image differences are independent of
+// this position convention.
 enum class PbcConvention {
   Legacy = 0,
   MinimumImage = 1,
