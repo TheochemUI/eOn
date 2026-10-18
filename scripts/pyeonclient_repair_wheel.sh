@@ -67,6 +67,10 @@ repair_one() {
     find "$work" "${PYEONCLIENT_BUILD_ROOT:-$PWD}" /project \
       \( -name 'librgpot.so' -o -name 'librgpot.so.*' \) \
       2>/dev/null | head -40
+    # The minimage and linkcell subprojects link their cdylibs.
+    find "$work" "${PYEONCLIENT_BUILD_ROOT:-$PWD}" /project \
+      \( -name 'libminimage.so' -o -name 'liblinkcell.so' \) \
+      2>/dev/null | head -20
   )
   # meson-python build dir still holds wrap librgpot after prefix/lib is
   # not packed. Seed the vendor dir from those paths and write the SONAME.
