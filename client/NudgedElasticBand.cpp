@@ -261,7 +261,8 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
   // Both endpoints in one call, so two calculator groups take one each.
   {
     Matter *const ends[] = {path[0].get(), path[numImages + 1].get()};
-    eonc::evaluateTogether(*pot, ends);
+    const long owners[] = {imageOwner(0), imageOwner(numImages + 1)};
+    eonc::evaluateTogether(*pot, ends, owners);
   }
   reactantEnergy = path[0]->getPotentialEnergy();
   climbingImage = 0;
@@ -729,11 +730,12 @@ void NudgedElasticBand::updateForces(bool ci_active) {
       }
 
       std::vector<double> energies(nDirty), variances(nDirty);
-      // Image i is system i - 1 to the potential's router, whether or not
-      // the images before it are dirty.
+      // Image i is system i - 1 to the potential's router (imageOwner),
+      // whether or not the images before it are dirty.
       std::vector<long> owners(static_cast<size_t>(nDirty));
       for (long j = 0; j < nDirty; j++) {
-        owners[static_cast<size_t>(j)] = dirty[static_cast<size_t>(j)] - 1;
+        owners[static_cast<size_t>(j)] =
+            imageOwner(static_cast<size_t>(dirty[static_cast<size_t>(j)]));
       }
       pot->forceBatchOwned(nDirty, atoms, posVec.data(), nrsVec.data(),
                            frcVec.data(), energies.data(), variances.data(),

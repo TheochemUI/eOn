@@ -410,7 +410,11 @@ private:
 /// Evaluates every system that needs a force update. With a potential
 /// that batches, the dirty systems go through forceBatch in one call, so
 /// calculator groups take them together; otherwise each computes on its
-/// own. Systems that are current are left alone.
-void evaluateTogether(Potential &pot, std::span<Matter *const> systems);
+/// own. Systems that are current are left alone. `owners`, when given,
+/// holds one identity per system (a NEB image), which a batch passes to
+/// forceBatchOwned so the potential keeps per-system state (stored
+/// orbitals) under it; empty, the batch carries no owners.
+void evaluateTogether(Potential &pot, std::span<Matter *const> systems,
+                      std::span<const long> owners = {});
 
 } // namespace eonc

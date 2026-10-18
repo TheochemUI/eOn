@@ -17,7 +17,6 @@
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <vector>
 
 class RGPotEngine;
 
@@ -57,14 +56,6 @@ public:
                        const int *const *atomicNrs, double *const *forces,
                        double *energies, double *variances,
                        const double *const *boxes, const long *owners) override;
-  /// A NEB names its band here. A batch without owners (the rgsaddle band
-  /// optimisers, the endpoint pair) then takes each system's band index as
-  /// its owner, as the classic band update does: image i owns i - 1, the
-  /// reactant `images`, the product `images + 1`. Without it a system
-  /// would take its batch position, which the endpoint batch and the first
-  /// interior batch share.
-  void
-  bindBand(const std::vector<std::shared_ptr<eonc::Matter>> &path) override;
   /// NWChem molecular SCF does not support PBC; CPMD may be periodic.
   [[nodiscard]] bool requiresIsolatedMoleculeLayout() const noexcept override {
     return backend_ == "nwchemc";
@@ -109,6 +100,4 @@ private:
   eonc::CalculatorGroupUse use_;
   // Driver only: which group evaluates which system.
   std::unique_ptr<eonc::GroupSchedule> schedule_;
-  // The band bindBand named; a system is matched by its position buffer.
-  std::vector<std::weak_ptr<eonc::Matter>> band_;
 };

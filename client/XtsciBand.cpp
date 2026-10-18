@@ -137,7 +137,9 @@ int xtsciBandSurface(void *user, void *request) {
     }
     const auto dof = static_cast<Eigen::Index>(3 * nAtoms);
     std::vector<Matter *> carried;
+    std::vector<long> owners;
     carried.reserve(static_cast<size_t>(rows));
+    owners.reserve(static_cast<size_t>(rows));
     for (int64_t r = 0; r < rows; ++r) {
       const auto i = static_cast<size_t>(first + r);
       AtomMatrix pos = AtomMatrix::Map(req->positions + r * dof, nAtoms, 3);
@@ -148,10 +150,12 @@ int xtsciBandSurface(void *user, void *request) {
       // come back from the image's own cache.
       moveTo(*neb->path[i], pos);
       carried.push_back(neb->path[i].get());
+      owners.push_back(neb->imageOwner(i));
     }
     // One batch for every carried image, so calculator groups or a batched
     // model take them together; a serial potential evaluates them in turn.
-    eonc::evaluateTogether(*carried.front()->getPotential(), carried);
+    // Each image carries its band identity, as in the classic update.
+    eonc::evaluateTogether(*carried.front()->getPotential(), carried, owners);
     for (int64_t r = 0; r < rows; ++r) {
       Matter &image = *carried[static_cast<size_t>(r)];
       req->energies[r] = image.getPotentialEnergy();
