@@ -288,20 +288,23 @@ inline void twoSum(double a, double b, double &s, double &e) {
   e = (a - (s - bb)) + (b - bb);
 }
 
+// kFma: the caller runs with FMA enabled (its own ISA or a target("fma")
+// wrapper). Both forms give the same exact error term.
+template <bool kFma>
 inline void twoProduct(double a, double b, double &p, double &e) {
   p = a * b;
-#if defined(__FMA__) || defined(__ARM_FEATURE_FMA)
-  e = std::fma(a, b, -p);
-#else
-  constexpr double kSplitter = 134217729.0; // 2^27 + 1, Veltkamp
-  const double ca = kSplitter * a;
-  const double ah = ca - (ca - a);
-  const double al = a - ah;
-  const double cb = kSplitter * b;
-  const double bh = cb - (cb - b);
-  const double bl = b - bh;
-  e = ((ah * bh - p) + ah * bl + al * bh) + al * bl;
-#endif
+  if constexpr (kFma) {
+    e = std::fma(a, b, -p);
+  } else {
+    constexpr double kSplitter = 134217729.0; // 2^27 + 1, Veltkamp
+    const double ca = kSplitter * a;
+    const double ah = ca - (ca - a);
+    const double al = a - ah;
+    const double cb = kSplitter * b;
+    const double bh = cb - (cb - b);
+    const double bl = b - bh;
+    e = ((ah * bh - p) + ah * bl + al * bh) + al * bl;
+  }
 }
 
 // Fast path: a compensated dot product (Ogita, Rump and Oishi 2005, Dot2)
@@ -312,8 +315,16 @@ inline void twoProduct(double a, double b, double &p, double &e) {
 // sum. Otherwise, or when a range guard fails, returns false and the
 // integer accumulator decides. Both paths return RN(exact), so the choice
 // never shows in the bits.
-bool certifiedDot(const double *x, const double *y, std::size_t n,
-                  double &out) {
+// Inlined into each wrapper so the FMA instance is compiled for FMA.
+#if defined(__GNUC__)
+#define EONC_EXACT_INLINE inline __attribute__((always_inline))
+#else
+#define EONC_EXACT_INLINE inline
+#endif
+
+template <bool kFma>
+EONC_EXACT_INLINE bool certifiedDotT(const double *x, const double *y,
+                                     std::size_t n, double &out) {
   constexpr double u = 0x1p-53;
   if (n == 0 || static_cast<double>(n) > 0x1p30) {
     return false;
@@ -326,7 +337,7 @@ bool certifiedDot(const double *x, const double *y, std::size_t n,
   const auto term = [&](std::size_t k, double xi, double yi) {
     double p;
     double e;
-    twoProduct(xi, yi, p, e);
+    twoProduct<kFma>(xi, yi, p, e);
     double q;
     twoSum(s[k], p, s[k], q);
     c[k] += q + e;
@@ -409,6 +420,31 @@ bool certifiedDot(const double *x, const double *y, std::size_t n,
   }
   return false;
 }
+
+#if defined(__FMA__) || defined(__ARM_FEATURE_FMA) || defined(_M_ARM64)
+bool certifiedDot(const double *x, const double *y, std::size_t n,
+                  double &out) {
+  return certifiedDotT<true>(x, y, n, out);
+}
+#elif (defined(__x86_64__) || defined(__i386__)) && defined(__GNUC__)
+// Baseline x86-64 build: the FMA form runs only after the CPU reports FMA.
+__attribute__((target("fma"))) bool
+certifiedDotFma(const double *x, const double *y, std::size_t n, double &out) {
+  return certifiedDotT<true>(x, y, n, out);
+}
+
+bool certifiedDot(const double *x, const double *y, std::size_t n,
+                  double &out) {
+  static const bool hasFma = __builtin_cpu_supports("fma");
+  return hasFma ? certifiedDotFma(x, y, n, out)
+                : certifiedDotT<false>(x, y, n, out);
+}
+#else
+bool certifiedDot(const double *x, const double *y, std::size_t n,
+                  double &out) {
+  return certifiedDotT<false>(x, y, n, out);
+}
+#endif
 
 } // namespace
 
