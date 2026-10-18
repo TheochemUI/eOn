@@ -268,6 +268,14 @@ std::vector<rgpot::ExprPot::Term> parse_expr_terms(const Parameters &params) {
 std::unique_ptr<Potential> makePotential(const Parameters &params) {
   return makePotential(params.potential_options().potential, params);
 }
+std::shared_ptr<Potential> makeImagePotential(const Potential &pot,
+                                              const Parameters &params) {
+  PotentialConstructionScope scope(pot.registry());
+  if (auto cloned = pot.clonePotential()) {
+    return cloned;
+  }
+  return sharePotential(makePotential(params));
+}
 std::unique_ptr<Potential>
 makePotential(PotType ptype, const Parameters &params, Runtime &runtime) {
   PotentialConstructionScope scope(runtime.pots());

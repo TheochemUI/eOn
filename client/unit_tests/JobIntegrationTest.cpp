@@ -3745,8 +3745,8 @@ TEST_CASE_METHOD(
   REQUIRE(results.at("termination_reason") == "0");
   REQUIRE(potential->calls == 2);
   REQUIRE(potential->receivedOwners.size() == 2);
-  for (long owner : potential->receivedOwners)
-    REQUIRE(owner == eonc::potential_owner::auxiliary);
+  REQUIRE(potential->receivedOwners[0] == eonc::potential_owner::reactant);
+  REQUIRE(potential->receivedOwners[1] == eonc::potential_owner::saddle);
   REQUIRE(std::stod(results.at("sd_path_force_calls")) == 0.0);
   REQUIRE_FALSE(std::filesystem::exists("instanton_sd_path.con"));
   REQUIRE_FALSE(std::filesystem::exists("instanton.con"));
