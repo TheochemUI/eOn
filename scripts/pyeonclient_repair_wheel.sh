@@ -241,6 +241,7 @@ repair_one() {
   local old_soname new_soname so
   declare -A soname_map=(
     [librgpot.so.3]=libeon_rgpot.so.3
+    [librgpot.so.4]=libeon_rgpot.so.4
   )
   local src
   for old_soname in "${!soname_map[@]}"; do
