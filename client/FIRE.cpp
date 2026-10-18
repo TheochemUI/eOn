@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/FIRE.h"
+#include "eon/ExactReduction.h"
 #include "eon/HelperFunctions.h"
 
 #include <algorithm>
@@ -36,15 +37,15 @@ int FIRE::step(double a_maxMove) {
   m_objf->setPositions(x + dx);
 
   f = -m_objf->getGradient();
-  const double fnorm = f.norm();
+  const double fnorm = eonc::exact::norm(f);
   Eigen::VectorXd f_unit = Eigen::VectorXd::Zero(f.size());
   if (fnorm > 0.0) {
     f_unit = f / fnorm;
   }
 
   // FIRE
-  P = f.dot(m_vel);
-  m_vel = (1 - m_alpha) * m_vel + m_alpha * f_unit * m_vel.norm();
+  P = eonc::exact::dot(f, m_vel);
+  m_vel = (1 - m_alpha) * m_vel + m_alpha * f_unit * eonc::exact::norm(m_vel);
   QUILL_LOG_DEBUG(m_log,
                   "P: {:.4f}, v: {:.4f}, m_dt: {:.4f}, m_alpha: {:.4f}, N: {}",
                   P, m_vel.norm(), m_dt, m_alpha, m_N);

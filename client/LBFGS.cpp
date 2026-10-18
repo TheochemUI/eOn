@@ -15,6 +15,7 @@
 // Al-Baali extra-updates, and Grippo nonmonotone accept.
 
 #include "eon/LBFGS.h"
+#include "eon/ExactReduction.h"
 #include "eon/GeometryAnalysis.h"
 #include "eon/PairHessian.h"
 #include "eon/SafeMath.h"
@@ -147,9 +148,9 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
   if (m_iteration > 0) {
     Eigen::VectorXd dr = m_objf->difference(r, m_rPrev);
     const Eigen::VectorXd y = m_fPrev - f;
-    const double sy = dr.dot(y);
-    const double yy = y.squaredNorm();
-    const double ss = dr.squaredNorm();
+    const double sy = eonc::exact::dot(dr, y);
+    const double yy = eonc::exact::squaredNorm(y);
+    const double ss = eonc::exact::squaredNorm(dr);
     const double C = eonc::safemath::safe_div(yy, sy, -1.0);
     if (C < 0) {
       QUILL_LOG_DEBUG(
@@ -191,11 +192,10 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
     QUILL_LOG_DEBUG(m_log, "[LBFGS] H0={:.4e} (known curvature)", H0);
   } else if (m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale &&
              m_objf->supportsFiniteDifferenceCurvature()) {
-    m_objf->setPositions(r + m_optConfig.finiteDifference *
-                                 eonc::safemath::safe_normalized(a_f));
+    const Eigen::VectorXd fhat = eonc::exact::normalized(a_f);
+    m_objf->setPositions(r + m_optConfig.finiteDifference * fhat);
     Eigen::VectorXd dg = m_objf->getGradient(true) + a_f;
-    const double C = dg.dot(eonc::safemath::safe_normalized(a_f)) /
-                     m_optConfig.finiteDifference;
+    const double C = eonc::exact::dot(dg, fhat) / m_optConfig.finiteDifference;
     H0 = eonc::safemath::safe_recip(C, -1.0);
     m_objf->setPositions(r);
     if (H0 < 0) {
@@ -221,7 +221,8 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
   for (int k = loopmax - 1; k >= 0; k--) {
     const int i = idx[static_cast<size_t>(k)];
     a[static_cast<size_t>(k)] =
-        m_rho[static_cast<size_t>(i)] * m_s[static_cast<size_t>(i)].dot(q);
+        m_rho[static_cast<size_t>(i)] *
+        eonc::exact::dot(m_s[static_cast<size_t>(i)], q);
     q -= a[static_cast<size_t>(k)] * m_y[static_cast<size_t>(i)];
   }
 
@@ -229,8 +230,8 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
 
   for (int k = 0; k < loopmax; k++) {
     const int i = idx[static_cast<size_t>(k)];
-    const double b =
-        m_rho[static_cast<size_t>(i)] * m_y[static_cast<size_t>(i)].dot(z);
+    const double b = m_rho[static_cast<size_t>(i)] *
+                     eonc::exact::dot(m_y[static_cast<size_t>(i)], z);
     z += m_s[static_cast<size_t>(i)] * (a[static_cast<size_t>(k)] - b);
   }
 
@@ -245,8 +246,8 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
     return eonc::geometry::maxAtomMotionAppliedV(H0 * f, a_maxMove);
   }
 
-  double vd = eonc::safemath::safe_normalized(d).dot(
-      eonc::safemath::safe_normalized(f));
+  double vd =
+      eonc::exact::dot(eonc::exact::normalized(d), eonc::exact::normalized(f));
   if (vd > 1.0)
     vd = 1.0;
   if (vd < -1.0)
@@ -279,32 +280,33 @@ int LBFGS::update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
 
   // y0 is the change in the gradient, not the force
   Eigen::VectorXd y0 = a_f0 - a_f1;
-  double sy = s0.dot(y0);
+  double sy = eonc::exact::dot(s0, y0);
   const auto &cfg = m_optConfig.opts.lbfgs;
   const std::string &curv = cfg.curvature;
   const double H0 = std::max(cfg.inverse_curvature, 1.0e-16);
-  const double ss = s0.squaredNorm();
+  const double ss = eonc::exact::squaredNorm(s0);
 
   if (cfg.secant == "zhangxu" && ss > kLbfgsEps) {
     // Zhang, Deng, Chen, JOTA 102, 147 (1999); Zhang and Xu, JOTA 2001.
     // t = 6(f_k - f_{k+1}) + 3(g_k + g_{k+1})·s, ŷ = y + (t - y·s)/||s||^2 s.
     // Forces f = -g, so (g_k + g_{k+1})·s = -(f0 + f1)·s.
-    const double t = 6.0 * (a_e0 - a_e1) - 3.0 * (a_f0 + a_f1).dot(s0);
+    const double t =
+        6.0 * (a_e0 - a_e1) - 3.0 * eonc::exact::dot(a_f0 + a_f1, s0);
     const double theta = t - sy;
     y0 += (theta / ss) * s0;
-    sy = s0.dot(y0);
+    sy = eonc::exact::dot(s0, y0);
     QUILL_LOG_DEBUG(m_log, "[LBFGS] Zhang-Xu θ={:.4e} s·ŷ={:.4e}", theta, sy);
   }
 
   double sBs = ss / H0;
   if (usesPrecon() && a_r1.size() >= 6 && a_r1.size() % 3 == 0) {
     const Eigen::MatrixXd P = buildPrecon(a_r1);
-    sBs = s0.dot(P * s0);
+    sBs = eonc::exact::dot(s0, P * s0);
   }
 
-  const double gnorm = a_f1.norm();
+  const double gnorm = eonc::exact::norm(a_f1);
   const double sn = std::sqrt(ss);
-  const double yn = y0.norm();
+  const double yn = eonc::exact::norm(y0);
 
   if (curv == "cautious") {
     // Li and Fukushima, J. Comput. Appl. Math. 129, 15 (2001).
@@ -328,13 +330,13 @@ int LBFGS::update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
               ? Eigen::VectorXd(buildPrecon(a_r1) * s0)
               : Eigen::VectorXd(s0 / H0);
       y0 = theta * y0 + (1.0 - theta) * B0s;
-      sy = s0.dot(y0);
+      sy = eonc::exact::dot(s0, y0);
       QUILL_LOG_DEBUG(m_log, "[LBFGS] Powell damp θ={:.3f} s·ŷ={:.4e}", theta,
                       sy);
     } else if (std::abs(sy) < kLbfgsEps) {
       QUILL_LOG_WARNING(m_log,
                         "[LBFGS] s0.y0 too small ({:.4e}), resetting memory",
-                        s0.dot(y0));
+                        eonc::exact::dot(s0, y0));
       reset();
       return 0;
     }

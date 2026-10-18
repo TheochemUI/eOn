@@ -12,6 +12,7 @@
 #include "eon/HelperFunctions.h"
 #include "eon/EonLogger.h"
 #include "eon/EpiCenters.h"
+#include "eon/ExactReduction.h"
 #include "eon/GeometryAnalysis.h"
 #include "eon/ObjectiveFunction.h"
 #include "eon/Optimizer.h"
@@ -401,11 +402,12 @@ public:
   }
   double getConvergence() {
     if (params.optimizer_options().convergence_metric == "norm") {
-      return m_matter.getForcesFreeV().norm();
+      return eonc::exact::norm(m_matter.getForcesFreeV());
     } else if (params.optimizer_options().convergence_metric == "rms") {
       const VectorXd f = m_matter.getForcesFreeV();
       const auto n = f.size();
-      return n > 0 ? f.norm() / std::sqrt(static_cast<double>(n)) : 0.0;
+      return n > 0 ? eonc::exact::norm(f) / std::sqrt(static_cast<double>(n))
+                   : 0.0;
     } else if (params.optimizer_options().convergence_metric == "max_atom") {
       return m_matter.maxForce();
     } else if (params.optimizer_options().convergence_metric ==
