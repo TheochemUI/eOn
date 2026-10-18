@@ -22,8 +22,9 @@
 // alone: the same bits for any summation order, vector width, contraction
 // setting, compiler or Eigen release. This is the integer formulation of
 // the error-free splitting in Ozaki, Ogita, Oishi and Rump, Numer.
-// Algorithms 59, 95 (2012) and of Ozaki, Uchino and Imamura's scheme II
-// (arXiv:2504.08009), taken to a single correctly rounded scalar.
+// Algorithms 59 (2012), doi:10.1007/s11075-011-9478-1, and of Ozaki,
+// Uchino and Imamura's scheme II (arXiv:2504.08009), taken to a single
+// correctly rounded scalar.
 //
 // Use these where a reduction decides something (step lengths, curvature
 // estimates, convergence tests, acceptance); Eigen's own reductions change

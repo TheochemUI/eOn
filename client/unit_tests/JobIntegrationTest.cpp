@@ -945,10 +945,10 @@ max_iterations = 200
   double minEnergy = std::stod(results["minimum_energy"]);
   REQUIRE(minEnergy == Catch::Approx(-44.326774).epsilon(1e-4));
   // The LJ13 global minimum (icosahedron) is -44.326801 epsilon in the
-  // Cambridge Cluster Database (Wales and Doye, J. Phys. Chem. A 101, 5111,
-  // 1997). The LJ potential shifts each pair by its value at the 15 A
-  // cutoff, 4 (15^-12 - 15^-6), and all 78 pairs of the cluster are inside
-  // it. The table gives six decimals.
+  // Cambridge Cluster Database (Wales and Doye, J. Phys. Chem. A 101 (1997),
+  // doi:10.1021/jp970984n). The LJ potential shifts each pair by its value at
+  // the 15 A cutoff, 4 (15^-12 - 15^-6), and all 78 pairs of the cluster are
+  // inside it. The table gives six decimals.
   const double rc6 = std::pow(15.0, -6.0);
   const double lj13 = -44.326801 - 78.0 * 4.0 * (rc6 * rc6 - rc6);
   REQUIRE(minEnergy == Catch::Approx(lj13).margin(1e-6));
