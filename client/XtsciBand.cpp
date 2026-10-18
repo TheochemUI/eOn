@@ -231,7 +231,8 @@ int xtsciBandSurface(void *user, void *request) {
   }
 }
 
-int xtsciSolidBandSurface(void *user, void *request) {
+int xtsciSolidBandSurface([[maybe_unused]] void *user,
+                          [[maybe_unused]] void *request) {
 #if RGSADDLE_ABI_MINOR >= 17
   auto *self = static_cast<XtsciBand *>(user);
   auto *req = static_cast<rgsaddle_solid_surface_request_t *>(request);
@@ -295,8 +296,6 @@ int xtsciSolidBandSurface(void *user, void *request) {
     return RGSADDLE_SURFACE_FAILED;
   }
 #else
-  (void)user;
-  (void)request;
   return RGSADDLE_SURFACE_FAILED;
 #endif
 }
