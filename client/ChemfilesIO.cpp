@@ -12,6 +12,7 @@
 #include "eon/ChemfilesIO.h"
 #include "eon/EonLogger.h"
 #include "eon/Matter.h"
+#include "eon/fpe_handler.h"
 
 #include <algorithm>
 #include <cctype>
@@ -268,6 +269,12 @@ IoStatus chemfiles2matter(Matter &m, const std::string &filename,
                           const std::string &format) {
   quiet_chemfiles();
   try {
+    // chemfiles' cell-angle math divides by a zero length while building the
+    // default UnitCell (calc_angles_from_cell_matrix). eonclient arms FP
+    // traps; that invalid op is a continuable SIGFPE on Linux and a fatal
+    // SIGILL on Apple Silicon. External libraries run with soft IEEE, the
+    // same contract as LAMMPS and ASE.
+    const eonc::FPEGuard fpe;
     chemfiles::Trajectory traj(filename, 'r',
                                format_for_path(filename, format));
     if (traj.nsteps() == 0) {

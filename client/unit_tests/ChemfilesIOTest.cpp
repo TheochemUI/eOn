@@ -18,11 +18,24 @@
 #include "eon/Parameters.h"
 
 #include <chrono>
-#include <cstdlib>
 #include <filesystem>
 #include <format>
 #include <fstream>
+#include <sstream>
 #include <string>
+
+#ifndef _WIN32
+#include <fcntl.h>
+#include <spawn.h>
+#include <sys/wait.h>
+#include <unistd.h>
+extern char **environ;
+#else
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#endif
 
 namespace {
 
@@ -42,6 +55,82 @@ fs::path scratch(std::string_view tag) {
 void write_text(const fs::path &p, const std::string &text) {
   std::ofstream out(p);
   out << text;
+}
+
+std::string read_all(const fs::path &path) {
+  std::ifstream in(path);
+  std::stringstream buffer;
+  buffer << in.rdbuf();
+  return buffer.str();
+}
+
+// Spawn eonclient in `dir` with the test environment intact. std::system goes
+// through a shell: macOS strips DYLD_* across /bin/sh, and cmd.exe quoting
+// on Windows can run the client in the wrong directory (exit 1, log lost).
+int run_eonclient(const fs::path &dir, const char *exe) {
+  const fs::path log_path = dir / "client.log";
+#ifdef _WIN32
+  SECURITY_ATTRIBUTES sa{};
+  sa.nLength = sizeof(sa);
+  sa.bInheritHandle = TRUE;
+  HANDLE log = CreateFileW(log_path.c_str(), GENERIC_WRITE, FILE_SHARE_READ,
+                           &sa, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+  if (log == INVALID_HANDLE_VALUE) {
+    return -1;
+  }
+  STARTUPINFOW si{};
+  si.cb = sizeof(si);
+  si.dwFlags = STARTF_USESTDHANDLES;
+  si.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+  si.hStdOutput = log;
+  si.hStdError = log;
+  std::wstring cmdline = L"\"" + fs::path(exe).wstring() + L"\"";
+  PROCESS_INFORMATION pi{};
+  const BOOL started = CreateProcessW(nullptr, cmdline.data(), nullptr, nullptr,
+                                      TRUE, 0, nullptr, dir.c_str(), &si, &pi);
+  CloseHandle(log);
+  if (!started) {
+    return -1;
+  }
+  WaitForSingleObject(pi.hProcess, INFINITE);
+  DWORD code = 1;
+  GetExitCodeProcess(pi.hProcess, &code);
+  CloseHandle(pi.hThread);
+  CloseHandle(pi.hProcess);
+  return static_cast<int>(code);
+#else
+  const std::string log_name = log_path.string();
+  posix_spawn_file_actions_t actions;
+  posix_spawn_file_actions_init(&actions);
+  posix_spawn_file_actions_addopen(&actions, STDOUT_FILENO, log_name.c_str(),
+                                   O_WRONLY | O_CREAT | O_TRUNC, 0644);
+  posix_spawn_file_actions_adddup2(&actions, STDOUT_FILENO, STDERR_FILENO);
+  char *argv[] = {const_cast<char *>(exe), nullptr};
+  pid_t pid = 0;
+  int spawned = -1;
+  int status = 1;
+  {
+    const fs::path previous = fs::current_path();
+    fs::current_path(dir);
+    spawned = posix_spawn(&pid, exe, &actions, nullptr, argv, environ);
+    std::error_code ec;
+    fs::current_path(previous, ec);
+  }
+  posix_spawn_file_actions_destroy(&actions);
+  if (spawned != 0) {
+    return -1;
+  }
+  if (waitpid(pid, &status, 0) < 0) {
+    return -1;
+  }
+  if (WIFEXITED(status)) {
+    return WEXITSTATUS(status);
+  }
+  if (WIFSIGNALED(status)) {
+    return 128 + WTERMSIG(status);
+  }
+  return 1;
+#endif
 }
 
 /// Three Ar atoms near the LJ minimum spacing, with a 15 A cubic lattice.
@@ -331,9 +420,11 @@ TEST_CASE("eonclient minimizes and evaluates a point from pos.xyz",
                                                "[Potential]\n"
                                                "potential = lj\n",
                                                job));
-    const auto cmd =
-        std::format("cd \"{}\" && \"{}\" > client.log 2>&1", dir.string(), exe);
-    REQUIRE(std::system(cmd.c_str()) == 0);
+    const int rc = run_eonclient(dir, exe);
+    if (rc != 0) {
+      INFO(read_all(dir / "client.log"));
+    }
+    REQUIRE(rc == 0);
     if (std::string(job) == "minimization") {
       CHECK(fs::exists(dir / "min.con"));
     } else {

@@ -1068,7 +1068,7 @@ TEST_CASE("basin hopping Metropolis rejects uphill hops at non-positive "
   REQUIRE(Job::metropolisProbability(de, kB, temperature) ==
           Catch::Approx(std::exp(-de / (kB * temperature))));
 
-#if !defined(_WIN32) && !(defined(__APPLE__) && defined(__aarch64__))
+#if !defined(_WIN32)
   eonc::enableFPE();
   REQUIRE(Job::metropolisProbability(1.0, kB, 0.0) == 0.0);
   REQUIRE(Job::metropolisProbability(-2.0, kB, 0.0) == 1.0);
