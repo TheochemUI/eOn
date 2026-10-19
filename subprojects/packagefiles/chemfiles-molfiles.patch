@@ -1,0 +1,39 @@
+--- a/external/CMakeLists.txt
++++ b/external/CMakeLists.txt
+@@ -174,12 +174,30 @@
+ # ==========
+ # VMD molfile: https://github.com/chemfiles/molfiles
+ # ==========
+-set(VMD_MOLFILE_PLUGINS
+-    gromacsplugin moldenplugin psfplugin
+-)
+-
+-external_library(molfiles)
+-list(APPEND EXTERNAL_INCLUDES ${CMAKE_CURRENT_BINARY_DIR}/molfiles/include)
++# Upstream compiles every plugin into one OBJECT library and stamps
++# -DVMDPLUGIN=<name> with set_source_files_properties(COMPILE_FLAGS).
++# Meson's cmake module copies those flags onto every file in the target,
++# so the last plugin wins and moldenplugin_init is never defined.
++# One OBJECT library per plugin keeps the macro on that file only.
++unpack_library(molfiles)
++set(_chfl_molfiles_root "${CMAKE_CURRENT_BINARY_DIR}/molfiles")
++foreach(_plugin gromacsplugin moldenplugin psfplugin)
++    file(GLOB _plugin_src "${_chfl_molfiles_root}/src/${_plugin}.*")
++    list(LENGTH _plugin_src _plugin_count)
++    if(NOT _plugin_count EQUAL 1)
++        message(FATAL_ERROR "Could not find molfiles plugin ${_plugin}")
++    endif()
++    add_library(${_plugin} OBJECT ${_plugin_src})
++    target_include_directories(${_plugin} PRIVATE "${_chfl_molfiles_root}/include")
++    target_compile_definitions(${_plugin} PRIVATE STATIC_PLUGIN "VMDPLUGIN=${_plugin}")
++    set_target_properties(${_plugin} PROPERTIES
++        POSITION_INDEPENDENT_CODE ON
++        C_VISIBILITY_PRESET hidden
++        CXX_VISIBILITY_PRESET hidden
++        VISIBILITY_INLINES_HIDDEN ON
++    )
++endforeach()
++list(APPEND EXTERNAL_INCLUDES "${_chfl_molfiles_root}/include")
+ 
+ # ==========
+ # Plugins not yet enabled but that should compile without issue:

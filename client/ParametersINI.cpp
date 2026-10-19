@@ -11,6 +11,7 @@
 */
 #include "eon/ParametersINI.h"
 #include "eon/BaseStructures.h"
+#include "eon/ChemfilesIO.h"
 #include "eon/ConFileIO.h"
 #include "eon/EpiCenters.h"
 #include "eon/HelperFunctions.h"
@@ -71,6 +72,12 @@ int load_ini(const INIReader &ini, Parameters &params) {
   // Process-wide io mode; same pattern as the RNG seeding below.
   eonc::io::set_write_con_forces(
       ParametersLoadAccess::main_options(params).writeConForces);
+  // chemfiles ingress, process-wide like the flag above. Output stays .con.
+  eonc::io::set_structure_input_format(ini.Get("Main", "input_format", ""));
+  eonc::io::set_config_cell(
+      eonc::io::parse_cell_values(ini.Get("Main", "cell", "")),
+      ini.GetBoolean("Main", "pbc", true));
+  eonc::io::set_default_vacuum(ini.GetReal("Main", "default_vacuum", 10.0));
   ParametersLoadAccess::main_options(params).finiteDifference =
       ini.GetReal("Main", "finite_difference",
                   ParametersLoadAccess::main_options(params).finiteDifference);

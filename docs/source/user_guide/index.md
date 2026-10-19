@@ -131,6 +131,7 @@ mpi_potential
 
 algorithm_selection
 main
+structure_input
 potential
 structure_comparison
 optimizer

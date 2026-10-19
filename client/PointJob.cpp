@@ -27,7 +27,7 @@ std::vector<std::string> PointJob::run() {
   std::string resultsFilename("results.dat");
 
   auto pos = std::make_unique<Matter>(std::move(ownedPot), params);
-  if (!eonc::io::io_ok(pos->con2matter(posInFilename))) {
+  if (!eonc::io::io_ok(pos->inp2matter(posInFilename))) {
     QUILL_LOG_CRITICAL(log, "Failed to load {}", posInFilename);
     throw std::runtime_error("failed to load " + posInFilename);
   }

@@ -3746,7 +3746,7 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
     JobIntegrationFixture,
-    "Instanton job forwards explicit auxiliary owners to its native potential",
+    "Instanton rate references keep distinct reactant and saddle owners",
     "[job][instanton][integration][OrbitalOwners]") {
   class CountedPotential : public eonc::Potential {
   public:
