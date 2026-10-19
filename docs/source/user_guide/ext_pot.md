@@ -25,7 +25,135 @@ The [ASE](project:ase_pot.md) potentials require additional compile-time flags
 that are **not** enabled in the `conda-forge` build.
 ```
 
-## Start with a complete working example
+This page describes the file protocol first, then gives a runnable harmonic
+example, two machine-learned potential wrappers (DeePMD-kit and ASE) and the
+Car-Parrinello Molecular Dynamics (CPMD) wrapper from the eOn sources.
+
+## Protocol
+
+When the client needs an energy/force evaluation it:
+
+1. Creates a private exchange directory named `extpot_<pid>_<n>` inside the
+   directory eOn runs in, where `<pid>` is the client's process id and `<n>`
+   counts the potentials it built.
+2. Writes the file `from_eon_to_extpot` in that directory, after removing any
+   `from_extpot_to_eon` an earlier call left there.
+3. Calls the executable (or script) specified by `ext_pot_path` via
+   `system()`, with the exchange directory as the command's working
+   directory.
+4. Reads the file `from_extpot_to_eon` that the script must create there.
+
+The two filenames do not change, so a wrapper that opens them by relative
+name, as every example below does, needs no edit. The exchange directory is
+what keeps two clients started in one directory from reading each other's
+numbers. The directory lives as long as the potential: each call reuses it,
+so a wrapper can keep state there between calls (the CPMD wrapper below
+keeps its wavefunction). When the potential is destroyed the client
+removes the two exchange files and then the directory, if nothing else is
+left in it. A failed call leaves everything in place for inspection.
+
+### Input file (`from_eon_to_extpot`)
+
+Positions and box vectors are in Angstrom. The first three lines are the
+3x3 box matrix (one lattice vector per row, tab-separated).
+Each subsequent line contains one atom: `atomic_number  x  y  z`
+(tab-separated, double precision).
+
+```
+box_00  box_01  box_02
+box_10  box_11  box_12
+box_20  box_21  box_22
+6   1.234   5.678   9.012
+6   ...
+```
+
+### Output file (`from_extpot_to_eon`)
+
+The first line is the total energy in eV (scalar).
+Each subsequent line contains the force on one atom in eV/Angstrom: `fx  fy  fz`
+(space-separated). The atom order must match the input.
+
+```
+-42.12345
+0.123  -0.456  0.789
+...
+```
+
+The client reads the numbers in order, separated by any whitespace: one
+energy, then three force components per input atom. It ignores anything
+after the last force.
+
+(extpot-units)=
+### Units and force sign
+
+The external interface expects the **total energy in eV**, positions and box
+vectors in **Angstrom**, and forces in **eV/Angstrom**. Forces are the
+negative derivative of the energy:
+
+```text
+force = -gradient
+```
+
+Flip the sign of an energy gradient before writing it as a force.
+Returning a positive gradient as a force drives minimization uphill.
+Convert any other units in the wrapper; the CPMD section below gives the
+Hartree and Bohr factors.
+
+### What the wrapper must do
+
+- Run from the exchange directory and open both files by their relative
+  names.
+- Write `from_extpot_to_eon` only after the calculation succeeds, with
+  finite values.
+- Exit with a nonzero status when the calculation fails. It must not invent
+  an energy or reuse a stale response.
+
+The client stops the run with an error in these cases:
+
+- The command cannot start, dies on a signal or exits with a nonzero status.
+- `from_extpot_to_eon` is missing.
+- The energy cannot be read.
+- The file has fewer force rows than atoms.
+
+## Configuration
+
+```{code-block} ini
+[Potential]
+potential = ext_pot
+ext_pot_path = /full/path/to/your_wrapper
+```
+
+The client's default for `ext_pot_path` is `./ext_pot`.
+
+```{important}
+`ext_pot_path` is resolved against the directory eOn runs in when it names an
+existing file, so `./ext_pot` and an absolute path both work. A command line
+with arguments (`python wrapper.py`) or a name looked up on `PATH` is passed
+to the shell unchanged and therefore has to be written so it resolves from
+the exchange directory: give the script an absolute path. On Windows,
+`cmd.exe` does not honor a shebang: a resolved script whose first line names
+python, or whose name ends in `.py`, is invoked as `python <script>`. A
+wrapper that needs to reach files in the directory eOn runs in finds that
+directory in the environment variable `EON_EXTPOT_RUN_DIR`.
+```
+
+```{important}
+When running compound jobs (aKMC, process search, etc.) eOn copies
+configuration into per-job scratch directories. Use **absolute paths** for
+`ext_pot_path` and for any model files referenced inside your wrapper.
+```
+
+## One directory per image
+
+`[Main] parallel` defaults to true. A dimer, and the two product
+minimizations in a process search, then build a second potential when the
+potential asks for one instance per image. `ext_pot` does. Each instance
+takes the next `extpot_<pid>_<n>`, so the two calls do not share
+`from_eon_to_extpot`. An error on the second thread is stored, the first
+thread is joined, and the stored error is raised. `parallel = false` runs
+both images on the one instance, one after the other.
+
+## A complete working example
 
 This example needs Python and the eOn client only. It evaluates a harmonic
 potential, so it needs no electronic-structure executable, model download or
@@ -150,92 +278,111 @@ Signed zero is equivalent to zero. A successful wrapper-only check tests
 the file protocol; the client run also tests the structure, configuration
 and executable lookup.
 
-## Protocol
+## Machine-learned potentials
 
-When the client needs an energy/force evaluation it:
+Each call starts a new process. The wrappers below load the model on every
+call (see {ref}`extpot-performance`). They pass the calculator's
+energy and forces to eOn unchanged, so the model must return eV and
+eV/Angstrom.
 
-1. Creates a private exchange directory named `extpot_<pid>_<n>` inside the
-   directory eOn runs in, where `<pid>` is the client's process id and `<n>`
-   counts the potentials it built.
-2. Writes the file `from_eon_to_extpot` in that directory.
-3. Calls the executable (or script) specified by `ext_pot_path` via
-   `system()`, with the exchange directory as the command's working
-   directory.
-4. Reads the file `from_extpot_to_eon` that the script must create there.
+### DeePMD (PyTorch) wrapper
 
-The two filenames do not change, so a wrapper that opens them by relative
-name, as every example below does, needs no edit. The exchange directory is
-what keeps two clients started in one directory from reading each other's
-numbers. The directory lives as long as the potential: each call reuses it,
-so a wrapper can keep state there between calls (the CPMD wrapper below
-keeps its wavefunction). When the potential is destroyed the client
-removes the two exchange files and then the directory, if nothing else is
-left in it. A failed call leaves everything in place for inspection.
+The following Python script wraps a DeePMD-kit v3 PyTorch model and can be used
+directly as the `ext_pot_path` target. Save it as, e.g.,
+`/home/user/scripts/deepmd_extpot` and make it executable (`chmod +x`).
+DeePMD-kit takes atom types as indices into the model's type map, so the
+script maps eOn's atomic numbers through the element symbols in
+`ase.data`.
 
-## One directory per image
+```{code-block} python
+:caption: deepmd_extpot
 
-`[Main] parallel` defaults to true. A dimer, and the two product
-minimizations in a process search, then build a second potential when the
-potential asks for one instance per image. `ext_pot` does. Each instance
-takes the next `extpot_<pid>_<n>`, so the two calls do not share
-`from_eon_to_extpot`. An error on the second thread is stored, the first
-thread is joined, and the stored error is raised. `parallel = false` runs
-both images on the one instance, one after the other.
+#!/usr/bin/env python
+"""eOn ext_pot wrapper for DeePMD-kit (PyTorch backend)."""
+import numpy as np
+from ase.data import chemical_symbols
+from deepmd.infer import DeepPot
 
-```{important}
-`ext_pot_path` is resolved against the directory eOn runs in when it names an
-existing file, so `./ext_pot` and an absolute path both work. A command line
-with arguments (`python wrapper.py`) or a name looked up on `PATH` is passed
-to the shell unchanged and therefore has to be written so it resolves from
-the exchange directory: give the script an absolute path. On Windows,
-`cmd.exe` does not honor a shebang: a resolved script whose first line names
-python, or whose name ends in `.py`, is invoked as `python <script>`. A
-wrapper that needs to reach files in the directory eOn runs in finds that
-directory in the environment variable `EON_EXTPOT_RUN_DIR`.
+# --- user settings ---
+MODEL = "/absolute/path/to/model.pth"
+# ----------------------
+
+dp = DeepPot(MODEL)
+type_map = dp.get_type_map()
+
+# Read input
+lines = open("from_eon_to_extpot").readlines()
+box = np.array([[float(v) for v in l.split()] for l in lines[:3]])
+atoms = []
+coords = []
+for l in lines[3:]:
+    tok = l.split()
+    atoms.append(type_map.index(chemical_symbols[int(tok[0])]))
+    coords.append([float(tok[1]), float(tok[2]), float(tok[3])])
+atoms = np.array(atoms)
+coords = np.array(coords)
+
+# Evaluate
+energy, forces, _ = dp.eval(coords.reshape(1, -1),
+                             box.reshape(1, 9),
+                             atoms)
+
+# Write output
+with open("from_extpot_to_eon", "w") as f:
+    f.write(f"{float(energy.ravel()[0]):.15f}\n")
+    for fx, fy, fz in forces[0]:
+        f.write(f"{fx:.15f} {fy:.15f} {fz:.15f}\n")
 ```
 
-### Input file (`from_eon_to_extpot`)
+An element missing from the model's type map raises `ValueError` in
+`type_map.index`; the script then exits with a nonzero status and the
+client stops.
 
-Positions and box vectors are in Angstrom. The first three lines are the
-3x3 box matrix (one lattice vector per row, tab-separated).
-Each subsequent line contains one atom: `atomic_number  x  y  z`
-(tab-separated, double precision).
+### Generic ASE calculator wrapper
 
+Any ASE-compatible calculator can be wrapped in a similar fashion. ASE
+calculators return eV and eV/Angstrom. The calculator below comes from the
+`mace` package:
+
+```{code-block} python
+:caption: ase_extpot
+
+#!/usr/bin/env python
+"""eOn ext_pot wrapper using an ASE calculator."""
+import numpy as np
+from ase import Atoms
+
+# --- user settings ---
+from mace.calculators import MACECalculator
+calc = MACECalculator(model_paths="/path/to/model.pt", device="cuda")
+# ----------------------
+
+lines = open("from_eon_to_extpot").readlines()
+box = np.array([[float(v) for v in l.split()] for l in lines[:3]])
+numbers = []
+positions = []
+for l in lines[3:]:
+    tok = l.split()
+    numbers.append(int(tok[0]))
+    positions.append([float(tok[1]), float(tok[2]), float(tok[3])])
+
+system = Atoms(numbers=numbers, positions=positions, cell=box, pbc=True)
+system.calc = calc
+
+energy = system.get_potential_energy()
+forces = system.get_forces()
+
+with open("from_extpot_to_eon", "w") as f:
+    f.write(f"{energy:.15f}\n")
+    for fx, fy, fz in forces:
+        f.write(f"{fx:.15f} {fy:.15f} {fz:.15f}\n")
 ```
-box_00  box_01  box_02
-box_10  box_11  box_12
-box_20  box_21  box_22
-6   1.234   5.678   9.012
-6   ...
-```
 
-### Output file (`from_extpot_to_eon`)
+Replace the two lines under `user settings` to use another ASE calculator.
+The [ASE potential page](project:ase_pot.md) shows the same calculator
+embedded in the client.
 
-The first line is the total energy in eV (scalar).
-Each subsequent line contains the force on one atom in eV/Angstrom: `fx  fy  fz`
-(space-separated). The atom order must match the input.
-
-```
--42.12345
-0.123  -0.456  0.789
-...
-```
-
-## Configuration
-
-```{code-block} ini
-[Potential]
-potential = ext_pot
-ext_pot_path = /full/path/to/your_wrapper
-```
-
-```{important}
-When running compound jobs (aKMC, process search, etc.) eOn copies
-configuration into per-job scratch directories. Use **absolute paths** for
-`ext_pot_path` and for any model files referenced inside your wrapper.
-```
-
-## Examples
+## CPMD
 
 ### Use an existing HPC CPMD installation
 
@@ -362,21 +509,19 @@ occupations and SCF convergence. The in-process
 [RGPOT route](project:rgpot_pot.md) uses a separate serialized CPMD method
 message; it does not read this wrapper's environment as that message.
 
-### Units and force sign
 
-The external interface expects the **total energy in eV**, positions and box
-vectors in **Angstrom**, and forces in **eV/Angstrom**. For CPMD:
+### CPMD units and force sign
+
+CPMD answers in Hartree and Hartree/Bohr. The conversions to the units of
+the protocol ({ref}`extpot-units`) are:
 
 ```text
 energy_eV       = energy_Hartree * 27.211386245988
 force_eV_per_A  = force_Hartree_per_Bohr * 51.4220674763
-force           = -gradient
 ```
 
-The last line applies when the source quantity is an energy gradient.
 CPMD's `GEOMETRY` columns 4–6 already contain the ionic **force** `fion`:
-convert the units without negating them. Returning a positive gradient as
-a force drives minimization uphill. The header `GRADIENTS (-FORCES)` in
+convert the units without negating them. The header `GRADIENTS (-FORCES)` in
 the printed CPMD table does not change what `fion` contains.
 
 ### CPMD on several MPI ranks
@@ -457,6 +602,17 @@ The script refuses a result whose wavefunction optimisation printed
 `PCG MINIMIZE`. It keeps `RESTART.1` in the exchange directory, so every call
 after the first in a job restarts from the previous wavefunction.
 
+### CPMD method settings
+
+`cpmd_extpot.py` builds its deck from the variables in the table above. Its
+`&DFT` section sets only `FUNCTIONAL`, and the deck sets no charge. The
+script does not read the job file that the
+[rgpot page](project:rgpot_pot.md) compiles to a CPMDParams message. When
+one study uses both routes, set `CPMD_CUTOFF` and `CPMD_FUNCTIONAL` to the
+`cutoff_ry` and `functional` of that file. The script's deck has no
+counterpart for any other key in that job file, such as `charge` or the
+`[dft]` table.
+
 ## Troubleshooting
 
 | Symptom | Check |
@@ -474,6 +630,7 @@ it must not invent an energy or reuse a stale response. Return finite values
 and preserve diagnostics. A point job validates setup before a minimization,
 NEB or aKMC run makes many expensive calls.
 
+(extpot-performance)=
 ## Performance considerations
 
 Each force call spawns a new process and re-initializes the calculator. For
