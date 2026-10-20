@@ -246,11 +246,12 @@ TEST_CASE("ImprovedDimer CG direction persists across translations",
           Catch::Approx(0.0).margin(1e-10));
 }
 
-TEST_CASE("ImprovedDimer CG restarts after a multi-rotation estimate",
+TEST_CASE("ImprovedDimer CG direction persists after a multi-rotation estimate",
           "[ImprovedDimer][cg]") {
-  // Several rotations at one centre solve that centre's rotation. The
-  // next centre starts conjugate gradients over, so a single following
-  // rotation has gamma = 0. A carried direction would be nonzero here.
+  // An estimate that rotated more than once still leaves F_R_Old and
+  // thetaOld for the next centre. The following rotation uses them, so
+  // gamma is the Polak-Ribiere value rather than the steepest-descent 0
+  // a per-compute reset would force.
   Parameters parameters;
   ParametersLoadAccess::main_options(parameters).parallel = false;
   ParametersLoadAccess::main_options(parameters).finiteDifference = 0.01;
@@ -269,12 +270,31 @@ TEST_CASE("ImprovedDimer CG restarts after a multi-rotation estimate",
   REQUIRE(dimer.statsRotations > 1);
   REQUIRE_FALSE(dimer.init_cg);
 
+  // The converged rotational force is tiny. Plant a direction the next
+  // F_R does not already contain, so a reset (gamma = 0) cannot pass.
+  dimer.F_R_Old = VectorXd::Zero(3);
+  dimer.F_R_Old << 0.0, 4.0, -1.0;
+  dimer.thetaOld = VectorXd::Zero(3);
+  dimer.thetaOld << 0.2, -0.5, 0.1;
+  const VectorXd thetaBefore = dimer.thetaOld;
+  const VectorXd frBefore = dimer.F_R_Old;
+
   ParametersLoadAccess::dimer_options(parameters).converged_angle = 180.0;
   ParametersLoadAccess::dimer_options(parameters).rotations_max = 1;
   mode << 0.5, 0.2, -1.0;
   dimer.compute(matter, mode);
-  REQUIRE(dimer.gamma == Catch::Approx(0.0));
+
+  const double b = frBefore.squaredNorm();
+  const double overlap = std::abs(dimer.F_R.dot(frBefore));
+  REQUIRE(overlap < 0.5 * b);
+  const double expectGamma = dimer.F_R.dot(dimer.F_R - frBefore) / b;
+  REQUIRE(std::abs(expectGamma) > 1.0e-3);
+  REQUIRE(dimer.gamma == Catch::Approx(expectGamma).epsilon(1e-12));
   REQUIRE_FALSE(dimer.init_cg);
+  VectorXd expectTheta = dimer.F_R + thetaBefore * dimer.gamma;
+  expectTheta -= expectTheta.dot(dimer.tau) * dimer.tau;
+  REQUIRE((dimer.thetaOld - expectTheta).norm() ==
+          Catch::Approx(0.0).margin(1e-10));
 }
 
 static void prepareMinMode(Parameters &parameters) {
@@ -310,7 +330,6 @@ TEST_CASE("Steep mode curvature yields to the effective-force probe",
   const double cFd = 40.0 * fhat.x() * fhat.x() + 100.0 * fhat.y() * fhat.y() +
                      100.0 * fhat.z() * fhat.z();
   const Eigen::Vector3d expect = feff / cFd;
-  REQUIRE(std::abs(-40.0) >= 30.0);
   REQUIRE(expect.norm() < 0.2);
   REQUIRE((feff / 40.0).norm() > 0.2);
 
@@ -331,17 +350,22 @@ TEST_CASE("Steep mode curvature yields to the effective-force probe",
   REQUIRE(calls == 4);
 }
 
-TEST_CASE("Mild mode curvature keeps the capped first step",
+TEST_CASE("Mild mode curvature yields to the effective-force probe",
           "[ImprovedDimer][lbfgs]") {
-  // |C_τ| = 2 is under the steep-mode threshold. H0 |F_eff| exceeds
-  // max_move, and the step stays on that cap. The probe would shorten
-  // it and add a force call; the LJ13 pins rely on this cap.
+  // |C_τ| = 2 is mild, and H0 = 1/|C_τ| times |F_eff| is still past
+  // max_move. The finite-difference curvature of F_eff is used anyway:
+  // the probe is not reserved for steep modes.
   Parameters parameters;
   prepareMinMode(parameters);
   const Eigen::Vector3d r0(0.01, 0.05, 0.05);
   const Eigen::Vector3d tau(1.0, 0.0, 0.0);
   const Eigen::Vector3d feff(-2.0 * r0.x(), -50.0 * r0.y(), -50.0 * r0.z());
+  const Eigen::Vector3d fhat = feff.normalized();
+  const double cFd = 2.0 * fhat.x() * fhat.x() + 50.0 * fhat.y() * fhat.y() +
+                     50.0 * fhat.z() * fhat.z();
+  const Eigen::Vector3d expect = feff / cFd;
   REQUIRE((feff / 2.0).norm() > 0.2);
+  REQUIRE(expect.norm() < 0.2);
 
   auto pot = std::make_shared<DiagHessianPot>(-2.0, 50.0, 50.0);
   auto matter = oneAtom(pot, parameters, r0);
@@ -354,10 +378,10 @@ TEST_CASE("Mild mode curvature keeps the capped first step",
   const Eigen::Vector3d step = matter->getPositions().row(0).transpose() - r0;
   INFO("status " << status << " force calls " << calls << " step "
                  << step.norm());
-  REQUIRE(step.norm() == Catch::Approx(0.2).margin(1e-9));
-  REQUIRE(step.normalized().dot(feff.normalized()) ==
-          Catch::Approx(1.0).margin(1e-6));
-  REQUIRE(calls == 3);
+  REQUIRE(step.norm() == Catch::Approx(expect.norm()).epsilon(1e-6));
+  REQUIRE(step.normalized().dot(fhat) == Catch::Approx(1.0).margin(1e-6));
+  // Centre, forward image, the probe, and the accepted step.
+  REQUIRE(calls == 4);
 }
 
 } /* namespace tests */
