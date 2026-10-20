@@ -6,7 +6,30 @@ on: [push, pull_request]
 permissions:
   contents: read
 jobs:
+  # jobs.<job_id>.if can read github, needs, vars, and inputs. It cannot
+  # read secrets, and on a pull_request from a fork the secret is empty.
+  # Map the secret to a boolean in a step (steps.env may read secrets) and
+  # publish that boolean. The Si3N4 job's if then reads needs, so a missing
+  # token skips the job instead of failing the private checkout.
+  sige_repro_token:
+    name: Si3N4 token
+    runs-on: ubuntu-22.04
+    outputs:
+      present: ${{ steps.check.outputs.present }}
+    steps:
+      - name: Record whether SIGE_REPRO_TOKEN is set
+        id: check
+        env:
+          HAVE_SIGE_REPRO_TOKEN: ${{ secrets.SIGE_REPRO_TOKEN != '' }}
+        run: |
+          if [ "$HAVE_SIGE_REPRO_TOKEN" = true ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
   si3n4_point:
+    needs: sige_repro_token
+    if: needs.sige_repro_token.outputs.present == 'true'
     runs-on: ubuntu-22.04
     name: Si3N4 point
     steps:
@@ -16,7 +39,7 @@ jobs:
       - name: Compilers and libraries
         run: |
           sudo apt-get update
-          sudo apt-get install -y gfortran libopenmpi-dev libfftw3-dev libopenblas-dev
+          sudo apt-get install -y g++ gfortran libopenmpi-dev libfftw3-dev libopenblas-dev
       - uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4
         with:
           cache: true
@@ -36,7 +59,7 @@ jobs:
           path: kit
           persist-credentials: false
       - name: Pinned OpenCPMD point
-        shell: pixi run bash -e {0}
+        shell: bash
         env:
           OPENCPMD_COMMIT: 062582b7cfd832d36f88f504cd08e4ead42eb404
           CPMDC_COMMIT: 95d779a839a2787e022148216baa331c2a6f412b
@@ -44,4 +67,87 @@ jobs:
           STACK: ${{ github.workspace }}/.stack-opencpmd
           KIT: ${{ github.workspace }}/kit
           EONCLIENT: ${{ github.workspace }}/bbdir/client/eonclient
-        run: bash scripts/ci/opencpmd_point.sh
+        run: |
+          set -euo pipefail
+          # pixi puts a conda gcc on PATH and exports CFLAGS with its
+          # sysroot. CPMD compiles C with -I/usr/include, and that mix
+          # cannot find bits/timesize.h. Use the system MPI compilers.
+          # meson and ninja stay available from the pixi env.
+          export PATH="/usr/bin:${PWD}/.pixi/envs/default/bin:${PATH}"
+          hash -r
+          unset CC CXX FC CFLAGS CXXFLAGS FCFLAGS FFLAGS
+          # Point meson and cmake at g++. A clang c++ does not see g++'s
+          # libstdc++. CPMD's makefile assigns CC and FC itself, so these
+          # do not replace mpicc.
+          export CC=/usr/bin/gcc
+          export CXX=/usr/bin/g++
+          export FC=/usr/bin/mpif90
+          bash scripts/ci/opencpmd_point.sh
+  h2_point:
+    runs-on: ubuntu-22.04
+    name: H2 point
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Compilers and libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++ gfortran libopenmpi-dev libfftw3-dev libopenblas-dev
+      - uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4
+        with:
+          cache: true
+          cache-write: true
+      - name: eonclient
+        shell: pixi run bash -e {0}
+        run: |
+          meson setup bbdir --buildtype release -Dwith_tests=false
+          meson compile -C bbdir eonclient
+      - name: Pinned OpenCPMD point
+        shell: bash
+        env:
+          OPENCPMD_COMMIT: 062582b7cfd832d36f88f504cd08e4ead42eb404
+          CPMDC_COMMIT: 95d779a839a2787e022148216baa331c2a6f412b
+          PREFIX: /usr
+          STACK: ${{ github.workspace }}/.stack-opencpmd-h2
+          KIT: ${{ github.workspace }}/examples/opencpmd-h2
+          STRUCTURE: ${{ github.workspace }}/examples/opencpmd-h2/h2.con
+          CONFIG: ${{ github.workspace }}/examples/opencpmd-h2/config.ini
+          EXT_POT: ${{ github.workspace }}/examples/opencpmd-h2/ext_pot
+          CPMD_WRAPPER: ${{ github.workspace }}/examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py
+          CPMD_PP: 1:H_GTH_BLYP:LMAX=S LOC=S
+          PP_LIBRARY_PATH: ${{ github.workspace }}/examples/opencpmd-h2/pseudo
+          CPMD_FUNCTIONAL: BLYP
+          # 100 Ry: the five-point quadratic H-H minimum moves by 0.0047 A
+          # from 50 to 70 Ry, then by 0.00033 A from 70 to 100 Ry.
+          CPMD_CUTOFF: "100"
+          CPMD_CONVERGENCE: "1.0e-7"
+          # Same five lengths as the local scan (10 Angstrom cube, BLYP,
+          # GTH H, orbitals to 1e-7). The quadratic minimum
+          # e = a(r-r0)^2 + b(r-r0) + c of those 100 Ry energies is
+          # 0.748890 Angstrom, and the 0.74 Angstrom energy is
+          # -31.795980465 eV. A repeated 50 Ry point matched every printed
+          # digit, and a 12 Angstrom cube at 50 Ry shifted that energy by
+          # 0.0006 eV. 0.01 eV is the rerun window for this setup: 70 to
+          # 100 Ry still moves the absolute energy by 0.065 eV, so it is
+          # not a cutoff-completeness bar. 0.005 Angstrom is wider than
+          # the 70-to-100 Ry bond shift and narrower than the 0.0075 A
+          # gap from this minimum to the experimental 0.7414 A
+          # (Huber and Herzberg).
+          BOND_LENGTHS: "0.70 0.72 0.74 0.76 0.78"
+          ENERGY_AT: "0.74"
+          ENERGY_EV: "-31.795980465"
+          ENERGY_TOL_EV: "0.01"
+          BOND_REF_ANG: "0.748890"
+          BOND_TOL_ANG: "0.005"
+          EONCLIENT: ${{ github.workspace }}/bbdir/client/eonclient
+        run: |
+          set -euo pipefail
+          # Same compiler choice as the Si3N4 step: system MPI, pixi meson.
+          export PATH="/usr/bin:${PWD}/.pixi/envs/default/bin:${PATH}"
+          hash -r
+          unset CC CXX FC CFLAGS CXXFLAGS FCFLAGS FFLAGS
+          export CC=/usr/bin/gcc
+          export CXX=/usr/bin/g++
+          export FC=/usr/bin/mpif90
+          bash scripts/ci/opencpmd_point.sh

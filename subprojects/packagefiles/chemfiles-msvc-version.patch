@@ -1,0 +1,22 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -26,7 +26,10 @@ if (POLICY CMP0063)
+     cmake_policy(SET CMP0063 NEW)
+ endif()
+ 
+-file(READ ${PROJECT_SOURCE_DIR}/VERSION CHEMFILES_VERSION)
++# The upstream file is named VERSION. Meson puts the subproject root on
++# the include path, and MSVC's case-insensitive lookup then treats that
++# file as the C++ <version> header.
++file(READ ${PROJECT_SOURCE_DIR}/chemfiles.version CHEMFILES_VERSION)
+ string(STRIP ${CHEMFILES_VERSION} CHEMFILES_VERSION)
+ string(REGEX REPLACE "^([0-9]+)\\..*" "\\1" CHEMFILES_VERSION_MAJOR "${CHEMFILES_VERSION}")
+ string(REGEX REPLACE "^[0-9]+\\.([0-9]+).*" "\\1" CHEMFILES_VERSION_MINOR "${CHEMFILES_VERSION}")
+--- a/VERSION
++++ /dev/null
+@@ -1 +0,0 @@
+-0.10.4
+--- /dev/null
++++ b/chemfiles.version
+@@ -0,0 +1 @@
++0.10.4

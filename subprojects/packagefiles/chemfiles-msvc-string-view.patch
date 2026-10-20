@@ -1,0 +1,16 @@
+--- a/include/chemfiles/utils.hpp
++++ b/include/chemfiles/utils.hpp
+@@ -104,7 +104,12 @@
+         end++;
+     }
+ 
+-    return string_view(begin, static_cast<size_t>(end - begin));
++    // MSVC's std::string_view::iterator is not a pointer, so
++    // string_view(iterator, length) does not match a constructor once
++    // string-view-lite aliases std::string_view (C++17 or later).
++    return string.substr(
++        static_cast<size_t>(begin - string.begin()),
++        static_cast<size_t>(end - begin));
+ }
+ 
+ inline string_view trim(const char* string) {
