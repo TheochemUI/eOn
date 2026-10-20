@@ -2313,6 +2313,7 @@ if get_option('with_tests')
         ['test_solid_state_neb', 'SolidStateNEBTest.cpp', ''],
         ['test_solid_state_bain', 'SolidStateBainTest.cpp', ''],
         ['test_neb_regression', 'NEBRegressionTest.cpp', 'neb_lj13'],
+        ['test_bench_parity', 'BenchParityTest.cpp', 'neb_lj13'],
         ['test_dimer', 'DimerTest.cpp', 'neb_morse'],
         ['test_saddle', 'SaddleSearchTest.cpp', 'neb_morse'],
         ['test_confileio', 'ConFileIOTest.cpp', 'neb_morse'],
