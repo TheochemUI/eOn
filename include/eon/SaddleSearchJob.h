@@ -81,6 +81,9 @@ private:
 
   //! Force calls to find the saddle
   int fCallsSaddle;
+  //! Calls made through per-image clones of pot (Main.parallel), which
+  //! pot->forceCallCounter does not see
+  size_t fCallsImages{0};
 
   eonc::log::Scoped log;
 };

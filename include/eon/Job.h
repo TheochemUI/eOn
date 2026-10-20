@@ -107,6 +107,9 @@ public:
   virtual std::vector<std::string> run() = 0;
   [[nodiscard]] JobType getType() { return this->jtype; };
   [[nodiscard]] PotRegistry &pots() noexcept { return runtime_->pots(); }
+  /// Force calls charged to pot's registry. Per-image clones of pot
+  /// (Main.parallel) charge it too; pot->forceCallCounter sees only pot.
+  [[nodiscard]] size_t potRegistryForceCalls() const noexcept;
   /// Drop the Potential so on_destroyed is recorded before Runtime dies.
   void releasePotential() { pot.reset(); }
 };

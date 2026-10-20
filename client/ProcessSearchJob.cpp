@@ -237,7 +237,7 @@ int ProcessSearchJob::doProcessSearch() {
   long status;
   size_t fctmp{0};
 
-  fctmp = pot->forceCallCounter;
+  fctmp = potRegistryForceCalls();
   status = saddleSearch->run();
   if (params.saddle_search_options().method == "min_mode" &&
       params.saddle_search_options().minmode_method ==
@@ -246,7 +246,7 @@ int ProcessSearchJob::doProcessSearch() {
   } else if (params.saddle_search_options().method == "artn") {
     fCallsSaddle += saddleSearch->getForceCalls();
   } else {
-    fCallsSaddle += pot->forceCallCounter - fctmp;
+    fCallsSaddle += potRegistryForceCalls() - fctmp;
   }
   EONC_LOG_DEBUG("Got {} calls in the saddle search, with previous {}",
                  fCallsSaddle, fctmp);
