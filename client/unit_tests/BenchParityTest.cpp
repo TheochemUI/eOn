@@ -13,8 +13,9 @@
 /// Force-call counts pinned to eOn 3.5.0. Each config.ini below was run
 /// through the v3.5.0 eonclient; the pinned counts are what it reported
 /// with lbfgs_accept = none. With lbfgs_accept = energy that client spent
-/// 367, 1924, 280, 4424 and 818 calls on the same five cases, so the energy
-/// test must leave the band and min-mode searches alone.
+/// 367 and 158 calls on the LJ13 bands, 844 on the single-image Pt hop, and
+/// 1924, 280, 4424 and 818 on the min-mode searches, so the energy test must
+/// leave the band and min-mode searches alone.
 
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
@@ -146,6 +147,35 @@ TEST_CASE("LJ13 CI-NEB L-BFGS force calls match eOn 3.5.0",
   // The climbing image sits on the 1.0017 eV saddle.
   REQUIRE(std::stod(results.at("image5_energy")) ==
           Catch::Approx(1.001675).margin(1e-4));
+}
+
+TEST_CASE("Single-image CI-NEB force calls match eOn 3.5.0",
+          "[bench_parity][neb][lbfgs]") {
+  struct Case {
+    const char *system;
+    const char *potential;
+    long calls;
+    double imageEnergy;
+  };
+  // The optbench Pt-island ini as written: no spring or max_move, and
+  // climbing_image is not a key, so the band climbs by default.
+  const auto c = GENERATE(Case{"neb_lj13", "lj", 64, 0.920287},
+                          Case{"pt_heptamer_hop", "morse_pt", 24, 1.086257});
+  const std::string accept = GENERATE("none", "energy");
+  CAPTURE(c.system, accept);
+  ParityRun run(c.system);
+  auto results = run.run(
+      "[Main]\njob = nudged_elastic_band\nrandom_seed = 1\nparallel = false\n"
+      "[Potential]\npotential = " +
+      std::string(c.potential) +
+      "\n[Optimizer]\nopt_method = lbfgs\nconverged_force = 0.001\n"
+      "max_iterations = 1000\nlbfgs_accept = " +
+      accept + "\n[Nudged Elastic Band]\nimages = 1\nclimbing_image = true\n");
+  REQUIRE(results.at("termination_reason") == "0");
+  REQUIRE(results.at("number_of_images") == "1.000000000000e+00");
+  requireNear350(std::stol(results.at("total_force_calls")), c.calls);
+  REQUIRE(std::stod(results.at("image1_energy")) ==
+          Catch::Approx(c.imageEnergy).margin(1e-4));
 }
 
 TEST_CASE("Min-mode L-BFGS saddle searches match eOn 3.5.0",
