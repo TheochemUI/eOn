@@ -4,7 +4,7 @@ source_url = https://github.com/chemfiles/chemfiles/archive/refs/tags/0.10.4.tar
 source_filename = chemfiles-0.10.4.tar.gz
 source_hash = b8232ddaae2953538274982838aa6c2df87d300f7e2f80e92c171581e06325ba
 method = cmake
-diff_files = chemfiles-cmake4.patch, chemfiles-molfiles.patch
+diff_files = chemfiles-cmake4.patch, chemfiles-molfiles.patch, chemfiles-msvc-string-view.patch
 
 [provide]
 # Meson names the dependency variable <cmake-target>_dep. The CMake

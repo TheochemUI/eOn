@@ -557,6 +557,16 @@ if not chemfiles_dep.found() and not _chfl_feature.disabled()
         # reaches the unpatched file.
         'CMAKE_POLICY_VERSION_MINIMUM': '3.5',
     })
+    # chemfiles 0.10.4 is C++11. GCC records -std=c++11 and Meson honors
+    # that. MSVC has no such flag in CompilerFlags.cmake, so the wrap keeps
+    # the project c++20. string-view-lite then aliases std::string_view, and
+    # MSVC's iterator is not a pointer, so trim() does not compile. c++14 is
+    # the oldest ISO mode cl.exe still exposes; below C++17 the lite header
+    # keeps its pointer implementation. The utils.hpp patch covers a TU that
+    # still sees std::string_view.
+    if is_windows and cppc.get_id() == 'msvc'
+        chfl_opts.set_override_option('cpp_std', 'c++14')
+    endif
     chfl_proj = cmake.subproject(
         'chemfiles',
         required: _chfl_feature,
