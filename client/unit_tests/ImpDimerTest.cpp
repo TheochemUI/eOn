@@ -160,7 +160,8 @@ TEST_CASE("ImprovedDimer evaluates per-image potentials on separate instances",
 class DiagHessianPot final : public eonc::Potential {
 public:
   DiagHessianPot(double cx, double cy, double cz)
-      : Potential(PotType::UNKNOWN), c_{cx, cy, cz} {}
+      : Potential(PotType::UNKNOWN),
+        c_{cx, cy, cz} {}
 
   void force(long nAtoms, const double *positions, const int *atomicNrs,
              double *forces, double *energy, double *variance,
@@ -185,9 +186,9 @@ private:
   double c_[3];
 };
 
-static std::shared_ptr<Matter> oneAtom(const std::shared_ptr<eonc::Potential> &pot,
-                                       const Parameters &parameters,
-                                       const Eigen::Vector3d &r) {
+static std::shared_ptr<Matter>
+oneAtom(const std::shared_ptr<eonc::Potential> &pot,
+        const Parameters &parameters, const Eigen::Vector3d &r) {
   auto matter = std::make_shared<Matter>(pot, parameters);
   matter->resize(1);
   matter->setAtomicNr(0, 1);
