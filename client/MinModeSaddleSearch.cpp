@@ -54,9 +54,7 @@ public:
   // force is not |C_tau|. Reporting the mode scale as H0 takes a first
   // step the finite-difference probe of F_eff would not, including
   // when that step is shorter than max_move.
-  std::optional<double> knownCurvature() const override {
-    return std::nullopt;
-  }
+  std::optional<double> knownCurvature() const override { return std::nullopt; }
 
   // The translation force has its component along the mode reversed, so
   // the search climbs the potential energy that getEnergy() returns.
