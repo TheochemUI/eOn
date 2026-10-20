@@ -9,6 +9,7 @@ var classeonc_1_1Job =
     [ "~Job", "classeonc_1_1Job.html#a4ba6ee96636fdbc95059c67a10900ea7", null ],
     [ "adoptRuntime", "classeonc_1_1Job.html#a2106aabb046a746647151b5e46180631", null ],
     [ "getType", "classeonc_1_1Job.html#a6a8f2fa4c5209bee4d243fec7b9db59e", null ],
+    [ "potRegistryForceCalls", "classeonc_1_1Job.html#a38797bdd6ab6331a21e1ebbdd4cc7e4a", null ],
     [ "pots", "classeonc_1_1Job.html#a03a40b0e3f078b9e284220c71567e644", null ],
     [ "releasePotential", "classeonc_1_1Job.html#acdb29769b15353b093288278a05bff3c", null ],
     [ "run", "classeonc_1_1Job.html#ac23db10c6a90d5c6cc8a3a49d7b0dace", null ],

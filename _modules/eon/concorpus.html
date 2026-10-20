@@ -84,7 +84,6 @@ data-aria-dark="Switch to auto color mode">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../team.html">eOn team</a></li>
-<li class="toctree-l1 _expand"><a class="reference internal" href="../../citing.html">Citing eOn</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../install/eessi.html">Build develop on EESSI</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../install/lammps.html">LAMMPS</a></li>
@@ -123,6 +122,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/mpi_potential.html">MPI potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/algorithm_selection.html">Choosing an algorithm</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/main.html">General simulation parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/structure_input.html">Structure input formats</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/potential.html">Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/structure_comparison.html">Structure comparison</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/optimizer.html">Optimizer</a></li>
@@ -178,6 +178,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/design/client/index.html">Client design</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/types.html">Type system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/exact-reduction.html">Exact reductions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/parameters.html">Parameters system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
@@ -200,6 +201,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.contracts.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.contracts.load_outcome.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts.load_outcome</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
@@ -413,321 +418,251 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="12">
 </span><span data-line="13"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="14">
-</span><span data-line="15"><span class="kn">import</span><span class="w"> </span><span class="nn">atexit</span>
-</span><span data-line="16"><span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>
-</span><span data-line="17"><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-</span><span data-line="18"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-</span><span data-line="19"><span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
-</span><span data-line="20"><span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
-</span><span data-line="21"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span data-line="15"><span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>
+</span><span data-line="16"><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+</span><span data-line="17"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span data-line="18"><span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+</span><span data-line="19"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span data-line="20">
+</span><span data-line="21"><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;eon.concorpus&quot;</span><span class="p">)</span>
 </span><span data-line="22">
-</span><span data-line="23"><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;eon.concorpus&quot;</span><span class="p">)</span>
-</span><span data-line="24">
-</span><span data-line="25"><span class="n">_FNV_OFFSET</span> <span class="o">=</span> <span class="mi">14695981039346656037</span>
-</span><span data-line="26"><span class="n">_FNV_PRIME</span> <span class="o">=</span> <span class="mi">1099511628211</span>
-</span><span data-line="27"><span class="n">_MASK</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">64</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-</span><span data-line="28">
-</span><span data-line="29"><span class="n">_GROUP</span> <span class="o">=</span> <span class="mi">64</span>
-</span><span data-line="30"><span class="n">_unavailable</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="31"><span class="n">_corpora</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="32"><span class="n">_pending</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="33"><span class="n">_pending_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
-</span><span data-line="34">
-</span><span data-line="35">
+</span><span data-line="23"><span class="n">_FNV_OFFSET</span> <span class="o">=</span> <span class="mi">14695981039346656037</span>
+</span><span data-line="24"><span class="n">_FNV_PRIME</span> <span class="o">=</span> <span class="mi">1099511628211</span>
+</span><span data-line="25"><span class="n">_MASK</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">64</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+</span><span data-line="26">
+</span><span data-line="27"><span class="n">_unavailable</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="28"><span class="n">_corpora</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="29">
+</span><span data-line="30">
 <div class="viewcode-block" id="traj_id">
 <a class="viewcode-back" href="../../apidocs/eon/eon.concorpus.html#eon.concorpus.traj_id">[docs]</a>
-</span><span data-line="36"><span class="k">def</span><span class="w"> </span><span class="nf">traj_id</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span data-line="37"><span class="w">    </span><span class="sd">&quot;&quot;&quot;FNV-1a 64 of the canonical path bytes.</span>
-</span><span data-line="38">
-</span><span data-line="39"><span class="sd">    ``text`` is ignored. The id is the path alone, the same offset and</span>
-</span><span data-line="40"><span class="sd">    prime as the C++ mirror. A zero digest becomes 1. Old corpora stay</span>
-</span><span data-line="41"><span class="sd">    under the keys they already have.</span>
-</span><span data-line="42"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="43">    <span class="k">del</span> <span class="n">text</span>
-</span><span data-line="44">    <span class="n">h</span> <span class="o">=</span> <span class="n">_FNV_OFFSET</span>
-</span><span data-line="45">    <span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">encode</span><span class="p">():</span>
-</span><span data-line="46">        <span class="n">h</span> <span class="o">^=</span> <span class="n">byte</span>
-</span><span data-line="47">        <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="n">_FNV_PRIME</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">_MASK</span>
-</span><span data-line="48">    <span class="k">return</span> <span class="n">h</span> <span class="ow">or</span> <span class="mi">1</span></div>
+</span><span data-line="31"><span class="k">def</span><span class="w"> </span><span class="nf">traj_id</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span data-line="32"><span class="w">    </span><span class="sd">&quot;&quot;&quot;FNV-1a 64 over the absolute path, a NUL, and the con text.&quot;&quot;&quot;</span>
+</span><span data-line="33">    <span class="n">h</span> <span class="o">=</span> <span class="n">_FNV_OFFSET</span>
+</span><span data-line="34">    <span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\0</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">():</span>
+</span><span data-line="35">        <span class="n">h</span> <span class="o">^=</span> <span class="n">byte</span>
+</span><span data-line="36">        <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="n">_FNV_PRIME</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">_MASK</span>
+</span><span data-line="37">    <span class="k">return</span> <span class="n">h</span> <span class="ow">or</span> <span class="mi">1</span></div>
 
-</span><span data-line="49">
-</span><span data-line="50">
+</span><span data-line="38">
+</span><span data-line="39">
 <div class="viewcode-block" id="corpus_dir">
 <a class="viewcode-back" href="../../apidocs/eon/eon.concorpus.html#eon.concorpus.corpus_dir">[docs]</a>
-</span><span data-line="51"><span class="k">def</span><span class="w"> </span><span class="nf">corpus_dir</span><span class="p">(</span><span class="n">con_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-</span><span data-line="52"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Directory of the LMDB corpus for this con path.&quot;&quot;&quot;</span>
-</span><span data-line="53">    <span class="n">cur</span> <span class="o">=</span> <span class="n">con_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span>
-</span><span data-line="54">    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
-</span><span data-line="55">        <span class="k">if</span> <span class="p">(</span><span class="n">cur</span> <span class="o">/</span> <span class="s2">&quot;config.ini&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-</span><span data-line="56">            <span class="k">return</span> <span class="n">cur</span> <span class="o">/</span> <span class="s2">&quot;readcon.db&quot;</span>
-</span><span data-line="57">        <span class="n">parent</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">parent</span>
-</span><span data-line="58">        <span class="k">if</span> <span class="n">parent</span> <span class="o">==</span> <span class="n">cur</span><span class="p">:</span>
-</span><span data-line="59">            <span class="k">break</span>
-</span><span data-line="60">        <span class="n">cur</span> <span class="o">=</span> <span class="n">parent</span>
-</span><span data-line="61">    <span class="k">return</span> <span class="n">con_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;readcon.db&quot;</span></div>
+</span><span data-line="40"><span class="k">def</span><span class="w"> </span><span class="nf">corpus_dir</span><span class="p">(</span><span class="n">con_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+</span><span data-line="41"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Directory of the LMDB corpus for this con path.&quot;&quot;&quot;</span>
+</span><span data-line="42">    <span class="n">cur</span> <span class="o">=</span> <span class="n">con_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span>
+</span><span data-line="43">    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+</span><span data-line="44">        <span class="k">if</span> <span class="p">(</span><span class="n">cur</span> <span class="o">/</span> <span class="s2">&quot;config.ini&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+</span><span data-line="45">            <span class="k">return</span> <span class="n">cur</span> <span class="o">/</span> <span class="s2">&quot;readcon.db&quot;</span>
+</span><span data-line="46">        <span class="n">parent</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">parent</span>
+</span><span data-line="47">        <span class="k">if</span> <span class="n">parent</span> <span class="o">==</span> <span class="n">cur</span><span class="p">:</span>
+</span><span data-line="48">            <span class="k">break</span>
+</span><span data-line="49">        <span class="n">cur</span> <span class="o">=</span> <span class="n">parent</span>
+</span><span data-line="50">    <span class="k">return</span> <span class="n">con_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;readcon.db&quot;</span></div>
 
+</span><span data-line="51">
+</span><span data-line="52">
+</span><span data-line="53"><span class="k">def</span><span class="w"> </span><span class="nf">_loader_error</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="54"><span class="w">    </span><span class="sd">&quot;&quot;&quot;dlopen text for a missing libreadcon_db.so, or an empty string.&quot;&quot;&quot;</span>
+</span><span data-line="55">    <span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
+</span><span data-line="56">
+</span><span data-line="57">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="58">        <span class="n">ctypes</span><span class="o">.</span><span class="n">CDLL</span><span class="p">(</span><span class="s2">&quot;libreadcon_db.so&quot;</span><span class="p">)</span>
+</span><span data-line="59">    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+</span><span data-line="60">        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+</span><span data-line="61">    <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 </span><span data-line="62">
 </span><span data-line="63">
-</span><span data-line="64"><span class="k">def</span><span class="w"> </span><span class="nf">_corpus</span><span class="p">(</span><span class="n">directory</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
-</span><span data-line="65">    <span class="k">global</span> <span class="n">_unavailable</span>
-</span><span data-line="66">    <span class="k">if</span> <span class="n">_unavailable</span><span class="p">:</span>
-</span><span data-line="67">        <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="68">    <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
-</span><span data-line="69">    <span class="n">cached</span> <span class="o">=</span> <span class="n">_corpora</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-</span><span data-line="70">    <span class="k">if</span> <span class="n">cached</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="71">        <span class="k">return</span> <span class="n">cached</span>
-</span><span data-line="72">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="73">        <span class="kn">from</span><span class="w"> </span><span class="nn">readcon_db</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConCorpus</span>
-</span><span data-line="74">    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-</span><span data-line="75">        <span class="n">_unavailable</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span data-line="76">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;readcon_db is not installed; con files stay authoritative&quot;</span><span class="p">)</span>
-</span><span data-line="77">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="64"><span class="k">def</span><span class="w"> </span><span class="nf">_note_library_missing</span><span class="p">(</span><span class="n">exc</span><span class="p">:</span> <span class="ne">BaseException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="65"><span class="w">    </span><span class="sd">&quot;&quot;&quot;One warning. Later calls return before this runs.&quot;&quot;&quot;</span>
+</span><span data-line="66">    <span class="n">detail</span> <span class="o">=</span> <span class="n">_loader_error</span><span class="p">()</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+</span><span data-line="67">    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;libreadcon_db.so failed to load: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">detail</span><span class="p">)</span>
+</span><span data-line="68">
+</span><span data-line="69">
+</span><span data-line="70"><span class="k">def</span><span class="w"> </span><span class="nf">_corpus</span><span class="p">(</span><span class="n">directory</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+</span><span data-line="71">    <span class="k">global</span> <span class="n">_unavailable</span>
+</span><span data-line="72">    <span class="k">if</span> <span class="n">_unavailable</span><span class="p">:</span>
+</span><span data-line="73">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="74">    <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+</span><span data-line="75">    <span class="n">cached</span> <span class="o">=</span> <span class="n">_corpora</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="76">    <span class="k">if</span> <span class="n">cached</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="77">        <span class="k">return</span> <span class="n">cached</span>
 </span><span data-line="78">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="79">        <span class="n">db</span> <span class="o">=</span> <span class="n">ConCorpus</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-</span><span data-line="80">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-</span><span data-line="81">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;readcon-db open failed for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="82">        <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="83">    <span class="n">_corpora</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">db</span>
-</span><span data-line="84">    <span class="k">return</span> <span class="n">db</span>
-</span><span data-line="85">
-</span><span data-line="86">
-</span><span data-line="87"><span class="k">def</span><span class="w"> </span><span class="nf">_resolved</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="88">    <span class="n">con_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-</span><span data-line="89">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="90">        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">con_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
-</span><span data-line="91">    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-</span><span data-line="92">        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">con_path</span><span class="p">)</span>
-</span><span data-line="93">
-</span><span data-line="94">
-</span><span data-line="95"><span class="k">def</span><span class="w"> </span><span class="nf">_extend_batch</span><span class="p">(</span><span class="n">resolved</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">frames</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="96"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Extend one batch. A missing symbol or library is a soft skip.&quot;&quot;&quot;</span>
-</span><span data-line="97">    <span class="k">if</span> <span class="ow">not</span> <span class="n">frames</span><span class="p">:</span>
-</span><span data-line="98">        <span class="k">return</span>
-</span><span data-line="99">    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">frames</span><span class="p">)</span>
-</span><span data-line="100">    <span class="n">db</span> <span class="o">=</span> <span class="n">_corpus</span><span class="p">(</span><span class="n">corpus_dir</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">resolved</span><span class="p">)))</span>
-</span><span data-line="101">    <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="102">        <span class="k">return</span>
-</span><span data-line="103">    <span class="n">tid</span> <span class="o">=</span> <span class="n">traj_id</span><span class="p">(</span><span class="n">resolved</span><span class="p">)</span>
-</span><span data-line="104">    <span class="n">extend_str</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="s2">&quot;extend_trajectory_str&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="79">        <span class="kn">from</span><span class="w"> </span><span class="nn">readcon_db</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConCorpus</span>
+</span><span data-line="80">    <span class="k">except</span> <span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+</span><span data-line="81">        <span class="n">_unavailable</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="82">        <span class="n">_note_library_missing</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+</span><span data-line="83">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="84">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="85">        <span class="n">db</span> <span class="o">=</span> <span class="n">ConCorpus</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="86">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="87">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;readcon-db open failed for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="88">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="89">    <span class="n">_corpora</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">db</span>
+</span><span data-line="90">    <span class="k">return</span> <span class="n">db</span>
+</span><span data-line="91">
+</span><span data-line="92">
+<div class="viewcode-block" id="mirror_con_text">
+<a class="viewcode-back" href="../../apidocs/eon/eon.concorpus.html#eon.concorpus.mirror_con_text">[docs]</a>
+</span><span data-line="93"><span class="k">def</span><span class="w"> </span><span class="nf">mirror_con_text</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="94"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Insert one con blob. Identical path-and-text pairs are stored once.&quot;&quot;&quot;</span>
+</span><span data-line="95">    <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+</span><span data-line="96">        <span class="k">return</span>
+</span><span data-line="97">    <span class="n">con_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="98">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="99">        <span class="n">resolved</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">con_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
+</span><span data-line="100">    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+</span><span data-line="101">        <span class="n">resolved</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">con_path</span><span class="p">)</span>
+</span><span data-line="102">    <span class="n">db</span> <span class="o">=</span> <span class="n">_corpus</span><span class="p">(</span><span class="n">corpus_dir</span><span class="p">(</span><span class="n">con_path</span><span class="p">))</span>
+</span><span data-line="103">    <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="104">        <span class="k">return</span>
 </span><span data-line="105">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="106">        <span class="k">if</span> <span class="n">extend_str</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="107">            <span class="n">extend_str</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">resolved</span><span class="p">)</span>
-</span><span data-line="108">            <span class="k">return</span>
-</span><span data-line="109">        <span class="n">extend</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="s2">&quot;extend_trajectory&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-</span><span data-line="110">        <span class="k">if</span> <span class="n">extend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="111">            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;readcon-db has no extend entry; corpus batch skipped&quot;</span><span class="p">)</span>
-</span><span data-line="112">            <span class="k">return</span>
-</span><span data-line="113">        <span class="n">fd</span><span class="p">,</span> <span class="n">scratch</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;eon-corpus-&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.con&quot;</span><span class="p">)</span>
-</span><span data-line="114">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="115">            <span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">fdopen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
-</span><span data-line="116">                <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
-</span><span data-line="117">            <span class="n">extend</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span> <span class="n">scratch</span><span class="p">)</span>
-</span><span data-line="118">        <span class="k">finally</span><span class="p">:</span>
-</span><span data-line="119">            <span class="k">try</span><span class="p">:</span>
-</span><span data-line="120">                <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">scratch</span><span class="p">)</span>
-</span><span data-line="121">            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-</span><span data-line="122">                <span class="k">pass</span>
-</span><span data-line="123">    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-</span><span data-line="124">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;readcon-db extend skipped for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">resolved</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
-</span><span data-line="125">
-</span><span data-line="126">
-<div class="viewcode-block" id="note_corpus_append">
-<a class="viewcode-back" href="../../apidocs/eon/eon.concorpus.html#eon.concorpus.note_corpus_append">[docs]</a>
-</span><span data-line="127"><span class="k">def</span><span class="w"> </span><span class="nf">note_corpus_append</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">frame_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="128"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Buffer one appended frame. Flush at 64 frames.&quot;&quot;&quot;</span>
-</span><span data-line="129">    <span class="k">if</span> <span class="ow">not</span> <span class="n">frame_text</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">frame_text</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
-</span><span data-line="130">        <span class="k">return</span>
-</span><span data-line="131">    <span class="n">resolved</span> <span class="o">=</span> <span class="n">_resolved</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-</span><span data-line="132">    <span class="n">ready</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="133">    <span class="k">with</span> <span class="n">_pending_lock</span><span class="p">:</span>
-</span><span data-line="134">        <span class="n">slot</span> <span class="o">=</span> <span class="n">_pending</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">resolved</span><span class="p">,</span> <span class="p">[])</span>
-</span><span data-line="135">        <span class="n">slot</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">frame_text</span><span class="p">)</span>
-</span><span data-line="136">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">_GROUP</span><span class="p">:</span>
-</span><span data-line="137">            <span class="n">ready</span> <span class="o">=</span> <span class="n">slot</span>
-</span><span data-line="138">            <span class="k">del</span> <span class="n">_pending</span><span class="p">[</span><span class="n">resolved</span><span class="p">]</span>
-</span><span data-line="139">    <span class="k">if</span> <span class="n">ready</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="140">        <span class="n">_extend_batch</span><span class="p">(</span><span class="n">resolved</span><span class="p">,</span> <span class="n">ready</span><span class="p">)</span></div>
+</span><span data-line="106">        <span class="n">db</span><span class="o">.</span><span class="n">append_trajectory_str</span><span class="p">(</span><span class="n">traj_id</span><span class="p">(</span><span class="n">resolved</span><span class="p">,</span> <span class="n">text</span><span class="p">),</span> <span class="n">text</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">resolved</span><span class="p">)</span>
+</span><span data-line="107">    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+</span><span data-line="108">        <span class="k">if</span> <span class="s2">&quot;already exists&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">):</span>
+</span><span data-line="109">            <span class="k">return</span>
+</span><span data-line="110">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;readcon-db mirror skipped for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">resolved</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span></div>
 
-</span><span data-line="141">
-</span><span data-line="142">
-<div class="viewcode-block" id="flush_corpus_appends">
-<a class="viewcode-back" href="../../apidocs/eon/eon.concorpus.html#eon.concorpus.flush_corpus_appends">[docs]</a>
-</span><span data-line="143"><span class="k">def</span><span class="w"> </span><span class="nf">flush_corpus_appends</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="144"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Extend every buffered batch. A crash before this drops at most 63 frames.&quot;&quot;&quot;</span>
-</span><span data-line="145">    <span class="k">with</span> <span class="n">_pending_lock</span><span class="p">:</span>
-</span><span data-line="146">        <span class="n">pending</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_pending</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
-</span><span data-line="147">        <span class="n">_pending</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span data-line="148">    <span class="k">for</span> <span class="n">resolved</span><span class="p">,</span> <span class="n">frames</span> <span class="ow">in</span> <span class="n">pending</span><span class="p">:</span>
-</span><span data-line="149">        <span class="n">_extend_batch</span><span class="p">(</span><span class="n">resolved</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span></div>
+</span><span data-line="111">
+</span><span data-line="112">
+<div class="viewcode-block" id="store_frame_text">
+<a class="viewcode-back" href="../../apidocs/eon/eon.concorpus.html#eon.concorpus.store_frame_text">[docs]</a>
+</span><span data-line="113"><span class="k">def</span><span class="w"> </span><span class="nf">store_frame_text</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="114"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Store one con blob. Returns ``(traj_id, 0)`` for a single frame.</span>
+</span><span data-line="115">
+</span><span data-line="116"><span class="sd">    The corpus takes the con text only. A barrier is not an argument.</span>
+</span><span data-line="117"><span class="sd">    A mode is not an argument either: it rides in the saddle frame as</span>
+</span><span data-line="118"><span class="sd">    the displacements section.</span>
+</span><span data-line="119"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="120">    <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+</span><span data-line="121">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="122">    <span class="n">con_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="123">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="124">        <span class="n">resolved</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">con_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
+</span><span data-line="125">    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+</span><span data-line="126">        <span class="n">resolved</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">con_path</span><span class="p">)</span>
+</span><span data-line="127">    <span class="n">db</span> <span class="o">=</span> <span class="n">_corpus</span><span class="p">(</span><span class="n">corpus_dir</span><span class="p">(</span><span class="n">con_path</span><span class="p">))</span>
+</span><span data-line="128">    <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="129">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="130">    <span class="n">key</span> <span class="o">=</span> <span class="n">traj_id</span><span class="p">(</span><span class="n">resolved</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+</span><span data-line="131">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="132">        <span class="n">db</span><span class="o">.</span><span class="n">append_trajectory_str</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">resolved</span><span class="p">)</span>
+</span><span data-line="133">    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+</span><span data-line="134">        <span class="k">if</span> <span class="s2">&quot;already exists&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">):</span>
+</span><span data-line="135">            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;readcon-db store failed for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">resolved</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
+</span><span data-line="136">            <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="137">    <span class="k">return</span> <span class="n">key</span><span class="p">,</span> <span class="mi">0</span></div>
 
-</span><span data-line="150">
-</span><span data-line="151">
-<div class="viewcode-block" id="corpus_buffered_frames">
-<a class="viewcode-back" href="../../apidocs/eon/eon.concorpus.html#eon.concorpus.corpus_buffered_frames">[docs]</a>
-</span><span data-line="152"><span class="k">def</span><span class="w"> </span><span class="nf">corpus_buffered_frames</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span data-line="153">    <span class="n">resolved</span> <span class="o">=</span> <span class="n">_resolved</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-</span><span data-line="154">    <span class="k">with</span> <span class="n">_pending_lock</span><span class="p">:</span>
-</span><span data-line="155">        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">_pending</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">resolved</span><span class="p">,</span> <span class="p">()))</span></div>
+</span><span data-line="138">
+</span><span data-line="139">
+<div class="viewcode-block" id="load_frame_text">
+<a class="viewcode-back" href="../../apidocs/eon/eon.concorpus.html#eon.concorpus.load_frame_text">[docs]</a>
+</span><span data-line="140"><span class="k">def</span><span class="w"> </span><span class="nf">load_frame_text</span><span class="p">(</span><span class="n">directory</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">traj</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">frame_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="141"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Frame text for a key in this corpus, or None when it is absent.&quot;&quot;&quot;</span>
+</span><span data-line="142">    <span class="n">db</span> <span class="o">=</span> <span class="n">_corpus</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">))</span>
+</span><span data-line="143">    <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="144">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="145">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="146">        <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">get_frame_text</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">traj</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">frame_idx</span><span class="p">))</span>
+</span><span data-line="147">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="148">        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+</span><span data-line="149">            <span class="s2">&quot;readcon-db get_frame_text failed for </span><span class="si">%s</span><span class="s2"> frame </span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span data-line="150">            <span class="n">directory</span><span class="p">,</span>
+</span><span data-line="151">            <span class="n">traj</span><span class="p">,</span>
+</span><span data-line="152">            <span class="n">frame_idx</span><span class="p">,</span>
+</span><span data-line="153">            <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="154">        <span class="p">)</span>
+</span><span data-line="155">        <span class="k">return</span> <span class="kc">None</span></div>
 
 </span><span data-line="156">
 </span><span data-line="157">
-</span><span data-line="158"><span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">flush_corpus_appends</span><span class="p">)</span>
-</span><span data-line="159">
-</span><span data-line="160">
-<div class="viewcode-block" id="mirror_con_text">
-<a class="viewcode-back" href="../../apidocs/eon/eon.concorpus.html#eon.concorpus.mirror_con_text">[docs]</a>
-</span><span data-line="161"><span class="k">def</span><span class="w"> </span><span class="nf">mirror_con_text</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="162"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Insert one con blob under the path id. A second insert is TrajExists.&quot;&quot;&quot;</span>
-</span><span data-line="163">    <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
-</span><span data-line="164">        <span class="k">return</span>
-</span><span data-line="165">    <span class="n">resolved</span> <span class="o">=</span> <span class="n">_resolved</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-</span><span data-line="166">    <span class="n">db</span> <span class="o">=</span> <span class="n">_corpus</span><span class="p">(</span><span class="n">corpus_dir</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">resolved</span><span class="p">)))</span>
-</span><span data-line="167">    <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="168">        <span class="k">return</span>
-</span><span data-line="169">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="170">        <span class="n">db</span><span class="o">.</span><span class="n">append_trajectory_str</span><span class="p">(</span><span class="n">traj_id</span><span class="p">(</span><span class="n">resolved</span><span class="p">),</span> <span class="n">text</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">resolved</span><span class="p">)</span>
-</span><span data-line="171">    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-</span><span data-line="172">        <span class="k">if</span> <span class="s2">&quot;already exists&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">):</span>
-</span><span data-line="173">            <span class="k">return</span>
-</span><span data-line="174">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;readcon-db mirror skipped for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">resolved</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span></div>
-
-</span><span data-line="175">
-</span><span data-line="176">
-<div class="viewcode-block" id="store_frame_text">
-<a class="viewcode-back" href="../../apidocs/eon/eon.concorpus.html#eon.concorpus.store_frame_text">[docs]</a>
-</span><span data-line="177"><span class="k">def</span><span class="w"> </span><span class="nf">store_frame_text</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="178"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Store one con blob. Returns ``(traj_id, 0)`` for a single frame.</span>
-</span><span data-line="179">
-</span><span data-line="180"><span class="sd">    The corpus takes the con text only. A barrier is not an argument.</span>
-</span><span data-line="181"><span class="sd">    A mode is not an argument either: it rides in the saddle frame as</span>
-</span><span data-line="182"><span class="sd">    the displacements section.</span>
-</span><span data-line="183"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="184">    <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
-</span><span data-line="185">        <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="186">    <span class="n">resolved</span> <span class="o">=</span> <span class="n">_resolved</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-</span><span data-line="187">    <span class="n">db</span> <span class="o">=</span> <span class="n">_corpus</span><span class="p">(</span><span class="n">corpus_dir</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">resolved</span><span class="p">)))</span>
-</span><span data-line="188">    <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="189">        <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="190">    <span class="n">key</span> <span class="o">=</span> <span class="n">traj_id</span><span class="p">(</span><span class="n">resolved</span><span class="p">)</span>
-</span><span data-line="191">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="192">        <span class="n">db</span><span class="o">.</span><span class="n">append_trajectory_str</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">resolved</span><span class="p">)</span>
-</span><span data-line="193">    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-</span><span data-line="194">        <span class="k">if</span> <span class="s2">&quot;already exists&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">):</span>
-</span><span data-line="195">            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;readcon-db store failed for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">resolved</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
-</span><span data-line="196">            <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="197">    <span class="k">return</span> <span class="n">key</span><span class="p">,</span> <span class="mi">0</span></div>
-
-</span><span data-line="198">
-</span><span data-line="199">
-<div class="viewcode-block" id="load_frame_text">
-<a class="viewcode-back" href="../../apidocs/eon/eon.concorpus.html#eon.concorpus.load_frame_text">[docs]</a>
-</span><span data-line="200"><span class="k">def</span><span class="w"> </span><span class="nf">load_frame_text</span><span class="p">(</span><span class="n">directory</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">traj</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">frame_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="201"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Frame text for a key in this corpus, or None when it is absent.&quot;&quot;&quot;</span>
-</span><span data-line="202">    <span class="n">flush_corpus_appends</span><span class="p">()</span>
-</span><span data-line="203">    <span class="n">db</span> <span class="o">=</span> <span class="n">_corpus</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">))</span>
-</span><span data-line="204">    <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="205">        <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="206">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="207">        <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">get_frame_text</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">traj</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">frame_idx</span><span class="p">))</span>
-</span><span data-line="208">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-</span><span data-line="209">        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-</span><span data-line="210">            <span class="s2">&quot;readcon-db get_frame_text failed for </span><span class="si">%s</span><span class="s2"> frame </span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span data-line="211">            <span class="n">directory</span><span class="p">,</span>
-</span><span data-line="212">            <span class="n">traj</span><span class="p">,</span>
-</span><span data-line="213">            <span class="n">frame_idx</span><span class="p">,</span>
-</span><span data-line="214">            <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span data-line="215">        <span class="p">)</span>
-</span><span data-line="216">        <span class="k">return</span> <span class="kc">None</span></div>
-
-</span><span data-line="217">
-</span><span data-line="218">
 <div class="viewcode-block" id="stored_frame_text">
 <a class="viewcode-back" href="../../apidocs/eon/eon.concorpus.html#eon.concorpus.stored_frame_text">[docs]</a>
-</span><span data-line="219"><span class="k">def</span><span class="w"> </span><span class="nf">stored_frame_text</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="220"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Frame text for this path&#39;s current blob, or None when the corpus has no copy.&quot;&quot;&quot;</span>
-</span><span data-line="221">    <span class="n">flush_corpus_appends</span><span class="p">()</span>
-</span><span data-line="222">    <span class="n">con_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-</span><span data-line="223">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="224">        <span class="n">resolved</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">con_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
-</span><span data-line="225">    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-</span><span data-line="226">        <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="227">    <span class="n">db</span> <span class="o">=</span> <span class="n">_corpus</span><span class="p">(</span><span class="n">corpus_dir</span><span class="p">(</span><span class="n">con_path</span><span class="p">))</span>
-</span><span data-line="228">    <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="229">        <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="230">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="231">        <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">get_frame_text</span><span class="p">(</span><span class="n">traj_id</span><span class="p">(</span><span class="n">resolved</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
-</span><span data-line="232">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-</span><span data-line="233">        <span class="k">return</span> <span class="kc">None</span></div>
+</span><span data-line="158"><span class="k">def</span><span class="w"> </span><span class="nf">stored_frame_text</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="159"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Frame text for this path&#39;s current blob, or None when the corpus has no copy.&quot;&quot;&quot;</span>
+</span><span data-line="160">    <span class="n">con_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="161">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="162">        <span class="n">text</span> <span class="o">=</span> <span class="n">con_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+</span><span data-line="163">        <span class="n">resolved</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">con_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
+</span><span data-line="164">    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+</span><span data-line="165">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="166">    <span class="n">db</span> <span class="o">=</span> <span class="n">_corpus</span><span class="p">(</span><span class="n">corpus_dir</span><span class="p">(</span><span class="n">con_path</span><span class="p">))</span>
+</span><span data-line="167">    <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="168">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="169">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="170">        <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">get_frame_text</span><span class="p">(</span><span class="n">traj_id</span><span class="p">(</span><span class="n">resolved</span><span class="p">,</span> <span class="n">text</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+</span><span data-line="171">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="172">        <span class="k">return</span> <span class="kc">None</span></div>
 
-</span><span data-line="234">
-</span><span data-line="235">
+</span><span data-line="173">
+</span><span data-line="174">
 <div class="viewcode-block" id="mirror_con_path">
 <a class="viewcode-back" href="../../apidocs/eon/eon.concorpus.html#eon.concorpus.mirror_con_path">[docs]</a>
-</span><span data-line="236"><span class="k">def</span><span class="w"> </span><span class="nf">mirror_con_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="237"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Insert the con file&#39;s current bytes.&quot;&quot;&quot;</span>
-</span><span data-line="238">    <span class="n">con_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-</span><span data-line="239">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="240">        <span class="n">text</span> <span class="o">=</span> <span class="n">con_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
-</span><span data-line="241">    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-</span><span data-line="242">        <span class="k">return</span>
-</span><span data-line="243">    <span class="n">mirror_con_text</span><span class="p">(</span><span class="n">con_path</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span></div>
+</span><span data-line="175"><span class="k">def</span><span class="w"> </span><span class="nf">mirror_con_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="176"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Insert the con file&#39;s current bytes.&quot;&quot;&quot;</span>
+</span><span data-line="177">    <span class="n">con_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="178">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="179">        <span class="n">text</span> <span class="o">=</span> <span class="n">con_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+</span><span data-line="180">    <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">UnicodeDecodeError</span><span class="p">):</span>
+</span><span data-line="181">        <span class="k">return</span>
+</span><span data-line="182">    <span class="n">mirror_con_text</span><span class="p">(</span><span class="n">con_path</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span></div>
 
-</span><span data-line="244">
-</span><span data-line="245">
+</span><span data-line="183">
+</span><span data-line="184">
 <div class="viewcode-block" id="directories_with_con">
 <a class="viewcode-back" href="../../apidocs/eon/eon.concorpus.html#eon.concorpus.directories_with_con">[docs]</a>
-</span><span data-line="246"><span class="k">def</span><span class="w"> </span><span class="nf">directories_with_con</span><span class="p">(</span><span class="n">tree</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
-</span><span data-line="247"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Directories under ``tree`` that directly contain ``.con`` or ``.convel``.&quot;&quot;&quot;</span>
-</span><span data-line="248">    <span class="n">found</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="249">    <span class="k">for</span> <span class="n">dirpath</span><span class="p">,</span> <span class="n">dirnames</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
-</span><span data-line="250">        <span class="n">dirnames</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-</span><span data-line="251">        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.con&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.convel&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">):</span>
-</span><span data-line="252">            <span class="n">found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dirpath</span><span class="p">))</span>
-</span><span data-line="253">    <span class="k">return</span> <span class="n">found</span></div>
+</span><span data-line="185"><span class="k">def</span><span class="w"> </span><span class="nf">directories_with_con</span><span class="p">(</span><span class="n">tree</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
+</span><span data-line="186"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Directories under ``tree`` that directly contain ``.con`` or ``.convel``.&quot;&quot;&quot;</span>
+</span><span data-line="187">    <span class="n">found</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="188">    <span class="k">for</span> <span class="n">dirpath</span><span class="p">,</span> <span class="n">dirnames</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
+</span><span data-line="189">        <span class="n">dirnames</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+</span><span data-line="190">        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.con&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.convel&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">):</span>
+</span><span data-line="191">            <span class="n">found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dirpath</span><span class="p">))</span>
+</span><span data-line="192">    <span class="k">return</span> <span class="n">found</span></div>
 
-</span><span data-line="254">
-</span><span data-line="255">
-</span><span data-line="256"><span class="k">def</span><span class="w"> </span><span class="nf">_index_tree</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
-</span><span data-line="257">    <span class="n">index</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="258">    <span class="n">next_id</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span data-line="259">    <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">directories_with_con</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
-</span><span data-line="260">        <span class="n">rows</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">ingest_directory</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">directory</span><span class="p">),</span> <span class="n">start_traj_id</span><span class="o">=</span><span class="n">next_id</span><span class="p">)</span>
-</span><span data-line="261">        <span class="k">for</span> <span class="n">traj_id</span><span class="p">,</span> <span class="n">_nframes</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
-</span><span data-line="262">            <span class="n">index</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">())]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">traj_id</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
-</span><span data-line="263">            <span class="n">next_id</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">next_id</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">traj_id</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-</span><span data-line="264">    <span class="k">return</span> <span class="n">index</span>
-</span><span data-line="265">
-</span><span data-line="266">
+</span><span data-line="193">
+</span><span data-line="194">
+</span><span data-line="195"><span class="k">def</span><span class="w"> </span><span class="nf">_index_tree</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+</span><span data-line="196">    <span class="n">index</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="197">    <span class="n">next_id</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span data-line="198">    <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">directories_with_con</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
+</span><span data-line="199">        <span class="n">rows</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">ingest_directory</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">directory</span><span class="p">),</span> <span class="n">start_traj_id</span><span class="o">=</span><span class="n">next_id</span><span class="p">)</span>
+</span><span data-line="200">        <span class="k">for</span> <span class="n">traj_id</span><span class="p">,</span> <span class="n">_nframes</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+</span><span data-line="201">            <span class="n">index</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">())]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">traj_id</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+</span><span data-line="202">            <span class="n">next_id</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">next_id</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">traj_id</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span data-line="203">    <span class="k">return</span> <span class="n">index</span>
+</span><span data-line="204">
+</span><span data-line="205">
 <div class="viewcode-block" id="frame_texts_for_paths">
 <a class="viewcode-back" href="../../apidocs/eon/eon.concorpus.html#eon.concorpus.frame_texts_for_paths">[docs]</a>
-</span><span data-line="267"><span class="k">def</span><span class="w"> </span><span class="nf">frame_texts_for_paths</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">con_paths</span><span class="p">,</span> <span class="n">corpus_cls</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="268"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Ingest ``tree`` and return frame 0 text for each path, in order.</span>
-</span><span data-line="269">
-</span><span data-line="270"><span class="sd">    ``corpus_cls`` defaults to ``readcon_db.ConCorpus``. Tests pass a stand-in</span>
-</span><span data-line="271"><span class="sd">    with the same constructor, ``ingest_directory``, and ``get_frame_texts``.</span>
-</span><span data-line="272"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="273">    <span class="k">if</span> <span class="n">corpus_cls</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="274">        <span class="kn">from</span><span class="w"> </span><span class="nn">readcon_db</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConCorpus</span>
-</span><span data-line="275">
-</span><span data-line="276">        <span class="n">corpus_cls</span> <span class="o">=</span> <span class="n">ConCorpus</span>
-</span><span data-line="277">    <span class="n">tree</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
-</span><span data-line="278">    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;eon-concorpus-&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">corpus_dir</span><span class="p">:</span>
-</span><span data-line="279">        <span class="n">writer</span> <span class="o">=</span> <span class="n">corpus_cls</span><span class="p">(</span><span class="n">corpus_dir</span><span class="p">)</span>
-</span><span data-line="280">        <span class="n">index</span> <span class="o">=</span> <span class="n">_index_tree</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">tree</span><span class="p">)</span>
-</span><span data-line="281">        <span class="c1"># One LMDB environment per path. Drop the writer before the read-only open.</span>
-</span><span data-line="282">        <span class="n">close</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-</span><span data-line="283">        <span class="k">if</span> <span class="n">close</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="284">            <span class="n">close</span><span class="p">()</span>
-</span><span data-line="285">        <span class="k">del</span> <span class="n">writer</span>
-</span><span data-line="286">        <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
-</span><span data-line="287">        <span class="n">keys</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="288">        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">con_paths</span><span class="p">:</span>
-</span><span data-line="289">            <span class="n">resolved</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
-</span><span data-line="290">            <span class="k">if</span> <span class="n">resolved</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">index</span><span class="p">:</span>
-</span><span data-line="291">                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> was not ingested from </span><span class="si">{</span><span class="n">tree</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span data-line="292">            <span class="n">keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">[</span><span class="n">resolved</span><span class="p">])</span>
-</span><span data-line="293">        <span class="n">reader</span> <span class="o">=</span> <span class="n">corpus_cls</span><span class="p">(</span><span class="n">corpus_dir</span><span class="p">,</span> <span class="n">readonly</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="294">        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">reader</span><span class="o">.</span><span class="n">get_frame_texts</span><span class="p">(</span><span class="n">keys</span><span class="p">))</span></div>
+</span><span data-line="206"><span class="k">def</span><span class="w"> </span><span class="nf">frame_texts_for_paths</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">con_paths</span><span class="p">,</span> <span class="n">corpus_cls</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="207"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Ingest ``tree`` and return frame 0 text for each path, in order.</span>
+</span><span data-line="208">
+</span><span data-line="209"><span class="sd">    ``corpus_cls`` defaults to ``readcon_db.ConCorpus``. Tests pass a stand-in</span>
+</span><span data-line="210"><span class="sd">    with the same constructor, ``ingest_directory``, and ``get_frame_texts``.</span>
+</span><span data-line="211"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="212">    <span class="k">if</span> <span class="n">corpus_cls</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="213">        <span class="kn">from</span><span class="w"> </span><span class="nn">readcon_db</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConCorpus</span>
+</span><span data-line="214">
+</span><span data-line="215">        <span class="n">corpus_cls</span> <span class="o">=</span> <span class="n">ConCorpus</span>
+</span><span data-line="216">    <span class="n">tree</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+</span><span data-line="217">    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;eon-concorpus-&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">corpus_dir</span><span class="p">:</span>
+</span><span data-line="218">        <span class="n">writer</span> <span class="o">=</span> <span class="n">corpus_cls</span><span class="p">(</span><span class="n">corpus_dir</span><span class="p">)</span>
+</span><span data-line="219">        <span class="n">index</span> <span class="o">=</span> <span class="n">_index_tree</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">tree</span><span class="p">)</span>
+</span><span data-line="220">        <span class="c1"># One LMDB environment per path. Drop the writer before the read-only open.</span>
+</span><span data-line="221">        <span class="n">close</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="222">        <span class="k">if</span> <span class="n">close</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="223">            <span class="n">close</span><span class="p">()</span>
+</span><span data-line="224">        <span class="k">del</span> <span class="n">writer</span>
+</span><span data-line="225">        <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+</span><span data-line="226">        <span class="n">keys</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="227">        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">con_paths</span><span class="p">:</span>
+</span><span data-line="228">            <span class="n">resolved</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
+</span><span data-line="229">            <span class="k">if</span> <span class="n">resolved</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">index</span><span class="p">:</span>
+</span><span data-line="230">                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> was not ingested from </span><span class="si">{</span><span class="n">tree</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="231">            <span class="n">keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">[</span><span class="n">resolved</span><span class="p">])</span>
+</span><span data-line="232">        <span class="n">reader</span> <span class="o">=</span> <span class="n">corpus_cls</span><span class="p">(</span><span class="n">corpus_dir</span><span class="p">,</span> <span class="n">readonly</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="233">        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">reader</span><span class="o">.</span><span class="n">get_frame_texts</span><span class="p">(</span><span class="n">keys</span><span class="p">))</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">

@@ -340,9 +340,9 @@ Additional Inherited Members</h2></td></tr>
 <div class="ttc" id="aclasseonc_1_1Optimizer_html_a51ef8ef5f774fa7125131d8a5dd72710"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">eonc::Optimizer::Optimizer</a></div><div class="ttdeci">Optimizer(std::shared_ptr&lt; ObjectiveFunction &gt; a_objf, const OptimizerConfig &amp;a_config)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00074">Optimizer.h:74</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56ab7426fb9c3932995306fceba2874d057"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ab7426fb9c3932995306fceba2874d057">eonc::OptType::FIRE</a></div><div class="ttdeci">@ FIRE</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00110">BaseStructures.h:110</a></div></div>
 <div class="ttc" id="astructeonc_1_1OptimizerConfig_html_abcfc681e415bb093ecdc44ed452e7e0d"><div class="ttname"><a href="structeonc_1_1OptimizerConfig.html#abcfc681e415bb093ecdc44ed452e7e0d">eonc::OptimizerConfig::fromParams</a></div><div class="ttdeci">static OptimizerConfig fromParams(const Parameters &amp;p)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00057">Optimizer.h:57</a></div></div>
-<div class="ttc" id="astructeonc_1_1optimizer__options__t_html_aa26d8a612871a6f19ddc8188c12279ce"><div class="ttname"><a href="structeonc_1_1optimizer__options__t.html#aa26d8a612871a6f19ddc8188c12279ce">eonc::optimizer_options_t::time_step</a></div><div class="ttdeci">double time_step</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00251">ParametersOptions.h:251</a></div></div>
-<div class="ttc" id="astructeonc_1_1optimizer__options__t_html_ac66493c6be3d64dc0b86430b71abcade"><div class="ttname"><a href="structeonc_1_1optimizer__options__t.html#ac66493c6be3d64dc0b86430b71abcade">eonc::optimizer_options_t::max_move</a></div><div class="ttdeci">double max_move</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00248">ParametersOptions.h:248</a></div></div>
-<div class="ttc" id="astructeonc_1_1optimizer__options__t_html_aef05c716fc2dac310fd73b71e9b0b0e2"><div class="ttname"><a href="structeonc_1_1optimizer__options__t.html#aef05c716fc2dac310fd73b71e9b0b0e2">eonc::optimizer_options_t::max_time_step</a></div><div class="ttdeci">double max_time_step</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00253">ParametersOptions.h:253</a></div></div>
+<div class="ttc" id="astructeonc_1_1optimizer__options__t_html_aa26d8a612871a6f19ddc8188c12279ce"><div class="ttname"><a href="structeonc_1_1optimizer__options__t.html#aa26d8a612871a6f19ddc8188c12279ce">eonc::optimizer_options_t::time_step</a></div><div class="ttdeci">double time_step</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00258">ParametersOptions.h:258</a></div></div>
+<div class="ttc" id="astructeonc_1_1optimizer__options__t_html_ac66493c6be3d64dc0b86430b71abcade"><div class="ttname"><a href="structeonc_1_1optimizer__options__t.html#ac66493c6be3d64dc0b86430b71abcade">eonc::optimizer_options_t::max_move</a></div><div class="ttdeci">double max_move</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00255">ParametersOptions.h:255</a></div></div>
+<div class="ttc" id="astructeonc_1_1optimizer__options__t_html_aef05c716fc2dac310fd73b71e9b0b0e2"><div class="ttname"><a href="structeonc_1_1optimizer__options__t.html#aef05c716fc2dac310fd73b71e9b0b0e2">eonc::optimizer_options_t::max_time_step</a></div><div class="ttdeci">double max_time_step</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00260">ParametersOptions.h:260</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -401,14 +401,14 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1Optimizer.html#a94dd8b89c732857574c03586efa25273">eonc::Optimizer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="FIRE_8cpp_source.html#l00076">76</a> of file <a class="el" href="FIRE_8cpp_source.html">FIRE.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   76</span>                                                      {</div>
-<div class="line"><span class="lineno">   77</span>  <span class="keywordflow">while</span> (!<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() &amp;&amp; <a class="code hl_variable" href="#ab4db8aff0beccdc1e9f470246643c66f">m_iteration</a> &lt; a_maxIterations) {</div>
-<div class="line"><span class="lineno">   78</span>    <a class="code hl_function" href="#a611194b7f1e015f4b57fbd5ef00945ee">step</a>(a_maxMove);</div>
-<div class="line"><span class="lineno">   79</span>  }</div>
-<div class="line"><span class="lineno">   80</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
-<div class="line"><span class="lineno">   81</span>}</div>
-<div class="ttc" id="aclasseonc_1_1FIRE_html_a611194b7f1e015f4b57fbd5ef00945ee"><div class="ttname"><a href="#a611194b7f1e015f4b57fbd5ef00945ee">eonc::FIRE::step</a></div><div class="ttdeci">int step(double a_maxMove) override</div><div class="ttdef"><b>Definition</b> <a href="FIRE_8cpp_source.html#l00021">FIRE.cpp:21</a></div></div>
+<p class="definition">Definition at line <a class="el" href="FIRE_8cpp_source.html#l00077">77</a> of file <a class="el" href="FIRE_8cpp_source.html">FIRE.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   77</span>                                                      {</div>
+<div class="line"><span class="lineno">   78</span>  <span class="keywordflow">while</span> (!<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() &amp;&amp; <a class="code hl_variable" href="#ab4db8aff0beccdc1e9f470246643c66f">m_iteration</a> &lt; a_maxIterations) {</div>
+<div class="line"><span class="lineno">   79</span>    <a class="code hl_function" href="#a611194b7f1e015f4b57fbd5ef00945ee">step</a>(a_maxMove);</div>
+<div class="line"><span class="lineno">   80</span>  }</div>
+<div class="line"><span class="lineno">   81</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">   82</span>}</div>
+<div class="ttc" id="aclasseonc_1_1FIRE_html_a611194b7f1e015f4b57fbd5ef00945ee"><div class="ttname"><a href="#a611194b7f1e015f4b57fbd5ef00945ee">eonc::FIRE::step</a></div><div class="ttdeci">int step(double a_maxMove) override</div><div class="ttdef"><b>Definition</b> <a href="FIRE_8cpp_source.html#l00022">FIRE.cpp:22</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Optimizer_html_ac396cbda1caadf57ff9df7eda4db1822"><div class="ttname"><a href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">eonc::Optimizer::m_objf</a></div><div class="ttdeci">std::shared_ptr&lt; ObjectiveFunction &gt; m_objf</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00071">Optimizer.h:71</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -438,63 +438,65 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1Optimizer.html#aa66365f3f15e6d4b9829e555cfc9f2b5">eonc::Optimizer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="FIRE_8cpp_source.html#l00021">21</a> of file <a class="el" href="FIRE_8cpp_source.html">FIRE.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   21</span>                               {</div>
-<div class="line"><span class="lineno">   22</span>  <span class="keywordtype">double</span> P = 0;</div>
-<div class="line"><span class="lineno">   23</span>  <span class="comment">// Check convergence.</span></div>
-<div class="line"><span class="lineno">   24</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged()) {</div>
-<div class="line"><span class="lineno">   25</span>    <span class="keywordflow">return</span> 1;</div>
-<div class="line"><span class="lineno">   26</span>  }</div>
-<div class="line"><span class="lineno">   27</span> </div>
-<div class="line"><span class="lineno">   28</span>  <span class="comment">// Velocity Verlet</span></div>
-<div class="line"><span class="lineno">   29</span>  Eigen::VectorXd f = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient();</div>
-<div class="line"><span class="lineno">   30</span>  Eigen::VectorXd x = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPositions();</div>
-<div class="line"><span class="lineno">   31</span> </div>
-<div class="line"><span class="lineno">   32</span>  <a class="code hl_variable" href="#a1c9fe0735a102b0a0c3428b5dcc20bec">m_vel</a> += f * <a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a>;</div>
-<div class="line"><span class="lineno">   33</span>  Eigen::VectorXd dx = <a class="code hl_variable" href="#a1c9fe0735a102b0a0c3428b5dcc20bec">m_vel</a> * <a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a>;</div>
-<div class="line"><span class="lineno">   34</span> </div>
-<div class="line"><span class="lineno">   35</span>  dx = <a class="code hl_function" href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a>(dx, a_maxMove);</div>
-<div class="line"><span class="lineno">   36</span>  <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(x + dx);</div>
-<div class="line"><span class="lineno">   37</span> </div>
-<div class="line"><span class="lineno">   38</span>  f = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient();</div>
-<div class="line"><span class="lineno">   39</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> fnorm = f.norm();</div>
-<div class="line"><span class="lineno">   40</span>  Eigen::VectorXd f_unit = Eigen::VectorXd::Zero(f.size());</div>
-<div class="line"><span class="lineno">   41</span>  <span class="keywordflow">if</span> (fnorm &gt; 0.0) {</div>
-<div class="line"><span class="lineno">   42</span>    f_unit = f / fnorm;</div>
-<div class="line"><span class="lineno">   43</span>  }</div>
-<div class="line"><span class="lineno">   44</span> </div>
-<div class="line"><span class="lineno">   45</span>  <span class="comment">// FIRE</span></div>
-<div class="line"><span class="lineno">   46</span>  P = f.dot(<a class="code hl_variable" href="#a1c9fe0735a102b0a0c3428b5dcc20bec">m_vel</a>);</div>
-<div class="line"><span class="lineno">   47</span>  <a class="code hl_variable" href="#a1c9fe0735a102b0a0c3428b5dcc20bec">m_vel</a> = (1 - <a class="code hl_variable" href="#aed1aad2f2fd444356fdaa1f8a39fa1fd">m_alpha</a>) * <a class="code hl_variable" href="#a1c9fe0735a102b0a0c3428b5dcc20bec">m_vel</a> + <a class="code hl_variable" href="#aed1aad2f2fd444356fdaa1f8a39fa1fd">m_alpha</a> * f_unit * <a class="code hl_variable" href="#a1c9fe0735a102b0a0c3428b5dcc20bec">m_vel</a>.norm();</div>
-<div class="line"><span class="lineno">   48</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ab43c2d9dcd7562e6f170975f26af12ad">m_log</a>,</div>
-<div class="line"><span class="lineno">   49</span>                  <span class="stringliteral">&quot;P: {:.4f}, v: {:.4f}, m_dt: {:.4f}, m_alpha: {:.4f}, N: {}&quot;</span>,</div>
-<div class="line"><span class="lineno">   50</span>                  P, <a class="code hl_variable" href="#a1c9fe0735a102b0a0c3428b5dcc20bec">m_vel</a>.norm(), <a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a>, <a class="code hl_variable" href="#aed1aad2f2fd444356fdaa1f8a39fa1fd">m_alpha</a>, <a class="code hl_variable" href="#aeb69212e7541ecec172554a84ebe5524">m_N</a>);</div>
-<div class="line"><span class="lineno">   51</span>  <span class="keywordflow">if</span> (P &gt;= 0) {</div>
-<div class="line"><span class="lineno">   52</span>    <a class="code hl_variable" href="#aeb69212e7541ecec172554a84ebe5524">m_N</a>++;</div>
-<div class="line"><span class="lineno">   53</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aeb69212e7541ecec172554a84ebe5524">m_N</a> &gt; <a class="code hl_variable" href="#a4e8cff140ff668c417f78b8a2a04caf4">m_N_min</a>) {</div>
-<div class="line"><span class="lineno">   54</span>      <a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a> = std::min(<a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a> * <a class="code hl_variable" href="#a27a801b09d2f420cf2ca8cb63329876b">m_f_inc</a>, <a class="code hl_variable" href="#a20c3a00a6cff2bdb3e5ceb1e140681c8">m_dt_max</a>);</div>
-<div class="line"><span class="lineno">   55</span>      <a class="code hl_variable" href="#aed1aad2f2fd444356fdaa1f8a39fa1fd">m_alpha</a> = <a class="code hl_variable" href="#aed1aad2f2fd444356fdaa1f8a39fa1fd">m_alpha</a> * <a class="code hl_variable" href="#a69e519d1d21cd6813ce3fa685de8a658">m_f_a</a>;</div>
-<div class="line"><span class="lineno">   56</span>    }</div>
-<div class="line"><span class="lineno">   57</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">   58</span>    <a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a> = <a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a> * <a class="code hl_variable" href="#aef378749ee7c1f087f4c493e8fdecb13">m_f_dec</a>;</div>
-<div class="line"><span class="lineno">   59</span>    <a class="code hl_variable" href="#a1c9fe0735a102b0a0c3428b5dcc20bec">m_vel</a>.setZero();</div>
-<div class="line"><span class="lineno">   60</span>    <a class="code hl_variable" href="#aed1aad2f2fd444356fdaa1f8a39fa1fd">m_alpha</a> = <a class="code hl_variable" href="#a521c1487b19777322d3fbce874b8bb9d">m_alpha_start</a>;</div>
-<div class="line"><span class="lineno">   61</span>    <a class="code hl_variable" href="#aeb69212e7541ecec172554a84ebe5524">m_N</a> = 0;</div>
-<div class="line"><span class="lineno">   62</span>  }</div>
-<div class="line"><span class="lineno">   63</span> </div>
-<div class="line"><span class="lineno">   64</span>  <span class="comment">// add a sanity check on m_dt</span></div>
-<div class="line"><span class="lineno">   65</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a> &lt; 1e-6) {</div>
-<div class="line"><span class="lineno">   66</span>    QUILL_LOG_CRITICAL(<a class="code hl_variable" href="#ab43c2d9dcd7562e6f170975f26af12ad">m_log</a>, <span class="stringliteral">&quot;[FIRE] [critical] m_dt is too small: {:.4f}&quot;</span>,</div>
-<div class="line"><span class="lineno">   67</span>                       <a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a>);</div>
-<div class="line"><span class="lineno">   68</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">   69</span>        std::format(<span class="stringliteral">&quot;[FIRE] m_dt is too small: {:.4f}&quot;</span>, <a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a>));</div>
-<div class="line"><span class="lineno">   70</span>  }</div>
-<div class="line"><span class="lineno">   71</span> </div>
-<div class="line"><span class="lineno">   72</span>  <a class="code hl_variable" href="#ab4db8aff0beccdc1e9f470246643c66f">m_iteration</a>++;</div>
-<div class="line"><span class="lineno">   73</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
-<div class="line"><span class="lineno">   74</span>}</div>
+<p class="definition">Definition at line <a class="el" href="FIRE_8cpp_source.html#l00022">22</a> of file <a class="el" href="FIRE_8cpp_source.html">FIRE.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   22</span>                               {</div>
+<div class="line"><span class="lineno">   23</span>  <span class="keywordtype">double</span> P = 0;</div>
+<div class="line"><span class="lineno">   24</span>  <span class="comment">// Check convergence.</span></div>
+<div class="line"><span class="lineno">   25</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged()) {</div>
+<div class="line"><span class="lineno">   26</span>    <span class="keywordflow">return</span> 1;</div>
+<div class="line"><span class="lineno">   27</span>  }</div>
+<div class="line"><span class="lineno">   28</span> </div>
+<div class="line"><span class="lineno">   29</span>  <span class="comment">// Velocity Verlet</span></div>
+<div class="line"><span class="lineno">   30</span>  Eigen::VectorXd f = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient();</div>
+<div class="line"><span class="lineno">   31</span>  Eigen::VectorXd x = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">   32</span> </div>
+<div class="line"><span class="lineno">   33</span>  <a class="code hl_variable" href="#a1c9fe0735a102b0a0c3428b5dcc20bec">m_vel</a> += f * <a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a>;</div>
+<div class="line"><span class="lineno">   34</span>  Eigen::VectorXd dx = <a class="code hl_variable" href="#a1c9fe0735a102b0a0c3428b5dcc20bec">m_vel</a> * <a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a>;</div>
+<div class="line"><span class="lineno">   35</span> </div>
+<div class="line"><span class="lineno">   36</span>  dx = <a class="code hl_function" href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a>(dx, a_maxMove);</div>
+<div class="line"><span class="lineno">   37</span>  <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(x + dx);</div>
+<div class="line"><span class="lineno">   38</span> </div>
+<div class="line"><span class="lineno">   39</span>  f = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient();</div>
+<div class="line"><span class="lineno">   40</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> fnorm = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a5fc310e3d2dec128339f8f3b105b829e">eonc::exact::norm</a>(f);</div>
+<div class="line"><span class="lineno">   41</span>  Eigen::VectorXd f_unit = Eigen::VectorXd::Zero(f.size());</div>
+<div class="line"><span class="lineno">   42</span>  <span class="keywordflow">if</span> (fnorm &gt; 0.0) {</div>
+<div class="line"><span class="lineno">   43</span>    f_unit = f / fnorm;</div>
+<div class="line"><span class="lineno">   44</span>  }</div>
+<div class="line"><span class="lineno">   45</span> </div>
+<div class="line"><span class="lineno">   46</span>  <span class="comment">// FIRE</span></div>
+<div class="line"><span class="lineno">   47</span>  P = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(f, <a class="code hl_variable" href="#a1c9fe0735a102b0a0c3428b5dcc20bec">m_vel</a>);</div>
+<div class="line"><span class="lineno">   48</span>  <a class="code hl_variable" href="#a1c9fe0735a102b0a0c3428b5dcc20bec">m_vel</a> = (1 - <a class="code hl_variable" href="#aed1aad2f2fd444356fdaa1f8a39fa1fd">m_alpha</a>) * <a class="code hl_variable" href="#a1c9fe0735a102b0a0c3428b5dcc20bec">m_vel</a> + <a class="code hl_variable" href="#aed1aad2f2fd444356fdaa1f8a39fa1fd">m_alpha</a> * f_unit * <a class="code hl_function" href="namespaceeonc_1_1exact.html#a5fc310e3d2dec128339f8f3b105b829e">eonc::exact::norm</a>(<a class="code hl_variable" href="#a1c9fe0735a102b0a0c3428b5dcc20bec">m_vel</a>);</div>
+<div class="line"><span class="lineno">   49</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ab43c2d9dcd7562e6f170975f26af12ad">m_log</a>,</div>
+<div class="line"><span class="lineno">   50</span>                  <span class="stringliteral">&quot;P: {:.4f}, v: {:.4f}, m_dt: {:.4f}, m_alpha: {:.4f}, N: {}&quot;</span>,</div>
+<div class="line"><span class="lineno">   51</span>                  P, <a class="code hl_variable" href="#a1c9fe0735a102b0a0c3428b5dcc20bec">m_vel</a>.norm(), <a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a>, <a class="code hl_variable" href="#aed1aad2f2fd444356fdaa1f8a39fa1fd">m_alpha</a>, <a class="code hl_variable" href="#aeb69212e7541ecec172554a84ebe5524">m_N</a>);</div>
+<div class="line"><span class="lineno">   52</span>  <span class="keywordflow">if</span> (P &gt;= 0) {</div>
+<div class="line"><span class="lineno">   53</span>    <a class="code hl_variable" href="#aeb69212e7541ecec172554a84ebe5524">m_N</a>++;</div>
+<div class="line"><span class="lineno">   54</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aeb69212e7541ecec172554a84ebe5524">m_N</a> &gt; <a class="code hl_variable" href="#a4e8cff140ff668c417f78b8a2a04caf4">m_N_min</a>) {</div>
+<div class="line"><span class="lineno">   55</span>      <a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a> = std::min(<a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a> * <a class="code hl_variable" href="#a27a801b09d2f420cf2ca8cb63329876b">m_f_inc</a>, <a class="code hl_variable" href="#a20c3a00a6cff2bdb3e5ceb1e140681c8">m_dt_max</a>);</div>
+<div class="line"><span class="lineno">   56</span>      <a class="code hl_variable" href="#aed1aad2f2fd444356fdaa1f8a39fa1fd">m_alpha</a> = <a class="code hl_variable" href="#aed1aad2f2fd444356fdaa1f8a39fa1fd">m_alpha</a> * <a class="code hl_variable" href="#a69e519d1d21cd6813ce3fa685de8a658">m_f_a</a>;</div>
+<div class="line"><span class="lineno">   57</span>    }</div>
+<div class="line"><span class="lineno">   58</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   59</span>    <a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a> = <a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a> * <a class="code hl_variable" href="#aef378749ee7c1f087f4c493e8fdecb13">m_f_dec</a>;</div>
+<div class="line"><span class="lineno">   60</span>    <a class="code hl_variable" href="#a1c9fe0735a102b0a0c3428b5dcc20bec">m_vel</a>.setZero();</div>
+<div class="line"><span class="lineno">   61</span>    <a class="code hl_variable" href="#aed1aad2f2fd444356fdaa1f8a39fa1fd">m_alpha</a> = <a class="code hl_variable" href="#a521c1487b19777322d3fbce874b8bb9d">m_alpha_start</a>;</div>
+<div class="line"><span class="lineno">   62</span>    <a class="code hl_variable" href="#aeb69212e7541ecec172554a84ebe5524">m_N</a> = 0;</div>
+<div class="line"><span class="lineno">   63</span>  }</div>
+<div class="line"><span class="lineno">   64</span> </div>
+<div class="line"><span class="lineno">   65</span>  <span class="comment">// add a sanity check on m_dt</span></div>
+<div class="line"><span class="lineno">   66</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a> &lt; 1e-6) {</div>
+<div class="line"><span class="lineno">   67</span>    QUILL_LOG_CRITICAL(<a class="code hl_variable" href="#ab43c2d9dcd7562e6f170975f26af12ad">m_log</a>, <span class="stringliteral">&quot;[FIRE] [critical] m_dt is too small: {:.4f}&quot;</span>,</div>
+<div class="line"><span class="lineno">   68</span>                       <a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a>);</div>
+<div class="line"><span class="lineno">   69</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">   70</span>        std::format(<span class="stringliteral">&quot;[FIRE] m_dt is too small: {:.4f}&quot;</span>, <a class="code hl_variable" href="#afbbbdb122bf4b3f5f6dbaac4f94e4aad">m_dt</a>));</div>
+<div class="line"><span class="lineno">   71</span>  }</div>
+<div class="line"><span class="lineno">   72</span> </div>
+<div class="line"><span class="lineno">   73</span>  <a class="code hl_variable" href="#ab4db8aff0beccdc1e9f470246643c66f">m_iteration</a>++;</div>
+<div class="line"><span class="lineno">   74</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">   75</span>}</div>
 <div class="ttc" id="aclasseonc_1_1FIRE_html_ab43c2d9dcd7562e6f170975f26af12ad"><div class="ttname"><a href="#ab43c2d9dcd7562e6f170975f26af12ad">eonc::FIRE::m_log</a></div><div class="ttdeci">eonc::log::FileScoped m_log</div><div class="ttdef"><b>Definition</b> <a href="FIRE_8h_source.html#l00045">FIRE.h:45</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1geometry_html_acbf42a1f91c3c4317451f0c12a60aeee"><div class="ttname"><a href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a></div><div class="ttdeci">VectorXd maxAtomMotionAppliedV(const VectorXd v1, double maxMotion)</div><div class="ttdef"><b>Definition</b> <a href="GeometryAnalysis_8cpp_source.html#l00319">GeometryAnalysis.cpp:319</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1exact_html_a5fc310e3d2dec128339f8f3b105b829e"><div class="ttname"><a href="namespaceeonc_1_1exact.html#a5fc310e3d2dec128339f8f3b105b829e">eonc::exact::norm</a></div><div class="ttdeci">double norm(const Eigen::MatrixBase&lt; A &gt; &amp;x)</div><div class="ttdoc">sqrt of the correctly rounded squared norm; IEEE sqrt is itself correctly rounded,...</div><div class="ttdef"><b>Definition</b> <a href="ExactReduction_8h_source.html#l00092">ExactReduction.h:92</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1exact_html_a6b3d75c60fb3ef9c1f3572b0982cde13"><div class="ttname"><a href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a></div><div class="ttdeci">double dot(const double *x, const double *y, std::size_t n)</div><div class="ttdoc">Round-to-nearest-even value of the exact sum of x[i] * y[i].</div><div class="ttdef"><b>Definition</b> <a href="ExactReduction_8cpp_source.html#l00451">ExactReduction.cpp:451</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1geometry_html_acbf42a1f91c3c4317451f0c12a60aeee"><div class="ttname"><a href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a></div><div class="ttdeci">VectorXd maxAtomMotionAppliedV(const VectorXd v1, double maxMotion)</div><div class="ttdef"><b>Definition</b> <a href="GeometryAnalysis_8cpp_source.html#l00324">GeometryAnalysis.cpp:324</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

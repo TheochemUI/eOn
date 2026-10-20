@@ -257,7 +257,8 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a0ebd4a2931379fb191f59a3343b2c58e" id="r_a0ebd4a2931379fb191f59a3343b2c58e"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#a0ebd4a2931379fb191f59a3343b2c58e">~IPotRegistry</a> ()=default</td></tr>
+<tr class="memitem:af3aef02f83f3881a4ea116170f9413d2" id="r_af3aef02f83f3881a4ea116170f9413d2"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#af3aef02f83f3881a4ea116170f9413d2">~IPotRegistry</a> ()</td></tr>
+<tr class="memitem:a47e431046221e6fd62e81fe860351940" id="r_a47e431046221e6fd62e81fe860351940"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="structeonc_1_1RegistryLifetime.html">RegistryLifetime</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a47e431046221e6fd62e81fe860351940">lifetime</a> () const</td></tr>
 <tr class="memitem:afdd908ca0a310da27b22aceb0504952e" id="r_afdd908ca0a310da27b22aceb0504952e"><td class="memItemLeft">virtual uint64_t&#160;</td><td class="memItemRight"><a class="el" href="#afdd908ca0a310da27b22aceb0504952e">on_created</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> t) noexcept=0</td></tr>
 <tr class="memitem:a6ba36eca39bd85718e470c139a988d5e" id="r_a6ba36eca39bd85718e470c139a988d5e"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a6ba36eca39bd85718e470c139a988d5e">on_destroyed</a> (uint64_t id, <a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> t, size_t force_calls, <a class="el" href="#ac7f7f3dcfab9e7706675e5852b2e441c">TimePoint</a> created_at)=0</td></tr>
 <tr class="memitem:aca3996ad44fbf022c5371444030bbcdd" id="r_aca3996ad44fbf022c5371444030bbcdd"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aca3996ad44fbf022c5371444030bbcdd">on_force_call</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> t) noexcept=0</td></tr>
@@ -267,10 +268,14 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a8ffcbcb77a41b071c9e1273d5643418b" id="r_a8ffcbcb77a41b071c9e1273d5643418b"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a8ffcbcb77a41b071c9e1273d5643418b">IPotRegistry</a> ()=default</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a83ad7abab1273a146b36b1b016efa07f" id="r_a83ad7abab1273a146b36b1b016efa07f"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="structeonc_1_1RegistryLifetime.html">RegistryLifetime</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a83ad7abab1273a146b36b1b016efa07f">lifetime_</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00027">27</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00034">34</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
 </div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
 <a id="ad9c8d4271db481d2bc2d3b3fb95fc858" name="ad9c8d4271db481d2bc2d3b3fb95fc858"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad9c8d4271db481d2bc2d3b3fb95fc858">&#9670;&#160;</a></span>Clock</h2>
@@ -284,7 +289,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00029">29</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00036">36</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
 
 </div>
 </div>
@@ -300,13 +305,13 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00030">30</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00037">37</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
 
 </div>
 </div>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a0ebd4a2931379fb191f59a3343b2c58e" name="a0ebd4a2931379fb191f59a3343b2c58e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0ebd4a2931379fb191f59a3343b2c58e">&#9670;&#160;</a></span>~IPotRegistry()</h2>
+<a id="af3aef02f83f3881a4ea116170f9413d2" name="af3aef02f83f3881a4ea116170f9413d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3aef02f83f3881a4ea116170f9413d2">&#9670;&#160;</a></span>~IPotRegistry()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -323,11 +328,18 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel virtual">virtual</span><span class="mlabel default">default</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00039">39</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   39</span>                          {</div>
+<div class="line"><span class="lineno">   40</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a83ad7abab1273a146b36b1b016efa07f">lifetime_</a>)</div>
+<div class="line"><span class="lineno">   41</span>      <a class="code hl_variable" href="#a83ad7abab1273a146b36b1b016efa07f">lifetime_</a>-&gt;alive.store(<span class="keyword">false</span>, std::memory_order_release);</div>
+<div class="line"><span class="lineno">   42</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1IPotRegistry_html_a83ad7abab1273a146b36b1b016efa07f"><div class="ttname"><a href="#a83ad7abab1273a146b36b1b016efa07f">eonc::IPotRegistry::lifetime_</a></div><div class="ttdeci">std::shared_ptr&lt; RegistryLifetime &gt; lifetime_</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8h_source.html#l00058">PotRegistry.h:58</a></div></div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a06aefed71360aa800f9a1210867335d6" name="a06aefed71360aa800f9a1210867335d6"></a>
@@ -381,6 +393,36 @@ Protected Member Functions</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a47e431046221e6fd62e81fe860351940" name="a47e431046221e6fd62e81fe860351940"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47e431046221e6fd62e81fe860351940">&#9670;&#160;</a></span>lifetime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="structeonc_1_1RegistryLifetime.html">RegistryLifetime</a> &gt; eonc::IPotRegistry::lifetime </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00044">44</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   44</span>                                                                 {</div>
+<div class="line"><span class="lineno">   45</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a83ad7abab1273a146b36b1b016efa07f">lifetime_</a>;</div>
+<div class="line"><span class="lineno">   46</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="afdd908ca0a310da27b22aceb0504952e" name="afdd908ca0a310da27b22aceb0504952e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afdd908ca0a310da27b22aceb0504952e">&#9670;&#160;</a></span>on_created()</h2>
 
@@ -499,6 +541,35 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a83ad7abab1273a146b36b1b016efa07f" name="a83ad7abab1273a146b36b1b016efa07f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83ad7abab1273a146b36b1b016efa07f">&#9670;&#160;</a></span>lifetime_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="structeonc_1_1RegistryLifetime.html">RegistryLifetime</a>&gt; eonc::IPotRegistry::lifetime_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">{</div>
+<div class="line">      std::make_shared&lt;RegistryLifetime&gt;()}</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00058">58</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   58</span>                                           {</div>
+<div class="line"><span class="lineno">   59</span>      std::make_shared&lt;RegistryLifetime&gt;()};</div>
+</div><!-- fragment -->
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>

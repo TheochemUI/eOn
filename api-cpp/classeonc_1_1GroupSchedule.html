@@ -251,10 +251,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a56f934840615be19304fbff41c10325a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The home of a key never seen: key mod G for a key of zero or more, the batch position mod G otherwise.  <br /></td></tr>
 <tr class="memitem:a0974c780f10a2d8fc81313f9bba8d2f7" id="r_a0974c780f10a2d8fc81313f9bba8d2f7"><td class="memItemLeft">std::vector&lt; int &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a0974c780f10a2d8fc81313f9bba8d2f7">assign</a> (const std::vector&lt; std::int64_t &gt; &amp;keys)</td></tr>
 <tr class="memdesc:a0974c780f10a2d8fc81313f9bba8d2f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Groups for a batch of systems with these keys.  <br /></td></tr>
-<tr class="memitem:a45b9f01a3ace7206f043137d5bae3eac" id="r_a45b9f01a3ace7206f043137d5bae3eac"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a45b9f01a3ace7206f043137d5bae3eac">record</a> (std::int64_t key, const double *positions, long n3)</td></tr>
-<tr class="memdesc:a45b9f01a3ace7206f043137d5bae3eac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remember the geometry a key was last evaluated at.  <br /></td></tr>
-<tr class="memitem:af9d8a395ed59816ae29ece939b64192d" id="r_af9d8a395ed59816ae29ece939b64192d"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#af9d8a395ed59816ae29ece939b64192d">nearest</a> (const double *positions, long n3) const</td></tr>
-<tr class="memdesc:af9d8a395ed59816ae29ece939b64192d"><td class="mdescLeft">&#160;</td><td class="mdescRight">The group for a single request: the home of the recorded geometry nearest to <span class="tt">positions</span> (root-mean-square over coordinates), group 0 when nothing of this size is recorded.  <br /></td></tr>
+<tr class="memitem:ac79e9a521febd7d961d14977c702d719" id="r_ac79e9a521febd7d961d14977c702d719"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac79e9a521febd7d961d14977c702d719">record</a> (std::int64_t key, const double *positions, long n3, const double *cell=nullptr)</td></tr>
+<tr class="memdesc:ac79e9a521febd7d961d14977c702d719"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remember the geometry a key was last evaluated at.  <br /></td></tr>
+<tr class="memitem:a09e4d33741c50fffe8f938d9bf9301bd" id="r_a09e4d33741c50fffe8f938d9bf9301bd"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a09e4d33741c50fffe8f938d9bf9301bd">nearest</a> (const double *positions, long n3, const double *cell=nullptr) const</td></tr>
+<tr class="memdesc:a09e4d33741c50fffe8f938d9bf9301bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">The group for a single request: the home of the recorded geometry nearest to <span class="tt">positions</span> (root-mean-square over coordinates), group 0 when nothing of this size is recorded.  <br /></td></tr>
 <tr class="memitem:a7600c3eb7af9ef25751f8eff5e704da6" id="r_a7600c3eb7af9ef25751f8eff5e704da6"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a7600c3eb7af9ef25751f8eff5e704da6">settle</a> (std::int64_t key, int group)</td></tr>
 <tr class="memdesc:a7600c3eb7af9ef25751f8eff5e704da6"><td class="mdescLeft">&#160;</td><td class="mdescRight">A single request's group becomes the home of the single-request key.  <br /></td></tr>
 </table><table class="memberdecls">
@@ -267,13 +267,14 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:abcf2921bdd37f30e4594667a0e161241" id="r_abcf2921bdd37f30e4594667a0e161241"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#abcf2921bdd37f30e4594667a0e161241">groups_</a></td></tr>
 <tr class="memitem:a3a25e5b3993250ebe85d70cc46aee648" id="r_a3a25e5b3993250ebe85d70cc46aee648"><td class="memItemLeft">std::map&lt; std::int64_t, int &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a3a25e5b3993250ebe85d70cc46aee648">home_</a></td></tr>
 <tr class="memitem:a8d01afc5219468955107b3d2657c7fee" id="r_a8d01afc5219468955107b3d2657c7fee"><td class="memItemLeft">std::map&lt; std::int64_t, std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a8d01afc5219468955107b3d2657c7fee">last_</a></td></tr>
+<tr class="memitem:a02cd8ae39e93b69021f1ca5f2e73553f" id="r_a02cd8ae39e93b69021f1ca5f2e73553f"><td class="memItemLeft">std::map&lt; std::int64_t, std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a02cd8ae39e93b69021f1ca5f2e73553f">cells_</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Which calculator group evaluates which system. </p>
 <p>A group keeps the converged orbitals of every system it evaluated, under the system's key (a NEB image, a ring bead). Sending a key back to the group that holds its orbitals is what makes the next SCF warm, so a key stays on its home group. A batch caps each group at ceil(M / G) systems: a key whose home group is full moves to the least-loaded group, which becomes its home, because one extra evaluation on a full group costs a whole SCF while a move costs the difference between a warm and a cooler start. A single request goes to the group that last evaluated the geometry nearest to it.</p>
 <p>Every decision is made on the driver and sent to the other ranks, so the state here lives on the driver only. </p>
 
-<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00037">37</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00039">39</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aed4e263f083e47e58198c14f52e62100" name="aed4e263f083e47e58198c14f52e62100"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aed4e263f083e47e58198c14f52e62100">&#9670;&#160;</a></span>GroupSchedule()</h2>
@@ -298,10 +299,10 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00039">39</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   39</span>: <a class="code hl_variable" href="#abcf2921bdd37f30e4594667a0e161241">groups_</a>{std::max(<a class="code hl_function" href="#a0509ffefb16de034c1d0184f565858bb">groups</a>, 1)} {}</div>
-<div class="ttc" id="aclasseonc_1_1GroupSchedule_html_a0509ffefb16de034c1d0184f565858bb"><div class="ttname"><a href="#a0509ffefb16de034c1d0184f565858bb">eonc::GroupSchedule::groups</a></div><div class="ttdeci">int groups() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="GroupSchedule_8h_source.html#l00041">GroupSchedule.h:41</a></div></div>
-<div class="ttc" id="aclasseonc_1_1GroupSchedule_html_abcf2921bdd37f30e4594667a0e161241"><div class="ttname"><a href="#abcf2921bdd37f30e4594667a0e161241">eonc::GroupSchedule::groups_</a></div><div class="ttdeci">int groups_</div><div class="ttdef"><b>Definition</b> <a href="GroupSchedule_8h_source.html#l00115">GroupSchedule.h:115</a></div></div>
+<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00041">41</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   41</span>: <a class="code hl_variable" href="#abcf2921bdd37f30e4594667a0e161241">groups_</a>{std::max(<a class="code hl_function" href="#a0509ffefb16de034c1d0184f565858bb">groups</a>, 1)} {}</div>
+<div class="ttc" id="aclasseonc_1_1GroupSchedule_html_a0509ffefb16de034c1d0184f565858bb"><div class="ttname"><a href="#a0509ffefb16de034c1d0184f565858bb">eonc::GroupSchedule::groups</a></div><div class="ttdeci">int groups() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="GroupSchedule_8h_source.html#l00043">GroupSchedule.h:43</a></div></div>
+<div class="ttc" id="aclasseonc_1_1GroupSchedule_html_abcf2921bdd37f30e4594667a0e161241"><div class="ttname"><a href="#abcf2921bdd37f30e4594667a0e161241">eonc::GroupSchedule::groups_</a></div><div class="ttdeci">int groups_</div><div class="ttdef"><b>Definition</b> <a href="GroupSchedule_8h_source.html#l00133">GroupSchedule.h:133</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -331,33 +332,33 @@ Private Attributes</h2></td></tr>
 
 <p>Groups for a batch of systems with these keys. </p>
 
-<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00052">52</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   52</span>                                            {</div>
-<div class="line"><span class="lineno">   53</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> m = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(keys.size());</div>
-<div class="line"><span class="lineno">   54</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> cap = (m + <a class="code hl_variable" href="#abcf2921bdd37f30e4594667a0e161241">groups_</a> - 1) / <a class="code hl_variable" href="#abcf2921bdd37f30e4594667a0e161241">groups_</a>;</div>
-<div class="line"><span class="lineno">   55</span>    std::vector&lt;long&gt; load(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#abcf2921bdd37f30e4594667a0e161241">groups_</a>), 0);</div>
-<div class="line"><span class="lineno">   56</span>    std::vector&lt;int&gt; route(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(m), -1);</div>
-<div class="line"><span class="lineno">   57</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; m; ++j) {</div>
-<div class="line"><span class="lineno">   58</span>      <span class="keyword">const</span> <span class="keywordtype">int</span> home = <a class="code hl_function" href="#a0ed3cc8a4557174215150cbd0f73a330">homeOf</a>(keys[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)], j);</div>
-<div class="line"><span class="lineno">   59</span>      <span class="keywordflow">if</span> (load[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(home)] &lt; cap) {</div>
-<div class="line"><span class="lineno">   60</span>        route[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = home;</div>
-<div class="line"><span class="lineno">   61</span>        ++load[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(home)];</div>
-<div class="line"><span class="lineno">   62</span>      }</div>
-<div class="line"><span class="lineno">   63</span>    }</div>
-<div class="line"><span class="lineno">   64</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; m; ++j) {</div>
-<div class="line"><span class="lineno">   65</span>      <span class="keywordflow">if</span> (route[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] &gt;= 0)</div>
-<div class="line"><span class="lineno">   66</span>        <span class="keywordflow">continue</span>;</div>
-<div class="line"><span class="lineno">   67</span>      <span class="keyword">const</span> <span class="keyword">auto</span> least = std::min_element(load.begin(), load.end());</div>
-<div class="line"><span class="lineno">   68</span>      <span class="keyword">const</span> <span class="keywordtype">int</span> g = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(least - load.begin());</div>
-<div class="line"><span class="lineno">   69</span>      route[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = g;</div>
-<div class="line"><span class="lineno">   70</span>      ++*least;</div>
-<div class="line"><span class="lineno">   71</span>    }</div>
-<div class="line"><span class="lineno">   72</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; m; ++j)</div>
-<div class="line"><span class="lineno">   73</span>      <a class="code hl_variable" href="#a3a25e5b3993250ebe85d70cc46aee648">home_</a>[keys[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)]] = route[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)];</div>
-<div class="line"><span class="lineno">   74</span>    <span class="keywordflow">return</span> route;</div>
-<div class="line"><span class="lineno">   75</span>  }</div>
-<div class="ttc" id="aclasseonc_1_1GroupSchedule_html_a0ed3cc8a4557174215150cbd0f73a330"><div class="ttname"><a href="#a0ed3cc8a4557174215150cbd0f73a330">eonc::GroupSchedule::homeOf</a></div><div class="ttdeci">int homeOf(std::int64_t key, long position) const</div><div class="ttdef"><b>Definition</b> <a href="GroupSchedule_8h_source.html#l00110">GroupSchedule.h:110</a></div></div>
-<div class="ttc" id="aclasseonc_1_1GroupSchedule_html_a3a25e5b3993250ebe85d70cc46aee648"><div class="ttname"><a href="#a3a25e5b3993250ebe85d70cc46aee648">eonc::GroupSchedule::home_</a></div><div class="ttdeci">std::map&lt; std::int64_t, int &gt; home_</div><div class="ttdef"><b>Definition</b> <a href="GroupSchedule_8h_source.html#l00116">GroupSchedule.h:116</a></div></div>
+<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00053">53</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   53</span>                                                                         {</div>
+<div class="line"><span class="lineno">   54</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> m = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(keys.size());</div>
+<div class="line"><span class="lineno">   55</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> cap = (m + <a class="code hl_variable" href="#abcf2921bdd37f30e4594667a0e161241">groups_</a> - 1) / <a class="code hl_variable" href="#abcf2921bdd37f30e4594667a0e161241">groups_</a>;</div>
+<div class="line"><span class="lineno">   56</span>    std::vector&lt;long&gt; load(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#abcf2921bdd37f30e4594667a0e161241">groups_</a>), 0);</div>
+<div class="line"><span class="lineno">   57</span>    std::vector&lt;int&gt; route(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(m), -1);</div>
+<div class="line"><span class="lineno">   58</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; m; ++j) {</div>
+<div class="line"><span class="lineno">   59</span>      <span class="keyword">const</span> <span class="keywordtype">int</span> home = <a class="code hl_function" href="#a0ed3cc8a4557174215150cbd0f73a330">homeOf</a>(keys[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)], j);</div>
+<div class="line"><span class="lineno">   60</span>      <span class="keywordflow">if</span> (load[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(home)] &lt; cap) {</div>
+<div class="line"><span class="lineno">   61</span>        route[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = home;</div>
+<div class="line"><span class="lineno">   62</span>        ++load[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(home)];</div>
+<div class="line"><span class="lineno">   63</span>      }</div>
+<div class="line"><span class="lineno">   64</span>    }</div>
+<div class="line"><span class="lineno">   65</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; m; ++j) {</div>
+<div class="line"><span class="lineno">   66</span>      <span class="keywordflow">if</span> (route[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] &gt;= 0)</div>
+<div class="line"><span class="lineno">   67</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">   68</span>      <span class="keyword">const</span> <span class="keyword">auto</span> least = std::min_element(load.begin(), load.end());</div>
+<div class="line"><span class="lineno">   69</span>      <span class="keyword">const</span> <span class="keywordtype">int</span> g = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(least - load.begin());</div>
+<div class="line"><span class="lineno">   70</span>      route[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = g;</div>
+<div class="line"><span class="lineno">   71</span>      ++*least;</div>
+<div class="line"><span class="lineno">   72</span>    }</div>
+<div class="line"><span class="lineno">   73</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; m; ++j)</div>
+<div class="line"><span class="lineno">   74</span>      <a class="code hl_variable" href="#a3a25e5b3993250ebe85d70cc46aee648">home_</a>[keys[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)]] = route[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)];</div>
+<div class="line"><span class="lineno">   75</span>    <span class="keywordflow">return</span> route;</div>
+<div class="line"><span class="lineno">   76</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1GroupSchedule_html_a0ed3cc8a4557174215150cbd0f73a330"><div class="ttname"><a href="#a0ed3cc8a4557174215150cbd0f73a330">eonc::GroupSchedule::homeOf</a></div><div class="ttdeci">int homeOf(std::int64_t key, long position) const</div><div class="ttdef"><b>Definition</b> <a href="GroupSchedule_8h_source.html#l00128">GroupSchedule.h:128</a></div></div>
+<div class="ttc" id="aclasseonc_1_1GroupSchedule_html_a3a25e5b3993250ebe85d70cc46aee648"><div class="ttname"><a href="#a3a25e5b3993250ebe85d70cc46aee648">eonc::GroupSchedule::home_</a></div><div class="ttdeci">std::map&lt; std::int64_t, int &gt; home_</div><div class="ttdef"><b>Definition</b> <a href="GroupSchedule_8h_source.html#l00134">GroupSchedule.h:134</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -390,11 +391,11 @@ Private Attributes</h2></td></tr>
 
 <p>The home of a key never seen: key mod G for a key of zero or more, the batch position mod G otherwise. </p>
 
-<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00045">45</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   45</span>                                                                     {</div>
-<div class="line"><span class="lineno">   46</span>    <span class="keyword">const</span> std::int64_t base = key &gt;= 0 ? key : position;</div>
-<div class="line"><span class="lineno">   47</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(((base % <a class="code hl_variable" href="#abcf2921bdd37f30e4594667a0e161241">groups_</a>) + <a class="code hl_variable" href="#abcf2921bdd37f30e4594667a0e161241">groups_</a>) % <a class="code hl_variable" href="#abcf2921bdd37f30e4594667a0e161241">groups_</a>);</div>
-<div class="line"><span class="lineno">   48</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00047">47</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   47</span>                                                                     {</div>
+<div class="line"><span class="lineno">   48</span>    <span class="keyword">const</span> std::int64_t base = key &gt;= 0 ? key : position;</div>
+<div class="line"><span class="lineno">   49</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(((base % <a class="code hl_variable" href="#abcf2921bdd37f30e4594667a0e161241">groups_</a>) + <a class="code hl_variable" href="#abcf2921bdd37f30e4594667a0e161241">groups_</a>) % <a class="code hl_variable" href="#abcf2921bdd37f30e4594667a0e161241">groups_</a>);</div>
+<div class="line"><span class="lineno">   50</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -421,8 +422,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00041">41</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   41</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#abcf2921bdd37f30e4594667a0e161241">groups_</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00043">43</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   43</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#abcf2921bdd37f30e4594667a0e161241">groups_</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -453,17 +454,17 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00110">110</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  110</span>                                                                {</div>
-<div class="line"><span class="lineno">  111</span>    <span class="keyword">const</span> <span class="keyword">auto</span> it = <a class="code hl_variable" href="#a3a25e5b3993250ebe85d70cc46aee648">home_</a>.find(key);</div>
-<div class="line"><span class="lineno">  112</span>    <span class="keywordflow">return</span> it != <a class="code hl_variable" href="#a3a25e5b3993250ebe85d70cc46aee648">home_</a>.end() ? it-&gt;second : <a class="code hl_function" href="#a56f934840615be19304fbff41c10325a">defaultHome</a>(key, position);</div>
-<div class="line"><span class="lineno">  113</span>  }</div>
-<div class="ttc" id="aclasseonc_1_1GroupSchedule_html_a56f934840615be19304fbff41c10325a"><div class="ttname"><a href="#a56f934840615be19304fbff41c10325a">eonc::GroupSchedule::defaultHome</a></div><div class="ttdeci">int defaultHome(std::int64_t key, long position) const</div><div class="ttdoc">The home of a key never seen: key mod G for a key of zero or more, the batch position mod G otherwise...</div><div class="ttdef"><b>Definition</b> <a href="GroupSchedule_8h_source.html#l00045">GroupSchedule.h:45</a></div></div>
+<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00128">128</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  128</span>                                                                {</div>
+<div class="line"><span class="lineno">  129</span>    <span class="keyword">const</span> <span class="keyword">auto</span> it = <a class="code hl_variable" href="#a3a25e5b3993250ebe85d70cc46aee648">home_</a>.find(key);</div>
+<div class="line"><span class="lineno">  130</span>    <span class="keywordflow">return</span> it != <a class="code hl_variable" href="#a3a25e5b3993250ebe85d70cc46aee648">home_</a>.end() ? it-&gt;second : <a class="code hl_function" href="#a56f934840615be19304fbff41c10325a">defaultHome</a>(key, position);</div>
+<div class="line"><span class="lineno">  131</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1GroupSchedule_html_a56f934840615be19304fbff41c10325a"><div class="ttname"><a href="#a56f934840615be19304fbff41c10325a">eonc::GroupSchedule::defaultHome</a></div><div class="ttdeci">int defaultHome(std::int64_t key, long position) const</div><div class="ttdoc">The home of a key never seen: key mod G for a key of zero or more, the batch position mod G otherwise...</div><div class="ttdef"><b>Definition</b> <a href="GroupSchedule_8h_source.html#l00047">GroupSchedule.h:47</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="af9d8a395ed59816ae29ece939b64192d" name="af9d8a395ed59816ae29ece939b64192d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af9d8a395ed59816ae29ece939b64192d">&#9670;&#160;</a></span>nearest()</h2>
+<a id="a09e4d33741c50fffe8f938d9bf9301bd" name="a09e4d33741c50fffe8f938d9bf9301bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09e4d33741c50fffe8f938d9bf9301bd">&#9670;&#160;</a></span>nearest()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -479,7 +480,12 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>n3</em></span>&#160;) const</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>n3</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>cell</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;) const</td>
         </tr>
       </table>
   </td>
@@ -491,32 +497,45 @@ Private Attributes</h2></td></tr>
 
 <p>The group for a single request: the home of the recorded geometry nearest to <span class="tt">positions</span> (root-mean-square over coordinates), group 0 when nothing of this size is recorded. </p>
 
-<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00086">86</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   86</span>                                                                    {</div>
-<div class="line"><span class="lineno">   87</span>    <span class="keywordtype">double</span> best = std::numeric_limits&lt;double&gt;::infinity();</div>
-<div class="line"><span class="lineno">   88</span>    <span class="keywordtype">int</span> group = 0;</div>
-<div class="line"><span class="lineno">   89</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[key, stored] : <a class="code hl_variable" href="#a8d01afc5219468955107b3d2657c7fee">last_</a>) {</div>
-<div class="line"><span class="lineno">   90</span>      <span class="keywordflow">if</span> (<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(stored.size()) != n3)</div>
-<div class="line"><span class="lineno">   91</span>        <span class="keywordflow">continue</span>;</div>
-<div class="line"><span class="lineno">   92</span>      <span class="keywordtype">double</span> d2 = 0.0;</div>
-<div class="line"><span class="lineno">   93</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; n3; ++i) {</div>
-<div class="line"><span class="lineno">   94</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> d = stored[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] - positions[i];</div>
-<div class="line"><span class="lineno">   95</span>        d2 += d * d;</div>
-<div class="line"><span class="lineno">   96</span>      }</div>
-<div class="line"><span class="lineno">   97</span>      <span class="keyword">const</span> <span class="keyword">auto</span> home = <a class="code hl_variable" href="#a3a25e5b3993250ebe85d70cc46aee648">home_</a>.find(key);</div>
-<div class="line"><span class="lineno">   98</span>      <span class="keywordflow">if</span> (d2 &lt; best &amp;&amp; home != <a class="code hl_variable" href="#a3a25e5b3993250ebe85d70cc46aee648">home_</a>.end()) {</div>
-<div class="line"><span class="lineno">   99</span>        best = d2;</div>
-<div class="line"><span class="lineno">  100</span>        group = home-&gt;second;</div>
-<div class="line"><span class="lineno">  101</span>      }</div>
-<div class="line"><span class="lineno">  102</span>    }</div>
-<div class="line"><span class="lineno">  103</span>    <span class="keywordflow">return</span> group;</div>
-<div class="line"><span class="lineno">  104</span>  }</div>
-<div class="ttc" id="aclasseonc_1_1GroupSchedule_html_a8d01afc5219468955107b3d2657c7fee"><div class="ttname"><a href="#a8d01afc5219468955107b3d2657c7fee">eonc::GroupSchedule::last_</a></div><div class="ttdeci">std::map&lt; std::int64_t, std::vector&lt; double &gt; &gt; last_</div><div class="ttdef"><b>Definition</b> <a href="GroupSchedule_8h_source.html#l00117">GroupSchedule.h:117</a></div></div>
+<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00092">92</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   93</span>                                                              {</div>
+<div class="line"><span class="lineno">   94</span>    <span class="keywordtype">double</span> best = std::numeric_limits&lt;double&gt;::infinity();</div>
+<div class="line"><span class="lineno">   95</span>    <span class="keywordtype">int</span> group = 0;</div>
+<div class="line"><span class="lineno">   96</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[key, stored] : <a class="code hl_variable" href="#a8d01afc5219468955107b3d2657c7fee">last_</a>) {</div>
+<div class="line"><span class="lineno">   97</span>      <span class="keywordflow">if</span> (<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(stored.size()) != n3)</div>
+<div class="line"><span class="lineno">   98</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">   99</span>      <span class="keyword">const</span> <span class="keyword">auto</span> recordedCell = <a class="code hl_variable" href="#a02cd8ae39e93b69021f1ca5f2e73553f">cells_</a>.find(key);</div>
+<div class="line"><span class="lineno">  100</span>      <span class="keywordflow">if</span> (cell &amp;&amp; recordedCell != <a class="code hl_variable" href="#a02cd8ae39e93b69021f1ca5f2e73553f">cells_</a>.end() &amp;&amp;</div>
+<div class="line"><span class="lineno">  101</span>          !std::equal(recordedCell-&gt;second.begin(), recordedCell-&gt;second.end(),</div>
+<div class="line"><span class="lineno">  102</span>                      cell))</div>
+<div class="line"><span class="lineno">  103</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  104</span>      std::vector&lt;double&gt; differences(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(n3));</div>
+<div class="line"><span class="lineno">  105</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; n3; ++i) {</div>
+<div class="line"><span class="lineno">  106</span>        differences[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] =</div>
+<div class="line"><span class="lineno">  107</span>            stored[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] - positions[i];</div>
+<div class="line"><span class="lineno">  108</span>      }</div>
+<div class="line"><span class="lineno">  109</span>      <span class="keywordflow">if</span> (cell &amp;&amp;</div>
+<div class="line"><span class="lineno">  110</span>          std::any_of(cell, cell + 9, [](<span class="keywordtype">double</span> x) { <span class="keywordflow">return</span> x != 0.0; }))</div>
+<div class="line"><span class="lineno">  111</span>        <a class="code hl_function" href="namespaceeonc_1_1pbc.html#a01ada2c6654878b1682476390b7c21bb">pbc::closestDisplacements</a>(differences.data(), differences.size(), cell);</div>
+<div class="line"><span class="lineno">  112</span>      <span class="keywordtype">double</span> d2 = 0.0;</div>
+<div class="line"><span class="lineno">  113</span>      <span class="keywordflow">for</span> (<span class="keywordtype">double</span> d : differences)</div>
+<div class="line"><span class="lineno">  114</span>        d2 += d * d;</div>
+<div class="line"><span class="lineno">  115</span>      <span class="keyword">const</span> <span class="keyword">auto</span> home = <a class="code hl_variable" href="#a3a25e5b3993250ebe85d70cc46aee648">home_</a>.find(key);</div>
+<div class="line"><span class="lineno">  116</span>      <span class="keywordflow">if</span> (d2 &lt; best &amp;&amp; home != <a class="code hl_variable" href="#a3a25e5b3993250ebe85d70cc46aee648">home_</a>.end()) {</div>
+<div class="line"><span class="lineno">  117</span>        best = d2;</div>
+<div class="line"><span class="lineno">  118</span>        group = home-&gt;second;</div>
+<div class="line"><span class="lineno">  119</span>      }</div>
+<div class="line"><span class="lineno">  120</span>    }</div>
+<div class="line"><span class="lineno">  121</span>    <span class="keywordflow">return</span> group;</div>
+<div class="line"><span class="lineno">  122</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1GroupSchedule_html_a02cd8ae39e93b69021f1ca5f2e73553f"><div class="ttname"><a href="#a02cd8ae39e93b69021f1ca5f2e73553f">eonc::GroupSchedule::cells_</a></div><div class="ttdeci">std::map&lt; std::int64_t, std::vector&lt; double &gt; &gt; cells_</div><div class="ttdef"><b>Definition</b> <a href="GroupSchedule_8h_source.html#l00136">GroupSchedule.h:136</a></div></div>
+<div class="ttc" id="aclasseonc_1_1GroupSchedule_html_a8d01afc5219468955107b3d2657c7fee"><div class="ttname"><a href="#a8d01afc5219468955107b3d2657c7fee">eonc::GroupSchedule::last_</a></div><div class="ttdeci">std::map&lt; std::int64_t, std::vector&lt; double &gt; &gt; last_</div><div class="ttdef"><b>Definition</b> <a href="GroupSchedule_8h_source.html#l00135">GroupSchedule.h:135</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pbc_html_a01ada2c6654878b1682476390b7c21bb"><div class="ttname"><a href="namespaceeonc_1_1pbc.html#a01ada2c6654878b1682476390b7c21bb">eonc::pbc::closestDisplacements</a></div><div class="ttdeci">void closestDisplacements(double *data, size_t coordinates, const double *rowMajorCell)</div><div class="ttdef"><b>Definition</b> <a href="MinimumImage_8cpp_source.html#l00007">MinimumImage.cpp:7</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a45b9f01a3ace7206f043137d5bae3eac" name="a45b9f01a3ace7206f043137d5bae3eac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a45b9f01a3ace7206f043137d5bae3eac">&#9670;&#160;</a></span>record()</h2>
+<a id="ac79e9a521febd7d961d14977c702d719" name="ac79e9a521febd7d961d14977c702d719"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac79e9a521febd7d961d14977c702d719">&#9670;&#160;</a></span>record()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -537,7 +556,12 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>n3</em></span>&#160;)</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>n3</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>cell</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -549,11 +573,15 @@ Private Attributes</h2></td></tr>
 
 <p>Remember the geometry a key was last evaluated at. </p>
 
-<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00078">78</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   78</span>                                                                {</div>
-<div class="line"><span class="lineno">   79</span>    <span class="keyword">auto</span> &amp;stored = <a class="code hl_variable" href="#a8d01afc5219468955107b3d2657c7fee">last_</a>[key];</div>
-<div class="line"><span class="lineno">   80</span>    stored.assign(positions, positions + n3);</div>
-<div class="line"><span class="lineno">   81</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00079">79</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   80</span>                                          {</div>
+<div class="line"><span class="lineno">   81</span>    <span class="keyword">auto</span> &amp;stored = <a class="code hl_variable" href="#a8d01afc5219468955107b3d2657c7fee">last_</a>[key];</div>
+<div class="line"><span class="lineno">   82</span>    stored.assign(positions, positions + n3);</div>
+<div class="line"><span class="lineno">   83</span>    <span class="keywordflow">if</span> (cell)</div>
+<div class="line"><span class="lineno">   84</span>      <a class="code hl_variable" href="#a02cd8ae39e93b69021f1ca5f2e73553f">cells_</a>[key].assign(cell, cell + 9);</div>
+<div class="line"><span class="lineno">   85</span>    <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">   86</span>      <a class="code hl_variable" href="#a02cd8ae39e93b69021f1ca5f2e73553f">cells_</a>.erase(key);</div>
+<div class="line"><span class="lineno">   87</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -586,12 +614,36 @@ Private Attributes</h2></td></tr>
 
 <p>A single request's group becomes the home of the single-request key. </p>
 
-<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00107">107</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  107</span>{ <a class="code hl_variable" href="#a3a25e5b3993250ebe85d70cc46aee648">home_</a>[key] = group; }</div>
+<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00125">125</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  125</span>{ <a class="code hl_variable" href="#a3a25e5b3993250ebe85d70cc46aee648">home_</a>[key] = group; }</div>
 </div><!-- fragment -->
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a02cd8ae39e93b69021f1ca5f2e73553f" name="a02cd8ae39e93b69021f1ca5f2e73553f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02cd8ae39e93b69021f1ca5f2e73553f">&#9670;&#160;</a></span>cells_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::int64_t, std::vector&lt;double&gt; &gt; eonc::GroupSchedule::cells_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00136">136</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
+
+</div>
+</div>
 <a id="abcf2921bdd37f30e4594667a0e161241" name="abcf2921bdd37f30e4594667a0e161241"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abcf2921bdd37f30e4594667a0e161241">&#9670;&#160;</a></span>groups_</h2>
 
@@ -612,7 +664,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00115">115</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00133">133</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
 
 </div>
 </div>
@@ -636,7 +688,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00116">116</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00134">134</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
 
 </div>
 </div>
@@ -660,7 +712,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00117">117</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GroupSchedule_8h_source.html#l00135">135</a> of file <a class="el" href="GroupSchedule_8h_source.html">GroupSchedule.h</a>.</p>
 
 </div>
 </div>

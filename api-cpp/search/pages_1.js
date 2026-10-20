@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['bug_20list_0',['Bug List',['../bug.html',1,'']]]
+  ['converters_3a_20converting_20quantities_0',['Converters: converting quantities.',['../units_8hpp.html#xtb_converters',1,'']]],
+  ['converting_20quantities_1',['Converters: converting quantities.',['../units_8hpp.html#xtb_converters',1,'']]]
 ];

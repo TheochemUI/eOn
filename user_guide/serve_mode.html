@@ -84,7 +84,6 @@ data-aria-dark="Switch to auto color mode">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
-<li class="toctree-l1 _expand"><a class="reference internal" href="../citing.html">Citing eOn</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/eessi.html">Build develop on EESSI</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/lammps.html">LAMMPS</a></li>
@@ -123,6 +122,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="mpi_potential.html">MPI potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="algorithm_selection.html">Choosing an algorithm</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="main.html">General simulation parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="structure_input.html">Structure input formats</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="potential.html">Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="structure_comparison.html">Structure comparison</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
@@ -178,6 +178,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/design/client/index.html">Client design</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/types.html">Type system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/exact-reduction.html">Exact reductions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/parameters.html">Parameters system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
@@ -200,6 +201,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.contracts.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.contracts.load_outcome.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts.load_outcome</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
@@ -712,6 +717,20 @@ sends:</p>
 <li><p><strong>energy</strong>: total potential energy (eV)</p></li>
 <li><p><strong>forces</strong>: flat array matching positions layout (eV/Angstrom)</p></li>
 </ul>
+<p>A client calls <code class="docutils literal notranslate"><span class="pre">getCapabilities</span></code> before <code class="docutils literal notranslate"><span class="pre">calculate</span></code>. The reply contains:</p>
+<ul class="simple">
+<li><p><strong>protocolFamily</strong>: <code class="docutils literal notranslate"><span class="pre">rgpot.potentials</span></code></p></li>
+<li><p><strong>protocolMajor</strong>: 1</p></li>
+<li><p><strong>schemaId</strong>: <code class="docutils literal notranslate"><span class="pre">0xbd1f89fa17369103</span></code></p></li>
+<li><p><strong>bridgeAbiMajor</strong> / <strong>bridgeAbiMinor</strong>: 1 / 0</p></li>
+<li><p><strong>bridgeLayout</strong>: 1</p></li>
+<li><p><strong>dlpackMajor</strong> / <strong>dlpackMinor</strong>: 1 / 0</p></li>
+<li><p><strong>bridgeFeatures</strong>: 0 (energy and forces over RPC; no eindir feature bits)</p></li>
+<li><p><strong>operations</strong>: energy and forces</p></li>
+<li><p><strong>buildVersion</strong>: the eOn project version</p></li>
+<li><p><strong>buildRevision</strong>: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">rev-parse</span> <span class="pre">--short=12</span></code>, or empty when git cannot name the commit</p></li>
+</ul>
+<p>A client refuses the server when <code class="docutils literal notranslate"><span class="pre">getCapabilities</span></code> is left unimplemented.</p>
 </section>
 <section id="integration-with-chemgp">
 <h2>Integration with ChemGP<a class="headerlink" href="#integration-with-chemgp" title="Link to this heading">¶</a></h2>
@@ -737,7 +756,7 @@ custom <code class="docutils literal notranslate"><span class="pre">AtomMatrix</
 translation unit. The capnp schema code is compiled in a separate TU
 (<code class="docutils literal notranslate"><span class="pre">ServeRpcServer.cpp</span></code>) from the eOn potential wrapper (<code class="docutils literal notranslate"><span class="pre">ServeMode.cpp</span></code>). For
 more on the integration pattern, see the
-<a class="reference external" href="https://rgpot.rgoswami.me/integration_guide.html">rgpot integration guide</a>.</p>
+<a class="reference external" href="https://rgpot.rgoswami.me/howto/integration.html">rgpot integration guide</a>.</p>
 </section>
 <section id="command-reference">
 <h2>Command reference<a class="headerlink" href="#command-reference" title="Link to this heading">¶</a></h2>

@@ -9,6 +9,7 @@ var classeonc_1_1NEBObjectiveFunction =
     [ "getGradient", "classeonc_1_1NEBObjectiveFunction.html#a01941b334921107d573ae0f8f5ad7e1f", null ],
     [ "getMasses", "classeonc_1_1NEBObjectiveFunction.html#aebb666d686e494ae12f51d9a2649d544", null ],
     [ "getPositions", "classeonc_1_1NEBObjectiveFunction.html#a03dab0f040cd499a6a3ef38e82b668e9", null ],
+    [ "gradientMatchesEnergy", "classeonc_1_1NEBObjectiveFunction.html#a89d1e5655bca0863be93d9aabcc85e41", null ],
     [ "isConverged", "classeonc_1_1NEBObjectiveFunction.html#a8e752fbd1e367a9c573239cb20e01341", null ],
     [ "isUncertain", "classeonc_1_1NEBObjectiveFunction.html#ace98066ce47a2bd62c91b9ec68636734", null ],
     [ "setPositions", "classeonc_1_1NEBObjectiveFunction.html#af16aa1b71afc9ded3769415a31aad88b", null ],

@@ -5,6 +5,7 @@ var classeonc_1_1PotRegistry =
     [ "Clock", "classeonc_1_1PotRegistry.html#acbe97551f4df161dc6952d7365100c7c", null ],
     [ "TimePoint", "classeonc_1_1PotRegistry.html#aeeb990f618a5a28e051858b6c78b248c", null ],
     [ "PotRegistry", "classeonc_1_1PotRegistry.html#a1b6fe723a0e0851801d78ee0c85fa7b0", null ],
+    [ "~PotRegistry", "classeonc_1_1PotRegistry.html#a24a5954e57eca6cd8072cb5414b43fce", null ],
     [ "get", "classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b", null ],
     [ "on_created", "classeonc_1_1PotRegistry.html#abc84af654d887beaaf7e87204d21f03d", null ],
     [ "on_destroyed", "classeonc_1_1PotRegistry.html#ace0bb47f57b588d2eaf89253d0135c3a", null ],

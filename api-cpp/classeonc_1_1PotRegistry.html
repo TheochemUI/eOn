@@ -266,6 +266,7 @@ Public Types</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a1b6fe723a0e0851801d78ee0c85fa7b0" id="r_a1b6fe723a0e0851801d78ee0c85fa7b0"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a1b6fe723a0e0851801d78ee0c85fa7b0">PotRegistry</a> ()=default</td></tr>
+<tr class="memitem:a24a5954e57eca6cd8072cb5414b43fce" id="r_a24a5954e57eca6cd8072cb5414b43fce"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a24a5954e57eca6cd8072cb5414b43fce">~PotRegistry</a> () override</td></tr>
 <tr class="memitem:a6c56fe049ed93ae0e93258dd62003cd7" id="r_a6c56fe049ed93ae0e93258dd62003cd7"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a6c56fe049ed93ae0e93258dd62003cd7">reset</a> ()</td></tr>
 <tr class="memitem:abc84af654d887beaaf7e87204d21f03d" id="r_abc84af654d887beaaf7e87204d21f03d"><td class="memItemLeft">uint64_t&#160;</td><td class="memItemRight"><a class="el" href="#abc84af654d887beaaf7e87204d21f03d">on_created</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> t) noexcept override</td></tr>
 <tr class="memitem:ace0bb47f57b588d2eaf89253d0135c3a" id="r_ace0bb47f57b588d2eaf89253d0135c3a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ace0bb47f57b588d2eaf89253d0135c3a">on_destroyed</a> (uint64_t id, <a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> t, size_t force_calls, <a class="el" href="#aeeb990f618a5a28e051858b6c78b248c">TimePoint</a> created_at) override</td></tr>
@@ -275,7 +276,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9ede73a599d49dfeec6041efe0918a79" id="r_a9ede73a599d49dfeec6041efe0918a79"><td class="memItemLeft">size_t&#160;</td><td class="memItemRight"><a class="el" href="#a9ede73a599d49dfeec6041efe0918a79">type_alive</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> t) const noexcept</td></tr>
 <tr class="memitem:ac5fd01be77f33ee6b4442f4b47a9e5c9" id="r_ac5fd01be77f33ee6b4442f4b47a9e5c9"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac5fd01be77f33ee6b4442f4b47a9e5c9">write_summary</a> (const std::string &amp;path=&quot;_potcalls.json&quot;) const</td></tr>
 <tr class="inherit_header pub_methods_classeonc_1_1IPotRegistry"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1IPotRegistry')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1IPotRegistry.html">eonc::IPotRegistry</a></td></tr>
-<tr class="memitem:a0ebd4a2931379fb191f59a3343b2c58e inherit pub_methods_classeonc_1_1IPotRegistry" id="r_a0ebd4a2931379fb191f59a3343b2c58e"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IPotRegistry.html#a0ebd4a2931379fb191f59a3343b2c58e">~IPotRegistry</a> ()=default</td></tr>
+<tr class="memitem:af3aef02f83f3881a4ea116170f9413d2 inherit pub_methods_classeonc_1_1IPotRegistry" id="r_af3aef02f83f3881a4ea116170f9413d2"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IPotRegistry.html#af3aef02f83f3881a4ea116170f9413d2">~IPotRegistry</a> ()</td></tr>
+<tr class="memitem:a47e431046221e6fd62e81fe860351940 inherit pub_methods_classeonc_1_1IPotRegistry" id="r_a47e431046221e6fd62e81fe860351940"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="structeonc_1_1RegistryLifetime.html">RegistryLifetime</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IPotRegistry.html#a47e431046221e6fd62e81fe860351940">lifetime</a> () const</td></tr>
 <tr class="memitem:a06aefed71360aa800f9a1210867335d6 inherit pub_methods_classeonc_1_1IPotRegistry" id="r_a06aefed71360aa800f9a1210867335d6"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IPotRegistry.html#a06aefed71360aa800f9a1210867335d6">IPotRegistry</a> (const IPotRegistry &amp;)=delete</td></tr>
 <tr class="memitem:a6256d9c1d7d135e21dd478ae232ef64e inherit pub_methods_classeonc_1_1IPotRegistry" id="r_a6256d9c1d7d135e21dd478ae232ef64e"><td class="memItemLeft"><a class="el" href="classeonc_1_1IPotRegistry.html#a06aefed71360aa800f9a1210867335d6">IPotRegistry</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IPotRegistry.html#a6256d9c1d7d135e21dd478ae232ef64e">operator=</a> (const <a class="el" href="classeonc_1_1IPotRegistry.html#a06aefed71360aa800f9a1210867335d6">IPotRegistry</a> &amp;)=delete</td></tr>
 </table><table class="memberdecls">
@@ -295,10 +297,12 @@ Private Attributes</h2></td></tr>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_methods_classeonc_1_1IPotRegistry"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classeonc_1_1IPotRegistry')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classeonc_1_1IPotRegistry.html">eonc::IPotRegistry</a></td></tr>
 <tr class="memitem:a8ffcbcb77a41b071c9e1273d5643418b inherit pro_methods_classeonc_1_1IPotRegistry" id="r_a8ffcbcb77a41b071c9e1273d5643418b"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IPotRegistry.html#a8ffcbcb77a41b071c9e1273d5643418b">IPotRegistry</a> ()=default</td></tr>
+<tr class="inherit_header pro_attribs_classeonc_1_1IPotRegistry"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1IPotRegistry')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1IPotRegistry.html">eonc::IPotRegistry</a></td></tr>
+<tr class="memitem:a83ad7abab1273a146b36b1b016efa07f inherit pro_attribs_classeonc_1_1IPotRegistry" id="r_a83ad7abab1273a146b36b1b016efa07f"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="structeonc_1_1RegistryLifetime.html">RegistryLifetime</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IPotRegistry.html#a83ad7abab1273a146b36b1b016efa07f">lifetime_</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00045">45</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00062">62</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
 </div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
 <a id="acbe97551f4df161dc6952d7365100c7c" name="acbe97551f4df161dc6952d7365100c7c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acbe97551f4df161dc6952d7365100c7c">&#9670;&#160;</a></span>Clock</h2>
@@ -312,7 +316,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00047">47</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00064">64</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
 
 </div>
 </div>
@@ -328,7 +332,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00048">48</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00065">65</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
 
 </div>
 </div>
@@ -358,6 +362,40 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="a24a5954e57eca6cd8072cb5414b43fce" name="a24a5954e57eca6cd8072cb5414b43fce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24a5954e57eca6cd8072cb5414b43fce">&#9670;&#160;</a></span>~PotRegistry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eonc::PotRegistry::~PotRegistry </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00090">90</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   90</span>                          {</div>
+<div class="line"><span class="lineno">   91</span>    <span class="comment">// Members are still intact. Mark the registry dead before they go,</span></div>
+<div class="line"><span class="lineno">   92</span>    <span class="comment">// so a Potential destroyed from here does not lock a dead mutex.</span></div>
+<div class="line"><span class="lineno">   93</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1IPotRegistry.html#a83ad7abab1273a146b36b1b016efa07f">lifetime_</a>)</div>
+<div class="line"><span class="lineno">   94</span>      <a class="code hl_variable" href="classeonc_1_1IPotRegistry.html#a83ad7abab1273a146b36b1b016efa07f">lifetime_</a>-&gt;alive.store(<span class="keyword">false</span>, std::memory_order_release);</div>
+<div class="line"><span class="lineno">   95</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1IPotRegistry_html_a83ad7abab1273a146b36b1b016efa07f"><div class="ttname"><a href="classeonc_1_1IPotRegistry.html#a83ad7abab1273a146b36b1b016efa07f">eonc::IPotRegistry::lifetime_</a></div><div class="ttdeci">std::shared_ptr&lt; RegistryLifetime &gt; lifetime_</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8h_source.html#l00058">PotRegistry.h:58</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a5d307a4845d9c0d6d16031a5a637e23b" name="a5d307a4845d9c0d6d16031a5a637e23b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5d307a4845d9c0d6d16031a5a637e23b">&#9670;&#160;</a></span>get()</h2>
@@ -385,16 +423,16 @@ Additional Inherited Members</h2></td></tr>
 <p>Process-lifetime singleton. </p>
 <p>The instance is allocated on the heap and never destroyed, so <a class="el" href="classeonc_1_1Potential.html">Potential</a> destructors can still record teardown after C++ static destruction. </p>
 
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8cpp_source.html#l00050">50</a> of file <a class="el" href="PotRegistry_8cpp_source.html">PotRegistry.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   50</span>                                       {</div>
-<div class="line"><span class="lineno">   51</span>  <span class="comment">// Heap-allocated and never deleted. Potential destructors call</span></div>
-<div class="line"><span class="lineno">   52</span>  <span class="comment">// on_destroyed, and those objects can outlive C++ static</span></div>
-<div class="line"><span class="lineno">   53</span>  <span class="comment">// destructors (interpreter finalization, leaked shared_ptrs). A</span></div>
-<div class="line"><span class="lineno">   54</span>  <span class="comment">// function-local static would already be destroyed on those paths,</span></div>
-<div class="line"><span class="lineno">   55</span>  <span class="comment">// so on_destroyed would lock a destroyed mutex.</span></div>
-<div class="line"><span class="lineno">   56</span>  <span class="keyword">static</span> <a class="code hl_function" href="#a1b6fe723a0e0851801d78ee0c85fa7b0">PotRegistry</a> *instance = <span class="keyword">new</span> <a class="code hl_function" href="#a1b6fe723a0e0851801d78ee0c85fa7b0">PotRegistry</a>;</div>
-<div class="line"><span class="lineno">   57</span>  <span class="keywordflow">return</span> *instance;</div>
-<div class="line"><span class="lineno">   58</span>}</div>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8cpp_source.html#l00051">51</a> of file <a class="el" href="PotRegistry_8cpp_source.html">PotRegistry.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   51</span>                                       {</div>
+<div class="line"><span class="lineno">   52</span>  <span class="comment">// Heap-allocated and never deleted. Potential destructors call</span></div>
+<div class="line"><span class="lineno">   53</span>  <span class="comment">// on_destroyed, and those objects can outlive C++ static</span></div>
+<div class="line"><span class="lineno">   54</span>  <span class="comment">// destructors (interpreter finalization, leaked shared_ptrs). A</span></div>
+<div class="line"><span class="lineno">   55</span>  <span class="comment">// function-local static would already be destroyed on those paths,</span></div>
+<div class="line"><span class="lineno">   56</span>  <span class="comment">// so on_destroyed would lock a destroyed mutex.</span></div>
+<div class="line"><span class="lineno">   57</span>  <span class="keyword">static</span> <a class="code hl_function" href="#a1b6fe723a0e0851801d78ee0c85fa7b0">PotRegistry</a> *instance = std::make_unique&lt;PotRegistry&gt;().release();</div>
+<div class="line"><span class="lineno">   58</span>  <span class="keywordflow">return</span> *instance;</div>
+<div class="line"><span class="lineno">   59</span>}</div>
 <div class="ttc" id="aclasseonc_1_1PotRegistry_html_a1b6fe723a0e0851801d78ee0c85fa7b0"><div class="ttname"><a href="#a1b6fe723a0e0851801d78ee0c85fa7b0">eonc::PotRegistry::PotRegistry</a></div><div class="ttdeci">PotRegistry()=default</div></div>
 </div><!-- fragment -->
 </div>
@@ -424,15 +462,15 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1IPotRegistry.html#afdd908ca0a310da27b22aceb0504952e">eonc::IPotRegistry</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8cpp_source.html#l00071">71</a> of file <a class="el" href="PotRegistry_8cpp_source.html">PotRegistry.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   71</span>                                                   {</div>
-<div class="line"><span class="lineno">   72</span>  <span class="keyword">auto</span> idx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(magic_enum::enum_index(t).value_or(0));</div>
-<div class="line"><span class="lineno">   73</span>  <a class="code hl_variable" href="#a0d8f7e0a89e62ca1588e7055a0e70920">m_type_stats</a>[idx].created.fetch_add(1, std::memory_order_relaxed);</div>
-<div class="line"><span class="lineno">   74</span>  <a class="code hl_variable" href="#a0d8f7e0a89e62ca1588e7055a0e70920">m_type_stats</a>[idx].alive.fetch_add(1, std::memory_order_relaxed);</div>
-<div class="line"><span class="lineno">   75</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a0b90a1d0f7acf7e3bb9af57bc12df651">m_next_id</a>.fetch_add(1, std::memory_order_relaxed);</div>
-<div class="line"><span class="lineno">   76</span>}</div>
-<div class="ttc" id="aclasseonc_1_1PotRegistry_html_a0b90a1d0f7acf7e3bb9af57bc12df651"><div class="ttname"><a href="#a0b90a1d0f7acf7e3bb9af57bc12df651">eonc::PotRegistry::m_next_id</a></div><div class="ttdeci">std::atomic&lt; uint64_t &gt; m_next_id</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8h_source.html#l00069">PotRegistry.h:69</a></div></div>
-<div class="ttc" id="aclasseonc_1_1PotRegistry_html_a0d8f7e0a89e62ca1588e7055a0e70920"><div class="ttname"><a href="#a0d8f7e0a89e62ca1588e7055a0e70920">eonc::PotRegistry::m_type_stats</a></div><div class="ttdeci">std::array&lt; TypeStats, magic_enum::enum_count&lt; PotType &gt;()&gt; m_type_stats</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8h_source.html#l00064">PotRegistry.h:64</a></div></div>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8cpp_source.html#l00072">72</a> of file <a class="el" href="PotRegistry_8cpp_source.html">PotRegistry.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   72</span>                                                   {</div>
+<div class="line"><span class="lineno">   73</span>  <span class="keyword">auto</span> idx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(magic_enum::enum_index(t).value_or(0));</div>
+<div class="line"><span class="lineno">   74</span>  <a class="code hl_variable" href="#a0d8f7e0a89e62ca1588e7055a0e70920">m_type_stats</a>[idx].created.fetch_add(1, std::memory_order_relaxed);</div>
+<div class="line"><span class="lineno">   75</span>  <a class="code hl_variable" href="#a0d8f7e0a89e62ca1588e7055a0e70920">m_type_stats</a>[idx].alive.fetch_add(1, std::memory_order_relaxed);</div>
+<div class="line"><span class="lineno">   76</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a0b90a1d0f7acf7e3bb9af57bc12df651">m_next_id</a>.fetch_add(1, std::memory_order_relaxed);</div>
+<div class="line"><span class="lineno">   77</span>}</div>
+<div class="ttc" id="aclasseonc_1_1PotRegistry_html_a0b90a1d0f7acf7e3bb9af57bc12df651"><div class="ttname"><a href="#a0b90a1d0f7acf7e3bb9af57bc12df651">eonc::PotRegistry::m_next_id</a></div><div class="ttdeci">std::atomic&lt; uint64_t &gt; m_next_id</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8h_source.html#l00086">PotRegistry.h:86</a></div></div>
+<div class="ttc" id="aclasseonc_1_1PotRegistry_html_a0d8f7e0a89e62ca1588e7055a0e70920"><div class="ttname"><a href="#a0d8f7e0a89e62ca1588e7055a0e70920">eonc::PotRegistry::m_type_stats</a></div><div class="ttdeci">std::array&lt; TypeStats, magic_enum::enum_count&lt; PotType &gt;()&gt; m_type_stats</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8h_source.html#l00081">PotRegistry.h:81</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -475,18 +513,18 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1IPotRegistry.html#a6ba36eca39bd85718e470c139a988d5e">eonc::IPotRegistry</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8cpp_source.html#l00078">78</a> of file <a class="el" href="PotRegistry_8cpp_source.html">PotRegistry.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   79</span>                                                     {</div>
-<div class="line"><span class="lineno">   80</span>  <span class="keyword">auto</span> idx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(magic_enum::enum_index(t).value_or(0));</div>
-<div class="line"><span class="lineno">   81</span>  <a class="code hl_variable" href="#a0d8f7e0a89e62ca1588e7055a0e70920">m_type_stats</a>[idx].alive.fetch_sub(1, std::memory_order_relaxed);</div>
-<div class="line"><span class="lineno">   82</span> </div>
-<div class="line"><span class="lineno">   83</span>  <a class="code hl_struct" href="structeonc_1_1PotRegistry_1_1InstanceRecord.html">InstanceRecord</a> rec{id, t, created_at, Clock::now(), force_calls};</div>
-<div class="line"><span class="lineno">   84</span>  std::lock_guard&lt;std::mutex&gt; lock(<a class="code hl_variable" href="#a821b4bd32ebd52f8d9418eb66558408e">m_records_mutex</a>);</div>
-<div class="line"><span class="lineno">   85</span>  <a class="code hl_variable" href="#ac779efffc60e6be89613236e157b1932">m_records</a>.push_back(rec);</div>
-<div class="line"><span class="lineno">   86</span>}</div>
-<div class="ttc" id="aclasseonc_1_1PotRegistry_html_a821b4bd32ebd52f8d9418eb66558408e"><div class="ttname"><a href="#a821b4bd32ebd52f8d9418eb66558408e">eonc::PotRegistry::m_records_mutex</a></div><div class="ttdeci">std::mutex m_records_mutex</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8h_source.html#l00066">PotRegistry.h:66</a></div></div>
-<div class="ttc" id="aclasseonc_1_1PotRegistry_html_ac779efffc60e6be89613236e157b1932"><div class="ttname"><a href="#ac779efffc60e6be89613236e157b1932">eonc::PotRegistry::m_records</a></div><div class="ttdeci">std::vector&lt; InstanceRecord &gt; m_records</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8h_source.html#l00067">PotRegistry.h:67</a></div></div>
-<div class="ttc" id="astructeonc_1_1PotRegistry_1_1InstanceRecord_html"><div class="ttname"><a href="structeonc_1_1PotRegistry_1_1InstanceRecord.html">eonc::PotRegistry::InstanceRecord</a></div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8h_source.html#l00050">PotRegistry.h:50</a></div></div>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8cpp_source.html#l00079">79</a> of file <a class="el" href="PotRegistry_8cpp_source.html">PotRegistry.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   80</span>                                                     {</div>
+<div class="line"><span class="lineno">   81</span>  <span class="keyword">auto</span> idx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(magic_enum::enum_index(t).value_or(0));</div>
+<div class="line"><span class="lineno">   82</span>  <a class="code hl_variable" href="#a0d8f7e0a89e62ca1588e7055a0e70920">m_type_stats</a>[idx].alive.fetch_sub(1, std::memory_order_relaxed);</div>
+<div class="line"><span class="lineno">   83</span> </div>
+<div class="line"><span class="lineno">   84</span>  <a class="code hl_struct" href="structeonc_1_1PotRegistry_1_1InstanceRecord.html">InstanceRecord</a> rec{id, t, created_at, Clock::now(), force_calls};</div>
+<div class="line"><span class="lineno">   85</span>  std::lock_guard&lt;std::mutex&gt; lock(<a class="code hl_variable" href="#a821b4bd32ebd52f8d9418eb66558408e">m_records_mutex</a>);</div>
+<div class="line"><span class="lineno">   86</span>  <a class="code hl_variable" href="#ac779efffc60e6be89613236e157b1932">m_records</a>.push_back(rec);</div>
+<div class="line"><span class="lineno">   87</span>}</div>
+<div class="ttc" id="aclasseonc_1_1PotRegistry_html_a821b4bd32ebd52f8d9418eb66558408e"><div class="ttname"><a href="#a821b4bd32ebd52f8d9418eb66558408e">eonc::PotRegistry::m_records_mutex</a></div><div class="ttdeci">std::mutex m_records_mutex</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8h_source.html#l00083">PotRegistry.h:83</a></div></div>
+<div class="ttc" id="aclasseonc_1_1PotRegistry_html_ac779efffc60e6be89613236e157b1932"><div class="ttname"><a href="#ac779efffc60e6be89613236e157b1932">eonc::PotRegistry::m_records</a></div><div class="ttdeci">std::vector&lt; InstanceRecord &gt; m_records</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8h_source.html#l00084">PotRegistry.h:84</a></div></div>
+<div class="ttc" id="astructeonc_1_1PotRegistry_1_1InstanceRecord_html"><div class="ttname"><a href="structeonc_1_1PotRegistry_1_1InstanceRecord.html">eonc::PotRegistry::InstanceRecord</a></div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8h_source.html#l00067">PotRegistry.h:67</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -515,11 +553,11 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1IPotRegistry.html#aca3996ad44fbf022c5371444030bbcdd">eonc::IPotRegistry</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8cpp_source.html#l00088">88</a> of file <a class="el" href="PotRegistry_8cpp_source.html">PotRegistry.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   88</span>                                                  {</div>
-<div class="line"><span class="lineno">   89</span>  <span class="keyword">auto</span> idx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(magic_enum::enum_index(t).value_or(0));</div>
-<div class="line"><span class="lineno">   90</span>  <a class="code hl_variable" href="#a0d8f7e0a89e62ca1588e7055a0e70920">m_type_stats</a>[idx].force_calls.fetch_add(1, std::memory_order_relaxed);</div>
-<div class="line"><span class="lineno">   91</span>}</div>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8cpp_source.html#l00089">89</a> of file <a class="el" href="PotRegistry_8cpp_source.html">PotRegistry.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   89</span>                                                  {</div>
+<div class="line"><span class="lineno">   90</span>  <span class="keyword">auto</span> idx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(magic_enum::enum_index(t).value_or(0));</div>
+<div class="line"><span class="lineno">   91</span>  <a class="code hl_variable" href="#a0d8f7e0a89e62ca1588e7055a0e70920">m_type_stats</a>[idx].force_calls.fetch_add(1, std::memory_order_relaxed);</div>
+<div class="line"><span class="lineno">   92</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -538,17 +576,17 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8cpp_source.html#l00060">60</a> of file <a class="el" href="PotRegistry_8cpp_source.html">PotRegistry.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   60</span>                        {</div>
-<div class="line"><span class="lineno">   61</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;ts : <a class="code hl_variable" href="#a0d8f7e0a89e62ca1588e7055a0e70920">m_type_stats</a>) {</div>
-<div class="line"><span class="lineno">   62</span>    ts.force_calls.store(0, std::memory_order_relaxed);</div>
-<div class="line"><span class="lineno">   63</span>    ts.created.store(0, std::memory_order_relaxed);</div>
-<div class="line"><span class="lineno">   64</span>    ts.alive.store(0, std::memory_order_relaxed);</div>
-<div class="line"><span class="lineno">   65</span>  }</div>
-<div class="line"><span class="lineno">   66</span>  std::lock_guard&lt;std::mutex&gt; lock(<a class="code hl_variable" href="#a821b4bd32ebd52f8d9418eb66558408e">m_records_mutex</a>);</div>
-<div class="line"><span class="lineno">   67</span>  <a class="code hl_variable" href="#ac779efffc60e6be89613236e157b1932">m_records</a>.clear();</div>
-<div class="line"><span class="lineno">   68</span>  <a class="code hl_variable" href="#a0b90a1d0f7acf7e3bb9af57bc12df651">m_next_id</a>.store(1, std::memory_order_relaxed);</div>
-<div class="line"><span class="lineno">   69</span>}</div>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8cpp_source.html#l00061">61</a> of file <a class="el" href="PotRegistry_8cpp_source.html">PotRegistry.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   61</span>                        {</div>
+<div class="line"><span class="lineno">   62</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;ts : <a class="code hl_variable" href="#a0d8f7e0a89e62ca1588e7055a0e70920">m_type_stats</a>) {</div>
+<div class="line"><span class="lineno">   63</span>    ts.force_calls.store(0, std::memory_order_relaxed);</div>
+<div class="line"><span class="lineno">   64</span>    ts.created.store(0, std::memory_order_relaxed);</div>
+<div class="line"><span class="lineno">   65</span>    ts.alive.store(0, std::memory_order_relaxed);</div>
+<div class="line"><span class="lineno">   66</span>  }</div>
+<div class="line"><span class="lineno">   67</span>  std::lock_guard&lt;std::mutex&gt; lock(<a class="code hl_variable" href="#a821b4bd32ebd52f8d9418eb66558408e">m_records_mutex</a>);</div>
+<div class="line"><span class="lineno">   68</span>  <a class="code hl_variable" href="#ac779efffc60e6be89613236e157b1932">m_records</a>.clear();</div>
+<div class="line"><span class="lineno">   69</span>  <a class="code hl_variable" href="#a0b90a1d0f7acf7e3bb9af57bc12df651">m_next_id</a>.store(1, std::memory_order_relaxed);</div>
+<div class="line"><span class="lineno">   70</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -575,14 +613,14 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8cpp_source.html#l00098">98</a> of file <a class="el" href="PotRegistry_8cpp_source.html">PotRegistry.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   98</span>                                                     {</div>
-<div class="line"><span class="lineno">   99</span>  <span class="keywordtype">size_t</span> total = 0;</div>
-<div class="line"><span class="lineno">  100</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;ts : <a class="code hl_variable" href="#a0d8f7e0a89e62ca1588e7055a0e70920">m_type_stats</a>) {</div>
-<div class="line"><span class="lineno">  101</span>    total += ts.force_calls.load(std::memory_order_relaxed);</div>
-<div class="line"><span class="lineno">  102</span>  }</div>
-<div class="line"><span class="lineno">  103</span>  <span class="keywordflow">return</span> total;</div>
-<div class="line"><span class="lineno">  104</span>}</div>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8cpp_source.html#l00099">99</a> of file <a class="el" href="PotRegistry_8cpp_source.html">PotRegistry.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   99</span>                                                     {</div>
+<div class="line"><span class="lineno">  100</span>  <span class="keywordtype">size_t</span> total = 0;</div>
+<div class="line"><span class="lineno">  101</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;ts : <a class="code hl_variable" href="#a0d8f7e0a89e62ca1588e7055a0e70920">m_type_stats</a>) {</div>
+<div class="line"><span class="lineno">  102</span>    total += ts.force_calls.load(std::memory_order_relaxed);</div>
+<div class="line"><span class="lineno">  103</span>  }</div>
+<div class="line"><span class="lineno">  104</span>  <span class="keywordflow">return</span> total;</div>
+<div class="line"><span class="lineno">  105</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -609,11 +647,11 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8cpp_source.html#l00106">106</a> of file <a class="el" href="PotRegistry_8cpp_source.html">PotRegistry.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  106</span>                                                       {</div>
-<div class="line"><span class="lineno">  107</span>  <span class="keyword">auto</span> idx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(magic_enum::enum_index(t).value_or(0));</div>
-<div class="line"><span class="lineno">  108</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a0d8f7e0a89e62ca1588e7055a0e70920">m_type_stats</a>[idx].alive.load(std::memory_order_relaxed);</div>
-<div class="line"><span class="lineno">  109</span>}</div>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8cpp_source.html#l00107">107</a> of file <a class="el" href="PotRegistry_8cpp_source.html">PotRegistry.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  107</span>                                                       {</div>
+<div class="line"><span class="lineno">  108</span>  <span class="keyword">auto</span> idx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(magic_enum::enum_index(t).value_or(0));</div>
+<div class="line"><span class="lineno">  109</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a0d8f7e0a89e62ca1588e7055a0e70920">m_type_stats</a>[idx].alive.load(std::memory_order_relaxed);</div>
+<div class="line"><span class="lineno">  110</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -640,11 +678,11 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8cpp_source.html#l00093">93</a> of file <a class="el" href="PotRegistry_8cpp_source.html">PotRegistry.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   93</span>                                                             {</div>
-<div class="line"><span class="lineno">   94</span>  <span class="keyword">auto</span> idx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(magic_enum::enum_index(t).value_or(0));</div>
-<div class="line"><span class="lineno">   95</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a0d8f7e0a89e62ca1588e7055a0e70920">m_type_stats</a>[idx].force_calls.load(std::memory_order_relaxed);</div>
-<div class="line"><span class="lineno">   96</span>}</div>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8cpp_source.html#l00094">94</a> of file <a class="el" href="PotRegistry_8cpp_source.html">PotRegistry.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   94</span>                                                             {</div>
+<div class="line"><span class="lineno">   95</span>  <span class="keyword">auto</span> idx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(magic_enum::enum_index(t).value_or(0));</div>
+<div class="line"><span class="lineno">   96</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a0d8f7e0a89e62ca1588e7055a0e70920">m_type_stats</a>[idx].force_calls.load(std::memory_order_relaxed);</div>
+<div class="line"><span class="lineno">   97</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -663,37 +701,37 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8cpp_source.html#l00111">111</a> of file <a class="el" href="PotRegistry_8cpp_source.html">PotRegistry.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  111</span>                                                           {</div>
-<div class="line"><span class="lineno">  112</span>  std::vector&lt;InstanceRecord&gt; snapshot;</div>
-<div class="line"><span class="lineno">  113</span>  {</div>
-<div class="line"><span class="lineno">  114</span>    std::lock_guard&lt;std::mutex&gt; lock(<span class="keyword">const_cast&lt;</span>std::mutex &amp;<span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a821b4bd32ebd52f8d9418eb66558408e">m_records_mutex</a>));</div>
-<div class="line"><span class="lineno">  115</span>    snapshot = <a class="code hl_variable" href="#ac779efffc60e6be89613236e157b1932">m_records</a>;</div>
-<div class="line"><span class="lineno">  116</span>  }</div>
-<div class="line"><span class="lineno">  117</span> </div>
-<div class="line"><span class="lineno">  118</span>  std::ofstream ofs(path);</div>
-<div class="line"><span class="lineno">  119</span>  <span class="keywordflow">if</span> (!ofs.is_open())</div>
-<div class="line"><span class="lineno">  120</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  121</span> </div>
-<div class="line"><span class="lineno">  122</span>  ofs &lt;&lt; <span class="stringliteral">&quot;[\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  123</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; snapshot.size(); ++i) {</div>
-<div class="line"><span class="lineno">  124</span>    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;r = snapshot[i];</div>
-<div class="line"><span class="lineno">  125</span>    <span class="keyword">auto</span> type_name = magic_enum::enum_name(r.type);</div>
-<div class="line"><span class="lineno">  126</span>    ofs &lt;&lt; <span class="stringliteral">&quot;  {\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  127</span>    ofs &lt;&lt; <span class="stringliteral">&quot;    \&quot;id\&quot;: &quot;</span> &lt;&lt; r.id &lt;&lt; <span class="stringliteral">&quot;,\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  128</span>    ofs &lt;&lt; <span class="stringliteral">&quot;    \&quot;type\&quot;: \&quot;&quot;</span> &lt;&lt; json_escape(type_name) &lt;&lt; <span class="stringliteral">&quot;\&quot;,\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  129</span>    ofs &lt;&lt; <span class="stringliteral">&quot;    \&quot;created_at\&quot;: \&quot;&quot;</span> &lt;&lt; format_timepoint(r.created_at)</div>
-<div class="line"><span class="lineno">  130</span>        &lt;&lt; <span class="stringliteral">&quot;\&quot;,\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  131</span>    ofs &lt;&lt; <span class="stringliteral">&quot;    \&quot;destroyed_at\&quot;: \&quot;&quot;</span> &lt;&lt; format_timepoint(r.destroyed_at)</div>
-<div class="line"><span class="lineno">  132</span>        &lt;&lt; <span class="stringliteral">&quot;\&quot;,\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  133</span>    ofs &lt;&lt; <span class="stringliteral">&quot;    \&quot;force_calls\&quot;: &quot;</span> &lt;&lt; r.force_calls &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  134</span>    ofs &lt;&lt; <span class="stringliteral">&quot;  }&quot;</span>;</div>
-<div class="line"><span class="lineno">  135</span>    <span class="keywordflow">if</span> (i + 1 &lt; snapshot.size())</div>
-<div class="line"><span class="lineno">  136</span>      ofs &lt;&lt; <span class="charliteral">&#39;,&#39;</span>;</div>
-<div class="line"><span class="lineno">  137</span>    ofs &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
-<div class="line"><span class="lineno">  138</span>  }</div>
-<div class="line"><span class="lineno">  139</span>  ofs &lt;&lt; <span class="stringliteral">&quot;]\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  140</span>}</div>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8cpp_source.html#l00112">112</a> of file <a class="el" href="PotRegistry_8cpp_source.html">PotRegistry.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  112</span>                                                           {</div>
+<div class="line"><span class="lineno">  113</span>  std::vector&lt;InstanceRecord&gt; snapshot;</div>
+<div class="line"><span class="lineno">  114</span>  {</div>
+<div class="line"><span class="lineno">  115</span>    std::lock_guard&lt;std::mutex&gt; lock(<span class="keyword">const_cast&lt;</span>std::mutex &amp;<span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a821b4bd32ebd52f8d9418eb66558408e">m_records_mutex</a>));</div>
+<div class="line"><span class="lineno">  116</span>    snapshot = <a class="code hl_variable" href="#ac779efffc60e6be89613236e157b1932">m_records</a>;</div>
+<div class="line"><span class="lineno">  117</span>  }</div>
+<div class="line"><span class="lineno">  118</span> </div>
+<div class="line"><span class="lineno">  119</span>  std::ofstream ofs(path);</div>
+<div class="line"><span class="lineno">  120</span>  <span class="keywordflow">if</span> (!ofs.is_open())</div>
+<div class="line"><span class="lineno">  121</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  122</span> </div>
+<div class="line"><span class="lineno">  123</span>  ofs &lt;&lt; <span class="stringliteral">&quot;[\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  124</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; snapshot.size(); ++i) {</div>
+<div class="line"><span class="lineno">  125</span>    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;r = snapshot[i];</div>
+<div class="line"><span class="lineno">  126</span>    <span class="keyword">auto</span> type_name = magic_enum::enum_name(r.type);</div>
+<div class="line"><span class="lineno">  127</span>    ofs &lt;&lt; <span class="stringliteral">&quot;  {\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  128</span>    ofs &lt;&lt; <span class="stringliteral">&quot;    \&quot;id\&quot;: &quot;</span> &lt;&lt; r.id &lt;&lt; <span class="stringliteral">&quot;,\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  129</span>    ofs &lt;&lt; <span class="stringliteral">&quot;    \&quot;type\&quot;: \&quot;&quot;</span> &lt;&lt; json_escape(type_name) &lt;&lt; <span class="stringliteral">&quot;\&quot;,\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  130</span>    ofs &lt;&lt; <span class="stringliteral">&quot;    \&quot;created_at\&quot;: \&quot;&quot;</span> &lt;&lt; format_timepoint(r.created_at)</div>
+<div class="line"><span class="lineno">  131</span>        &lt;&lt; <span class="stringliteral">&quot;\&quot;,\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  132</span>    ofs &lt;&lt; <span class="stringliteral">&quot;    \&quot;destroyed_at\&quot;: \&quot;&quot;</span> &lt;&lt; format_timepoint(r.destroyed_at)</div>
+<div class="line"><span class="lineno">  133</span>        &lt;&lt; <span class="stringliteral">&quot;\&quot;,\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  134</span>    ofs &lt;&lt; <span class="stringliteral">&quot;    \&quot;force_calls\&quot;: &quot;</span> &lt;&lt; r.force_calls &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  135</span>    ofs &lt;&lt; <span class="stringliteral">&quot;  }&quot;</span>;</div>
+<div class="line"><span class="lineno">  136</span>    <span class="keywordflow">if</span> (i + 1 &lt; snapshot.size())</div>
+<div class="line"><span class="lineno">  137</span>      ofs &lt;&lt; <span class="charliteral">&#39;,&#39;</span>;</div>
+<div class="line"><span class="lineno">  138</span>    ofs &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"><span class="lineno">  139</span>  }</div>
+<div class="line"><span class="lineno">  140</span>  ofs &lt;&lt; <span class="stringliteral">&quot;]\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  141</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -718,8 +756,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00069">69</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   69</span>{1};</div>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00086">86</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   86</span>{1};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -743,7 +781,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00067">67</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00084">84</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
 
 </div>
 </div>
@@ -767,7 +805,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00066">66</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00083">83</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
 
 </div>
 </div>
@@ -791,8 +829,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00064">64</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   64</span>{};</div>
+<p class="definition">Definition at line <a class="el" href="PotRegistry_8h_source.html#l00081">81</a> of file <a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   81</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>

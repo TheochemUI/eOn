@@ -84,7 +84,6 @@ data-aria-dark="Switch to auto color mode">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../team.html">eOn team</a></li>
-<li class="toctree-l1 _expand"><a class="reference internal" href="../../citing.html">Citing eOn</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../install/eessi.html">Build develop on EESSI</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../install/lammps.html">LAMMPS</a></li>
@@ -123,6 +122,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/mpi_potential.html">MPI potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/algorithm_selection.html">Choosing an algorithm</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/main.html">General simulation parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/structure_input.html">Structure input formats</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/potential.html">Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/structure_comparison.html">Structure comparison</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/optimizer.html">Optimizer</a></li>
@@ -178,6 +178,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/design/client/index.html">Client design</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/types.html">Type system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/exact-reduction.html">Exact reductions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/parameters.html">Parameters system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
@@ -200,6 +201,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.contracts.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.contracts.load_outcome.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts.load_outcome</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
@@ -531,146 +536,149 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="126">                <span class="k">else</span><span class="p">:</span>
 </span><span data-line="127">                    <span class="n">R</span><span class="p">[</span><span class="n">st2i</span><span class="p">[</span><span class="n">number</span><span class="p">],</span> <span class="n">st2col</span><span class="p">[(</span><span class="n">number</span><span class="p">,</span> <span class="nb">id</span><span class="p">)]]</span> <span class="o">+=</span> <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">]</span>
 </span><span data-line="128">
-</span><span data-line="129">        <span class="n">t</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">residual</span> <span class="o">=</span> <span class="n">mcamc</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
-</span><span data-line="130">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;residual </span><span class="si">%e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">residual</span><span class="p">)</span>
+</span><span data-line="129">        <span class="k">if</span> <span class="ow">not</span> <span class="n">col2st</span><span class="p">:</span>
+</span><span data-line="130">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;superbasin </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has no exit process&quot;</span><span class="p">)</span>
 </span><span data-line="131">
-</span><span data-line="132">        <span class="n">b</span> <span class="o">=</span> <span class="n">B</span><span class="p">[</span><span class="n">st2i</span><span class="p">[</span><span class="n">entry_state</span><span class="o">.</span><span class="n">number</span><span class="p">],:]</span>
-</span><span data-line="133">        <span class="n">p</span> <span class="o">=</span> <span class="mf">0.0</span>
-</span><span data-line="134">        <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>
-</span><span data-line="135">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)):</span>
-</span><span data-line="136">            <span class="n">p</span> <span class="o">+=</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-</span><span data-line="137">            <span class="k">if</span> <span class="n">p</span> <span class="o">&gt;=</span> <span class="n">u</span><span class="p">:</span>
-</span><span data-line="138">                <span class="n">exit_state_number</span><span class="p">,</span> <span class="n">exit_proc_id</span> <span class="o">=</span> <span class="n">col2st</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-</span><span data-line="139">                <span class="k">break</span>
-</span><span data-line="140">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="141">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to select exit process.&quot;</span><span class="p">)</span>
-</span><span data-line="142">
-</span><span data-line="143">        <span class="n">exit_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span><span class="p">[</span><span class="n">exit_state_number</span><span class="p">]</span>
-</span><span data-line="144">        <span class="n">product_state</span> <span class="o">=</span> <span class="n">get_product_state</span><span class="p">(</span><span class="n">exit_state_number</span><span class="p">,</span> <span class="n">exit_proc_id</span><span class="p">)</span>
-</span><span data-line="145">        <span class="n">mean_time</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">st2i</span><span class="p">[</span><span class="n">entry_state</span><span class="o">.</span><span class="n">number</span><span class="p">]]</span>
-</span><span data-line="146">        <span class="k">return</span> <span class="n">mean_time</span><span class="p">,</span> <span class="n">exit_state</span><span class="p">,</span> <span class="n">product_state</span><span class="p">,</span> <span class="n">exit_proc_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span></div>
+</span><span data-line="132">        <span class="n">t</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">residual</span> <span class="o">=</span> <span class="n">mcamc</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+</span><span data-line="133">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;residual </span><span class="si">%e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">residual</span><span class="p">)</span>
+</span><span data-line="134">
+</span><span data-line="135">        <span class="n">b</span> <span class="o">=</span> <span class="n">B</span><span class="p">[</span><span class="n">st2i</span><span class="p">[</span><span class="n">entry_state</span><span class="o">.</span><span class="n">number</span><span class="p">],:]</span>
+</span><span data-line="136">        <span class="n">p</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span data-line="137">        <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>
+</span><span data-line="138">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)):</span>
+</span><span data-line="139">            <span class="n">p</span> <span class="o">+=</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span data-line="140">            <span class="k">if</span> <span class="n">p</span> <span class="o">&gt;=</span> <span class="n">u</span><span class="p">:</span>
+</span><span data-line="141">                <span class="n">exit_state_number</span><span class="p">,</span> <span class="n">exit_proc_id</span> <span class="o">=</span> <span class="n">col2st</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span data-line="142">                <span class="k">break</span>
+</span><span data-line="143">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="144">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to select exit process.&quot;</span><span class="p">)</span>
+</span><span data-line="145">
+</span><span data-line="146">        <span class="n">exit_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span><span class="p">[</span><span class="n">exit_state_number</span><span class="p">]</span>
+</span><span data-line="147">        <span class="n">product_state</span> <span class="o">=</span> <span class="n">get_product_state</span><span class="p">(</span><span class="n">exit_state_number</span><span class="p">,</span> <span class="n">exit_proc_id</span><span class="p">)</span>
+</span><span data-line="148">        <span class="n">mean_time</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">st2i</span><span class="p">[</span><span class="n">entry_state</span><span class="o">.</span><span class="n">number</span><span class="p">]]</span>
+</span><span data-line="149">        <span class="k">return</span> <span class="n">mean_time</span><span class="p">,</span> <span class="n">exit_state</span><span class="p">,</span> <span class="n">product_state</span><span class="p">,</span> <span class="n">exit_proc_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span></div>
 
-</span><span data-line="147">
+</span><span data-line="150">
 <div class="viewcode-block" id="Superbasin.contains_state">
 <a class="viewcode-back" href="../../apidocs/eon/eon.superbasin.html#eon.superbasin.Superbasin.contains_state">[docs]</a>
-</span><span data-line="148">    <span class="k">def</span><span class="w"> </span><span class="nf">contains_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
-</span><span data-line="149">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="150">            <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span>
-</span><span data-line="151">        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-</span><span data-line="152">            <span class="k">return</span> <span class="kc">False</span></div>
+</span><span data-line="151">    <span class="k">def</span><span class="w"> </span><span class="nf">contains_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+</span><span data-line="152">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="153">            <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span>
+</span><span data-line="154">        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+</span><span data-line="155">            <span class="k">return</span> <span class="kc">False</span></div>
 
-</span><span data-line="153">
+</span><span data-line="156">
 <div class="viewcode-block" id="Superbasin.write_data">
 <a class="viewcode-back" href="../../apidocs/eon/eon.superbasin.html#eon.superbasin.Superbasin.write_data">[docs]</a>
-</span><span data-line="154">    <span class="k">def</span><span class="w"> </span><span class="nf">write_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="155">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;saving data to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
-</span><span data-line="156">        <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">atomic_write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span><span data-line="157">            <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span><span class="p">:</span>
-</span><span data-line="158">                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="n">number</span><span class="p">)</span></div>
+</span><span data-line="157">    <span class="k">def</span><span class="w"> </span><span class="nf">write_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="158">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;saving data to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="159">        <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">atomic_write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span data-line="160">            <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span><span class="p">:</span>
+</span><span data-line="161">                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="n">number</span><span class="p">)</span></div>
 
-</span><span data-line="159">
+</span><span data-line="162">
 <div class="viewcode-block" id="Superbasin.read_data">
 <a class="viewcode-back" href="../../apidocs/eon/eon.superbasin.html#eon.superbasin.Superbasin.read_data">[docs]</a>
-</span><span data-line="160">    <span class="k">def</span><span class="w"> </span><span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_state</span><span class="p">):</span>
-</span><span data-line="161">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;reading data from </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
-</span><span data-line="162">        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
-</span><span data-line="163">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="164">            <span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
-</span><span data-line="165">                                  <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
-</span><span data-line="166">        <span class="k">finally</span><span class="p">:</span>
-</span><span data-line="167">            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span data-line="168">        <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_state</span><span class="p">(</span><span class="n">number</span><span class="p">)</span> <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span><span class="p">]</span></div>
+</span><span data-line="163">    <span class="k">def</span><span class="w"> </span><span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_state</span><span class="p">):</span>
+</span><span data-line="164">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;reading data from </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="165">        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="166">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="167">            <span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+</span><span data-line="168">                                  <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
+</span><span data-line="169">        <span class="k">finally</span><span class="p">:</span>
+</span><span data-line="170">            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span data-line="171">        <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_state</span><span class="p">(</span><span class="n">number</span><span class="p">)</span> <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span><span class="p">]</span></div>
 
-</span><span data-line="169">
+</span><span data-line="172">
 <div class="viewcode-block" id="Superbasin.delete">
 <a class="viewcode-back" href="../../apidocs/eon/eon.superbasin.html#eon.superbasin.Superbasin.delete">[docs]</a>
-</span><span data-line="170">    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-</span><span data-line="171">        <span class="k">if</span> <span class="n">storage</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="172">            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;deleting </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
-</span><span data-line="173">            <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
-</span><span data-line="174">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="175">            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;storing </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
-</span><span data-line="176">            <span class="n">path_storage</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">storage</span><span class="p">)</span> <span class="o">/</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-</span><span data-line="177">            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">path_storage</span><span class="p">))</span>
-</span><span data-line="178">        <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="kc">None</span></div>
+</span><span data-line="173">    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span data-line="174">        <span class="k">if</span> <span class="n">storage</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="175">            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;deleting </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="176">            <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+</span><span data-line="177">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="178">            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;storing </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="179">            <span class="n">path_storage</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">storage</span><span class="p">)</span> <span class="o">/</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</span><span data-line="180">            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">path_storage</span><span class="p">))</span>
+</span><span data-line="181">        <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-</span><span data-line="179">
-</span><span data-line="180">    <span class="k">def</span><span class="w"> </span><span class="nf">_get_filtered_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="181"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter out states, which have no processes leading out of the superbasin</span>
-</span><span data-line="182"><span class="sd">        and which have spent at least twice as much time in dynamics</span>
-</span><span data-line="183"><span class="sd">        search as the longest time of all other states which do have</span>
-</span><span data-line="184"><span class="sd">        processes leading out.</span>
-</span><span data-line="185">
-</span><span data-line="186"><span class="sd">        Returns an iterator over states that should still be</span>
-</span><span data-line="187"><span class="sd">        considered.</span>
+</span><span data-line="182">
+</span><span data-line="183">    <span class="k">def</span><span class="w"> </span><span class="nf">_get_filtered_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="184"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter out states, which have no processes leading out of the superbasin</span>
+</span><span data-line="185"><span class="sd">        and which have spent at least twice as much time in dynamics</span>
+</span><span data-line="186"><span class="sd">        search as the longest time of all other states which do have</span>
+</span><span data-line="187"><span class="sd">        processes leading out.</span>
 </span><span data-line="188">
-</span><span data-line="189"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="190">        <span class="c1"># Do not filter states if superbasin_confidence is disabled.</span>
-</span><span data-line="191">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">sb_superbasin_confidence</span><span class="p">:</span>
-</span><span data-line="192">            <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
-</span><span data-line="193">                <span class="k">yield</span> <span class="n">state</span>
-</span><span data-line="194">            <span class="k">return</span>
-</span><span data-line="195">        <span class="c1"># The code for an enabled superbasin_confidence feature follows.</span>
-</span><span data-line="196">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">saddle_method</span> <span class="o">==</span> <span class="s2">&quot;dynamics&quot;</span><span class="p">:</span>
-</span><span data-line="197">            <span class="c1"># Use time spent in dynamics.</span>
-</span><span data-line="198">            <span class="k">try</span><span class="p">:</span>
-</span><span data-line="199">                <span class="n">max_time</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
-</span><span data-line="200">                               <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span>
-</span><span data-line="201">                               <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">get_ratetable</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-</span><span data-line="202">            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-</span><span data-line="203">                <span class="c1"># There is no state with an exit process, yet.</span>
-</span><span data-line="204">                <span class="n">max_time</span> <span class="o">=</span> <span class="mf">0.0</span>
-</span><span data-line="205">            <span class="k">if</span> <span class="n">max_time</span> <span class="o">&lt;</span> <span class="mf">100.0</span><span class="p">:</span>
-</span><span data-line="206">                <span class="c1"># If no state was searched for at least 100 fs, do not</span>
-</span><span data-line="207">                <span class="c1"># filter yet.</span>
-</span><span data-line="208">                <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
-</span><span data-line="209">                    <span class="k">yield</span> <span class="n">state</span>
-</span><span data-line="210">            <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
-</span><span data-line="211">                <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">get_ratetable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">or</span> <span class="n">state</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">*</span><span class="n">max_time</span><span class="p">:</span>
+</span><span data-line="189"><span class="sd">        Returns an iterator over states that should still be</span>
+</span><span data-line="190"><span class="sd">        considered.</span>
+</span><span data-line="191">
+</span><span data-line="192"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="193">        <span class="c1"># Do not filter states if superbasin_confidence is disabled.</span>
+</span><span data-line="194">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">sb_superbasin_confidence</span><span class="p">:</span>
+</span><span data-line="195">            <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+</span><span data-line="196">                <span class="k">yield</span> <span class="n">state</span>
+</span><span data-line="197">            <span class="k">return</span>
+</span><span data-line="198">        <span class="c1"># The code for an enabled superbasin_confidence feature follows.</span>
+</span><span data-line="199">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">saddle_method</span> <span class="o">==</span> <span class="s2">&quot;dynamics&quot;</span><span class="p">:</span>
+</span><span data-line="200">            <span class="c1"># Use time spent in dynamics.</span>
+</span><span data-line="201">            <span class="k">try</span><span class="p">:</span>
+</span><span data-line="202">                <span class="n">max_time</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
+</span><span data-line="203">                               <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span>
+</span><span data-line="204">                               <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">get_ratetable</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+</span><span data-line="205">            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span data-line="206">                <span class="c1"># There is no state with an exit process, yet.</span>
+</span><span data-line="207">                <span class="n">max_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span data-line="208">            <span class="k">if</span> <span class="n">max_time</span> <span class="o">&lt;</span> <span class="mf">100.0</span><span class="p">:</span>
+</span><span data-line="209">                <span class="c1"># If no state was searched for at least 100 fs, do not</span>
+</span><span data-line="210">                <span class="c1"># filter yet.</span>
+</span><span data-line="211">                <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
 </span><span data-line="212">                    <span class="k">yield</span> <span class="n">state</span>
-</span><span data-line="213">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="214">            <span class="c1"># Use number of searches.</span>
-</span><span data-line="215">            <span class="k">try</span><span class="p">:</span>
-</span><span data-line="216">                <span class="n">max_searches</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_number_of_searches</span><span class="p">()</span>
-</span><span data-line="217">                                   <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span>
-</span><span data-line="218">                                   <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">get_ratetable</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-</span><span data-line="219">            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-</span><span data-line="220">                <span class="c1"># There is no state with an exit process, yet.</span>
-</span><span data-line="221">                <span class="n">max_searches</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span data-line="222">            <span class="k">if</span> <span class="n">max_searches</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-</span><span data-line="223">                <span class="c1"># If no state was searched at least once, do not</span>
-</span><span data-line="224">                <span class="c1"># filter yet.</span>
-</span><span data-line="225">                <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
-</span><span data-line="226">                    <span class="k">yield</span> <span class="n">state</span>
-</span><span data-line="227">            <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
-</span><span data-line="228">                <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">get_ratetable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">or</span> <span class="n">state</span><span class="o">.</span><span class="n">get_number_of_searches</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">*</span><span class="n">max_searches</span><span class="p">:</span>
+</span><span data-line="213">            <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+</span><span data-line="214">                <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">get_ratetable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">or</span> <span class="n">state</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">*</span><span class="n">max_time</span><span class="p">:</span>
+</span><span data-line="215">                    <span class="k">yield</span> <span class="n">state</span>
+</span><span data-line="216">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="217">            <span class="c1"># Use number of searches.</span>
+</span><span data-line="218">            <span class="k">try</span><span class="p">:</span>
+</span><span data-line="219">                <span class="n">max_searches</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_number_of_searches</span><span class="p">()</span>
+</span><span data-line="220">                                   <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span>
+</span><span data-line="221">                                   <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">get_ratetable</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+</span><span data-line="222">            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span data-line="223">                <span class="c1"># There is no state with an exit process, yet.</span>
+</span><span data-line="224">                <span class="n">max_searches</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="225">            <span class="k">if</span> <span class="n">max_searches</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="226">                <span class="c1"># If no state was searched at least once, do not</span>
+</span><span data-line="227">                <span class="c1"># filter yet.</span>
+</span><span data-line="228">                <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
 </span><span data-line="229">                    <span class="k">yield</span> <span class="n">state</span>
-</span><span data-line="230">
+</span><span data-line="230">            <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+</span><span data-line="231">                <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">get_ratetable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">or</span> <span class="n">state</span><span class="o">.</span><span class="n">get_number_of_searches</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">*</span><span class="n">max_searches</span><span class="p">:</span>
+</span><span data-line="232">                    <span class="k">yield</span> <span class="n">state</span>
+</span><span data-line="233">
 <div class="viewcode-block" id="Superbasin.get_confidence">
 <a class="viewcode-back" href="../../apidocs/eon/eon.superbasin.html#eon.superbasin.Superbasin.get_confidence">[docs]</a>
-</span><span data-line="231">    <span class="k">def</span><span class="w"> </span><span class="nf">get_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="232">        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-</span><span data-line="233">                   <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_filtered_states</span><span class="p">())</span></div>
+</span><span data-line="234">    <span class="k">def</span><span class="w"> </span><span class="nf">get_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="235">        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</span><span data-line="236">                   <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_filtered_states</span><span class="p">())</span></div>
 
-</span><span data-line="234">
+</span><span data-line="237">
 <div class="viewcode-block" id="Superbasin.get_lowest_confidence_state">
 <a class="viewcode-back" href="../../apidocs/eon/eon.superbasin.html#eon.superbasin.Superbasin.get_lowest_confidence_state">[docs]</a>
-</span><span data-line="235">    <span class="k">def</span><span class="w"> </span><span class="nf">get_lowest_confidence_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="236">        <span class="c1"># If there are several states with equal confidence, order by</span>
-</span><span data-line="237">        <span class="c1"># time spent searching.  This is needed in the case where we</span>
-</span><span data-line="238">        <span class="c1"># know no exit at all from the superbasin. All states have</span>
-</span><span data-line="239">        <span class="c1"># confidence 0.0 and we keep searching the same state. If that</span>
-</span><span data-line="240">        <span class="c1"># state happens to have no exit but another one has, we will</span>
-</span><span data-line="241">        <span class="c1"># never find anything. When we sort by time spent searching,</span>
-</span><span data-line="242">        <span class="c1"># though, we will cycle the search through all states.</span>
-</span><span data-line="243">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">saddle_method</span> <span class="o">==</span> <span class="s2">&quot;dynamics&quot;</span><span class="p">:</span>
-</span><span data-line="244">            <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_filtered_states</span><span class="p">(),</span>
-</span><span data-line="245">                          <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">state</span><span class="o">.</span><span class="n">get_time</span><span class="p">())</span>
-</span><span data-line="246">                          <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-</span><span data-line="247">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="248">            <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_filtered_states</span><span class="p">(),</span>
-</span><span data-line="249">                          <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">state</span><span class="o">.</span><span class="n">get_number_of_searches</span><span class="p">())</span>
-</span><span data-line="250">                          <span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+</span><span data-line="238">    <span class="k">def</span><span class="w"> </span><span class="nf">get_lowest_confidence_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="239">        <span class="c1"># If there are several states with equal confidence, order by</span>
+</span><span data-line="240">        <span class="c1"># time spent searching.  This is needed in the case where we</span>
+</span><span data-line="241">        <span class="c1"># know no exit at all from the superbasin. All states have</span>
+</span><span data-line="242">        <span class="c1"># confidence 0.0 and we keep searching the same state. If that</span>
+</span><span data-line="243">        <span class="c1"># state happens to have no exit but another one has, we will</span>
+</span><span data-line="244">        <span class="c1"># never find anything. When we sort by time spent searching,</span>
+</span><span data-line="245">        <span class="c1"># though, we will cycle the search through all states.</span>
+</span><span data-line="246">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">saddle_method</span> <span class="o">==</span> <span class="s2">&quot;dynamics&quot;</span><span class="p">:</span>
+</span><span data-line="247">            <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_filtered_states</span><span class="p">(),</span>
+</span><span data-line="248">                          <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">state</span><span class="o">.</span><span class="n">get_time</span><span class="p">())</span>
+</span><span data-line="249">                          <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span><span data-line="250">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="251">            <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_filtered_states</span><span class="p">(),</span>
+</span><span data-line="252">                          <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">state</span><span class="o">.</span><span class="n">get_number_of_searches</span><span class="p">())</span>
+</span><span data-line="253">                          <span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 </div>
 
 </span></pre></div>

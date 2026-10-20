@@ -84,7 +84,6 @@ data-aria-dark="Switch to auto color mode">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
-<li class="toctree-l1 _expand"><a class="reference internal" href="../citing.html">Citing eOn</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/eessi.html">Build develop on EESSI</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/lammps.html">LAMMPS</a></li>
@@ -123,6 +122,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/mpi_potential.html">MPI potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/algorithm_selection.html">Choosing an algorithm</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/main.html">General simulation parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/structure_input.html">Structure input formats</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/potential.html">Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/structure_comparison.html">Structure comparison</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/optimizer.html">Optimizer</a></li>
@@ -178,6 +178,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="design/client/index.html">Client design</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="design/client/types.html">Type system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="design/client/exact-reduction.html">Exact reductions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="design/client/parameters.html">Parameters system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="design/client/neb-modularization.html">NEB modularization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="design/client/confile.html">CON file I/O via readcon-core</a></li>
@@ -200,6 +201,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.contracts.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.contracts.load_outcome.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts.load_outcome</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
@@ -504,9 +509,18 @@ needs a mutex; separate instances run independently. Returns
 per-instance, so <code class="docutils literal notranslate"><span class="pre">isThreadSafe()</span></code> is false and <code class="docutils literal notranslate"><span class="pre">needsPerImageInstance()</span></code>
 is true. Each image owns its own xtb handles.</p></li>
 </ul>
-<p>When <code class="docutils literal notranslate"><span class="pre">needsPerImageInstance()</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code>, NEB creates N+2 potential
-instances (one per image) at construction time. The parallel force
-evaluation then proceeds lock-free.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">needsPerImageInstance()</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code>, NEB gives each interior image
+its own instance at construction time, whether or not <code class="docutils literal notranslate"><span class="pre">[Main]</span> <span class="pre">parallel</span></code>
+is set; the endpoints keep the job’s instance. A kernel that keeps a
+neighbour table then follows one image instead of rebuilding for every
+image of every step: the 601-atom EAM Al band runs 1.68 times faster on
+one core with the same iterations. <code class="docutils literal notranslate"><span class="pre">[Main]</span> <span class="pre">parallel</span></code> only decides whether
+the images run on the image pool, and the threaded evaluation proceeds
+lock-free.</p>
+<p>Every per-image instance comes from <code class="docutils literal notranslate"><span class="pre">eonc::helpers::makeImagePotential</span></code>,
+which clones the job’s potential or builds a new one from the parameters
+inside a <code class="docutils literal notranslate"><span class="pre">PotentialConstructionScope</span></code> on the job’s registry. The force
+calls of every image are then part of <code class="docutils literal notranslate"><span class="pre">total_force_calls</span></code>.</p>
 </section>
 </section>
 <section id="decision-table">
@@ -563,6 +577,14 @@ exercise in checking the kernel and adding a test.</p>
 </span><span data-line="2"><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">numImages</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">.</span><span class="n">main_options</span><span class="p">.</span><span class="n">parallel</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">canParallel</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
 </span></pre></div>
 </div>
+<p>The rgsaddle band (<code class="docutils literal notranslate"><span class="pre">opt_method</span></code> <code class="docutils literal notranslate"><span class="pre">lbfgs</span></code>, <code class="docutils literal notranslate"><span class="pre">fire</span></code> or <code class="docutils literal notranslate"><span class="pre">xtsci</span></code> in a
+<code class="docutils literal notranslate"><span class="pre">-Dwith_rgsaddle=true</span></code> build) asks the client for the images it carries
+through one surface callback. The callback hands them to
+<code class="docutils literal notranslate"><span class="pre">eonc::evaluateTogether</span></code>, which with <code class="docutils literal notranslate"><span class="pre">[Main]</span> <span class="pre">parallel</span></code> runs them on the
+image pool when no two of them share an instance that is unsafe to share.
+A potential that batches still takes them in one <code class="docutils literal notranslate"><span class="pre">forceBatch</span></code>. Each image
+computes exactly what it computes in a serial run, so energies, forces
+and iteration counts do not depend on the number of threads.</p>
 </section>
 </section>
 <section id="affected-code-paths">
@@ -576,9 +598,9 @@ exercise in checking the kernel and adding a test.</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td class="text-left"><p>NEB</p></td>
+<tr class="row-even"><td class="text-left"><p>NEB (host optimizers and the rgsaddle band)</p></td>
 <td class="text-left"><p>N images</p></td>
-<td class="text-left"><p>Each <code class="docutils literal notranslate"><span class="pre">path[i]</span></code> Matter</p></td>
+<td class="text-left"><p>Each interior <code class="docutils literal notranslate"><span class="pre">path[i]</span></code> Matter</p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p>Dimer</p></td>
 <td class="text-left"><p>center + forward</p></td>

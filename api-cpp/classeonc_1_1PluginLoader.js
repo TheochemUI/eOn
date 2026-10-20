@@ -1,8 +1,10 @@
 var classeonc_1_1PluginLoader =
 [
+    [ "Key", "classeonc_1_1PluginLoader_1_1Key.html", "classeonc_1_1PluginLoader_1_1Key" ],
     [ "~PluginLoader", "classeonc_1_1PluginLoader.html#afdfc9e7539756a768eaf0b1adaf924c7", null ],
     [ "PluginLoader", "classeonc_1_1PluginLoader.html#aaad69ae4eb4ee99ddc995e04d924d839", null ],
     [ "PluginLoader", "classeonc_1_1PluginLoader.html#a4b63585096e96d7bf5dd9e48e2f09853", null ],
+    [ "PluginLoader", "classeonc_1_1PluginLoader.html#ae37f362d1693b84ee64e1466fddf3f02", null ],
     [ "add_config_paths", "classeonc_1_1PluginLoader.html#a38fabb0e7664a9f17407bde238b592ae", null ],
     [ "append_paths", "classeonc_1_1PluginLoader.html#a8d3f636e5289cebf412b685a441d70c0", null ],
     [ "instance", "classeonc_1_1PluginLoader.html#a808ed27cbe75f94d1f953a47badee475", null ],

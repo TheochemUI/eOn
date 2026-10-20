@@ -84,7 +84,6 @@ data-aria-dark="Switch to auto color mode">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
-<li class="toctree-l1 _expand"><a class="reference internal" href="../citing.html">Citing eOn</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/eessi.html">Build develop on EESSI</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/lammps.html">LAMMPS</a></li>
@@ -123,6 +122,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="mpi_potential.html">MPI potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="algorithm_selection.html">Choosing an algorithm</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="main.html">General simulation parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="structure_input.html">Structure input formats</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="potential.html">Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="structure_comparison.html">Structure comparison</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
@@ -178,6 +178,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/design/client/index.html">Client design</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/types.html">Type system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/exact-reduction.html">Exact reductions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/parameters.html">Parameters system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
@@ -200,6 +201,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.contracts.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.contracts.load_outcome.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts.load_outcome</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
@@ -345,15 +350,7 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
-<li><a class="reference internal" href="#run-cpmd-through-eon">Run CPMD through eOn</a><ul>
-<li><a class="reference internal" href="#install-the-example-environment">Install the example environment</a></li>
-<li><a class="reference internal" href="#set-the-existing-cpmd-paths">Set the existing CPMD paths</a></li>
-<li><a class="reference internal" href="#evaluate-a-geometry">Evaluate a geometry</a></li>
-<li><a class="reference internal" href="#xyz-frames-units-and-the-periodic-cell">XYZ frames, units and the periodic cell</a></li>
-<li><a class="reference internal" href="#run-a-nudged-elastic-band">Run a nudged elastic band</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#cpmd-method-requirements">CPMD method requirements</a></li>
+<li><a class="reference internal" href="#start-with-a-complete-working-example">Start with a complete working example</a></li>
 <li><a class="reference internal" href="#protocol">Protocol</a></li>
 <li><a class="reference internal" href="#one-directory-per-image">One directory per image</a><ul>
 <li><a class="reference internal" href="#input-file-from-eon-to-extpot">Input file (<code class="docutils literal notranslate"><span class="pre">from_eon_to_extpot</span></code>)</a></li>
@@ -361,15 +358,13 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li><a class="reference internal" href="#configuration">Configuration</a></li>
-<li><a class="reference internal" href="#calculator-units">Calculator units</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#use-an-existing-hpc-cpmd-installation">Use an existing HPC CPMD installation</a></li>
 <li><a class="reference internal" href="#units-and-force-sign">Units and force sign</a></li>
 <li><a class="reference internal" href="#cpmd-on-several-mpi-ranks">CPMD on several MPI ranks</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
-<li><a class="reference internal" href="#empty-cpmd-output-or-a-site-that-requires-an-allocation">Empty CPMD output or a site that requires an allocation</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
 <li><a class="reference internal" href="#performance-considerations">Performance considerations</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
@@ -481,180 +476,113 @@ interface, <code class="docutils literal notranslate"><span class="pre">ext_pot<
 The <a class="reference internal" href="ase_pot.html"><span class="std std-doc">ASE</span></a> potentials require additional compile-time flags
 that are <strong>not</strong> enabled in the <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> build.</p>
 </div>
-<section id="run-cpmd-through-eon">
-<h2>Run CPMD through eOn<a class="headerlink" href="#run-cpmd-through-eon" title="Link to this heading">¶</a></h2>
-<p>Use the runnable example in <code class="docutils literal notranslate"><span class="pre">examples/ext_pot_cpmd</span></code> on the <strong>main</strong> branch.
-It evaluates a geometry with your existing CPMD executable and
-pseudopotentials. Pixi supplies eOn, Python and uv; no cpmdc library or eOn
-source compilation is needed for this external route.</p>
-<p>The example contains:</p>
-<div class="table-wrapper colwidths-auto docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>File</p></th>
-<th class="head"><p>Purpose</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code></p></td>
-<td><p>Installs eOn, Python and uv; defines <code class="docutils literal notranslate"><span class="pre">run</span></code> and <code class="docutils literal notranslate"><span class="pre">neb</span></code> tasks.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.env.example</span></code></p></td>
-<td><p>Executable, pseudopotential, MPI and physical-method settings; copy it to <code class="docutils literal notranslate"><span class="pre">.env</span></code>.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">config.ini</span></code></p></td>
-<td><p>A point job with <code class="docutils literal notranslate"><span class="pre">ext_pot_path</span> <span class="pre">=</span> <span class="pre">./ext_pot</span></code>.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ext_pot</span></code></p></td>
-<td><p>Loads <code class="docutils literal notranslate"><span class="pre">.env</span></code> and invokes the CPMD file-interface wrapper.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cpmd_extpot.py</span></code></p></td>
-<td><p>Renders a single-point deck, runs CPMD and converts its results.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cpmd_launch.sh</span></code></p></td>
-<td><p>Starts CPMD with the compatible MPI runtime.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">run.sh</span></code></p></td>
-<td><p>Converts an input if needed and preserves a separate point-job record.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">con_to_input.py</span></code></p></td>
-<td><p>Reads a CON frame and removes cached evaluations while preserving its geometry and constraints.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<section id="install-the-example-environment">
-<h3>Install the example environment<a class="headerlink" href="#install-the-example-environment" title="Link to this heading">¶</a></h3>
-<p>Use a Linux terminal, including Ubuntu under WSL. Install
-<a class="reference external" href="https://pixi.sh">Pixi</a>, clone the public repository, then install the
-example’s environment:</p>
+<section id="start-with-a-complete-working-example">
+<h2>Start with a complete working example<a class="headerlink" href="#start-with-a-complete-working-example" title="Link to this heading">¶</a></h2>
+<p>This example needs Python and the eOn client only. It evaluates a harmonic
+potential, so it needs no electronic-structure executable, model download or
+pseudopotentials. The commands below target Linux, including Ubuntu under WSL.
+Run calculations inside your site’s compute allocation, not on its login node.</p>
+<p>Install <a class="reference external" href="https://pixi.sh">Pixi</a>, then create a separate workspace:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">curl<span class="w"> </span>-fsSL<span class="w"> </span>https://pixi.sh/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
 </span><span data-line="2"><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.pixi/bin:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
-</span><span data-line="3">git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>main<span class="w"> </span>https://github.com/TheochemUI/eOn.git
-</span><span data-line="4"><span class="nb">cd</span><span class="w"> </span>eOn/examples/ext_pot_cpmd
-</span><span data-line="5">pixi<span class="w"> </span>install
-</span><span data-line="6">pixi<span class="w"> </span>run<span class="w"> </span>eonclient<span class="w"> </span>--version
-</span><span data-line="7">cp<span class="w"> </span>.env.example<span class="w"> </span>.env
+</span><span data-line="3">mkdir<span class="w"> </span>eon-external-demo
+</span><span data-line="4"><span class="nb">cd</span><span class="w"> </span>eon-external-demo
+</span><span data-line="5">pixi<span class="w"> </span>init<span class="w"> </span>--channel<span class="w"> </span>conda-forge
+</span><span data-line="6">pixi<span class="w"> </span>add<span class="w"> </span>eon<span class="w"> </span>python
+</span><span data-line="7">pixi<span class="w"> </span>run<span class="w"> </span>eonclient<span class="w"> </span>--version
 </span></pre></div>
 </div>
-<p>Git is needed for the initial clone. Pixi installs the scientific
-environment without administrator rights. Keep its generated <code class="docutils literal notranslate"><span class="pre">pixi.lock</span></code>
-with <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code> when sharing a resolved environment; another account can
-recreate it using <code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">install</span> <span class="pre">--locked</span></code>. On an HPC system, run calculations
-inside a compute allocation according to the site policy. A workstation
-does not require Slurm.</p>
-</section>
-<section id="set-the-existing-cpmd-paths">
-<h3>Set the existing CPMD paths<a class="headerlink" href="#set-the-existing-cpmd-paths" title="Link to this heading">¶</a></h3>
-<p>Edit <code class="docutils literal notranslate"><span class="pre">.env</span></code>. For an existing Intel oneAPI CPMD installation, the essential
-settings look like:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nv">EON_CLIENT</span><span class="o">=</span>eonclient
-</span><span data-line="2"><span class="nv">CPMD_BIN</span><span class="o">=</span><span class="nv">$HOME</span>/myCPMD/bin/cpmd4.3-oneAPI-2022-AMD.x
-</span><span data-line="3"><span class="nv">PP_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$HOME</span>/pseudo
-</span><span data-line="4"><span class="nv">CPMD_PP</span><span class="o">=</span><span class="s1">&#39;14:Si_MT_BLYP.psp:LMAX=D LOC=D,7:N_MT_BLYP.psp:LMAX=P LOC=P&#39;</span>
-</span><span data-line="5"><span class="nv">CPMD_MPI_LAUNCH</span><span class="o">=</span><span class="s1">&#39;mpirun -np 4&#39;</span>
-</span><span data-line="6"><span class="nv">CPMD_MODULES</span><span class="o">=</span><span class="s1">&#39;intel/oneAPI-2022 intelmpi/oneAPI-2022&#39;</span>
-</span><span data-line="7"><span class="nv">CPMD_FUNCTIONAL</span><span class="o">=</span>BLYP
-</span><span data-line="8"><span class="nv">CPMD_CUTOFF</span><span class="o">=</span><span class="m">70</span>
-</span><span data-line="9"><span class="nv">CPMD_CONVERGENCE</span><span class="o">=</span>1e-6
+<p><code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">add</span></code> installs the client and Python and records their resolved packages
+in <code class="docutils literal notranslate"><span class="pre">pixi.lock</span></code>. Keep <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code> and <code class="docutils literal notranslate"><span class="pre">pixi.lock</span></code> together; a recipient can
+recreate the environment with <code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">install</span> <span class="pre">--locked</span></code>. No compiler or MPI
+installation is needed for this file-interface example.</p>
+<p>Save the following executable as <code class="docutils literal notranslate"><span class="pre">harmonic_extpot.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="ch">#!/usr/bin/env python3</span>
+</span><span data-line="2"><span class="sd">&quot;&quot;&quot;Harmonic energy in eV and its negative derivative in eV/Angstrom.&quot;&quot;&quot;</span>
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="n">rows</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span>
+</span><span data-line="7">        <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;from_eon_to_extpot&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+</span><span data-line="8"><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">4</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">[:</span><span class="mi">3</span><span class="p">]):</span>
+</span><span data-line="9">    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Expected three box rows followed by at least one atom&quot;</span><span class="p">)</span>
+</span><span data-line="10"><span class="n">positions</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="11"><span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">[</span><span class="mi">3</span><span class="p">:]:</span>
+</span><span data-line="12">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+</span><span data-line="13">        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Expected atomic_number x y z&quot;</span><span class="p">)</span>
+</span><span data-line="14">    <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span data-line="15">    <span class="n">xyz</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span>
+</span><span data-line="16">    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">xyz</span><span class="p">):</span>
+</span><span data-line="17">        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Non-finite coordinate&quot;</span><span class="p">)</span>
+</span><span data-line="18">    <span class="n">positions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span>
+</span><span data-line="19"><span class="n">k</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># eV/Angstrom squared</span>
+</span><span data-line="20"><span class="n">energy</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">k</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="k">for</span> <span class="n">xyz</span> <span class="ow">in</span> <span class="n">positions</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xyz</span><span class="p">)</span>
+</span><span data-line="21"><span class="n">forces</span> <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="n">k</span><span class="o">*</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xyz</span><span class="p">]</span> <span class="k">for</span> <span class="n">xyz</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">]</span>
+</span><span data-line="22"><span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;from_extpot_to_eon&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">output</span><span class="p">:</span>
+</span><span data-line="23">    <span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">energy</span><span class="si">:</span><span class="s2">.15g</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="24">    <span class="k">for</span> <span class="n">force</span> <span class="ow">in</span> <span class="n">forces</span><span class="p">:</span>
+</span><span data-line="25">        <span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">.15g</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">force</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 </span></pre></div>
 </div>
-<p>Replace the paths, module names, pseudopotential mapping and ranks with
-the actual CPMD installation. The executable and licensed pseudopotentials
-are supplied by your group, not downloaded by Pixi. Every element in the
-structure needs a mapping in <code class="docutils literal notranslate"><span class="pre">CPMD_PP</span></code>. Its third field is CPMD’s
-angular-momentum/options line; the wrapper uses Kleinman–Bylander
-pseudopotentials.</p>
-<p>Leave <code class="docutils literal notranslate"><span class="pre">CPMD_MODULES=''</span></code> on a workstation where the compatible runtime is
-already available. A binary linked with Intel MPI needs the matching
-Intel MPI launcher; another environment’s Open MPI is not a substitute.
-When modules are requested, only the CPMD child clears inherited library
-overrides and loads them. The parent eOn client keeps its Pixi libraries.</p>
-<p><code class="docutils literal notranslate"><span class="pre">.env</span></code> is sourced by Bash: values set there take precedence over the
-environment inherited by the launcher. Keep account paths in <code class="docutils literal notranslate"><span class="pre">.env</span></code>,
-which is ignored by Git.</p>
-</section>
-<section id="evaluate-a-geometry">
-<h3>Evaluate a geometry<a class="headerlink" href="#evaluate-a-geometry" title="Link to this heading">¶</a></h3>
-<p>From <code class="docutils literal notranslate"><span class="pre">examples/ext_pot_cpmd</span></code>, use the same command for XYZ or CON input:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pixi<span class="w"> </span>run<span class="w"> </span>run<span class="w"> </span>/absolute/path/input.xyz
-</span><span data-line="2">pixi<span class="w"> </span>run<span class="w"> </span>run<span class="w"> </span>/absolute/path/pos.con
+<p>Create <code class="docutils literal notranslate"><span class="pre">pos.con</span></code>, with one silicon atom at (1, 0, 0) Angstrom in a 20 Angstrom
+cube. The two blank lines between the cell angles and component count are
+part of this structure format:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span data-line="1">One atom harmonic example
+</span><span data-line="2">0.0
+</span><span data-line="3">20.0 20.0 20.0
+</span><span data-line="4">90.0 90.0 90.0
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7">1
+</span><span data-line="8">1
+</span><span data-line="9">28.0855
+</span><span data-line="10">Si
+</span><span data-line="11">Coordinates of Component 1
+</span><span data-line="12">1.0 0.0 0.0 0 0
 </span></pre></div>
 </div>
-<p>The CON route uses <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">--script</span> <span class="pre">con_to_input.py</span></code> with pinned readcon.
-It preserves coordinates, cell, atom IDs, masses and fixed flags, and clears
-stored energy and forces so your configured CPMD calculation is evaluated.
-Set <code class="docutils literal notranslate"><span class="pre">CON_FRAME=0</span></code> in <code class="docutils literal notranslate"><span class="pre">.env</span></code> for the first frame, or <code class="docutils literal notranslate"><span class="pre">CON_FRAME=-1</span></code> for the
-last. <code class="docutils literal notranslate"><span class="pre">pos.source.json</span></code> records the frame, input hash and cache removal.</p>
-<p>Each invocation prints <code class="docutils literal notranslate"><span class="pre">Record:</span> <span class="pre">.../runs/point-...</span></code>, evaluates one geometry,
-and prints a finite energy in eV when successful. The record retains
-<code class="docutils literal notranslate"><span class="pre">pos.con</span></code>, <code class="docutils literal notranslate"><span class="pre">config.ini</span></code>, <code class="docutils literal notranslate"><span class="pre">eon.log</span></code> and <code class="docutils literal notranslate"><span class="pre">results.dat</span></code>. CPMD input, output and
-<code class="docutils literal notranslate"><span class="pre">GEOMETRY</span></code> remain in its external-potential exchange directory. A failed
-client or a non-finite energy causes a nonzero exit; inspect the preserved
-logs rather than using a partial result.</p>
-<p>For the supplied CON example, the static configuration can also be run
-directly from this directory after editing <code class="docutils literal notranslate"><span class="pre">.env</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pixi<span class="w"> </span>run<span class="w"> </span>eonclient<span class="w"> </span>&gt;<span class="w"> </span>eon.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
-</span><span data-line="2">cat<span class="w"> </span>results.dat
+<p>Make the wrapper executable, create the configuration and evaluate the point:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">chmod<span class="w"> </span>+x<span class="w"> </span>harmonic_extpot.py
+</span><span data-line="2">cat<span class="w"> </span>&gt;<span class="w"> </span>config.ini<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+</span><span data-line="3"><span class="s">[Main]</span>
+</span><span data-line="4"><span class="s">job = point</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="s">[Potential]</span>
+</span><span data-line="7"><span class="s">potential = ext_pot</span>
+</span><span data-line="8"><span class="s">ext_pot_path = $PWD/harmonic_extpot.py</span>
+</span><span data-line="9"><span class="s">EOF</span>
+</span><span data-line="10">pixi<span class="w"> </span>run<span class="w"> </span>eonclient<span class="w"> </span>&gt;<span class="w"> </span>eon.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</span><span data-line="11">cat<span class="w"> </span>results.dat
 </span></pre></div>
 </div>
-<p>This direct command uses the existing <code class="docutils literal notranslate"><span class="pre">pos.con</span></code> and <code class="docutils literal notranslate"><span class="pre">config.ini</span></code> in place;
-<code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">run</span> <span class="pre">run</span></code> creates a separate record and handles an arbitrary input.
-Use the launcher for a CON containing stored energies and forces: an
-installed client can otherwise reuse that stored evaluation.
-For a file route using four CPMD ranks, reserve four ranks for each
-concurrent calculator. The eOn client itself stays one process.</p>
-</section>
-<section id="xyz-frames-units-and-the-periodic-cell">
-<h3>XYZ frames, units and the periodic cell<a class="headerlink" href="#xyz-frames-units-and-the-periodic-cell" title="Link to this heading">¶</a></h3>
-<p>The XYZ launcher uses <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">--script</span> <span class="pre">xyz_to_con.py</span></code> with the pinned
-<code class="docutils literal notranslate"><span class="pre">readcon-chemfiles==0.17.1</span></code> dependency to read XYZ and write CON. The first
-conversion needs network access unless the wheel is cached. Prepare that
-cache with an actual input on a host where dependency installation is
-permitted:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pixi<span class="w"> </span>run<span class="w"> </span>uv<span class="w"> </span>run<span class="w"> </span>--script<span class="w"> </span>xyz_to_con.py<span class="w"> </span>/absolute/path/input.xyz<span class="w"> </span>/tmp/input.con
+<p>The <code class="docutils literal notranslate"><span class="pre">potential_energy</span></code> result is <strong>0.5 eV</strong>. The wrapper returns one force,
+<strong>(-1, 0, 0) eV/Angstrom</strong>. This potential is a protocol demonstration:
+its origin is fixed and it does not model periodic interatomic interactions.
+The exact result-file formatting depends on the installed eOn release.</p>
+<p>For example, the point check prints these result entries:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span data-line="1">GOOD termination_reason_text
+</span><span data-line="2">EXT_POT potential_type
+</span><span data-line="3">1 total_force_calls
+</span><span data-line="4">5.000000000000e-01 potential_energy
+</span><span data-line="5">1.000000000000e+00 Max_Force
 </span></pre></div>
 </div>
-<p>Set <code class="docutils literal notranslate"><span class="pre">XYZ_FRAME=-1</span></code> for the last frame, or a zero-based nonnegative frame
-index. <code class="docutils literal notranslate"><span class="pre">XYZ_UNITS=angstrom</span></code> is the default; <code class="docutils literal notranslate"><span class="pre">XYZ_UNITS=bohr</span></code> converts
-coordinates and a metadata cell to Angstrom. An explicit
-<code class="docutils literal notranslate"><span class="pre">CELL_ANGSTROM='9.984</span> <span class="pre">19.968</span> <span class="pre">14.976'</span></code> is always in Angstrom. Edit these
-values in <code class="docutils literal notranslate"><span class="pre">.env</span></code> before launching.</p>
-<p>A positive cell in extended XYZ metadata is preserved unless
-<code class="docutils literal notranslate"><span class="pre">CELL_ANGSTROM</span></code> overrides it. This wrapper requires an orthorhombic box.
-For plain XYZ with no cell, conversion prints a <strong>LOUD WARNING</strong> and
-infers a box from the coordinate bounds with <code class="docutils literal notranslate"><span class="pre">VACUUM_ANGSTROM=10</span></code> on
-each side. It translates the coordinates into that artificial box;
-<strong>this does not recover the original bulk cell</strong>. Supply the actual
-periodic cell for a material calculation. <code class="docutils literal notranslate"><span class="pre">pos.source.json</span></code> records
-the frame, input units, cell source, translation, atom IDs and the
-mapping between CON and original XYZ order.</p>
-</section>
-<section id="run-a-nudged-elastic-band">
-<h3>Run a nudged elastic band<a class="headerlink" href="#run-a-nudged-elastic-band" title="Link to this heading">¶</a></h3>
-<p>Use two endpoints with the same atoms, atom correspondence and periodic
-cell, relaxed on the same physical Hamiltonian:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pixi<span class="w"> </span>run<span class="w"> </span>neb<span class="w"> </span>/absolute/path/reactant.xyz<span class="w"> </span>/absolute/path/product.xyz
+<p>To check the wrapper independently, run it from a separate directory
+containing this <code class="docutils literal notranslate"><span class="pre">from_eon_to_extpot</span></code> file:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span data-line="1">20 0 0
+</span><span data-line="2">0 20 0
+</span><span data-line="3">0 0 20
+</span><span data-line="4">14 1 0 0
 </span></pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">neb</span></code> task uses <code class="docutils literal notranslate"><span class="pre">run_neb.sh</span></code> and <code class="docutils literal notranslate"><span class="pre">config-neb.ini</span></code>; XYZ endpoints use
-the same conversion and cell settings. Confirm endpoint identities and
-the real cell before launching. Reserve resources for the number of
-concurrent images times the CPMD rank count, and inspect the band’s
-termination and force convergence before treating its peak as a barrier.</p>
-</section>
-</section>
-<section id="cpmd-method-requirements">
-<h2>CPMD method requirements<a class="headerlink" href="#cpmd-method-requirements" title="Link to this heading">¶</a></h2>
-<p>The distributed settings use a neutral BLYP single-point calculation.
-A charged, spin-polarized, dispersion-corrected or constrained system
-needs a deck/wrapper that explicitly retains those settings. Replacing
-its geometry alone does not reproduce that Hamiltonian. Check charge,
-occupations, functional, dispersion, pseudopotentials, cell, cutoff and
-SCF convergence against the actual source calculation.</p>
-<p>The <a class="reference internal" href="rgpot_pot.html"><span class="std std-doc">RGPOT route</span></a> loads cpmdc in process and uses a
-separate CPMD method message. This external executable route reads its
-own settings from <code class="docutils literal notranslate"><span class="pre">.env</span></code>; the two configurations are distinct inputs.</p>
+<p>Its <code class="docutils literal notranslate"><span class="pre">from_extpot_to_eon</span></code> must contain:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span data-line="1">0.5
+</span><span data-line="2">-1 -0 -0
+</span></pre></div>
+</div>
+<p>Signed zero is equivalent to zero. A successful wrapper-only check tests
+the file protocol; the client run also tests the structure, configuration
+and executable lookup.</p>
 </section>
 <section id="protocol">
 <h2>Protocol<a class="headerlink" href="#protocol" title="Link to this heading">¶</a></h2>
@@ -739,8 +667,120 @@ configuration into per-job scratch directories. Use <strong>absolute paths</stro
 <code class="docutils literal notranslate"><span class="pre">ext_pot_path</span></code> and for any model files referenced inside your wrapper.</p>
 </div>
 </section>
-<section id="calculator-units">
-<h2>Calculator units<a class="headerlink" href="#calculator-units" title="Link to this heading">¶</a></h2>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
+<section id="use-an-existing-hpc-cpmd-installation">
+<h3>Use an existing HPC CPMD installation<a class="headerlink" href="#use-an-existing-hpc-cpmd-installation" title="Link to this heading">¶</a></h3>
+<p>Keep the eOn client in its Pixi environment and use the site’s existing CPMD
+executable for the expensive force evaluations. You need all of:</p>
+<ol class="arabic simple">
+<li><p>The absolute path to a working <code class="docutils literal notranslate"><span class="pre">cpmd.x</span></code> (or site-named CPMD executable).</p></li>
+<li><p>Its compatible MPI runtime and the modules used to run it.</p></li>
+<li><p>The licensed pseudopotentials for every element in <code class="docutils literal notranslate"><span class="pre">pos.con</span></code>, with the
+correct functional and angular-momentum choices.</p></li>
+<li><p>A periodic <code class="docutils literal notranslate"><span class="pre">pos.con</span></code>, the wrapper script and <code class="docutils literal notranslate"><span class="pre">config.ini</span></code>.</p></li>
+</ol>
+<p>For example, clone the public eOn sources using Pixi’s Git. This supplies
+the CPMD wrapper and a small silicon-vacancy structure; it does not build
+or install another eOn client:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pixi<span class="w"> </span>add<span class="w"> </span>git
+</span><span data-line="2">pixi<span class="w"> </span>run<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>develop<span class="w"> </span>https://github.com/TheochemUI/eOn.git<span class="w"> </span>eon-source
+</span><span data-line="3">pixi<span class="w"> </span>run<span class="w"> </span>git<span class="w"> </span>-C<span class="w"> </span>eon-source<span class="w"> </span>rev-parse<span class="w"> </span>HEAD
+</span><span data-line="4">cp<span class="w"> </span>eon-source/examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py<span class="w"> </span>./cpmd_extpot.py
+</span><span data-line="5">cp<span class="w"> </span>eon-source/examples/akmc-cpmd-slurm/pos.con<span class="w"> </span>./pos.con
+</span><span data-line="6">chmod<span class="w"> </span>+x<span class="w"> </span>cpmd_extpot.py
+</span></pre></div>
+</div>
+<p>Record the printed source commit alongside the Pixi lockfile. The silicon
+example contains seven atoms and requires a silicon pseudopotential; it is
+separate from the harmonic demonstration.</p>
+<p>An executable built with Intel MPI must use its matching Intel MPI launcher.
+Do not send it through Open MPI installed for another calculator. A launcher
+script can restore the site’s compiler/MPI modules in the CPMD child process
+without replacing the eOn environment. Save this as <code class="docutils literal notranslate"><span class="pre">launch-cpmd-mpi.sh</span></code> and
+replace the module initialization and module names with those from the
+working CPMD batch script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="ch">#!/usr/bin/env bash</span>
+</span><span data-line="2"><span class="nb">set</span><span class="w"> </span>-euo<span class="w"> </span>pipefail
+</span><span data-line="3"><span class="nb">source</span><span class="w"> </span>/etc/profile.d/modules.sh
+</span><span data-line="4">module<span class="w"> </span>purge
+</span><span data-line="5"><span class="nb">unset</span><span class="w"> </span>LD_LIBRARY_PATH<span class="w"> </span>LD_PRELOAD<span class="w"> </span>LIBRARY_PATH<span class="w"> </span>CPATH<span class="w"> </span>C_INCLUDE_PATH<span class="w"> </span>CPLUS_INCLUDE_PATH
+</span><span data-line="6">module<span class="w"> </span>load<span class="w"> </span>intel/oneAPI-2022<span class="w"> </span>intelmpi/oneAPI-2022
+</span><span data-line="7"><span class="nb">exec</span><span class="w"> </span>mpirun<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span>
+</span></pre></div>
+</div>
+<p>The module initialization path is site-specific. Add further modules only
+when that CPMD binary needs them. Verify this launcher on the allocated node;
+the <code class="docutils literal notranslate"><span class="pre">mpirun</span></code> it selects must belong to the MPI used to link CPMD.
+The library-path cleanup belongs in this child launcher before loading its
+modules; applying it to the parent process can break the eOn installation.</p>
+<p>From the workspace root, set the actual executable and pseudopotential
+locations. These are examples of account-relative paths, not files supplied
+by Pixi:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">chmod<span class="w"> </span>+x<span class="w"> </span>launch-cpmd-mpi.sh
+</span><span data-line="2"><span class="nb">export</span><span class="w"> </span><span class="nv">CPMD_BIN</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/myCPMD/bin/cpmd4.3-oneAPI-2022-AMD.x&quot;</span>
+</span><span data-line="3"><span class="nb">export</span><span class="w"> </span><span class="nv">PP_LIBRARY_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/pseudo/&quot;</span>
+</span><span data-line="4"><span class="nb">export</span><span class="w"> </span><span class="nv">CPMD_LAUNCH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/launch-cpmd-mpi.sh -np 4&quot;</span>
+</span><span data-line="5"><span class="nb">export</span><span class="w"> </span><span class="nv">CPMD_PP</span><span class="o">=</span><span class="s2">&quot;14:Si_MT_BLYP.psp:LMAX=D LOC=D&quot;</span>
+</span><span data-line="6"><span class="nb">export</span><span class="w"> </span><span class="nv">CPMD_CUTOFF</span><span class="o">=</span><span class="m">70</span>
+</span><span data-line="7"><span class="nb">export</span><span class="w"> </span><span class="nv">CPMD_FUNCTIONAL</span><span class="o">=</span>BLYP
+</span><span data-line="8"><span class="nb">export</span><span class="w"> </span><span class="nv">CPMD_CONVERGENCE</span><span class="o">=</span>1e-6
+</span><span data-line="9"><span class="nb">export</span><span class="w"> </span><span class="nv">OMP_NUM_THREADS</span><span class="o">=</span><span class="m">1</span>
+</span><span data-line="10"><span class="nb">test</span><span class="w"> </span>-x<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CPMD_BIN</span><span class="s2">&quot;</span>
+</span><span data-line="11"><span class="nb">test</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">PP_LIBRARY_PATH</span><span class="si">}</span><span class="s2">Si_MT_BLYP.psp&quot;</span>
+</span><span data-line="12">cat<span class="w"> </span>&gt;<span class="w"> </span>config.ini<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+</span><span data-line="13"><span class="s">[Main]</span>
+</span><span data-line="14"><span class="s">job = point</span>
+</span><span data-line="15">
+</span><span data-line="16"><span class="s">[Potential]</span>
+</span><span data-line="17"><span class="s">potential = ext_pot</span>
+</span><span data-line="18"><span class="s">ext_pot_path = $PWD/cpmd_extpot.py</span>
+</span><span data-line="19"><span class="s">EOF</span>
+</span><span data-line="20">pixi<span class="w"> </span>run<span class="w"> </span>eonclient<span class="w"> </span>&gt;<span class="w"> </span>eon-cpmd.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</span><span data-line="21">cat<span class="w"> </span>results.dat
+</span></pre></div>
+</div>
+<p>Run this command inside a compute allocation with four MPI tasks available
+for CPMD. The eOn client is one process; its wrapper launches those four
+CPMD processes. For Slurm, request a node with <code class="docutils literal notranslate"><span class="pre">--ntasks=4</span></code> and enter the
+node using the site’s supported interactive-job procedure. A site that
+requires <code class="docutils literal notranslate"><span class="pre">srun</span></code> instead of <code class="docutils literal notranslate"><span class="pre">mpirun</span></code> needs a launcher adapted to its MPI/PMI
+configuration. Do not start four copies of <code class="docutils literal notranslate"><span class="pre">eonclient</span></code> for this file route.</p>
+<p>For the Intel oneAPI 2022 setup, the source tree also supplies a complete
+Slurm job at <code class="docutils literal notranslate"><span class="pre">examples/akmc-cpmd-slurm/run_point.sbatch</span></code>. From the workspace
+root, copy it and edit its <code class="docutils literal notranslate"><span class="pre">#SBATCH</span></code> partition/account and the child
+launcher’s module names to match the site. Submit through the Pixi
+environment so the installed client and Python are inherited by the job:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">cp<span class="w"> </span>eon-source/examples/akmc-cpmd-slurm/run_point.sbatch<span class="w"> </span>./run_point.sbatch
+</span><span data-line="2"><span class="c1"># Edit the scheduler directives and site module names in run_point.sbatch.</span>
+</span><span data-line="3"><span class="nb">export</span><span class="w"> </span><span class="nv">EON_REPO</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/eon-source&quot;</span>
+</span><span data-line="4">pixi<span class="w"> </span>run<span class="w"> </span>sbatch<span class="w"> </span>./run_point.sbatch<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/pos.con&quot;</span>
+</span></pre></div>
+</div>
+<p>Keep <code class="docutils literal notranslate"><span class="pre">CPMD_BIN</span></code>, <code class="docutils literal notranslate"><span class="pre">PP_LIBRARY_PATH</span></code> and the method variables exported as
+above. The script’s own defaults are the public Si7 vacancy demonstration
+at 20 Ry with <code class="docutils literal notranslate"><span class="pre">LMAX=P</span></code>; an exported override changes those defaults.
+Slurm prints <code class="docutils literal notranslate"><span class="pre">Submitted</span> <span class="pre">batch</span> <span class="pre">job</span> <span class="pre">&lt;jobid&gt;</span></code>. The calculation’s record is
+<code class="docutils literal notranslate"><span class="pre">eon-cpmd-point-&lt;jobid&gt;/</span></code>, including the copied geometry, configuration,
+wrapper and <code class="docutils literal notranslate"><span class="pre">eon.log</span></code>. The scheduler output prints the converted finite
+energy when the point calculation succeeds. The script leaves that
+directory in the submission filesystem for inspection.</p>
+<p>The result contains a finite <code class="docutils literal notranslate"><span class="pre">potential_energy</span></code>. Its numerical value depends
+on the supplied pseudopotential, cutoff, geometry and convergence settings;
+the relaxed structure’s recorded example energy is not a universal check
+at another cutoff. Inspect the exchange directory’s <code class="docutils literal notranslate"><span class="pre">cpmd.out</span></code>, <code class="docutils literal notranslate"><span class="pre">input</span></code>,
+<code class="docutils literal notranslate"><span class="pre">GEOMETRY</span></code> and <code class="docutils literal notranslate"><span class="pre">RESTART.1</span></code> if the call fails. Keep these with the result when
+reporting an error.</p>
+<p>The supplied wrapper builds a neutral, single-point BLYP deck by default.
+Its environment controls listed below do <strong>not</strong> provide a complete method
+description for a charged, spin-polarized, dispersion-corrected or constrained
+system. Such a calculation requires a wrapper/deck that explicitly retains
+those physical settings. A dynamics or restart deck cannot be substituted
+without checking its task, charge, cell, functional, dispersion, species,
+occupations and SCF convergence. The in-process
+<a class="reference internal" href="rgpot_pot.html"><span class="std std-doc">RGPOT route</span></a> uses a separate serialized CPMD method
+message; it does not read this wrapper’s environment as that message.</p>
+</section>
 <section id="units-and-force-sign">
 <h3>Units and force sign<a class="headerlink" href="#units-and-force-sign" title="Link to this heading">¶</a></h3>
 <p>The external interface expects the <strong>total energy in eV</strong>, positions and box
@@ -758,12 +798,10 @@ the printed CPMD table does not change what <code class="docutils literal notran
 </section>
 <section id="cpmd-on-several-mpi-ranks">
 <h3>CPMD on several MPI ranks<a class="headerlink" href="#cpmd-on-several-mpi-ranks" title="Link to this heading">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">examples/ext_pot_cpmd/ext_pot</span></code> invokes the example’s own
-<code class="docutils literal notranslate"><span class="pre">cpmd_extpot.py</span></code>, which answers each call with a <code class="docutils literal notranslate"><span class="pre">cpmd.x</span></code> wavefunction
-optimisation on several MPI ranks. It reads its settings from the
-environment. The table lists the wrapper’s fallback values when a variable
-is absent. The supplied <code class="docutils literal notranslate"><span class="pre">.env.example</span></code> explicitly sets the cutoff to
-<strong>70 Ry</strong>, overriding the raw wrapper’s <strong>30 Ry</strong> fallback:</p>
+<p><code class="docutils literal notranslate"><span class="pre">examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py</span></code> answers each call with a
+<code class="docutils literal notranslate"><span class="pre">cpmd.x</span></code> wavefunction optimisation on the MPI ranks that <code class="docutils literal notranslate"><span class="pre">CPMD_LAUNCH</span></code>
+starts. It reads its
+settings from the environment:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -809,18 +847,42 @@ is absent. The supplied <code class="docutils literal notranslate"><span class="
 <td><p>shared directory of converged <code class="docutils literal notranslate"><span class="pre">RESTART.1</span></code> files that seed a job’s first call</p></td>
 <td><p>unset</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CPMDC_RESTART</span></code></p></td>
+<td><p>path to the <code class="docutils literal notranslate"><span class="pre">cpmdc-restart</span></code> tool; a pooled <code class="docutils literal notranslate"><span class="pre">RESTART.1</span></code> seeds a call only when <code class="docutils literal notranslate"><span class="pre">cpmdc-restart</span> <span class="pre">info</span></code> reports the same atom count, species counts and cutoff</p></td>
+<td><p>unset, no check</p></td>
+</tr>
 </tbody>
 </table>
 </div>
-<p>The runnable point and NEB commands above use this wrapper. The older
-<code class="docutils literal notranslate"><span class="pre">examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py</span></code> campaign wrapper uses the
-same protocol for process searches submitted through the cluster communicator (see
-<a class="reference internal" href="communicator.html"><span class="std std-doc">Communicator</span></a>). Its scheduler setup is separate
-from the workstation launcher in <code class="docutils literal notranslate"><span class="pre">examples/ext_pot_cpmd</span></code>.</p>
+<p>A single point, a minimization or a nudged elastic band on one machine
+needs nothing else than the script as <code class="docutils literal notranslate"><span class="pre">ext_pot_path</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nb">export</span><span class="w"> </span><span class="nv">CPMD_BIN</span><span class="o">=</span>/path/to/cpmd.x<span class="w"> </span><span class="nv">PP_LIBRARY_PATH</span><span class="o">=</span>/path/to/pseudopotentials/
+</span><span data-line="2"><span class="nb">export</span><span class="w"> </span><span class="nv">CPMD_LAUNCH</span><span class="o">=</span><span class="s2">&quot;mpirun -np 4 --bind-to none&quot;</span><span class="w"> </span><span class="nv">CPMD_CUTOFF</span><span class="o">=</span><span class="m">70</span>
+</span><span data-line="3"><span class="nb">export</span><span class="w"> </span><span class="nv">CPMD_PP</span><span class="o">=</span><span class="s2">&quot;14:Si_MT_BLYP.psp:LMAX=D,7:N_MT_BLYP.psp:LMAX=P&quot;</span>
+</span><span data-line="4">cat<span class="w"> </span>&gt;<span class="w"> </span>config.ini<span class="w"> </span><span class="s">&lt;&lt;&#39;EOF&#39;</span>
+</span><span data-line="5"><span class="s">[Main]</span>
+</span><span data-line="6"><span class="s">job = point</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="s">[Potential]</span>
+</span><span data-line="9"><span class="s">potential = ext_pot</span>
+</span><span data-line="10"><span class="s">ext_pot_path = /absolute/path/to/eOn/examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py</span>
+</span><span data-line="11"><span class="s">EOF</span>
+</span><span data-line="12">eonclient
+</span></pre></div>
+</div>
+<p>Inside a Slurm job, ask for as many tasks as <code class="docutils literal notranslate"><span class="pre">CPMD_LAUNCH</span></code> starts ranks
+(<code class="docutils literal notranslate"><span class="pre">--ntasks=4</span></code>), or OpenMPI finds one slot and refuses <code class="docutils literal notranslate"><span class="pre">-np</span> <span class="pre">4</span></code>.
+<code class="docutils literal notranslate"><span class="pre">--bind-to</span> <span class="pre">none</span></code> keeps it from refusing to bind when the allocation is
+hardware threads rather than physical cores.</p>
+<p><code class="docutils literal notranslate"><span class="pre">examples/akmc-cpmd-slurm</span></code> runs adaptive kinetic Monte Carlo on a silicon
+vacancy with the same script. The <code class="docutils literal notranslate"><span class="pre">cluster</span></code> communicator submits each
+process search as a Slurm job (see <a class="reference internal" href="communicator.html"><span class="std std-doc">Communicator</span></a>),
+and inside the job <code class="docutils literal notranslate"><span class="pre">ext_pot</span></code> calls <code class="docutils literal notranslate"><span class="pre">cpmd_extpot.py</span></code>. The client stays one
+process; the ranks belong to CPMD alone.</p>
 <p>What the script hands CPMD and reads back:</p>
 <ul class="simple">
-<li><p>The deck says <code class="docutils literal notranslate"><span class="pre">ANGSTROM</span></code>, so CPMD converts eOn’s positions with its own
-Bohr (0.529177210859 A). CPMD answers in Hartree and Hartree/Bohr, and the
+<li><p>The deck says <code class="docutils literal notranslate"><span class="pre">ANGSTROM</span></code>. CPMD then converts eOn’s positions with its
+own Bohr, 0.529177210859 A. CPMD answers in Hartree and Hartree/Bohr. The
 script converts with CODATA 2018 (27.211386245988 eV, 0.529177210903 A),
 as the in-process <a class="reference internal" href="rgpot_pot.html"><span class="std std-doc">RGPOT</span></a> route does. The two Bohr
 values differ by 8.3e-11 relative; <code class="docutils literal notranslate"><span class="pre">client/validation/cpmd_units.py</span></code>
@@ -885,34 +947,6 @@ after the first in a job restarts from the previous wavefunction.</p>
 it must not invent an energy or reuse a stale response. Return finite values
 and preserve diagnostics. A point job validates setup before a minimization,
 NEB or aKMC run makes many expensive calls.</p>
-<section id="empty-cpmd-output-or-a-site-that-requires-an-allocation">
-<h3>Empty CPMD output or a site that requires an allocation<a class="headerlink" href="#empty-cpmd-output-or-a-site-that-requires-an-allocation" title="Link to this heading">¶</a></h3>
-<p>The CPMD example launcher writes <code class="docutils literal notranslate"><span class="pre">CPMD</span> <span class="pre">launcher:</span> <span class="pre">initializing</span></code>, the module
-loading phase and the selected executable to <code class="docutils literal notranslate"><span class="pre">cpmd.out</span></code>. If these lines
-are absent, check that the checkout contains the current launcher and
-that the inspected file belongs to the failed call. eOn names exchange
-directories <code class="docutils literal notranslate"><span class="pre">extpot_&lt;process-id&gt;_&lt;call-id&gt;</span></code>; use the directory printed in
-the error rather than guessing a hidden directory name. If initialization
-appears but execution does not, inspect the module-loading error. If
-execution appears, inspect the MPI/runtime diagnostics that follow it.
-An empty file alone does not identify an SCF failure.</p>
-<p>A workstation can run the example directly. On a cluster whose MPI launch
-requires a compute allocation, submit the entire eOn point job from
-<code class="docutils literal notranslate"><span class="pre">examples/ext_pot_cpmd</span></code>, with the site’s partition and account:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">sbatch<span class="w"> </span>--partition<span class="o">=</span>YOUR_PARTITION<span class="w"> </span>--account<span class="o">=</span>YOUR_ACCOUNT<span class="w"> </span>submit.sbatch
-</span></pre></div>
-</div>
-<p>The script requests four MPI ranks and runs <code class="docutils literal notranslate"><span class="pre">run.sh</span></code> inside the example’s
-Pixi environment. It finds Pixi on <code class="docutils literal notranslate"><span class="pre">PATH</span></code> or at <code class="docutils literal notranslate"><span class="pre">$HOME/.pixi/bin/pixi</span></code>;
-set <code class="docutils literal notranslate"><span class="pre">PIXI_BIN</span></code> to an absolute executable path for another installation.
-Its job output is
-<code class="docutils literal notranslate"><span class="pre">eon-cpmd-&lt;job-id&gt;.out</span></code>, and <code class="docutils literal notranslate"><span class="pre">run.sh</span></code> prints the record directory. Edit the
-rank request and <code class="docutils literal notranslate"><span class="pre">CPMD_MPI_LAUNCH</span></code> together if the calculation needs a
-different rank count. A batch script that runs a generated <code class="docutils literal notranslate"><span class="pre">cpmd.inp</span></code>
-directly checks CPMD startup, but does not resume an eOn process that has
-already exited. Run eOn inside the allocation to complete the external
-potential exchange.</p>
-</section>
 </section>
 <section id="performance-considerations">
 <h2>Performance considerations<a class="headerlink" href="#performance-considerations" title="Link to this heading">¶</a></h2>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['procedures_0',['Client procedures',['../group__Jobs.html',1,'']]]
+  ['structure_20optimizers_0',['Structure optimizers',['../group__Optimizers.html',1,'']]]
 ];

@@ -243,6 +243,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('MetatomicPoten
 <code>#include &quot;vesin.h&quot;</code><br />
 <code>#include &lt;torch/csrc/jit/runtime/graph_executor.h&gt;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;random&gt;</code><br />
 <code>#include &lt;sstream&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
@@ -278,12 +279,12 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8cpp_source.html#l00050">50</a> of file <a class="el" href="MetatomicPotential_8cpp_source.html">MetatomicPotential.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   50</span>                                                                      {</div>
-<div class="line"><span class="lineno">   51</span>  <span class="keywordflow">if</span> (s.empty() || s == <span class="stringliteral">&quot;off&quot;</span>)</div>
-<div class="line"><span class="lineno">   52</span>    <span class="keywordflow">return</span> torch::nullopt;</div>
-<div class="line"><span class="lineno">   53</span>  <span class="keywordflow">return</span> s;</div>
-<div class="line"><span class="lineno">   54</span>}</div>
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8cpp_source.html#l00051">51</a> of file <a class="el" href="MetatomicPotential_8cpp_source.html">MetatomicPotential.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   51</span>                                                                      {</div>
+<div class="line"><span class="lineno">   52</span>  <span class="keywordflow">if</span> (s.empty() || s == <span class="stringliteral">&quot;off&quot;</span>)</div>
+<div class="line"><span class="lineno">   53</span>    <span class="keywordflow">return</span> torch::nullopt;</div>
+<div class="line"><span class="lineno">   54</span>  <span class="keywordflow">return</span> s;</div>
+<div class="line"><span class="lineno">   55</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

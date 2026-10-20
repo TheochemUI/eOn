@@ -240,17 +240,22 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('Matter_8cpp.ht
 <div class="textblock"><code>#include &quot;<a class="el" href="Matter_8h_source.html">eon/Matter.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="BaseStructures_8h_source.html">eon/BaseStructures.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="BondBoost_8h_source.html">eon/BondBoost.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ExactReduction_8h_source.html">eon/ExactReduction.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="ForceNorm_8h_source.html">eon/ForceNorm.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="GeometryAnalysis_8h_source.html">eon/GeometryAnalysis.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="HelperFunctions_8h_source.html">eon/HelperFunctions.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Parameters_8h_source.html">eon/Parameters.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="PotCapabilities_8h_source.html">eon/PotCapabilities.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="SurrogatePotential_8h_source.html">eon/SurrogatePotential.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ForEachImage_8h_source.html">ForEachImage.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="EonLogger_8h_source.html">eon/EonLogger.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
 <code>#include &lt;cmath&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;span&gt;</code><br />
 <code>#include &lt;stdexcept&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
 </div>
 <p><a href="Matter_8cpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -265,8 +270,10 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a0a75f0d31324c1f054a663565625d66c" id="r_a0a75f0d31324c1f054a663565625d66c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a0a75f0d31324c1f054a663565625d66c">eonc::evaluateTogether</a> (<a class="el" href="classeonc_1_1Potential.html">Potential</a> &amp;pot, std::span&lt; <a class="el" href="classMatter.html">Matter</a> *const  &gt; systems)</td></tr>
-<tr class="memdesc:a0a75f0d31324c1f054a663565625d66c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluates every system that needs a force update.  <br /></td></tr>
+<tr class="memitem:afa25d65889a01852246fe4d2033b3e44" id="r_afa25d65889a01852246fe4d2033b3e44"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#afa25d65889a01852246fe4d2033b3e44">eonc::canComputeConcurrently</a> (std::span&lt; <a class="el" href="classMatter.html">Matter</a> *const  &gt; systems)</td></tr>
+<tr class="memdesc:afa25d65889a01852246fe4d2033b3e44"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the systems can compute on separate threads at once: every potential instance that two of them share is safe to share.  <br /></td></tr>
+<tr class="memitem:abcb215950a62dd0c90c82213b53be033" id="r_abcb215950a62dd0c90c82213b53be033"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#abcb215950a62dd0c90c82213b53be033">eonc::evaluateTogether</a> (<a class="el" href="classeonc_1_1Potential.html">Potential</a> &amp;pot, std::span&lt; <a class="el" href="classMatter.html">Matter</a> *const  &gt; systems, bool threads=false, std::span&lt; const long &gt; owners={})</td></tr>
+<tr class="memdesc:abcb215950a62dd0c90c82213b53be033"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluates every system that needs a force update.  <br /></td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

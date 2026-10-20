@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['runtime_0',['Runtime',['../classeonc_1_1ARTnResource.html#af3d14e26ba8af9e6cc5a32aad8446de7',1,'eonc::ARTnResource::Runtime()'],['../classeonc_1_1IRAResource.html#af3d14e26ba8af9e6cc5a32aad8446de7',1,'eonc::IRAResource::Runtime()'],['../classeonc_1_1MetatomicLoader.html#af3d14e26ba8af9e6cc5a32aad8446de7',1,'eonc::MetatomicLoader::Runtime()'],['../classeonc_1_1PluginLoader.html#af3d14e26ba8af9e6cc5a32aad8446de7',1,'eonc::PluginLoader::Runtime()']]]
+  ['xtscibandsurface_0',['xtsciBandSurface',['../classeonc_1_1XtsciBand.html#a58dd62d9064c58a1e4bf7343009cebc1',1,'eonc::XtsciBand']]],
+  ['xtscisolidbandsurface_1',['xtsciSolidBandSurface',['../classeonc_1_1XtsciBand.html#a50de03d5bb93ee10d905e3c022557d59',1,'eonc::XtsciBand']]]
 ];

@@ -126,6 +126,13 @@ export EON_SERVER_PATH=$PWD/server.py
 mpirun -n 8 /path/to/eonclient
 ```
 
+This launch needs `-Dwith_mpi=enabled`, the client/server program.
+It does not need `-Dwith_rgpot_mpi=enabled`, which builds calculator groups.
+
+```{code-block} bash
+mpirun -np 42 /path/to/eonclient
+```
+
 A client whose job fails, through a potential error, a `config.ini` it cannot
 load or a job type it does not know, logs the error into that job's directory
 and hands the directory back without `results.dat`. The server logs

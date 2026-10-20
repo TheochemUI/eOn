@@ -1,6 +1,7 @@
 var namespaceeonc_1_1log =
 [
     [ "detail", "namespaceeonc_1_1log_1_1detail.html", [
+      [ "kBackendSleep", "namespaceeonc_1_1log_1_1detail.html#a7326a45cc38c80c7ab6e4b5f97cd0e2b", null ],
       [ "kDefaultLoggerName", "namespaceeonc_1_1log_1_1detail.html#a98fff7a6b38782d04baafd43880b7b83", null ],
       [ "kTracebackLoggerName", "namespaceeonc_1_1log_1_1detail.html#a13ecaa4676a7d55b383cf89f9b3a68cc", null ]
     ] ],

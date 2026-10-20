@@ -84,7 +84,6 @@ data-aria-dark="Switch to auto color mode">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
-<li class="toctree-l1 _expand"><a class="reference internal" href="../citing.html">Citing eOn</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/eessi.html">Build develop on EESSI</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/lammps.html">LAMMPS</a></li>
@@ -123,6 +122,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="mpi_potential.html">MPI potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="algorithm_selection.html">Choosing an algorithm</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="main.html">General simulation parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="structure_input.html">Structure input formats</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="potential.html">Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="structure_comparison.html">Structure comparison</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Optimizer</a></li>
@@ -178,6 +178,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/design/client/index.html">Client design</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/types.html">Type system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/exact-reduction.html">Exact reductions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/parameters.html">Parameters system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
@@ -200,6 +201,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.contracts.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.contracts.load_outcome.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts.load_outcome</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
@@ -533,7 +538,7 @@ data-aria-dark="Switch to auto color mode">
 <p>The eOn optimizers skip a line search when taking the steepest-descent step.</p>
 </div>
 <p>There are several other ways in which the <code class="docutils literal notranslate"><span class="pre">eOn</span></code> implementations differ from a
-standard optimizer software suite<a class="footnote-reference brackets" href="#id115" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> . Some prominent reasons are:</p>
+standard optimizer software suite<a class="footnote-reference brackets" href="#id108" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> . Some prominent reasons are:</p>
 <ul class="simple">
 <li><p>They are written for the <a class="reference internal" href="neb.html"><span class="std std-doc">Nudged elastic band</span></a>, whose energy surface has no
 closed form</p>
@@ -1110,13 +1115,64 @@ another move outside the session.</p>
 <p><code class="docutils literal notranslate"><span class="pre">min_mode_method</span> <span class="pre">=</span> <span class="pre">xtsci</span></code> rotates the lowest mode in that session
 with a zero translation cap. The min-mode callback reads the centre
 from its cached evaluation and runs a displaced probe on a copy. The
-min-mode saddle search still climbs with the selected optimizer.</p>
+min-mode saddle search still climbs with the selected optimizer.
+In a build with <code class="docutils literal notranslate"><span class="pre">-Dwith_rgsaddle=true</span></code>, <code class="docutils literal notranslate"><span class="pre">min_mode_method</span> <span class="pre">=</span> <span class="pre">dimer</span></code>
+and <code class="docutils literal notranslate"><span class="pre">lanczos</span></code> rotate in the same session, <code class="docutils literal notranslate"><span class="pre">lanczos</span></code> as a Lanczos
+session. Davidson and the GP dimer keep their own solvers.
+Against rgsaddle ABI minor 5 or newer one session serves every step of the
+search: the client moves it to each new centre with the gradient it
+already has, so the centre costs no extra call, and the previous
+mode seeds the next rotation.</p>
+<p>The session takes its settings from the dimer and Hessian keys:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>rgsaddle setting</p></th>
+<th class="head"><p>eOn key</p></th>
+<th class="head"><p>Conversion</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dr</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[Main]</span> <span class="pre">finite_difference</span></code></p></td>
+<td><p>Angstrom; 0.001 when not positive</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rotation_tol</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[Dimer]</span> <span class="pre">torque_min</span></code></p></td>
+<td><p>none</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rotation_angle_tol</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[Dimer]</span> <span class="pre">converged_angle</span></code></p></td>
+<td><p>degrees to radians (ABI minor 5)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_rotations</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[Dimer]</span> <span class="pre">rotations_max</span></code></p></td>
+<td><p>at least 1</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">difference</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[Hessian]</span> <span class="pre">fd_scheme</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">one_sided</span></code> is forward; <code class="docutils literal notranslate"><span class="pre">central</span></code> and <code class="docutils literal notranslate"><span class="pre">fourth</span></code> are central (ABI minor 5)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">method</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">method</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lbfgs</span></code> gives L-BFGS; any other gives FIRE, the fast inertial relaxation engine</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">krylov_dim</span></code></p></td>
+<td><p>none</p></td>
+<td><p>12</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>rgsaddle has no fourth-order stencil, so <code class="docutils literal notranslate"><span class="pre">fd_scheme</span> <span class="pre">=</span> <span class="pre">fourth</span></code> gives
+central differences here. <code class="docutils literal notranslate"><span class="pre">[Dimer]</span> <span class="pre">rotation_angle</span></code> is a trial angle
+of the host dimer and does not reach the session.</p>
 </section>
 </section>
 </section>
 <hr class="footnotes docutils" />
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id115" role="doc-footnote">
+<aside class="footnote brackets" id="id108" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>e.g. as may be found in <code class="docutils literal notranslate"><span class="pre">scipy</span></code> or <code class="docutils literal notranslate"><span class="pre">ceres</span></code> for instance</p>
 </aside>

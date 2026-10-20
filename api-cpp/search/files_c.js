@@ -18,9 +18,8 @@ var searchData=
   ['nebtangent_2eh_15',['NEBTangent.h',['../NEBTangent_8h.html',1,'']]],
   ['nebzoom_2ecpp_16',['NEBZoom.cpp',['../NEBZoom_8cpp.html',1,'']]],
   ['nebzoom_2eh_17',['NEBZoom.h',['../NEBZoom_8h.html',1,'']]],
-  ['neighborlist_2eh_18',['NeighborList.h',['../NeighborList_8h.html',1,'']]],
-  ['nudgedelasticband_2ecpp_19',['NudgedElasticBand.cpp',['../NudgedElasticBand_8cpp.html',1,'']]],
-  ['nudgedelasticband_2eh_20',['NudgedElasticBand.h',['../NudgedElasticBand_8h.html',1,'']]],
-  ['nudgedelasticbandjob_2ecpp_21',['NudgedElasticBandJob.cpp',['../NudgedElasticBandJob_8cpp.html',1,'']]],
-  ['nudgedelasticbandjob_2eh_22',['NudgedElasticBandJob.h',['../NudgedElasticBandJob_8h.html',1,'']]]
+  ['nudgedelasticband_2ecpp_18',['NudgedElasticBand.cpp',['../NudgedElasticBand_8cpp.html',1,'']]],
+  ['nudgedelasticband_2eh_19',['NudgedElasticBand.h',['../NudgedElasticBand_8h.html',1,'']]],
+  ['nudgedelasticbandjob_2ecpp_20',['NudgedElasticBandJob.cpp',['../NudgedElasticBandJob_8cpp.html',1,'']]],
+  ['nudgedelasticbandjob_2eh_21',['NudgedElasticBandJob.h',['../NudgedElasticBandJob_8h.html',1,'']]]
 ];

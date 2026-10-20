@@ -240,6 +240,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('namespaceeonc_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a01ada2c6654878b1682476390b7c21bb" id="r_a01ada2c6654878b1682476390b7c21bb"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a01ada2c6654878b1682476390b7c21bb">closestDisplacements</a> (double *data, size_t coordinates, const double *rowMajorCell)</td></tr>
 <tr class="memitem:a4b4602b79d548ced226ea35337b5c119" id="r_a4b4602b79d548ced226ea35337b5c119"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a4b4602b79d548ced226ea35337b5c119">wrapMinimumImage</a> (double *data, size_t n)</td></tr>
 <tr class="memitem:a826e0e89281d1e1b00d3815898fc8d4e" id="r_a826e0e89281d1e1b00d3815898fc8d4e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a826e0e89281d1e1b00d3815898fc8d4e">wrapLegacyUnit</a> (double *data, size_t n)</td></tr>
 <tr class="memitem:a7bf2adae174e6b9e1265299d46b400ee" id="r_a7bf2adae174e6b9e1265299d46b400ee"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="#a7bf2adae174e6b9e1265299d46b400ee">apply</a> (const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;diff, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cell, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cellInverse)</td></tr>
@@ -282,14 +283,14 @@ Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="Matter_8h_source.html#l00046">46</a> of file <a class="el" href="Matter_8h_source.html">Matter.h</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">   47</span>                                                     {</div>
-<div class="line"><span class="lineno">   48</span>  <span class="comment">// Fractional coordinates, minimum-image wrap to [-0.5, 0.5), back to</span></div>
-<div class="line"><span class="lineno">   49</span>  <span class="comment">// Cartesian. x - floor(x + 0.5), Highway when the build has it.</span></div>
-<div class="line"><span class="lineno">   50</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> frac = diff * cellInverse;</div>
-<div class="line"><span class="lineno">   51</span>  <a class="code hl_function" href="#a4b4602b79d548ced226ea35337b5c119">wrapMinimumImage</a>(frac.data(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(frac.size()));</div>
-<div class="line"><span class="lineno">   52</span>  <span class="keywordflow">return</span> frac * cell;</div>
+<div class="line"><span class="lineno">   48</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(cellInverse);</div>
+<div class="line"><span class="lineno">   49</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> image = diff;</div>
+<div class="line"><span class="lineno">   50</span>  <a class="code hl_function" href="#a01ada2c6654878b1682476390b7c21bb">closestDisplacements</a>(image.data(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(image.size()),</div>
+<div class="line"><span class="lineno">   51</span>                       cell.data());</div>
+<div class="line"><span class="lineno">   52</span>  <span class="keywordflow">return</span> image;</div>
 <div class="line"><span class="lineno">   53</span>}</div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1pbc_html_a4b4602b79d548ced226ea35337b5c119"><div class="ttname"><a href="#a4b4602b79d548ced226ea35337b5c119">eonc::pbc::wrapMinimumImage</a></div><div class="ttdeci">void wrapMinimumImage(double *data, size_t n)</div><div class="ttdef"><b>Definition</b> <a href="PbcSimd_8cpp_source.html#l00110">PbcSimd.cpp:110</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pbc_html_a01ada2c6654878b1682476390b7c21bb"><div class="ttname"><a href="#a01ada2c6654878b1682476390b7c21bb">eonc::pbc::closestDisplacements</a></div><div class="ttdeci">void closestDisplacements(double *data, size_t coordinates, const double *rowMajorCell)</div><div class="ttdef"><b>Definition</b> <a href="MinimumImage_8cpp_source.html#l00007">MinimumImage.cpp:7</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -376,11 +377,13 @@ Functions</h2></td></tr>
 <p class="definition">Definition at line <a class="el" href="Matter_8h_source.html#l00066">66</a> of file <a class="el" href="Matter_8h_source.html">Matter.h</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">   68</span>                                                           {</div>
 <div class="line"><span class="lineno">   69</span>  <span class="keywordflow">if</span> (convention == <a class="code hl_enumvalue" href="namespaceeonc.html#a80ab802e9396a8f80486e4ee8a309a8faeade0e772b3c124d07c314e12a036f12">PbcConvention::MinimumImage</a>) {</div>
-<div class="line"><span class="lineno">   70</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#a7bf2adae174e6b9e1265299d46b400ee">apply</a>(coords, cell, cellInverse);</div>
-<div class="line"><span class="lineno">   71</span>  }</div>
-<div class="line"><span class="lineno">   72</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#aa30c19bf4a78bd641a3087cd2d228c19">applyLegacy</a>(coords, cell, cellInverse);</div>
-<div class="line"><span class="lineno">   73</span>}</div>
-<div class="ttc" id="anamespaceeonc_1_1pbc_html_a7bf2adae174e6b9e1265299d46b400ee"><div class="ttname"><a href="#a7bf2adae174e6b9e1265299d46b400ee">eonc::pbc::apply</a></div><div class="ttdeci">AtomMatrix apply(const AtomMatrix &amp;diff, const Matrix3d &amp;cell, const Matrix3d &amp;cellInverse)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00046">Matter.h:46</a></div></div>
+<div class="line"><span class="lineno">   70</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> frac = coords * cellInverse;</div>
+<div class="line"><span class="lineno">   71</span>    <a class="code hl_function" href="#a4b4602b79d548ced226ea35337b5c119">wrapMinimumImage</a>(frac.data(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(frac.size()));</div>
+<div class="line"><span class="lineno">   72</span>    <span class="keywordflow">return</span> frac * cell;</div>
+<div class="line"><span class="lineno">   73</span>  }</div>
+<div class="line"><span class="lineno">   74</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#aa30c19bf4a78bd641a3087cd2d228c19">applyLegacy</a>(coords, cell, cellInverse);</div>
+<div class="line"><span class="lineno">   75</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1pbc_html_a4b4602b79d548ced226ea35337b5c119"><div class="ttname"><a href="#a4b4602b79d548ced226ea35337b5c119">eonc::pbc::wrapMinimumImage</a></div><div class="ttdeci">void wrapMinimumImage(double *data, size_t n)</div><div class="ttdef"><b>Definition</b> <a href="PbcSimd_8cpp_source.html#l00110">PbcSimd.cpp:110</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1pbc_html_aa30c19bf4a78bd641a3087cd2d228c19"><div class="ttname"><a href="#aa30c19bf4a78bd641a3087cd2d228c19">eonc::pbc::applyLegacy</a></div><div class="ttdeci">AtomMatrix applyLegacy(const AtomMatrix &amp;coords, const Matrix3d &amp;cell, const Matrix3d &amp;cellInverse)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00057">Matter.h:57</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a80ab802e9396a8f80486e4ee8a309a8faeade0e772b3c124d07c314e12a036f12"><div class="ttname"><a href="namespaceeonc.html#a80ab802e9396a8f80486e4ee8a309a8faeade0e772b3c124d07c314e12a036f12">eonc::PbcConvention::MinimumImage</a></div><div class="ttdeci">@ MinimumImage</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00040">Matter.h:40</a></div></div>
 </div><!-- fragment -->
@@ -418,13 +421,56 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8h_source.html#l00075">75</a> of file <a class="el" href="Matter_8h_source.html">Matter.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   76</span>                                                    {</div>
-<div class="line"><span class="lineno">   77</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pbcMatrix =</div>
-<div class="line"><span class="lineno">   78</span>      <a class="code hl_function" href="#a7bf2adae174e6b9e1265299d46b400ee">apply</a>(AtomMatrix::Map(diffVector.data(), diffVector.size() / 3, 3), cell,</div>
-<div class="line"><span class="lineno">   79</span>            cellInverse);</div>
-<div class="line"><span class="lineno">   80</span>  <span class="keywordflow">return</span> VectorXd(VectorXd::Map(pbcMatrix.data(), diffVector.size()));</div>
-<div class="line"><span class="lineno">   81</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8h_source.html#l00077">77</a> of file <a class="el" href="Matter_8h_source.html">Matter.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   78</span>                                                    {</div>
+<div class="line"><span class="lineno">   79</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pbcMatrix =</div>
+<div class="line"><span class="lineno">   80</span>      <a class="code hl_function" href="#a7bf2adae174e6b9e1265299d46b400ee">apply</a>(AtomMatrix::Map(diffVector.data(), diffVector.size() / 3, 3), cell,</div>
+<div class="line"><span class="lineno">   81</span>            cellInverse);</div>
+<div class="line"><span class="lineno">   82</span>  <span class="keywordflow">return</span> VectorXd(VectorXd::Map(pbcMatrix.data(), diffVector.size()));</div>
+<div class="line"><span class="lineno">   83</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1pbc_html_a7bf2adae174e6b9e1265299d46b400ee"><div class="ttname"><a href="#a7bf2adae174e6b9e1265299d46b400ee">eonc::pbc::apply</a></div><div class="ttdeci">AtomMatrix apply(const AtomMatrix &amp;diff, const Matrix3d &amp;cell, const Matrix3d &amp;cellInverse)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00046">Matter.h:46</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a01ada2c6654878b1682476390b7c21bb" name="a01ada2c6654878b1682476390b7c21bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01ada2c6654878b1682476390b7c21bb">&#9670;&#160;</a></span>closestDisplacements()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pbc::closestDisplacements </td>
+          <td>(</td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>coordinates</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>rowMajorCell</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MinimumImage_8cpp_source.html#l00007">7</a> of file <a class="el" href="MinimumImage_8cpp_source.html">MinimumImage.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">    8</span>                                                      {</div>
+<div class="line"><span class="lineno">    9</span>  <span class="keywordflow">if</span> (coordinates % 3 != 0)</div>
+<div class="line"><span class="lineno">   10</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">   11</span>        <span class="stringliteral">&quot;periodic differences require Cartesian triples&quot;</span>);</div>
+<div class="line"><span class="lineno">   12</span>  <span class="keywordflow">if</span> (coordinates == 0)</div>
+<div class="line"><span class="lineno">   13</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   14</span>  <span class="keyword">const</span> <span class="keyword">auto</span> cell = minimage::Cell::from_con(rowMajorCell);</div>
+<div class="line"><span class="lineno">   15</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; coordinates; j += 3) {</div>
+<div class="line"><span class="lineno">   16</span>    <span class="keyword">const</span> <span class="keyword">auto</span> image = cell.displacement_euclidean(</div>
+<div class="line"><span class="lineno">   17</span>        {0.0, 0.0, 0.0}, {data[j], data[j + 1], data[j + 2]});</div>
+<div class="line"><span class="lineno">   18</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 0; k &lt; 3; ++k)</div>
+<div class="line"><span class="lineno">   19</span>      data[j + k] = image[k];</div>
+<div class="line"><span class="lineno">   20</span>  }</div>
+<div class="line"><span class="lineno">   21</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

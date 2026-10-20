@@ -1,0 +1,489 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/include/eon/PhysicalBathModel.h Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn 3.2.0</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('PhysicalBathModel_8h_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">PhysicalBathModel.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PhysicalBathModel_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">** This file is part of eOn.</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">** SPDX-License-Identifier: BSD-3-Clause</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">** Copyright (c) 2010--present, eOn Development Team</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">*/</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="DerivativeRbfModel_8h.html">DerivativeRbfModel.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="PhysicalQuadraticBath_8h.html">PhysicalQuadraticBath.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;fstream&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;nlohmann/json.hpp&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc_1_1tunneling.html">eonc::tunneling</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="};">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html">   17</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html">PhysicalBathModel</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#aa1e340d5e2e3867f8c17547c23ef953a">   18</a></span>  Eigen::VectorXd <a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#aa1e340d5e2e3867f8c17547c23ef953a">center</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ac7aeb941eafc8d0a959f736da3b45168">   19</a></span>  Eigen::MatrixXd <a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ab5cf718a0e1e2b8bdd4a39baa4139ba3">reactionBasis</a>, <a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ac7aeb941eafc8d0a959f736da3b45168">bathBasis</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ace8778e2f70169b7c1f8722af534e780">   20</a></span>  std::shared_ptr&lt;PhysicalQuadraticBath&gt; <a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ace8778e2f70169b7c1f8722af534e780">bath</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#af4075f4d17dd971f234aa4f098bab4d4">   21</a></span>  std::shared_ptr&lt;const DerivativeRbfModel&gt; <a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#af4075f4d17dd971f234aa4f098bab4d4">potentialModel</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#abf61626b7d3048f28780145d19727adb">   22</a></span>  std::string <a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#abf61626b7d3048f28780145d19727adb">qualification</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a9a4443b797b464fbe923fccde7f720cd">   23</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a9a4443b797b464fbe923fccde7f720cd">stationaryTolerance</a> = 0;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="}">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ae371ee0952a013b09173955d05e65edd">   25</a></span>  <span class="keyword">static</span> Eigen::VectorXd <a class="code hl_function" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ae371ee0952a013b09173955d05e65edd">vector</a>(<span class="keyword">const</span> nlohmann::json &amp;value) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">if</span> (!value.is_array())</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>      <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;physical bath model vector is not an array&quot;</span>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    Eigen::VectorXd out(value.size());</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; value.size(); ++i)</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>      out[i] = value.at(i).get&lt;<span class="keywordtype">double</span>&gt;();</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">if</span> (!out.allFinite())</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>      <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;physical bath model vector is not finite&quot;</span>);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  }</div>
+</div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="}">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a679cf3d36d542e439c8a4ff6951cecdf">   35</a></span>  <span class="keyword">static</span> Eigen::MatrixXd <a class="code hl_function" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a679cf3d36d542e439c8a4ff6951cecdf">matrix</a>(<span class="keyword">const</span> nlohmann::json &amp;value,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                                <span class="keywordtype">long</span> columns = -1) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">if</span> (!value.is_array())</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>      <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;physical bath model matrix is not an array&quot;</span>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> cols = value.empty() ? std::max(0L, columns)</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                                    : <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(value.at(0).size());</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    Eigen::MatrixXd out(value.size(), cols);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; value.size(); ++i) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>      <span class="keywordflow">if</span> (!value.at(i).is_array() ||</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>          value.at(i).size() != <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(cols))</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <span class="stringliteral">&quot;physical bath model matrix has inconsistent rows&quot;</span>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; cols; ++j)</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        out(i, j) = value.at(i).at(j).get&lt;<span class="keywordtype">double</span>&gt;();</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">if</span> (!out.allFinite())</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>      <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;physical bath model matrix is not finite&quot;</span>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  }</div>
+</div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="}">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a68449d93889e4bfff85aecc3f5685234">   54</a></span>  <span class="keyword">static</span> <a class="code hl_struct" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html">PhysicalBathModel</a> <a class="code hl_function" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a68449d93889e4bfff85aecc3f5685234">read</a>(<span class="keyword">const</span> std::string &amp;filename, <span class="keywordtype">long</span> dimension) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    std::ifstream stream(filename);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">if</span> (!stream)</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;cannot read physical bath model &quot;</span> + filename);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    nlohmann::json data;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    stream &gt;&gt; data;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">if</span> (data.at(<span class="stringliteral">&quot;format&quot;</span>) != <span class="stringliteral">&quot;eon.physical_quadratic_bath.v1&quot;</span> ||</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        data.at(<span class="stringliteral">&quot;callback&quot;</span>) != <span class="stringliteral">&quot;frozen&quot;</span>)</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>      <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>          <span class="stringliteral">&quot;physical bath model requires v1 and frozen callback convention&quot;</span>);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <a class="code hl_struct" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html">PhysicalBathModel</a> out;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#aa1e340d5e2e3867f8c17547c23ef953a">center</a> = <a class="code hl_function" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ae371ee0952a013b09173955d05e65edd">vector</a>(data.at(<span class="stringliteral">&quot;center&quot;</span>));</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ab5cf718a0e1e2b8bdd4a39baa4139ba3">reactionBasis</a> = <a class="code hl_function" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a679cf3d36d542e439c8a4ff6951cecdf">matrix</a>(data.at(<span class="stringliteral">&quot;reaction_basis&quot;</span>));</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ac7aeb941eafc8d0a959f736da3b45168">bathBasis</a> = <a class="code hl_function" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a679cf3d36d542e439c8a4ff6951cecdf">matrix</a>(data.at(<span class="stringliteral">&quot;bath_basis&quot;</span>));</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#abf61626b7d3048f28780145d19727adb">qualification</a> = data.at(<span class="stringliteral">&quot;qualification&quot;</span>).get&lt;std::string&gt;();</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a9a4443b797b464fbe923fccde7f720cd">stationaryTolerance</a> = data.at(<span class="stringliteral">&quot;stationary_tolerance&quot;</span>).get&lt;<span class="keywordtype">double</span>&gt;();</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ace8778e2f70169b7c1f8722af534e780">bath</a> = std::make_shared&lt;PhysicalQuadraticBath&gt;();</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ace8778e2f70169b7c1f8722af534e780">bath</a>-&gt;coupling = <a class="code hl_function" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a679cf3d36d542e439c8a4ff6951cecdf">matrix</a>(data.at(<span class="stringliteral">&quot;coupling&quot;</span>));</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ace8778e2f70169b7c1f8722af534e780">bath</a>-&gt;curvatures = <a class="code hl_function" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ae371ee0952a013b09173955d05e65edd">vector</a>(data.at(<span class="stringliteral">&quot;curvatures&quot;</span>));</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> r = out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ab5cf718a0e1e2b8bdd4a39baa4139ba3">reactionBasis</a>.cols(), b = out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ac7aeb941eafc8d0a959f736da3b45168">bathBasis</a>.cols();</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">if</span> (out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#aa1e340d5e2e3867f8c17547c23ef953a">center</a>.size() != dimension ||</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ab5cf718a0e1e2b8bdd4a39baa4139ba3">reactionBasis</a>.rows() != dimension ||</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ac7aeb941eafc8d0a959f736da3b45168">bathBasis</a>.rows() != dimension || r + b != dimension || r &lt; 1 ||</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ace8778e2f70169b7c1f8722af534e780">bath</a>-&gt;curvatures.size() != b || out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#abf61626b7d3048f28780145d19727adb">qualification</a>.empty() ||</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        !(out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a9a4443b797b464fbe923fccde7f720cd">stationaryTolerance</a> &gt; 0) ||</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        !std::isfinite(out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a9a4443b797b464fbe923fccde7f720cd">stationaryTolerance</a>))</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>      <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>          <span class="stringliteral">&quot;physical bath model dimension or qualification mismatch&quot;</span>);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    Eigen::MatrixXd basis(dimension, dimension);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    basis &lt;&lt; out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ab5cf718a0e1e2b8bdd4a39baa4139ba3">reactionBasis</a>, out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ac7aeb941eafc8d0a959f736da3b45168">bathBasis</a>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">if</span> (!(basis.transpose() * basis)</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>             .isApprox(Eigen::MatrixXd::Identity(dimension, dimension), 1e-10))</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>      <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>          <span class="stringliteral">&quot;physical bath model basis is not complete and orthonormal&quot;</span>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="comment">// Reactant coordinates define q=0 in the physical mass-weighted input.</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">if</span> (out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#aa1e340d5e2e3867f8c17547c23ef953a">center</a>.norm() &gt; 1e-10)</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>      <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>          <span class="stringliteral">&quot;physical bath model center must match the input reactant&quot;</span>);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ace8778e2f70169b7c1f8722af534e780">bath</a>-&gt;validate(r);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">if</span> (data.contains(<span class="stringliteral">&quot;curvature_model&quot;</span>)) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>      <span class="keyword">const</span> <span class="keyword">auto</span> &amp;spec = data.at(<span class="stringliteral">&quot;curvature_model&quot;</span>);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>      <span class="keywordflow">if</span> (spec.at(<span class="stringliteral">&quot;kind&quot;</span>) != <span class="stringliteral">&quot;convex_endpoint_blend&quot;</span>)</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            <span class="stringliteral">&quot;unsupported physical bath curvature model&quot;</span>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>      <span class="keyword">const</span> Eigen::MatrixXd endpoint = <a class="code hl_function" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a679cf3d36d542e439c8a4ff6951cecdf">matrix</a>(spec.at(<span class="stringliteral">&quot;endpoint&quot;</span>));</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>      <span class="keyword">const</span> Eigen::VectorXd coordinate = <a class="code hl_function" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ae371ee0952a013b09173955d05e65edd">vector</a>(spec.at(<span class="stringliteral">&quot;coordinate&quot;</span>));</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>      <span class="keywordflow">if</span> (endpoint.rows() != b || endpoint.cols() != b ||</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>          coordinate.size() != r ||</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>          !endpoint.isApprox(endpoint.transpose(), 1e-12))</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            <span class="stringliteral">&quot;physical bath curvature model dimension or symmetry mismatch&quot;</span>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>      Eigen::LLT&lt;Eigen::MatrixXd&gt; positive(endpoint);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>      <span class="keywordflow">if</span> (positive.info() != Eigen::Success)</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            <span class="stringliteral">&quot;physical bath curvature endpoint is not positive definite&quot;</span>);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>      <span class="keyword">const</span> Eigen::MatrixXd initial = out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ace8778e2f70169b7c1f8722af534e780">bath</a>-&gt;curvatures.asDiagonal();</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>      <span class="keyword">const</span> Eigen::MatrixXd change = endpoint - initial;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>      out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ace8778e2f70169b7c1f8722af534e780">bath</a>-&gt;curvature = [initial, change,</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                             coordinate](<span class="keyword">const</span> Eigen::VectorXd &amp;q, <span class="keywordtype">int</span> order) {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <a class="code hl_struct" href="structeonc_1_1tunneling_1_1PhysicalQuadraticBath_1_1CurvatureDerivatives.html">PhysicalQuadraticBath::CurvatureDerivatives</a> result;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> p = coordinate.dot(q);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordtype">double</span> weight = 0, first = 0, second = 0;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordflow">if</span> (p &gt;= 1)</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>          weight = 1;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (p &gt; 0) {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>          weight = p * p * p * (10 + p * (-15 + 6 * p));</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>          first = 30 * p * p * (1 - p) * (1 - p);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>          second = 60 * p * (1 - p) * (1 - 2 * p);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        }</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        result.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalQuadraticBath_1_1CurvatureDerivatives.html#a86cc1fc174619925c4025d986b64ef6d">value</a> = initial + weight * change;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <span class="keywordflow">if</span> (order &gt;= 1) {</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>          result.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalQuadraticBath_1_1CurvatureDerivatives.html#ad380467dcf50f90d49da5803a4a8a865">first</a>.resize(coordinate.size());</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>          <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; coordinate.size(); ++i)</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            result.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalQuadraticBath_1_1CurvatureDerivatives.html#ad380467dcf50f90d49da5803a4a8a865">first</a>[i] = first * coordinate[i] * change;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        }</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        <span class="keywordflow">if</span> (order &gt;= 2) {</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>          result.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalQuadraticBath_1_1CurvatureDerivatives.html#a8c269418c4538372d654712bf0642db3">second</a>.resize(coordinate.size());</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>          <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; coordinate.size(); ++i) {</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>            result.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalQuadraticBath_1_1CurvatureDerivatives.html#a8c269418c4538372d654712bf0642db3">second</a>[i].resize(coordinate.size());</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; coordinate.size(); ++j)</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>              result.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalQuadraticBath_1_1CurvatureDerivatives.html#a8c269418c4538372d654712bf0642db3">second</a>[i][j] =</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                  second * coordinate[i] * coordinate[j] * change;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>          }</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        }</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>      };</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    }</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordflow">if</span> (data.contains(<span class="stringliteral">&quot;source_model&quot;</span>)) {</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>      <span class="keyword">auto</span> model = std::make_shared&lt;const DerivativeRbfModel&gt;(</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>          <a class="code hl_function" href="classeonc_1_1tunneling_1_1DerivativeRbfModel.html#a7a3f8333ce1fa6b50ef75a9d552f39fa">DerivativeRbfModel::fromJson</a>(data.at(<span class="stringliteral">&quot;source_model&quot;</span>)));</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>      <span class="keywordflow">if</span> (model-&gt;dimension() != r || model-&gt;outputs() != b)</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>            <span class="stringliteral">&quot;physical bath source interpolant dimension mismatch&quot;</span>);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>      out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ace8778e2f70169b7c1f8722af534e780">bath</a>-&gt;source = [model](<span class="keyword">const</span> Eigen::VectorXd &amp;q, Eigen::VectorXd &amp;s,</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                                 Eigen::MatrixXd &amp;j,</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>                                 std::vector&lt;Eigen::MatrixXd&gt; &amp;h) {</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        <span class="keyword">const</span> <span class="keyword">auto</span> value = model-&gt;evaluate(q);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        s = value.value;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        j = value.jacobian;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        h = value.hessians;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>      };</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    }</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordflow">if</span> (data.contains(<span class="stringliteral">&quot;potential_model&quot;</span>)) {</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>      out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#af4075f4d17dd971f234aa4f098bab4d4">potentialModel</a> = std::make_shared&lt;const DerivativeRbfModel&gt;(</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>          <a class="code hl_function" href="classeonc_1_1tunneling_1_1DerivativeRbfModel.html#a7a3f8333ce1fa6b50ef75a9d552f39fa">DerivativeRbfModel::fromJson</a>(data.at(<span class="stringliteral">&quot;potential_model&quot;</span>)));</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>      <span class="keywordflow">if</span> (out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#af4075f4d17dd971f234aa4f098bab4d4">potentialModel</a>-&gt;dimension() != r ||</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>          out.<a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#af4075f4d17dd971f234aa4f098bab4d4">potentialModel</a>-&gt;outputs() != 1)</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            <span class="stringliteral">&quot;physical bath potential interpolant dimension mismatch&quot;</span>);</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    }</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>  }</div>
+</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="foldopen" id="foldopen00167" data-start="{" data-end="}">
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a86e3cb46c68629b656b52a864bd34cb2">  167</a></span>  Eigen::VectorXd <a class="code hl_function" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a86e3cb46c68629b656b52a864bd34cb2">project</a>(<span class="keyword">const</span> Eigen::VectorXd &amp;q)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ab5cf718a0e1e2b8bdd4a39baa4139ba3">reactionBasis</a>.transpose() * (q - <a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#aa1e340d5e2e3867f8c17547c23ef953a">center</a>);</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>  }</div>
+</div>
+<div class="foldopen" id="foldopen00170" data-start="{" data-end="}">
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a2132415cf6ed6e20026c7fd1774ab1c7">  170</a></span>  Eigen::VectorXd <a class="code hl_function" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a2132415cf6ed6e20026c7fd1774ab1c7">frozen</a>(<span class="keyword">const</span> Eigen::VectorXd &amp;q)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#aa1e340d5e2e3867f8c17547c23ef953a">center</a> + <a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ab5cf718a0e1e2b8bdd4a39baa4139ba3">reactionBasis</a> * q;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>  }</div>
+</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>  std::vector&lt;Eigen::VectorXd&gt;</div>
+<div class="foldopen" id="foldopen00174" data-start="{" data-end="}">
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno"><a class="line" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a99e200ded7145dbef1face3ff7e90712">  174</a></span>  <a class="code hl_function" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a99e200ded7145dbef1face3ff7e90712">reconstruct</a>(<span class="keyword">const</span> std::vector&lt;Eigen::VectorXd&gt; &amp;q, <span class="keywordtype">double</span> spring)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keyword">const</span> <span class="keyword">auto</span> eliminated = <a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ace8778e2f70169b7c1f8722af534e780">bath</a>-&gt;evaluate(q, spring);</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    std::vector&lt;Eigen::VectorXd&gt; out(q.size());</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; q.size(); ++j)</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>      out[j] = <a class="code hl_function" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a2132415cf6ed6e20026c7fd1774ab1c7">frozen</a>(q[j]) + <a class="code hl_variable" href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ac7aeb941eafc8d0a959f736da3b45168">bathBasis</a> * eliminated.bathPositions[j];</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>  }</div>
+</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>};</div>
+</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>} <span class="comment">// namespace eonc::tunneling</span></div>
+<div class="ttc" id="aDerivativeRbfModel_8h_html"><div class="ttname"><a href="DerivativeRbfModel_8h.html">DerivativeRbfModel.h</a></div></div>
+<div class="ttc" id="aPhysicalQuadraticBath_8h_html"><div class="ttname"><a href="PhysicalQuadraticBath_8h.html">PhysicalQuadraticBath.h</a></div></div>
+<div class="ttc" id="aclasseonc_1_1tunneling_1_1DerivativeRbfModel_html_a7a3f8333ce1fa6b50ef75a9d552f39fa"><div class="ttname"><a href="classeonc_1_1tunneling_1_1DerivativeRbfModel.html#a7a3f8333ce1fa6b50ef75a9d552f39fa">eonc::tunneling::DerivativeRbfModel::fromJson</a></div><div class="ttdeci">static DerivativeRbfModel fromJson(const nlohmann::json &amp;data)</div><div class="ttdef"><b>Definition</b> <a href="DerivativeRbfModel_8h_source.html#l00025">DerivativeRbfModel.h:25</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1tunneling_html"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html">eonc::tunneling</a></div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8cpp_source.html#l00040">Tunneling.cpp:40</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1PhysicalBathModel_html"><div class="ttname"><a href="structeonc_1_1tunneling_1_1PhysicalBathModel.html">eonc::tunneling::PhysicalBathModel</a></div><div class="ttdef"><b>Definition</b> <a href="#l00017">PhysicalBathModel.h:17</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1PhysicalBathModel_html_a2132415cf6ed6e20026c7fd1774ab1c7"><div class="ttname"><a href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a2132415cf6ed6e20026c7fd1774ab1c7">eonc::tunneling::PhysicalBathModel::frozen</a></div><div class="ttdeci">Eigen::VectorXd frozen(const Eigen::VectorXd &amp;q) const</div><div class="ttdef"><b>Definition</b> <a href="#l00170">PhysicalBathModel.h:170</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1PhysicalBathModel_html_a679cf3d36d542e439c8a4ff6951cecdf"><div class="ttname"><a href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a679cf3d36d542e439c8a4ff6951cecdf">eonc::tunneling::PhysicalBathModel::matrix</a></div><div class="ttdeci">static Eigen::MatrixXd matrix(const nlohmann::json &amp;value, long columns=-1)</div><div class="ttdef"><b>Definition</b> <a href="#l00035">PhysicalBathModel.h:35</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1PhysicalBathModel_html_a68449d93889e4bfff85aecc3f5685234"><div class="ttname"><a href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a68449d93889e4bfff85aecc3f5685234">eonc::tunneling::PhysicalBathModel::read</a></div><div class="ttdeci">static PhysicalBathModel read(const std::string &amp;filename, long dimension)</div><div class="ttdef"><b>Definition</b> <a href="#l00054">PhysicalBathModel.h:54</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1PhysicalBathModel_html_a86e3cb46c68629b656b52a864bd34cb2"><div class="ttname"><a href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a86e3cb46c68629b656b52a864bd34cb2">eonc::tunneling::PhysicalBathModel::project</a></div><div class="ttdeci">Eigen::VectorXd project(const Eigen::VectorXd &amp;q) const</div><div class="ttdef"><b>Definition</b> <a href="#l00167">PhysicalBathModel.h:167</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1PhysicalBathModel_html_a99e200ded7145dbef1face3ff7e90712"><div class="ttname"><a href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a99e200ded7145dbef1face3ff7e90712">eonc::tunneling::PhysicalBathModel::reconstruct</a></div><div class="ttdeci">std::vector&lt; Eigen::VectorXd &gt; reconstruct(const std::vector&lt; Eigen::VectorXd &gt; &amp;q, double spring) const</div><div class="ttdef"><b>Definition</b> <a href="#l00174">PhysicalBathModel.h:174</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1PhysicalBathModel_html_a9a4443b797b464fbe923fccde7f720cd"><div class="ttname"><a href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#a9a4443b797b464fbe923fccde7f720cd">eonc::tunneling::PhysicalBathModel::stationaryTolerance</a></div><div class="ttdeci">double stationaryTolerance</div><div class="ttdef"><b>Definition</b> <a href="#l00023">PhysicalBathModel.h:23</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1PhysicalBathModel_html_aa1e340d5e2e3867f8c17547c23ef953a"><div class="ttname"><a href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#aa1e340d5e2e3867f8c17547c23ef953a">eonc::tunneling::PhysicalBathModel::center</a></div><div class="ttdeci">Eigen::VectorXd center</div><div class="ttdef"><b>Definition</b> <a href="#l00018">PhysicalBathModel.h:18</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1PhysicalBathModel_html_ab5cf718a0e1e2b8bdd4a39baa4139ba3"><div class="ttname"><a href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ab5cf718a0e1e2b8bdd4a39baa4139ba3">eonc::tunneling::PhysicalBathModel::reactionBasis</a></div><div class="ttdeci">Eigen::MatrixXd reactionBasis</div><div class="ttdef"><b>Definition</b> <a href="#l00019">PhysicalBathModel.h:19</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1PhysicalBathModel_html_abf61626b7d3048f28780145d19727adb"><div class="ttname"><a href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#abf61626b7d3048f28780145d19727adb">eonc::tunneling::PhysicalBathModel::qualification</a></div><div class="ttdeci">std::string qualification</div><div class="ttdef"><b>Definition</b> <a href="#l00022">PhysicalBathModel.h:22</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1PhysicalBathModel_html_ac7aeb941eafc8d0a959f736da3b45168"><div class="ttname"><a href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ac7aeb941eafc8d0a959f736da3b45168">eonc::tunneling::PhysicalBathModel::bathBasis</a></div><div class="ttdeci">Eigen::MatrixXd bathBasis</div><div class="ttdef"><b>Definition</b> <a href="#l00019">PhysicalBathModel.h:19</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1PhysicalBathModel_html_ace8778e2f70169b7c1f8722af534e780"><div class="ttname"><a href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ace8778e2f70169b7c1f8722af534e780">eonc::tunneling::PhysicalBathModel::bath</a></div><div class="ttdeci">std::shared_ptr&lt; PhysicalQuadraticBath &gt; bath</div><div class="ttdef"><b>Definition</b> <a href="#l00020">PhysicalBathModel.h:20</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1PhysicalBathModel_html_ae371ee0952a013b09173955d05e65edd"><div class="ttname"><a href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#ae371ee0952a013b09173955d05e65edd">eonc::tunneling::PhysicalBathModel::vector</a></div><div class="ttdeci">static Eigen::VectorXd vector(const nlohmann::json &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="#l00025">PhysicalBathModel.h:25</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1PhysicalBathModel_html_af4075f4d17dd971f234aa4f098bab4d4"><div class="ttname"><a href="structeonc_1_1tunneling_1_1PhysicalBathModel.html#af4075f4d17dd971f234aa4f098bab4d4">eonc::tunneling::PhysicalBathModel::potentialModel</a></div><div class="ttdeci">std::shared_ptr&lt; const DerivativeRbfModel &gt; potentialModel</div><div class="ttdef"><b>Definition</b> <a href="#l00021">PhysicalBathModel.h:21</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1PhysicalQuadraticBath_1_1CurvatureDerivatives_html"><div class="ttname"><a href="structeonc_1_1tunneling_1_1PhysicalQuadraticBath_1_1CurvatureDerivatives.html">eonc::tunneling::PhysicalQuadraticBath::CurvatureDerivatives</a></div><div class="ttdef"><b>Definition</b> <a href="PhysicalQuadraticBath_8h_source.html#l00032">PhysicalQuadraticBath.h:32</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1PhysicalQuadraticBath_1_1CurvatureDerivatives_html_a86cc1fc174619925c4025d986b64ef6d"><div class="ttname"><a href="structeonc_1_1tunneling_1_1PhysicalQuadraticBath_1_1CurvatureDerivatives.html#a86cc1fc174619925c4025d986b64ef6d">eonc::tunneling::PhysicalQuadraticBath::CurvatureDerivatives::value</a></div><div class="ttdeci">Eigen::MatrixXd value</div><div class="ttdef"><b>Definition</b> <a href="PhysicalQuadraticBath_8h_source.html#l00033">PhysicalQuadraticBath.h:33</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1PhysicalQuadraticBath_1_1CurvatureDerivatives_html_a8c269418c4538372d654712bf0642db3"><div class="ttname"><a href="structeonc_1_1tunneling_1_1PhysicalQuadraticBath_1_1CurvatureDerivatives.html#a8c269418c4538372d654712bf0642db3">eonc::tunneling::PhysicalQuadraticBath::CurvatureDerivatives::second</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; Eigen::MatrixXd &gt; &gt; second</div><div class="ttdef"><b>Definition</b> <a href="PhysicalQuadraticBath_8h_source.html#l00035">PhysicalQuadraticBath.h:35</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1PhysicalQuadraticBath_1_1CurvatureDerivatives_html_ad380467dcf50f90d49da5803a4a8a865"><div class="ttname"><a href="structeonc_1_1tunneling_1_1PhysicalQuadraticBath_1_1CurvatureDerivatives.html#ad380467dcf50f90d49da5803a4a8a865">eonc::tunneling::PhysicalQuadraticBath::CurvatureDerivatives::first</a></div><div class="ttdeci">std::vector&lt; Eigen::MatrixXd &gt; first</div><div class="ttdef"><b>Definition</b> <a href="PhysicalQuadraticBath_8h_source.html#l00034">PhysicalQuadraticBath.h:34</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="dir_2527c5cc2e6dc8ce970a4d420439d1d9.html">eon</a></li><li class="navelem"><a href="PhysicalBathModel_8h.html">PhysicalBathModel.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

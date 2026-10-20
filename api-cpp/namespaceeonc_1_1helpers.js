@@ -35,6 +35,7 @@ var namespaceeonc_1_1helpers =
       [ "make_target", "namespaceeonc_1_1helpers_1_1surrogate.html#afb72d01ef6c1e32950b58b359c000cc7", null ]
     ] ],
     [ "applyClientDisplacement", "namespaceeonc_1_1helpers.html#a2a110b853a8d95856f9e66dc9ef65dc1", null ],
+    [ "atomicWriteFile", "namespaceeonc_1_1helpers.html#a1e1187456cdd39e1057c896ccef6003a", null ],
     [ "convergenceMetricLabel", "namespaceeonc_1_1helpers.html#a968192cea5872cea9e92b71f75cd42ff", null ],
     [ "eigenEquality", "namespaceeonc_1_1helpers.html#acccb269a05080dcacb46450405b0721c", null ],
     [ "enterJobDirectory", "namespaceeonc_1_1helpers.html#acc29f403877f68b0a0aa26d7204865b2", null ],
@@ -53,6 +54,7 @@ var namespaceeonc_1_1helpers =
     [ "loadMode", "namespaceeonc_1_1helpers.html#a7e0f14f155e21cdf88411cef6a98c90f", null ],
     [ "loadMode", "namespaceeonc_1_1helpers.html#a38f684e117c5cd3db5c0e065791c71e1", null ],
     [ "loadOrSynthesizeDisplacement", "namespaceeonc_1_1helpers.html#a5cdfb8c4450eaa8a9d66d6d2e5e9d67e", null ],
+    [ "makeImagePotential", "namespaceeonc_1_1helpers.html#a56fd7848b77f2534f775dd826f801745", null ],
     [ "makeJob", "namespaceeonc_1_1helpers.html#a9c381333c273bde2e2ed47adefca7db3", null ],
     [ "makeJob", "namespaceeonc_1_1helpers.html#a353d254b2b4e3b09c3fdf1786d3a6cec", null ],
     [ "makeJob", "namespaceeonc_1_1helpers.html#acca5ce570486141f2b6485a454f3ee00", null ],

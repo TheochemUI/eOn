@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Installation - eOn</title><link rel="shortcut icon" href="../_static/favicon.ico"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Build develop on EESSI" href="eessi.html" /><link rel="prev" title="Citing eOn" href="../citing.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Installation - eOn</title><link rel="shortcut icon" href="../_static/favicon.ico"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Build develop on EESSI" href="eessi.html" /><link rel="prev" title="eOn team" href="../team.html" />
       <link rel="canonical" href="https://eondocs.org/install/" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -84,7 +84,6 @@ data-aria-dark="Switch to auto color mode">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
-<li class="toctree-l1 _expand"><a class="reference internal" href="../citing.html">Citing eOn</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="eessi.html">Build develop on EESSI</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="lammps.html">LAMMPS</a></li>
@@ -123,6 +122,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/mpi_potential.html">MPI potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/algorithm_selection.html">Choosing an algorithm</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/main.html">General simulation parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/structure_input.html">Structure input formats</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/potential.html">Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/structure_comparison.html">Structure comparison</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/optimizer.html">Optimizer</a></li>
@@ -178,6 +178,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/design/client/index.html">Client design</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/types.html">Type system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/exact-reduction.html">Exact reductions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/parameters.html">Parameters system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
@@ -200,6 +201,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.contracts.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.contracts.load_outcome.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts.load_outcome</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
@@ -469,7 +474,7 @@ output.</p>
 </span><span data-line="5">micromamba<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>eon
 </span></pre></div>
 </div>
-<p>Those commands install the conda-forge release package. They do not check out <code class="docutils literal notranslate"><span class="pre">develop</span></code>. A source build of <code class="docutils literal notranslate"><span class="pre">develop</span></code> is the section below. The examples in this book run against the release package. <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code> on <code class="docutils literal notranslate"><span class="pre">develop</span></code> records version 3.6.0. The conda-forge package is built without <code class="docutils literal notranslate"><span class="pre">-Drgpot:with_mpi=enabled</span></code>, so it does not ship calculator groups or in-process CPMD.</p>
+<p>Those commands install the conda-forge release package. They do not check out <code class="docutils literal notranslate"><span class="pre">develop</span></code>. A source build of <code class="docutils literal notranslate"><span class="pre">develop</span></code> is the section below. The examples in this book run against the release package. <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code> on <code class="docutils literal notranslate"><span class="pre">develop</span></code> records version 3.6.0. The conda-forge package does not contain the CPMD engine. It is built without <code class="docutils literal notranslate"><span class="pre">-Drgpot:with_mpi=enabled</span></code>, so it does not ship calculator groups or in-process CPMD.</p>
 <p>The conda package is a maximalist build with the following potentials and
 features enabled:</p>
 <ul class="simple">
@@ -542,12 +547,6 @@ Copy a sibling checkout into place with:</p>
 for <code class="docutils literal notranslate"><span class="pre">gprdimer</span></code> then stops, and the message names <code class="docutils literal notranslate"><span class="pre">-Dwith_gprd=enabled</span></code>
 and that <code class="docutils literal notranslate"><span class="pre">rsync</span></code>.</p>
 <p>The setup line already passes <code class="docutils literal notranslate"><span class="pre">--force-fallback-for=nlohmann_json,hwy</span></code>. The rolling distro section below says why a host <code class="docutils literal notranslate"><span class="pre">nlohmann_json</span></code> breaks the conda compiler, and why the Highway name is <code class="docutils literal notranslate"><span class="pre">hwy</span></code> rather than <code class="docutils literal notranslate"><span class="pre">libhwy</span></code>. The test line should finish with a fail count of 0.</p>
-<p>Update the subprojects after each <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code>, then configure again:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">meson<span class="w"> </span>subprojects<span class="w"> </span>update<span class="w"> </span>--reset
-</span><span data-line="2">meson<span class="w"> </span>setup<span class="w"> </span>--reconfigure<span class="w"> </span>bbdir
-</span></pre></div>
-</div>
-<p>Meson skips the fetch for a wrap subproject such as <code class="docutils literal notranslate"><span class="pre">rgpot</span></code> once it sits on disk. A stale checkout then fails with missing headers, for example <code class="docutils literal notranslate"><span class="pre">rgpot/EMT/EMTPot.hpp</span></code>. The <code class="docutils literal notranslate"><span class="pre">--reset</span></code> flag throws away local edits under <code class="docutils literal notranslate"><span class="pre">subprojects/</span></code>.</p>
 <p>Some additional performance can be gained with <code class="docutils literal notranslate"><span class="pre">ccache</span></code> and <code class="docutils literal notranslate"><span class="pre">mold</span></code>, which can be
 passed with <code class="docutils literal notranslate"><span class="pre">--native-file</span></code>:</p>
 <ul class="simple">
@@ -611,7 +610,7 @@ integration instructions</span></a>.</p>
 </section>
 <section id="european-environment-for-scientific-software-installations-eessi">
 <h1>European environment for scientific software installations (EESSI)<a class="headerlink" href="#european-environment-for-scientific-software-installations-eessi" title="Link to this heading">¶</a></h1>
-<p>A <code class="docutils literal notranslate"><span class="pre">develop</span></code> checkout on this 2026.06 release uses EESSI-extend, the <code class="docutils literal notranslate"><span class="pre">eOn-devel</span></code> bundle, CapnProto 1.4.0, and <code class="docutils literal notranslate"><span class="pre">foss/2026.1</span></code>. The run-path list and the calculator groups are on the <a class="reference internal" href="eessi.html"><span class="std std-doc">build page</span></a>.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">develop</span></code> checkout on this 2026.06 release uses EESSI-extend and the <code class="docutils literal notranslate"><span class="pre">eOn-devel</span></code> bundle. That bundle depends on <code class="docutils literal notranslate"><span class="pre">foss/2026.1</span></code> and builds Cap’n Proto 1.4.0. The run-path list and the calculator groups are on the <a class="reference internal" href="eessi.html"><span class="std std-doc">build page</span></a>.</p>
 </section>
 <section id="licenses">
 <h1>Licenses<a class="headerlink" href="#licenses" title="Link to this heading">¶</a></h1>
@@ -657,10 +656,10 @@ License</a>.</p>
   </svg>
   <span>Back to top</span>
 </button><div class="navigation flex print:hidden"><div class="navigation-prev">
-    <a href="../citing.html">
+    <a href="../team.html">
       <i class="i-lucide chevron-left"></i>
       <div class="page-info">
-        <span>Previous</span><div class="title">Citing eOn</div></div>
+        <span>Previous</span><div class="title">eOn team</div></div>
     </a>
   </div><div class="navigation-next">
     <a href="eessi.html">

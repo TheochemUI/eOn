@@ -25,175 +25,130 @@ The [ASE](project:ase_pot.md) potentials require additional compile-time flags
 that are **not** enabled in the `conda-forge` build.
 ```
 
-## Run CPMD through eOn
+## Start with a complete working example
 
-Use the runnable example in `examples/ext_pot_cpmd` on the **main** branch.
-It evaluates a geometry with your existing CPMD executable and
-pseudopotentials. Pixi supplies eOn, Python and uv; no cpmdc library or eOn
-source compilation is needed for this external route.
+This example needs Python and the eOn client only. It evaluates a harmonic
+potential, so it needs no electronic-structure executable, model download or
+pseudopotentials. The commands below target Linux, including Ubuntu under WSL.
+Run calculations inside your site's compute allocation, not on its login node.
 
-The example contains:
-
-| File | Purpose |
-| --- | --- |
-| `pixi.toml` | Installs eOn, Python and uv; defines `run` and `neb` tasks. |
-| `.env.example` | Executable, pseudopotential, MPI and physical-method settings; copy it to `.env`. |
-| `config.ini` | A point job with `ext_pot_path = ./ext_pot`. |
-| `ext_pot` | Loads `.env` and invokes the CPMD file-interface wrapper. |
-| `cpmd_extpot.py` | Renders a single-point deck, runs CPMD and converts its results. |
-| `cpmd_launch.sh` | Starts CPMD with the compatible MPI runtime. |
-| `run.sh` | Converts an input if needed and preserves a separate point-job record. |
-| `con_to_input.py` | Reads a CON frame and removes cached evaluations while preserving its geometry and constraints. |
-
-### Install the example environment
-
-Use a Linux terminal, including Ubuntu under WSL. Install
-[Pixi](https://pixi.sh), clone the public repository, then install the
-example's environment:
+Install [Pixi](https://pixi.sh), then create a separate workspace:
 
 ```bash
 curl -fsSL https://pixi.sh/install.sh | sh
 export PATH="$HOME/.pixi/bin:$PATH"
-git clone --branch main https://github.com/TheochemUI/eOn.git
-cd eOn/examples/ext_pot_cpmd
-pixi install
+mkdir eon-external-demo
+cd eon-external-demo
+pixi init --channel conda-forge
+pixi add eon python
 pixi run eonclient --version
-cp .env.example .env
 ```
 
-Git is needed for the initial clone. Pixi installs the scientific
-environment without administrator rights. Keep its generated `pixi.lock`
-with `pixi.toml` when sharing a resolved environment; another account can
-recreate it using `pixi install --locked`. On an HPC system, run calculations
-inside a compute allocation according to the site policy. A workstation
-does not require Slurm.
+`pixi add` installs the client and Python and records their resolved packages
+in `pixi.lock`. Keep `pixi.toml` and `pixi.lock` together; a recipient can
+recreate the environment with `pixi install --locked`. No compiler or MPI
+installation is needed for this file-interface example.
 
-### Set the existing CPMD paths
+Save the following executable as `harmonic_extpot.py`:
 
-Edit `.env`. For an existing Intel oneAPI CPMD installation, the essential
-settings look like:
+```python
+#!/usr/bin/env python3
+"""Harmonic energy in eV and its negative derivative in eV/Angstrom."""
+import math
+from pathlib import Path
 
-```bash
-EON_CLIENT=eonclient
-CPMD_BIN=$HOME/myCPMD/bin/cpmd4.3-oneAPI-2022-AMD.x
-PP_LIBRARY_PATH=$HOME/pseudo
-CPMD_PP='14:Si_MT_BLYP.psp:LMAX=D LOC=D,7:N_MT_BLYP.psp:LMAX=P LOC=P'
-CPMD_MPI_LAUNCH='mpirun -np 4'
-CPMD_MODULES='intel/oneAPI-2022 intelmpi/oneAPI-2022'
-CPMD_FUNCTIONAL=BLYP
-CPMD_CUTOFF=70
-CPMD_CONVERGENCE=1e-6
+rows = [line.split() for line in
+        Path("from_eon_to_extpot").read_text().splitlines() if line.strip()]
+if len(rows) < 4 or any(len(row) != 3 for row in rows[:3]):
+    raise ValueError("Expected three box rows followed by at least one atom")
+positions = []
+for row in rows[3:]:
+    if len(row) != 4:
+        raise ValueError("Expected atomic_number x y z")
+    int(row[0])
+    xyz = [float(value) for value in row[1:]]
+    if not all(math.isfinite(value) for value in xyz):
+        raise ValueError("Non-finite coordinate")
+    positions.append(xyz)
+k = 1.0  # eV/Angstrom squared
+energy = 0.5 * k * sum(x*x for xyz in positions for x in xyz)
+forces = [[-k*x for x in xyz] for xyz in positions]
+with Path("from_extpot_to_eon").open("w") as output:
+    output.write(f"{energy:.15g}\n")
+    for force in forces:
+        output.write(" ".join(f"{value:.15g}" for value in force) + "\n")
 ```
 
-Replace the paths, module names, pseudopotential mapping and ranks with
-the actual CPMD installation. The executable and licensed pseudopotentials
-are supplied by your group, not downloaded by Pixi. Every element in the
-structure needs a mapping in `CPMD_PP`. Its third field is CPMD's
-angular-momentum/options line; the wrapper uses Kleinman–Bylander
-pseudopotentials.
+Create `pos.con`, with one silicon atom at (1, 0, 0) Angstrom in a 20 Angstrom
+cube. The two blank lines between the cell angles and component count are
+part of this structure format:
 
-Leave `CPMD_MODULES=''` on a workstation where the compatible runtime is
-already available. A binary linked with Intel MPI needs the matching
-Intel MPI launcher; another environment's Open MPI is not a substitute.
-When modules are requested, only the CPMD child clears inherited library
-overrides and loads them. The parent eOn client keeps its Pixi libraries.
+```text
+One atom harmonic example
+0.0
+20.0 20.0 20.0
+90.0 90.0 90.0
 
-`.env` is sourced by Bash: values set there take precedence over the
-environment inherited by the launcher. Keep account paths in `.env`,
-which is ignored by Git.
 
-### Evaluate a geometry
-
-From `examples/ext_pot_cpmd`, use the same command for XYZ or CON input:
-
-```bash
-pixi run run /absolute/path/input.xyz
-pixi run run /absolute/path/pos.con
+1
+1
+28.0855
+Si
+Coordinates of Component 1
+1.0 0.0 0.0 0 0
 ```
 
-The CON route uses `uv run --script con_to_input.py` with pinned readcon.
-It preserves coordinates, cell, atom IDs, masses and fixed flags, and clears
-stored energy and forces so your configured CPMD calculation is evaluated.
-Set `CON_FRAME=0` in `.env` for the first frame, or `CON_FRAME=-1` for the
-last. `pos.source.json` records the frame, input hash and cache removal.
-
-Each invocation prints `Record: .../runs/point-...`, evaluates one geometry,
-and prints a finite energy in eV when successful. The record retains
-`pos.con`, `config.ini`, `eon.log` and `results.dat`. CPMD input, output and
-`GEOMETRY` remain in its external-potential exchange directory. A failed
-client or a non-finite energy causes a nonzero exit; inspect the preserved
-logs rather than using a partial result.
-
-For the supplied CON example, the static configuration can also be run
-directly from this directory after editing `.env`:
+Make the wrapper executable, create the configuration and evaluate the point:
 
 ```bash
+chmod +x harmonic_extpot.py
+cat > config.ini <<EOF
+[Main]
+job = point
+
+[Potential]
+potential = ext_pot
+ext_pot_path = $PWD/harmonic_extpot.py
+EOF
 pixi run eonclient > eon.log 2>&1
 cat results.dat
 ```
 
-This direct command uses the existing `pos.con` and `config.ini` in place;
-`pixi run run` creates a separate record and handles an arbitrary input.
-Use the launcher for a CON containing stored energies and forces: an
-installed client can otherwise reuse that stored evaluation.
-For a file route using four CPMD ranks, reserve four ranks for each
-concurrent calculator. The eOn client itself stays one process.
+The `potential_energy` result is **0.5 eV**. The wrapper returns one force,
+**(-1, 0, 0) eV/Angstrom**. This potential is a protocol demonstration:
+its origin is fixed and it does not model periodic interatomic interactions.
+The exact result-file formatting depends on the installed eOn release.
 
-### XYZ frames, units and the periodic cell
+For example, the point check prints these result entries:
 
-The XYZ launcher uses `uv run --script xyz_to_con.py` with the pinned
-`readcon-chemfiles==0.17.1` dependency to read XYZ and write CON. The first
-conversion needs network access unless the wheel is cached. Prepare that
-cache with an actual input on a host where dependency installation is
-permitted:
-
-```bash
-pixi run uv run --script xyz_to_con.py /absolute/path/input.xyz /tmp/input.con
+```text
+GOOD termination_reason_text
+EXT_POT potential_type
+1 total_force_calls
+5.000000000000e-01 potential_energy
+1.000000000000e+00 Max_Force
 ```
 
-Set `XYZ_FRAME=-1` for the last frame, or a zero-based nonnegative frame
-index. `XYZ_UNITS=angstrom` is the default; `XYZ_UNITS=bohr` converts
-coordinates and a metadata cell to Angstrom. An explicit
-`CELL_ANGSTROM='9.984 19.968 14.976'` is always in Angstrom. Edit these
-values in `.env` before launching.
+To check the wrapper independently, run it from a separate directory
+containing this `from_eon_to_extpot` file:
 
-A positive cell in extended XYZ metadata is preserved unless
-`CELL_ANGSTROM` overrides it. This wrapper requires an orthorhombic box.
-For plain XYZ with no cell, conversion prints a **LOUD WARNING** and
-infers a box from the coordinate bounds with `VACUUM_ANGSTROM=10` on
-each side. It translates the coordinates into that artificial box;
-**this does not recover the original bulk cell**. Supply the actual
-periodic cell for a material calculation. `pos.source.json` records
-the frame, input units, cell source, translation, atom IDs and the
-mapping between CON and original XYZ order.
-
-### Run a nudged elastic band
-
-Use two endpoints with the same atoms, atom correspondence and periodic
-cell, relaxed on the same physical Hamiltonian:
-
-```bash
-pixi run neb /absolute/path/reactant.xyz /absolute/path/product.xyz
+```text
+20 0 0
+0 20 0
+0 0 20
+14 1 0 0
 ```
 
-The `neb` task uses `run_neb.sh` and `config-neb.ini`; XYZ endpoints use
-the same conversion and cell settings. Confirm endpoint identities and
-the real cell before launching. Reserve resources for the number of
-concurrent images times the CPMD rank count, and inspect the band's
-termination and force convergence before treating its peak as a barrier.
+Its `from_extpot_to_eon` must contain:
 
-## CPMD method requirements
+```text
+0.5
+-1 -0 -0
+```
 
-The distributed settings use a neutral BLYP single-point calculation.
-A charged, spin-polarized, dispersion-corrected or constrained system
-needs a deck/wrapper that explicitly retains those settings. Replacing
-its geometry alone does not reproduce that Hamiltonian. Check charge,
-occupations, functional, dispersion, pseudopotentials, cell, cutoff and
-SCF convergence against the actual source calculation.
-
-The [RGPOT route](project:rgpot_pot.md) loads cpmdc in process and uses a
-separate CPMD method message. This external executable route reads its
-own settings from `.env`; the two configurations are distinct inputs.
+Signed zero is equivalent to zero. A successful wrapper-only check tests
+the file protocol; the client run also tests the structure, configuration
+and executable lookup.
 
 ## Protocol
 
@@ -280,7 +235,132 @@ configuration into per-job scratch directories. Use **absolute paths** for
 `ext_pot_path` and for any model files referenced inside your wrapper.
 ```
 
-## Calculator units
+## Examples
+
+### Use an existing HPC CPMD installation
+
+Keep the eOn client in its Pixi environment and use the site's existing CPMD
+executable for the expensive force evaluations. You need all of:
+
+1. The absolute path to a working `cpmd.x` (or site-named CPMD executable).
+2. Its compatible MPI runtime and the modules used to run it.
+3. The licensed pseudopotentials for every element in `pos.con`, with the
+   correct functional and angular-momentum choices.
+4. A periodic `pos.con`, the wrapper script and `config.ini`.
+
+For example, clone the public eOn sources using Pixi's Git. This supplies
+the CPMD wrapper and a small silicon-vacancy structure; it does not build
+or install another eOn client:
+
+```bash
+pixi add git
+pixi run git clone --branch develop https://github.com/TheochemUI/eOn.git eon-source
+pixi run git -C eon-source rev-parse HEAD
+cp eon-source/examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py ./cpmd_extpot.py
+cp eon-source/examples/akmc-cpmd-slurm/pos.con ./pos.con
+chmod +x cpmd_extpot.py
+```
+
+Record the printed source commit alongside the Pixi lockfile. The silicon
+example contains seven atoms and requires a silicon pseudopotential; it is
+separate from the harmonic demonstration.
+
+An executable built with Intel MPI must use its matching Intel MPI launcher.
+Do not send it through Open MPI installed for another calculator. A launcher
+script can restore the site's compiler/MPI modules in the CPMD child process
+without replacing the eOn environment. Save this as `launch-cpmd-mpi.sh` and
+replace the module initialization and module names with those from the
+working CPMD batch script:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+source /etc/profile.d/modules.sh
+module purge
+unset LD_LIBRARY_PATH LD_PRELOAD LIBRARY_PATH CPATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH
+module load intel/oneAPI-2022 intelmpi/oneAPI-2022
+exec mpirun "$@"
+```
+
+The module initialization path is site-specific. Add further modules only
+when that CPMD binary needs them. Verify this launcher on the allocated node;
+the `mpirun` it selects must belong to the MPI used to link CPMD.
+The library-path cleanup belongs in this child launcher before loading its
+modules; applying it to the parent process can break the eOn installation.
+
+From the workspace root, set the actual executable and pseudopotential
+locations. These are examples of account-relative paths, not files supplied
+by Pixi:
+
+```bash
+chmod +x launch-cpmd-mpi.sh
+export CPMD_BIN="$HOME/myCPMD/bin/cpmd4.3-oneAPI-2022-AMD.x"
+export PP_LIBRARY_PATH="$HOME/pseudo/"
+export CPMD_LAUNCH="$PWD/launch-cpmd-mpi.sh -np 4"
+export CPMD_PP="14:Si_MT_BLYP.psp:LMAX=D LOC=D"
+export CPMD_CUTOFF=70
+export CPMD_FUNCTIONAL=BLYP
+export CPMD_CONVERGENCE=1e-6
+export OMP_NUM_THREADS=1
+test -x "$CPMD_BIN"
+test -f "${PP_LIBRARY_PATH}Si_MT_BLYP.psp"
+cat > config.ini <<EOF
+[Main]
+job = point
+
+[Potential]
+potential = ext_pot
+ext_pot_path = $PWD/cpmd_extpot.py
+EOF
+pixi run eonclient > eon-cpmd.log 2>&1
+cat results.dat
+```
+
+Run this command inside a compute allocation with four MPI tasks available
+for CPMD. The eOn client is one process; its wrapper launches those four
+CPMD processes. For Slurm, request a node with `--ntasks=4` and enter the
+node using the site's supported interactive-job procedure. A site that
+requires `srun` instead of `mpirun` needs a launcher adapted to its MPI/PMI
+configuration. Do not start four copies of `eonclient` for this file route.
+
+For the Intel oneAPI 2022 setup, the source tree also supplies a complete
+Slurm job at `examples/akmc-cpmd-slurm/run_point.sbatch`. From the workspace
+root, copy it and edit its `#SBATCH` partition/account and the child
+launcher's module names to match the site. Submit through the Pixi
+environment so the installed client and Python are inherited by the job:
+
+```bash
+cp eon-source/examples/akmc-cpmd-slurm/run_point.sbatch ./run_point.sbatch
+# Edit the scheduler directives and site module names in run_point.sbatch.
+export EON_REPO="$PWD/eon-source"
+pixi run sbatch ./run_point.sbatch "$PWD/pos.con"
+```
+
+Keep `CPMD_BIN`, `PP_LIBRARY_PATH` and the method variables exported as
+above. The script's own defaults are the public Si7 vacancy demonstration
+at 20 Ry with `LMAX=P`; an exported override changes those defaults.
+Slurm prints `Submitted batch job <jobid>`. The calculation's record is
+`eon-cpmd-point-<jobid>/`, including the copied geometry, configuration,
+wrapper and `eon.log`. The scheduler output prints the converted finite
+energy when the point calculation succeeds. The script leaves that
+directory in the submission filesystem for inspection.
+
+The result contains a finite `potential_energy`. Its numerical value depends
+on the supplied pseudopotential, cutoff, geometry and convergence settings;
+the relaxed structure's recorded example energy is not a universal check
+at another cutoff. Inspect the exchange directory's `cpmd.out`, `input`,
+`GEOMETRY` and `RESTART.1` if the call fails. Keep these with the result when
+reporting an error.
+
+The supplied wrapper builds a neutral, single-point BLYP deck by default.
+Its environment controls listed below do **not** provide a complete method
+description for a charged, spin-polarized, dispersion-corrected or constrained
+system. Such a calculation requires a wrapper/deck that explicitly retains
+those physical settings. A dynamics or restart deck cannot be substituted
+without checking its task, charge, cell, functional, dispersion, species,
+occupations and SCF convergence. The in-process
+[RGPOT route](project:rgpot_pot.md) uses a separate serialized CPMD method
+message; it does not read this wrapper's environment as that message.
 
 ### Units and force sign
 
@@ -301,12 +381,10 @@ the printed CPMD table does not change what `fion` contains.
 
 ### CPMD on several MPI ranks
 
-`examples/ext_pot_cpmd/ext_pot` invokes the example's own
-`cpmd_extpot.py`, which answers each call with a `cpmd.x` wavefunction
-optimisation on several MPI ranks. It reads its settings from the
-environment. The table lists the wrapper's fallback values when a variable
-is absent. The supplied `.env.example` explicitly sets the cutoff to
-**70 Ry**, overriding the raw wrapper's **30 Ry** fallback:
+`examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py` answers each call with a
+`cpmd.x` wavefunction optimisation on the MPI ranks that `CPMD_LAUNCH`
+starts. It reads its
+settings from the environment:
 
 | Variable | Meaning | Default |
 | --- | --- | --- |
@@ -319,17 +397,41 @@ is absent. The supplied `.env.example` explicitly sets the cutoff to
 | `CPMD_CONVERGENCE` | `CONVERGENCE ORBITALS` | `1e-6` |
 | `CPMD_MAXITER` | `MAXITER` | `300` |
 | `CPMD_RESTART_POOL` | shared directory of converged `RESTART.1` files that seed a job's first call | unset |
+| `CPMDC_RESTART` | path to the `cpmdc-restart` tool; a pooled `RESTART.1` seeds a call only when `cpmdc-restart info` reports the same atom count, species counts and cutoff | unset, no check |
 
-The runnable point and NEB commands above use this wrapper. The older
-`examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py` campaign wrapper uses the
-same protocol for process searches submitted through the cluster communicator (see
-[Communicator](project:communicator.md)). Its scheduler setup is separate
-from the workstation launcher in `examples/ext_pot_cpmd`.
+A single point, a minimization or a nudged elastic band on one machine
+needs nothing else than the script as `ext_pot_path`:
+
+```{code-block} bash
+export CPMD_BIN=/path/to/cpmd.x PP_LIBRARY_PATH=/path/to/pseudopotentials/
+export CPMD_LAUNCH="mpirun -np 4 --bind-to none" CPMD_CUTOFF=70
+export CPMD_PP="14:Si_MT_BLYP.psp:LMAX=D,7:N_MT_BLYP.psp:LMAX=P"
+cat > config.ini <<'EOF'
+[Main]
+job = point
+
+[Potential]
+potential = ext_pot
+ext_pot_path = /absolute/path/to/eOn/examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py
+EOF
+eonclient
+```
+
+Inside a Slurm job, ask for as many tasks as `CPMD_LAUNCH` starts ranks
+(`--ntasks=4`), or OpenMPI finds one slot and refuses `-np 4`.
+`--bind-to none` keeps it from refusing to bind when the allocation is
+hardware threads rather than physical cores.
+
+`examples/akmc-cpmd-slurm` runs adaptive kinetic Monte Carlo on a silicon
+vacancy with the same script. The `cluster` communicator submits each
+process search as a Slurm job (see [Communicator](project:communicator.md)),
+and inside the job `ext_pot` calls `cpmd_extpot.py`. The client stays one
+process; the ranks belong to CPMD alone.
 
 What the script hands CPMD and reads back:
 
-- The deck says `ANGSTROM`, so CPMD converts eOn's positions with its own
-  Bohr (0.529177210859 A). CPMD answers in Hartree and Hartree/Bohr, and the
+- The deck says `ANGSTROM`. CPMD then converts eOn's positions with its
+  own Bohr, 0.529177210859 A. CPMD answers in Hartree and Hartree/Bohr. The
   script converts with CODATA 2018 (27.211386245988 eV, 0.529177210903 A),
   as the in-process [RGPOT](project:rgpot_pot.md) route does. The two Bohr
   values differ by 8.3e-11 relative; `client/validation/cpmd_units.py`
@@ -371,37 +473,6 @@ An external wrapper must return a nonzero status for a failed calculation;
 it must not invent an energy or reuse a stale response. Return finite values
 and preserve diagnostics. A point job validates setup before a minimization,
 NEB or aKMC run makes many expensive calls.
-
-### Empty CPMD output or a site that requires an allocation
-
-The CPMD example launcher writes `CPMD launcher: initializing`, the module
-loading phase and the selected executable to `cpmd.out`. If these lines
-are absent, check that the checkout contains the current launcher and
-that the inspected file belongs to the failed call. eOn names exchange
-directories `extpot_<process-id>_<call-id>`; use the directory printed in
-the error rather than guessing a hidden directory name. If initialization
-appears but execution does not, inspect the module-loading error. If
-execution appears, inspect the MPI/runtime diagnostics that follow it.
-An empty file alone does not identify an SCF failure.
-
-A workstation can run the example directly. On a cluster whose MPI launch
-requires a compute allocation, submit the entire eOn point job from
-`examples/ext_pot_cpmd`, with the site's partition and account:
-
-```bash
-sbatch --partition=YOUR_PARTITION --account=YOUR_ACCOUNT submit.sbatch
-```
-
-The script requests four MPI ranks and runs `run.sh` inside the example's
-Pixi environment. It finds Pixi on `PATH` or at `$HOME/.pixi/bin/pixi`;
-set `PIXI_BIN` to an absolute executable path for another installation.
-Its job output is
-`eon-cpmd-<job-id>.out`, and `run.sh` prints the record directory. Edit the
-rank request and `CPMD_MPI_LAUNCH` together if the calculation needs a
-different rank count. A batch script that runs a generated `cpmd.inp`
-directly checks CPMD startup, but does not resume an eOn process that has
-already exited. Run eOn inside the allocation to complete the external
-potential exchange.
 
 ## Performance considerations
 

@@ -255,7 +255,7 @@ Public Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Onsager-Machlup action-based springs (Mandelli &amp; Parrinello 2021). </p>
 
-<p class="definition">Definition at line <a class="el" href="NEBSpringForce_8h_source.html#l00048">48</a> of file <a class="el" href="NEBSpringForce_8h_source.html">NEBSpringForce.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="NEBSpringForce_8h_source.html#l00058">58</a> of file <a class="el" href="NEBSpringForce_8h_source.html">NEBSpringForce.h</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a54a4166719db13f004669057c4d071f7" name="a54a4166719db13f004669057c4d071f7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a54a4166719db13f004669057c4d071f7">&#9670;&#160;</a></span>compute()</h2>
@@ -296,23 +296,23 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NEBSpringForce_8cpp_source.html#l00052">52</a> of file <a class="el" href="NEBSpringForce_8cpp_source.html">NEBSpringForce.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   55</span>                                                                        {</div>
-<div class="line"><span class="lineno">   56</span>  <span class="comment">// Mandelli Eq. 13: k * ( R(i+1) + R(i-1) - 2R(i) + L(i+1) - L(i) )</span></div>
-<div class="line"><span class="lineno">   57</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff =</div>
-<div class="line"><span class="lineno">   58</span>      image-&gt;pbc(posNext + posPrev - 2.0 * pos + <a class="code hl_variable" href="#acf35d44b9d0458a3d15543045505acbd">L_vecs</a>[i + 1] - <a class="code hl_variable" href="#acf35d44b9d0458a3d15543045505acbd">L_vecs</a>[i]);</div>
-<div class="line"><span class="lineno">   59</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> f_om_vec = <a class="code hl_variable" href="#acf3e3732760c0e39e4e19488eee15660">base_k</a> * diff;</div>
-<div class="line"><span class="lineno">   60</span> </div>
-<div class="line"><span class="lineno">   61</span>  <span class="comment">// Mandelli Eq. 15: Project onto tangent</span></div>
-<div class="line"><span class="lineno">   62</span>  SpringResult result;</div>
-<div class="line"><span class="lineno">   63</span>  result.forceSpringPar = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(f_om_vec, tangent) * tangent;</div>
-<div class="line"><span class="lineno">   64</span>  result.forceSpring = AtomMatrix::Zero(tangent.rows(), tangent.cols());</div>
-<div class="line"><span class="lineno">   65</span>  <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">   66</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBSpringForce_8cpp_source.html#l00064">64</a> of file <a class="el" href="NEBSpringForce_8cpp_source.html">NEBSpringForce.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   67</span>                                                                        {</div>
+<div class="line"><span class="lineno">   68</span>  <span class="comment">// Mandelli Eq. 13: k * ( R(i+1) + R(i-1) - 2R(i) + L(i+1) - L(i) )</span></div>
+<div class="line"><span class="lineno">   69</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff =</div>
+<div class="line"><span class="lineno">   70</span>      image-&gt;pbc(posNext + posPrev - 2.0 * pos + <a class="code hl_variable" href="#acf35d44b9d0458a3d15543045505acbd">L_vecs</a>[i + 1] - <a class="code hl_variable" href="#acf35d44b9d0458a3d15543045505acbd">L_vecs</a>[i]);</div>
+<div class="line"><span class="lineno">   71</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> f_om_vec = <a class="code hl_variable" href="#acf3e3732760c0e39e4e19488eee15660">base_k</a> * diff;</div>
+<div class="line"><span class="lineno">   72</span> </div>
+<div class="line"><span class="lineno">   73</span>  <span class="comment">// Mandelli Eq. 15: Project onto tangent</span></div>
+<div class="line"><span class="lineno">   74</span>  SpringResult result;</div>
+<div class="line"><span class="lineno">   75</span>  result.forceSpringPar = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(f_om_vec, tangent) * tangent;</div>
+<div class="line"><span class="lineno">   76</span>  result.forceSpring = AtomMatrix::Zero(tangent.rows(), tangent.cols());</div>
+<div class="line"><span class="lineno">   77</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">   78</span>}</div>
 <div class="ttc" id="aEigen_8h_html_a427ffeef0bf8105f9563078d30c121e5"><div class="ttname"><a href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a></div><div class="ttdeci">double matDot(const AtomMatrix &amp;a, const AtomMatrix &amp;b)</div><div class="ttdoc">SIMD-optimized dot product for contiguous Eigen matrices.</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00050">Eigen.h:50</a></div></div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb_1_1OnsagerMachlupSpring_html_acf35d44b9d0458a3d15543045505acbd"><div class="ttname"><a href="#acf35d44b9d0458a3d15543045505acbd">eonc::neb::OnsagerMachlupSpring::L_vecs</a></div><div class="ttdeci">std::vector&lt; AtomMatrix &gt; L_vecs</div><div class="ttdef"><b>Definition</b> <a href="NEBSpringForce_8h_source.html#l00050">NEBSpringForce.h:50</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb_1_1OnsagerMachlupSpring_html_acf3e3732760c0e39e4e19488eee15660"><div class="ttname"><a href="#acf3e3732760c0e39e4e19488eee15660">eonc::neb::OnsagerMachlupSpring::base_k</a></div><div class="ttdeci">double base_k</div><div class="ttdef"><b>Definition</b> <a href="NEBSpringForce_8h_source.html#l00049">NEBSpringForce.h:49</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb_1_1OnsagerMachlupSpring_html_acf35d44b9d0458a3d15543045505acbd"><div class="ttname"><a href="#acf35d44b9d0458a3d15543045505acbd">eonc::neb::OnsagerMachlupSpring::L_vecs</a></div><div class="ttdeci">std::vector&lt; AtomMatrix &gt; L_vecs</div><div class="ttdef"><b>Definition</b> <a href="NEBSpringForce_8h_source.html#l00060">NEBSpringForce.h:60</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb_1_1OnsagerMachlupSpring_html_acf3e3732760c0e39e4e19488eee15660"><div class="ttname"><a href="#acf3e3732760c0e39e4e19488eee15660">eonc::neb::OnsagerMachlupSpring::base_k</a></div><div class="ttdeci">double base_k</div><div class="ttdef"><b>Definition</b> <a href="NEBSpringForce_8h_source.html#l00059">NEBSpringForce.h:59</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -329,7 +329,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NEBSpringForce_8h_source.html#l00049">49</a> of file <a class="el" href="NEBSpringForce_8h_source.html">NEBSpringForce.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="NEBSpringForce_8h_source.html#l00059">59</a> of file <a class="el" href="NEBSpringForce_8h_source.html">NEBSpringForce.h</a>.</p>
 
 </div>
 </div>
@@ -345,7 +345,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NEBSpringForce_8h_source.html#l00050">50</a> of file <a class="el" href="NEBSpringForce_8h_source.html">NEBSpringForce.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="NEBSpringForce_8h_source.html#l00060">60</a> of file <a class="el" href="NEBSpringForce_8h_source.html">NEBSpringForce.h</a>.</p>
 
 </div>
 </div>

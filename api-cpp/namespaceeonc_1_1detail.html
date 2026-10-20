@@ -311,14 +311,15 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">   43</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> xx = row[0] * row[0];</div>
 <div class="line"><span class="lineno">   44</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> yy = row[1] * row[1];</div>
 <div class="line"><span class="lineno">   45</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> zz = row[2] * row[2];</div>
-<div class="line"><span class="lineno">   46</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> norm = std::sqrt((xx + yy) + zz);</div>
+<div class="line"><span class="lineno">   46</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeonc_1_1exact.html#a5fc310e3d2dec128339f8f3b105b829e">norm</a> = std::sqrt((xx + yy) + zz);</div>
 <div class="line"><span class="lineno">   47</span>    <span class="keywordflow">if</span> (std::isnan(norm)) {</div>
-<div class="line"><span class="lineno">   48</span>      <span class="keywordflow">return</span> norm;</div>
+<div class="line"><span class="lineno">   48</span>      <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1exact.html#a5fc310e3d2dec128339f8f3b105b829e">norm</a>;</div>
 <div class="line"><span class="lineno">   49</span>    }</div>
 <div class="line"><span class="lineno">   50</span>    best = std::max(best, norm);</div>
 <div class="line"><span class="lineno">   51</span>  }</div>
 <div class="line"><span class="lineno">   52</span>  <span class="keywordflow">return</span> best;</div>
 <div class="line"><span class="lineno">   53</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1exact_html_a5fc310e3d2dec128339f8f3b105b829e"><div class="ttname"><a href="namespaceeonc_1_1exact.html#a5fc310e3d2dec128339f8f3b105b829e">eonc::exact::norm</a></div><div class="ttdeci">double norm(const Eigen::MatrixBase&lt; A &gt; &amp;x)</div><div class="ttdoc">sqrt of the correctly rounded squared norm; IEEE sqrt is itself correctly rounded,...</div><div class="ttdef"><b>Definition</b> <a href="ExactReduction_8h_source.html#l00092">ExactReduction.h:92</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -413,17 +414,16 @@ template&lt;typename Solver&gt; </div>
 <p class="definition">Definition at line <a class="el" href="ForEachImage_8h_source.html#l00026">26</a> of file <a class="el" href="ForEachImage_8h_source.html">ForEachImage.h</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">   26</span>                          {</div>
 <div class="line"><span class="lineno">   27</span><span class="preprocessor">#if defined(__linux__)</span></div>
-<div class="line"><span class="lineno">   28</span>  cpu_set_t <a class="code hl_class" href="classset.html">set</a>;</div>
-<div class="line"><span class="lineno">   29</span>  CPU_ZERO(&amp;<a class="code hl_class" href="classset.html">set</a>);</div>
-<div class="line"><span class="lineno">   30</span>  <span class="keywordflow">if</span> (sched_getaffinity(0, <span class="keyword">sizeof</span>(<a class="code hl_class" href="classset.html">set</a>), &amp;<a class="code hl_class" href="classset.html">set</a>) == 0) {</div>
-<div class="line"><span class="lineno">   31</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> n = CPU_COUNT(&amp;<a class="code hl_class" href="classset.html">set</a>);</div>
+<div class="line"><span class="lineno">   28</span>  cpu_set_t set;</div>
+<div class="line"><span class="lineno">   29</span>  CPU_ZERO(&amp;set);</div>
+<div class="line"><span class="lineno">   30</span>  <span class="keywordflow">if</span> (sched_getaffinity(0, <span class="keyword">sizeof</span>(set), &amp;set) == 0) {</div>
+<div class="line"><span class="lineno">   31</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> n = CPU_COUNT(&amp;set);</div>
 <div class="line"><span class="lineno">   32</span>    <span class="keywordflow">if</span> (n &gt; 0)</div>
 <div class="line"><span class="lineno">   33</span>      <span class="keywordflow">return</span> n;</div>
 <div class="line"><span class="lineno">   34</span>  }</div>
 <div class="line"><span class="lineno">   35</span><span class="preprocessor">#endif</span></div>
 <div class="line"><span class="lineno">   36</span>  <span class="keywordflow">return</span> std::max(1L, <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(std::thread::hardware_concurrency()));</div>
 <div class="line"><span class="lineno">   37</span>}</div>
-<div class="ttc" id="aclassset_html"><div class="ttname"><a href="classset.html">set</a></div><div class="ttdoc">STL class.</div></div>
 </div><!-- fragment -->
 </div>
 </div>

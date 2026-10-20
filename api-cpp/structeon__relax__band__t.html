@@ -261,7 +261,7 @@ Public Attributes</h2></td></tr>
 <div class="textblock"><p>Caller-owned band. </p>
 <p>The caller stamps version (EON_RELAX_VERSION_INIT) and zeroes flags. positions is 3*n_atoms*n_images (image stride 3*n_atoms). A successful NEB run or step writes interior images only; endpoints stay in the caller frame. atomic_nrs is n_atoms (shared composition), boxes is 9*n_images in <a class="el" href="classMatter.html#a527727dfd88d55bc617c3633a1ca5776">Matter::getCell()</a>.data() order (eOn <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> is RowMajor). is_fixed may be NULL (all free) or n_atoms (1 = fixed atom). mode may be NULL; required for kind=saddle (3*n_atoms). image_ids may be NULL; dest run/step emits dest path[] slots on the surface request (pointer identity) and does not read this field. masses may be NULL (each atom mass 1.0) or n_atoms (amu); readers honor masses only when version.minor &gt;= 1. For kind=NEB, n_images must equal Parameters.neb_options.image_count + 2 (NSDMI 7). positions layout matches <a class="el" href="classMatter.html">Matter</a> <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> (row-major xyz per atom). </p>
 
-<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00147">147</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00146">146</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
 </div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
 <a id="a2bb43a5a04c377b724f71ad2c0dfc5d3" name="a2bb43a5a04c377b724f71ad2c0dfc5d3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2bb43a5a04c377b724f71ad2c0dfc5d3">&#9670;&#160;</a></span>atomic_nrs</h2>
@@ -275,7 +275,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00153">153</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00152">152</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
 
 </div>
 </div>
@@ -291,7 +291,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00154">154</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00153">153</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
 
 </div>
 </div>
@@ -307,7 +307,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00149">149</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00148">148</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
 
 </div>
 </div>
@@ -323,7 +323,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00157">157</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00156">156</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
 
 </div>
 </div>
@@ -339,7 +339,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00155">155</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00154">154</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
 
 </div>
 </div>
@@ -355,7 +355,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00158">158</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00157">157</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
 
 </div>
 </div>
@@ -371,7 +371,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00156">156</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00155">155</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
 
 </div>
 </div>
@@ -387,7 +387,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00151">151</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00150">150</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
 
 </div>
 </div>
@@ -403,7 +403,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00150">150</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00149">149</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
 
 </div>
 </div>
@@ -419,7 +419,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00152">152</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00151">151</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
 
 </div>
 </div>
@@ -435,7 +435,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00148">148</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="eon__relax__engine_8h_source.html#l00147">147</a> of file <a class="el" href="eon__relax__engine_8h_source.html">eon_relax_engine.h</a>.</p>
 
 </div>
 </div>

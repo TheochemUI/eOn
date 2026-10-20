@@ -84,7 +84,6 @@ data-aria-dark="Switch to auto color mode">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
-<li class="toctree-l1 _expand"><a class="reference internal" href="../citing.html">Citing eOn</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/eessi.html">Build develop on EESSI</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/lammps.html">LAMMPS</a></li>
@@ -123,6 +122,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="mpi_potential.html">MPI potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="algorithm_selection.html">Choosing an algorithm</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="main.html">General simulation parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="structure_input.html">Structure input formats</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="potential.html">Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="structure_comparison.html">Structure comparison</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
@@ -178,6 +178,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/design/client/index.html">Client design</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/types.html">Type system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/exact-reduction.html">Exact reductions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/parameters.html">Parameters system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
@@ -200,6 +201,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.contracts.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.contracts.load_outcome.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts.load_outcome</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
@@ -468,10 +473,10 @@ with a local configuration closely resembling either minimum of (b), the kinetic
 database will suggest a saddle to converge with a dimer search. The dimer starts
 with this suggested configuration and mode, and if it is a good suggestion,
 converges very rapidly to the saddle.</p>
-<figure class="align-center" id="id114">
+<figure class="align-center" id="id107">
 <img alt="Carboxyl group on an Au(111)" class="full-width" src="../_images/akmc-1.png" />
 <figcaption>
-<p><span class="caption-text">Snapshots of Carboxyl group on an Au(111). (a) Hydrogen of carboxyl transfers to another oxygen. (b) Other atoms are stripped and stored.</span><a class="headerlink" href="#id114" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Snapshots of Carboxyl group on an Au(111). (a) Hydrogen of carboxyl transfers to another oxygen. (b) Other atoms are stripped and stored.</span><a class="headerlink" href="#id107" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <section id="where-a-process-is-stored">
@@ -493,6 +498,8 @@ With <code class="docutils literal notranslate"><span class="pre">kdb_only</span
 <p><code class="docutils literal notranslate"><span class="pre">use_kdb</span> <span class="pre">=</span> <span class="pre">true</span></code> does not import the PyPI <code class="docutils literal notranslate"><span class="pre">kdb</span></code> package. It needs
 <code class="docutils literal notranslate"><span class="pre">amsel</span></code> and <code class="docutils literal notranslate"><span class="pre">readcon-db</span></code>. A missing <code class="docutils literal notranslate"><span class="pre">amsel</span></code> logs <code class="docutils literal notranslate"><span class="pre">amsel</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">installed</span></code>
 and leaves the state unmarked, so a later iteration can try again.</p>
+<p>The retired reader imported <code class="docutils literal notranslate"><span class="pre">aselite</span></code> from the <code class="docutils literal notranslate"><span class="pre">kdb</span></code> module of the
+<code class="docutils literal notranslate"><span class="pre">tsase</span></code> package. This catalog does not import that module.</p>
 <p>The three match numbers are <code class="docutils literal notranslate"><span class="pre">kdb_nf</span></code>, <code class="docutils literal notranslate"><span class="pre">kdb_dc</span></code>, and <code class="docutils literal notranslate"><span class="pre">kdb_mac</span></code>:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">kdb_nf</span></code> is the neighbor fudge, a fraction. The default is 0.2.</p></li>

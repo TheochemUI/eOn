@@ -269,8 +269,8 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('GPRPotential_8
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classGPRPotential.html#ad02c8260f9ef21637b6d3361be2368ba">   34</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classGPRPotential.html#ad02c8260f9ef21637b6d3361be2368ba">GPRPotential::force</a>(<span class="keywordtype">long</span> N, <span class="keyword">const</span> <span class="keywordtype">double</span> *R, <span class="keyword">const</span> <span class="keywordtype">int</span> *atomicNrs,</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                         <span class="keywordtype">double</span> *F, <span class="keywordtype">double</span> *U, <span class="keywordtype">double</span> *variance,</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                         <span class="keyword">const</span> <span class="keywordtype">double</span> *box) {</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  (void)atomicNrs;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>  (void)box;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(atomicNrs);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(box);</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>  <span class="keywordflow">if</span> (variance != <span class="keyword">nullptr</span>) {</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    *variance = 0.0;</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  }</div>

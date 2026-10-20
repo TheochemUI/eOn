@@ -281,6 +281,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4ba6ee96636fdbc95059c67a10900ea7 inherit pub_methods_classeonc_1_1Job" id="r_a4ba6ee96636fdbc95059c67a10900ea7"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a4ba6ee96636fdbc95059c67a10900ea7">~Job</a> ()=default</td></tr>
 <tr class="memitem:a6a8f2fa4c5209bee4d243fec7b9db59e inherit pub_methods_classeonc_1_1Job" id="r_a6a8f2fa4c5209bee4d243fec7b9db59e"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379">JobType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a6a8f2fa4c5209bee4d243fec7b9db59e">getType</a> ()</td></tr>
 <tr class="memitem:a03a40b0e3f078b9e284220c71567e644 inherit pub_methods_classeonc_1_1Job" id="r_a03a40b0e3f078b9e284220c71567e644"><td class="memItemLeft"><a class="el" href="classeonc_1_1PotRegistry.html">PotRegistry</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a03a40b0e3f078b9e284220c71567e644">pots</a> () noexcept</td></tr>
+<tr class="memitem:a38797bdd6ab6331a21e1ebbdd4cc7e4a inherit pub_methods_classeonc_1_1Job" id="r_a38797bdd6ab6331a21e1ebbdd4cc7e4a"><td class="memItemLeft">size_t&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a38797bdd6ab6331a21e1ebbdd4cc7e4a">potRegistryForceCalls</a> () const noexcept</td></tr>
+<tr class="memdesc:a38797bdd6ab6331a21e1ebbdd4cc7e4a inherit pub_methods_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Force calls charged to pot's registry.  <br /></td></tr>
 <tr class="memitem:acdb29769b15353b093288278a05bff3c inherit pub_methods_classeonc_1_1Job" id="r_acdb29769b15353b093288278a05bff3c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#acdb29769b15353b093288278a05bff3c">releasePotential</a> ()</td></tr>
 <tr class="memdesc:acdb29769b15353b093288278a05bff3c inherit pub_methods_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop the <a class="el" href="classeonc_1_1Potential.html">Potential</a> so on_destroyed is recorded before <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a> dies.  <br /></td></tr>
 </table><table class="memberdecls">
@@ -445,7 +447,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   73</span>  safeHyper.setThermalVelocity();</div>
 <div class="line"><span class="lineno">   74</span> </div>
 <div class="line"><span class="lineno">   75</span>  {</div>
-<div class="line"><span class="lineno">   76</span>    eonc::ForceCallTimer timer(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#abfa6502e05b2d80b0850495314ac0b84">dephaseFCalls</a>);</div>
+<div class="line"><span class="lineno">   76</span>    eonc::ForceCallTimer timer(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#abfa6502e05b2d80b0850495314ac0b84">dephaseFCalls</a>, *<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>);</div>
 <div class="line"><span class="lineno">   77</span>    <a class="code hl_function" href="classeonc_1_1ReplicaDynamicsJob.html#ad42615653fca5638f109aa72ad3fbf3f">dephase</a>();</div>
 <div class="line"><span class="lineno">   78</span>  }</div>
 <div class="line"><span class="lineno">   79</span> </div>
@@ -510,136 +512,141 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  138</span>      }</div>
 <div class="line"><span class="lineno">  139</span>    }</div>
 <div class="line"><span class="lineno">  140</span> </div>
-<div class="line"><span class="lineno">  141</span>    <span class="keywordflow">if</span> ((nCheck == StateCheckInterval) &amp;&amp; !<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">newStateFlag</a>) {</div>
-<div class="line"><span class="lineno">  142</span>      nCheck = 0;</div>
-<div class="line"><span class="lineno">  143</span>      nRecord = 0;</div>
-<div class="line"><span class="lineno">  144</span>      {</div>
-<div class="line"><span class="lineno">  145</span>        eonc::ForceCallTimer timer(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a5ae0b01e5231f3657b4e07fff71c0b1a">minimizeFCalls</a>);</div>
-<div class="line"><span class="lineno">  146</span>        transitionFlag = <a class="code hl_function" href="classeonc_1_1ReplicaDynamicsJob.html#abe0432f594a29e908f38ab5ecad8d163">checkState</a>(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>.get(), <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab9e7b458ec30552def19abe4868a8009">reactant</a>.get());</div>
-<div class="line"><span class="lineno">  147</span>      }</div>
-<div class="line"><span class="lineno">  148</span>      <span class="keywordflow">if</span> (transitionFlag) {</div>
-<div class="line"><span class="lineno">  149</span>        nState++;</div>
-<div class="line"><span class="lineno">  150</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;New State {}: &quot;</span>, nState);</div>
-<div class="line"><span class="lineno">  151</span>        *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aee672e5d5baac404181abba95d977407">finalStateTmp</a> = *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>;</div>
-<div class="line"><span class="lineno">  152</span>        <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">transitionTime</a> = <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aeee8ccd5638f47488c72768c6a79ee06">time</a>;</div>
-<div class="line"><span class="lineno">  153</span>        newStateStep = step;</div>
-<div class="line"><span class="lineno">  154</span>        <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab9dd7546edfcb4b63aa54a48e1846a95">transitionStep</a> = newStateStep;</div>
-<div class="line"><span class="lineno">  155</span>        firstTransitFlag = 1;</div>
-<div class="line"><span class="lineno">  156</span>      }</div>
-<div class="line"><span class="lineno">  157</span>    }</div>
-<div class="line"><span class="lineno">  158</span> </div>
-<div class="line"><span class="lineno">  159</span>    <span class="keywordflow">if</span> (transitionFlag) {</div>
-<div class="line"><span class="lineno">  160</span>      QUILL_LOG_TRACE_L1(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;Refining transition time.&quot;</span>);</div>
-<div class="line"><span class="lineno">  161</span>      <span class="keyword">const</span> <span class="keywordtype">bool</span> can_refine =</div>
-<div class="line"><span class="lineno">  162</span>          <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options().refine_transition &amp;&amp; nRecord &gt;= 2;</div>
-<div class="line"><span class="lineno">  163</span>      <span class="keywordflow">if</span> (can_refine) {</div>
-<div class="line"><span class="lineno">  164</span>        eonc::ForceCallTimer timer(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#af15c54fa5be83dc980bf8b68be03eac3">refineFCalls</a>);</div>
-<div class="line"><span class="lineno">  165</span>        refineStep = <a class="code hl_function" href="classeonc_1_1ReplicaDynamicsJob.html#a23b0ecbde754088aac43c3124fb0ace9">refine</a>(mdBuffer, <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab9e7b458ec30552def19abe4868a8009">reactant</a>.get());</div>
-<div class="line"><span class="lineno">  166</span>        <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab9dd7546edfcb4b63aa54a48e1846a95">transitionStep</a> =</div>
-<div class="line"><span class="lineno">  167</span>            newStateStep - StateCheckInterval + refineStep * RecordInterval;</div>
-<div class="line"><span class="lineno">  168</span>        transitionTime_current = <a class="code hl_variable" href="#a586a4164522c27ddf5a7da1ec67059c1">timeBuffer</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(refineStep)];</div>
-<div class="line"><span class="lineno">  169</span>        <a class="code hl_variable" href="#ac4b60b9292797b3cd11768d0f9f63be3">transitionPot</a> = <a class="code hl_variable" href="#aa8de34fa6b72f4994a931ad9391f64ce">biasBuffer</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(refineStep)];</div>
-<div class="line"><span class="lineno">  170</span>        <span class="keyword">const</span> <span class="keywordtype">long</span> prev = refineStep &gt; 0 ? refineStep - 1 : 0;</div>
-<div class="line"><span class="lineno">  171</span>        <span class="comment">// The loop keeps integrating from this frame. The bond boost stays</span></div>
-<div class="line"><span class="lineno">  172</span>        <span class="comment">// on current: copy assignment would clear it, and the next step</span></div>
-<div class="line"><span class="lineno">  173</span>        <span class="comment">// would keep the bias from before the move.</span></div>
-<div class="line"><span class="lineno">  174</span>        <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>-&gt;assignKeepingBias(*mdBuffer[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(prev)]);</div>
-<div class="line"><span class="lineno">  175</span>      } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  176</span>        refineStep = 0;</div>
-<div class="line"><span class="lineno">  177</span>        transitionTime_current = <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aeee8ccd5638f47488c72768c6a79ee06">time</a>;</div>
-<div class="line"><span class="lineno">  178</span>        <a class="code hl_variable" href="#ac4b60b9292797b3cd11768d0f9f63be3">transitionPot</a> = boostPotential;</div>
-<div class="line"><span class="lineno">  179</span>      }</div>
-<div class="line"><span class="lineno">  180</span>      <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">transitionTime</a> = transitionTime_current - transitionTime_pre;</div>
-<div class="line"><span class="lineno">  181</span>      transitionTime_pre = transitionTime_current;</div>
-<div class="line"><span class="lineno">  182</span>      correctedTime =</div>
-<div class="line"><span class="lineno">  183</span>          (Temp &gt; 0.0 &amp;&amp; kB &gt; 0.0)</div>
-<div class="line"><span class="lineno">  184</span>              ? <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">transitionTime</a> * std::exp((-1) * <a class="code hl_variable" href="#ac4b60b9292797b3cd11768d0f9f63be3">transitionPot</a> / kB / Temp)</div>
-<div class="line"><span class="lineno">  185</span>              : <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">transitionTime</a>;</div>
-<div class="line"><span class="lineno">  186</span>      sumCorrectedTime += correctedTime;</div>
-<div class="line"><span class="lineno">  187</span>      <span class="keywordflow">if</span> (nState == 1) {</div>
-<div class="line"><span class="lineno">  188</span>        firstTransitionTime = <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">transitionTime</a>;</div>
-<div class="line"><span class="lineno">  189</span>      }</div>
-<div class="line"><span class="lineno">  190</span>      velocity = <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>-&gt;getVelocities();</div>
-<div class="line"><span class="lineno">  191</span>      velocity = velocity * (-1);</div>
-<div class="line"><span class="lineno">  192</span>      <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>-&gt;setVelocities(velocity);</div>
-<div class="line"><span class="lineno">  193</span> </div>
-<div class="line"><span class="lineno">  194</span>      <span class="keywordflow">if</span> (correctedTime &lt; <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a16ca616aa1cb47bfa738eb586b5d0dfa">minCorrectedTime</a>) {</div>
-<div class="line"><span class="lineno">  195</span>        <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a16ca616aa1cb47bfa738eb586b5d0dfa">minCorrectedTime</a> = correctedTime;</div>
-<div class="line"><span class="lineno">  196</span>        <span class="keywordflow">if</span> (can_refine) {</div>
-<div class="line"><span class="lineno">  197</span>          *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a3ad5c43bac2ea834829bcfd0a9eecc46">saddle</a> = *mdBuffer[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(refineStep)];</div>
-<div class="line"><span class="lineno">  198</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  199</span>          *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a3ad5c43bac2ea834829bcfd0a9eecc46">saddle</a> = *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>;</div>
-<div class="line"><span class="lineno">  200</span>        }</div>
-<div class="line"><span class="lineno">  201</span>        *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aaac1969265dba975eb457b7b205e3dbb">finalState</a> = *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aee672e5d5baac404181abba95d977407">finalStateTmp</a>;</div>
-<div class="line"><span class="lineno">  202</span>      }</div>
-<div class="line"><span class="lineno">  203</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>,</div>
-<div class="line"><span class="lineno">  204</span>                      <span class="stringliteral">&quot;tranisitonTime= {:.3e} s, biasPot= {:.3f} eV, &quot;</span></div>
-<div class="line"><span class="lineno">  205</span>                      <span class="stringliteral">&quot;correctedTime= {:.3e} s, &quot;</span></div>
-<div class="line"><span class="lineno">  206</span>                      <span class="stringliteral">&quot;sumCorrectedTime= {:.3e} s, minCorTime= {:.3e} s&quot;</span>,</div>
-<div class="line"><span class="lineno">  207</span>                      <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">transitionTime</a> * 1e-15 * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().timeUnit,</div>
-<div class="line"><span class="lineno">  208</span>                      <a class="code hl_variable" href="#ac4b60b9292797b3cd11768d0f9f63be3">transitionPot</a>,</div>
-<div class="line"><span class="lineno">  209</span>                      correctedTime * 1e-15 * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().timeUnit,</div>
-<div class="line"><span class="lineno">  210</span>                      sumCorrectedTime * 1e-15 * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().timeUnit,</div>
-<div class="line"><span class="lineno">  211</span>                      <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a16ca616aa1cb47bfa738eb586b5d0dfa">minCorrectedTime</a> * 1.0e-15 * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().timeUnit);</div>
-<div class="line"><span class="lineno">  212</span> </div>
-<div class="line"><span class="lineno">  213</span>      transitionFlag = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  214</span>    }</div>
-<div class="line"><span class="lineno">  215</span> </div>
-<div class="line"><span class="lineno">  216</span>    <span class="keywordflow">if</span> (firstTransitFlag &amp;&amp; sumCorrectedTime &gt; firstTransitionTime) {</div>
-<div class="line"><span class="lineno">  217</span>      stopFlag = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  218</span>      <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">newStateFlag</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  141</span>    <span class="comment">// The snapshots taken during this interval are the refine window.</span></div>
+<div class="line"><span class="lineno">  142</span>    <span class="comment">// Clearing the count before the transition drops that window.</span></div>
+<div class="line"><span class="lineno">  143</span>    <span class="keywordtype">long</span> recordedThisInterval = 0;</div>
+<div class="line"><span class="lineno">  144</span>    <span class="keywordflow">if</span> ((nCheck == StateCheckInterval) &amp;&amp; !<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">newStateFlag</a>) {</div>
+<div class="line"><span class="lineno">  145</span>      recordedThisInterval = nRecord;</div>
+<div class="line"><span class="lineno">  146</span>      nCheck = 0;</div>
+<div class="line"><span class="lineno">  147</span>      nRecord = 0;</div>
+<div class="line"><span class="lineno">  148</span>      {</div>
+<div class="line"><span class="lineno">  149</span>        eonc::ForceCallTimer timer(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a5ae0b01e5231f3657b4e07fff71c0b1a">minimizeFCalls</a>, *<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>);</div>
+<div class="line"><span class="lineno">  150</span>        transitionFlag = <a class="code hl_function" href="classeonc_1_1ReplicaDynamicsJob.html#abe0432f594a29e908f38ab5ecad8d163">checkState</a>(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>.get(), <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab9e7b458ec30552def19abe4868a8009">reactant</a>.get());</div>
+<div class="line"><span class="lineno">  151</span>      }</div>
+<div class="line"><span class="lineno">  152</span>      <span class="keywordflow">if</span> (transitionFlag) {</div>
+<div class="line"><span class="lineno">  153</span>        nState++;</div>
+<div class="line"><span class="lineno">  154</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;New State {}: &quot;</span>, nState);</div>
+<div class="line"><span class="lineno">  155</span>        *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aee672e5d5baac404181abba95d977407">finalStateTmp</a> = *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>;</div>
+<div class="line"><span class="lineno">  156</span>        <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">transitionTime</a> = <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aeee8ccd5638f47488c72768c6a79ee06">time</a>;</div>
+<div class="line"><span class="lineno">  157</span>        newStateStep = step;</div>
+<div class="line"><span class="lineno">  158</span>        <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab9dd7546edfcb4b63aa54a48e1846a95">transitionStep</a> = newStateStep;</div>
+<div class="line"><span class="lineno">  159</span>        firstTransitFlag = 1;</div>
+<div class="line"><span class="lineno">  160</span>      }</div>
+<div class="line"><span class="lineno">  161</span>    }</div>
+<div class="line"><span class="lineno">  162</span> </div>
+<div class="line"><span class="lineno">  163</span>    <span class="keywordflow">if</span> (transitionFlag) {</div>
+<div class="line"><span class="lineno">  164</span>      QUILL_LOG_TRACE_L1(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;Refining transition time.&quot;</span>);</div>
+<div class="line"><span class="lineno">  165</span>      <span class="keyword">const</span> <span class="keywordtype">bool</span> can_refine =</div>
+<div class="line"><span class="lineno">  166</span>          <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options().refine_transition &amp;&amp;</div>
+<div class="line"><span class="lineno">  167</span>          recordedThisInterval &gt;= 2;</div>
+<div class="line"><span class="lineno">  168</span>      <span class="keywordflow">if</span> (can_refine) {</div>
+<div class="line"><span class="lineno">  169</span>        eonc::ForceCallTimer timer(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#af15c54fa5be83dc980bf8b68be03eac3">refineFCalls</a>, *<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>);</div>
+<div class="line"><span class="lineno">  170</span>        refineStep = <a class="code hl_function" href="classeonc_1_1ReplicaDynamicsJob.html#a23b0ecbde754088aac43c3124fb0ace9">refine</a>(mdBuffer, <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab9e7b458ec30552def19abe4868a8009">reactant</a>.get());</div>
+<div class="line"><span class="lineno">  171</span>        <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab9dd7546edfcb4b63aa54a48e1846a95">transitionStep</a> =</div>
+<div class="line"><span class="lineno">  172</span>            newStateStep - StateCheckInterval + refineStep * RecordInterval;</div>
+<div class="line"><span class="lineno">  173</span>        transitionTime_current = <a class="code hl_variable" href="#a586a4164522c27ddf5a7da1ec67059c1">timeBuffer</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(refineStep)];</div>
+<div class="line"><span class="lineno">  174</span>        <a class="code hl_variable" href="#ac4b60b9292797b3cd11768d0f9f63be3">transitionPot</a> = <a class="code hl_variable" href="#aa8de34fa6b72f4994a931ad9391f64ce">biasBuffer</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(refineStep)];</div>
+<div class="line"><span class="lineno">  175</span>        <span class="keyword">const</span> <span class="keywordtype">long</span> prev = refineStep &gt; 0 ? refineStep - 1 : 0;</div>
+<div class="line"><span class="lineno">  176</span>        <span class="comment">// The loop keeps integrating from this frame. The bond boost stays</span></div>
+<div class="line"><span class="lineno">  177</span>        <span class="comment">// on current: copy assignment would clear it, and the next step</span></div>
+<div class="line"><span class="lineno">  178</span>        <span class="comment">// would keep the bias from before the move.</span></div>
+<div class="line"><span class="lineno">  179</span>        <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>-&gt;assignKeepingBias(*mdBuffer[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(prev)]);</div>
+<div class="line"><span class="lineno">  180</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  181</span>        refineStep = 0;</div>
+<div class="line"><span class="lineno">  182</span>        transitionTime_current = <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aeee8ccd5638f47488c72768c6a79ee06">time</a>;</div>
+<div class="line"><span class="lineno">  183</span>        <a class="code hl_variable" href="#ac4b60b9292797b3cd11768d0f9f63be3">transitionPot</a> = boostPotential;</div>
+<div class="line"><span class="lineno">  184</span>      }</div>
+<div class="line"><span class="lineno">  185</span>      <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">transitionTime</a> = transitionTime_current - transitionTime_pre;</div>
+<div class="line"><span class="lineno">  186</span>      transitionTime_pre = transitionTime_current;</div>
+<div class="line"><span class="lineno">  187</span>      correctedTime =</div>
+<div class="line"><span class="lineno">  188</span>          (Temp &gt; 0.0 &amp;&amp; kB &gt; 0.0)</div>
+<div class="line"><span class="lineno">  189</span>              ? <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">transitionTime</a> * std::exp((-1) * <a class="code hl_variable" href="#ac4b60b9292797b3cd11768d0f9f63be3">transitionPot</a> / kB / Temp)</div>
+<div class="line"><span class="lineno">  190</span>              : <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">transitionTime</a>;</div>
+<div class="line"><span class="lineno">  191</span>      sumCorrectedTime += correctedTime;</div>
+<div class="line"><span class="lineno">  192</span>      <span class="keywordflow">if</span> (nState == 1) {</div>
+<div class="line"><span class="lineno">  193</span>        firstTransitionTime = <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">transitionTime</a>;</div>
+<div class="line"><span class="lineno">  194</span>      }</div>
+<div class="line"><span class="lineno">  195</span>      velocity = <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>-&gt;getVelocities();</div>
+<div class="line"><span class="lineno">  196</span>      velocity = velocity * (-1);</div>
+<div class="line"><span class="lineno">  197</span>      <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>-&gt;setVelocities(velocity);</div>
+<div class="line"><span class="lineno">  198</span> </div>
+<div class="line"><span class="lineno">  199</span>      <span class="keywordflow">if</span> (correctedTime &lt; <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a16ca616aa1cb47bfa738eb586b5d0dfa">minCorrectedTime</a>) {</div>
+<div class="line"><span class="lineno">  200</span>        <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a16ca616aa1cb47bfa738eb586b5d0dfa">minCorrectedTime</a> = correctedTime;</div>
+<div class="line"><span class="lineno">  201</span>        <span class="keywordflow">if</span> (can_refine) {</div>
+<div class="line"><span class="lineno">  202</span>          *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a3ad5c43bac2ea834829bcfd0a9eecc46">saddle</a> = *mdBuffer[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(refineStep)];</div>
+<div class="line"><span class="lineno">  203</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  204</span>          *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a3ad5c43bac2ea834829bcfd0a9eecc46">saddle</a> = *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>;</div>
+<div class="line"><span class="lineno">  205</span>        }</div>
+<div class="line"><span class="lineno">  206</span>        *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aaac1969265dba975eb457b7b205e3dbb">finalState</a> = *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aee672e5d5baac404181abba95d977407">finalStateTmp</a>;</div>
+<div class="line"><span class="lineno">  207</span>      }</div>
+<div class="line"><span class="lineno">  208</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>,</div>
+<div class="line"><span class="lineno">  209</span>                      <span class="stringliteral">&quot;tranisitonTime= {:.3e} s, biasPot= {:.3f} eV, &quot;</span></div>
+<div class="line"><span class="lineno">  210</span>                      <span class="stringliteral">&quot;correctedTime= {:.3e} s, &quot;</span></div>
+<div class="line"><span class="lineno">  211</span>                      <span class="stringliteral">&quot;sumCorrectedTime= {:.3e} s, minCorTime= {:.3e} s&quot;</span>,</div>
+<div class="line"><span class="lineno">  212</span>                      <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">transitionTime</a> * 1e-15 * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().timeUnit,</div>
+<div class="line"><span class="lineno">  213</span>                      <a class="code hl_variable" href="#ac4b60b9292797b3cd11768d0f9f63be3">transitionPot</a>,</div>
+<div class="line"><span class="lineno">  214</span>                      correctedTime * 1e-15 * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().timeUnit,</div>
+<div class="line"><span class="lineno">  215</span>                      sumCorrectedTime * 1e-15 * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().timeUnit,</div>
+<div class="line"><span class="lineno">  216</span>                      <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a16ca616aa1cb47bfa738eb586b5d0dfa">minCorrectedTime</a> * 1.0e-15 * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().timeUnit);</div>
+<div class="line"><span class="lineno">  217</span> </div>
+<div class="line"><span class="lineno">  218</span>      transitionFlag = <span class="keyword">false</span>;</div>
 <div class="line"><span class="lineno">  219</span>    }</div>
 <div class="line"><span class="lineno">  220</span> </div>
-<div class="line"><span class="lineno">  221</span>    <span class="keywordflow">if</span> ((step % tenthSteps == 0) || (step == <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().steps)) {</div>
-<div class="line"><span class="lineno">  222</span>      <span class="keywordtype">double</span> maxAtomDistance = <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>-&gt;perAtomNorm(*<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab9e7b458ec30552def19abe4868a8009">reactant</a>);</div>
-<div class="line"><span class="lineno">  223</span>      QUILL_LOG_DEBUG(</div>
-<div class="line"><span class="lineno">  224</span>          <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;progress: {:.0f}%, max displacement: {:.3f}, step {} / {}&quot;</span>,</div>
-<div class="line"><span class="lineno">  225</span>          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(100.0 * step / <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().steps),</div>
-<div class="line"><span class="lineno">  226</span>          maxAtomDistance, step, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().steps);</div>
-<div class="line"><span class="lineno">  227</span>    }</div>
-<div class="line"><span class="lineno">  228</span> </div>
-<div class="line"><span class="lineno">  229</span>    <span class="comment">// Honor dynamics step budget (parity with TADJob); without this the</span></div>
-<div class="line"><span class="lineno">  230</span>    <span class="comment">// loop only exits on a confidence-gated transition and can run forever.</span></div>
-<div class="line"><span class="lineno">  231</span>    <span class="keywordflow">if</span> (step &gt;= <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().steps) {</div>
-<div class="line"><span class="lineno">  232</span>      stopFlag = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  233</span>    }</div>
-<div class="line"><span class="lineno">  234</span>  }</div>
-<div class="line"><span class="lineno">  235</span> </div>
-<div class="line"><span class="lineno">  236</span>  avgT = sumT / step;</div>
-<div class="line"><span class="lineno">  237</span>  varT = sumT2 / step - avgT * avgT;</div>
-<div class="line"><span class="lineno">  238</span> </div>
-<div class="line"><span class="lineno">  239</span>  <span class="keywordflow">if</span> (nBoost &gt; 0) {</div>
-<div class="line"><span class="lineno">  240</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>,</div>
-<div class="line"><span class="lineno">  241</span>                    <span class="stringliteral">&quot;Temperature : Average = {:.6f} ; Stddev = {:.6f} ; &quot;</span></div>
-<div class="line"><span class="lineno">  242</span>                    <span class="stringliteral">&quot;Factor = {:.6f}; Boost = {:.6f}&quot;</span>,</div>
-<div class="line"><span class="lineno">  243</span>                    avgT, std::sqrt(varT), varT / avgT / avgT * nFreeCoord / 2,</div>
-<div class="line"><span class="lineno">  244</span>                    sumboost / nBoost);</div>
-<div class="line"><span class="lineno">  245</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  246</span>    QUILL_LOG_DEBUG(</div>
-<div class="line"><span class="lineno">  247</span>        <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>,</div>
-<div class="line"><span class="lineno">  248</span>        <span class="stringliteral">&quot;Temperature : Average = {:.6f} ; Stddev = {:.6f} ; Factor = {:.6f}&quot;</span>,</div>
-<div class="line"><span class="lineno">  249</span>        avgT, std::sqrt(varT), varT / avgT / avgT * nFreeCoord / 2);</div>
-<div class="line"><span class="lineno">  250</span>  }</div>
-<div class="line"><span class="lineno">  251</span>  <span class="keywordflow">if</span> (std::isfinite(avgT) == 0) {</div>
-<div class="line"><span class="lineno">  252</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;Infinite average temperature, something went wrong!&quot;</span>);</div>
-<div class="line"><span class="lineno">  253</span>    <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">newStateFlag</a> = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  254</span>  }</div>
-<div class="line"><span class="lineno">  255</span> </div>
-<div class="line"><span class="lineno">  256</span>  <span class="comment">// finalState is only filled on transition; keep product valid otherwise.</span></div>
-<div class="line"><span class="lineno">  257</span>  <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>-&gt;setBiasPotential(<span class="keyword">nullptr</span>);</div>
-<div class="line"><span class="lineno">  258</span> </div>
-<div class="line"><span class="lineno">  259</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">newStateFlag</a> &amp;&amp; <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aaac1969265dba975eb457b7b205e3dbb">finalState</a>) {</div>
-<div class="line"><span class="lineno">  260</span>    *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a5e30efb7baa6f5088bb7ef8bede8af87">product</a> = *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aaac1969265dba975eb457b7b205e3dbb">finalState</a>;</div>
-<div class="line"><span class="lineno">  261</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>) {</div>
-<div class="line"><span class="lineno">  262</span>    *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a5e30efb7baa6f5088bb7ef8bede8af87">product</a> = *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>;</div>
-<div class="line"><span class="lineno">  263</span>  }</div>
-<div class="line"><span class="lineno">  264</span> </div>
-<div class="line"><span class="lineno">  265</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">newStateFlag</a>) {</div>
-<div class="line"><span class="lineno">  266</span>    <span class="keywordflow">return</span> 1;</div>
-<div class="line"><span class="lineno">  267</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  268</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">  269</span>  }</div>
-<div class="line"><span class="lineno">  270</span>}</div>
+<div class="line"><span class="lineno">  221</span>    <span class="keywordflow">if</span> (firstTransitFlag &amp;&amp; sumCorrectedTime &gt; firstTransitionTime) {</div>
+<div class="line"><span class="lineno">  222</span>      stopFlag = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  223</span>      <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">newStateFlag</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  224</span>    }</div>
+<div class="line"><span class="lineno">  225</span> </div>
+<div class="line"><span class="lineno">  226</span>    <span class="keywordflow">if</span> ((step % tenthSteps == 0) || (step == <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().steps)) {</div>
+<div class="line"><span class="lineno">  227</span>      <span class="keywordtype">double</span> maxAtomDistance = <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>-&gt;perAtomNorm(*<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab9e7b458ec30552def19abe4868a8009">reactant</a>);</div>
+<div class="line"><span class="lineno">  228</span>      QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">  229</span>          <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;progress: {:.0f}%, max displacement: {:.3f}, step {} / {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  230</span>          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(100.0 * step / <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().steps),</div>
+<div class="line"><span class="lineno">  231</span>          maxAtomDistance, step, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().steps);</div>
+<div class="line"><span class="lineno">  232</span>    }</div>
+<div class="line"><span class="lineno">  233</span> </div>
+<div class="line"><span class="lineno">  234</span>    <span class="comment">// Honor dynamics step budget (parity with TADJob); without this the</span></div>
+<div class="line"><span class="lineno">  235</span>    <span class="comment">// loop only exits on a confidence-gated transition and can run forever.</span></div>
+<div class="line"><span class="lineno">  236</span>    <span class="keywordflow">if</span> (step &gt;= <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().steps) {</div>
+<div class="line"><span class="lineno">  237</span>      stopFlag = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  238</span>    }</div>
+<div class="line"><span class="lineno">  239</span>  }</div>
+<div class="line"><span class="lineno">  240</span> </div>
+<div class="line"><span class="lineno">  241</span>  avgT = sumT / step;</div>
+<div class="line"><span class="lineno">  242</span>  varT = sumT2 / step - avgT * avgT;</div>
+<div class="line"><span class="lineno">  243</span> </div>
+<div class="line"><span class="lineno">  244</span>  <span class="keywordflow">if</span> (nBoost &gt; 0) {</div>
+<div class="line"><span class="lineno">  245</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>,</div>
+<div class="line"><span class="lineno">  246</span>                    <span class="stringliteral">&quot;Temperature : Average = {:.6f} ; Stddev = {:.6f} ; &quot;</span></div>
+<div class="line"><span class="lineno">  247</span>                    <span class="stringliteral">&quot;Factor = {:.6f}; Boost = {:.6f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  248</span>                    avgT, std::sqrt(varT), varT / avgT / avgT * nFreeCoord / 2,</div>
+<div class="line"><span class="lineno">  249</span>                    sumboost / nBoost);</div>
+<div class="line"><span class="lineno">  250</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  251</span>    QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">  252</span>        <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>,</div>
+<div class="line"><span class="lineno">  253</span>        <span class="stringliteral">&quot;Temperature : Average = {:.6f} ; Stddev = {:.6f} ; Factor = {:.6f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  254</span>        avgT, std::sqrt(varT), varT / avgT / avgT * nFreeCoord / 2);</div>
+<div class="line"><span class="lineno">  255</span>  }</div>
+<div class="line"><span class="lineno">  256</span>  <span class="keywordflow">if</span> (std::isfinite(avgT) == 0) {</div>
+<div class="line"><span class="lineno">  257</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;Infinite average temperature, something went wrong!&quot;</span>);</div>
+<div class="line"><span class="lineno">  258</span>    <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">newStateFlag</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  259</span>  }</div>
+<div class="line"><span class="lineno">  260</span> </div>
+<div class="line"><span class="lineno">  261</span>  <span class="comment">// finalState is only filled on transition; keep product valid otherwise.</span></div>
+<div class="line"><span class="lineno">  262</span>  <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>-&gt;setBiasPotential(<span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">  263</span> </div>
+<div class="line"><span class="lineno">  264</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">newStateFlag</a> &amp;&amp; <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aaac1969265dba975eb457b7b205e3dbb">finalState</a>) {</div>
+<div class="line"><span class="lineno">  265</span>    *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a5e30efb7baa6f5088bb7ef8bede8af87">product</a> = *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aaac1969265dba975eb457b7b205e3dbb">finalState</a>;</div>
+<div class="line"><span class="lineno">  266</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>) {</div>
+<div class="line"><span class="lineno">  267</span>    *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a5e30efb7baa6f5088bb7ef8bede8af87">product</a> = *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>;</div>
+<div class="line"><span class="lineno">  268</span>  }</div>
+<div class="line"><span class="lineno">  269</span> </div>
+<div class="line"><span class="lineno">  270</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">newStateFlag</a>) {</div>
+<div class="line"><span class="lineno">  271</span>    <span class="keywordflow">return</span> 1;</div>
+<div class="line"><span class="lineno">  272</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  273</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">  274</span>  }</div>
+<div class="line"><span class="lineno">  275</span>}</div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Hyperdynamics_html_a7c047d56f2b6eed95770617d534b9953"><div class="ttname"><a href="classeonc_1_1Hyperdynamics.html#a7c047d56f2b6eed95770617d534b9953">eonc::Hyperdynamics::BOND_BOOST</a></div><div class="ttdeci">static const char BOND_BOOST[]</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00075">BondBoost.h:75</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Job_html_a948da0de6ec2575bd6ac975fedaad0c9"><div class="ttname"><a href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">eonc::Job::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdoc">Set when one Potential is shared across Matters, images, or a caller.</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00066">Job.h:66</a></div></div>

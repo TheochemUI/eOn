@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('CancelToken_8h
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">public</span>:</div>
 <div class="foldopen" id="foldopen00024" data-start="{" data-end="}">
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeonc_1_1JobCancelled.html#a225ffe0a540cee41236c779b6668742e">   24</a></span>  <span class="keyword">explicit</span> <a class="code hl_function" href="classeonc_1_1JobCancelled.html#a225ffe0a540cee41236c779b6668742e">JobCancelled</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *site = <span class="stringliteral">&quot;cancelled&quot;</span>)</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>      : std::runtime_error(std::<a class="code hl_class" href="classstring.html">string</a>(<span class="stringliteral">&quot;job cancelled at &quot;</span>) +</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>      : std::runtime_error(std::string(<span class="stringliteral">&quot;job cancelled at &quot;</span>) +</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>                           (site != nullptr ? site : <span class="stringliteral">&quot;cancelled&quot;</span>)) {}</div>
 </div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>};</div>
@@ -308,7 +308,6 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('CancelToken_8h
 <div class="ttc" id="aclasseonc_1_1CancelToken_html_af189b16e5127511dfbeccc60c717056a"><div class="ttname"><a href="classeonc_1_1CancelToken.html#af189b16e5127511dfbeccc60c717056a">eonc::CancelToken::reset</a></div><div class="ttdeci">void reset() noexcept</div><div class="ttdef"><b>Definition</b> <a href="#l00040">CancelToken.h:40</a></div></div>
 <div class="ttc" id="aclasseonc_1_1JobCancelled_html"><div class="ttname"><a href="classeonc_1_1JobCancelled.html">eonc::JobCancelled</a></div><div class="ttdoc">Cooperative stop. Loops poll and throw; they do not abort the process.</div><div class="ttdef"><b>Definition</b> <a href="#l00022">CancelToken.h:22</a></div></div>
 <div class="ttc" id="aclasseonc_1_1JobCancelled_html_a225ffe0a540cee41236c779b6668742e"><div class="ttname"><a href="classeonc_1_1JobCancelled.html#a225ffe0a540cee41236c779b6668742e">eonc::JobCancelled::JobCancelled</a></div><div class="ttdeci">JobCancelled(const char *site=&quot;cancelled&quot;)</div><div class="ttdef"><b>Definition</b> <a href="#l00024">CancelToken.h:24</a></div></div>
-<div class="ttc" id="aclassstring_html"><div class="ttname"><a href="classstring.html">string</a></div><div class="ttdoc">STL class.</div></div>
 <div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00023">ARTnSaddleSearch.cpp:23</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

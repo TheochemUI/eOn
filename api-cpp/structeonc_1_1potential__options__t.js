@@ -8,6 +8,8 @@ var structeonc_1_1potential__options__t =
     [ "MPIClientComm", "structeonc_1_1potential__options__t.html#a87cc638d8bdacb04e502fdc8d000d59c", null ],
     [ "MPIPollPeriod", "structeonc_1_1potential__options__t.html#a084157b4cf3cdd133115e645cef5dc7d", null ],
     [ "MPIPotentialRank", "structeonc_1_1potential__options__t.html#aaaf5bbabc7588ad37229eb8ce4505927", null ],
+    [ "pairCutoff", "structeonc_1_1potential__options__t.html#acda4a16d6c5d839aa6878bbb4c098d1a", null ],
+    [ "pairSwitchWidth", "structeonc_1_1potential__options__t.html#a7a3d330c58a55ce416de7cfda5da1b75", null ],
     [ "potential", "structeonc_1_1potential__options__t.html#a9cdc33bdbae47475f3a71c8e39c0ee78", null ],
     [ "potentialsPath", "structeonc_1_1potential__options__t.html#a511ee05ffc7b3df07cd89c9ce8a801f1", null ],
     [ "thread_safe", "structeonc_1_1potential__options__t.html#a8fd9e177d2816783656110c9f80f5838", null ]

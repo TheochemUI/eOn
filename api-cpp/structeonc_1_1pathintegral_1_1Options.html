@@ -256,7 +256,7 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a1f6545406e7c659239c00556e7672f98" id="r_a1f6545406e7c659239c00556e7672f98"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a1f6545406e7c659239c00556e7672f98">ecoOmegaMax</a> {0.0}</td></tr>
 <tr class="memdesc:a1f6545406e7c659239c00556e7672f98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Highest physical frequency the economised springs reproduce.  <br /></td></tr>
 <tr class="memitem:a462451eb9b3d400d3803107ea8ec1ed1" id="r_a462451eb9b3d400d3803107ea8ec1ed1"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a462451eb9b3d400d3803107ea8ec1ed1">gleFile</a></td></tr>
-<tr class="memdesc:a462451eb9b3d400d3803107ea8ec1ed1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normal-mode GLE matrices.  <br /></td></tr>
+<tr class="memdesc:a462451eb9b3d400d3803107ea8ec1ed1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normal-mode GLE matrices in normal-mode order.  <br /></td></tr>
 <tr class="memitem:a700dab2116cd740f25511468409d688a" id="r_a700dab2116cd740f25511468409d688a"><td class="memItemLeft">std::uint64_t&#160;</td><td class="memItemRight"><a class="el" href="#a700dab2116cd740f25511468409d688a">seed</a> {1}</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
@@ -328,8 +328,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Normal-mode GLE matrices. </p>
-<p>One block per internal mode, or one block per bead with the centroid block ignored. </p>
+<p>Normal-mode GLE matrices in normal-mode order. </p>
+<p>One block per bead includes the centroid; one block per internal mode omits it. </p>
 
 <p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00064">64</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
 

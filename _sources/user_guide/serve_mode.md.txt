@@ -238,6 +238,21 @@ Each response returns:
 - **energy**: total potential energy (eV)
 - **forces**: flat array matching positions layout (eV/Angstrom)
 
+A client calls `getCapabilities` before `calculate`. The reply contains:
+
+- **protocolFamily**: `rgpot.potentials`
+- **protocolMajor**: 1
+- **schemaId**: `0xbd1f89fa17369103`
+- **bridgeAbiMajor** / **bridgeAbiMinor**: 1 / 0
+- **bridgeLayout**: 1
+- **dlpackMajor** / **dlpackMinor**: 1 / 0
+- **bridgeFeatures**: 0 (energy and forces over RPC; no eindir feature bits)
+- **operations**: energy and forces
+- **buildVersion**: the eOn project version
+- **buildRevision**: `git rev-parse --short=12`, or empty when git cannot name the commit
+
+A client refuses the server when `getCapabilities` is left unimplemented.
+
 ## Integration with ChemGP
 
 ChemGP connects to serve mode via its `RpcPotential` oracle:
@@ -264,7 +279,7 @@ custom `AtomMatrix` by never allowing both types to coexist in the same
 translation unit. The capnp schema code is compiled in a separate TU
 (`ServeRpcServer.cpp`) from the eOn potential wrapper (`ServeMode.cpp`). For
 more on the integration pattern, see the
-[rgpot integration guide](https://rgpot.rgoswami.me/integration_guide.html).
+[rgpot integration guide](https://rgpot.rgoswami.me/howto/integration.html).
 
 ## Command reference
 

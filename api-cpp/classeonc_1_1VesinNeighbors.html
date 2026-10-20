@@ -359,12 +359,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="VesinNeighbors_8cpp_source.html#l00014">14</a> of file <a class="el" href="VesinNeighbors_8cpp_source.html">VesinNeighbors.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   15</span>    : <a class="code hl_variable" href="#a6d7874cc3032e22c9ba6c46978484147">list_</a>(other.list_),</div>
-<div class="line"><span class="lineno">   16</span>      <a class="code hl_variable" href="#a2c375c43c369dd784c2319220b27e89a">owns_</a>(other.owns_) {</div>
-<div class="line"><span class="lineno">   17</span>  other.list_ = VesinNeighborList{};</div>
-<div class="line"><span class="lineno">   18</span>  other.owns_ = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   19</span>}</div>
+<p class="definition">Definition at line <a class="el" href="VesinNeighbors_8cpp_source.html#l00015">15</a> of file <a class="el" href="VesinNeighbors_8cpp_source.html">VesinNeighbors.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   16</span>    : <a class="code hl_variable" href="#a6d7874cc3032e22c9ba6c46978484147">list_</a>(other.list_),</div>
+<div class="line"><span class="lineno">   17</span>      <a class="code hl_variable" href="#a2c375c43c369dd784c2319220b27e89a">owns_</a>(other.owns_) {</div>
+<div class="line"><span class="lineno">   18</span>  other.list_ = VesinNeighborList{};</div>
+<div class="line"><span class="lineno">   19</span>  other.owns_ = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   20</span>}</div>
 <div class="ttc" id="aclasseonc_1_1VesinNeighbors_html_a2c375c43c369dd784c2319220b27e89a"><div class="ttname"><a href="#a2c375c43c369dd784c2319220b27e89a">eonc::VesinNeighbors::owns_</a></div><div class="ttdeci">bool owns_</div><div class="ttdef"><b>Definition</b> <a href="VesinNeighbors_8h_source.html#l00094">VesinNeighbors.h:94</a></div></div>
 <div class="ttc" id="aclasseonc_1_1VesinNeighbors_html_a6d7874cc3032e22c9ba6c46978484147"><div class="ttname"><a href="#a6d7874cc3032e22c9ba6c46978484147">eonc::VesinNeighbors::list_</a></div><div class="ttdeci">VesinNeighborList list_</div><div class="ttdef"><b>Definition</b> <a href="VesinNeighbors_8h_source.html#l00093">VesinNeighbors.h:93</a></div></div>
 </div><!-- fragment -->
@@ -385,9 +385,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="VesinNeighbors_8cpp_source.html#l00032">32</a> of file <a class="el" href="VesinNeighbors_8cpp_source.html">VesinNeighbors.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   32</span>{ <a class="code hl_function" href="#a1112082018d8c7b824d15e0a8a989ba3">free_list</a>(); }</div>
-<div class="ttc" id="aclasseonc_1_1VesinNeighbors_html_a1112082018d8c7b824d15e0a8a989ba3"><div class="ttname"><a href="#a1112082018d8c7b824d15e0a8a989ba3">eonc::VesinNeighbors::free_list</a></div><div class="ttdeci">void free_list()</div><div class="ttdef"><b>Definition</b> <a href="VesinNeighbors_8cpp_source.html#l00034">VesinNeighbors.cpp:34</a></div></div>
+<p class="definition">Definition at line <a class="el" href="VesinNeighbors_8cpp_source.html#l00033">33</a> of file <a class="el" href="VesinNeighbors_8cpp_source.html">VesinNeighbors.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   33</span>{ <a class="code hl_function" href="#a1112082018d8c7b824d15e0a8a989ba3">free_list</a>(); }</div>
+<div class="ttc" id="aclasseonc_1_1VesinNeighbors_html_a1112082018d8c7b824d15e0a8a989ba3"><div class="ttname"><a href="#a1112082018d8c7b824d15e0a8a989ba3">eonc::VesinNeighbors::free_list</a></div><div class="ttdeci">void free_list()</div><div class="ttdef"><b>Definition</b> <a href="VesinNeighbors_8cpp_source.html#l00035">VesinNeighbors.cpp:35</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -425,54 +425,54 @@ Private Attributes</h2></td></tr>
 <p><span class="tt">R</span> is length <span class="tt">3*n</span> (x,y,z interleaved); <span class="tt">box</span> is length 9 (row-major cell vectors).</p>
 <p>Keep the same <span class="tt"><a class="el" href="classeonc_1_1VesinNeighbors.html" title="RAII wrapper around vesin_neighbors for Matter-style boxes (double[9] row-major 3×3 cell,...">VesinNeighbors</a></span> instance across force evaluations so vesin can re-use pair/distance/vector allocations (see <span class="tt">vesin_neighbors</span> docs). Freeing before every <span class="tt"><a class="el" href="#ab548af1230dbf3ec9413a278e2632422" title="Build / rebuild the list.">compute</a></span> is incorrect and expensive. </p>
 
-<p class="definition">Definition at line <a class="el" href="VesinNeighbors_8cpp_source.html#l00042">42</a> of file <a class="el" href="VesinNeighbors_8cpp_source.html">VesinNeighbors.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   43</span>                                                 {</div>
-<div class="line"><span class="lineno">   44</span>  <span class="keywordflow">if</span> (R == <span class="keyword">nullptr</span> || (n &gt; 0 &amp;&amp; box == <span class="keyword">nullptr</span>)) {</div>
-<div class="line"><span class="lineno">   45</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;VesinNeighbors::compute: null R or box&quot;</span>);</div>
-<div class="line"><span class="lineno">   46</span>  }</div>
-<div class="line"><span class="lineno">   47</span>  <span class="keywordflow">if</span> (opt.cutoff &lt;= 0.0) {</div>
-<div class="line"><span class="lineno">   48</span>    <a class="code hl_function" href="#a1112082018d8c7b824d15e0a8a989ba3">free_list</a>();</div>
-<div class="line"><span class="lineno">   49</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">   50</span>  }</div>
-<div class="line"><span class="lineno">   51</span> </div>
-<div class="line"><span class="lineno">   52</span>  <span class="comment">// Pass the existing VesinNeighborList through so vesin can re-use pair /</span></div>
-<div class="line"><span class="lineno">   53</span>  <span class="comment">// distance / vector buffers (upstream contract). Do not vesin_free first —</span></div>
-<div class="line"><span class="lineno">   54</span>  <span class="comment">// that forces a full realloc every call and is the #386 ASV regression.</span></div>
-<div class="line"><span class="lineno">   55</span>  VesinOptions vopt{};</div>
-<div class="line"><span class="lineno">   56</span>  vopt.cutoff = opt.cutoff;</div>
-<div class="line"><span class="lineno">   57</span>  vopt.full = opt.full;</div>
-<div class="line"><span class="lineno">   58</span>  vopt.sorted = opt.sorted;</div>
-<div class="line"><span class="lineno">   59</span>  vopt.algorithm = opt.algorithm;</div>
-<div class="line"><span class="lineno">   60</span>  vopt.skin = opt.skin;</div>
-<div class="line"><span class="lineno">   61</span>  vopt.n_threads = opt.n_threads;</div>
-<div class="line"><span class="lineno">   62</span>  vopt.return_shifts = opt.return_shifts;</div>
-<div class="line"><span class="lineno">   63</span>  vopt.return_distances = opt.return_distances;</div>
-<div class="line"><span class="lineno">   64</span>  vopt.return_vectors = opt.return_vectors;</div>
-<div class="line"><span class="lineno">   65</span> </div>
-<div class="line"><span class="lineno">   66</span>  <span class="keywordtype">bool</span> periodic[3] = {opt.periodic[0], opt.periodic[1], opt.periodic[2]};</div>
-<div class="line"><span class="lineno">   67</span>  <span class="keywordtype">double</span> box33[3][3];</div>
-<div class="line"><span class="lineno">   68</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> a = 0; a &lt; 3; ++a) {</div>
-<div class="line"><span class="lineno">   69</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> b = 0; b &lt; 3; ++b) {</div>
-<div class="line"><span class="lineno">   70</span>      box33[a][b] = box[3 * a + b];</div>
-<div class="line"><span class="lineno">   71</span>    }</div>
-<div class="line"><span class="lineno">   72</span>  }</div>
-<div class="line"><span class="lineno">   73</span> </div>
-<div class="line"><span class="lineno">   74</span>  VesinDevice cpu{VesinCPU, 0};</div>
-<div class="line"><span class="lineno">   75</span>  <span class="keyword">const</span> <span class="keywordtype">char</span> *error_message = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">   76</span>  <span class="keywordtype">int</span> status =</div>
-<div class="line"><span class="lineno">   77</span>      vesin_neighbors(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">double</span> (*)[3]<span class="keyword">&gt;</span>(R), n, box33,</div>
-<div class="line"><span class="lineno">   78</span>                      periodic, cpu, vopt, &amp;<a class="code hl_variable" href="#a6d7874cc3032e22c9ba6c46978484147">list_</a>, &amp;error_message);</div>
-<div class="line"><span class="lineno">   79</span>  <span class="keywordflow">if</span> (status != EXIT_SUCCESS) {</div>
-<div class="line"><span class="lineno">   80</span>    std::string err = <span class="stringliteral">&quot;vesin_neighbors failed&quot;</span>;</div>
-<div class="line"><span class="lineno">   81</span>    <span class="keywordflow">if</span> (error_message != <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">   82</span>      err += <span class="stringliteral">&quot;: &quot;</span>;</div>
-<div class="line"><span class="lineno">   83</span>      err += error_message;</div>
-<div class="line"><span class="lineno">   84</span>    }</div>
-<div class="line"><span class="lineno">   85</span>    <a class="code hl_function" href="#a1112082018d8c7b824d15e0a8a989ba3">free_list</a>();</div>
-<div class="line"><span class="lineno">   86</span>    <span class="keywordflow">throw</span> std::runtime_error(err);</div>
-<div class="line"><span class="lineno">   87</span>  }</div>
-<div class="line"><span class="lineno">   88</span>  <a class="code hl_variable" href="#a2c375c43c369dd784c2319220b27e89a">owns_</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   89</span>}</div>
+<p class="definition">Definition at line <a class="el" href="VesinNeighbors_8cpp_source.html#l00043">43</a> of file <a class="el" href="VesinNeighbors_8cpp_source.html">VesinNeighbors.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   44</span>                                                 {</div>
+<div class="line"><span class="lineno">   45</span>  <span class="keywordflow">if</span> (R == <span class="keyword">nullptr</span> || (n &gt; 0 &amp;&amp; box == <span class="keyword">nullptr</span>)) {</div>
+<div class="line"><span class="lineno">   46</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;VesinNeighbors::compute: null R or box&quot;</span>);</div>
+<div class="line"><span class="lineno">   47</span>  }</div>
+<div class="line"><span class="lineno">   48</span>  <span class="keywordflow">if</span> (opt.cutoff &lt;= 0.0) {</div>
+<div class="line"><span class="lineno">   49</span>    <a class="code hl_function" href="#a1112082018d8c7b824d15e0a8a989ba3">free_list</a>();</div>
+<div class="line"><span class="lineno">   50</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   51</span>  }</div>
+<div class="line"><span class="lineno">   52</span> </div>
+<div class="line"><span class="lineno">   53</span>  <span class="comment">// Pass the existing VesinNeighborList through so vesin can re-use pair /</span></div>
+<div class="line"><span class="lineno">   54</span>  <span class="comment">// distance / vector buffers (upstream contract). Do not vesin_free first —</span></div>
+<div class="line"><span class="lineno">   55</span>  <span class="comment">// that forces a full realloc every call and is the #386 ASV regression.</span></div>
+<div class="line"><span class="lineno">   56</span>  VesinOptions vopt{};</div>
+<div class="line"><span class="lineno">   57</span>  vopt.cutoff = opt.cutoff;</div>
+<div class="line"><span class="lineno">   58</span>  vopt.full = opt.full;</div>
+<div class="line"><span class="lineno">   59</span>  vopt.sorted = opt.sorted;</div>
+<div class="line"><span class="lineno">   60</span>  vopt.algorithm = opt.algorithm;</div>
+<div class="line"><span class="lineno">   61</span>  vopt.skin = opt.skin;</div>
+<div class="line"><span class="lineno">   62</span>  vopt.n_threads = opt.n_threads;</div>
+<div class="line"><span class="lineno">   63</span>  vopt.return_shifts = opt.return_shifts;</div>
+<div class="line"><span class="lineno">   64</span>  vopt.return_distances = opt.return_distances;</div>
+<div class="line"><span class="lineno">   65</span>  vopt.return_vectors = opt.return_vectors;</div>
+<div class="line"><span class="lineno">   66</span> </div>
+<div class="line"><span class="lineno">   67</span>  <span class="keywordtype">bool</span> periodic[3] = {opt.periodic[0], opt.periodic[1], opt.periodic[2]};</div>
+<div class="line"><span class="lineno">   68</span>  <span class="keywordtype">double</span> box33[3][3];</div>
+<div class="line"><span class="lineno">   69</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> a = 0; a &lt; 3; ++a) {</div>
+<div class="line"><span class="lineno">   70</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> b = 0; b &lt; 3; ++b) {</div>
+<div class="line"><span class="lineno">   71</span>      box33[a][b] = box[3 * a + b];</div>
+<div class="line"><span class="lineno">   72</span>    }</div>
+<div class="line"><span class="lineno">   73</span>  }</div>
+<div class="line"><span class="lineno">   74</span> </div>
+<div class="line"><span class="lineno">   75</span>  VesinDevice cpu{VesinCPU, 0};</div>
+<div class="line"><span class="lineno">   76</span>  <span class="keyword">const</span> <span class="keywordtype">char</span> *error_message = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   77</span>  <span class="keywordtype">int</span> status =</div>
+<div class="line"><span class="lineno">   78</span>      vesin_neighbors(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">double</span> (*)[3]<span class="keyword">&gt;</span>(R), n, box33,</div>
+<div class="line"><span class="lineno">   79</span>                      periodic, cpu, vopt, &amp;<a class="code hl_variable" href="#a6d7874cc3032e22c9ba6c46978484147">list_</a>, &amp;error_message);</div>
+<div class="line"><span class="lineno">   80</span>  <span class="keywordflow">if</span> (status != EXIT_SUCCESS) {</div>
+<div class="line"><span class="lineno">   81</span>    std::string err = <span class="stringliteral">&quot;vesin_neighbors failed&quot;</span>;</div>
+<div class="line"><span class="lineno">   82</span>    <span class="keywordflow">if</span> (error_message != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">   83</span>      err += <span class="stringliteral">&quot;: &quot;</span>;</div>
+<div class="line"><span class="lineno">   84</span>      err += error_message;</div>
+<div class="line"><span class="lineno">   85</span>    }</div>
+<div class="line"><span class="lineno">   86</span>    <a class="code hl_function" href="#a1112082018d8c7b824d15e0a8a989ba3">free_list</a>();</div>
+<div class="line"><span class="lineno">   87</span>    <span class="keywordflow">throw</span> std::runtime_error(err);</div>
+<div class="line"><span class="lineno">   88</span>  }</div>
+<div class="line"><span class="lineno">   89</span>  <a class="code hl_variable" href="#a2c375c43c369dd784c2319220b27e89a">owns_</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   90</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -531,14 +531,14 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="VesinNeighbors_8cpp_source.html#l00034">34</a> of file <a class="el" href="VesinNeighbors_8cpp_source.html">VesinNeighbors.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   34</span>                               {</div>
-<div class="line"><span class="lineno">   35</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a2c375c43c369dd784c2319220b27e89a">owns_</a>) {</div>
-<div class="line"><span class="lineno">   36</span>    vesin_free(&amp;<a class="code hl_variable" href="#a6d7874cc3032e22c9ba6c46978484147">list_</a>);</div>
-<div class="line"><span class="lineno">   37</span>    <a class="code hl_variable" href="#a2c375c43c369dd784c2319220b27e89a">owns_</a> = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   38</span>  }</div>
-<div class="line"><span class="lineno">   39</span>  <a class="code hl_variable" href="#a6d7874cc3032e22c9ba6c46978484147">list_</a> = VesinNeighborList{};</div>
-<div class="line"><span class="lineno">   40</span>}</div>
+<p class="definition">Definition at line <a class="el" href="VesinNeighbors_8cpp_source.html#l00035">35</a> of file <a class="el" href="VesinNeighbors_8cpp_source.html">VesinNeighbors.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   35</span>                               {</div>
+<div class="line"><span class="lineno">   36</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a2c375c43c369dd784c2319220b27e89a">owns_</a>) {</div>
+<div class="line"><span class="lineno">   37</span>    vesin_free(&amp;<a class="code hl_variable" href="#a6d7874cc3032e22c9ba6c46978484147">list_</a>);</div>
+<div class="line"><span class="lineno">   38</span>    <a class="code hl_variable" href="#a2c375c43c369dd784c2319220b27e89a">owns_</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   39</span>  }</div>
+<div class="line"><span class="lineno">   40</span>  <a class="code hl_variable" href="#a6d7874cc3032e22c9ba6c46978484147">list_</a> = VesinNeighborList{};</div>
+<div class="line"><span class="lineno">   41</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -646,17 +646,17 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="VesinNeighbors_8cpp_source.html#l00021">21</a> of file <a class="el" href="VesinNeighbors_8cpp_source.html">VesinNeighbors.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   21</span>                                                                       {</div>
-<div class="line"><span class="lineno">   22</span>  <span class="keywordflow">if</span> (<span class="keyword">this</span> != &amp;other) {</div>
-<div class="line"><span class="lineno">   23</span>    <a class="code hl_function" href="#a1112082018d8c7b824d15e0a8a989ba3">free_list</a>();</div>
-<div class="line"><span class="lineno">   24</span>    <a class="code hl_variable" href="#a6d7874cc3032e22c9ba6c46978484147">list_</a> = other.list_;</div>
-<div class="line"><span class="lineno">   25</span>    <a class="code hl_variable" href="#a2c375c43c369dd784c2319220b27e89a">owns_</a> = other.owns_;</div>
-<div class="line"><span class="lineno">   26</span>    other.list_ = VesinNeighborList{};</div>
-<div class="line"><span class="lineno">   27</span>    other.owns_ = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   28</span>  }</div>
-<div class="line"><span class="lineno">   29</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">   30</span>}</div>
+<p class="definition">Definition at line <a class="el" href="VesinNeighbors_8cpp_source.html#l00022">22</a> of file <a class="el" href="VesinNeighbors_8cpp_source.html">VesinNeighbors.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   22</span>                                                                       {</div>
+<div class="line"><span class="lineno">   23</span>  <span class="keywordflow">if</span> (<span class="keyword">this</span> != &amp;other) {</div>
+<div class="line"><span class="lineno">   24</span>    <a class="code hl_function" href="#a1112082018d8c7b824d15e0a8a989ba3">free_list</a>();</div>
+<div class="line"><span class="lineno">   25</span>    <a class="code hl_variable" href="#a6d7874cc3032e22c9ba6c46978484147">list_</a> = other.list_;</div>
+<div class="line"><span class="lineno">   26</span>    <a class="code hl_variable" href="#a2c375c43c369dd784c2319220b27e89a">owns_</a> = other.owns_;</div>
+<div class="line"><span class="lineno">   27</span>    other.list_ = VesinNeighborList{};</div>
+<div class="line"><span class="lineno">   28</span>    other.owns_ = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   29</span>  }</div>
+<div class="line"><span class="lineno">   30</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">   31</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -736,16 +736,16 @@ Private Attributes</h2></td></tr>
 <p>Steal ownership of the internal list (for Metatomic custom deleters). </p>
 <p>After release, this object is empty until the next <span class="tt"><a class="el" href="#ab548af1230dbf3ec9413a278e2632422" title="Build / rebuild the list.">compute</a></span>. </p>
 
-<p class="definition">Definition at line <a class="el" href="VesinNeighbors_8cpp_source.html#l00091">91</a> of file <a class="el" href="VesinNeighbors_8cpp_source.html">VesinNeighbors.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   91</span>                                           {</div>
-<div class="line"><span class="lineno">   92</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a2c375c43c369dd784c2319220b27e89a">owns_</a>) {</div>
-<div class="line"><span class="lineno">   93</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">   94</span>  }</div>
-<div class="line"><span class="lineno">   95</span>  <span class="keyword">auto</span> *heap = <span class="keyword">new</span> VesinNeighborList(<a class="code hl_variable" href="#a6d7874cc3032e22c9ba6c46978484147">list_</a>);</div>
-<div class="line"><span class="lineno">   96</span>  <a class="code hl_variable" href="#a6d7874cc3032e22c9ba6c46978484147">list_</a> = VesinNeighborList{};</div>
-<div class="line"><span class="lineno">   97</span>  <a class="code hl_variable" href="#a2c375c43c369dd784c2319220b27e89a">owns_</a> = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   98</span>  <span class="keywordflow">return</span> heap;</div>
-<div class="line"><span class="lineno">   99</span>}</div>
+<p class="definition">Definition at line <a class="el" href="VesinNeighbors_8cpp_source.html#l00092">92</a> of file <a class="el" href="VesinNeighbors_8cpp_source.html">VesinNeighbors.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   92</span>                                           {</div>
+<div class="line"><span class="lineno">   93</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a2c375c43c369dd784c2319220b27e89a">owns_</a>) {</div>
+<div class="line"><span class="lineno">   94</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   95</span>  }</div>
+<div class="line"><span class="lineno">   96</span>  <span class="keyword">auto</span> heap = std::make_unique&lt;VesinNeighborList&gt;(<a class="code hl_variable" href="#a6d7874cc3032e22c9ba6c46978484147">list_</a>);</div>
+<div class="line"><span class="lineno">   97</span>  <a class="code hl_variable" href="#a6d7874cc3032e22c9ba6c46978484147">list_</a> = VesinNeighborList{};</div>
+<div class="line"><span class="lineno">   98</span>  <a class="code hl_variable" href="#a2c375c43c369dd784c2319220b27e89a">owns_</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   99</span>  <span class="keywordflow">return</span> heap.release();</div>
+<div class="line"><span class="lineno">  100</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

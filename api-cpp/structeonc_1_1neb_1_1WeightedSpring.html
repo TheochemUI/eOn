@@ -254,7 +254,7 @@ Public Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Energy-weighted spring constants (variable per segment). </p>
 
-<p class="definition">Definition at line <a class="el" href="NEBSpringForce_8h_source.html#l00040">40</a> of file <a class="el" href="NEBSpringForce_8h_source.html">NEBSpringForce.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="NEBSpringForce_8h_source.html#l00050">50</a> of file <a class="el" href="NEBSpringForce_8h_source.html">NEBSpringForce.h</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="aceb1a1cb6c904b40eba22e73b23188be" name="aceb1a1cb6c904b40eba22e73b23188be"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aceb1a1cb6c904b40eba22e73b23188be">&#9670;&#160;</a></span>compute()</h2>
@@ -285,22 +285,22 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NEBSpringForce_8cpp_source.html#l00033">33</a> of file <a class="el" href="NEBSpringForce_8cpp_source.html">NEBSpringForce.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   34</span>                                                                             {</div>
-<div class="line"><span class="lineno">   35</span>  <span class="keywordflow">if</span> (i &lt; 1 || <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i) &gt;= <a class="code hl_variable" href="#aa51478cee879266bdb6d545c5dbb8b89">springConstants</a>.size()) {</div>
-<div class="line"><span class="lineno">   36</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><span class="lineno">   37</span>        <span class="stringliteral">&quot;WeightedSpring::compute: image index out of range&quot;</span>);</div>
-<div class="line"><span class="lineno">   38</span>  }</div>
-<div class="line"><span class="lineno">   39</span>  <span class="keywordtype">double</span> kspNext = <a class="code hl_variable" href="#aa51478cee879266bdb6d545c5dbb8b89">springConstants</a>[i];</div>
-<div class="line"><span class="lineno">   40</span>  <span class="keywordtype">double</span> kspPrev = <a class="code hl_variable" href="#aa51478cee879266bdb6d545c5dbb8b89">springConstants</a>[i - 1];</div>
-<div class="line"><span class="lineno">   41</span> </div>
-<div class="line"><span class="lineno">   42</span>  SpringResult result;</div>
-<div class="line"><span class="lineno">   43</span>  result.forceSpringPar =</div>
-<div class="line"><span class="lineno">   44</span>      ((kspNext * distNext) - (kspPrev * distPrev)) * tangent;</div>
-<div class="line"><span class="lineno">   45</span>  result.forceSpring = AtomMatrix::Zero(tangent.rows(), tangent.cols());</div>
-<div class="line"><span class="lineno">   46</span>  <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">   47</span>}</div>
-<div class="ttc" id="astructeonc_1_1neb_1_1WeightedSpring_html_aa51478cee879266bdb6d545c5dbb8b89"><div class="ttname"><a href="#aa51478cee879266bdb6d545c5dbb8b89">eonc::neb::WeightedSpring::springConstants</a></div><div class="ttdeci">std::vector&lt; double &gt; springConstants</div><div class="ttdef"><b>Definition</b> <a href="NEBSpringForce_8h_source.html#l00041">NEBSpringForce.h:41</a></div></div>
+<p class="definition">Definition at line <a class="el" href="NEBSpringForce_8cpp_source.html#l00045">45</a> of file <a class="el" href="NEBSpringForce_8cpp_source.html">NEBSpringForce.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   46</span>                                                                             {</div>
+<div class="line"><span class="lineno">   47</span>  <span class="keywordflow">if</span> (i &lt; 1 || <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i) &gt;= <a class="code hl_variable" href="#aa51478cee879266bdb6d545c5dbb8b89">springConstants</a>.size()) {</div>
+<div class="line"><span class="lineno">   48</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">   49</span>        <span class="stringliteral">&quot;WeightedSpring::compute: image index out of range&quot;</span>);</div>
+<div class="line"><span class="lineno">   50</span>  }</div>
+<div class="line"><span class="lineno">   51</span>  <span class="keywordtype">double</span> kspNext = <a class="code hl_variable" href="#aa51478cee879266bdb6d545c5dbb8b89">springConstants</a>[i];</div>
+<div class="line"><span class="lineno">   52</span>  <span class="keywordtype">double</span> kspPrev = <a class="code hl_variable" href="#aa51478cee879266bdb6d545c5dbb8b89">springConstants</a>[i - 1];</div>
+<div class="line"><span class="lineno">   53</span> </div>
+<div class="line"><span class="lineno">   54</span>  SpringResult result;</div>
+<div class="line"><span class="lineno">   55</span>  result.forceSpringPar =</div>
+<div class="line"><span class="lineno">   56</span>      ((kspNext * distNext) - (kspPrev * distPrev)) * tangent;</div>
+<div class="line"><span class="lineno">   57</span>  result.forceSpring = AtomMatrix::Zero(tangent.rows(), tangent.cols());</div>
+<div class="line"><span class="lineno">   58</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">   59</span>}</div>
+<div class="ttc" id="astructeonc_1_1neb_1_1WeightedSpring_html_aa51478cee879266bdb6d545c5dbb8b89"><div class="ttname"><a href="#aa51478cee879266bdb6d545c5dbb8b89">eonc::neb::WeightedSpring::springConstants</a></div><div class="ttdeci">std::vector&lt; double &gt; springConstants</div><div class="ttdef"><b>Definition</b> <a href="NEBSpringForce_8h_source.html#l00051">NEBSpringForce.h:51</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -317,7 +317,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NEBSpringForce_8h_source.html#l00041">41</a> of file <a class="el" href="NEBSpringForce_8h_source.html">NEBSpringForce.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="NEBSpringForce_8h_source.html#l00051">51</a> of file <a class="el" href="NEBSpringForce_8h_source.html">NEBSpringForce.h</a>.</p>
 
 </div>
 </div>

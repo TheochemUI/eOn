@@ -31,7 +31,7 @@ pixi add eon
 micromamba install -c conda-forge eon
 ```
 
-Those commands install the conda-forge release package. They do not check out `develop`. A source build of `develop` is the section below. The examples in this book run against the release package. `pixi.toml` on `develop` records version 3.6.0. The conda-forge package is built without `-Drgpot:with_mpi=enabled`, so it does not ship calculator groups or in-process CPMD.
+Those commands install the conda-forge release package. They do not check out `develop`. A source build of `develop` is the section below. The examples in this book run against the release package. `pixi.toml` on `develop` records version 3.6.0. The conda-forge package does not contain the CPMD engine. It is built without `-Drgpot:with_mpi=enabled`, so it does not ship calculator groups or in-process CPMD.
 
 The conda package is a maximalist build with the following potentials and
 features enabled:
@@ -117,15 +117,6 @@ and that `rsync`.
 
 The setup line already passes `--force-fallback-for=nlohmann_json,hwy`. The rolling distro section below says why a host `nlohmann_json` breaks the conda compiler, and why the Highway name is `hwy` rather than `libhwy`. The test line should finish with a fail count of 0.
 
-Update the subprojects after each `git pull`, then configure again:
-
-```{code-block} bash
-meson subprojects update --reset
-meson setup --reconfigure bbdir
-```
-
-Meson skips the fetch for a wrap subproject such as `rgpot` once it sits on disk. A stale checkout then fails with missing headers, for example `rgpot/EMT/EMTPot.hpp`. The `--reset` flag throws away local edits under `subprojects/`.
-
 Some additional performance can be gained with `ccache` and `mold`, which can be
 passed with `--native-file`:
 
@@ -198,7 +189,7 @@ meson subprojects download artn-plugin ira
 
 # European environment for scientific software installations (EESSI)
 
-A `develop` checkout on this 2026.06 release uses EESSI-extend, the `eOn-devel` bundle, CapnProto 1.4.0, and `foss/2026.1`. The run-path list and the calculator groups are on the [build page](eessi.md).
+A `develop` checkout on this 2026.06 release uses EESSI-extend and the `eOn-devel` bundle. That bundle depends on `foss/2026.1` and builds Cap'n Proto 1.4.0. The run-path list and the calculator groups are on the [build page](eessi.md).
 
 # Licenses
 

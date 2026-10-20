@@ -252,11 +252,10 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('Potential_8cpp
 <code>#include &quot;<a class="el" href="Parameters_8h_source.html">eon/Parameters.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Potential_8h_source.html">eon/Potential.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Runtime_8h_source.html">eon/Runtime.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="EAM_8h_source.html">eon/potentials/EAM/EAM.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="EffectiveMediumTheory_8h_source.html">eon/potentials/EMT/EffectiveMediumTheory.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="ExtPot_8h_source.html">eon/potentials/ExtPot/ExtPot.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="PluginLoader_8h_source.html">eon/potentials/PluginLoader.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="RgpotAdapter_8h_source.html">eon/potentials/RgpotAdapter/RgpotAdapter.h</a>&quot;</code><br />
+<code>#include &quot;rgpot/EMT/EMTPot.hpp&quot;</code><br />
 <code>#include &quot;rgpot/LennardJones/LJClusterPot.hpp&quot;</code><br />
 <code>#include &quot;rgpot/LennardJones/LJPot.hpp&quot;</code><br />
 <code>#include &quot;rgpot/Morse/MorsePot.hpp&quot;</code><br />
@@ -279,6 +278,8 @@ Namespaces</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a5f1e0c7a3fbf2324d5e6c2b84c0ddb86" id="r_a5f1e0c7a3fbf2324d5e6c2b84c0ddb86"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers.html#a5f1e0c7a3fbf2324d5e6c2b84c0ddb86">eonc::helpers::makePotential</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
 <tr class="memdesc:a5f1e0c7a3fbf2324d5e6c2b84c0ddb86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exclusive ownership.  <br /></td></tr>
+<tr class="memitem:a56fd7848b77f2534f775dd826f801745" id="r_a56fd7848b77f2534f775dd826f801745"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers.html#a56fd7848b77f2534f775dd826f801745">eonc::helpers::makeImagePotential</a> (const <a class="el" href="classeonc_1_1Potential.html">Potential</a> &amp;pot, const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
+<tr class="memdesc:a56fd7848b77f2534f775dd826f801745"><td class="mdescLeft">&#160;</td><td class="mdescRight">A separate instance of <span class="tt"><a class="el" href="namespaceeonc_1_1pot.html">pot</a></span> for one image of a band, dimer or pair of minimizations: a clone when the backend can clone, else a new instance built from <span class="tt">params</span>.  <br /></td></tr>
 <tr class="memitem:a7a8efc5346c8f68c6f24b757cc0685d4" id="r_a7a8efc5346c8f68c6f24b757cc0685d4"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers.html#a7a8efc5346c8f68c6f24b757cc0685d4">eonc::helpers::makePotential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> ptype, const <a class="el" href="classParameters.html">Parameters</a> &amp;params, <a class="el" href="classeonc_1_1Runtime.html">Runtime</a> &amp;runtime)</td></tr>
 <tr class="memitem:ae1932ddfd1850f07c690b461bba3faf6" id="r_ae1932ddfd1850f07c690b461bba3faf6"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers.html#ae1932ddfd1850f07c690b461bba3faf6">eonc::helpers::makePotential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> ptype, const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
 </table>

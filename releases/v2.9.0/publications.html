@@ -84,7 +84,6 @@ data-aria-dark="Switch to auto color mode">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../team.html">eOn team</a></li>
-<li class="toctree-l1 _expand"><a class="reference internal" href="../../citing.html">Citing eOn</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../install/eessi.html">Build develop on EESSI</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../install/lammps.html">LAMMPS</a></li>
@@ -123,6 +122,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/mpi_potential.html">MPI potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/algorithm_selection.html">Choosing an algorithm</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/main.html">General simulation parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/structure_input.html">Structure input formats</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/potential.html">Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/structure_comparison.html">Structure comparison</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/optimizer.html">Optimizer</a></li>
@@ -178,6 +178,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/design/client/index.html">Client design</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/types.html">Type system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/exact-reduction.html">Exact reductions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/parameters.html">Parameters system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
@@ -200,6 +201,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.contracts.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.contracts.load_outcome.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts.load_outcome</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
@@ -449,7 +454,7 @@ data-aria-dark="Switch to auto color mode">
 <h2><a class="reference external" href="https://hj.hi.is/indexE.html">Jónsson Group</a><a class="headerlink" href="#jonsson-group" title="Link to this heading">¶</a></h2>
 <ul>
 <li><p><strong>Method ::</strong> Enhanced Climbing Image Nudged Elastic Band method with Hessian
-Eigenmode Alignment from <span id="id1">Goswami <em>et al.</em> [<a class="reference internal" href="#id27" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 14:1807063, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">2.9.0_GGJonsson26</a>]</span>.</p>
+Eigenmode Alignment from <span id="id1">Goswami <em>et al.</em> [<a class="reference internal" href="#id27" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">2.9.0_GGJonsson26</a>]</span>.</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://arxiv.org/abs/2601.12630">ArXiV preprint</a></p></li>
 </ul>
@@ -467,7 +472,7 @@ Eigenmode Alignment from <span id="id1">Goswami <em>et al.</em> [<a class="refer
 <div role="list" class="citation-list">
 <div class="citation" id="id27" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">2.9.0_GGJonsson26</a><span class="fn-bracket">]</span></span>
-<p>Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. <em>Frontiers in Chemistry</em>, 14:1807063, 2026. <a class="reference external" href="https://arxiv.org/abs/2601.12630">arXiv:2601.12630</a>, <a class="reference external" href="https://doi.org/10.3389/fchem.2026.1807063">doi:10.3389/fchem.2026.1807063</a>.</p>
+<p>Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. <em>Frontiers in Chemistry</em>, 2026. <a class="reference external" href="https://arxiv.org/abs/2601.12630">arXiv:2601.12630</a>, <a class="reference external" href="https://doi.org/10.3389/fchem.2026.1807063">doi:10.3389/fchem.2026.1807063</a>.</p>
 </div>
 </div>
 </div>

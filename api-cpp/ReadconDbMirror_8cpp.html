@@ -238,18 +238,16 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('ReadconDbMirro
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="ReadconDbMirror_8h_source.html">ReadconDbMirror.h</a>&quot;</code><br />
-<code>#include &lt;atomic&gt;</code><br />
+<code>#include &quot;<a class="el" href="EonLogger_8h_source.html">eon/EonLogger.h</a>&quot;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
 <code>#include &lt;cstdlib&gt;</code><br />
 <code>#include &lt;filesystem&gt;</code><br />
-<code>#include &lt;format&gt;</code><br />
 <code>#include &lt;fstream&gt;</code><br />
 <code>#include &lt;mutex&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
 <code>#include &lt;sstream&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;unordered_map&gt;</code><br />
-<code>#include &lt;utility&gt;</code><br />
-<code>#include &lt;vector&gt;</code><br />
 <code>#include &lt;dlfcn.h&gt;</code><br />
 </div>
 <p><a href="ReadconDbMirror_8cpp_source.html">Go to the source code of this file.</a></p>
@@ -260,20 +258,118 @@ Namespaces</h2></td></tr>
 <tr class="memdesc:namespaceeonc"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII resource manager for the ARTn C library with global synchronization. <br /></td></tr>
 <tr class="memitem:eonc_3A_3Aio" id="r_eonc_3A_3Aio"><td class="memItemLeft">namespace &#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html">eonc::io</a></td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-define-members" class="groupheader"><a id="define-members" name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a21600964247d0e0c49fc25f9668eb305" id="r_a21600964247d0e0c49fc25f9668eb305"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a21600964247d0e0c49fc25f9668eb305">EON_READCON_DB_VERSION</a>&#160;&#160;&#160;&quot;&quot;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-typedef-members" class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:ad90308a65b60132ac528759f56806177" id="r_ad90308a65b60132ac528759f56806177"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#ad90308a65b60132ac528759f56806177">LibHandle</a> = void *</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a283dbb3464136e99df71453b4fb09202" id="r_a283dbb3464136e99df71453b4fb09202"><td class="memItemLeft">std::uint64_t&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a283dbb3464136e99df71453b4fb09202">eonc::io::corpus_path_id</a> (std::string_view canonical_path)</td></tr>
-<tr class="memdesc:a283dbb3464136e99df71453b4fb09202"><td class="mdescLeft">&#160;</td><td class="mdescRight">FNV-1a 64 of the canonical path bytes.  <br /></td></tr>
-<tr class="memitem:a11d8f6f847546a411453bdd7944bfefa" id="r_a11d8f6f847546a411453bdd7944bfefa"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a11d8f6f847546a411453bdd7944bfefa">eonc::io::arm_corpus_flush</a> ()</td></tr>
+<tr class="memitem:ab29798689f187ffd455c1c4806092c94" id="r_ab29798689f187ffd455c1c4806092c94"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ab29798689f187ffd455c1c4806092c94">rkrdb_open</a> (const char *, std::size_t *)</td></tr>
 <tr class="memitem:abc75e22aaffd22817956f2c37fac7bac" id="r_abc75e22aaffd22817956f2c37fac7bac"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#abc75e22aaffd22817956f2c37fac7bac">eonc::io::mirror_con_corpus</a> (const std::string &amp;path)</td></tr>
 <tr class="memdesc:abc75e22aaffd22817956f2c37fac7bac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy a con file into the run readcon-db corpus when libreadcon_db loads.  <br /></td></tr>
-<tr class="memitem:aba01c03e69b625b827df99e81fc299e0" id="r_aba01c03e69b625b827df99e81fc299e0"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#aba01c03e69b625b827df99e81fc299e0">eonc::io::note_corpus_append</a> (const std::string &amp;path, const std::string &amp;frame_text)</td></tr>
-<tr class="memdesc:aba01c03e69b625b827df99e81fc299e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Buffer one serialized frame from an append.  <br /></td></tr>
-<tr class="memitem:a52586b519002b3f7a3d01421452aa808" id="r_a52586b519002b3f7a3d01421452aa808"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a52586b519002b3f7a3d01421452aa808">eonc::io::flush_corpus_appends</a> ()</td></tr>
-<tr class="memdesc:a52586b519002b3f7a3d01421452aa808"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extend every buffered batch. Called on corpus-cache teardown.  <br /></td></tr>
-<tr class="memitem:a2aac5a81cbe10efef71df5dff3365488" id="r_a2aac5a81cbe10efef71df5dff3365488"><td class="memItemLeft">std::size_t&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a2aac5a81cbe10efef71df5dff3365488">eonc::io::corpus_buffered_frames</a> (const std::string &amp;path)</td></tr>
-<tr class="memdesc:a2aac5a81cbe10efef71df5dff3365488"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frames waiting for the next extend of this path.  <br /></td></tr>
+<tr class="memitem:a0d1cb66c52c93a1ced57ded56051ba30" id="r_a0d1cb66c52c93a1ced57ded56051ba30"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a0d1cb66c52c93a1ced57ded56051ba30">eonc::io::readcon_db_mirror_ok</a> ()</td></tr>
+<tr class="memdesc:a0d1cb66c52c93a1ced57ded56051ba30"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the loaded rkrdb_open belongs to the linked readcon-db.  <br /></td></tr>
+<tr class="memitem:a2ed15da96ab956544a69342720cd0a4a" id="r_a2ed15da96ab956544a69342720cd0a4a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a2ed15da96ab956544a69342720cd0a4a">eonc::io::readcon_db_mirror_reset</a> ()</td></tr>
+<tr class="memdesc:a2ed15da96ab956544a69342720cd0a4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop a cached load so a later call reads EON_READCON_DB_LIBRARY again.  <br /></td></tr>
+<tr class="memitem:a53595fddf895a0a3818f0cf77409209f" id="r_a53595fddf895a0a3818f0cf77409209f"><td class="memItemLeft">const char *&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a53595fddf895a0a3818f0cf77409209f">eonc::io::readcon_db_loaded_version</a> ()</td></tr>
+<tr class="memdesc:a53595fddf895a0a3818f0cf77409209f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Version of the loaded library. Empty when the load failed.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-var-members" class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a7ca07089f4277db9b0dbddca9396710d" id="r_a7ca07089f4277db9b0dbddca9396710d"><td class="memItemLeft">static int(*const&#160;</td><td class="memItemRight"><a class="el" href="#a7ca07089f4277db9b0dbddca9396710d">kLinkedOpen</a> )(const char *, std::size_t *) = <a class="el" href="#ab29798689f187ffd455c1c4806092c94">rkrdb_open</a></td></tr>
 </table>
+<a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
+<a id="a21600964247d0e0c49fc25f9668eb305" name="a21600964247d0e0c49fc25f9668eb305"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21600964247d0e0c49fc25f9668eb305">&#9670;&#160;</a></span>EON_READCON_DB_VERSION</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EON_READCON_DB_VERSION&#160;&#160;&#160;&quot;&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ReadconDbMirror_8cpp_source.html#l00027">27</a> of file <a class="el" href="ReadconDbMirror_8cpp_source.html">ReadconDbMirror.cpp</a>.</p>
+
+</div>
+</div>
+<a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Typedef Documentation</h2>
+<a id="ad90308a65b60132ac528759f56806177" name="ad90308a65b60132ac528759f56806177"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad90308a65b60132ac528759f56806177">&#9670;&#160;</a></span>LibHandle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#ad90308a65b60132ac528759f56806177">LibHandle</a> = void *</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ReadconDbMirror_8cpp_source.html#l00041">41</a> of file <a class="el" href="ReadconDbMirror_8cpp_source.html">ReadconDbMirror.cpp</a>.</p>
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="ab29798689f187ffd455c1c4806092c94" name="ab29798689f187ffd455c1c4806092c94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab29798689f187ffd455c1c4806092c94">&#9670;&#160;</a></span>rkrdb_open()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int rkrdb_open </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-var-members" id="doc-var-members"></a><h2 id="header-doc-var-members" class="groupheader">Variable Documentation</h2>
+<a id="a7ca07089f4277db9b0dbddca9396710d" name="a7ca07089f4277db9b0dbddca9396710d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ca07089f4277db9b0dbddca9396710d">&#9670;&#160;</a></span>kLinkedOpen</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int(*const kLinkedOpen) (const char *, std::size_t *) </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;) = <a class="el" href="#ab29798689f187ffd455c1c4806092c94">rkrdb_open</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ReadconDbMirror_8cpp_source.html#l00046">46</a> of file <a class="el" href="ReadconDbMirror_8cpp_source.html">ReadconDbMirror.cpp</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

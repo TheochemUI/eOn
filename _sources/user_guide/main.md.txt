@@ -71,6 +71,9 @@ with this, we can then run a
 Saddle search job
 : to find a nearby saddle point.
 
+Instanton
+: which estimates a tunneling rate from a path between two minima.
+
 and they may do so by using
 
 Dimer

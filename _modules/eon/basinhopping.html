@@ -84,7 +84,6 @@ data-aria-dark="Switch to auto color mode">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../team.html">eOn team</a></li>
-<li class="toctree-l1 _expand"><a class="reference internal" href="../../citing.html">Citing eOn</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../install/eessi.html">Build develop on EESSI</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../install/lammps.html">LAMMPS</a></li>
@@ -123,6 +122,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/mpi_potential.html">MPI potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/algorithm_selection.html">Choosing an algorithm</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/main.html">General simulation parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/structure_input.html">Structure input formats</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/potential.html">Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/structure_comparison.html">Structure comparison</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/optimizer.html">Optimizer</a></li>
@@ -178,6 +178,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/design/client/index.html">Client design</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/types.html">Type system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/exact-reduction.html">Exact reductions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/parameters.html">Parameters system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
@@ -200,6 +201,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.contracts.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.contracts.load_outcome.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts.load_outcome</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
@@ -503,70 +508,70 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="91">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Eon version: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
 </span><span data-line="92">    <span class="c1"># First of all, does the root directory even exist?</span>
 </span><span data-line="93">    <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
-</span><span data-line="94">        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Root directory does not exist&quot;</span><span class="p">)</span>
-</span><span data-line="95">        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</span><span data-line="96">
-</span><span data-line="97">    <span class="c1"># load metadata</span>
-</span><span data-line="98">    <span class="n">bhstates</span> <span class="o">=</span> <span class="n">BHStates</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="99">
-</span><span data-line="100">    <span class="n">wuid_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;wuid.dat&quot;</span><span class="p">)</span>
-</span><span data-line="101">    <span class="k">if</span> <span class="n">wuid_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-</span><span data-line="102">        <span class="n">wuid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">wuid_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-</span><span data-line="103">    <span class="k">else</span><span class="p">:</span>
-</span><span data-line="104">        <span class="n">wuid</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span data-line="105">
-</span><span data-line="106">    <span class="c1"># get communicator</span>
-</span><span data-line="107">    <span class="n">comm</span> <span class="o">=</span> <span class="n">communicator</span><span class="o">.</span><span class="n">get_communicator</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="108">
-</span><span data-line="109">    <span class="c1"># Register all the results. There is  no need to ever discard found</span>
-</span><span data-line="110">    <span class="c1"># processes like we do with akmc. There is no confidence to calculate.</span>
-</span><span data-line="111">    <span class="n">register_results</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">bhstates</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-</span><span data-line="112">
-</span><span data-line="113">    <span class="n">wuid</span> <span class="o">=</span> <span class="n">make_searches</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">wuid</span><span class="p">,</span> <span class="n">bhstates</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-</span><span data-line="114">
-</span><span data-line="115">    <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;wuid.dat&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%i</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">wuid</span><span class="p">)</span>
-</span><span data-line="116">
-</span><span data-line="117">    <span class="n">io</span><span class="o">.</span><span class="n">save_prng_state</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">prng_state_path</span><span class="p">(</span><span class="n">config</span><span class="p">))</span></div>
+</span><span data-line="94">        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+</span><span data-line="95">            <span class="sa">f</span><span class="s2">&quot;root directory does not exist: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="96">        <span class="p">)</span>
+</span><span data-line="97">
+</span><span data-line="98">    <span class="c1"># load metadata</span>
+</span><span data-line="99">    <span class="n">bhstates</span> <span class="o">=</span> <span class="n">BHStates</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="100">
+</span><span data-line="101">    <span class="n">wuid_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;wuid.dat&quot;</span><span class="p">)</span>
+</span><span data-line="102">    <span class="k">if</span> <span class="n">wuid_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+</span><span data-line="103">        <span class="n">wuid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">wuid_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+</span><span data-line="104">    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="105">        <span class="n">wuid</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="106">
+</span><span data-line="107">    <span class="c1"># get communicator</span>
+</span><span data-line="108">    <span class="n">comm</span> <span class="o">=</span> <span class="n">communicator</span><span class="o">.</span><span class="n">get_communicator</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="109">
+</span><span data-line="110">    <span class="c1"># Register all the results. There is  no need to ever discard found</span>
+</span><span data-line="111">    <span class="c1"># processes like we do with akmc. There is no confidence to calculate.</span>
+</span><span data-line="112">    <span class="n">register_results</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">bhstates</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+</span><span data-line="113">
+</span><span data-line="114">    <span class="n">wuid</span> <span class="o">=</span> <span class="n">make_searches</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">wuid</span><span class="p">,</span> <span class="n">bhstates</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+</span><span data-line="115">
+</span><span data-line="116">    <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;wuid.dat&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%i</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">wuid</span><span class="p">)</span>
+</span><span data-line="117">
+</span><span data-line="118">    <span class="n">io</span><span class="o">.</span><span class="n">save_prng_state</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">prng_state_path</span><span class="p">(</span><span class="n">config</span><span class="p">))</span></div>
 
-</span><span data-line="118">
+</span><span data-line="119">
 <div class="viewcode-block" id="make_searches">
 <a class="viewcode-back" href="../../apidocs/eon/eon.basinhopping.html#eon.basinhopping.make_searches">[docs]</a>
-</span><span data-line="119"><span class="k">def</span><span class="w"> </span><span class="nf">make_searches</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">wuid</span><span class="p">,</span> <span class="n">bhstates</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span><span class="p">):</span>
-</span><span data-line="120">    <span class="n">num_in_buffer</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">queued_search_count</span><span class="p">()</span>
-</span><span data-line="121">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%i</span><span class="s2"> searches in the queue&quot;</span> <span class="o">%</span> <span class="n">num_in_buffer</span><span class="p">)</span>
-</span><span data-line="122">    <span class="n">num_to_make</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">comm_job_buffer_size</span> <span class="o">-</span> <span class="n">num_in_buffer</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span data-line="123">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Making </span><span class="si">%i</span><span class="s2"> searches&quot;</span> <span class="o">%</span> <span class="n">num_to_make</span><span class="p">)</span>
-</span><span data-line="124">
-</span><span data-line="125">    <span class="k">if</span> <span class="n">num_to_make</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-</span><span data-line="126">        <span class="k">return</span> <span class="n">wuid</span>
-</span><span data-line="127">
-</span><span data-line="128">    <span class="n">searches</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="129">
-</span><span data-line="130">    <span class="n">invariants</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="131">
-</span><span data-line="132">    <span class="n">initial_react</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">((</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;pos.con&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
-</span><span data-line="133">
-</span><span data-line="134">    <span class="c1">#invariants[&#39;reactant_passed.con&#39;]=reactIO</span>
-</span><span data-line="135">
-</span><span data-line="136">    <span class="n">ini_changes</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="s1">&#39;job&#39;</span><span class="p">,</span> <span class="s1">&#39;basin_hopping&#39;</span><span class="p">)</span> <span class="p">]</span>
-</span><span data-line="137">    <span class="c1">#invariants[&#39;config_passed.ini&#39;] = io.modify_config(config.config_path, ini_changes)</span>
-</span><span data-line="138">    <span class="c1">#invariants[&#39;reactant_passed.con&#39;]  = reactIO</span>
-</span><span data-line="139">
-</span><span data-line="140">    <span class="n">searches</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="141">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_to_make</span><span class="p">):</span>
-</span><span data-line="142">        <span class="n">search</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="143">        <span class="n">search</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">wuid</span>
-</span><span data-line="144">        <span class="n">ini_changes</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="s1">&#39;random_seed&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mi">2</span><span class="o">**</span><span class="mi">32</span><span class="p">)))</span> <span class="p">]</span>
-</span><span data-line="145">
-</span><span data-line="146">        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">bh_initial_state_pool_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-</span><span data-line="147">            <span class="n">reactIO</span> <span class="o">=</span> <span class="n">initial_react</span>
-</span><span data-line="148">        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">bh_initial_state_pool_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-</span><span data-line="149">            <span class="n">reactIO</span> <span class="o">=</span> <span class="n">bhstates</span><span class="o">.</span><span class="n">get_random_minimum</span><span class="p">()</span>
-</span><span data-line="150">            <span class="k">if</span> <span class="n">reactIO</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="151">                <span class="n">reactIO</span> <span class="o">=</span> <span class="n">initial_react</span>
-</span><span data-line="152">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="153">            <span class="n">logger</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s2">&quot;Initial state pool size negative&quot;</span><span class="p">)</span>
-</span><span data-line="154">            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="120"><span class="k">def</span><span class="w"> </span><span class="nf">make_searches</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">wuid</span><span class="p">,</span> <span class="n">bhstates</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span><span class="p">):</span>
+</span><span data-line="121">    <span class="n">num_in_buffer</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">queued_search_count</span><span class="p">()</span>
+</span><span data-line="122">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%i</span><span class="s2"> searches in the queue&quot;</span> <span class="o">%</span> <span class="n">num_in_buffer</span><span class="p">)</span>
+</span><span data-line="123">    <span class="n">num_to_make</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">comm_job_buffer_size</span> <span class="o">-</span> <span class="n">num_in_buffer</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span data-line="124">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Making </span><span class="si">%i</span><span class="s2"> searches&quot;</span> <span class="o">%</span> <span class="n">num_to_make</span><span class="p">)</span>
+</span><span data-line="125">
+</span><span data-line="126">    <span class="k">if</span> <span class="n">num_to_make</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="127">        <span class="k">return</span> <span class="n">wuid</span>
+</span><span data-line="128">
+</span><span data-line="129">    <span class="n">searches</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="130">
+</span><span data-line="131">    <span class="n">invariants</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="132">
+</span><span data-line="133">    <span class="n">initial_react</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">((</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;pos.con&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+</span><span data-line="134">
+</span><span data-line="135">    <span class="c1">#invariants[&#39;reactant_passed.con&#39;]=reactIO</span>
+</span><span data-line="136">
+</span><span data-line="137">    <span class="n">ini_changes</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="s1">&#39;job&#39;</span><span class="p">,</span> <span class="s1">&#39;basin_hopping&#39;</span><span class="p">)</span> <span class="p">]</span>
+</span><span data-line="138">    <span class="c1">#invariants[&#39;config_passed.ini&#39;] = io.modify_config(config.config_path, ini_changes)</span>
+</span><span data-line="139">    <span class="c1">#invariants[&#39;reactant_passed.con&#39;]  = reactIO</span>
+</span><span data-line="140">
+</span><span data-line="141">    <span class="n">searches</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="142">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_to_make</span><span class="p">):</span>
+</span><span data-line="143">        <span class="n">search</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="144">        <span class="n">search</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">wuid</span>
+</span><span data-line="145">        <span class="n">ini_changes</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="s1">&#39;random_seed&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mi">2</span><span class="o">**</span><span class="mi">32</span><span class="p">)))</span> <span class="p">]</span>
+</span><span data-line="146">
+</span><span data-line="147">        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">bh_initial_state_pool_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="148">            <span class="n">reactIO</span> <span class="o">=</span> <span class="n">initial_react</span>
+</span><span data-line="149">        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">bh_initial_state_pool_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="150">            <span class="n">reactIO</span> <span class="o">=</span> <span class="n">bhstates</span><span class="o">.</span><span class="n">get_random_minimum</span><span class="p">()</span>
+</span><span data-line="151">            <span class="k">if</span> <span class="n">reactIO</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="152">                <span class="n">reactIO</span> <span class="o">=</span> <span class="n">initial_react</span>
+</span><span data-line="153">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="154">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;initial state pool size is negative&quot;</span><span class="p">)</span>
 </span><span data-line="155">
 </span><span data-line="156">        <span class="n">search</span><span class="p">[</span><span class="s1">&#39;pos.con&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reactIO</span>
 </span><span data-line="157">        <span class="n">search</span><span class="p">[</span><span class="s1">&#39;config.ini&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">modify_config</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">config_path</span><span class="p">,</span> <span class="n">ini_changes</span><span class="p">)</span>

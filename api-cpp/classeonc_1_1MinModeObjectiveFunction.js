@@ -9,6 +9,7 @@ var classeonc_1_1MinModeObjectiveFunction =
     [ "getEnergy", "classeonc_1_1MinModeObjectiveFunction.html#acd9a980aff0ce3eefa9aef08d40aa5af", null ],
     [ "getGradient", "classeonc_1_1MinModeObjectiveFunction.html#a6d66337710dadc9e124e7ed7f553164f", null ],
     [ "getPositions", "classeonc_1_1MinModeObjectiveFunction.html#a523005401d15fffade0c67624844bdd9", null ],
+    [ "gradientMatchesEnergy", "classeonc_1_1MinModeObjectiveFunction.html#ad775d84fb0a3be0eba00b75a1fcb05ac", null ],
     [ "isConverged", "classeonc_1_1MinModeObjectiveFunction.html#ae78b175b373a4f92d7e4cb2dce0577f7", null ],
     [ "knownCurvature", "classeonc_1_1MinModeObjectiveFunction.html#aae1a7855290a56b2b53965b9c3d738b9", null ],
     [ "setPositions", "classeonc_1_1MinModeObjectiveFunction.html#ae5821ab7860f4d031604c92eecc99138", null ],

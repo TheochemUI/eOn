@@ -1,8 +1,10 @@
 var classeonc_1_1MetatomicLoader =
 [
+    [ "Key", "classeonc_1_1MetatomicLoader_1_1Key.html", "classeonc_1_1MetatomicLoader_1_1Key" ],
     [ "~MetatomicLoader", "classeonc_1_1MetatomicLoader.html#a8a4c8fd297f6085f9021158da6beca17", null ],
     [ "MetatomicLoader", "classeonc_1_1MetatomicLoader.html#a703b26074aa1772088a5de24f54860b4", null ],
     [ "MetatomicLoader", "classeonc_1_1MetatomicLoader.html#a573dddb8fa1165afbaef2ebe95e870bf", null ],
+    [ "MetatomicLoader", "classeonc_1_1MetatomicLoader.html#a829f843004ecb6c81ec76d9f5058c942", null ],
     [ "instance", "classeonc_1_1MetatomicLoader.html#a2ec41289daa8badf818949a47a410978", null ],
     [ "is_loaded", "classeonc_1_1MetatomicLoader.html#a7f769896c1e1d58ee1048f21ddc4302b", null ],
     [ "operator=", "classeonc_1_1MetatomicLoader.html#a1645783f2e53d8ac4b8c97f812a922d1", null ],

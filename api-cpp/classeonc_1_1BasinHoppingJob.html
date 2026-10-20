@@ -269,6 +269,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4ba6ee96636fdbc95059c67a10900ea7 inherit pub_methods_classeonc_1_1Job" id="r_a4ba6ee96636fdbc95059c67a10900ea7"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a4ba6ee96636fdbc95059c67a10900ea7">~Job</a> ()=default</td></tr>
 <tr class="memitem:a6a8f2fa4c5209bee4d243fec7b9db59e inherit pub_methods_classeonc_1_1Job" id="r_a6a8f2fa4c5209bee4d243fec7b9db59e"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379">JobType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a6a8f2fa4c5209bee4d243fec7b9db59e">getType</a> ()</td></tr>
 <tr class="memitem:a03a40b0e3f078b9e284220c71567e644 inherit pub_methods_classeonc_1_1Job" id="r_a03a40b0e3f078b9e284220c71567e644"><td class="memItemLeft"><a class="el" href="classeonc_1_1PotRegistry.html">PotRegistry</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a03a40b0e3f078b9e284220c71567e644">pots</a> () noexcept</td></tr>
+<tr class="memitem:a38797bdd6ab6331a21e1ebbdd4cc7e4a inherit pub_methods_classeonc_1_1Job" id="r_a38797bdd6ab6331a21e1ebbdd4cc7e4a"><td class="memItemLeft">size_t&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a38797bdd6ab6331a21e1ebbdd4cc7e4a">potRegistryForceCalls</a> () const noexcept</td></tr>
+<tr class="memdesc:a38797bdd6ab6331a21e1ebbdd4cc7e4a inherit pub_methods_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Force calls charged to pot's registry.  <br /></td></tr>
 <tr class="memitem:acdb29769b15353b093288278a05bff3c inherit pub_methods_classeonc_1_1Job" id="r_acdb29769b15353b093288278a05bff3c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#acdb29769b15353b093288278a05bff3c">releasePotential</a> ()</td></tr>
 <tr class="memdesc:acdb29769b15353b093288278a05bff3c inherit pub_methods_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop the <a class="el" href="classeonc_1_1Potential.html">Potential</a> so on_destroyed is recorded before <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a> dies.  <br /></td></tr>
 </table><table class="memberdecls">
@@ -411,26 +413,26 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BasinHoppingJob_8cpp_source.html#l00475">475</a> of file <a class="el" href="BasinHoppingJob_8cpp_source.html">BasinHoppingJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  475</span>                                                                    {</div>
-<div class="line"><span class="lineno">  476</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = matter-&gt;<a class="code hl_function" href="classMatter.html#a2472b3c954d101c0810da69ed442b244">getPositions</a>();</div>
-<div class="line"><span class="lineno">  477</span>  Vector3d cen(0, 0, 0);</div>
-<div class="line"><span class="lineno">  478</span>  <span class="keywordtype">int</span> num = matter-&gt;<a class="code hl_function" href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>();</div>
-<div class="line"><span class="lineno">  479</span> </div>
-<div class="line"><span class="lineno">  480</span>  cen = pos.colwise().sum() / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(num);</div>
-<div class="line"><span class="lineno">  481</span> </div>
-<div class="line"><span class="lineno">  482</span>  VectorXd dist(num);</div>
-<div class="line"><span class="lineno">  483</span> </div>
-<div class="line"><span class="lineno">  484</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> n = 0; n &lt; num; n++) {</div>
-<div class="line"><span class="lineno">  485</span>    pos.row(n) -= cen;</div>
-<div class="line"><span class="lineno">  486</span>    dist(n) = pos.row(n).norm();</div>
-<div class="line"><span class="lineno">  487</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="BasinHoppingJob_8cpp_source.html#l00480">480</a> of file <a class="el" href="BasinHoppingJob_8cpp_source.html">BasinHoppingJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  480</span>                                                                    {</div>
+<div class="line"><span class="lineno">  481</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = matter-&gt;<a class="code hl_function" href="classMatter.html#a2472b3c954d101c0810da69ed442b244">getPositions</a>();</div>
+<div class="line"><span class="lineno">  482</span>  Vector3d cen(0, 0, 0);</div>
+<div class="line"><span class="lineno">  483</span>  <span class="keywordtype">int</span> num = matter-&gt;<a class="code hl_function" href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>();</div>
+<div class="line"><span class="lineno">  484</span> </div>
+<div class="line"><span class="lineno">  485</span>  cen = pos.colwise().sum() / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(num);</div>
+<div class="line"><span class="lineno">  486</span> </div>
+<div class="line"><span class="lineno">  487</span>  VectorXd dist(num);</div>
 <div class="line"><span class="lineno">  488</span> </div>
-<div class="line"><span class="lineno">  489</span>  <span class="keywordflow">return</span> dist;</div>
-<div class="line"><span class="lineno">  490</span>}</div>
+<div class="line"><span class="lineno">  489</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> n = 0; n &lt; num; n++) {</div>
+<div class="line"><span class="lineno">  490</span>    pos.row(n) -= cen;</div>
+<div class="line"><span class="lineno">  491</span>    dist(n) = pos.row(n).norm();</div>
+<div class="line"><span class="lineno">  492</span>  }</div>
+<div class="line"><span class="lineno">  493</span> </div>
+<div class="line"><span class="lineno">  494</span>  <span class="keywordflow">return</span> dist;</div>
+<div class="line"><span class="lineno">  495</span>}</div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
-<div class="ttc" id="aclassMatter_html_a2472b3c954d101c0810da69ed442b244"><div class="ttname"><a href="classMatter.html#a2472b3c954d101c0810da69ed442b244">Matter::getPositions</a></div><div class="ttdeci">const AtomMatrix &amp; getPositions() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00326">Matter.cpp:326</a></div></div>
-<div class="ttc" id="aclassMatter_html_a5b678e80aa584c41d54e221d04bb729e"><div class="ttname"><a href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">Matter::numberOfAtoms</a></div><div class="ttdeci">long int numberOfAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00291">Matter.cpp:291</a></div></div>
+<div class="ttc" id="aclassMatter_html_a2472b3c954d101c0810da69ed442b244"><div class="ttname"><a href="classMatter.html#a2472b3c954d101c0810da69ed442b244">Matter::getPositions</a></div><div class="ttdeci">const AtomMatrix &amp; getPositions() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00375">Matter.cpp:375</a></div></div>
+<div class="ttc" id="aclassMatter_html_a5b678e80aa584c41d54e221d04bb729e"><div class="ttname"><a href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">Matter::numberOfAtoms</a></div><div class="ttdeci">long int numberOfAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00340">Matter.cpp:340</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -457,78 +459,82 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BasinHoppingJob_8cpp_source.html#l00333">333</a> of file <a class="el" href="BasinHoppingJob_8cpp_source.html">BasinHoppingJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  333</span>                                                                 {</div>
-<div class="line"><span class="lineno">  334</span>  <a class="code hl_variable" href="#a8ecd36e3338d9a83d897ae978e103f15">disp_count</a>++;</div>
-<div class="line"><span class="lineno">  335</span>  <span class="comment">// Create a random displacement</span></div>
-<div class="line"><span class="lineno">  336</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> displacement;</div>
-<div class="line"><span class="lineno">  337</span>  displacement.resize(<a class="code hl_variable" href="#aa0e62dde00fe1ac919aab9f721a781d3">trial</a>-&gt;numberOfAtoms(), 3);</div>
-<div class="line"><span class="lineno">  338</span>  displacement.setZero();</div>
-<div class="line"><span class="lineno">  339</span>  VectorXd distvec = <a class="code hl_function" href="#a502243193a61bc4e03ab14d8bf9bb398">calculateDistanceFromCenter</a>(<a class="code hl_variable" href="#a551be7e96004ae71b0499dc3bc549a89">current</a>.get());</div>
-<div class="line"><span class="lineno">  340</span>  <span class="comment">// Coincident atoms share a zero radius. Dividing by it writes NaN and</span></div>
-<div class="line"><span class="lineno">  341</span>  <span class="comment">// the hop cannot leave the center. Those atoms are the outer shell, so</span></div>
-<div class="line"><span class="lineno">  342</span>  <span class="comment">// the step stays the unscaled displacement.</span></div>
-<div class="line"><span class="lineno">  343</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> radius = distvec.size() &gt; 0 ? distvec.maxCoeff() : 0.0;</div>
-<div class="line"><span class="lineno">  344</span>  <span class="keywordtype">int</span> num = <a class="code hl_variable" href="#aa0e62dde00fe1ac919aab9f721a781d3">trial</a>-&gt;numberOfAtoms();</div>
-<div class="line"><span class="lineno">  345</span>  <span class="keywordtype">int</span> m = 0;</div>
-<div class="line"><span class="lineno">  346</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.basin_hopping_options().single_atom_displace) {</div>
-<div class="line"><span class="lineno">  347</span>    m = <a class="code hl_function" href="namespaceeonc_1_1rng.html#a5e8caf65ab4c88babd709b38d410927c">eonc::rng::randomInt</a>(0, <a class="code hl_variable" href="#aa0e62dde00fe1ac919aab9f721a781d3">trial</a>-&gt;numberOfAtoms() - 1);</div>
-<div class="line"><span class="lineno">  348</span>    num = m + 1;</div>
-<div class="line"><span class="lineno">  349</span>  }</div>
-<div class="line"><span class="lineno">  350</span> </div>
-<div class="line"><span class="lineno">  351</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = m; i &lt; num; i++) {</div>
-<div class="line"><span class="lineno">  352</span>    <span class="keywordtype">double</span> dist = distvec(i);</div>
-<div class="line"><span class="lineno">  353</span>    <span class="keywordtype">double</span> disp = 0.0; <span class="comment">// displacement size, possibly scaled</span></div>
-<div class="line"><span class="lineno">  354</span> </div>
-<div class="line"><span class="lineno">  355</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa0e62dde00fe1ac919aab9f721a781d3">trial</a>-&gt;getFixed(i)) {</div>
-<div class="line"><span class="lineno">  356</span>      <span class="keyword">const</span> std::string &amp;algorithm =</div>
-<div class="line"><span class="lineno">  357</span>          <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.basin_hopping_options().displacement_algorithm;</div>
-<div class="line"><span class="lineno">  358</span>      <span class="keywordflow">if</span> (algorithm == <span class="stringliteral">&quot;standard&quot;</span>) {</div>
-<div class="line"><span class="lineno">  359</span>        disp = curDisplacement;</div>
-<div class="line"><span class="lineno">  360</span>      }</div>
-<div class="line"><span class="lineno">  361</span>      <span class="comment">// scale displacement linearly with the particle radius</span></div>
-<div class="line"><span class="lineno">  362</span>      <span class="keywordflow">else</span> <span class="keywordflow">if</span> (algorithm == <span class="stringliteral">&quot;linear&quot;</span>) {</div>
-<div class="line"><span class="lineno">  363</span>        disp =</div>
-<div class="line"><span class="lineno">  364</span>            radius == 0.0 ? curDisplacement : curDisplacement * (dist / radius);</div>
-<div class="line"><span class="lineno">  365</span>      }</div>
-<div class="line"><span class="lineno">  366</span>      <span class="comment">// scale displacement quadratically with the particle radius</span></div>
-<div class="line"><span class="lineno">  367</span>      <span class="keywordflow">else</span> <span class="keywordflow">if</span> (algorithm == <span class="stringliteral">&quot;quadratic&quot;</span>) {</div>
-<div class="line"><span class="lineno">  368</span>        <span class="keywordflow">if</span> (radius == 0.0) {</div>
-<div class="line"><span class="lineno">  369</span>          disp = curDisplacement;</div>
-<div class="line"><span class="lineno">  370</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  371</span>          <span class="keyword">const</span> <span class="keywordtype">double</span> scale = dist / radius;</div>
-<div class="line"><span class="lineno">  372</span>          disp = curDisplacement * scale * scale;</div>
-<div class="line"><span class="lineno">  373</span>        }</div>
-<div class="line"><span class="lineno">  374</span>      } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  375</span>        <a class="code hl_variable" href="#a9823e2678e850d4b9ae86cb77ff85a31">log</a> = <a class="code hl_function" href="namespaceeonc_1_1log.html#aad1a942f68ca20cc5bc1d7601b4cf816">eonc::log::traceback</a>();</div>
-<div class="line"><span class="lineno">  376</span>        QUILL_LOG_CRITICAL(<a class="code hl_variable" href="#a9823e2678e850d4b9ae86cb77ff85a31">log</a>, <span class="stringliteral">&quot;Unknown displacement_algorithm\n&quot;</span>);</div>
-<div class="line"><span class="lineno">  377</span>        <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><span class="lineno">  378</span>            std::format(<span class="stringliteral">&quot;[Basin Hopping] unknown displacement_algorithm: {}&quot;</span>,</div>
-<div class="line"><span class="lineno">  379</span>                        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.basin_hopping_options().displacement_algorithm));</div>
-<div class="line"><span class="lineno">  380</span>      }</div>
-<div class="line"><span class="lineno">  381</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 3; j++) {</div>
-<div class="line"><span class="lineno">  382</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.basin_hopping_options().displacement_distribution ==</div>
-<div class="line"><span class="lineno">  383</span>            <span class="stringliteral">&quot;uniform&quot;</span>) {</div>
-<div class="line"><span class="lineno">  384</span>          displacement(i, j) = <a class="code hl_function" href="namespaceeonc_1_1rng.html#a699a6770b311d7f44a437f4f915bad69">eonc::rng::randomDouble</a>(2 * disp) - disp;</div>
-<div class="line"><span class="lineno">  385</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.basin_hopping_options().displacement_distribution ==</div>
-<div class="line"><span class="lineno">  386</span>                   <span class="stringliteral">&quot;gaussian&quot;</span>) {</div>
-<div class="line"><span class="lineno">  387</span>          displacement(i, j) = <a class="code hl_function" href="namespaceeonc_1_1rng.html#acec44c143227d3b4957ed2c919a551c3">eonc::rng::gaussRandom</a>(0.0, disp);</div>
-<div class="line"><span class="lineno">  388</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  389</span>          <a class="code hl_variable" href="#a9823e2678e850d4b9ae86cb77ff85a31">log</a> = <a class="code hl_function" href="namespaceeonc_1_1log.html#aad1a942f68ca20cc5bc1d7601b4cf816">eonc::log::traceback</a>();</div>
-<div class="line"><span class="lineno">  390</span>          QUILL_LOG_CRITICAL(<a class="code hl_variable" href="#a9823e2678e850d4b9ae86cb77ff85a31">log</a>, <span class="stringliteral">&quot;Unknown displacement_distribution\n&quot;</span>);</div>
-<div class="line"><span class="lineno">  391</span>          <span class="keywordflow">throw</span> std::invalid_argument(std::format(</div>
-<div class="line"><span class="lineno">  392</span>              <span class="stringliteral">&quot;[Basin Hopping] unknown displacement_distribution: {}&quot;</span>,</div>
-<div class="line"><span class="lineno">  393</span>              <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.basin_hopping_options().displacement_distribution));</div>
-<div class="line"><span class="lineno">  394</span>        }</div>
-<div class="line"><span class="lineno">  395</span>      }</div>
-<div class="line"><span class="lineno">  396</span>    }</div>
-<div class="line"><span class="lineno">  397</span>  }</div>
-<div class="line"><span class="lineno">  398</span>  <span class="keywordflow">return</span> displacement;</div>
-<div class="line"><span class="lineno">  399</span>}</div>
-<div class="ttc" id="aclasseonc_1_1BasinHoppingJob_html_a502243193a61bc4e03ab14d8bf9bb398"><div class="ttname"><a href="#a502243193a61bc4e03ab14d8bf9bb398">eonc::BasinHoppingJob::calculateDistanceFromCenter</a></div><div class="ttdeci">VectorXd calculateDistanceFromCenter(Matter *matter)</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingJob_8cpp_source.html#l00475">BasinHoppingJob.cpp:475</a></div></div>
+<p class="definition">Definition at line <a class="el" href="BasinHoppingJob_8cpp_source.html#l00334">334</a> of file <a class="el" href="BasinHoppingJob_8cpp_source.html">BasinHoppingJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  334</span>                                                                 {</div>
+<div class="line"><span class="lineno">  335</span>  <a class="code hl_variable" href="#a8ecd36e3338d9a83d897ae978e103f15">disp_count</a>++;</div>
+<div class="line"><span class="lineno">  336</span>  <span class="comment">// Create a random displacement</span></div>
+<div class="line"><span class="lineno">  337</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> displacement;</div>
+<div class="line"><span class="lineno">  338</span>  displacement.resize(<a class="code hl_variable" href="#aa0e62dde00fe1ac919aab9f721a781d3">trial</a>-&gt;numberOfAtoms(), 3);</div>
+<div class="line"><span class="lineno">  339</span>  displacement.setZero();</div>
+<div class="line"><span class="lineno">  340</span>  VectorXd distvec = <a class="code hl_function" href="#a502243193a61bc4e03ab14d8bf9bb398">calculateDistanceFromCenter</a>(<a class="code hl_variable" href="#a551be7e96004ae71b0499dc3bc549a89">current</a>.get());</div>
+<div class="line"><span class="lineno">  341</span>  <span class="comment">// Coincident atoms share a zero radius. Dividing by it writes NaN and</span></div>
+<div class="line"><span class="lineno">  342</span>  <span class="comment">// the hop cannot leave the center. Those atoms are the outer shell, so</span></div>
+<div class="line"><span class="lineno">  343</span>  <span class="comment">// the step stays the unscaled displacement.</span></div>
+<div class="line"><span class="lineno">  344</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> radius = distvec.size() &gt; 0 ? distvec.maxCoeff() : 0.0;</div>
+<div class="line"><span class="lineno">  345</span>  <span class="keywordtype">int</span> num = <a class="code hl_variable" href="#aa0e62dde00fe1ac919aab9f721a781d3">trial</a>-&gt;numberOfAtoms();</div>
+<div class="line"><span class="lineno">  346</span>  <span class="keywordtype">int</span> m = 0;</div>
+<div class="line"><span class="lineno">  347</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.basin_hopping_options().single_atom_displace) {</div>
+<div class="line"><span class="lineno">  348</span>    m = <a class="code hl_function" href="namespaceeonc_1_1rng.html#a5e8caf65ab4c88babd709b38d410927c">eonc::rng::randomInt</a>(0, <a class="code hl_variable" href="#aa0e62dde00fe1ac919aab9f721a781d3">trial</a>-&gt;numberOfAtoms() - 1);</div>
+<div class="line"><span class="lineno">  349</span>    num = m + 1;</div>
+<div class="line"><span class="lineno">  350</span>  }</div>
+<div class="line"><span class="lineno">  351</span> </div>
+<div class="line"><span class="lineno">  352</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = m; i &lt; num; i++) {</div>
+<div class="line"><span class="lineno">  353</span>    <span class="keywordtype">double</span> dist = distvec(i);</div>
+<div class="line"><span class="lineno">  354</span>    <span class="keywordtype">double</span> disp = 0.0; <span class="comment">// displacement size, possibly scaled</span></div>
+<div class="line"><span class="lineno">  355</span> </div>
+<div class="line"><span class="lineno">  356</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa0e62dde00fe1ac919aab9f721a781d3">trial</a>-&gt;getFixed(i)) {</div>
+<div class="line"><span class="lineno">  357</span>      <span class="keyword">const</span> std::string &amp;algorithm =</div>
+<div class="line"><span class="lineno">  358</span>          <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.basin_hopping_options().displacement_algorithm;</div>
+<div class="line"><span class="lineno">  359</span>      <span class="keywordflow">if</span> (algorithm == <span class="stringliteral">&quot;standard&quot;</span>) {</div>
+<div class="line"><span class="lineno">  360</span>        disp = curDisplacement;</div>
+<div class="line"><span class="lineno">  361</span>      }</div>
+<div class="line"><span class="lineno">  362</span>      <span class="comment">// scale displacement linearly with the particle radius</span></div>
+<div class="line"><span class="lineno">  363</span>      <span class="keywordflow">else</span> <span class="keywordflow">if</span> (algorithm == <span class="stringliteral">&quot;linear&quot;</span>) {</div>
+<div class="line"><span class="lineno">  364</span>        disp =</div>
+<div class="line"><span class="lineno">  365</span>            radius == 0.0 ? curDisplacement : curDisplacement * (dist / radius);</div>
+<div class="line"><span class="lineno">  366</span>      }</div>
+<div class="line"><span class="lineno">  367</span>      <span class="comment">// scale displacement quadratically with the particle radius</span></div>
+<div class="line"><span class="lineno">  368</span>      <span class="keywordflow">else</span> <span class="keywordflow">if</span> (algorithm == <span class="stringliteral">&quot;quadratic&quot;</span>) {</div>
+<div class="line"><span class="lineno">  369</span>        <span class="keywordflow">if</span> (radius == 0.0) {</div>
+<div class="line"><span class="lineno">  370</span>          disp = curDisplacement;</div>
+<div class="line"><span class="lineno">  371</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  372</span>          <span class="keyword">const</span> <span class="keywordtype">double</span> scale = dist / radius;</div>
+<div class="line"><span class="lineno">  373</span>          disp = curDisplacement * scale * scale;</div>
+<div class="line"><span class="lineno">  374</span>        }</div>
+<div class="line"><span class="lineno">  375</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  376</span>        <span class="keywordflow">if</span> (quill::Logger *trace = <a class="code hl_function" href="namespaceeonc_1_1log.html#aad1a942f68ca20cc5bc1d7601b4cf816">eonc::log::traceback</a>()) {</div>
+<div class="line"><span class="lineno">  377</span>          <a class="code hl_variable" href="#a9823e2678e850d4b9ae86cb77ff85a31">log</a> = trace;</div>
+<div class="line"><span class="lineno">  378</span>          QUILL_LOG_CRITICAL(<a class="code hl_variable" href="#a9823e2678e850d4b9ae86cb77ff85a31">log</a>, <span class="stringliteral">&quot;Unknown displacement_algorithm\n&quot;</span>);</div>
+<div class="line"><span class="lineno">  379</span>        }</div>
+<div class="line"><span class="lineno">  380</span>        <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  381</span>            std::format(<span class="stringliteral">&quot;[Basin Hopping] unknown displacement_algorithm: {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  382</span>                        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.basin_hopping_options().displacement_algorithm));</div>
+<div class="line"><span class="lineno">  383</span>      }</div>
+<div class="line"><span class="lineno">  384</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 3; j++) {</div>
+<div class="line"><span class="lineno">  385</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.basin_hopping_options().displacement_distribution ==</div>
+<div class="line"><span class="lineno">  386</span>            <span class="stringliteral">&quot;uniform&quot;</span>) {</div>
+<div class="line"><span class="lineno">  387</span>          displacement(i, j) = <a class="code hl_function" href="namespaceeonc_1_1rng.html#a699a6770b311d7f44a437f4f915bad69">eonc::rng::randomDouble</a>(2 * disp) - disp;</div>
+<div class="line"><span class="lineno">  388</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.basin_hopping_options().displacement_distribution ==</div>
+<div class="line"><span class="lineno">  389</span>                   <span class="stringliteral">&quot;gaussian&quot;</span>) {</div>
+<div class="line"><span class="lineno">  390</span>          displacement(i, j) = <a class="code hl_function" href="namespaceeonc_1_1rng.html#acec44c143227d3b4957ed2c919a551c3">eonc::rng::gaussRandom</a>(0.0, disp);</div>
+<div class="line"><span class="lineno">  391</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  392</span>          <span class="keywordflow">if</span> (quill::Logger *trace = <a class="code hl_function" href="namespaceeonc_1_1log.html#aad1a942f68ca20cc5bc1d7601b4cf816">eonc::log::traceback</a>()) {</div>
+<div class="line"><span class="lineno">  393</span>            <a class="code hl_variable" href="#a9823e2678e850d4b9ae86cb77ff85a31">log</a> = trace;</div>
+<div class="line"><span class="lineno">  394</span>            QUILL_LOG_CRITICAL(<a class="code hl_variable" href="#a9823e2678e850d4b9ae86cb77ff85a31">log</a>, <span class="stringliteral">&quot;Unknown displacement_distribution\n&quot;</span>);</div>
+<div class="line"><span class="lineno">  395</span>          }</div>
+<div class="line"><span class="lineno">  396</span>          <span class="keywordflow">throw</span> std::invalid_argument(std::format(</div>
+<div class="line"><span class="lineno">  397</span>              <span class="stringliteral">&quot;[Basin Hopping] unknown displacement_distribution: {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  398</span>              <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.basin_hopping_options().displacement_distribution));</div>
+<div class="line"><span class="lineno">  399</span>        }</div>
+<div class="line"><span class="lineno">  400</span>      }</div>
+<div class="line"><span class="lineno">  401</span>    }</div>
+<div class="line"><span class="lineno">  402</span>  }</div>
+<div class="line"><span class="lineno">  403</span>  <span class="keywordflow">return</span> displacement;</div>
+<div class="line"><span class="lineno">  404</span>}</div>
+<div class="ttc" id="aclasseonc_1_1BasinHoppingJob_html_a502243193a61bc4e03ab14d8bf9bb398"><div class="ttname"><a href="#a502243193a61bc4e03ab14d8bf9bb398">eonc::BasinHoppingJob::calculateDistanceFromCenter</a></div><div class="ttdeci">VectorXd calculateDistanceFromCenter(Matter *matter)</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingJob_8cpp_source.html#l00480">BasinHoppingJob.cpp:480</a></div></div>
 <div class="ttc" id="aclasseonc_1_1BasinHoppingJob_html_a8ecd36e3338d9a83d897ae978e103f15"><div class="ttname"><a href="#a8ecd36e3338d9a83d897ae978e103f15">eonc::BasinHoppingJob::disp_count</a></div><div class="ttdeci">int disp_count</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingJob_8h_source.html#l00047">BasinHoppingJob.h:47</a></div></div>
 <div class="ttc" id="aclasseonc_1_1BasinHoppingJob_html_a9823e2678e850d4b9ae86cb77ff85a31"><div class="ttname"><a href="#a9823e2678e850d4b9ae86cb77ff85a31">eonc::BasinHoppingJob::log</a></div><div class="ttdeci">eonc::log::Scoped log</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingJob_8h_source.html#l00053">BasinHoppingJob.h:53</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1log_html_aad1a942f68ca20cc5bc1d7601b4cf816"><div class="ttname"><a href="namespaceeonc_1_1log.html#aad1a942f68ca20cc5bc1d7601b4cf816">eonc::log::traceback</a></div><div class="ttdeci">quill::Logger * traceback() noexcept</div><div class="ttdoc">Get or create the &quot;_traceback&quot; logger for traceback logging.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00150">EonLogger.h:150</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1log_html_aad1a942f68ca20cc5bc1d7601b4cf816"><div class="ttname"><a href="namespaceeonc_1_1log.html#aad1a942f68ca20cc5bc1d7601b4cf816">eonc::log::traceback</a></div><div class="ttdeci">quill::Logger * traceback() noexcept</div><div class="ttdoc">Get or create the &quot;_traceback&quot; logger for traceback logging.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00155">EonLogger.h:155</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1rng_html_a5e8caf65ab4c88babd709b38d410927c"><div class="ttname"><a href="namespaceeonc_1_1rng.html#a5e8caf65ab4c88babd709b38d410927c">eonc::rng::randomInt</a></div><div class="ttdeci">long randomInt(int lower, int upper)</div><div class="ttdef"><b>Definition</b> <a href="RandomNumbers_8cpp_source.html#l00086">RandomNumbers.cpp:86</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1rng_html_a699a6770b311d7f44a437f4f915bad69"><div class="ttname"><a href="namespaceeonc_1_1rng.html#a699a6770b311d7f44a437f4f915bad69">eonc::rng::randomDouble</a></div><div class="ttdeci">double randomDouble()</div><div class="ttdef"><b>Definition</b> <a href="RandomNumbers_8cpp_source.html#l00072">RandomNumbers.cpp:72</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1rng_html_acec44c143227d3b4957ed2c919a551c3"><div class="ttname"><a href="namespaceeonc_1_1rng.html#acec44c143227d3b4957ed2c919a551c3">eonc::rng::gaussRandom</a></div><div class="ttdeci">double gaussRandom(double avg, double std)</div><div class="ttdef"><b>Definition</b> <a href="RandomNumbers_8cpp_source.html#l00090">RandomNumbers.cpp:90</a></div></div>
@@ -558,32 +564,32 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BasinHoppingJob_8cpp_source.html#l00451">451</a> of file <a class="el" href="BasinHoppingJob_8cpp_source.html">BasinHoppingJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  451</span>                                                           {</div>
-<div class="line"><span class="lineno">  452</span>  <span class="comment">// Z is 0..118. A 118-slot table stores 118 one past the end.</span></div>
-<div class="line"><span class="lineno">  453</span>  <span class="keyword">constexpr</span> <span class="keywordtype">int</span> kElementSlots = 119;</div>
-<div class="line"><span class="lineno">  454</span>  std::array&lt;int, kElementSlots&gt; allElements{};</div>
-<div class="line"><span class="lineno">  455</span>  std::vector&lt;long&gt; elements;</div>
-<div class="line"><span class="lineno">  456</span> </div>
-<div class="line"><span class="lineno">  457</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> y = 0; y &lt; matter-&gt;<a class="code hl_function" href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>(); ++y) {</div>
-<div class="line"><span class="lineno">  458</span>    <span class="keywordflow">if</span> (!matter-&gt;<a class="code hl_function" href="classMatter.html#aeccfa311325cb6f4fb520cf071fef679">getFixed</a>(y)) {</div>
-<div class="line"><span class="lineno">  459</span>      <span class="keyword">const</span> <span class="keywordtype">long</span> z = matter-&gt;<a class="code hl_function" href="classMatter.html#ac150b53306181b32c020549ff4686903">getAtomicNr</a>(y);</div>
-<div class="line"><span class="lineno">  460</span>      <span class="keywordflow">if</span> (z &gt;= 0 &amp;&amp; z &lt; kElementSlots) {</div>
-<div class="line"><span class="lineno">  461</span>        allElements[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(z)] = 1;</div>
-<div class="line"><span class="lineno">  462</span>      }</div>
-<div class="line"><span class="lineno">  463</span>    }</div>
-<div class="line"><span class="lineno">  464</span>  }</div>
-<div class="line"><span class="lineno">  465</span> </div>
-<div class="line"><span class="lineno">  466</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; kElementSlots; ++i) {</div>
-<div class="line"><span class="lineno">  467</span>    <span class="keywordflow">if</span> (allElements[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] != 0) {</div>
-<div class="line"><span class="lineno">  468</span>      elements.push_back(i);</div>
-<div class="line"><span class="lineno">  469</span>    }</div>
-<div class="line"><span class="lineno">  470</span>  }</div>
-<div class="line"><span class="lineno">  471</span> </div>
-<div class="line"><span class="lineno">  472</span>  <span class="keywordflow">return</span> elements;</div>
-<div class="line"><span class="lineno">  473</span>}</div>
-<div class="ttc" id="aclassMatter_html_ac150b53306181b32c020549ff4686903"><div class="ttname"><a href="classMatter.html#ac150b53306181b32c020549ff4686903">Matter::getAtomicNr</a></div><div class="ttdeci">long getAtomicNr(long int atom) const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00513">Matter.cpp:513</a></div></div>
-<div class="ttc" id="aclassMatter_html_aeccfa311325cb6f4fb520cf071fef679"><div class="ttname"><a href="classMatter.html#aeccfa311325cb6f4fb520cf071fef679">Matter::getFixed</a></div><div class="ttdeci">int getFixed(long int atom) const</div><div class="ttdoc">1 if every Cartesian axis of the atom is fixed, else 0.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00523">Matter.cpp:523</a></div></div>
+<p class="definition">Definition at line <a class="el" href="BasinHoppingJob_8cpp_source.html#l00456">456</a> of file <a class="el" href="BasinHoppingJob_8cpp_source.html">BasinHoppingJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  456</span>                                                           {</div>
+<div class="line"><span class="lineno">  457</span>  <span class="comment">// Z is 0..118. A 118-slot table stores 118 one past the end.</span></div>
+<div class="line"><span class="lineno">  458</span>  <span class="keyword">constexpr</span> <span class="keywordtype">int</span> kElementSlots = 119;</div>
+<div class="line"><span class="lineno">  459</span>  std::array&lt;int, kElementSlots&gt; allElements{};</div>
+<div class="line"><span class="lineno">  460</span>  std::vector&lt;long&gt; elements;</div>
+<div class="line"><span class="lineno">  461</span> </div>
+<div class="line"><span class="lineno">  462</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> y = 0; y &lt; matter-&gt;<a class="code hl_function" href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>(); ++y) {</div>
+<div class="line"><span class="lineno">  463</span>    <span class="keywordflow">if</span> (!matter-&gt;<a class="code hl_function" href="classMatter.html#aeccfa311325cb6f4fb520cf071fef679">getFixed</a>(y)) {</div>
+<div class="line"><span class="lineno">  464</span>      <span class="keyword">const</span> <span class="keywordtype">long</span> z = matter-&gt;<a class="code hl_function" href="classMatter.html#ac150b53306181b32c020549ff4686903">getAtomicNr</a>(y);</div>
+<div class="line"><span class="lineno">  465</span>      <span class="keywordflow">if</span> (z &gt;= 0 &amp;&amp; z &lt; kElementSlots) {</div>
+<div class="line"><span class="lineno">  466</span>        allElements[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(z)] = 1;</div>
+<div class="line"><span class="lineno">  467</span>      }</div>
+<div class="line"><span class="lineno">  468</span>    }</div>
+<div class="line"><span class="lineno">  469</span>  }</div>
+<div class="line"><span class="lineno">  470</span> </div>
+<div class="line"><span class="lineno">  471</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; kElementSlots; ++i) {</div>
+<div class="line"><span class="lineno">  472</span>    <span class="keywordflow">if</span> (allElements[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] != 0) {</div>
+<div class="line"><span class="lineno">  473</span>      elements.push_back(i);</div>
+<div class="line"><span class="lineno">  474</span>    }</div>
+<div class="line"><span class="lineno">  475</span>  }</div>
+<div class="line"><span class="lineno">  476</span> </div>
+<div class="line"><span class="lineno">  477</span>  <span class="keywordflow">return</span> elements;</div>
+<div class="line"><span class="lineno">  478</span>}</div>
+<div class="ttc" id="aclassMatter_html_ac150b53306181b32c020549ff4686903"><div class="ttname"><a href="classMatter.html#ac150b53306181b32c020549ff4686903">Matter::getAtomicNr</a></div><div class="ttdeci">long getAtomicNr(long int atom) const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00562">Matter.cpp:562</a></div></div>
+<div class="ttc" id="aclassMatter_html_aeccfa311325cb6f4fb520cf071fef679"><div class="ttname"><a href="classMatter.html#aeccfa311325cb6f4fb520cf071fef679">Matter::getFixed</a></div><div class="ttdeci">int getFixed(long int atom) const</div><div class="ttdoc">1 if every Cartesian axis of the atom is fixed, else 0.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00572">Matter.cpp:572</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -622,16 +628,16 @@ Additional Inherited Members</h2></td></tr>
 <p>Metropolis weight for energy change <span class="tt">de</span>. </p>
 <p>Divides by <span class="tt">kB * temperature</span> only for an uphill hop when both are positive. Non-positive temperature or <span class="tt">kB</span> refuses that hop. </p>
 
-<p class="definition">Definition at line <a class="el" href="BasinHoppingJob_8cpp_source.html#l00322">322</a> of file <a class="el" href="BasinHoppingJob_8cpp_source.html">BasinHoppingJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  323</span>                                                                  {</div>
-<div class="line"><span class="lineno">  324</span>  <span class="keywordflow">if</span> (!(de &gt; 0.0)) {</div>
-<div class="line"><span class="lineno">  325</span>    <span class="keywordflow">return</span> 1.0;</div>
-<div class="line"><span class="lineno">  326</span>  }</div>
-<div class="line"><span class="lineno">  327</span>  <span class="keywordflow">if</span> (!(temperature &gt; 0.0) || !(kB &gt; 0.0)) {</div>
-<div class="line"><span class="lineno">  328</span>    <span class="keywordflow">return</span> 0.0;</div>
-<div class="line"><span class="lineno">  329</span>  }</div>
-<div class="line"><span class="lineno">  330</span>  <span class="keywordflow">return</span> std::exp(-de / (kB * temperature));</div>
-<div class="line"><span class="lineno">  331</span>}</div>
+<p class="definition">Definition at line <a class="el" href="BasinHoppingJob_8cpp_source.html#l00323">323</a> of file <a class="el" href="BasinHoppingJob_8cpp_source.html">BasinHoppingJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  324</span>                                                                  {</div>
+<div class="line"><span class="lineno">  325</span>  <span class="keywordflow">if</span> (!(de &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  326</span>    <span class="keywordflow">return</span> 1.0;</div>
+<div class="line"><span class="lineno">  327</span>  }</div>
+<div class="line"><span class="lineno">  328</span>  <span class="keywordflow">if</span> (!(temperature &gt; 0.0) || !(kB &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  329</span>    <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><span class="lineno">  330</span>  }</div>
+<div class="line"><span class="lineno">  331</span>  <span class="keywordflow">return</span> std::exp(-de / (kB * temperature));</div>
+<div class="line"><span class="lineno">  332</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -658,59 +664,59 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BasinHoppingJob_8cpp_source.html#l00401">401</a> of file <a class="el" href="BasinHoppingJob_8cpp_source.html">BasinHoppingJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  401</span>                                               {</div>
-<div class="line"><span class="lineno">  402</span>  <a class="code hl_variable" href="#ae69e6d8732b5a0d091a6372952ff0274">swap_count</a>++;</div>
-<div class="line"><span class="lineno">  403</span>  std::vector&lt;long&gt; Elements;</div>
-<div class="line"><span class="lineno">  404</span>  Elements = <a class="code hl_function" href="#a5530883c3ea1e8e60ace5853087bbb74">getElements</a>(matter);</div>
-<div class="line"><span class="lineno">  405</span> </div>
-<div class="line"><span class="lineno">  406</span>  <span class="keywordtype">long</span> ela;</div>
-<div class="line"><span class="lineno">  407</span>  <span class="keywordtype">long</span> elb;</div>
-<div class="line"><span class="lineno">  408</span>  <span class="keywordtype">long</span> ia = <a class="code hl_function" href="namespaceeonc_1_1rng.html#a5e8caf65ab4c88babd709b38d410927c">eonc::rng::randomInt</a>(0, Elements.size() - 1);</div>
-<div class="line"><span class="lineno">  409</span>  ela = Elements.at(ia);</div>
-<div class="line"><span class="lineno">  410</span>  Elements.erase(Elements.begin() + ia);</div>
-<div class="line"><span class="lineno">  411</span> </div>
-<div class="line"><span class="lineno">  412</span>  <span class="keywordtype">long</span> ib = <a class="code hl_function" href="namespaceeonc_1_1rng.html#a5e8caf65ab4c88babd709b38d410927c">eonc::rng::randomInt</a>(0, Elements.size() - 1);</div>
-<div class="line"><span class="lineno">  413</span>  elb = Elements.at(ib);</div>
-<div class="line"><span class="lineno">  414</span> </div>
-<div class="line"><span class="lineno">  415</span>  <span class="keywordtype">int</span> changera = 0;</div>
-<div class="line"><span class="lineno">  416</span>  <span class="keywordtype">int</span> changerb = 0;</div>
-<div class="line"><span class="lineno">  417</span> </div>
-<div class="line"><span class="lineno">  418</span>  changera = <a class="code hl_function" href="namespaceeonc_1_1rng.html#a5e8caf65ab4c88babd709b38d410927c">eonc::rng::randomInt</a>(0, matter-&gt;<a class="code hl_function" href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>() - 1);</div>
-<div class="line"><span class="lineno">  419</span>  <span class="keywordtype">int</span> guard = 0;</div>
-<div class="line"><span class="lineno">  420</span>  <span class="keywordflow">while</span> ((matter-&gt;<a class="code hl_function" href="classMatter.html#ac150b53306181b32c020549ff4686903">getAtomicNr</a>(changera) != ela || matter-&gt;<a class="code hl_function" href="classMatter.html#aeccfa311325cb6f4fb520cf071fef679">getFixed</a>(changera)) &amp;&amp;</div>
-<div class="line"><span class="lineno">  421</span>         guard &lt; 10000) {</div>
-<div class="line"><span class="lineno">  422</span>    changera = <a class="code hl_function" href="namespaceeonc_1_1rng.html#a5e8caf65ab4c88babd709b38d410927c">eonc::rng::randomInt</a>(0, matter-&gt;<a class="code hl_function" href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>() - 1);</div>
-<div class="line"><span class="lineno">  423</span>    guard++;</div>
-<div class="line"><span class="lineno">  424</span>  }</div>
-<div class="line"><span class="lineno">  425</span>  changerb = <a class="code hl_function" href="namespaceeonc_1_1rng.html#a5e8caf65ab4c88babd709b38d410927c">eonc::rng::randomInt</a>(0, matter-&gt;<a class="code hl_function" href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>() - 1);</div>
-<div class="line"><span class="lineno">  426</span>  guard = 0;</div>
-<div class="line"><span class="lineno">  427</span>  <span class="keywordflow">while</span> ((matter-&gt;<a class="code hl_function" href="classMatter.html#ac150b53306181b32c020549ff4686903">getAtomicNr</a>(changerb) != elb || matter-&gt;<a class="code hl_function" href="classMatter.html#aeccfa311325cb6f4fb520cf071fef679">getFixed</a>(changerb) ||</div>
-<div class="line"><span class="lineno">  428</span>          changerb == changera) &amp;&amp;</div>
-<div class="line"><span class="lineno">  429</span>         guard &lt; 10000) {</div>
-<div class="line"><span class="lineno">  430</span>    changerb = <a class="code hl_function" href="namespaceeonc_1_1rng.html#a5e8caf65ab4c88babd709b38d410927c">eonc::rng::randomInt</a>(0, matter-&gt;<a class="code hl_function" href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>() - 1);</div>
-<div class="line"><span class="lineno">  431</span>    guard++;</div>
-<div class="line"><span class="lineno">  432</span>  }</div>
-<div class="line"><span class="lineno">  433</span>  <span class="keywordflow">if</span> (matter-&gt;<a class="code hl_function" href="classMatter.html#ac150b53306181b32c020549ff4686903">getAtomicNr</a>(changera) != ela || matter-&gt;<a class="code hl_function" href="classMatter.html#aeccfa311325cb6f4fb520cf071fef679">getFixed</a>(changera) ||</div>
-<div class="line"><span class="lineno">  434</span>      matter-&gt;<a class="code hl_function" href="classMatter.html#ac150b53306181b32c020549ff4686903">getAtomicNr</a>(changerb) != elb || matter-&gt;<a class="code hl_function" href="classMatter.html#aeccfa311325cb6f4fb520cf071fef679">getFixed</a>(changerb)) {</div>
-<div class="line"><span class="lineno">  435</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  436</span>  }</div>
-<div class="line"><span class="lineno">  437</span> </div>
-<div class="line"><span class="lineno">  438</span>  <span class="keywordtype">double</span> posax = matter-&gt;<a class="code hl_function" href="classMatter.html#a7f144fbf8ad4db76f016494b182c731b">getPosition</a>(changera, 0);</div>
-<div class="line"><span class="lineno">  439</span>  <span class="keywordtype">double</span> posay = matter-&gt;<a class="code hl_function" href="classMatter.html#a7f144fbf8ad4db76f016494b182c731b">getPosition</a>(changera, 1);</div>
-<div class="line"><span class="lineno">  440</span>  <span class="keywordtype">double</span> posaz = matter-&gt;<a class="code hl_function" href="classMatter.html#a7f144fbf8ad4db76f016494b182c731b">getPosition</a>(changera, 2);</div>
-<div class="line"><span class="lineno">  441</span> </div>
-<div class="line"><span class="lineno">  442</span>  matter-&gt;<a class="code hl_function" href="classMatter.html#a2117651cc14a71ffd5043b7600e58667">setPosition</a>(changera, 0, matter-&gt;<a class="code hl_function" href="classMatter.html#a7f144fbf8ad4db76f016494b182c731b">getPosition</a>(changerb, 0));</div>
-<div class="line"><span class="lineno">  443</span>  matter-&gt;<a class="code hl_function" href="classMatter.html#a2117651cc14a71ffd5043b7600e58667">setPosition</a>(changera, 1, matter-&gt;<a class="code hl_function" href="classMatter.html#a7f144fbf8ad4db76f016494b182c731b">getPosition</a>(changerb, 1));</div>
-<div class="line"><span class="lineno">  444</span>  matter-&gt;<a class="code hl_function" href="classMatter.html#a2117651cc14a71ffd5043b7600e58667">setPosition</a>(changera, 2, matter-&gt;<a class="code hl_function" href="classMatter.html#a7f144fbf8ad4db76f016494b182c731b">getPosition</a>(changerb, 2));</div>
-<div class="line"><span class="lineno">  445</span> </div>
-<div class="line"><span class="lineno">  446</span>  matter-&gt;<a class="code hl_function" href="classMatter.html#a2117651cc14a71ffd5043b7600e58667">setPosition</a>(changerb, 0, posax);</div>
-<div class="line"><span class="lineno">  447</span>  matter-&gt;<a class="code hl_function" href="classMatter.html#a2117651cc14a71ffd5043b7600e58667">setPosition</a>(changerb, 1, posay);</div>
-<div class="line"><span class="lineno">  448</span>  matter-&gt;<a class="code hl_function" href="classMatter.html#a2117651cc14a71ffd5043b7600e58667">setPosition</a>(changerb, 2, posaz);</div>
-<div class="line"><span class="lineno">  449</span>}</div>
-<div class="ttc" id="aclassMatter_html_a2117651cc14a71ffd5043b7600e58667"><div class="ttname"><a href="classMatter.html#a2117651cc14a71ffd5043b7600e58667">Matter::setPosition</a></div><div class="ttdeci">void setPosition(long int atom, int axis, double position)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00308">Matter.cpp:308</a></div></div>
-<div class="ttc" id="aclassMatter_html_a7f144fbf8ad4db76f016494b182c731b"><div class="ttname"><a href="classMatter.html#a7f144fbf8ad4db76f016494b182c731b">Matter::getPosition</a></div><div class="ttdeci">double getPosition(long int atom, int axis) const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00302">Matter.cpp:302</a></div></div>
-<div class="ttc" id="aclasseonc_1_1BasinHoppingJob_html_a5530883c3ea1e8e60ace5853087bbb74"><div class="ttname"><a href="#a5530883c3ea1e8e60ace5853087bbb74">eonc::BasinHoppingJob::getElements</a></div><div class="ttdeci">std::vector&lt; long &gt; getElements(Matter *matter)</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingJob_8cpp_source.html#l00451">BasinHoppingJob.cpp:451</a></div></div>
+<p class="definition">Definition at line <a class="el" href="BasinHoppingJob_8cpp_source.html#l00406">406</a> of file <a class="el" href="BasinHoppingJob_8cpp_source.html">BasinHoppingJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  406</span>                                               {</div>
+<div class="line"><span class="lineno">  407</span>  <a class="code hl_variable" href="#ae69e6d8732b5a0d091a6372952ff0274">swap_count</a>++;</div>
+<div class="line"><span class="lineno">  408</span>  std::vector&lt;long&gt; Elements;</div>
+<div class="line"><span class="lineno">  409</span>  Elements = <a class="code hl_function" href="#a5530883c3ea1e8e60ace5853087bbb74">getElements</a>(matter);</div>
+<div class="line"><span class="lineno">  410</span> </div>
+<div class="line"><span class="lineno">  411</span>  <span class="keywordtype">long</span> ela;</div>
+<div class="line"><span class="lineno">  412</span>  <span class="keywordtype">long</span> elb;</div>
+<div class="line"><span class="lineno">  413</span>  <span class="keywordtype">long</span> ia = <a class="code hl_function" href="namespaceeonc_1_1rng.html#a5e8caf65ab4c88babd709b38d410927c">eonc::rng::randomInt</a>(0, Elements.size() - 1);</div>
+<div class="line"><span class="lineno">  414</span>  ela = Elements.at(ia);</div>
+<div class="line"><span class="lineno">  415</span>  Elements.erase(Elements.begin() + ia);</div>
+<div class="line"><span class="lineno">  416</span> </div>
+<div class="line"><span class="lineno">  417</span>  <span class="keywordtype">long</span> ib = <a class="code hl_function" href="namespaceeonc_1_1rng.html#a5e8caf65ab4c88babd709b38d410927c">eonc::rng::randomInt</a>(0, Elements.size() - 1);</div>
+<div class="line"><span class="lineno">  418</span>  elb = Elements.at(ib);</div>
+<div class="line"><span class="lineno">  419</span> </div>
+<div class="line"><span class="lineno">  420</span>  <span class="keywordtype">int</span> changera = 0;</div>
+<div class="line"><span class="lineno">  421</span>  <span class="keywordtype">int</span> changerb = 0;</div>
+<div class="line"><span class="lineno">  422</span> </div>
+<div class="line"><span class="lineno">  423</span>  changera = <a class="code hl_function" href="namespaceeonc_1_1rng.html#a5e8caf65ab4c88babd709b38d410927c">eonc::rng::randomInt</a>(0, matter-&gt;<a class="code hl_function" href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>() - 1);</div>
+<div class="line"><span class="lineno">  424</span>  <span class="keywordtype">int</span> guard = 0;</div>
+<div class="line"><span class="lineno">  425</span>  <span class="keywordflow">while</span> ((matter-&gt;<a class="code hl_function" href="classMatter.html#ac150b53306181b32c020549ff4686903">getAtomicNr</a>(changera) != ela || matter-&gt;<a class="code hl_function" href="classMatter.html#aeccfa311325cb6f4fb520cf071fef679">getFixed</a>(changera)) &amp;&amp;</div>
+<div class="line"><span class="lineno">  426</span>         guard &lt; 10000) {</div>
+<div class="line"><span class="lineno">  427</span>    changera = <a class="code hl_function" href="namespaceeonc_1_1rng.html#a5e8caf65ab4c88babd709b38d410927c">eonc::rng::randomInt</a>(0, matter-&gt;<a class="code hl_function" href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>() - 1);</div>
+<div class="line"><span class="lineno">  428</span>    guard++;</div>
+<div class="line"><span class="lineno">  429</span>  }</div>
+<div class="line"><span class="lineno">  430</span>  changerb = <a class="code hl_function" href="namespaceeonc_1_1rng.html#a5e8caf65ab4c88babd709b38d410927c">eonc::rng::randomInt</a>(0, matter-&gt;<a class="code hl_function" href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>() - 1);</div>
+<div class="line"><span class="lineno">  431</span>  guard = 0;</div>
+<div class="line"><span class="lineno">  432</span>  <span class="keywordflow">while</span> ((matter-&gt;<a class="code hl_function" href="classMatter.html#ac150b53306181b32c020549ff4686903">getAtomicNr</a>(changerb) != elb || matter-&gt;<a class="code hl_function" href="classMatter.html#aeccfa311325cb6f4fb520cf071fef679">getFixed</a>(changerb) ||</div>
+<div class="line"><span class="lineno">  433</span>          changerb == changera) &amp;&amp;</div>
+<div class="line"><span class="lineno">  434</span>         guard &lt; 10000) {</div>
+<div class="line"><span class="lineno">  435</span>    changerb = <a class="code hl_function" href="namespaceeonc_1_1rng.html#a5e8caf65ab4c88babd709b38d410927c">eonc::rng::randomInt</a>(0, matter-&gt;<a class="code hl_function" href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>() - 1);</div>
+<div class="line"><span class="lineno">  436</span>    guard++;</div>
+<div class="line"><span class="lineno">  437</span>  }</div>
+<div class="line"><span class="lineno">  438</span>  <span class="keywordflow">if</span> (matter-&gt;<a class="code hl_function" href="classMatter.html#ac150b53306181b32c020549ff4686903">getAtomicNr</a>(changera) != ela || matter-&gt;<a class="code hl_function" href="classMatter.html#aeccfa311325cb6f4fb520cf071fef679">getFixed</a>(changera) ||</div>
+<div class="line"><span class="lineno">  439</span>      matter-&gt;<a class="code hl_function" href="classMatter.html#ac150b53306181b32c020549ff4686903">getAtomicNr</a>(changerb) != elb || matter-&gt;<a class="code hl_function" href="classMatter.html#aeccfa311325cb6f4fb520cf071fef679">getFixed</a>(changerb)) {</div>
+<div class="line"><span class="lineno">  440</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  441</span>  }</div>
+<div class="line"><span class="lineno">  442</span> </div>
+<div class="line"><span class="lineno">  443</span>  <span class="keywordtype">double</span> posax = matter-&gt;<a class="code hl_function" href="classMatter.html#a7f144fbf8ad4db76f016494b182c731b">getPosition</a>(changera, 0);</div>
+<div class="line"><span class="lineno">  444</span>  <span class="keywordtype">double</span> posay = matter-&gt;<a class="code hl_function" href="classMatter.html#a7f144fbf8ad4db76f016494b182c731b">getPosition</a>(changera, 1);</div>
+<div class="line"><span class="lineno">  445</span>  <span class="keywordtype">double</span> posaz = matter-&gt;<a class="code hl_function" href="classMatter.html#a7f144fbf8ad4db76f016494b182c731b">getPosition</a>(changera, 2);</div>
+<div class="line"><span class="lineno">  446</span> </div>
+<div class="line"><span class="lineno">  447</span>  matter-&gt;<a class="code hl_function" href="classMatter.html#a2117651cc14a71ffd5043b7600e58667">setPosition</a>(changera, 0, matter-&gt;<a class="code hl_function" href="classMatter.html#a7f144fbf8ad4db76f016494b182c731b">getPosition</a>(changerb, 0));</div>
+<div class="line"><span class="lineno">  448</span>  matter-&gt;<a class="code hl_function" href="classMatter.html#a2117651cc14a71ffd5043b7600e58667">setPosition</a>(changera, 1, matter-&gt;<a class="code hl_function" href="classMatter.html#a7f144fbf8ad4db76f016494b182c731b">getPosition</a>(changerb, 1));</div>
+<div class="line"><span class="lineno">  449</span>  matter-&gt;<a class="code hl_function" href="classMatter.html#a2117651cc14a71ffd5043b7600e58667">setPosition</a>(changera, 2, matter-&gt;<a class="code hl_function" href="classMatter.html#a7f144fbf8ad4db76f016494b182c731b">getPosition</a>(changerb, 2));</div>
+<div class="line"><span class="lineno">  450</span> </div>
+<div class="line"><span class="lineno">  451</span>  matter-&gt;<a class="code hl_function" href="classMatter.html#a2117651cc14a71ffd5043b7600e58667">setPosition</a>(changerb, 0, posax);</div>
+<div class="line"><span class="lineno">  452</span>  matter-&gt;<a class="code hl_function" href="classMatter.html#a2117651cc14a71ffd5043b7600e58667">setPosition</a>(changerb, 1, posay);</div>
+<div class="line"><span class="lineno">  453</span>  matter-&gt;<a class="code hl_function" href="classMatter.html#a2117651cc14a71ffd5043b7600e58667">setPosition</a>(changerb, 2, posaz);</div>
+<div class="line"><span class="lineno">  454</span>}</div>
+<div class="ttc" id="aclassMatter_html_a2117651cc14a71ffd5043b7600e58667"><div class="ttname"><a href="classMatter.html#a2117651cc14a71ffd5043b7600e58667">Matter::setPosition</a></div><div class="ttdeci">void setPosition(long int atom, int axis, double position)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00357">Matter.cpp:357</a></div></div>
+<div class="ttc" id="aclassMatter_html_a7f144fbf8ad4db76f016494b182c731b"><div class="ttname"><a href="classMatter.html#a7f144fbf8ad4db76f016494b182c731b">Matter::getPosition</a></div><div class="ttdeci">double getPosition(long int atom, int axis) const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00351">Matter.cpp:351</a></div></div>
+<div class="ttc" id="aclasseonc_1_1BasinHoppingJob_html_a5530883c3ea1e8e60ace5853087bbb74"><div class="ttname"><a href="#a5530883c3ea1e8e60ace5853087bbb74">eonc::BasinHoppingJob::getElements</a></div><div class="ttdeci">std::vector&lt; long &gt; getElements(Matter *matter)</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingJob_8cpp_source.html#l00456">BasinHoppingJob.cpp:456</a></div></div>
 <div class="ttc" id="aclasseonc_1_1BasinHoppingJob_html_ae69e6d8732b5a0d091a6372952ff0274"><div class="ttname"><a href="#ae69e6d8732b5a0d091a6372952ff0274">eonc::BasinHoppingJob::swap_count</a></div><div class="ttdeci">int swap_count</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingJob_8h_source.html#l00048">BasinHoppingJob.h:48</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -999,55 +1005,56 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  285</span>  {</div>
 <div class="line"><span class="lineno">  286</span>    <span class="keyword">auto</span> env = <a class="code hl_function" href="structeonc_1_1JobResultEnvelope.html#adcc250879257d0fb4823bb0c799a3510">JobResultEnvelope::fromMinimization</a>(</div>
 <div class="line"><span class="lineno">  287</span>        <a class="code hl_enumvalue" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a45802158e78dd9584161629098018fe8">RunStatus::GOOD</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options().potential,</div>
-<div class="line"><span class="lineno">  288</span>        <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">PotRegistry::get</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a6ffd8adea58bf8682dc74e73ad97c17b">total_force_calls</a>(), <span class="keyword">true</span>, minimumEnergy);</div>
-<div class="line"><span class="lineno">  289</span>    env.job_type = <span class="stringliteral">&quot;basin_hopping&quot;</span>;</div>
-<div class="line"><span class="lineno">  290</span>    env.random_seed = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().randomSeed;</div>
-<div class="line"><span class="lineno">  291</span>    env.extras.emplace_back(<span class="stringliteral">&quot;minimum_energy&quot;</span>, minimumEnergy);</div>
-<div class="line"><span class="lineno">  292</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> nsteps_ratio = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.basin_hopping_options().steps;</div>
-<div class="line"><span class="lineno">  293</span>    env.extras.emplace_back(<span class="stringliteral">&quot;acceptance_ratio&quot;</span>,</div>
-<div class="line"><span class="lineno">  294</span>                            nsteps_ratio ? totalAccept / nsteps_ratio : 0.0);</div>
-<div class="line"><span class="lineno">  295</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.basin_hopping_options().swap_probability &gt; 0) {</div>
-<div class="line"><span class="lineno">  296</span>      env.extras.emplace_back(</div>
-<div class="line"><span class="lineno">  297</span>          <span class="stringliteral">&quot;swap_acceptance_ratio&quot;</span>,</div>
-<div class="line"><span class="lineno">  298</span>          <a class="code hl_variable" href="#ae69e6d8732b5a0d091a6372952ff0274">swap_count</a> ? swap_accept / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae69e6d8732b5a0d091a6372952ff0274">swap_count</a>) : 0.0);</div>
-<div class="line"><span class="lineno">  299</span>    }</div>
-<div class="line"><span class="lineno">  300</span>    env.extras.emplace_back(</div>
-<div class="line"><span class="lineno">  301</span>        <span class="stringliteral">&quot;total_normal_displacement_steps&quot;</span>,</div>
-<div class="line"><span class="lineno">  302</span>        <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a8ecd36e3338d9a83d897ae978e103f15">disp_count</a> - <a class="code hl_variable" href="#a31eb21055c9cc5604596b17ceaf016a7">jump_count</a> - quench_displacements));</div>
-<div class="line"><span class="lineno">  303</span>    env.extras.emplace_back(<span class="stringliteral">&quot;total_jump_steps&quot;</span>,</div>
-<div class="line"><span class="lineno">  304</span>                            <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a31eb21055c9cc5604596b17ceaf016a7">jump_count</a>));</div>
-<div class="line"><span class="lineno">  305</span>    env.extras.emplace_back(<span class="stringliteral">&quot;total_swap_steps&quot;</span>,</div>
-<div class="line"><span class="lineno">  306</span>                            <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae69e6d8732b5a0d091a6372952ff0274">swap_count</a>));</div>
-<div class="line"><span class="lineno">  307</span>    env.writeResultsDat(resultsFilename);</div>
-<div class="line"><span class="lineno">  308</span>    <a class="code hl_variable" href="#a13d63bd9b9939bdff9514b0cf903e032">returnFiles</a>.push_back(resultsFilename);</div>
-<div class="line"><span class="lineno">  309</span>  }</div>
-<div class="line"><span class="lineno">  310</span> </div>
-<div class="line"><span class="lineno">  311</span>  std::string productFilename(<span class="stringliteral">&quot;min.con&quot;</span>);</div>
-<div class="line"><span class="lineno">  312</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(minimumEnergyStructure-&gt;matter2con(productFilename))) {</div>
-<div class="line"><span class="lineno">  313</span>    <a class="code hl_variable" href="#a13d63bd9b9939bdff9514b0cf903e032">returnFiles</a>.push_back(productFilename);</div>
-<div class="line"><span class="lineno">  314</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  315</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a9823e2678e850d4b9ae86cb77ff85a31">log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, productFilename);</div>
-<div class="line"><span class="lineno">  316</span>  }</div>
-<div class="line"><span class="lineno">  317</span> </div>
-<div class="line"><span class="lineno">  318</span>  <span class="comment">// minTrial and swapTrial automatically cleaned up by unique_ptr</span></div>
-<div class="line"><span class="lineno">  319</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a13d63bd9b9939bdff9514b0cf903e032">returnFiles</a>;</div>
-<div class="line"><span class="lineno">  320</span>}</div>
-<div class="ttc" id="aclassMatter_html_a378c2c524ece31a55ca15c213390a9b7"><div class="ttname"><a href="classMatter.html#a378c2c524ece31a55ca15c213390a9b7">Matter::compare</a></div><div class="ttdeci">bool compare(const Matter &amp;matter, bool indistinguishable=false)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00202">Matter.cpp:202</a></div></div>
+<div class="line"><span class="lineno">  288</span>        <a class="code hl_function" href="classeonc_1_1Job.html#a03a40b0e3f078b9e284220c71567e644">pots</a>().total_force_calls(), <span class="keyword">true</span>, minimumEnergy);</div>
+<div class="line"><span class="lineno">  289</span>    env.provenance = <a class="code hl_function" href="namespaceeonc.html#aa67d050aa179f681c8792139d0b2fed8">provenanceForJob</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  290</span>    env.job_type = <span class="stringliteral">&quot;basin_hopping&quot;</span>;</div>
+<div class="line"><span class="lineno">  291</span>    env.random_seed = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().randomSeed;</div>
+<div class="line"><span class="lineno">  292</span>    env.extras.emplace_back(<span class="stringliteral">&quot;minimum_energy&quot;</span>, minimumEnergy);</div>
+<div class="line"><span class="lineno">  293</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> nsteps_ratio = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.basin_hopping_options().steps;</div>
+<div class="line"><span class="lineno">  294</span>    env.extras.emplace_back(<span class="stringliteral">&quot;acceptance_ratio&quot;</span>,</div>
+<div class="line"><span class="lineno">  295</span>                            nsteps_ratio ? totalAccept / nsteps_ratio : 0.0);</div>
+<div class="line"><span class="lineno">  296</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.basin_hopping_options().swap_probability &gt; 0) {</div>
+<div class="line"><span class="lineno">  297</span>      env.extras.emplace_back(</div>
+<div class="line"><span class="lineno">  298</span>          <span class="stringliteral">&quot;swap_acceptance_ratio&quot;</span>,</div>
+<div class="line"><span class="lineno">  299</span>          <a class="code hl_variable" href="#ae69e6d8732b5a0d091a6372952ff0274">swap_count</a> ? swap_accept / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae69e6d8732b5a0d091a6372952ff0274">swap_count</a>) : 0.0);</div>
+<div class="line"><span class="lineno">  300</span>    }</div>
+<div class="line"><span class="lineno">  301</span>    env.extras.emplace_back(</div>
+<div class="line"><span class="lineno">  302</span>        <span class="stringliteral">&quot;total_normal_displacement_steps&quot;</span>,</div>
+<div class="line"><span class="lineno">  303</span>        <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a8ecd36e3338d9a83d897ae978e103f15">disp_count</a> - <a class="code hl_variable" href="#a31eb21055c9cc5604596b17ceaf016a7">jump_count</a> - quench_displacements));</div>
+<div class="line"><span class="lineno">  304</span>    env.extras.emplace_back(<span class="stringliteral">&quot;total_jump_steps&quot;</span>,</div>
+<div class="line"><span class="lineno">  305</span>                            <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a31eb21055c9cc5604596b17ceaf016a7">jump_count</a>));</div>
+<div class="line"><span class="lineno">  306</span>    env.extras.emplace_back(<span class="stringliteral">&quot;total_swap_steps&quot;</span>,</div>
+<div class="line"><span class="lineno">  307</span>                            <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae69e6d8732b5a0d091a6372952ff0274">swap_count</a>));</div>
+<div class="line"><span class="lineno">  308</span>    env.writeResultsDat(resultsFilename);</div>
+<div class="line"><span class="lineno">  309</span>    <a class="code hl_variable" href="#a13d63bd9b9939bdff9514b0cf903e032">returnFiles</a>.push_back(resultsFilename);</div>
+<div class="line"><span class="lineno">  310</span>  }</div>
+<div class="line"><span class="lineno">  311</span> </div>
+<div class="line"><span class="lineno">  312</span>  std::string productFilename(<span class="stringliteral">&quot;min.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  313</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(minimumEnergyStructure-&gt;matter2con(productFilename))) {</div>
+<div class="line"><span class="lineno">  314</span>    <a class="code hl_variable" href="#a13d63bd9b9939bdff9514b0cf903e032">returnFiles</a>.push_back(productFilename);</div>
+<div class="line"><span class="lineno">  315</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  316</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a9823e2678e850d4b9ae86cb77ff85a31">log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, productFilename);</div>
+<div class="line"><span class="lineno">  317</span>  }</div>
+<div class="line"><span class="lineno">  318</span> </div>
+<div class="line"><span class="lineno">  319</span>  <span class="comment">// minTrial and swapTrial automatically cleaned up by unique_ptr</span></div>
+<div class="line"><span class="lineno">  320</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a13d63bd9b9939bdff9514b0cf903e032">returnFiles</a>;</div>
+<div class="line"><span class="lineno">  321</span>}</div>
+<div class="ttc" id="aclassMatter_html_a378c2c524ece31a55ca15c213390a9b7"><div class="ttname"><a href="classMatter.html#a378c2c524ece31a55ca15c213390a9b7">Matter::compare</a></div><div class="ttdeci">bool compare(const Matter &amp;matter, bool indistinguishable=false)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00251">Matter.cpp:251</a></div></div>
 <div class="ttc" id="aclasseonc_1_1BasinHoppingJob_html_a13d63bd9b9939bdff9514b0cf903e032"><div class="ttname"><a href="#a13d63bd9b9939bdff9514b0cf903e032">eonc::BasinHoppingJob::returnFiles</a></div><div class="ttdeci">std::vector&lt; std::string &gt; returnFiles</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingJob_8h_source.html#l00045">BasinHoppingJob.h:45</a></div></div>
 <div class="ttc" id="aclasseonc_1_1BasinHoppingJob_html_a30a108f5f8e090b439f4fb0b9bc804ae"><div class="ttname"><a href="#a30a108f5f8e090b439f4fb0b9bc804ae">eonc::BasinHoppingJob::uniqueStructures</a></div><div class="ttdeci">std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; uniqueStructures</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingJob_8h_source.html#l00051">BasinHoppingJob.h:51</a></div></div>
 <div class="ttc" id="aclasseonc_1_1BasinHoppingJob_html_a31eb21055c9cc5604596b17ceaf016a7"><div class="ttname"><a href="#a31eb21055c9cc5604596b17ceaf016a7">eonc::BasinHoppingJob::jump_count</a></div><div class="ttdeci">int jump_count</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingJob_8h_source.html#l00046">BasinHoppingJob.h:46</a></div></div>
-<div class="ttc" id="aclasseonc_1_1BasinHoppingJob_html_a5c82c571e51387a2dcda3c06093e6879"><div class="ttname"><a href="#a5c82c571e51387a2dcda3c06093e6879">eonc::BasinHoppingJob::randomSwap</a></div><div class="ttdeci">void randomSwap(Matter *matter)</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingJob_8cpp_source.html#l00401">BasinHoppingJob.cpp:401</a></div></div>
-<div class="ttc" id="aclasseonc_1_1BasinHoppingJob_html_a6ee5d133b8d1837a09b081ac34f5af91"><div class="ttname"><a href="#a6ee5d133b8d1837a09b081ac34f5af91">eonc::BasinHoppingJob::displaceRandom</a></div><div class="ttdeci">AtomMatrix displaceRandom(double maxDisplacement)</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingJob_8cpp_source.html#l00333">BasinHoppingJob.cpp:333</a></div></div>
+<div class="ttc" id="aclasseonc_1_1BasinHoppingJob_html_a5c82c571e51387a2dcda3c06093e6879"><div class="ttname"><a href="#a5c82c571e51387a2dcda3c06093e6879">eonc::BasinHoppingJob::randomSwap</a></div><div class="ttdeci">void randomSwap(Matter *matter)</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingJob_8cpp_source.html#l00406">BasinHoppingJob.cpp:406</a></div></div>
+<div class="ttc" id="aclasseonc_1_1BasinHoppingJob_html_a6ee5d133b8d1837a09b081ac34f5af91"><div class="ttname"><a href="#a6ee5d133b8d1837a09b081ac34f5af91">eonc::BasinHoppingJob::displaceRandom</a></div><div class="ttdeci">AtomMatrix displaceRandom(double maxDisplacement)</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingJob_8cpp_source.html#l00334">BasinHoppingJob.cpp:334</a></div></div>
 <div class="ttc" id="aclasseonc_1_1BasinHoppingJob_html_a815945f9e9ac581b9a166ca9ab0e9d3e"><div class="ttname"><a href="#a815945f9e9ac581b9a166ca9ab0e9d3e">eonc::BasinHoppingJob::uniqueEnergies</a></div><div class="ttdeci">std::vector&lt; double &gt; uniqueEnergies</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingJob_8h_source.html#l00052">BasinHoppingJob.h:52</a></div></div>
-<div class="ttc" id="aclasseonc_1_1BasinHoppingJob_html_a9a6db305ae167803d115e6d44f9b60b3"><div class="ttname"><a href="#a9a6db305ae167803d115e6d44f9b60b3">eonc::BasinHoppingJob::metropolisProbability</a></div><div class="ttdeci">static double metropolisProbability(double de, double kB, double temperature)</div><div class="ttdoc">Metropolis weight for energy change de.</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingJob_8cpp_source.html#l00322">BasinHoppingJob.cpp:322</a></div></div>
-<div class="ttc" id="aclasseonc_1_1PotRegistry_html_a5d307a4845d9c0d6d16031a5a637e23b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry::get</a></div><div class="ttdeci">static PotRegistry &amp; get() noexcept</div><div class="ttdoc">Process-lifetime singleton.</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00050">PotRegistry.cpp:50</a></div></div>
-<div class="ttc" id="aclasseonc_1_1PotRegistry_html_a6ffd8adea58bf8682dc74e73ad97c17b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a6ffd8adea58bf8682dc74e73ad97c17b">eonc::PotRegistry::total_force_calls</a></div><div class="ttdeci">size_t total_force_calls() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00098">PotRegistry.cpp:98</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1geometry_html_a5024acd9efebda5023bb6723d0b92219"><div class="ttname"><a href="namespaceeonc_1_1geometry.html#a5024acd9efebda5023bb6723d0b92219">eonc::geometry::pushApart</a></div><div class="ttdeci">void pushApart(std::shared_ptr&lt; Matter &gt; m1, double minDistance)</div><div class="ttdef"><b>Definition</b> <a href="GeometryAnalysis_8cpp_source.html#l00507">GeometryAnalysis.cpp:507</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1helpers_html_a561b68f975ecb734266063b428d6f2f2"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a561b68f975ecb734266063b428d6f2f2">eonc::helpers::getRelevantFile</a></div><div class="ttdeci">std::string getRelevantFile(std::string filename)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00122">HelperFunctions.cpp:122</a></div></div>
+<div class="ttc" id="aclasseonc_1_1BasinHoppingJob_html_a9a6db305ae167803d115e6d44f9b60b3"><div class="ttname"><a href="#a9a6db305ae167803d115e6d44f9b60b3">eonc::BasinHoppingJob::metropolisProbability</a></div><div class="ttdeci">static double metropolisProbability(double de, double kB, double temperature)</div><div class="ttdoc">Metropolis weight for energy change de.</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingJob_8cpp_source.html#l00323">BasinHoppingJob.cpp:323</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Job_html_a03a40b0e3f078b9e284220c71567e644"><div class="ttname"><a href="classeonc_1_1Job.html#a03a40b0e3f078b9e284220c71567e644">eonc::Job::pots</a></div><div class="ttdeci">PotRegistry &amp; pots() noexcept</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00109">Job.h:109</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1geometry_html_a5024acd9efebda5023bb6723d0b92219"><div class="ttname"><a href="namespaceeonc_1_1geometry.html#a5024acd9efebda5023bb6723d0b92219">eonc::geometry::pushApart</a></div><div class="ttdeci">void pushApart(std::shared_ptr&lt; Matter &gt; m1, double minDistance)</div><div class="ttdef"><b>Definition</b> <a href="GeometryAnalysis_8cpp_source.html#l00512">GeometryAnalysis.cpp:512</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_a561b68f975ecb734266063b428d6f2f2"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a561b68f975ecb734266063b428d6f2f2">eonc::helpers::getRelevantFile</a></div><div class="ttdeci">std::string getRelevantFile(std::string filename)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00123">HelperFunctions.cpp:123</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_af66b2723d892a4095754f9b0354b4f78"><div class="ttname"><a href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a></div><div class="ttdeci">constexpr bool io_ok(IoStatus s) noexcept</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00038">ConFileIO.h:38</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1rng_html_a4f610303ae45757f71160f0664b09b9b"><div class="ttname"><a href="namespaceeonc_1_1rng.html#a4f610303ae45757f71160f0664b09b9b">eonc::rng::random</a></div><div class="ttdeci">double random(long newSeed=0)</div><div class="ttdef"><b>Definition</b> <a href="RandomNumbers_8cpp_source.html#l00029">RandomNumbers.cpp:29</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a848a1af56249f0cafd872ca8b59fc459a45802158e78dd9584161629098018fe8"><div class="ttname"><a href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a45802158e78dd9584161629098018fe8">eonc::RunStatus::GOOD</a></div><div class="ttdeci">@ GOOD</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00117">BaseStructures.h:117</a></div></div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_adcc250879257d0fb4823bb0c799a3510"><div class="ttname"><a href="structeonc_1_1JobResultEnvelope.html#adcc250879257d0fb4823bb0c799a3510">eonc::JobResultEnvelope::fromMinimization</a></div><div class="ttdeci">static JobResultEnvelope fromMinimization(RunStatus status, PotType pot, std::uint64_t fcalls, bool hasE, double energy)</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00244">JobResult.h:244</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_aa67d050aa179f681c8792139d0b2fed8"><div class="ttname"><a href="namespaceeonc.html#aa67d050aa179f681c8792139d0b2fed8">eonc::provenanceForJob</a></div><div class="ttdeci">JobResultProvenance provenanceForJob(const Parameters &amp;params)</div><div class="ttdoc">Optimizer backend, engine identity, rgpot pin, and xts ABI from a job.</div><div class="ttdef"><b>Definition</b> <a href="JobResultProvenance_8cpp_source.html#l00037">JobResultProvenance.cpp:37</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_adcc250879257d0fb4823bb0c799a3510"><div class="ttname"><a href="structeonc_1_1JobResultEnvelope.html#adcc250879257d0fb4823bb0c799a3510">eonc::JobResultEnvelope::fromMinimization</a></div><div class="ttdeci">static JobResultEnvelope fromMinimization(RunStatus status, PotType pot, std::uint64_t fcalls, bool hasE, double energy)</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00251">JobResult.h:251</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

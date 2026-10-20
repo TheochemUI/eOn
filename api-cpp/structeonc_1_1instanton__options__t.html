@@ -246,6 +246,8 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:ad4b7d7bd0147ebfbe13388b686c29968" id="r_ad4b7d7bd0147ebfbe13388b686c29968"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#ad4b7d7bd0147ebfbe13388b686c29968">reactant_filename</a> {&quot;reactant.con&quot;}</td></tr>
 <tr class="memitem:a780b36006943b24e6a50befa447e1264" id="r_a780b36006943b24e6a50befa447e1264"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a780b36006943b24e6a50befa447e1264">product_filename</a> {&quot;product.con&quot;}</td></tr>
 <tr class="memitem:a2226aa4be67afff6079b6817ea5940db" id="r_a2226aa4be67afff6079b6817ea5940db"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a2226aa4be67afff6079b6817ea5940db">initial_path</a> {&quot;&quot;}</td></tr>
+<tr class="memitem:a53c044d411d0b7b2e56c239c125cfbb5" id="r_a53c044d411d0b7b2e56c239c125cfbb5"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a53c044d411d0b7b2e56c239c125cfbb5">initial_ring</a> {&quot;&quot;}</td></tr>
+<tr class="memitem:af82e3c054cdc92a638685b9d77beef7d" id="r_af82e3c054cdc92a638685b9d77beef7d"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#af82e3c054cdc92a638685b9d77beef7d">physical_bath_filename</a> {&quot;&quot;}</td></tr>
 <tr class="memitem:a2cd366f7f8a50246f1d3aa57b2f7b6c7" id="r_a2cd366f7f8a50246f1d3aa57b2f7b6c7"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a2cd366f7f8a50246f1d3aa57b2f7b6c7">beads</a> {256}</td></tr>
 <tr class="memitem:a419d3f7a389f056feb0fc8ebc6fdf510" id="r_a419d3f7a389f056feb0fc8ebc6fdf510"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a419d3f7a389f056feb0fc8ebc6fdf510">beta_hbar_omega</a> {30.0}</td></tr>
 <tr class="memitem:ae6f2d6d8c1bcff94166b6c20233a0be3" id="r_ae6f2d6d8c1bcff94166b6c20233a0be3"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#ae6f2d6d8c1bcff94166b6c20233a0be3">max_iterations</a> {5000}</td></tr>
@@ -256,7 +258,18 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a1a1fa97d5bc1aadf7a374976b2c80883" id="r_a1a1fa97d5bc1aadf7a374976b2c80883"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a1a1fa97d5bc1aadf7a374976b2c80883">temperatures</a> {}</td></tr>
 <tr class="memitem:a5e68a352a49951cc52f3f642954c4117" id="r_a5e68a352a49951cc52f3f642954c4117"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a5e68a352a49951cc52f3f642954c4117">half_ring</a> {true}</td></tr>
 <tr class="memitem:a2e653d0cdc0a70bd54034c1926864a73" id="r_a2e653d0cdc0a70bd54034c1926864a73"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a2e653d0cdc0a70bd54034c1926864a73">energy_shift</a> {0.0}</td></tr>
+<tr class="memitem:a7adb1cf01cb63b5234363fe8ba8025bd" id="r_a7adb1cf01cb63b5234363fe8ba8025bd"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a7adb1cf01cb63b5234363fe8ba8025bd">discretization</a> {}</td></tr>
+<tr class="memitem:a4cc6b750200016d9b50ee8bb2765e84f" id="r_a4cc6b750200016d9b50ee8bb2765e84f"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a4cc6b750200016d9b50ee8bb2765e84f">friction</a> {&quot;none&quot;}</td></tr>
+<tr class="memitem:a9c30edd8c7c32de70298d70f47a80435" id="r_a9c30edd8c7c32de70298d70f47a80435"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a9c30edd8c7c32de70298d70f47a80435">friction_eta</a> {0.0}</td></tr>
+<tr class="memitem:ae4c62b108a2c07d5fe7640ca878cbddd" id="r_ae4c62b108a2c07d5fe7640ca878cbddd"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ae4c62b108a2c07d5fe7640ca878cbddd">friction_eta_beads</a> {}</td></tr>
 <tr class="memitem:af33ec9e812eb36b36359bd9c33ffeb2d" id="r_af33ec9e812eb36b36359bd9c33ffeb2d"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#af33ec9e812eb36b36359bd9c33ffeb2d">initial_hessians</a> {&quot;saddle&quot;}</td></tr>
+<tr class="memitem:a552c13ac8acbe34df074f64d117ae7fa" id="r_a552c13ac8acbe34df074f64d117ae7fa"><td class="memItemLeft">std::int64_t&#160;</td><td class="memItemRight"><a class="el" href="#a552c13ac8acbe34df074f64d117ae7fa">newton_limit</a> {std::numeric_limits&lt;std::int64_t&gt;::max()}</td></tr>
+<tr class="memitem:a6e6935d2e53b0a1d1683b9069eb5eb51" id="r_a6e6935d2e53b0a1d1683b9069eb5eb51"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a6e6935d2e53b0a1d1683b9069eb5eb51">lanczos_step</a> {1e-4}</td></tr>
+<tr class="memitem:a62ea4a19b8d96a844dc17cb2748bfaa4" id="r_a62ea4a19b8d96a844dc17cb2748bfaa4"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a62ea4a19b8d96a844dc17cb2748bfaa4">reactant_hessian_filename</a> {}</td></tr>
+<tr class="memitem:a190145821ab3a139cea5878d3ea55500" id="r_a190145821ab3a139cea5878d3ea55500"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a190145821ab3a139cea5878d3ea55500">saddle_hessian_filename</a> {}</td></tr>
+<tr class="memitem:a0ffe49c422ec089adb35d070eab81117" id="r_a0ffe49c422ec089adb35d070eab81117"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a0ffe49c422ec089adb35d070eab81117">physical_hessian_step</a> {1e-4}</td></tr>
+<tr class="memitem:add4cffb405106e499e70082be5a02862" id="r_add4cffb405106e499e70082be5a02862"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#add4cffb405106e499e70082be5a02862">collapse_fraction</a> {1e-4}</td></tr>
+<tr class="memitem:ab10683e4f10feb988ef738533906353d" id="r_ab10683e4f10feb988ef738533906353d"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ab10683e4f10feb988ef738533906353d">rotation_zero_fraction</a> {0.1}</td></tr>
 <tr class="memitem:a173b75cd6c54c11d837d9623ad410494" id="r_a173b75cd6c54c11d837d9623ad410494"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a173b75cd6c54c11d837d9623ad410494">bead_ladder</a> {false}</td></tr>
 <tr class="memitem:a6a9e76e47e07ccbf0789f0ad39e48bf7" id="r_a6a9e76e47e07ccbf0789f0ad39e48bf7"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a6a9e76e47e07ccbf0789f0ad39e48bf7">hessian_final</a> {&quot;recomputed&quot;}</td></tr>
 <tr class="memitem:a10bb41472ceab6de812e8c81253a1a06" id="r_a10bb41472ceab6de812e8c81253a1a06"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a10bb41472ceab6de812e8c81253a1a06">springs</a> {&quot;trotter&quot;}</td></tr>
@@ -279,7 +292,7 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00809">809</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00823">823</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
 </div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
 <a id="a173b75cd6c54c11d837d9623ad410494" name="a173b75cd6c54c11d837d9623ad410494"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a173b75cd6c54c11d837d9623ad410494">&#9670;&#160;</a></span>bead_ladder</h2>
@@ -293,8 +306,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00838">838</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  838</span>{<span class="keyword">false</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00880">880</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  880</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -310,8 +323,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00816">816</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  816</span>{256};              <span class="comment">// P, segments from one minimum to the other</span></div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00834">834</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  834</span>{256};              <span class="comment">// P, segments from one minimum to the other</span></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -327,8 +340,42 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00817">817</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  817</span>{30.0}; <span class="comment">// imaginary time, in units of 1 / omega</span></div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00835">835</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  835</span>{30.0}; <span class="comment">// imaginary time, in units of 1 / omega</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="add4cffb405106e499e70082be5a02862" name="add4cffb405106e499e70082be5a02862"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add4cffb405106e499e70082be5a02862">&#9670;&#160;</a></span>collapse_fraction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::instanton_options_t::collapse_fraction {1e-4}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00874">874</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  874</span>{1e-4};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7adb1cf01cb63b5234363fe8ba8025bd" name="a7adb1cf01cb63b5234363fe8ba8025bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7adb1cf01cb63b5234363fe8ba8025bd">&#9670;&#160;</a></span>discretization</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; eonc::instanton_options_t::discretization {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00852">852</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  852</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -344,8 +391,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00831">831</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  831</span>{0.0}; <span class="comment">// eV, subtracted from each bead potential</span></div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00849">849</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  849</span>{0.0}; <span class="comment">// eV, subtracted from each bead potential</span></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -361,8 +408,59 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00819">819</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  819</span>{1e-3}; <span class="comment">// eV / (amu^0.5 A), largest bead residual</span></div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00837">837</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  837</span>{1e-3}; <span class="comment">// eV / (amu^0.5 A), largest bead residual</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a4cc6b750200016d9b50ee8bb2765e84f" name="a4cc6b750200016d9b50ee8bb2765e84f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cc6b750200016d9b50ee8bb2765e84f">&#9670;&#160;</a></span>friction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::instanton_options_t::friction {&quot;none&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00855">855</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  855</span>{<span class="stringliteral">&quot;none&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9c30edd8c7c32de70298d70f47a80435" name="a9c30edd8c7c32de70298d70f47a80435"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c30edd8c7c32de70298d70f47a80435">&#9670;&#160;</a></span>friction_eta</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::instanton_options_t::friction_eta {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00856">856</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  856</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae4c62b108a2c07d5fe7640ca878cbddd" name="ae4c62b108a2c07d5fe7640ca878cbddd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4c62b108a2c07d5fe7640ca878cbddd">&#9670;&#160;</a></span>friction_eta_beads</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; eonc::instanton_options_t::friction_eta_beads {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00857">857</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  857</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -378,8 +476,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00830">830</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  830</span>{<span class="keyword">true</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00848">848</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  848</span>{<span class="keyword">true</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -395,8 +493,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00840">840</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  840</span>{<span class="stringliteral">&quot;recomputed&quot;</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00882">882</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  882</span>{<span class="stringliteral">&quot;recomputed&quot;</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -412,8 +510,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00821">821</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  821</span>{1};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00839">839</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  839</span>{1};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -429,8 +527,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00835">835</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  835</span>{<span class="stringliteral">&quot;saddle&quot;</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00861">861</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  861</span>{<span class="stringliteral">&quot;saddle&quot;</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -446,8 +544,42 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00815">815</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  815</span>{<span class="stringliteral">&quot;&quot;</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00829">829</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  829</span>{<span class="stringliteral">&quot;&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a53c044d411d0b7b2e56c239c125cfbb5" name="a53c044d411d0b7b2e56c239c125cfbb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53c044d411d0b7b2e56c239c125cfbb5">&#9670;&#160;</a></span>initial_ring</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::instanton_options_t::initial_ring {&quot;&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00831">831</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  831</span>{<span class="stringliteral">&quot;&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a6e6935d2e53b0a1d1683b9069eb5eb51" name="a6e6935d2e53b0a1d1683b9069eb5eb51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e6935d2e53b0a1d1683b9069eb5eb51">&#9670;&#160;</a></span>lanczos_step</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::instanton_options_t::lanczos_step {1e-4}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00867">867</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  867</span>{1e-4};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -463,8 +595,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00818">818</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  818</span>{5000};    <span class="comment">// L-BFGS iterations on the action</span></div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00836">836</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  836</span>{5000};    <span class="comment">// L-BFGS iterations on the action</span></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -480,8 +612,59 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00810">810</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  810</span>{<span class="stringliteral">&quot;splitting&quot;</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00824">824</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  824</span>{<span class="stringliteral">&quot;splitting&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a552c13ac8acbe34df074f64d117ae7fa" name="a552c13ac8acbe34df074f64d117ae7fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a552c13ac8acbe34df074f64d117ae7fa">&#9670;&#160;</a></span>newton_limit</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eonc::instanton_options_t::newton_limit {std::numeric_limits&lt;std::int64_t&gt;::max()}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00865">865</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  865</span>{std::numeric_limits&lt;std::int64_t&gt;::max()};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af82e3c054cdc92a638685b9d77beef7d" name="af82e3c054cdc92a638685b9d77beef7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af82e3c054cdc92a638685b9d77beef7d">&#9670;&#160;</a></span>physical_bath_filename</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::instanton_options_t::physical_bath_filename {&quot;&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00833">833</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  833</span>{<span class="stringliteral">&quot;&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0ffe49c422ec089adb35d070eab81117" name="a0ffe49c422ec089adb35d070eab81117"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ffe49c422ec089adb35d070eab81117">&#9670;&#160;</a></span>physical_hessian_step</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::instanton_options_t::physical_hessian_step {1e-4}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00871">871</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  871</span>{1e-4};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -497,8 +680,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00848">848</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  848</span>{16};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00890">890</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  890</span>{16};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -514,8 +697,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00861">861</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  861</span>{<span class="stringliteral">&quot;mode&quot;</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00903">903</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  903</span>{<span class="stringliteral">&quot;mode&quot;</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -531,8 +714,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00849">849</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  849</span>{500};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00891">891</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  891</span>{500};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -548,8 +731,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00855">855</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  855</span>{<span class="stringliteral">&quot;&quot;</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00897">897</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  897</span>{<span class="stringliteral">&quot;&quot;</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -565,8 +748,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00857">857</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  857</span>{1.0}; <span class="comment">// scales the internal-mode PILE damping</span></div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00899">899</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  899</span>{1.0}; <span class="comment">// scales the internal-mode PILE damping</span></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -582,8 +765,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00856">856</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  856</span>{100.0}; <span class="comment">// fs, centroid Langevin time</span></div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00898">898</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  898</span>{100.0}; <span class="comment">// fs, centroid Langevin time</span></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -599,8 +782,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00847">847</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  847</span>{0};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00889">889</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  889</span>{0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -616,8 +799,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00864">864</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  864</span>{0.5};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00906">906</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  906</span>{0.5};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -633,8 +816,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00870">870</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  870</span>{20};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00912">912</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  912</span>{20};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -650,8 +833,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00869">869</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  869</span>{0};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00911">911</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  911</span>{0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -667,8 +850,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00872">872</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  872</span>{50};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00914">914</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  914</span>{50};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -684,8 +867,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00871">871</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  871</span>{100.0}; <span class="comment">// fs</span></div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00913">913</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  913</span>{100.0}; <span class="comment">// fs</span></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -701,8 +884,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00850">850</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  850</span>{2000};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00892">892</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  892</span>{2000};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -718,8 +901,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00858">858</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  858</span>{1};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00900">900</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  900</span>{1};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -735,8 +918,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00854">854</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  854</span>{<span class="stringliteral">&quot;pile&quot;</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00896">896</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  896</span>{<span class="stringliteral">&quot;pile&quot;</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -752,8 +935,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00851">851</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  851</span>{0.5}; <span class="comment">// fs</span></div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00893">893</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  893</span>{0.5}; <span class="comment">// fs</span></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -769,8 +952,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00812">812</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  812</span>{<span class="stringliteral">&quot;product.con&quot;</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00826">826</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  826</span>{<span class="stringliteral">&quot;product.con&quot;</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -786,8 +969,42 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00811">811</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  811</span>{<span class="stringliteral">&quot;reactant.con&quot;</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00825">825</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  825</span>{<span class="stringliteral">&quot;reactant.con&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a62ea4a19b8d96a844dc17cb2748bfaa4" name="a62ea4a19b8d96a844dc17cb2748bfaa4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62ea4a19b8d96a844dc17cb2748bfaa4">&#9670;&#160;</a></span>reactant_hessian_filename</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::instanton_options_t::reactant_hessian_filename {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00868">868</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  868</span>{};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab10683e4f10feb988ef738533906353d" name="ab10683e4f10feb988ef738533906353d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab10683e4f10feb988ef738533906353d">&#9670;&#160;</a></span>rotation_zero_fraction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::instanton_options_t::rotation_zero_fraction {0.1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00877">877</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  877</span>{0.1};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -803,8 +1020,25 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00823">823</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  823</span>{<span class="stringliteral">&quot;saddle.con&quot;</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00841">841</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  841</span>{<span class="stringliteral">&quot;saddle.con&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a190145821ab3a139cea5878d3ea55500" name="a190145821ab3a139cea5878d3ea55500"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a190145821ab3a139cea5878d3ea55500">&#9670;&#160;</a></span>saddle_hessian_filename</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::instanton_options_t::saddle_hessian_filename {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00869">869</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  869</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -820,8 +1054,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00843">843</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  843</span>{<span class="stringliteral">&quot;trotter&quot;</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00885">885</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  885</span>{<span class="stringliteral">&quot;trotter&quot;</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -837,8 +1071,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00824">824</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  824</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00842">842</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  842</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -854,8 +1088,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00827">827</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  827</span>{};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00845">845</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  845</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>

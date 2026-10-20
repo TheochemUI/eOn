@@ -421,8 +421,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1SaddleSearchMethod.html#a70772a4163d7b2e5bae114620119f33f">eonc::SaddleSearchMethod</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DynamicsSaddleSearch_8cpp_source.html#l00414">414</a> of file <a class="el" href="DynamicsSaddleSearch_8cpp_source.html">DynamicsSaddleSearch.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  414</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a650c4b7128da08bb81c50e1d022eb83b">eigenvalue</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="DynamicsSaddleSearch_8cpp_source.html#l00412">412</a> of file <a class="el" href="DynamicsSaddleSearch_8cpp_source.html">DynamicsSaddleSearch.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  412</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a650c4b7128da08bb81c50e1d022eb83b">eigenvalue</a>; }</div>
 <div class="ttc" id="aclasseonc_1_1DynamicsSaddleSearch_html_a650c4b7128da08bb81c50e1d022eb83b"><div class="ttname"><a href="#a650c4b7128da08bb81c50e1d022eb83b">eonc::DynamicsSaddleSearch::eigenvalue</a></div><div class="ttdeci">double eigenvalue</div><div class="ttdef"><b>Definition</b> <a href="DynamicsSaddleSearch_8h_source.html#l00047">DynamicsSaddleSearch.h:47</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -452,8 +452,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1SaddleSearchMethod.html#a57da87103a898ecc496bf03eddb20d1b">eonc::SaddleSearchMethod</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DynamicsSaddleSearch_8cpp_source.html#l00416">416</a> of file <a class="el" href="DynamicsSaddleSearch_8cpp_source.html">DynamicsSaddleSearch.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  416</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a2b04cb61ea2946ebb934414825d5661a">eigenvector</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="DynamicsSaddleSearch_8cpp_source.html#l00414">414</a> of file <a class="el" href="DynamicsSaddleSearch_8cpp_source.html">DynamicsSaddleSearch.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  414</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a2b04cb61ea2946ebb934414825d5661a">eigenvector</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -508,41 +508,41 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Binary search through MD snapshots to find the transition point. </p>
 
-<p class="definition">Definition at line <a class="el" href="DynamicsSaddleSearch_8cpp_source.html#l00377">377</a> of file <a class="el" href="DynamicsSaddleSearch_8cpp_source.html">DynamicsSaddleSearch.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  379</span>                                {</div>
-<div class="line"><span class="lineno">  380</span>  <span class="keywordtype">int</span> lo = 0;</div>
-<div class="line"><span class="lineno">  381</span>  <span class="keywordtype">int</span> hi = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(snapshots.size()) - 1;</div>
-<div class="line"><span class="lineno">  382</span>  <span class="comment">// One frame is index 0. Zero frames yield -1, which is not a subscript.</span></div>
-<div class="line"><span class="lineno">  383</span>  <span class="keywordflow">if</span> (hi &lt;= 0) {</div>
-<div class="line"><span class="lineno">  384</span>    <span class="keywordflow">return</span> hi;</div>
-<div class="line"><span class="lineno">  385</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="DynamicsSaddleSearch_8cpp_source.html#l00375">375</a> of file <a class="el" href="DynamicsSaddleSearch_8cpp_source.html">DynamicsSaddleSearch.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  377</span>                                {</div>
+<div class="line"><span class="lineno">  378</span>  <span class="keywordtype">int</span> lo = 0;</div>
+<div class="line"><span class="lineno">  379</span>  <span class="keywordtype">int</span> hi = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(snapshots.size()) - 1;</div>
+<div class="line"><span class="lineno">  380</span>  <span class="comment">// One frame is index 0. Zero frames yield -1, which is not a subscript.</span></div>
+<div class="line"><span class="lineno">  381</span>  <span class="keywordflow">if</span> (hi &lt;= 0) {</div>
+<div class="line"><span class="lineno">  382</span>    <span class="keywordflow">return</span> hi;</div>
+<div class="line"><span class="lineno">  383</span>  }</div>
+<div class="line"><span class="lineno">  384</span> </div>
+<div class="line"><span class="lineno">  385</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;refining transition time&quot;</span>);</div>
 <div class="line"><span class="lineno">  386</span> </div>
-<div class="line"><span class="lineno">  387</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;refining transition time&quot;</span>);</div>
-<div class="line"><span class="lineno">  388</span> </div>
-<div class="line"><span class="lineno">  389</span>  <span class="keywordflow">while</span> ((hi - lo) &gt; 1) {</div>
-<div class="line"><span class="lineno">  390</span>    <span class="keywordtype">int</span> mid = lo + (hi - lo) / 2;</div>
-<div class="line"><span class="lineno">  391</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;minimizing image {}&quot;</span>, mid);</div>
-<div class="line"><span class="lineno">  392</span>    Matter snap(<a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#a3c005d31acbafdaa38c96a953c2b3d06">pot</a>, <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>);</div>
-<div class="line"><span class="lineno">  393</span>    snap = *snapshots[mid];</div>
-<div class="line"><span class="lineno">  394</span>    snap.relax(<span class="keyword">false</span>);</div>
-<div class="line"><span class="lineno">  395</span> </div>
-<div class="line"><span class="lineno">  396</span>    <span class="keywordflow">if</span> (snap.compare(*<a class="code hl_variable" href="#a6dded65d2d4d24a3771c61db3254fa18">reactant</a>)) {</div>
-<div class="line"><span class="lineno">  397</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;image {} minimizes to reactant&quot;</span>, mid);</div>
-<div class="line"><span class="lineno">  398</span>      lo = mid;</div>
-<div class="line"><span class="lineno">  399</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  400</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;image {} minimizes to product&quot;</span>, mid);</div>
-<div class="line"><span class="lineno">  401</span>      *prod = snap;</div>
-<div class="line"><span class="lineno">  402</span>      hi = mid;</div>
-<div class="line"><span class="lineno">  403</span>    }</div>
-<div class="line"><span class="lineno">  404</span>  }</div>
-<div class="line"><span class="lineno">  405</span> </div>
-<div class="line"><span class="lineno">  406</span>  <span class="comment">// Adjacent brackets make (lo + hi) / 2 equal lo, the snapshot that</span></div>
-<div class="line"><span class="lineno">  407</span>  <span class="comment">// still minimizes to the reactant. The transition is the higher index.</span></div>
-<div class="line"><span class="lineno">  408</span>  <span class="keywordflow">if</span> (hi &lt; 0) {</div>
-<div class="line"><span class="lineno">  409</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">  410</span>  }</div>
-<div class="line"><span class="lineno">  411</span>  <span class="keywordflow">return</span> hi;</div>
-<div class="line"><span class="lineno">  412</span>}</div>
+<div class="line"><span class="lineno">  387</span>  <span class="keywordflow">while</span> ((hi - lo) &gt; 1) {</div>
+<div class="line"><span class="lineno">  388</span>    <span class="keywordtype">int</span> mid = lo + (hi - lo) / 2;</div>
+<div class="line"><span class="lineno">  389</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;minimizing image {}&quot;</span>, mid);</div>
+<div class="line"><span class="lineno">  390</span>    Matter snap(<a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#a3c005d31acbafdaa38c96a953c2b3d06">pot</a>, <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>);</div>
+<div class="line"><span class="lineno">  391</span>    snap = *snapshots[mid];</div>
+<div class="line"><span class="lineno">  392</span>    snap.relax(<span class="keyword">false</span>);</div>
+<div class="line"><span class="lineno">  393</span> </div>
+<div class="line"><span class="lineno">  394</span>    <span class="keywordflow">if</span> (snap.compare(*<a class="code hl_variable" href="#a6dded65d2d4d24a3771c61db3254fa18">reactant</a>)) {</div>
+<div class="line"><span class="lineno">  395</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;image {} minimizes to reactant&quot;</span>, mid);</div>
+<div class="line"><span class="lineno">  396</span>      lo = mid;</div>
+<div class="line"><span class="lineno">  397</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  398</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;image {} minimizes to product&quot;</span>, mid);</div>
+<div class="line"><span class="lineno">  399</span>      *prod = snap;</div>
+<div class="line"><span class="lineno">  400</span>      hi = mid;</div>
+<div class="line"><span class="lineno">  401</span>    }</div>
+<div class="line"><span class="lineno">  402</span>  }</div>
+<div class="line"><span class="lineno">  403</span> </div>
+<div class="line"><span class="lineno">  404</span>  <span class="comment">// Adjacent brackets make (lo + hi) / 2 equal lo, the snapshot that</span></div>
+<div class="line"><span class="lineno">  405</span>  <span class="comment">// still minimizes to the reactant. The transition is the higher index.</span></div>
+<div class="line"><span class="lineno">  406</span>  <span class="keywordflow">if</span> (hi &lt; 0) {</div>
+<div class="line"><span class="lineno">  407</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">  408</span>  }</div>
+<div class="line"><span class="lineno">  409</span>  <span class="keywordflow">return</span> hi;</div>
+<div class="line"><span class="lineno">  410</span>}</div>
 <div class="ttc" id="aclasseonc_1_1DynamicsSaddleSearch_html_a2e070e5eb4e37f4c71743a52e06eca96"><div class="ttname"><a href="#a2e070e5eb4e37f4c71743a52e06eca96">eonc::DynamicsSaddleSearch::log</a></div><div class="ttdeci">eonc::log::Scoped log</div><div class="ttdef"><b>Definition</b> <a href="DynamicsSaddleSearch_8h_source.html#l00059">DynamicsSaddleSearch.h:59</a></div></div>
 <div class="ttc" id="aclasseonc_1_1SaddleSearchMethod_html_ad351caa18edcf52bb3a7530059ee2311"><div class="ttname"><a href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">eonc::SaddleSearchMethod::params</a></div><div class="ttdeci">const Parameters &amp; params</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchMethod_8h_source.html#l00024">SaddleSearchMethod.h:24</a></div></div>
 </div><!-- fragment -->
@@ -795,146 +795,144 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  246</span>              <a class="code hl_function" href="namespaceeonc.html#a53a942db7f595f4023b790db6ca2758a">eonc::buildEigenmodeStrategy</a>(<a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>, <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>, <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#a3c005d31acbafdaa38c96a953c2b3d06">pot</a>);</div>
 <div class="line"><span class="lineno">  247</span> </div>
 <div class="line"><span class="lineno">  248</span>          neb.compute();</div>
-<div class="line"><span class="lineno">  249</span>          neb.printImageData(<span class="keyword">true</span>);</div>
-<div class="line"><span class="lineno">  250</span>          <span class="keywordtype">int</span> extremumImage = -1;</div>
-<div class="line"><span class="lineno">  251</span>          <span class="keywordtype">int</span> jExt = 0;</div>
-<div class="line"><span class="lineno">  252</span>          <span class="keywordflow">for</span> (jExt = 0; jExt &lt; neb.numExtrema; jExt++) {</div>
-<div class="line"><span class="lineno">  253</span>            <span class="keywordflow">if</span> (neb.extremumCurvature[jExt] &lt;</div>
-<div class="line"><span class="lineno">  254</span>                <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>.saddle_search_options().dynamics.max_init_curvature) {</div>
-<div class="line"><span class="lineno">  255</span>              extremumImage =</div>
-<div class="line"><span class="lineno">  256</span>                  <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::floor(neb.extremumPosition[jExt]));</div>
-<div class="line"><span class="lineno">  257</span>              *<a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a> = *neb.path[extremumImage];</div>
-<div class="line"><span class="lineno">  258</span>              <span class="keywordtype">double</span> interpDist = neb.extremumPosition[jExt] -</div>
-<div class="line"><span class="lineno">  259</span>                                  <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(extremumImage);</div>
-<div class="line"><span class="lineno">  260</span>              <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> bandDir =</div>
-<div class="line"><span class="lineno">  261</span>                  <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;pbc(neb.path[extremumImage + 1]-&gt;getPositions() -</div>
-<div class="line"><span class="lineno">  262</span>                              neb.path[extremumImage]-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  263</span>              <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;setPositions(interpDist * bandDir +</div>
-<div class="line"><span class="lineno">  264</span>                                   <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  265</span>              mode = <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;pbc(neb.path[extremumImage + 1]-&gt;getPositions() -</div>
-<div class="line"><span class="lineno">  266</span>                                 <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  267</span>              eonc::safemath::safe_normalize_inplace(mode);</div>
-<div class="line"><span class="lineno">  268</span>              <a class="code hl_function" href="namespaceeonc.html#a1f0e36e8301c8aec77f544e954f8d301">eonc::eigenmodeCompute</a>(*minModeMethod, <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>, mode);</div>
-<div class="line"><span class="lineno">  269</span>              <span class="keywordtype">double</span> ev = <a class="code hl_function" href="namespaceeonc.html#a8a03dd97e2b389d73bdce26bd963e813">eonc::eigenmodeGetEigenvalue</a>(*minModeMethod);</div>
-<div class="line"><span class="lineno">  270</span>              QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;extrema #{} has eigenvalue {:.8f}&quot;</span>,</div>
-<div class="line"><span class="lineno">  271</span>                              jExt + 1, ev);</div>
-<div class="line"><span class="lineno">  272</span> </div>
-<div class="line"><span class="lineno">  273</span>              <span class="keywordflow">if</span> (ev &lt; 0) {</div>
-<div class="line"><span class="lineno">  274</span>                QUILL_LOG_DEBUG(</div>
-<div class="line"><span class="lineno">  275</span>                    <a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;chose image {} (extrema #{}) as extremum image&quot;</span>,</div>
-<div class="line"><span class="lineno">  276</span>                    extremumImage, jExt + 1);</div>
-<div class="line"><span class="lineno">  277</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  278</span>              } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  279</span>                extremumImage = -1;</div>
-<div class="line"><span class="lineno">  280</span>              }</div>
-<div class="line"><span class="lineno">  281</span>            }</div>
-<div class="line"><span class="lineno">  282</span>          }</div>
-<div class="line"><span class="lineno">  283</span> </div>
-<div class="line"><span class="lineno">  284</span>          <span class="keywordflow">if</span> (extremumImage != -1) {</div>
-<div class="line"><span class="lineno">  285</span>            *<a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a> = *neb.path[extremumImage];</div>
-<div class="line"><span class="lineno">  286</span>            <span class="keywordtype">double</span> interpDist =</div>
-<div class="line"><span class="lineno">  287</span>                neb.extremumPosition[jExt] - <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(extremumImage);</div>
-<div class="line"><span class="lineno">  288</span>            QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;interpDistance {}&quot;</span>, interpDist);</div>
-<div class="line"><span class="lineno">  289</span>            <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> bandDir =</div>
-<div class="line"><span class="lineno">  290</span>                <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;pbc(neb.path[extremumImage + 1]-&gt;getPositions() -</div>
-<div class="line"><span class="lineno">  291</span>                            neb.path[extremumImage]-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  292</span>            <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;setPositions(interpDist * bandDir + <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  293</span>            mode = <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;pbc(neb.path[extremumImage + 1]-&gt;getPositions() -</div>
-<div class="line"><span class="lineno">  294</span>                               <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  295</span>            eonc::safemath::safe_normalize_inplace(mode);</div>
-<div class="line"><span class="lineno">  296</span>          } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  297</span>            QUILL_LOG_DEBUG(</div>
-<div class="line"><span class="lineno">  298</span>                <a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;no maxima found, using max energy non-endpoint image&quot;</span>);</div>
-<div class="line"><span class="lineno">  299</span>            <span class="keywordtype">double</span> maxEnergy = -std::numeric_limits&lt;double&gt;::infinity();</div>
-<div class="line"><span class="lineno">  300</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> img = 1; img &lt;= neb.numImages; img++) {</div>
-<div class="line"><span class="lineno">  301</span>              <span class="keywordtype">double</span> U = neb.path[img]-&gt;getPotentialEnergy();</div>
-<div class="line"><span class="lineno">  302</span>              <span class="keywordflow">if</span> (U &gt; maxEnergy) {</div>
-<div class="line"><span class="lineno">  303</span>                maxEnergy = U;</div>
-<div class="line"><span class="lineno">  304</span>                *<a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a> = *neb.path[img];</div>
-<div class="line"><span class="lineno">  305</span>                mode = <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;pbc(neb.path[img + 1]-&gt;getPositions() -</div>
-<div class="line"><span class="lineno">  306</span>                                   <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  307</span>                eonc::safemath::safe_normalize_inplace(mode);</div>
-<div class="line"><span class="lineno">  308</span>              }</div>
-<div class="line"><span class="lineno">  309</span>            }</div>
-<div class="line"><span class="lineno">  310</span>            <span class="keywordflow">if</span> (maxEnergy &lt;= reactant-&gt;getPotentialEnergy()) {</div>
-<div class="line"><span class="lineno">  311</span>              QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;warning: no barrier found&quot;</span>);</div>
-<div class="line"><span class="lineno">  312</span>              <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a5340da9e157cd954497d7ff776845b8b">MinModeSaddleSearch::STATUS_BAD_NO_BARRIER</a>;</div>
-<div class="line"><span class="lineno">  313</span>            }</div>
-<div class="line"><span class="lineno">  314</span>          }</div>
-<div class="line"><span class="lineno">  315</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  316</span>          <span class="comment">// No NEB iterations: the middle image of the initial band is the</span></div>
-<div class="line"><span class="lineno">  317</span>          <span class="comment">// guess, and the dimer still needs an n-atom tangent. An empty</span></div>
-<div class="line"><span class="lineno">  318</span>          <span class="comment">// mode replaces the dimer direction and then indexes every atom.</span></div>
-<div class="line"><span class="lineno">  319</span>          neb.maxEnergyImage = neb.numImages / 2 + 1;</div>
-<div class="line"><span class="lineno">  320</span>          <span class="keyword">const</span> <span class="keywordtype">int</span> img = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(neb.maxEnergyImage);</div>
-<div class="line"><span class="lineno">  321</span>          <span class="keyword">const</span> <span class="keywordtype">int</span> last = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(neb.path.size()) - 1;</div>
-<div class="line"><span class="lineno">  322</span>          <span class="keyword">const</span> <span class="keywordtype">int</span> from = std::clamp(img, 0, last);</div>
-<div class="line"><span class="lineno">  323</span>          <span class="keyword">const</span> <span class="keywordtype">int</span> to = std::clamp(img + 1, 0, last);</div>
-<div class="line"><span class="lineno">  324</span>          <span class="comment">// With linear_interpolation the band does not pass through the MD</span></div>
-<div class="line"><span class="lineno">  325</span>          <span class="comment">// snapshot, so start from the image the tangent belongs to.</span></div>
-<div class="line"><span class="lineno">  326</span>          *<a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a> = *neb.path[from];</div>
-<div class="line"><span class="lineno">  327</span>          mode = <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;pbc(neb.path[to]-&gt;getPositions() -</div>
-<div class="line"><span class="lineno">  328</span>                             neb.path[from]-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  329</span>          <span class="keywordflow">if</span> (mode.norm() &gt; 0.0) {</div>
-<div class="line"><span class="lineno">  330</span>            mode.normalize();</div>
-<div class="line"><span class="lineno">  331</span>          } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  332</span>            mode = AtomMatrix::Zero(<a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;numberOfAtoms(), 3);</div>
-<div class="line"><span class="lineno">  333</span>            <span class="keywordflow">if</span> (mode.rows() &gt; 0) {</div>
-<div class="line"><span class="lineno">  334</span>              mode(0, 0) = 1.0;</div>
-<div class="line"><span class="lineno">  335</span>            }</div>
-<div class="line"><span class="lineno">  336</span>          }</div>
-<div class="line"><span class="lineno">  337</span>        }</div>
-<div class="line"><span class="lineno">  338</span> </div>
-<div class="line"><span class="lineno">  339</span>        QUILL_LOG_DEBUG(</div>
-<div class="line"><span class="lineno">  340</span>            <a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;Initial saddle guess saved to saddle_initial_guess.con&quot;</span>);</div>
-<div class="line"><span class="lineno">  341</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;matter2con(<span class="stringliteral">&quot;saddle_initial_guess.con&quot;</span>))) {</div>
-<div class="line"><span class="lineno">  342</span>          QUILL_LOG_WARNING(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;Failed to write saddle_initial_guess.con&quot;</span>);</div>
-<div class="line"><span class="lineno">  343</span>        }</div>
-<div class="line"><span class="lineno">  344</span>        MinModeSaddleSearch search = MinModeSaddleSearch(</div>
-<div class="line"><span class="lineno">  345</span>            <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>, mode, <a class="code hl_variable" href="#a6dded65d2d4d24a3771c61db3254fa18">reactant</a>-&gt;getPotentialEnergy(), <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>, <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#a3c005d31acbafdaa38c96a953c2b3d06">pot</a>);</div>
-<div class="line"><span class="lineno">  346</span>        <span class="keywordtype">int</span> minModeStatus = search.<a class="code hl_function" href="classMinModeSaddleSearch.html#abf9467dfa3ccc5ef058bb18fa2bf3325">run</a>();</div>
-<div class="line"><span class="lineno">  347</span> </div>
-<div class="line"><span class="lineno">  348</span>        <span class="keywordflow">if</span> (minModeStatus != <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">MinModeSaddleSearch::STATUS_GOOD</a>) {</div>
-<div class="line"><span class="lineno">  349</span>          QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;error in min mode saddle search&quot;</span>);</div>
-<div class="line"><span class="lineno">  350</span>          <span class="keywordflow">return</span> minModeStatus;</div>
-<div class="line"><span class="lineno">  351</span>        }</div>
-<div class="line"><span class="lineno">  352</span> </div>
-<div class="line"><span class="lineno">  353</span>        <a class="code hl_variable" href="#a650c4b7128da08bb81c50e1d022eb83b">eigenvalue</a> = search.<a class="code hl_function" href="classMinModeSaddleSearch.html#a32c8ac4e154a33f738f5c816cad6aecd">getEigenvalue</a>();</div>
-<div class="line"><span class="lineno">  354</span>        <a class="code hl_variable" href="#a2b04cb61ea2946ebb934414825d5661a">eigenvector</a> = search.<a class="code hl_function" href="classMinModeSaddleSearch.html#a2a691ec70bdc94f5f1869d521bc4fc2f">getEigenvector</a>();</div>
-<div class="line"><span class="lineno">  355</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;eigenvalue: {:.3f}&quot;</span>, <a class="code hl_variable" href="#a650c4b7128da08bb81c50e1d022eb83b">eigenvalue</a>);</div>
-<div class="line"><span class="lineno">  356</span> </div>
-<div class="line"><span class="lineno">  357</span>        <span class="keywordtype">double</span> barrier =</div>
-<div class="line"><span class="lineno">  358</span>            <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;getPotentialEnergy() - <a class="code hl_variable" href="#a6dded65d2d4d24a3771c61db3254fa18">reactant</a>-&gt;getPotentialEnergy();</div>
-<div class="line"><span class="lineno">  359</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;found barrier of {:.3f}&quot;</span>, barrier);</div>
-<div class="line"><span class="lineno">  360</span>        mdSnapshots.clear();</div>
-<div class="line"><span class="lineno">  361</span>        mdTimes.clear();</div>
-<div class="line"><span class="lineno">  362</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">MinModeSaddleSearch::STATUS_GOOD</a>;</div>
-<div class="line"><span class="lineno">  363</span>      } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  364</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;Still in original state&quot;</span>);</div>
-<div class="line"><span class="lineno">  365</span>        mdTimes.clear();</div>
-<div class="line"><span class="lineno">  366</span>        mdSnapshots.clear();</div>
-<div class="line"><span class="lineno">  367</span>      }</div>
-<div class="line"><span class="lineno">  368</span>    }</div>
-<div class="line"><span class="lineno">  369</span>  }</div>
-<div class="line"><span class="lineno">  370</span> </div>
-<div class="line"><span class="lineno">  371</span>  mdSnapshots.clear();</div>
-<div class="line"><span class="lineno">  372</span>  <a class="code hl_variable" href="#a44ef7ae48e1318516f24f0a802623aaa">time</a> = <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>.dynamics_options().steps * <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>.dynamics_options().time_step;</div>
-<div class="line"><span class="lineno">  373</span>  <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a757015d905f47f12d625584ff87256c1">MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT</a>;</div>
-<div class="line"><span class="lineno">  374</span>}</div>
+<div class="line"><span class="lineno">  249</span>          neb.findExtrema();</div>
+<div class="line"><span class="lineno">  250</span>          neb.printImageData(<span class="keyword">true</span>);</div>
+<div class="line"><span class="lineno">  251</span>          <span class="keywordtype">int</span> extremumImage = -1;</div>
+<div class="line"><span class="lineno">  252</span>          <span class="keywordtype">int</span> jExt = 0;</div>
+<div class="line"><span class="lineno">  253</span>          <span class="keywordflow">for</span> (jExt = 0; jExt &lt; neb.numExtrema; jExt++) {</div>
+<div class="line"><span class="lineno">  254</span>            <span class="keywordflow">if</span> (neb.extremumCurvature[jExt] &lt;</div>
+<div class="line"><span class="lineno">  255</span>                <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>.saddle_search_options().dynamics.max_init_curvature) {</div>
+<div class="line"><span class="lineno">  256</span>              extremumImage =</div>
+<div class="line"><span class="lineno">  257</span>                  <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::floor(neb.extremumPosition[jExt]));</div>
+<div class="line"><span class="lineno">  258</span>              *<a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a> = *neb.path[extremumImage];</div>
+<div class="line"><span class="lineno">  259</span>              <span class="keywordtype">double</span> interpDist = neb.extremumPosition[jExt] -</div>
+<div class="line"><span class="lineno">  260</span>                                  <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(extremumImage);</div>
+<div class="line"><span class="lineno">  261</span>              <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> bandDir =</div>
+<div class="line"><span class="lineno">  262</span>                  <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;pbc(neb.path[extremumImage + 1]-&gt;getPositions() -</div>
+<div class="line"><span class="lineno">  263</span>                              neb.path[extremumImage]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  264</span>              <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;setPositions(interpDist * bandDir +</div>
+<div class="line"><span class="lineno">  265</span>                                   <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  266</span>              mode = <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;pbc(neb.path[extremumImage + 1]-&gt;getPositions() -</div>
+<div class="line"><span class="lineno">  267</span>                                 <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  268</span>              eonc::safemath::safe_normalize_inplace(mode);</div>
+<div class="line"><span class="lineno">  269</span>              <a class="code hl_function" href="namespaceeonc.html#a1f0e36e8301c8aec77f544e954f8d301">eonc::eigenmodeCompute</a>(*minModeMethod, <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>, mode);</div>
+<div class="line"><span class="lineno">  270</span>              <span class="keywordtype">double</span> ev = <a class="code hl_function" href="namespaceeonc.html#a8a03dd97e2b389d73bdce26bd963e813">eonc::eigenmodeGetEigenvalue</a>(*minModeMethod);</div>
+<div class="line"><span class="lineno">  271</span>              QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;extrema #{} has eigenvalue {:.8f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  272</span>                              jExt + 1, ev);</div>
+<div class="line"><span class="lineno">  273</span> </div>
+<div class="line"><span class="lineno">  274</span>              <span class="keywordflow">if</span> (ev &lt; 0) {</div>
+<div class="line"><span class="lineno">  275</span>                QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">  276</span>                    <a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;chose image {} (extrema #{}) as extremum image&quot;</span>,</div>
+<div class="line"><span class="lineno">  277</span>                    extremumImage, jExt + 1);</div>
+<div class="line"><span class="lineno">  278</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  279</span>              } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  280</span>                extremumImage = -1;</div>
+<div class="line"><span class="lineno">  281</span>              }</div>
+<div class="line"><span class="lineno">  282</span>            }</div>
+<div class="line"><span class="lineno">  283</span>          }</div>
+<div class="line"><span class="lineno">  284</span> </div>
+<div class="line"><span class="lineno">  285</span>          <span class="keywordflow">if</span> (extremumImage != -1) {</div>
+<div class="line"><span class="lineno">  286</span>            *<a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a> = *neb.path[extremumImage];</div>
+<div class="line"><span class="lineno">  287</span>            <span class="keywordtype">double</span> interpDist =</div>
+<div class="line"><span class="lineno">  288</span>                neb.extremumPosition[jExt] - <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(extremumImage);</div>
+<div class="line"><span class="lineno">  289</span>            QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;interpDistance {}&quot;</span>, interpDist);</div>
+<div class="line"><span class="lineno">  290</span>            <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> bandDir =</div>
+<div class="line"><span class="lineno">  291</span>                <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;pbc(neb.path[extremumImage + 1]-&gt;getPositions() -</div>
+<div class="line"><span class="lineno">  292</span>                            neb.path[extremumImage]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  293</span>            <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;setPositions(interpDist * bandDir + <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  294</span>            mode = <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;pbc(neb.path[extremumImage + 1]-&gt;getPositions() -</div>
+<div class="line"><span class="lineno">  295</span>                               <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  296</span>            eonc::safemath::safe_normalize_inplace(mode);</div>
+<div class="line"><span class="lineno">  297</span>          } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  298</span>            QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">  299</span>                <a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;no maxima found, using max energy non-endpoint image&quot;</span>);</div>
+<div class="line"><span class="lineno">  300</span>            <span class="keywordtype">double</span> maxEnergy = -std::numeric_limits&lt;double&gt;::infinity();</div>
+<div class="line"><span class="lineno">  301</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> img = 1; img &lt;= neb.numImages; img++) {</div>
+<div class="line"><span class="lineno">  302</span>              <span class="keywordtype">double</span> U = neb.path[img]-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  303</span>              <span class="keywordflow">if</span> (U &gt; maxEnergy) {</div>
+<div class="line"><span class="lineno">  304</span>                maxEnergy = U;</div>
+<div class="line"><span class="lineno">  305</span>                *<a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a> = *neb.path[img];</div>
+<div class="line"><span class="lineno">  306</span>                mode = <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;pbc(neb.path[img + 1]-&gt;getPositions() -</div>
+<div class="line"><span class="lineno">  307</span>                                   <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  308</span>                eonc::safemath::safe_normalize_inplace(mode);</div>
+<div class="line"><span class="lineno">  309</span>              }</div>
+<div class="line"><span class="lineno">  310</span>            }</div>
+<div class="line"><span class="lineno">  311</span>            <span class="keywordflow">if</span> (maxEnergy &lt;= reactant-&gt;getPotentialEnergy()) {</div>
+<div class="line"><span class="lineno">  312</span>              QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;warning: no barrier found&quot;</span>);</div>
+<div class="line"><span class="lineno">  313</span>              <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a5340da9e157cd954497d7ff776845b8b">MinModeSaddleSearch::STATUS_BAD_NO_BARRIER</a>;</div>
+<div class="line"><span class="lineno">  314</span>            }</div>
+<div class="line"><span class="lineno">  315</span>          }</div>
+<div class="line"><span class="lineno">  316</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  317</span>          <span class="comment">// No NEB iterations: the middle image of the initial band is the</span></div>
+<div class="line"><span class="lineno">  318</span>          <span class="comment">// guess, and the dimer still needs an n-atom tangent. An empty</span></div>
+<div class="line"><span class="lineno">  319</span>          <span class="comment">// mode replaces the dimer direction and then indexes every atom.</span></div>
+<div class="line"><span class="lineno">  320</span>          neb.maxEnergyImage = neb.numImages / 2 + 1;</div>
+<div class="line"><span class="lineno">  321</span>          <span class="keyword">const</span> <span class="keywordtype">int</span> img = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(neb.maxEnergyImage);</div>
+<div class="line"><span class="lineno">  322</span>          <span class="keyword">const</span> <span class="keywordtype">int</span> last = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(neb.path.size()) - 1;</div>
+<div class="line"><span class="lineno">  323</span>          <span class="keyword">const</span> <span class="keywordtype">int</span> from = std::clamp(img, 0, last);</div>
+<div class="line"><span class="lineno">  324</span>          <span class="keyword">const</span> <span class="keywordtype">int</span> to = std::clamp(img + 1, 0, last);</div>
+<div class="line"><span class="lineno">  325</span>          mode = <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;pbc(neb.path[to]-&gt;getPositions() -</div>
+<div class="line"><span class="lineno">  326</span>                             neb.path[from]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  327</span>          <span class="keywordflow">if</span> (mode.norm() &gt; 0.0) {</div>
+<div class="line"><span class="lineno">  328</span>            mode.normalize();</div>
+<div class="line"><span class="lineno">  329</span>          } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  330</span>            mode = AtomMatrix::Zero(<a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;numberOfAtoms(), 3);</div>
+<div class="line"><span class="lineno">  331</span>            <span class="keywordflow">if</span> (mode.rows() &gt; 0) {</div>
+<div class="line"><span class="lineno">  332</span>              mode(0, 0) = 1.0;</div>
+<div class="line"><span class="lineno">  333</span>            }</div>
+<div class="line"><span class="lineno">  334</span>          }</div>
+<div class="line"><span class="lineno">  335</span>        }</div>
+<div class="line"><span class="lineno">  336</span> </div>
+<div class="line"><span class="lineno">  337</span>        QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">  338</span>            <a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;Initial saddle guess saved to saddle_initial_guess.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  339</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;matter2con(<span class="stringliteral">&quot;saddle_initial_guess.con&quot;</span>))) {</div>
+<div class="line"><span class="lineno">  340</span>          QUILL_LOG_WARNING(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;Failed to write saddle_initial_guess.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  341</span>        }</div>
+<div class="line"><span class="lineno">  342</span>        MinModeSaddleSearch search = MinModeSaddleSearch(</div>
+<div class="line"><span class="lineno">  343</span>            <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>, mode, <a class="code hl_variable" href="#a6dded65d2d4d24a3771c61db3254fa18">reactant</a>-&gt;getPotentialEnergy(), <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>, <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#a3c005d31acbafdaa38c96a953c2b3d06">pot</a>);</div>
+<div class="line"><span class="lineno">  344</span>        <span class="keywordtype">int</span> minModeStatus = search.<a class="code hl_function" href="classMinModeSaddleSearch.html#abf9467dfa3ccc5ef058bb18fa2bf3325">run</a>();</div>
+<div class="line"><span class="lineno">  345</span> </div>
+<div class="line"><span class="lineno">  346</span>        <span class="keywordflow">if</span> (minModeStatus != <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">MinModeSaddleSearch::STATUS_GOOD</a>) {</div>
+<div class="line"><span class="lineno">  347</span>          QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;error in min mode saddle search&quot;</span>);</div>
+<div class="line"><span class="lineno">  348</span>          <span class="keywordflow">return</span> minModeStatus;</div>
+<div class="line"><span class="lineno">  349</span>        }</div>
+<div class="line"><span class="lineno">  350</span> </div>
+<div class="line"><span class="lineno">  351</span>        <a class="code hl_variable" href="#a650c4b7128da08bb81c50e1d022eb83b">eigenvalue</a> = search.<a class="code hl_function" href="classMinModeSaddleSearch.html#a32c8ac4e154a33f738f5c816cad6aecd">getEigenvalue</a>();</div>
+<div class="line"><span class="lineno">  352</span>        <a class="code hl_variable" href="#a2b04cb61ea2946ebb934414825d5661a">eigenvector</a> = search.<a class="code hl_function" href="classMinModeSaddleSearch.html#a2a691ec70bdc94f5f1869d521bc4fc2f">getEigenvector</a>();</div>
+<div class="line"><span class="lineno">  353</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;eigenvalue: {:.3f}&quot;</span>, <a class="code hl_variable" href="#a650c4b7128da08bb81c50e1d022eb83b">eigenvalue</a>);</div>
+<div class="line"><span class="lineno">  354</span> </div>
+<div class="line"><span class="lineno">  355</span>        <span class="keywordtype">double</span> barrier =</div>
+<div class="line"><span class="lineno">  356</span>            <a class="code hl_variable" href="#a5cf5150200f607b3c488b9a89ae1650f">saddle</a>-&gt;getPotentialEnergy() - <a class="code hl_variable" href="#a6dded65d2d4d24a3771c61db3254fa18">reactant</a>-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  357</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;found barrier of {:.3f}&quot;</span>, barrier);</div>
+<div class="line"><span class="lineno">  358</span>        mdSnapshots.clear();</div>
+<div class="line"><span class="lineno">  359</span>        mdTimes.clear();</div>
+<div class="line"><span class="lineno">  360</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">MinModeSaddleSearch::STATUS_GOOD</a>;</div>
+<div class="line"><span class="lineno">  361</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  362</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2e070e5eb4e37f4c71743a52e06eca96">log</a>, <span class="stringliteral">&quot;Still in original state&quot;</span>);</div>
+<div class="line"><span class="lineno">  363</span>        mdTimes.clear();</div>
+<div class="line"><span class="lineno">  364</span>        mdSnapshots.clear();</div>
+<div class="line"><span class="lineno">  365</span>      }</div>
+<div class="line"><span class="lineno">  366</span>    }</div>
+<div class="line"><span class="lineno">  367</span>  }</div>
+<div class="line"><span class="lineno">  368</span> </div>
+<div class="line"><span class="lineno">  369</span>  mdSnapshots.clear();</div>
+<div class="line"><span class="lineno">  370</span>  <a class="code hl_variable" href="#a44ef7ae48e1318516f24f0a802623aaa">time</a> = <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>.dynamics_options().steps * <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>.dynamics_options().time_step;</div>
+<div class="line"><span class="lineno">  371</span>  <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a757015d905f47f12d625584ff87256c1">MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT</a>;</div>
+<div class="line"><span class="lineno">  372</span>}</div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
-<div class="ttc" id="aclassMatter_html_a04ffd790350c09dd4e1ac7fff100e293"><div class="ttname"><a href="classMatter.html#a04ffd790350c09dd4e1ac7fff100e293">Matter::setBiasPotential</a></div><div class="ttdeci">void setBiasPotential(BondBoost *bondBoost)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00412">Matter.cpp:412</a></div></div>
-<div class="ttc" id="aclassMatter_html_a5b678e80aa584c41d54e221d04bb729e"><div class="ttname"><a href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">Matter::numberOfAtoms</a></div><div class="ttdeci">long int numberOfAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00291">Matter.cpp:291</a></div></div>
-<div class="ttc" id="aclassMatter_html_acc2df116c691d8c6ef24ec2bac6edc64"><div class="ttname"><a href="classMatter.html#acc2df116c691d8c6ef24ec2bac6edc64">Matter::setBiasForces</a></div><div class="ttdeci">void setBiasForces(const AtomMatrix &amp;bf)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00424">Matter.cpp:424</a></div></div>
-<div class="ttc" id="aclassMinModeSaddleSearch_html_a2a691ec70bdc94f5f1869d521bc4fc2f"><div class="ttname"><a href="classMinModeSaddleSearch.html#a2a691ec70bdc94f5f1869d521bc4fc2f">MinModeSaddleSearch::getEigenvector</a></div><div class="ttdeci">AtomMatrix getEigenvector()</div><div class="ttdef"><b>Definition</b> <a href="MinModeSaddleSearch_8cpp_source.html#l00534">MinModeSaddleSearch.cpp:534</a></div></div>
-<div class="ttc" id="aclassMinModeSaddleSearch_html_a32c8ac4e154a33f738f5c816cad6aecd"><div class="ttname"><a href="classMinModeSaddleSearch.html#a32c8ac4e154a33f738f5c816cad6aecd">MinModeSaddleSearch::getEigenvalue</a></div><div class="ttdeci">double getEigenvalue()</div><div class="ttdef"><b>Definition</b> <a href="MinModeSaddleSearch_8cpp_source.html#l00530">MinModeSaddleSearch.cpp:530</a></div></div>
-<div class="ttc" id="aclassMinModeSaddleSearch_html_abf9467dfa3ccc5ef058bb18fa2bf3325"><div class="ttname"><a href="classMinModeSaddleSearch.html#abf9467dfa3ccc5ef058bb18fa2bf3325">MinModeSaddleSearch::run</a></div><div class="ttdeci">int run() override</div><div class="ttdef"><b>Definition</b> <a href="MinModeSaddleSearch_8cpp_source.html#l00242">MinModeSaddleSearch.cpp:242</a></div></div>
-<div class="ttc" id="aclasseonc_1_1DynamicsSaddleSearch_html_a38fa31142d51336392109b08d955c3c9"><div class="ttname"><a href="#a38fa31142d51336392109b08d955c3c9">eonc::DynamicsSaddleSearch::refineTransition</a></div><div class="ttdeci">int refineTransition(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;snapshots, std::shared_ptr&lt; Matter &gt; product)</div><div class="ttdoc">Binary search through MD snapshots to find the transition point.</div><div class="ttdef"><b>Definition</b> <a href="DynamicsSaddleSearch_8cpp_source.html#l00377">DynamicsSaddleSearch.cpp:377</a></div></div>
+<div class="ttc" id="aclassMatter_html_a04ffd790350c09dd4e1ac7fff100e293"><div class="ttname"><a href="classMatter.html#a04ffd790350c09dd4e1ac7fff100e293">Matter::setBiasPotential</a></div><div class="ttdeci">void setBiasPotential(BondBoost *bondBoost)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00461">Matter.cpp:461</a></div></div>
+<div class="ttc" id="aclassMatter_html_a5b678e80aa584c41d54e221d04bb729e"><div class="ttname"><a href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">Matter::numberOfAtoms</a></div><div class="ttdeci">long int numberOfAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00340">Matter.cpp:340</a></div></div>
+<div class="ttc" id="aclassMatter_html_acc2df116c691d8c6ef24ec2bac6edc64"><div class="ttname"><a href="classMatter.html#acc2df116c691d8c6ef24ec2bac6edc64">Matter::setBiasForces</a></div><div class="ttdeci">void setBiasForces(const AtomMatrix &amp;bf)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00473">Matter.cpp:473</a></div></div>
+<div class="ttc" id="aclassMinModeSaddleSearch_html_a2a691ec70bdc94f5f1869d521bc4fc2f"><div class="ttname"><a href="classMinModeSaddleSearch.html#a2a691ec70bdc94f5f1869d521bc4fc2f">MinModeSaddleSearch::getEigenvector</a></div><div class="ttdeci">AtomMatrix getEigenvector()</div><div class="ttdef"><b>Definition</b> <a href="MinModeSaddleSearch_8cpp_source.html#l00538">MinModeSaddleSearch.cpp:538</a></div></div>
+<div class="ttc" id="aclassMinModeSaddleSearch_html_a32c8ac4e154a33f738f5c816cad6aecd"><div class="ttname"><a href="classMinModeSaddleSearch.html#a32c8ac4e154a33f738f5c816cad6aecd">MinModeSaddleSearch::getEigenvalue</a></div><div class="ttdeci">double getEigenvalue()</div><div class="ttdef"><b>Definition</b> <a href="MinModeSaddleSearch_8cpp_source.html#l00534">MinModeSaddleSearch.cpp:534</a></div></div>
+<div class="ttc" id="aclassMinModeSaddleSearch_html_abf9467dfa3ccc5ef058bb18fa2bf3325"><div class="ttname"><a href="classMinModeSaddleSearch.html#abf9467dfa3ccc5ef058bb18fa2bf3325">MinModeSaddleSearch::run</a></div><div class="ttdeci">int run() override</div><div class="ttdef"><b>Definition</b> <a href="MinModeSaddleSearch_8cpp_source.html#l00246">MinModeSaddleSearch.cpp:246</a></div></div>
+<div class="ttc" id="aclasseonc_1_1DynamicsSaddleSearch_html_a38fa31142d51336392109b08d955c3c9"><div class="ttname"><a href="#a38fa31142d51336392109b08d955c3c9">eonc::DynamicsSaddleSearch::refineTransition</a></div><div class="ttdeci">int refineTransition(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;snapshots, std::shared_ptr&lt; Matter &gt; product)</div><div class="ttdoc">Binary search through MD snapshots to find the transition point.</div><div class="ttdef"><b>Definition</b> <a href="DynamicsSaddleSearch_8cpp_source.html#l00375">DynamicsSaddleSearch.cpp:375</a></div></div>
 <div class="ttc" id="aclasseonc_1_1DynamicsSaddleSearch_html_a44ef7ae48e1318516f24f0a802623aaa"><div class="ttname"><a href="#a44ef7ae48e1318516f24f0a802623aaa">eonc::DynamicsSaddleSearch::time</a></div><div class="ttdeci">double time</div><div class="ttdef"><b>Definition</b> <a href="DynamicsSaddleSearch_8h_source.html#l00050">DynamicsSaddleSearch.h:50</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Hyperdynamics_html_a7c047d56f2b6eed95770617d534b9953"><div class="ttname"><a href="classeonc_1_1Hyperdynamics.html#a7c047d56f2b6eed95770617d534b9953">eonc::Hyperdynamics::BOND_BOOST</a></div><div class="ttdeci">static const char BOND_BOOST[]</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00075">BondBoost.h:75</a></div></div>
 <div class="ttc" id="aclasseonc_1_1MinModeSaddleSearch_html_a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796"><div class="ttname"><a href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">eonc::MinModeSaddleSearch::STATUS_GOOD</a></div><div class="ttdeci">@ STATUS_GOOD</div><div class="ttdef"><b>Definition</b> <a href="MinModeSaddleSearch_8h_source.html#l00031">MinModeSaddleSearch.h:31</a></div></div>
 <div class="ttc" id="aclasseonc_1_1MinModeSaddleSearch_html_a4a5c4ebad104382ef600037faafd5960a5340da9e157cd954497d7ff776845b8b"><div class="ttname"><a href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a5340da9e157cd954497d7ff776845b8b">eonc::MinModeSaddleSearch::STATUS_BAD_NO_BARRIER</a></div><div class="ttdeci">@ STATUS_BAD_NO_BARRIER</div><div class="ttdef"><b>Definition</b> <a href="MinModeSaddleSearch_8h_source.html#l00048">MinModeSaddleSearch.h:48</a></div></div>
 <div class="ttc" id="aclasseonc_1_1MinModeSaddleSearch_html_a4a5c4ebad104382ef600037faafd5960a757015d905f47f12d625584ff87256c1"><div class="ttname"><a href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a757015d905f47f12d625584ff87256c1">eonc::MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT</a></div><div class="ttdeci">@ STATUS_BAD_MD_TRAJECTORY_TOO_SHORT</div><div class="ttdef"><b>Definition</b> <a href="MinModeSaddleSearch_8h_source.html#l00046">MinModeSaddleSearch.h:46</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1helpers_html_a0dd10b9b2d0a2e6f13afb7b3dcc49542"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a0dd10b9b2d0a2e6f13afb7b3dcc49542">eonc::helpers::loadMasses</a></div><div class="ttdeci">VectorXd loadMasses(std::string filename, int nAtoms)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00139">HelperFunctions.cpp:139</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_a0dd10b9b2d0a2e6f13afb7b3dcc49542"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a0dd10b9b2d0a2e6f13afb7b3dcc49542">eonc::helpers::loadMasses</a></div><div class="ttdeci">VectorXd loadMasses(std::string filename, int nAtoms)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00140">HelperFunctions.cpp:140</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_af66b2723d892a4095754f9b0354b4f78"><div class="ttname"><a href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a></div><div class="ttdeci">constexpr bool io_ok(IoStatus s) noexcept</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00038">ConFileIO.h:38</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a1f0e36e8301c8aec77f544e954f8d301"><div class="ttname"><a href="namespaceeonc.html#a1f0e36e8301c8aec77f544e954f8d301">eonc::eigenmodeCompute</a></div><div class="ttdeci">void eigenmodeCompute(LowestEigenmode &amp;s, std::shared_ptr&lt; Matter &gt; matter, AtomMatrix direction)</div><div class="ttdef"><b>Definition</b> <a href="EigenmodeStrategy_8h_source.html#l00031">EigenmodeStrategy.h:31</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a53a942db7f595f4023b790db6ca2758a"><div class="ttname"><a href="namespaceeonc.html#a53a942db7f595f4023b790db6ca2758a">eonc::buildEigenmodeStrategy</a></div><div class="ttdeci">std::shared_ptr&lt; LowestEigenmode &gt; buildEigenmodeStrategy(std::shared_ptr&lt; Matter &gt; matter, const Parameters &amp;params, std::shared_ptr&lt; Potential &gt; pot)</div><div class="ttdef"><b>Definition</b> <a href="EigenmodeStrategy_8cpp_source.html#l00032">EigenmodeStrategy.cpp:32</a></div></div>

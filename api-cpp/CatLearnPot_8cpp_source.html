@@ -274,8 +274,8 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('CatLearnPot_8c
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                        <span class="keyword">const</span> <span class="keywordtype">int</span> *atomicNrs, <span class="keywordtype">double</span> *forces, <span class="keywordtype">double</span> *energy,</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                        <span class="keywordtype">double</span> *variance, <span class="keyword">const</span> <span class="keywordtype">double</span> *box) {</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  <span class="keyword">using namespace </span>pybind11::literals;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  (void)atomicNrs;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  (void)box;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(atomicNrs);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(box);</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  py::gil_scoped_acquire gil;</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  <span class="keyword">const</span> Eigen::Map&lt;const MatrixXd&gt; features(positions, 1, nAtoms * 3);</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  py::tuple ef_and_unc = (this-&gt;<a class="code hl_variable" href="classCatLearnPot.html#a72067d52265df43c043bc4440b2299ec">m_gpmod</a>.attr(<span class="stringliteral">&quot;predict&quot;</span>)(</div>

@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Instructions for building and working with the eOn documentation, including setup with PDM, local building, and adding citations and extensions."
-    "keywords": "eOn docs, build documentation, Sphinx, MyST, PDM, autodoc-pydantic"
+    "description": "Instructions for building the eOn documentation with pixi, after installing eonclient into the docs-mta prefix."
+    "keywords": "eOn docs, build documentation, Sphinx, MyST, pixi, autodoc-pydantic"
 ---
 
 # Working with the documentation
@@ -10,48 +10,25 @@ myst:
 `eOn` is a relatively complex project, with both `C++` and `Python` sources,
 along with a large set of options.
 
-
 ## Setup
 
-Although we use `micromamba` for handling system dependencies, the documenation
-is handled via the `python` ecosystem. Namely:
-
-- [PDM](https://pdm-project.org/en/latest/) is used to track versions, and provide [development groups](https://pdm-project.org/latest/usage/dependency/#add-development-only-dependencies)
-
-To run `pdm` without installing it globally,
-[uvx](https://docs.astral.sh/uv/getting-started/installation//) is recommended.
+The documentation environment is `docs-mta` in `pixi.toml`. It adds the
+`docs`, `develop`, and `metatomic` features. Install eonclient into that
+prefix before the book build. The documentation job runs
+`meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release -Dwith_metatomic=True -Dtorch_version=2.10 -Dpip_metatomic=True`
+and `meson install --skip-subprojects -C bbdir` under
+`pixi run -e docs-mta`, then regenerates the tutorial figures. A missing
+figure fails that job.
 
 ## Building locally
 
-```{note}
-`uvx` simplifies running Python commands, and `pdm` handles version updates better, syncing nicely with the `pyproject.toml` so no Python dependencies not needed by the client should be in the `environment.yml`
-```
-
 ```{code-block} bash
-# Setup dependencies
-uvx pdm sync
-# Need to install for autodoc-pydantic
-uvx pdm run pip install . -vvv
-uvx pdm run sphinx-build -b html docs/source docs/build/html
-```
-
-The current in-tree path is pixi:
-
-```{code-block} bash
-pixi run -e docs makedocs
+pixi run -e docs-mta makedocs
 ```
 
 `makedocs` builds the Sphinx book and writes the sibling doxyYoda C++
 API tree to `docs/build/html/api-cpp/`. The book nav and landing page
 point at that tree; the Doxygen mainpage points back at the book.
-
-Docs CI installs `eonclient` into the `docs-mta` prefix, then runs
-`scripts/regen_tutorial_figures.py`. That step minimizes `docs/lj13.con`
-with `[Debug] write_movies = true` and writes `plt-min` profile and
-landscape PNGs to `docs/source/fig/generated/` (gitignored). The
-`docs` pixi feature supplies `rgpycrumbs`, `chemparseplot`, and `ira`.
-A missing figure fails the docs job. The same script can be run locally
-once `eonclient` is on `PATH`.
 
 This can be viewed locally with an HTTP server.
 
@@ -74,11 +51,7 @@ The following sections detail methods to add functionality to the documentation.
 
 ## Adding extensions
 
-Additions to the build process are handled by the `pdm` development group `docs`, so additions are done via:
-
-```{code-block} bash
-uvx pdm add -dG docs "sphinxcontrib-bibtex"
-```
+Additions to the build go in the `docs` feature of `pixi.toml`.
 
 ## Adding citations
 

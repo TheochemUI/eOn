@@ -1,5 +1,26 @@
 var searchData=
 [
-  ['quickmin_0',['Quickmin',['../classeonc_1_1Quickmin.html',1,'eonc']]],
-  ['quickmin_5ft_1',['quickmin_t',['../structeonc_1_1optimizer__options__t_1_1quickmin__t.html',1,'eonc::optimizer_options_t']]]
+  ['parallel_5freplica_5foptions_5ft_0',['parallel_replica_options_t',['../structeonc_1_1parallel__replica__options__t.html',1,'eonc']]],
+  ['parallelreplicajob_1',['ParallelReplicaJob',['../classeonc_1_1ParallelReplicaJob.html',1,'eonc']]],
+  ['parameters_2',['Parameters',['../classeonc_1_1Parameters.html',1,'eonc::Parameters'],['../classParameters.html',1,'Parameters']]],
+  ['parametersloadaccess_3',['ParametersLoadAccess',['../structeonc_1_1ParametersLoadAccess.html',1,'eonc::ParametersLoadAccess'],['../structParametersLoadAccess.html',1,'ParametersLoadAccess']]],
+  ['path_5finitialization_5ft_4',['path_initialization_t',['../structeonc_1_1neb__options__t_1_1path__initialization__t.html',1,'eonc::neb_options_t']]],
+  ['physicalbathmodel_5',['PhysicalBathModel',['../structeonc_1_1tunneling_1_1PhysicalBathModel.html',1,'eonc::tunneling']]],
+  ['physicalquadraticbath_6',['PhysicalQuadraticBath',['../structeonc_1_1tunneling_1_1PhysicalQuadraticBath.html',1,'eonc::tunneling']]],
+  ['plaineb_7',['PlainEB',['../structeonc_1_1neb_1_1PlainEB.html',1,'eonc::neb']]],
+  ['plane_8',['Plane',['../structeonc_1_1piqtst_1_1Plane.html',1,'eonc::piqtst']]],
+  ['planeaverages_9',['PlaneAverages',['../structeonc_1_1OHTSTJob_1_1PlaneAverages.html',1,'eonc::OHTSTJob']]],
+  ['pluginloader_10',['PluginLoader',['../classeonc_1_1PluginLoader.html',1,'eonc']]],
+  ['pointjob_11',['PointJob',['../classeonc_1_1PointJob.html',1,'eonc']]],
+  ['potential_12',['Potential',['../classeonc_1_1Potential.html',1,'eonc']]],
+  ['potential_5foptions_5ft_13',['potential_options_t',['../structeonc_1_1potential__options__t.html',1,'eonc']]],
+  ['potentialconstructionscope_14',['PotentialConstructionScope',['../classeonc_1_1PotentialConstructionScope.html',1,'eonc']]],
+  ['potregistry_15',['PotRegistry',['../classeonc_1_1PotRegistry.html',1,'eonc']]],
+  ['prdclock_16',['PrdClock',['../structeonc_1_1ReplicaDynamicsJob_1_1PrdClock.html',1,'eonc::ReplicaDynamicsJob']]],
+  ['prefactor_5foptions_5ft_17',['prefactor_options_t',['../structeonc_1_1prefactor__options__t.html',1,'eonc']]],
+  ['prefactorjob_18',['PrefactorJob',['../classeonc_1_1PrefactorJob.html',1,'eonc']]],
+  ['process_5fsearch_5foptions_5ft_19',['process_search_options_t',['../structeonc_1_1process__search__options__t.html',1,'eonc']]],
+  ['processsearchjob_20',['ProcessSearchJob',['../classeonc_1_1ProcessSearchJob.html',1,'eonc']]],
+  ['profile_21',['Profile',['../classeonc_1_1tunneling_1_1Profile.html',1,'eonc::tunneling']]],
+  ['prune_5fparams_5ft_22',['prune_params_t',['../structeonc_1_1gpr__dimer__options__t_1_1prune__params__t.html',1,'eonc::gpr_dimer_options_t']]]
 ];

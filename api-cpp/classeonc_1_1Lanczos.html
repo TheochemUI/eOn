@@ -651,10 +651,10 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   90</span>  <span class="keyword">auto</span> probe = std::make_unique&lt;Matter&gt;(*centre);</div>
 <div class="line"><span class="lineno">   91</span>  probe-&gt;setPositions(*pos);</div>
 <div class="line"><span class="lineno">   92</span>  Matter *<span class="keyword">const</span> both[] = {centre.get(), probe.get()};</div>
-<div class="line"><span class="lineno">   93</span>  <a class="code hl_function" href="namespaceeonc.html#a0a75f0d31324c1f054a663565625d66c">eonc::evaluateTogether</a>(*<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">pot</a>, both);</div>
+<div class="line"><span class="lineno">   93</span>  <a class="code hl_function" href="namespaceeonc.html#abcb215950a62dd0c90c82213b53be033">eonc::evaluateTogether</a>(*<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">pot</a>, both);</div>
 <div class="line"><span class="lineno">   94</span>  <a class="code hl_variable" href="#aebf952539874ee9b72a2f0697d8ded0e">probe_</a> = std::move(probe);</div>
 <div class="line"><span class="lineno">   95</span>}</div>
-<div class="ttc" id="anamespaceeonc_html_a0a75f0d31324c1f054a663565625d66c"><div class="ttname"><a href="namespaceeonc.html#a0a75f0d31324c1f054a663565625d66c">eonc::evaluateTogether</a></div><div class="ttdeci">void evaluateTogether(Potential &amp;pot, std::span&lt; Matter *const &gt; systems)</div><div class="ttdoc">Evaluates every system that needs a force update.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00925">Matter.cpp:925</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_abcb215950a62dd0c90c82213b53be033"><div class="ttname"><a href="namespaceeonc.html#abcb215950a62dd0c90c82213b53be033">eonc::evaluateTogether</a></div><div class="ttdeci">void evaluateTogether(Potential &amp;pot, std::span&lt; Matter *const &gt; systems, bool threads, std::span&lt; const long &gt; owners)</div><div class="ttdoc">Evaluates every system that needs a force update.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00995">Matter.cpp:995</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

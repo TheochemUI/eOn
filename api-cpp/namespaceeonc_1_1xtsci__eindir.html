@@ -334,8 +334,8 @@ Variables</h2></td></tr>
 <p class="definition">Definition at line <a class="el" href="XtsciEindir_8cpp_source.html#l00189">189</a> of file <a class="el" href="XtsciEindir_8cpp_source.html">XtsciEindir.cpp</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">  189</span>                                                                 {</div>
 <div class="line"><span class="lineno">  190</span><span class="preprocessor">#ifndef WITH_EINDIR</span></div>
-<div class="line"><span class="lineno">  191</span>  (void)objective;</div>
-<div class="line"><span class="lineno">  192</span>  (void)cached;</div>
+<div class="line"><span class="lineno">  191</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(objective);</div>
+<div class="line"><span class="lineno">  192</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(cached);</div>
 <div class="line"><span class="lineno">  193</span>  <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
 <div class="line"><span class="lineno">  194</span><span class="preprocessor">#else</span></div>
 <div class="line"><span class="lineno">  195</span>  <span class="keywordflow">if</span> (objective == <span class="keyword">nullptr</span> || objective-&gt;<a class="code hl_function" href="classeonc_1_1ObjectiveFunction.html#ae183480aed0570a0187cabe81bd11ffb">degreesOfFreedom</a>() &lt;= 0) {</div>
@@ -553,10 +553,10 @@ Variables</h2></td></tr>
 <p class="definition">Definition at line <a class="el" href="XtsciEindir_8cpp_source.html#l00270">270</a> of file <a class="el" href="XtsciEindir_8cpp_source.html">XtsciEindir.cpp</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">  271</span>                                                  {</div>
 <div class="line"><span class="lineno">  272</span><span class="preprocessor">#ifndef WITH_EINDIR</span></div>
-<div class="line"><span class="lineno">  273</span>  (void)state;</div>
-<div class="line"><span class="lineno">  274</span>  (void)x;</div>
-<div class="line"><span class="lineno">  275</span>  (void)value;</div>
-<div class="line"><span class="lineno">  276</span>  (void)gradient;</div>
+<div class="line"><span class="lineno">  273</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(state);</div>
+<div class="line"><span class="lineno">  274</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(x);</div>
+<div class="line"><span class="lineno">  275</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(value);</div>
+<div class="line"><span class="lineno">  276</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(gradient);</div>
 <div class="line"><span class="lineno">  277</span>  <span class="keywordflow">return</span> 2;</div>
 <div class="line"><span class="lineno">  278</span><span class="preprocessor">#else</span></div>
 <div class="line"><span class="lineno">  279</span>  <span class="keywordflow">if</span> (state == <span class="keyword">nullptr</span>) {</div>
@@ -631,15 +631,15 @@ Variables</h2></td></tr>
 <p class="definition">Definition at line <a class="el" href="XtsciEindir_8cpp_source.html#l00290">290</a> of file <a class="el" href="XtsciEindir_8cpp_source.html">XtsciEindir.cpp</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">  292</span>                                {</div>
 <div class="line"><span class="lineno">  293</span><span class="preprocessor">#ifndef WITH_EINDIR</span></div>
-<div class="line"><span class="lineno">  294</span>  (void)state;</div>
-<div class="line"><span class="lineno">  295</span>  (void)x;</div>
-<div class="line"><span class="lineno">  296</span>  (void)n;</div>
-<div class="line"><span class="lineno">  297</span>  (void)maxiter;</div>
-<div class="line"><span class="lineno">  298</span>  (void)gtol;</div>
-<div class="line"><span class="lineno">  299</span>  (void)istep;</div>
-<div class="line"><span class="lineno">  300</span>  (void)memory;</div>
-<div class="line"><span class="lineno">  301</span>  (void)method;</div>
-<div class="line"><span class="lineno">  302</span>  (void)value_out;</div>
+<div class="line"><span class="lineno">  294</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(state);</div>
+<div class="line"><span class="lineno">  295</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(x);</div>
+<div class="line"><span class="lineno">  296</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(n);</div>
+<div class="line"><span class="lineno">  297</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(maxiter);</div>
+<div class="line"><span class="lineno">  298</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(gtol);</div>
+<div class="line"><span class="lineno">  299</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(istep);</div>
+<div class="line"><span class="lineno">  300</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(memory);</div>
+<div class="line"><span class="lineno">  301</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(method);</div>
+<div class="line"><span class="lineno">  302</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(value_out);</div>
 <div class="line"><span class="lineno">  303</span>  <span class="keywordflow">return</span> 1;</div>
 <div class="line"><span class="lineno">  304</span><span class="preprocessor">#else</span></div>
 <div class="line"><span class="lineno">  305</span>  <span class="keywordflow">if</span> (state == <span class="keyword">nullptr</span> || x == <span class="keyword">nullptr</span>) {</div>
@@ -705,9 +705,9 @@ Variables</h2></td></tr>
 <p class="definition">Definition at line <a class="el" href="XtsciEindir_8cpp_source.html#l00262">262</a> of file <a class="el" href="XtsciEindir_8cpp_source.html">XtsciEindir.cpp</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">  262</span>                           {</div>
 <div class="line"><span class="lineno">  263</span><span class="preprocessor">#ifdef WITH_EINDIR</span></div>
-<div class="line"><span class="lineno">  264</span>  <span class="keyword">delete</span> state;</div>
+<div class="line"><span class="lineno">  264</span>  std::unique_ptr&lt;State&gt; owned(state);</div>
 <div class="line"><span class="lineno">  265</span><span class="preprocessor">#else</span></div>
-<div class="line"><span class="lineno">  266</span>  (void)state;</div>
+<div class="line"><span class="lineno">  266</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(state);</div>
 <div class="line"><span class="lineno">  267</span><span class="preprocessor">#endif</span></div>
 <div class="line"><span class="lineno">  268</span>}</div>
 </div><!-- fragment -->

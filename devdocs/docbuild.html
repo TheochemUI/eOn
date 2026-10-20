@@ -84,7 +84,6 @@ data-aria-dark="Switch to auto color mode">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
-<li class="toctree-l1 _expand"><a class="reference internal" href="../citing.html">Citing eOn</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/eessi.html">Build develop on EESSI</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/lammps.html">LAMMPS</a></li>
@@ -123,6 +122,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/mpi_potential.html">MPI potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/algorithm_selection.html">Choosing an algorithm</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/main.html">General simulation parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/structure_input.html">Structure input formats</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/potential.html">Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/structure_comparison.html">Structure comparison</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/optimizer.html">Optimizer</a></li>
@@ -178,6 +178,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="design/client/index.html">Client design</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="design/client/types.html">Type system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="design/client/exact-reduction.html">Exact reductions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="design/client/parameters.html">Parameters system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="design/client/neb-modularization.html">NEB modularization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="design/client/confile.html">CON file I/O via readcon-core</a></li>
@@ -200,6 +201,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.contracts.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.contracts.load_outcome.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts.load_outcome</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
@@ -449,41 +454,22 @@ data-aria-dark="Switch to auto color mode">
 along with a large set of options.</p>
 <section id="setup">
 <h2>Setup<a class="headerlink" href="#setup" title="Link to this heading">¶</a></h2>
-<p>Although we use <code class="docutils literal notranslate"><span class="pre">micromamba</span></code> for handling system dependencies, the documenation
-is handled via the <code class="docutils literal notranslate"><span class="pre">python</span></code> ecosystem. Namely:</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://pdm-project.org/en/latest/">PDM</a> is used to track versions, and provide <a class="reference external" href="https://pdm-project.org/latest/usage/dependency/#add-development-only-dependencies">development groups</a></p></li>
-</ul>
-<p>To run <code class="docutils literal notranslate"><span class="pre">pdm</span></code> without installing it globally,
-<a class="reference external" href="https://docs.astral.sh/uv/getting-started/installation//">uvx</a> is recommended.</p>
+<p>The documentation environment is <code class="docutils literal notranslate"><span class="pre">docs-mta</span></code> in <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code>. It adds the
+<code class="docutils literal notranslate"><span class="pre">docs</span></code>, <code class="docutils literal notranslate"><span class="pre">develop</span></code>, and <code class="docutils literal notranslate"><span class="pre">metatomic</span></code> features. Install eonclient into that
+prefix before the book build. The documentation job runs
+<code class="docutils literal notranslate"><span class="pre">meson</span> <span class="pre">setup</span> <span class="pre">bbdir</span> <span class="pre">--prefix=$CONDA_PREFIX</span> <span class="pre">--libdir=lib</span> <span class="pre">--buildtype</span> <span class="pre">release</span> <span class="pre">-Dwith_metatomic=True</span> <span class="pre">-Dtorch_version=2.10</span> <span class="pre">-Dpip_metatomic=True</span></code>
+and <code class="docutils literal notranslate"><span class="pre">meson</span> <span class="pre">install</span> <span class="pre">--skip-subprojects</span> <span class="pre">-C</span> <span class="pre">bbdir</span></code> under
+<code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">run</span> <span class="pre">-e</span> <span class="pre">docs-mta</span></code>, then regenerates the tutorial figures. A missing
+figure fails that job.</p>
 </section>
 <section id="building-locally">
 <h2>Building locally<a class="headerlink" href="#building-locally" title="Link to this heading">¶</a></h2>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">uvx</span></code> simplifies running Python commands, and <code class="docutils literal notranslate"><span class="pre">pdm</span></code> handles version updates better, syncing nicely with the <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> so no Python dependencies not needed by the client should be in the <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code></p>
-</div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Setup dependencies</span>
-</span><span data-line="2">uvx<span class="w"> </span>pdm<span class="w"> </span>sync
-</span><span data-line="3"><span class="c1"># Need to install for autodoc-pydantic</span>
-</span><span data-line="4">uvx<span class="w"> </span>pdm<span class="w"> </span>run<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>.<span class="w"> </span>-vvv
-</span><span data-line="5">uvx<span class="w"> </span>pdm<span class="w"> </span>run<span class="w"> </span>sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span>docs/source<span class="w"> </span>docs/build/html
-</span></pre></div>
-</div>
-<p>The current in-tree path is pixi:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>docs<span class="w"> </span>makedocs
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>docs-mta<span class="w"> </span>makedocs
 </span></pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">makedocs</span></code> builds the Sphinx book and writes the sibling doxyYoda C++
 API tree to <code class="docutils literal notranslate"><span class="pre">docs/build/html/api-cpp/</span></code>. The book nav and landing page
 point at that tree; the Doxygen mainpage points back at the book.</p>
-<p>Docs CI installs <code class="docutils literal notranslate"><span class="pre">eonclient</span></code> into the <code class="docutils literal notranslate"><span class="pre">docs-mta</span></code> prefix, then runs
-<code class="docutils literal notranslate"><span class="pre">scripts/regen_tutorial_figures.py</span></code>. That step minimizes <code class="docutils literal notranslate"><span class="pre">docs/lj13.con</span></code>
-with <code class="docutils literal notranslate"><span class="pre">[Debug]</span> <span class="pre">write_movies</span> <span class="pre">=</span> <span class="pre">true</span></code> and writes <code class="docutils literal notranslate"><span class="pre">plt-min</span></code> profile and
-landscape PNGs to <code class="docutils literal notranslate"><span class="pre">docs/source/fig/generated/</span></code> (gitignored). The
-<code class="docutils literal notranslate"><span class="pre">docs</span></code> pixi feature supplies <code class="docutils literal notranslate"><span class="pre">rgpycrumbs</span></code>, <code class="docutils literal notranslate"><span class="pre">chemparseplot</span></code>, and <code class="docutils literal notranslate"><span class="pre">ira</span></code>.
-A missing figure fails the docs job. The same script can be run locally
-once <code class="docutils literal notranslate"><span class="pre">eonclient</span></code> is on <code class="docutils literal notranslate"><span class="pre">PATH</span></code>.</p>
 <p>This can be viewed locally with an HTTP server.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python<span class="w"> </span>-m<span class="w"> </span>http.server<span class="w"> </span>docs/build/html
 </span></pre></div>
@@ -506,10 +492,7 @@ markdown files</p></li>
 </section>
 <section id="adding-extensions">
 <h2>Adding extensions<a class="headerlink" href="#adding-extensions" title="Link to this heading">¶</a></h2>
-<p>Additions to the build process are handled by the <code class="docutils literal notranslate"><span class="pre">pdm</span></code> development group <code class="docutils literal notranslate"><span class="pre">docs</span></code>, so additions are done via:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">uvx<span class="w"> </span>pdm<span class="w"> </span>add<span class="w"> </span>-dG<span class="w"> </span>docs<span class="w"> </span><span class="s2">&quot;sphinxcontrib-bibtex&quot;</span>
-</span></pre></div>
-</div>
+<p>Additions to the build go in the <code class="docutils literal notranslate"><span class="pre">docs</span></code> feature of <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code>.</p>
 </section>
 <section id="adding-citations">
 <h2>Adding citations<a class="headerlink" href="#adding-citations" title="Link to this heading">¶</a></h2>

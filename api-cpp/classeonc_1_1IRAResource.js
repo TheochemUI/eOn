@@ -1,8 +1,10 @@
 var classeonc_1_1IRAResource =
 [
+    [ "Key", "classeonc_1_1IRAResource_1_1Key.html", "classeonc_1_1IRAResource_1_1Key" ],
     [ "~IRAResource", "classeonc_1_1IRAResource.html#a7f3a2709fa3e9988627b0f7004bb65f3", null ],
     [ "IRAResource", "classeonc_1_1IRAResource.html#aa6ee4c226d12ffa9af713ea1653f0ace", null ],
     [ "IRAResource", "classeonc_1_1IRAResource.html#a1511f3c7ee8aa02907cde5e804147b19", null ],
+    [ "IRAResource", "classeonc_1_1IRAResource.html#a458a5b86cbfe9b7a23196b91b16cdbe5", null ],
     [ "get_compute_all_fn", "classeonc_1_1IRAResource.html#a37d6274248063a7b6fffa79656738644", null ],
     [ "get_cshda_pbc_fn", "classeonc_1_1IRAResource.html#ab93ff25f922de0af6b550f14d7112bf1", null ],
     [ "get_get_nmax_fn", "classeonc_1_1IRAResource.html#a7f5db217105ef229ced547b469131e8b", null ],

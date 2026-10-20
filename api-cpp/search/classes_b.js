@@ -1,23 +1,11 @@
 var searchData=
 [
-  ['main_5foptions_5ft_0',['main_options_t',['../structeonc_1_1main__options__t.html',1,'eonc']]],
-  ['matchresult_1',['MatchResult',['../structeonc_1_1IRACompare_1_1MatchResult.html',1,'eonc::IRACompare']]],
-  ['matter_2',['Matter',['../classeonc_1_1Matter.html',1,'eonc::Matter'],['../classMatter.html',1,'Matter']]],
-  ['metatomic_5foptions_5ft_3',['metatomic_options_t',['../structeonc_1_1metatomic__options__t.html',1,'eonc']]],
-  ['metatomicdynpot_4',['MetatomicDynPot',['../classeonc_1_1MetatomicDynPot.html',1,'eonc']]],
-  ['metatomicengineloader_5',['MetatomicEngineLoader',['../classMetatomicEngineLoader.html',1,'']]],
-  ['metatomicengineoptions_6',['MetatomicEngineOptions',['../structMetatomicEngineOptions.html',1,'']]],
-  ['metatomicloader_7',['MetatomicLoader',['../classeonc_1_1MetatomicLoader.html',1,'eonc']]],
-  ['metatomicpotential_8',['MetatomicPotential',['../classMetatomicPotential.html',1,'']]],
-  ['minimizationjob_9',['MinimizationJob',['../classeonc_1_1MinimizationJob.html',1,'eonc']]],
-  ['minmodeobjectivefunction_10',['MinModeObjectiveFunction',['../classeonc_1_1MinModeObjectiveFunction.html',1,'eonc']]],
-  ['minmodesaddlesearch_11',['MinModeSaddleSearch',['../classeonc_1_1MinModeSaddleSearch.html',1,'eonc::MinModeSaddleSearch'],['../classMinModeSaddleSearch.html',1,'MinModeSaddleSearch']]],
-  ['mmf_5fpeak_5foptions_5ft_12',['mmf_peak_options_t',['../structeonc_1_1neb__options__t_1_1mmf__peak__options__t.html',1,'eonc::neb_options_t']]],
-  ['mmfresult_13',['MMFResult',['../structeonc_1_1neb_1_1OCINEBController_1_1MMFResult.html',1,'eonc::neb::OCINEBController']]],
-  ['modegle_14',['ModeGle',['../structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html',1,'eonc::pathintegral::RingPolymer']]],
-  ['monte_5fcarlo_5foptions_5ft_15',['monte_carlo_options_t',['../structeonc_1_1monte__carlo__options__t.html',1,'eonc']]],
-  ['montecarlo_16',['MonteCarlo',['../classeonc_1_1MonteCarlo.html',1,'eonc']]],
-  ['montecarlojob_17',['MonteCarloJob',['../classeonc_1_1MonteCarloJob.html',1,'eonc']]],
-  ['mopac_5foptions_5ft_18',['mopac_options_t',['../structeonc_1_1mopac__options__t.html',1,'eonc']]],
-  ['mpipot_19',['MPIPot',['../classMPIPot.html',1,'']]]
+  ['lammpsloader_0',['LammpsLoader',['../classeonc_1_1LammpsLoader.html',1,'eonc']]],
+  ['lammpspot_1',['LAMMPSPot',['../classLAMMPSPot.html',1,'']]],
+  ['lanczos_2',['Lanczos',['../classeonc_1_1Lanczos.html',1,'eonc']]],
+  ['lanczos_5foptions_5ft_3',['lanczos_options_t',['../structeonc_1_1lanczos__options__t.html',1,'eonc']]],
+  ['lbfgs_4',['LBFGS',['../classeonc_1_1LBFGS.html',1,'eonc']]],
+  ['lbfgs_5ft_5',['lbfgs_t',['../structeonc_1_1optimizer__options__t_1_1lbfgs__t.html',1,'eonc::optimizer_options_t']]],
+  ['lorrotation_6',['LORRotation',['../classeonc_1_1LORRotation.html',1,'eonc']]],
+  ['lowesteigenmode_7',['LowestEigenmode',['../classeonc_1_1LowestEigenmode.html',1,'eonc']]]
 ];

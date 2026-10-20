@@ -276,7 +276,7 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Multi-model RPC serving for eOn potentials. </p>
 <p>Wraps any eOn Potential as a flat-array ForceCallback and serves it over Cap'n Proto RPC. Uses ForceCallback (std::function taking flat arrays) to completely avoid the <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> type collision between eOn's Eigen-based <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> and rgpot's custom <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>.</p>
-<p>This translation unit includes eOn's Potential.h. The Cap'n Proto server code is in <a class="el" href="ServeRpcServer_8cpp.html" title="Cap&#39;n Proto RPC server using flat-array force callbacks.">ServeRpcServer.cpp</a> (separate TU to avoid naming collision with the capnp-generated <span class="tt">Potential</span> interface). </p>
+<p>This translation unit includes eOn's <a class="el" href="Potential_8h.html">Potential.h</a>. The Cap'n Proto server code is in <a class="el" href="ServeRpcServer_8cpp.html" title="Cap&#39;n Proto RPC server using flat-array force callbacks.">ServeRpcServer.cpp</a> (separate TU to avoid naming collision with the capnp-generated <span class="tt">Potential</span> interface). </p>
 
 <p class="definition">Definition in file <a class="el" href="ServeMode_8cpp_source.html">ServeMode.cpp</a>.</p>
 </div></div><!-- contents -->

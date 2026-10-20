@@ -84,7 +84,6 @@ data-aria-dark="Switch to auto color mode">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
-<li class="toctree-l1 _expand"><a class="reference internal" href="../citing.html">Citing eOn</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Installation</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Build develop on EESSI</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="lammps.html">LAMMPS</a></li>
@@ -123,6 +122,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/mpi_potential.html">MPI potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/algorithm_selection.html">Choosing an algorithm</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/main.html">General simulation parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/structure_input.html">Structure input formats</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/potential.html">Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/structure_comparison.html">Structure comparison</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/optimizer.html">Optimizer</a></li>
@@ -178,6 +178,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/design/client/index.html">Client design</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/types.html">Type system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/exact-reduction.html">Exact reductions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/parameters.html">Parameters system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
@@ -200,6 +201,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.contracts.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.contracts.load_outcome.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts.load_outcome</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
@@ -451,7 +456,7 @@ data-aria-dark="Switch to auto color mode">
 <p>The first <code class="docutils literal notranslate"><span class="pre">meson</span> <span class="pre">setup</span></code> downloads the wraps in <code class="docutils literal notranslate"><span class="pre">subprojects/</span></code>. That step needs a network.</p>
 <section id="install-the-modules">
 <h2>Install the modules<a class="headerlink" href="#install-the-modules" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">eOn-devel/2026.06-GCCcore-15.2.0</span></code> is one EasyBuild bundle. It loads Meson, Ninja, CMake, pkgconf, Eigen, Python, and Rust. Cap’n Proto is a second module. OpenMPI comes from <code class="docutils literal notranslate"><span class="pre">foss/2026.1</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">eOn-devel/2026.06-GCCcore-15.2.0</span></code> is one EasyBuild bundle. It loads Meson, Ninja, CMake, pkgconf, Eigen, Python, and Rust. It depends on <code class="docutils literal notranslate"><span class="pre">foss/2026.1</span></code>, which loads OpenMPI, FFTW, and OpenBLAS. The bundle builds Cap’n Proto 1.4.0 into the same prefix. After <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">eOn-devel</span></code>, <code class="docutils literal notranslate"><span class="pre">pkg-config</span></code> finds <code class="docutils literal notranslate"><span class="pre">capnp-rpc</span></code> and <code class="docutils literal notranslate"><span class="pre">mpicc</span></code> is on <code class="docutils literal notranslate"><span class="pre">PATH</span></code>. <code class="docutils literal notranslate"><span class="pre">CC</span></code>, <code class="docutils literal notranslate"><span class="pre">CXX</span></code>, and <code class="docutils literal notranslate"><span class="pre">FC</span></code> stay <code class="docutils literal notranslate"><span class="pre">gcc</span></code>, <code class="docutils literal notranslate"><span class="pre">g++</span></code>, and <code class="docutils literal notranslate"><span class="pre">gfortran</span></code>.</p>
 <p>Set the install prefix before the module load. If <code class="docutils literal notranslate"><span class="pre">EESSI_USER_INSTALL</span></code> is unset, the prefix is <code class="docutils literal notranslate"><span class="pre">$HOME/eessi</span></code>. If you set it, the directory must already exist. The load stops when that path is missing.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nb">source</span><span class="w"> </span>/cvmfs/software.eessi.io/versions/2026.06/init/bash
 </span><span data-line="2">mkdir<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">EESSI_USER_INSTALL</span><span class="k">:-</span><span class="nv">$HOME</span><span class="p">/eessi</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -463,31 +468,21 @@ data-aria-dark="Switch to auto color mode">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">eb<span class="w"> </span>--umask<span class="o">=</span><span class="m">022</span><span class="w"> </span>eessi/eOn-devel-2026.06-GCCcore-15.2.0.eb
 </span></pre></div>
 </div>
-<p>The direct in-process rgpot arm builds rgpot’s remote procedure call stack. That stack needs the <code class="docutils literal notranslate"><span class="pre">capnp</span></code> program and the <code class="docutils literal notranslate"><span class="pre">capnp-rpc</span></code> pkg-config file. EESSI 2026.06 has no CapnProto 1.4.0 module for GCCcore 15.2.0. EasyBuild fetches that CapnProto easyconfig from pull request <a class="reference external" href="https://github.com/easybuilders/easybuild-easyconfigs/pull/26480">26480</a>. Pass the CapnProto filename. The other recipes in that pull request then stay unused.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">eb<span class="w"> </span>--umask<span class="o">=</span><span class="m">022</span><span class="w"> </span>--from-pr<span class="w"> </span><span class="m">26480</span><span class="w"> </span>CapnProto-1.4.0-GCCcore-15.2.0.eb
-</span></pre></div>
-</div>
-<p>A commit id works in place of the pull request number. The id is the full 40-character string. This one is the pull request head. <code class="docutils literal notranslate"><span class="pre">--from-pr</span></code> follows later updates. <code class="docutils literal notranslate"><span class="pre">--from-commit</span></code> stays on this id, and it avoids the GitHub rate limit on pull requests.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">eb<span class="w"> </span>--umask<span class="o">=</span><span class="m">022</span><span class="w"> </span>--from-commit<span class="w"> </span>66fa89934f0476cd4f9ff14154ee4c87ae5c5d82<span class="w"> </span>CapnProto-1.4.0-GCCcore-15.2.0.eb
-</span></pre></div>
-</div>
-<p>That commit can still be rejected. EasyBuild rejects toolchain GCCcore 15.2.0 when the pull request build is unsupported in EESSI 2026.06. Read the supported list in that message. When the list is empty, the message prints an export. Set that variable and run <code class="docutils literal notranslate"><span class="pre">eb</span></code> again.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nb">export</span><span class="w"> </span><span class="nv">EESSI_SITE_TOP_LEVEL_TOOLCHAINS_2026_06</span><span class="o">=</span><span class="s1">&#39;[{&quot;name&quot;: &quot;GCCcore&quot;, &quot;version&quot;: &quot;15.2.0&quot;}]&#39;</span>
-</span></pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">capnp</span> <span class="pre">--version</span></code> should print <code class="docutils literal notranslate"><span class="pre">Cap'n</span> <span class="pre">Proto</span> <span class="pre">version</span> <span class="pre">1.4.0</span></code>. <code class="docutils literal notranslate"><span class="pre">pkg-config</span> <span class="pre">--exists</span> <span class="pre">capnp-rpc</span></code> should return 0.</p>
+<p>The direct in-process rgpot arm builds rgpot’s remote procedure call stack. That stack needs the <code class="docutils literal notranslate"><span class="pre">capnp</span></code> program and the <code class="docutils literal notranslate"><span class="pre">capnp-rpc</span></code> pkg-config file. EESSI 2026.06 has no separate CapnProto module. The bundle builds Cap’n Proto 1.4.0 from <code class="docutils literal notranslate"><span class="pre">https://capnproto.org/capnproto-c++-1.4.0.tar.gz</span></code> and installs it into the <code class="docutils literal notranslate"><span class="pre">eOn-devel</span></code> prefix.</p>
 </section>
 <section id="configure-and-build">
 <h2>Configure and build<a class="headerlink" href="#configure-and-build" title="Link to this heading">¶</a></h2>
-<p>Open a new shell. Load the compiler stack, the bundle, and CapnProto.</p>
+<p>Open a new shell. Load the bundle. That load pulls <code class="docutils literal notranslate"><span class="pre">foss/2026.1</span></code> and puts Cap’n Proto on <code class="docutils literal notranslate"><span class="pre">PATH</span></code>. No second <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span></code> is required.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nb">source</span><span class="w"> </span>/cvmfs/software.eessi.io/versions/2026.06/init/bash
 </span><span data-line="2">module<span class="w"> </span>load<span class="w"> </span>EESSI-extend
-</span><span data-line="3">module<span class="w"> </span>load<span class="w"> </span>foss/2026.1<span class="w"> </span>eOn-devel/2026.06-GCCcore-15.2.0<span class="w"> </span>CapnProto/1.4.0-GCCcore-15.2.0
+</span><span data-line="3">module<span class="w"> </span>load<span class="w"> </span>eOn-devel/2026.06-GCCcore-15.2.0
 </span><span data-line="4"><span class="nb">hash</span><span class="w"> </span>-r
 </span><span data-line="5"><span class="nb">command</span><span class="w"> </span>-v<span class="w"> </span>mpicc
 </span><span data-line="6"><span class="nb">command</span><span class="w"> </span>-v<span class="w"> </span>capnp
+</span><span data-line="7">pkg-config<span class="w"> </span>--exists<span class="w"> </span>capnp-rpc
 </span></pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">capnp</span> <span class="pre">--version</span></code> should print <code class="docutils literal notranslate"><span class="pre">Cap'n</span> <span class="pre">Proto</span> <span class="pre">version</span> <span class="pre">1.4.0</span></code>. <code class="docutils literal notranslate"><span class="pre">pkg-config</span> <span class="pre">--exists</span> <span class="pre">capnp-rpc</span></code> should return 0.</p>
 <p><code class="docutils literal notranslate"><span class="pre">foss/2026.1</span></code> provides <code class="docutils literal notranslate"><span class="pre">mpicc</span></code>, <code class="docutils literal notranslate"><span class="pre">mpicxx</span></code>, and <code class="docutils literal notranslate"><span class="pre">mpif90</span></code>. Export those three as <code class="docutils literal notranslate"><span class="pre">CC</span></code>, <code class="docutils literal notranslate"><span class="pre">CXX</span></code>, and <code class="docutils literal notranslate"><span class="pre">FC</span></code>. Meson then stores the Message Passing Interface (MPI) compiler wrappers.</p>
 <p>Loaded modules do not set <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code>. Leave it unset. An empty value is not a search path. The bundle writes one run path into <code class="docutils literal notranslate"><span class="pre">LDFLAGS</span></code>, the GCCcore 15.2.0 <code class="docutils literal notranslate"><span class="pre">lib64</span></code> directory. <code class="docutils literal notranslate"><span class="pre">buildenv/default-foss-2026.1</span></code> is part of this release, and its <code class="docutils literal notranslate"><span class="pre">LDFLAGS</span></code> are <code class="docutils literal notranslate"><span class="pre">-L</span></code> link-search directories. Loading the bundle after that module replaces <code class="docutils literal notranslate"><span class="pre">LDFLAGS</span></code> with the single GCCcore run path. The loader still needs one <code class="docutils literal notranslate"><span class="pre">-Wl,-rpath</span></code> for every loaded module library.</p>
 <p>Walk each <code class="docutils literal notranslate"><span class="pre">EBROOT</span></code> variable. Append <code class="docutils literal notranslate"><span class="pre">lib</span></code> and <code class="docutils literal notranslate"><span class="pre">lib64</span></code> when the directory exists.</p>

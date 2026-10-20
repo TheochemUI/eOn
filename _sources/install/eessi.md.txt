@@ -20,7 +20,7 @@ The first `meson setup` downloads the wraps in `subprojects/`. That step needs a
 
 ## Install the modules
 
-`eOn-devel/2026.06-GCCcore-15.2.0` is one EasyBuild bundle. It loads Meson, Ninja, CMake, pkgconf, Eigen, Python, and Rust. Cap'n Proto is a second module. OpenMPI comes from `foss/2026.1`.
+`eOn-devel/2026.06-GCCcore-15.2.0` is one EasyBuild bundle. It loads Meson, Ninja, CMake, pkgconf, Eigen, Python, and Rust. It depends on `foss/2026.1`, which loads OpenMPI, FFTW, and OpenBLAS. The bundle builds Cap'n Proto 1.4.0 into the same prefix. After `module load eOn-devel`, `pkg-config` finds `capnp-rpc` and `mpicc` is on `PATH`. `CC`, `CXX`, and `FC` stay `gcc`, `g++`, and `gfortran`.
 
 Set the install prefix before the module load. If `EESSI_USER_INSTALL` is unset, the prefix is `$HOME/eessi`. If you set it, the directory must already exist. The load stops when that path is missing.
 
@@ -38,38 +38,23 @@ A shell with nounset (`set -u`) aborts during this load. `EESSI-extend` reads `L
 eb --umask=022 eessi/eOn-devel-2026.06-GCCcore-15.2.0.eb
 ```
 
-The direct in-process rgpot arm builds rgpot's remote procedure call stack. That stack needs the `capnp` program and the `capnp-rpc` pkg-config file. EESSI 2026.06 has no CapnProto 1.4.0 module for GCCcore 15.2.0. EasyBuild fetches that CapnProto easyconfig from pull request [26480](https://github.com/easybuilders/easybuild-easyconfigs/pull/26480). Pass the CapnProto filename. The other recipes in that pull request then stay unused.
-
-```{code-block} bash
-eb --umask=022 --from-pr 26480 CapnProto-1.4.0-GCCcore-15.2.0.eb
-```
-
-A commit id works in place of the pull request number. The id is the full 40-character string. This one is the pull request head. `--from-pr` follows later updates. `--from-commit` stays on this id, and it avoids the GitHub rate limit on pull requests.
-
-```{code-block} bash
-eb --umask=022 --from-commit 66fa89934f0476cd4f9ff14154ee4c87ae5c5d82 CapnProto-1.4.0-GCCcore-15.2.0.eb
-```
-
-That commit can still be rejected. EasyBuild rejects toolchain GCCcore 15.2.0 when the pull request build is unsupported in EESSI 2026.06. Read the supported list in that message. When the list is empty, the message prints an export. Set that variable and run `eb` again.
-
-```{code-block} bash
-export EESSI_SITE_TOP_LEVEL_TOOLCHAINS_2026_06='[{"name": "GCCcore", "version": "15.2.0"}]'
-```
-
-`capnp --version` should print `Cap'n Proto version 1.4.0`. `pkg-config --exists capnp-rpc` should return 0.
+The direct in-process rgpot arm builds rgpot's remote procedure call stack. That stack needs the `capnp` program and the `capnp-rpc` pkg-config file. EESSI 2026.06 has no separate CapnProto module. The bundle builds Cap'n Proto 1.4.0 from `https://capnproto.org/capnproto-c++-1.4.0.tar.gz` and installs it into the `eOn-devel` prefix.
 
 ## Configure and build
 
-Open a new shell. Load the compiler stack, the bundle, and CapnProto.
+Open a new shell. Load the bundle. That load pulls `foss/2026.1` and puts Cap'n Proto on `PATH`. No second `module load` is required.
 
 ```{code-block} bash
 source /cvmfs/software.eessi.io/versions/2026.06/init/bash
 module load EESSI-extend
-module load foss/2026.1 eOn-devel/2026.06-GCCcore-15.2.0 CapnProto/1.4.0-GCCcore-15.2.0
+module load eOn-devel/2026.06-GCCcore-15.2.0
 hash -r
 command -v mpicc
 command -v capnp
+pkg-config --exists capnp-rpc
 ```
+
+`capnp --version` should print `Cap'n Proto version 1.4.0`. `pkg-config --exists capnp-rpc` should return 0.
 
 `foss/2026.1` provides `mpicc`, `mpicxx`, and `mpif90`. Export those three as `CC`, `CXX`, and `FC`. Meson then stores the Message Passing Interface (MPI) compiler wrappers.
 

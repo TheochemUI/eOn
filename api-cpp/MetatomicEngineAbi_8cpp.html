@@ -442,7 +442,9 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="MetatomicEngineAbi_8cpp_source.html#l00063">63</a> of file <a class="el" href="MetatomicEngineAbi_8cpp_source.html">MetatomicEngineAbi.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   63</span>{ <span class="keyword">delete</span> pot; }</div>
+<div class="fragment"><div class="line"><span class="lineno">   63</span>                                         {</div>
+<div class="line"><span class="lineno">   64</span>  std::unique_ptr&lt;RgpotMtaPot&gt; owned(pot);</div>
+<div class="line"><span class="lineno">   65</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -498,20 +500,20 @@ Functions</h2></td></tr>
 <p>Energy + forces. </p>
 <p>Returns 0 on success. variance may be NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="MetatomicEngineAbi_8cpp_source.html#l00065">65</a> of file <a class="el" href="MetatomicEngineAbi_8cpp_source.html">MetatomicEngineAbi.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   67</span>                                                         {</div>
-<div class="line"><span class="lineno">   68</span>  <span class="keywordflow">if</span> (!pot || !pot-&gt;<a class="code hl_variable" href="structRgpotMtaPot.html#ae11c77d1261818792cea8b1cd90d06f7">impl</a> || !positions || !atomicNrs || !forces || !energy ||</div>
-<div class="line"><span class="lineno">   69</span>      !box)</div>
-<div class="line"><span class="lineno">   70</span>    <span class="keywordflow">return</span> 1;</div>
-<div class="line"><span class="lineno">   71</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">   72</span>    pot-&gt;<a class="code hl_variable" href="structRgpotMtaPot.html#ae11c77d1261818792cea8b1cd90d06f7">impl</a>-&gt;<a class="code hl_function" href="classMetatomicPotential.html#a06640aa432a3e8994c6074a60cb92a92">force</a>(nAtoms, positions, atomicNrs, forces, energy, variance,</div>
-<div class="line"><span class="lineno">   73</span>                     box);</div>
-<div class="line"><span class="lineno">   74</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">   75</span>  } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">   76</span>    <span class="keywordflow">return</span> 2;</div>
-<div class="line"><span class="lineno">   77</span>  }</div>
-<div class="line"><span class="lineno">   78</span>}</div>
-<div class="ttc" id="aclassMetatomicPotential_html_a06640aa432a3e8994c6074a60cb92a92"><div class="ttname"><a href="classMetatomicPotential.html#a06640aa432a3e8994c6074a60cb92a92">MetatomicPotential::force</a></div><div class="ttdeci">void force(long nAtoms, const double *positions, const int *atomicNrs, double *forces, double *energy, double *variance, const double *box) override</div><div class="ttdoc">Calculates the energy and forces for a given atomic configuration.</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8cpp_source.html#l00352">MetatomicPotential.cpp:352</a></div></div>
+<p class="definition">Definition at line <a class="el" href="MetatomicEngineAbi_8cpp_source.html#l00067">67</a> of file <a class="el" href="MetatomicEngineAbi_8cpp_source.html">MetatomicEngineAbi.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   69</span>                                                         {</div>
+<div class="line"><span class="lineno">   70</span>  <span class="keywordflow">if</span> (!pot || !pot-&gt;<a class="code hl_variable" href="structRgpotMtaPot.html#ae11c77d1261818792cea8b1cd90d06f7">impl</a> || !positions || !atomicNrs || !forces || !energy ||</div>
+<div class="line"><span class="lineno">   71</span>      !box)</div>
+<div class="line"><span class="lineno">   72</span>    <span class="keywordflow">return</span> 1;</div>
+<div class="line"><span class="lineno">   73</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">   74</span>    pot-&gt;<a class="code hl_variable" href="structRgpotMtaPot.html#ae11c77d1261818792cea8b1cd90d06f7">impl</a>-&gt;<a class="code hl_function" href="classMetatomicPotential.html#a06640aa432a3e8994c6074a60cb92a92">force</a>(nAtoms, positions, atomicNrs, forces, energy, variance,</div>
+<div class="line"><span class="lineno">   75</span>                     box);</div>
+<div class="line"><span class="lineno">   76</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">   77</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">   78</span>    <span class="keywordflow">return</span> 2;</div>
+<div class="line"><span class="lineno">   79</span>  }</div>
+<div class="line"><span class="lineno">   80</span>}</div>
+<div class="ttc" id="aclassMetatomicPotential_html_a06640aa432a3e8994c6074a60cb92a92"><div class="ttname"><a href="classMetatomicPotential.html#a06640aa432a3e8994c6074a60cb92a92">MetatomicPotential::force</a></div><div class="ttdeci">void force(long nAtoms, const double *positions, const int *atomicNrs, double *forces, double *energy, double *variance, const double *box) override</div><div class="ttdoc">Calculates the energy and forces for a given atomic configuration.</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8cpp_source.html#l00358">MetatomicPotential.cpp:358</a></div></div>
 <div class="ttc" id="astructRgpotMtaPot_html_ae11c77d1261818792cea8b1cd90d06f7"><div class="ttname"><a href="structRgpotMtaPot.html#ae11c77d1261818792cea8b1cd90d06f7">RgpotMtaPot::impl</a></div><div class="ttdeci">std::unique_ptr&lt; MetatomicPotential &gt; impl</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineAbi_8cpp_source.html#l00018">MetatomicEngineAbi.cpp:18</a></div></div>
 </div><!-- fragment -->
 </div>

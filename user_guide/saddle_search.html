@@ -84,7 +84,6 @@ data-aria-dark="Switch to auto color mode">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
-<li class="toctree-l1 _expand"><a class="reference internal" href="../citing.html">Citing eOn</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/eessi.html">Build develop on EESSI</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/lammps.html">LAMMPS</a></li>
@@ -123,6 +122,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="mpi_potential.html">MPI potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="algorithm_selection.html">Choosing an algorithm</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="main.html">General simulation parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="structure_input.html">Structure input formats</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="potential.html">Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="structure_comparison.html">Structure comparison</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
@@ -178,6 +178,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/design/client/index.html">Client design</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/types.html">Type system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/exact-reduction.html">Exact reductions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/parameters.html">Parameters system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
@@ -200,6 +201,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.contracts.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.contracts.load_outcome.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts.load_outcome</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
@@ -701,8 +706,8 @@ the initial push when present.</p></li>
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">min_mode_method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.15)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'dimer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lanczos'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'davidson'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gprdimer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'artn'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'xtsci'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dimer'</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.min_mode_method" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Options:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">dimer</span></code>: Use the dimer min-mode method from <span id="id1">Henkelman and Jónsson [<a class="reference internal" href="#id32" title="Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. The Journal of Chemical Physics, 111(15):7010–7022, October 1999. doi:10.1063/1.480097.">SS_HJonsson99</a>]</span></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">lanczos</span></code>: Use the Lanczos min-mode method from <span id="id2">Malek and Mousseau [<a class="reference internal" href="#id58" title="Rachid Malek and Normand Mousseau. Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique. Physical Review E, 62(6):7723–7728, December 2000. doi:10.1103/PhysRevE.62.7723.">SS_MM00</a>]</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dimer</span></code>: Use the dimer min-mode method from <span id="id1">Henkelman and Jónsson [<a class="reference internal" href="#id30" title="Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. The Journal of Chemical Physics, 111(15):7010–7022, October 1999. doi:10.1063/1.480097.">SS_HJonsson99</a>]</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lanczos</span></code>: Use the Lanczos min-mode method from <span id="id2">Malek and Mousseau [<a class="reference internal" href="#id56" title="Rachid Malek and Normand Mousseau. Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique. Physical Review E, 62(6):7723–7728, December 2000. doi:10.1103/PhysRevE.62.7723.">SS_MM00</a>]</span></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">davidson</span></code>: Davidson Ritz subspace with FD Hessian-vector products (alternative to dimer rotation).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">gprdimer</span></code>: GP dimer. The Linux default is <code class="docutils literal notranslate"><span class="pre">-Dwith_gprd=auto</span></code>, which links <code class="docutils literal notranslate"><span class="pre">subprojects/gpr_optim</span></code> when that subproject configures. A failed fetch leaves the dimer off.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">artn</span></code>: Use ARTn as a drop-in for min-mode search. eOn’s displacement
@@ -918,7 +923,7 @@ seeds the initial mode; ARTn takes over from the displaced structure.</p></li>
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">bowl_breakout</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.bowl_breakout" title="Link to this definition">¶</a></dt>
 <dd><p>Determines <a class="reference internal" href="#eon.schema.SaddleSearchConfig.bowl_active_atoms" title="eon.schema.SaddleSearchConfig.bowl_active_atoms"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">bowl_active_atoms</span></code></a> that are subject to the largest forces.
 To activate, <a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive" title="eon.schema.SaddleSearchConfig.confine_positive"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">confine_positive</span></code></a> must also be true. Method of
-<span id="id3">Pedersen and Luiser [<a class="reference internal" href="#id69" title="Andreas Pedersen and Mathieu Luiser. Bowl breakout: Escaping the positive region when searching for saddle points. The Journal of Chemical Physics, 141(2):024109, July 2014. doi:10.1063/1.4885852.">SS_PL14</a>]</span>.</p>
+<span id="id3">Pedersen and Luiser [<a class="reference internal" href="#id67" title="Andreas Pedersen and Mathieu Luiser. Bowl breakout: Escaping the positive region when searching for saddle points. The Journal of Chemical Physics, 141(2):024109, July 2014. doi:10.1063/1.4885852.">SS_PL14</a>]</span>.</p>
 <p>When activated, the search within positive regions of PES is confined to a subset of atoms.</p>
 </dd></dl>
 
@@ -1030,10 +1035,7 @@ minimizes to the final state.</p></li>
 </section>
 <section id="gaussian-process-dimer">
 <h2>Gaussian process dimer<a class="headerlink" href="#gaussian-process-dimer" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">min_mode_method</span> <span class="pre">=</span> <span class="pre">gprdimer</span></code> runs the Gaussian process dimer of
-<span id="id1">Goswami <em>et al.</em> [<a class="reference internal" href="#id26" title="Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Peña-Torres, and Hannes Jónsson. Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions. Journal of Chemical Theory and Computation, 21(16):7935–7943, July 2025. doi:10.1021/acs.jctc.5c00866.">SS_GMK+25</a>]</span>, with the adaptive
-pruning of <span id="id2">Goswami and Jónsson [<a class="reference internal" href="#id23" title="Rohit Goswami and Hannes Jónsson. Adaptive Pruning for Increased Robustness and Reduced Computational Overhead in Gaussian Process Accelerated Saddle Point Searches. ChemPhysChem, 27(4):e202500730, February 2026. doi:10.1002/cphc.202500730.">SS_GJonsson26</a>]</span> under <code class="docutils literal notranslate"><span class="pre">use_prune</span></code>.
-It builds from a
+<p><code class="docutils literal notranslate"><span class="pre">min_mode_method</span> <span class="pre">=</span> <span class="pre">gprdimer</span></code> runs the Gaussian process dimer from a
 <code class="docutils literal notranslate"><span class="pre">gpr_optim</span></code> checkout in <code class="docutils literal notranslate"><span class="pre">subprojects/gpr_optim</span></code>, for example
 <code class="docutils literal notranslate"><span class="pre">rsync</span> <span class="pre">-a</span> <span class="pre">../gpr_optim/</span> <span class="pre">subprojects/gpr_optim/</span></code>. Under <code class="docutils literal notranslate"><span class="pre">-Dwith_gprd=auto</span></code>
 (the default) a Linux build links that checkout when it is there and leaves
@@ -1069,25 +1071,17 @@ implementation (dimer, improved dimer, Lanczos, GPR dimer)</p></li>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
-<div class="docutils container" id="id3">
+<div class="docutils container" id="id1">
 <div role="list" class="citation-list">
-<div class="citation" id="id23" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">SS_GJonsson26</a><span class="fn-bracket">]</span></span>
-<p>Rohit Goswami and Hannes Jónsson. Adaptive Pruning for Increased Robustness and Reduced Computational Overhead in Gaussian Process Accelerated Saddle Point Searches. <em>ChemPhysChem</em>, 27(4):e202500730, February 2026. <a class="reference external" href="https://doi.org/10.1002/cphc.202500730">doi:10.1002/cphc.202500730</a>.</p>
-</div>
-<div class="citation" id="id26" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">SS_GMK+25</a><span class="fn-bracket">]</span></span>
-<p>Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Peña-Torres, and Hannes Jónsson. Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions. <em>Journal of Chemical Theory and Computation</em>, 21(16):7935–7943, July 2025. <a class="reference external" href="https://doi.org/10.1021/acs.jctc.5c00866">doi:10.1021/acs.jctc.5c00866</a>.</p>
-</div>
-<div class="citation" id="id32" role="doc-biblioentry">
+<div class="citation" id="id30" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">SS_HJonsson99</a><span class="fn-bracket">]</span></span>
 <p>Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. <em>The Journal of Chemical Physics</em>, 111(15):7010–7022, October 1999. <a class="reference external" href="https://doi.org/10.1063/1.480097">doi:10.1063/1.480097</a>.</p>
 </div>
-<div class="citation" id="id58" role="doc-biblioentry">
+<div class="citation" id="id56" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">SS_MM00</a><span class="fn-bracket">]</span></span>
 <p>Rachid Malek and Normand Mousseau. Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique. <em>Physical Review E</em>, 62(6):7723–7728, December 2000. <a class="reference external" href="https://doi.org/10.1103/PhysRevE.62.7723">doi:10.1103/PhysRevE.62.7723</a>.</p>
 </div>
-<div class="citation" id="id69" role="doc-biblioentry">
+<div class="citation" id="id67" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">SS_PL14</a><span class="fn-bracket">]</span></span>
 <p>Andreas Pedersen and Mathieu Luiser. Bowl breakout: Escaping the positive region when searching for saddle points. <em>The Journal of Chemical Physics</em>, 141(2):024109, July 2014. <a class="reference external" href="https://doi.org/10.1063/1.4885852">doi:10.1063/1.4885852</a>.</p>
 </div>

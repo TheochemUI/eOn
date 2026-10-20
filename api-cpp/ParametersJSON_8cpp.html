@@ -244,6 +244,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('ParametersJSON
 <code>#include &quot;<a class="el" href="ParametersINI_8h_source.html">eon/ParametersINI.h</a>&quot;</code><br />
 <code>#include &quot;magic_enum/magic_enum.hpp&quot;</code><br />
 <code>#include &lt;cctype&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
 <code>#include &lt;format&gt;</code><br />
 <code>#include &lt;nlohmann/json.hpp&gt;</code><br />
@@ -312,10 +313,10 @@ Functions</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> ((j).contains(key))                                                       \</div>
 <div class="line">(target) = (j).at(key).get&lt;<span class="keyword">decltype</span>(target)&gt;()</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="ParametersJSON_8cpp_source.html#l00044">44</a> of file <a class="el" href="ParametersJSON_8cpp_source.html">ParametersJSON.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   44</span><span class="preprocessor">#define JSON_OPT(j, key, target)                                               \</span></div>
-<div class="line"><span class="lineno">   45</span><span class="preprocessor">  if ((j).contains(key))                                                       \</span></div>
-<div class="line"><span class="lineno">   46</span><span class="preprocessor">  (target) = (j).at(key).get&lt;decltype(target)&gt;()</span></div>
+<p class="definition">Definition at line <a class="el" href="ParametersJSON_8cpp_source.html#l00045">45</a> of file <a class="el" href="ParametersJSON_8cpp_source.html">ParametersJSON.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   45</span><span class="preprocessor">#define JSON_OPT(j, key, target)                                               \</span></div>
+<div class="line"><span class="lineno">   46</span><span class="preprocessor">  if ((j).contains(key))                                                       \</span></div>
+<div class="line"><span class="lineno">   47</span><span class="preprocessor">  (target) = (j).at(key).get&lt;decltype(target)&gt;()</span></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -332,7 +333,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersJSON_8cpp_source.html#l00027">27</a> of file <a class="el" href="ParametersJSON_8cpp_source.html">ParametersJSON.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ParametersJSON_8cpp_source.html#l00028">28</a> of file <a class="el" href="ParametersJSON_8cpp_source.html">ParametersJSON.cpp</a>.</p>
 
 </div>
 </div>
@@ -366,15 +367,15 @@ template&lt;typename E&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersJSON_8cpp_source.html#l00034">34</a> of file <a class="el" href="ParametersJSON_8cpp_source.html">ParametersJSON.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   34</span>                                                                         {</div>
-<div class="line"><span class="lineno">   35</span>  <span class="keywordflow">if</span> (j.is_string()) {</div>
-<div class="line"><span class="lineno">   36</span>    <span class="keyword">auto</span> result = magic_enum::enum_cast&lt;E&gt;(j.get&lt;std::string&gt;(),</div>
-<div class="line"><span class="lineno">   37</span>                                           magic_enum::case_insensitive);</div>
-<div class="line"><span class="lineno">   38</span>    <span class="keywordflow">return</span> result.value_or(fallback);</div>
-<div class="line"><span class="lineno">   39</span>  }</div>
-<div class="line"><span class="lineno">   40</span>  <span class="keywordflow">return</span> fallback;</div>
-<div class="line"><span class="lineno">   41</span>}</div>
+<p class="definition">Definition at line <a class="el" href="ParametersJSON_8cpp_source.html#l00035">35</a> of file <a class="el" href="ParametersJSON_8cpp_source.html">ParametersJSON.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   35</span>                                                                         {</div>
+<div class="line"><span class="lineno">   36</span>  <span class="keywordflow">if</span> (j.is_string()) {</div>
+<div class="line"><span class="lineno">   37</span>    <span class="keyword">auto</span> result = magic_enum::enum_cast&lt;E&gt;(j.get&lt;std::string&gt;(),</div>
+<div class="line"><span class="lineno">   38</span>                                           magic_enum::case_insensitive);</div>
+<div class="line"><span class="lineno">   39</span>    <span class="keywordflow">return</span> result.value_or(fallback);</div>
+<div class="line"><span class="lineno">   40</span>  }</div>
+<div class="line"><span class="lineno">   41</span>  <span class="keywordflow">return</span> fallback;</div>
+<div class="line"><span class="lineno">   42</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -403,10 +404,10 @@ template&lt;typename E&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersJSON_8cpp_source.html#l00030">30</a> of file <a class="el" href="ParametersJSON_8cpp_source.html">ParametersJSON.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   30</span>                                                      {</div>
-<div class="line"><span class="lineno">   31</span>  <span class="keywordflow">return</span> std::string(magic_enum::enum_name(val));</div>
-<div class="line"><span class="lineno">   32</span>}</div>
+<p class="definition">Definition at line <a class="el" href="ParametersJSON_8cpp_source.html#l00031">31</a> of file <a class="el" href="ParametersJSON_8cpp_source.html">ParametersJSON.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   31</span>                                                      {</div>
+<div class="line"><span class="lineno">   32</span>  <span class="keywordflow">return</span> std::string(magic_enum::enum_name(val));</div>
+<div class="line"><span class="lineno">   33</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

@@ -242,182 +242,302 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('ServeRpcServer
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span></div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &quot;<a class="code" href="ServeRpcServer_8h.html">eon/ServeRpcServer.h</a>&quot;</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &quot;<a class="code" href="BaseStructures_8h.html">eon/BaseStructures.h</a>&quot;</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &quot;<a class="code" href="EonLogger_8h.html">eon/EonLogger.h</a>&quot;</span></div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &lt;atomic&gt;</span></div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#include &lt;capnp/ez-rpc.h&gt;</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &lt;kj/debug.h&gt;</span></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="comment">// Cap&#39;n Proto generated header (from Potentials.capnp).</span></div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="comment">// This defines `class Potential` -- which collides with eOn&#39;s Potential class,</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment">// hence the separate translation unit.</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#include &quot;rgpot/rpc/Potentials.capnp.h&quot;</span></div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">namespace </span>{</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span></div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="keyword">class </span>CallbackPotImpl final : <span class="keyword">public</span> Potential::Server {</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>  <span class="keyword">explicit</span> CallbackPotImpl(<a class="code hl_typedef" href="namespaceeonc.html#ab88f72c22b1653b9d6d3068512d0aa6f">ForceCallback</a> cb)</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>      : m_callback(std::move(cb)) {}</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>  kj::Promise&lt;void&gt; calculate(CalculateContext context)<span class="keyword"> override </span>{</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">auto</span> fip = context.getParams().getFip();</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> numAtoms = fip.getPos().size() / 3;</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    KJ_REQUIRE(fip.getAtmnrs().size() == numAtoms, <span class="stringliteral">&quot;AtomNumbers size mismatch&quot;</span>);</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="comment">// Extract flat arrays from capnp</span></div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    std::vector&lt;double&gt; positions(numAtoms * 3);</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">auto</span> capnpPos = fip.getPos();</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; numAtoms * 3; ++i) {</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>      positions[i] = capnpPos[i];</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    }</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    std::vector&lt;int&gt; atomicNrs(numAtoms);</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">auto</span> capnpAtmnrs = fip.getAtmnrs();</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; numAtoms; ++i) {</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>      atomicNrs[i] = capnpAtmnrs[i];</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    }</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">double</span> box[9] = {};</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">auto</span> capnpBox = fip.getBox();</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; 9 &amp;&amp; i &lt; capnpBox.size(); ++i) {</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>      box[i] = capnpBox[i];</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    }</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="comment">// Call the force callback</span></div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    std::vector&lt;double&gt; forces(numAtoms * 3, 0.0);</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordtype">double</span> energy = 0.0;</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    m_callback(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(numAtoms), positions.data(), atomicNrs.data(),</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>               forces.data(), &amp;energy, box);</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="comment">// Serialize result back to capnp</span></div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keyword">auto</span> result = context.getResults();</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">auto</span> pres = result.initResult();</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    pres.setEnergy(energy);</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">auto</span> forcesList = pres.initForces(numAtoms * 3);</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; numAtoms * 3; ++i) {</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>      forcesList.set(i, forces[i]);</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    }</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">return</span> kj::READY_NOW;</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>  }</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>  <a class="code hl_typedef" href="namespaceeonc.html#ab88f72c22b1653b9d6d3068512d0aa6f">ForceCallback</a> m_callback;</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>};</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>} <span class="comment">// anonymous namespace</span></div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
-<div class="foldopen" id="foldopen00105" data-start="{" data-end="}">
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="namespaceeonc.html#ae73698d7590f300d12636be26b8e0ea7">  105</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc.html#ae73698d7590f300d12636be26b8e0ea7">startRpcServer</a>(<a class="code hl_typedef" href="namespaceeonc.html#ab88f72c22b1653b9d6d3068512d0aa6f">ForceCallback</a> callback, <span class="keyword">const</span> std::string &amp;host,</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                    uint16_t port) {</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Starting Cap&#39;n Proto RPC server on {}:{}&quot;</span>, host, port);</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>  capnp::EzRpcServer server(kj::heap&lt;CallbackPotImpl&gt;(std::move(callback)),</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                            host, port);</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>  <span class="keyword">auto</span> &amp;waitScope = server.getWaitScope();</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Server ready on port {}. Ctrl+C to stop.&quot;</span>, port);</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>  kj::NEVER_DONE.wait(waitScope);</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>}</div>
-</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="comment">// Pooled (round-robin gateway) server</span></div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span><span class="keyword">namespace </span>{</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span></div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span><span class="keyword">class </span>PooledCallbackPotImpl final : <span class="keyword">public</span> Potential::Server {</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>  <span class="keyword">explicit</span> PooledCallbackPotImpl(std::vector&lt;ForceCallback&gt; pool)</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>      : m_pool(std::move(pool)),</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        m_mutexes(m_pool.size()),</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        m_next(0) {}</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>  kj::Promise&lt;void&gt; calculate(CalculateContext context)<span class="keyword"> override </span>{</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordtype">size_t</span> idx = m_next.fetch_add(1, std::memory_order_relaxed) % m_pool.size();</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keyword">auto</span> fip = context.getParams().getFip();</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> numAtoms = fip.getPos().size() / 3;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &quot;<a class="code" href="RpcCapabilitiesProbe_8h.html">RpcCapabilitiesProbe.h</a>&quot;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &quot;<a class="code" href="RpcServerHandshake_8h.html">RpcServerHandshake.h</a>&quot;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &quot;<a class="code" href="BaseStructures_8h.html">eon/BaseStructures.h</a>&quot;</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &quot;<a class="code" href="EonLogger_8h.html">eon/EonLogger.h</a>&quot;</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &lt;atomic&gt;</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#include &lt;capnp/ez-rpc.h&gt;</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#include &lt;capnp/rpc-twoparty.h&gt;</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#include &lt;kj/async-io.h&gt;</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#include &lt;kj/debug.h&gt;</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="comment">// Cap&#39;n Proto generated header (from Potentials.capnp).</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="comment">// This defines `class Potential` -- which collides with eOn&#39;s Potential class,</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="comment">// hence the separate translation unit.</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#include &quot;rgpot/rpc/Potentials.capnp.h&quot;</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="preprocessor">#ifndef EON_BUILD_VERSION</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="ServeRpcServer_8cpp.html#a541878e3565e843d96bef80da22aa8a9">   44</a></span><span class="preprocessor">#define EON_BUILD_VERSION &quot;&quot;</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="preprocessor">#ifndef EON_BUILD_REVISION</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="ServeRpcServer_8cpp.html#ad42d86aad64303341fe047743b336083">   47</a></span><span class="preprocessor">#define EON_BUILD_REVISION &quot;&quot;</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="keywordtype">void</span> fillServerCapabilities(::Capabilities::Builder caps) {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  caps.setProtocolFamily(<a class="code hl_variable" href="namespaceeonc_1_1rpc.html#aa9bc1641e65e5a5328fd1b41c29f5a36">eonc::rpc::kProtocolFamily</a>);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>  caps.setProtocolMajor(<a class="code hl_variable" href="namespaceeonc_1_1rpc.html#a5695a6ebb52c1536af3760ffbe774f59">eonc::rpc::kProtocolMajor</a>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>  caps.setProtocolMinor(<a class="code hl_variable" href="namespaceeonc_1_1rpc.html#a453b2fc9570915e6d7dfa484ca2d7feb">eonc::rpc::kProtocolMinor</a>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>  caps.setSchemaId(<a class="code hl_variable" href="namespaceeonc_1_1rpc.html#a51e2642dfb8b3ea3c916b95f42e0cac8">eonc::rpc::kSchemaId</a>);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>  caps.setBridgeAbiMajor(<a class="code hl_variable" href="namespaceeonc_1_1rpc.html#a2e54913d9b09e567a12f8b50ce26da27">eonc::rpc::kBridgeAbiMajor</a>);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>  caps.setBridgeAbiMinor(<a class="code hl_variable" href="namespaceeonc_1_1rpc.html#a2653385204321374aabb3095c05cee0f">eonc::rpc::kBridgeAbiMinor</a>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>  caps.setBridgeLayout(<a class="code hl_variable" href="namespaceeonc_1_1rpc.html#a7859c826477ecc338e29add08281837f">eonc::rpc::kBridgeLayout</a>);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  caps.setDlpackMajor(<a class="code hl_variable" href="namespaceeonc_1_1rpc.html#aa454985e25dc454d6ca2ce94144c795d">eonc::rpc::kDlpackMajor</a>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  caps.setDlpackMinor(<a class="code hl_variable" href="namespaceeonc_1_1rpc.html#aad656a8131148067ba07f100cad10044">eonc::rpc::kDlpackMinor</a>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>  caps.setBridgeFeatures(<a class="code hl_variable" href="namespaceeonc_1_1rpc.html#a0c66be18a0830337351157afc17c6020">eonc::rpc::kBridgeFeatures</a>);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  caps.setBackendName(<a class="code hl_variable" href="namespaceeonc_1_1rpc.html#a4b6fb9f390a01fa1a676551bbfcb90ab">eonc::rpc::kBackendName</a>);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>  caps.setBackendVersion(<a class="code hl_define" href="ServeRpcServer_8cpp.html#a541878e3565e843d96bef80da22aa8a9">EON_BUILD_VERSION</a>);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>  caps.setAvailable(<span class="keyword">true</span>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>  caps.setBuildVersion(<a class="code hl_define" href="ServeRpcServer_8cpp.html#a541878e3565e843d96bef80da22aa8a9">EON_BUILD_VERSION</a>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  caps.setBuildRevision(<a class="code hl_define" href="ServeRpcServer_8cpp.html#ad42d86aad64303341fe047743b336083">EON_BUILD_REVISION</a>);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>  <span class="keyword">auto</span> ops = caps.initOperations(2);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>  ops.set(0, ::Capabilities::Operation::ENERGY);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>  ops.set(1, ::Capabilities::Operation::FORCES);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>}</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><a class="code hl_typedef" href="namespaceeonc.html#ab88f72c22b1653b9d6d3068512d0aa6f">ForceCallback</a> noopCallback() {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>  <span class="keywordflow">return</span> [](long, <span class="keyword">const</span> <span class="keywordtype">double</span> *, <span class="keyword">const</span> <span class="keywordtype">int</span> *, <span class="keywordtype">double</span> *, <span class="keywordtype">double</span> *,</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <span class="keyword">const</span> <span class="keywordtype">double</span> *) {};</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>}</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>RpcCapabilitiesView readOne(kj::AsyncIoContext &amp;io,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                            capnp::Capability::Client bootstrap) {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>  <span class="keyword">auto</span> pipe = io.provider-&gt;newTwoWayPipe();</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>  capnp::TwoPartyClient serverSide(*pipe.ends[0], kj::mv(bootstrap),</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                                   capnp::rpc::twoparty::Side::SERVER);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>  capnp::TwoPartyClient clientSide(*pipe.ends[1]);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>  <span class="keyword">auto</span> pot = clientSide.bootstrap().castAs&lt;Potential&gt;();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>  <span class="keyword">auto</span> response = pot.getCapabilitiesRequest().send().wait(io.waitScope);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>  <span class="keyword">auto</span> caps = response.getCapabilities();</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>  RpcCapabilitiesView view;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>  view.protocolFamily = caps.getProtocolFamily().cStr();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>  view.protocolMajor = caps.getProtocolMajor();</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>  view.protocolMinor = caps.getProtocolMinor();</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>  view.schemaId = caps.getSchemaId().cStr();</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>  view.bridgeAbiMajor = caps.getBridgeAbiMajor();</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  view.bridgeAbiMinor = caps.getBridgeAbiMinor();</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>  view.bridgeLayout = caps.getBridgeLayout();</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  view.dlpackMajor = caps.getDlpackMajor();</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>  view.dlpackMinor = caps.getDlpackMinor();</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>  view.bridgeFeatures = caps.getBridgeFeatures();</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>  view.backendName = caps.getBackendName().cStr();</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>  view.available = caps.getAvailable();</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>  view.buildVersion = caps.getBuildVersion().cStr();</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>  view.buildRevision = caps.getBuildRevision().cStr();</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> op : caps.getOperations()) {</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">if</span> (op == ::Capabilities::Operation::ENERGY) {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>      view.servesEnergy = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    }</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordflow">if</span> (op == ::Capabilities::Operation::FORCES) {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>      view.servesForces = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    }</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>  }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>  <span class="keywordflow">return</span> view;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>}</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>} <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span></div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span><span class="keyword">class </span>CallbackPotImpl final : <span class="keyword">public</span> Potential::Server {</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>  <span class="keyword">explicit</span> CallbackPotImpl(<a class="code hl_typedef" href="namespaceeonc.html#ab88f72c22b1653b9d6d3068512d0aa6f">ForceCallback</a> cb)</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>      : m_callback(std::move(cb)) {}</div>
 <div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    KJ_REQUIRE(fip.getAtmnrs().size() == numAtoms, <span class="stringliteral">&quot;AtomNumbers size mismatch&quot;</span>);</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    std::vector&lt;double&gt; positions(numAtoms * 3);</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keyword">auto</span> capnpPos = fip.getPos();</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; numAtoms * 3; ++i) {</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>      positions[i] = capnpPos[i];</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    }</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    std::vector&lt;int&gt; atomicNrs(numAtoms);</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keyword">auto</span> capnpAtmnrs = fip.getAtmnrs();</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; numAtoms; ++i) {</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>      atomicNrs[i] = capnpAtmnrs[i];</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    }</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordtype">double</span> box[9] = {};</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keyword">auto</span> capnpBox = fip.getBox();</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; 9 &amp;&amp; i &lt; capnpBox.size(); ++i) {</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>      box[i] = capnpBox[i];</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    }</div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    std::vector&lt;double&gt; forces(numAtoms * 3, 0.0);</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keywordtype">double</span> energy = 0.0;</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    std::lock_guard&lt;std::mutex&gt; lock(m_mutexes[idx]);</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    m_pool[idx](<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(numAtoms), positions.data(), atomicNrs.data(),</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>                forces.data(), &amp;energy, box);</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keyword">auto</span> result = context.getResults();</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keyword">auto</span> pres = result.initResult();</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    pres.setEnergy(energy);</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keyword">auto</span> forcesList = pres.initForces(numAtoms * 3);</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; numAtoms * 3; ++i) {</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>      forcesList.set(i, forces[i]);</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    }</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>  kj::Promise&lt;void&gt; getCapabilities(GetCapabilitiesContext context)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    fillServerCapabilities(context.getResults().initCapabilities());</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordflow">return</span> kj::READY_NOW;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>  }</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>  kj::Promise&lt;void&gt; calculate(CalculateContext context)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keyword">auto</span> fip = context.getParams().getFip();</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> numAtoms = fip.getPos().size() / 3;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    KJ_REQUIRE(fip.getAtmnrs().size() == numAtoms, <span class="stringliteral">&quot;AtomNumbers size mismatch&quot;</span>);</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="comment">// Extract flat arrays from capnp</span></div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    std::vector&lt;double&gt; positions(numAtoms * 3);</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keyword">auto</span> capnpPos = fip.getPos();</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; numAtoms * 3; ++i) {</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>      positions[i] = capnpPos[i];</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    }</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    std::vector&lt;int&gt; atomicNrs(numAtoms);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keyword">auto</span> capnpAtmnrs = fip.getAtmnrs();</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; numAtoms; ++i) {</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>      atomicNrs[i] = capnpAtmnrs[i];</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    }</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordtype">double</span> box[9] = {};</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keyword">auto</span> capnpBox = fip.getBox();</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; 9 &amp;&amp; i &lt; capnpBox.size(); ++i) {</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>      box[i] = capnpBox[i];</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    }</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="comment">// Call the force callback</span></div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    std::vector&lt;double&gt; forces(numAtoms * 3, 0.0);</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="keywordtype">double</span> energy = 0.0;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    m_callback(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(numAtoms), positions.data(), atomicNrs.data(),</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>               forces.data(), &amp;energy, box);</div>
 <div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keywordflow">return</span> kj::READY_NOW;</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>  }</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>  std::vector&lt;ForceCallback&gt; m_pool;</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>  std::vector&lt;std::mutex&gt; m_mutexes;</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>  std::atomic&lt;size_t&gt; m_next;</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>};</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>} <span class="comment">// anonymous namespace</span></div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
-<div class="foldopen" id="foldopen00187" data-start="{" data-end="}">
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno"><a class="line" href="namespaceeonc.html#abde34b2d6455f233f19867a3e220b56c">  187</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc.html#abde34b2d6455f233f19867a3e220b56c">startPooledRpcServer</a>(std::vector&lt;ForceCallback&gt; pool,</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>                          <span class="keyword">const</span> std::string &amp;host, uint16_t port) {</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Starting pooled RPC gateway on {}:{} with {} instances&quot;</span>, host,</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                port, pool.size());</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>  capnp::EzRpcServer server(kj::heap&lt;PooledCallbackPotImpl&gt;(std::move(pool)),</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>                            host, port);</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="comment">// Serialize result back to capnp</span></div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <span class="keyword">auto</span> result = context.getResults();</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keyword">auto</span> pres = result.initResult();</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    pres.setEnergy(energy);</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keyword">auto</span> forcesList = pres.initForces(numAtoms * 3);</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; numAtoms * 3; ++i) {</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>      forcesList.set(i, forces[i]);</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    }</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keywordflow">return</span> kj::READY_NOW;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>  }</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>  <a class="code hl_typedef" href="namespaceeonc.html#ab88f72c22b1653b9d6d3068512d0aa6f">ForceCallback</a> m_callback;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>};</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span> </div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>} <span class="comment">// anonymous namespace</span></div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>  <span class="keyword">auto</span> &amp;waitScope = server.getWaitScope();</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Gateway ready on port {}. Ctrl+C to stop.&quot;</span>, port);</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>  kj::NEVER_DONE.wait(waitScope);</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>}</div>
+<div class="foldopen" id="foldopen00195" data-start="{" data-end="}">
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno"><a class="line" href="namespaceeonc.html#ae73698d7590f300d12636be26b8e0ea7">  195</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc.html#ae73698d7590f300d12636be26b8e0ea7">startRpcServer</a>(<a class="code hl_typedef" href="namespaceeonc.html#ab88f72c22b1653b9d6d3068512d0aa6f">ForceCallback</a> callback, <span class="keyword">const</span> std::string &amp;host,</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>                    uint16_t port) {</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Starting Cap&#39;n Proto RPC server on {}:{}&quot;</span>, host, port);</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>  capnp::EzRpcServer server(kj::heap&lt;CallbackPotImpl&gt;(std::move(callback)),</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>                            host, port);</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>  <span class="keyword">auto</span> &amp;waitScope = server.getWaitScope();</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Server ready on port {}. Ctrl+C to stop.&quot;</span>, port);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>  kj::NEVER_DONE.wait(waitScope);</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>}</div>
 </div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>} <span class="comment">// namespace eonc</span></div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span><span class="comment">// Pooled (round-robin gateway) server</span></div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span></div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span><span class="keyword">class </span>PooledCallbackPotImpl final : <span class="keyword">public</span> Potential::Server {</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>  <span class="keyword">explicit</span> PooledCallbackPotImpl(std::vector&lt;ForceCallback&gt; pool)</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>      : m_pool(std::move(pool)),</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        m_mutexes(m_pool.size()),</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        m_next(0) {}</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span> </div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>  kj::Promise&lt;void&gt; getCapabilities(GetCapabilitiesContext context)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    fillServerCapabilities(context.getResults().initCapabilities());</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <span class="keywordflow">return</span> kj::READY_NOW;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>  }</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>  kj::Promise&lt;void&gt; calculate(CalculateContext context)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    <span class="keywordtype">size_t</span> idx = m_next.fetch_add(1, std::memory_order_relaxed) % m_pool.size();</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span> </div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    <span class="keyword">auto</span> fip = context.getParams().getFip();</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> numAtoms = fip.getPos().size() / 3;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    KJ_REQUIRE(fip.getAtmnrs().size() == numAtoms, <span class="stringliteral">&quot;AtomNumbers size mismatch&quot;</span>);</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span> </div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    std::vector&lt;double&gt; positions(numAtoms * 3);</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    <span class="keyword">auto</span> capnpPos = fip.getPos();</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; numAtoms * 3; ++i) {</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>      positions[i] = capnpPos[i];</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    }</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    std::vector&lt;int&gt; atomicNrs(numAtoms);</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <span class="keyword">auto</span> capnpAtmnrs = fip.getAtmnrs();</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; numAtoms; ++i) {</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>      atomicNrs[i] = capnpAtmnrs[i];</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    }</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span> </div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    <span class="keywordtype">double</span> box[9] = {};</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    <span class="keyword">auto</span> capnpBox = fip.getBox();</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; 9 &amp;&amp; i &lt; capnpBox.size(); ++i) {</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>      box[i] = capnpBox[i];</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    }</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    std::vector&lt;double&gt; forces(numAtoms * 3, 0.0);</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    <span class="keywordtype">double</span> energy = 0.0;</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    std::lock_guard&lt;std::mutex&gt; lock(m_mutexes[idx]);</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    m_pool[idx](<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(numAtoms), positions.data(), atomicNrs.data(),</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>                forces.data(), &amp;energy, box);</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span> </div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    <span class="keyword">auto</span> result = context.getResults();</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    <span class="keyword">auto</span> pres = result.initResult();</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>    pres.setEnergy(energy);</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    <span class="keyword">auto</span> forcesList = pres.initForces(numAtoms * 3);</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; numAtoms * 3; ++i) {</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>      forcesList.set(i, forces[i]);</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    }</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span> </div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    <span class="keywordflow">return</span> kj::READY_NOW;</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>  }</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span> </div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>  std::vector&lt;ForceCallback&gt; m_pool;</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>  std::vector&lt;std::mutex&gt; m_mutexes;</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>  std::atomic&lt;size_t&gt; m_next;</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>};</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span> </div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>} <span class="comment">// anonymous namespace</span></div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span> </div>
+<div class="foldopen" id="foldopen00282" data-start="{" data-end="}">
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno"><a class="line" href="namespaceeonc.html#abde34b2d6455f233f19867a3e220b56c">  282</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc.html#abde34b2d6455f233f19867a3e220b56c">startPooledRpcServer</a>(std::vector&lt;ForceCallback&gt; pool,</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>                          <span class="keyword">const</span> std::string &amp;host, uint16_t port) {</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Starting pooled RPC gateway on {}:{} with {} instances&quot;</span>, host,</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>                port, pool.size());</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span> </div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>  capnp::EzRpcServer server(kj::heap&lt;PooledCallbackPotImpl&gt;(std::move(pool)),</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>                            host, port);</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span> </div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>  <span class="keyword">auto</span> &amp;waitScope = server.getWaitScope();</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Gateway ready on port {}. Ctrl+C to stop.&quot;</span>, port);</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>  kj::NEVER_DONE.wait(waitScope);</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>}</div>
+</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span> </div>
+<div class="foldopen" id="foldopen00295" data-start="{" data-end="}">
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a9d2c9aa9f4cb1ca8c164eca33fc162e0">  295</a></span><a class="code hl_struct" href="structeonc_1_1RpcServerCapabilitiesPair.html">RpcServerCapabilitiesPair</a> <a class="code hl_function" href="namespaceeonc.html#a9d2c9aa9f4cb1ca8c164eca33fc162e0">readRpcServerCapabilities</a>() {</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>  <span class="keyword">auto</span> <a class="code hl_namespace" href="namespaceeonc_1_1io.html">io</a> = kj::setupAsyncIo();</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>  <a class="code hl_struct" href="structeonc_1_1RpcServerCapabilitiesPair.html">RpcServerCapabilitiesPair</a> out;</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>  out.<a class="code hl_variable" href="structeonc_1_1RpcServerCapabilitiesPair.html#acc8d0a370efb5a3eb06b11e41ea6f6aa">callbackServer</a> = readOne(<a class="code hl_namespace" href="namespaceeonc_1_1io.html">io</a>, kj::heap&lt;CallbackPotImpl&gt;(noopCallback()));</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>  std::vector&lt;ForceCallback&gt; pool;</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>  pool.push_back(noopCallback());</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>  out.<a class="code hl_variable" href="structeonc_1_1RpcServerCapabilitiesPair.html#a429bb7baa707ee315b80919fa583aebb">pooledServer</a> =</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>      readOne(<a class="code hl_namespace" href="namespaceeonc_1_1io.html">io</a>, kj::heap&lt;PooledCallbackPotImpl&gt;(std::move(pool)));</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>  <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>}</div>
+</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span> </div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>} <span class="comment">// namespace eonc</span></div>
 <div class="ttc" id="aBaseStructures_8h_html"><div class="ttname"><a href="BaseStructures_8h.html">BaseStructures.h</a></div></div>
 <div class="ttc" id="aEonLogger_8h_html"><div class="ttname"><a href="EonLogger_8h.html">EonLogger.h</a></div></div>
-<div class="ttc" id="aEonLogger_8h_html_afba240899b90f3996875577cc095dc00"><div class="ttname"><a href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a></div><div class="ttdeci">#define EONC_LOG_INFO(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00311">EonLogger.h:311</a></div></div>
+<div class="ttc" id="aEonLogger_8h_html_afba240899b90f3996875577cc095dc00"><div class="ttname"><a href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a></div><div class="ttdeci">#define EONC_LOG_INFO(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00316">EonLogger.h:316</a></div></div>
+<div class="ttc" id="aRpcCapabilitiesProbe_8h_html"><div class="ttname"><a href="RpcCapabilitiesProbe_8h.html">RpcCapabilitiesProbe.h</a></div></div>
+<div class="ttc" id="aRpcServerHandshake_8h_html"><div class="ttname"><a href="RpcServerHandshake_8h.html">RpcServerHandshake.h</a></div></div>
+<div class="ttc" id="aServeRpcServer_8cpp_html_a541878e3565e843d96bef80da22aa8a9"><div class="ttname"><a href="ServeRpcServer_8cpp.html#a541878e3565e843d96bef80da22aa8a9">EON_BUILD_VERSION</a></div><div class="ttdeci">#define EON_BUILD_VERSION</div><div class="ttdef"><b>Definition</b> <a href="#l00044">ServeRpcServer.cpp:44</a></div></div>
+<div class="ttc" id="aServeRpcServer_8cpp_html_ad42d86aad64303341fe047743b336083"><div class="ttname"><a href="ServeRpcServer_8cpp.html#ad42d86aad64303341fe047743b336083">EON_BUILD_REVISION</a></div><div class="ttdeci">#define EON_BUILD_REVISION</div><div class="ttdef"><b>Definition</b> <a href="#l00047">ServeRpcServer.cpp:47</a></div></div>
 <div class="ttc" id="aServeRpcServer_8h_html"><div class="ttname"><a href="ServeRpcServer_8h.html">ServeRpcServer.h</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html"><div class="ttname"><a href="namespaceeonc_1_1io.html">eonc::io</a></div><div class="ttdef"><b>Definition</b> <a href="ChemfilesIO_8cpp_source.html#l00031">ChemfilesIO.cpp:31</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1rpc_html_a0c66be18a0830337351157afc17c6020"><div class="ttname"><a href="namespaceeonc_1_1rpc.html#a0c66be18a0830337351157afc17c6020">eonc::rpc::kBridgeFeatures</a></div><div class="ttdeci">constexpr std::uint64_t kBridgeFeatures</div><div class="ttdoc">This server does not advertise eindir bridge feature bits.</div><div class="ttdef"><b>Definition</b> <a href="RpcServerHandshake_8h_source.html#l00032">RpcServerHandshake.h:32</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1rpc_html_a2653385204321374aabb3095c05cee0f"><div class="ttname"><a href="namespaceeonc_1_1rpc.html#a2653385204321374aabb3095c05cee0f">eonc::rpc::kBridgeAbiMinor</a></div><div class="ttdeci">constexpr std::uint16_t kBridgeAbiMinor</div><div class="ttdef"><b>Definition</b> <a href="RpcServerHandshake_8h_source.html#l00027">RpcServerHandshake.h:27</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1rpc_html_a2e54913d9b09e567a12f8b50ce26da27"><div class="ttname"><a href="namespaceeonc_1_1rpc.html#a2e54913d9b09e567a12f8b50ce26da27">eonc::rpc::kBridgeAbiMajor</a></div><div class="ttdeci">constexpr std::uint16_t kBridgeAbiMajor</div><div class="ttdef"><b>Definition</b> <a href="RpcServerHandshake_8h_source.html#l00026">RpcServerHandshake.h:26</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1rpc_html_a453b2fc9570915e6d7dfa484ca2d7feb"><div class="ttname"><a href="namespaceeonc_1_1rpc.html#a453b2fc9570915e6d7dfa484ca2d7feb">eonc::rpc::kProtocolMinor</a></div><div class="ttdeci">constexpr std::uint16_t kProtocolMinor</div><div class="ttdef"><b>Definition</b> <a href="RpcServerHandshake_8h_source.html#l00024">RpcServerHandshake.h:24</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1rpc_html_a4b6fb9f390a01fa1a676551bbfcb90ab"><div class="ttname"><a href="namespaceeonc_1_1rpc.html#a4b6fb9f390a01fa1a676551bbfcb90ab">eonc::rpc::kBackendName</a></div><div class="ttdeci">constexpr const char * kBackendName</div><div class="ttdef"><b>Definition</b> <a href="RpcServerHandshake_8h_source.html#l00033">RpcServerHandshake.h:33</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1rpc_html_a51e2642dfb8b3ea3c916b95f42e0cac8"><div class="ttname"><a href="namespaceeonc_1_1rpc.html#a51e2642dfb8b3ea3c916b95f42e0cac8">eonc::rpc::kSchemaId</a></div><div class="ttdeci">constexpr const char * kSchemaId</div><div class="ttdef"><b>Definition</b> <a href="RpcServerHandshake_8h_source.html#l00025">RpcServerHandshake.h:25</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1rpc_html_a5695a6ebb52c1536af3760ffbe774f59"><div class="ttname"><a href="namespaceeonc_1_1rpc.html#a5695a6ebb52c1536af3760ffbe774f59">eonc::rpc::kProtocolMajor</a></div><div class="ttdeci">constexpr std::uint16_t kProtocolMajor</div><div class="ttdef"><b>Definition</b> <a href="RpcServerHandshake_8h_source.html#l00023">RpcServerHandshake.h:23</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1rpc_html_a7859c826477ecc338e29add08281837f"><div class="ttname"><a href="namespaceeonc_1_1rpc.html#a7859c826477ecc338e29add08281837f">eonc::rpc::kBridgeLayout</a></div><div class="ttdeci">constexpr std::uint32_t kBridgeLayout</div><div class="ttdef"><b>Definition</b> <a href="RpcServerHandshake_8h_source.html#l00028">RpcServerHandshake.h:28</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1rpc_html_aa454985e25dc454d6ca2ce94144c795d"><div class="ttname"><a href="namespaceeonc_1_1rpc.html#aa454985e25dc454d6ca2ce94144c795d">eonc::rpc::kDlpackMajor</a></div><div class="ttdeci">constexpr std::uint16_t kDlpackMajor</div><div class="ttdef"><b>Definition</b> <a href="RpcServerHandshake_8h_source.html#l00029">RpcServerHandshake.h:29</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1rpc_html_aa9bc1641e65e5a5328fd1b41c29f5a36"><div class="ttname"><a href="namespaceeonc_1_1rpc.html#aa9bc1641e65e5a5328fd1b41c29f5a36">eonc::rpc::kProtocolFamily</a></div><div class="ttdeci">constexpr const char * kProtocolFamily</div><div class="ttdoc">Handshake values that Potential.getCapabilities reports.</div><div class="ttdef"><b>Definition</b> <a href="RpcServerHandshake_8h_source.html#l00022">RpcServerHandshake.h:22</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1rpc_html_aad656a8131148067ba07f100cad10044"><div class="ttname"><a href="namespaceeonc_1_1rpc.html#aad656a8131148067ba07f100cad10044">eonc::rpc::kDlpackMinor</a></div><div class="ttdeci">constexpr std::uint16_t kDlpackMinor</div><div class="ttdef"><b>Definition</b> <a href="RpcServerHandshake_8h_source.html#l00030">RpcServerHandshake.h:30</a></div></div>
 <div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00023">ARTnSaddleSearch.cpp:23</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a9d2c9aa9f4cb1ca8c164eca33fc162e0"><div class="ttname"><a href="namespaceeonc.html#a9d2c9aa9f4cb1ca8c164eca33fc162e0">eonc::readRpcServerCapabilities</a></div><div class="ttdeci">RpcServerCapabilitiesPair readRpcServerCapabilities()</div><div class="ttdoc">Call getCapabilities on both server classes through an in-process RPC.</div><div class="ttdef"><b>Definition</b> <a href="#l00295">ServeRpcServer.cpp:295</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_ab88f72c22b1653b9d6d3068512d0aa6f"><div class="ttname"><a href="namespaceeonc.html#ab88f72c22b1653b9d6d3068512d0aa6f">eonc::ForceCallback</a></div><div class="ttdeci">std::function&lt; void(long nAtoms, const double *positions, const int *atomicNrs, double *forces, double *energy, const double *box)&gt; ForceCallback</div><div class="ttdoc">Callback type for potential energy/force evaluation.</div><div class="ttdef"><b>Definition</b> <a href="ServeRpcServer_8h_source.html#l00036">ServeRpcServer.h:36</a></div></div>
-<div class="ttc" id="anamespaceeonc_html_abde34b2d6455f233f19867a3e220b56c"><div class="ttname"><a href="namespaceeonc.html#abde34b2d6455f233f19867a3e220b56c">eonc::startPooledRpcServer</a></div><div class="ttdeci">void startPooledRpcServer(std::vector&lt; ForceCallback &gt; pool, const std::string &amp;host, uint16_t port)</div><div class="ttdoc">Start a blocking Cap&#39;n Proto RPC server backed by a pool of force callbacks dispatched round-robin.</div><div class="ttdef"><b>Definition</b> <a href="#l00187">ServeRpcServer.cpp:187</a></div></div>
-<div class="ttc" id="anamespaceeonc_html_ae73698d7590f300d12636be26b8e0ea7"><div class="ttname"><a href="namespaceeonc.html#ae73698d7590f300d12636be26b8e0ea7">eonc::startRpcServer</a></div><div class="ttdeci">void startRpcServer(ForceCallback callback, const std::string &amp;host, uint16_t port)</div><div class="ttdoc">Start a blocking Cap&#39;n Proto RPC server using a force callback.</div><div class="ttdef"><b>Definition</b> <a href="#l00105">ServeRpcServer.cpp:105</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_abde34b2d6455f233f19867a3e220b56c"><div class="ttname"><a href="namespaceeonc.html#abde34b2d6455f233f19867a3e220b56c">eonc::startPooledRpcServer</a></div><div class="ttdeci">void startPooledRpcServer(std::vector&lt; ForceCallback &gt; pool, const std::string &amp;host, uint16_t port)</div><div class="ttdoc">Start a blocking Cap&#39;n Proto RPC server backed by a pool of force callbacks dispatched round-robin.</div><div class="ttdef"><b>Definition</b> <a href="#l00282">ServeRpcServer.cpp:282</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_ae73698d7590f300d12636be26b8e0ea7"><div class="ttname"><a href="namespaceeonc.html#ae73698d7590f300d12636be26b8e0ea7">eonc::startRpcServer</a></div><div class="ttdeci">void startRpcServer(ForceCallback callback, const std::string &amp;host, uint16_t port)</div><div class="ttdoc">Start a blocking Cap&#39;n Proto RPC server using a force callback.</div><div class="ttdef"><b>Definition</b> <a href="#l00195">ServeRpcServer.cpp:195</a></div></div>
+<div class="ttc" id="astructeonc_1_1RpcServerCapabilitiesPair_html"><div class="ttname"><a href="structeonc_1_1RpcServerCapabilitiesPair.html">eonc::RpcServerCapabilitiesPair</a></div><div class="ttdef"><b>Definition</b> <a href="RpcCapabilitiesProbe_8h_source.html#l00045">RpcCapabilitiesProbe.h:45</a></div></div>
+<div class="ttc" id="astructeonc_1_1RpcServerCapabilitiesPair_html_a429bb7baa707ee315b80919fa583aebb"><div class="ttname"><a href="structeonc_1_1RpcServerCapabilitiesPair.html#a429bb7baa707ee315b80919fa583aebb">eonc::RpcServerCapabilitiesPair::pooledServer</a></div><div class="ttdeci">RpcCapabilitiesView pooledServer</div><div class="ttdef"><b>Definition</b> <a href="RpcCapabilitiesProbe_8h_source.html#l00047">RpcCapabilitiesProbe.h:47</a></div></div>
+<div class="ttc" id="astructeonc_1_1RpcServerCapabilitiesPair_html_acc8d0a370efb5a3eb06b11e41ea6f6aa"><div class="ttname"><a href="structeonc_1_1RpcServerCapabilitiesPair.html#acc8d0a370efb5a3eb06b11e41ea6f6aa">eonc::RpcServerCapabilitiesPair::callbackServer</a></div><div class="ttdeci">RpcCapabilitiesView callbackServer</div><div class="ttdef"><b>Definition</b> <a href="RpcCapabilitiesProbe_8h_source.html#l00046">RpcCapabilitiesProbe.h:46</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

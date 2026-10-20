@@ -84,7 +84,6 @@ data-aria-dark="Switch to auto color mode">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../team.html">eOn team</a></li>
-<li class="toctree-l1 _expand"><a class="reference internal" href="../../citing.html">Citing eOn</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../install/eessi.html">Build develop on EESSI</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../install/lammps.html">LAMMPS</a></li>
@@ -123,6 +122,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/mpi_potential.html">MPI potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/algorithm_selection.html">Choosing an algorithm</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/main.html">General simulation parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/structure_input.html">Structure input formats</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/potential.html">Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/structure_comparison.html">Structure comparison</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/optimizer.html">Optimizer</a></li>
@@ -178,6 +178,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/design/client/index.html">Client design</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/types.html">Type system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/exact-reduction.html">Exact reductions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/parameters.html">Parameters system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
@@ -200,6 +201,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.contracts.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.contracts.load_outcome.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts.load_outcome</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
@@ -732,7 +737,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="331">    <span class="o">*</span><span class="p">,</span>
 </span><span data-line="332">    <span class="n">cancelled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 </span><span data-line="333"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-</span><span data-line="334"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Typed in-process result. ``results.dat`` is derived from this dict.&quot;&quot;&quot;</span>
+</span><span data-line="334"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Typed in-process result. Cluster adapters format text from this dict.&quot;&quot;&quot;</span>
 </span><span data-line="335">    <span class="k">if</span> <span class="n">cancelled</span><span class="p">:</span>
 </span><span data-line="336">        <span class="n">reason</span> <span class="o">=</span> <span class="s2">&quot;cancelled&quot;</span>
 </span><span data-line="337">    <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -889,11 +894,11 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="474">            <span class="n">job_result</span> <span class="o">=</span> <span class="n">_job_result</span><span class="p">(</span>
 </span><span data-line="475">                <span class="n">status</span><span class="p">,</span> <span class="n">energy</span><span class="p">,</span> <span class="n">fcalls</span><span class="p">,</span> <span class="n">jname</span><span class="p">,</span> <span class="n">cancelled</span><span class="o">=</span><span class="n">cancelled</span>
 </span><span data-line="476">            <span class="p">)</span>
-</span><span data-line="477">            <span class="n">results</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span>
-</span><span data-line="478">                <span class="n">_results_dat</span><span class="p">(</span>
-</span><span data-line="479">                    <span class="n">status</span><span class="p">,</span> <span class="n">energy</span><span class="p">,</span> <span class="n">fcalls</span><span class="p">,</span> <span class="n">jname</span><span class="p">,</span> <span class="n">cancelled</span><span class="o">=</span><span class="n">cancelled</span>
-</span><span data-line="480">                <span class="p">)</span>
-</span><span data-line="481">            <span class="p">)</span>
+</span><span data-line="477">            <span class="kn">from</span><span class="w"> </span><span class="nn">eon.geometry.wire</span><span class="w"> </span><span class="kn">import</span> <span class="n">geometry_wire_lists</span>
+</span><span data-line="478">
+</span><span data-line="479">            <span class="n">raw_forces</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">matter</span><span class="p">,</span> <span class="s2">&quot;forces&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="480">            <span class="n">forces</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">raw_forces</span><span class="p">)</span> <span class="k">else</span> <span class="n">raw_forces</span>
+</span><span data-line="481">            <span class="n">job_result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">geometry_wire_lists</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">forces</span><span class="o">=</span><span class="n">forces</span><span class="p">))</span>
 </span><span data-line="482">
 </span><span data-line="483">            <span class="n">rec</span> <span class="o">=</span> <span class="p">{</span>
 </span><span data-line="484">                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">jid</span><span class="p">,</span>
@@ -902,37 +907,36 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="487">                <span class="s2">&quot;product&quot;</span><span class="p">:</span> <span class="n">_conframe_of</span><span class="p">(</span><span class="n">out</span><span class="p">),</span>
 </span><span data-line="488">                <span class="s2">&quot;min.con&quot;</span><span class="p">:</span> <span class="n">_LazyCon</span><span class="p">(</span><span class="n">out</span><span class="p">),</span>
 </span><span data-line="489">                <span class="s2">&quot;job_result&quot;</span><span class="p">:</span> <span class="n">job_result</span><span class="p">,</span>
-</span><span data-line="490">                <span class="s2">&quot;results.dat&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">,</span>
-</span><span data-line="491">                <span class="s2">&quot;_matter&quot;</span><span class="p">:</span> <span class="n">matter</span><span class="p">,</span>
-</span><span data-line="492">                <span class="s2">&quot;_structure&quot;</span><span class="p">:</span> <span class="n">out</span><span class="p">,</span>
-</span><span data-line="493">                <span class="s2">&quot;_energy&quot;</span><span class="p">:</span> <span class="n">energy</span><span class="p">,</span>
-</span><span data-line="494">                <span class="s2">&quot;_converged&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;converged&quot;</span><span class="p">,</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)),</span>
-</span><span data-line="495">            <span class="p">}</span>
-</span><span data-line="496">            <span class="n">saddle</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;saddle&quot;</span><span class="p">)</span>
-</span><span data-line="497">            <span class="k">if</span> <span class="n">saddle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="498">                <span class="n">saddle_structure</span> <span class="o">=</span> <span class="n">matter_to_structure</span><span class="p">(</span><span class="n">saddle</span><span class="p">)</span>
-</span><span data-line="499">                <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;saddle&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_conframe_of</span><span class="p">(</span><span class="n">saddle_structure</span><span class="p">)</span>
-</span><span data-line="500">                <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;saddle.con&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_LazyCon</span><span class="p">(</span><span class="n">saddle_structure</span><span class="p">)</span>
-</span><span data-line="501">                <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;_saddle&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">saddle</span>
-</span><span data-line="502">            <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
-</span><span data-line="503">            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-</span><span data-line="504">                <span class="s2">&quot;inprocess job </span><span class="si">%s</span><span class="s2"> type=</span><span class="si">%s</span><span class="s2"> status=</span><span class="si">%s</span><span class="s2"> E=</span><span class="si">%.6f</span><span class="s2"> fcalls=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span data-line="505">                <span class="n">jid</span><span class="p">,</span>
-</span><span data-line="506">                <span class="n">jname</span><span class="p">,</span>
-</span><span data-line="507">                <span class="n">status</span><span class="p">,</span>
-</span><span data-line="508">                <span class="n">energy</span><span class="p">,</span>
-</span><span data-line="509">                <span class="n">fcalls</span><span class="p">,</span>
-</span><span data-line="510">            <span class="p">)</span>
-</span><span data-line="511">
+</span><span data-line="490">                <span class="s2">&quot;_matter&quot;</span><span class="p">:</span> <span class="n">matter</span><span class="p">,</span>
+</span><span data-line="491">                <span class="s2">&quot;_structure&quot;</span><span class="p">:</span> <span class="n">out</span><span class="p">,</span>
+</span><span data-line="492">                <span class="s2">&quot;_energy&quot;</span><span class="p">:</span> <span class="n">energy</span><span class="p">,</span>
+</span><span data-line="493">                <span class="s2">&quot;_converged&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;converged&quot;</span><span class="p">,</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)),</span>
+</span><span data-line="494">            <span class="p">}</span>
+</span><span data-line="495">            <span class="n">saddle</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;saddle&quot;</span><span class="p">)</span>
+</span><span data-line="496">            <span class="k">if</span> <span class="n">saddle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="497">                <span class="n">saddle_structure</span> <span class="o">=</span> <span class="n">matter_to_structure</span><span class="p">(</span><span class="n">saddle</span><span class="p">)</span>
+</span><span data-line="498">                <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;saddle&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_conframe_of</span><span class="p">(</span><span class="n">saddle_structure</span><span class="p">)</span>
+</span><span data-line="499">                <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;saddle.con&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_LazyCon</span><span class="p">(</span><span class="n">saddle_structure</span><span class="p">)</span>
+</span><span data-line="500">                <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;_saddle&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">saddle</span>
+</span><span data-line="501">            <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
+</span><span data-line="502">            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+</span><span data-line="503">                <span class="s2">&quot;inprocess job </span><span class="si">%s</span><span class="s2"> type=</span><span class="si">%s</span><span class="s2"> status=</span><span class="si">%s</span><span class="s2"> E=</span><span class="si">%.6f</span><span class="s2"> fcalls=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span data-line="504">                <span class="n">jid</span><span class="p">,</span>
+</span><span data-line="505">                <span class="n">jname</span><span class="p">,</span>
+</span><span data-line="506">                <span class="n">status</span><span class="p">,</span>
+</span><span data-line="507">                <span class="n">energy</span><span class="p">,</span>
+</span><span data-line="508">                <span class="n">fcalls</span><span class="p">,</span>
+</span><span data-line="509">            <span class="p">)</span>
+</span><span data-line="510">
 <div class="viewcode-block" id="LocalInProcess.get_results">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator_inprocess.html#eon.communicator_inprocess.LocalInProcess.get_results">[docs]</a>
-</span><span data-line="512">    <span class="k">def</span><span class="w"> </span><span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resultspath</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_result</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-</span><span data-line="513"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return finished job dicts. Geometry is ConFrame, not a file.&quot;&quot;&quot;</span>
-</span><span data-line="514">        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span>
-</span><span data-line="515">        <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="516">        <span class="k">if</span> <span class="ow">not</span> <span class="n">out</span><span class="p">:</span>
-</span><span data-line="517">            <span class="k">return</span> <span class="p">[]</span>
-</span><span data-line="518">        <span class="k">return</span> <span class="n">out</span></div>
+</span><span data-line="511">    <span class="k">def</span><span class="w"> </span><span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resultspath</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_result</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span data-line="512"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return finished job dicts. Geometry is ConFrame, not a file.&quot;&quot;&quot;</span>
+</span><span data-line="513">        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span>
+</span><span data-line="514">        <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="515">        <span class="k">if</span> <span class="ow">not</span> <span class="n">out</span><span class="p">:</span>
+</span><span data-line="516">            <span class="k">return</span> <span class="p">[]</span>
+</span><span data-line="517">        <span class="k">return</span> <span class="n">out</span></div>
 </div>
 
 </span></pre></div>

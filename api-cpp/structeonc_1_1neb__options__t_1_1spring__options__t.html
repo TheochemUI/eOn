@@ -251,12 +251,14 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:afa6f029c670a20c2a6a5b2861710f48f" id="r_afa6f029c670a20c2a6a5b2861710f48f"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#afa6f029c670a20c2a6a5b2861710f48f">use_elastic_band</a> {false}</td></tr>
 <tr class="memitem:ae70633a42496b3460dc29832951b3e6c" id="r_ae70633a42496b3460dc29832951b3e6c"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ae70633a42496b3460dc29832951b3e6c">doubly_nudged</a> {false}</td></tr>
 <tr class="memitem:ab305b24a7c65ef6483633bb218333b70" id="r_ab305b24a7c65ef6483633bb218333b70"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ab305b24a7c65ef6483633bb218333b70">use_switching</a> {false}</td></tr>
+<tr class="memitem:a7b793c1fe0efa53d5e6d172ca789d2fa" id="r_a7b793c1fe0efa53d5e6d172ca789d2fa"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a7b793c1fe0efa53d5e6d172ca789d2fa">geometric</a> {false}</td></tr>
+<tr class="memdesc:a7b793c1fe0efa53d5e6d172ca789d2fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parallel force k (d_next^2 - d_prev^2).  <br /></td></tr>
 <tr class="memitem:a3a84535f8056cb43b2023d970f6bb1a9" id="r_a3a84535f8056cb43b2023d970f6bb1a9"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html">eonc::neb_options_t::spring_options_t::energy_weighting_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a3a84535f8056cb43b2023d970f6bb1a9">weighting</a></td></tr>
 <tr class="memitem:aeeab2a722bc5d04279dc47f2b4d41f4a" id="r_aeeab2a722bc5d04279dc47f2b4d41f4a"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html">eonc::neb_options_t::spring_options_t::onsager_machlup_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#aeeab2a722bc5d04279dc47f2b4d41f4a">om</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00532">532</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00539">539</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
 </div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
 <a id="ad5800582f276d39b756d9b90609ce6f4" name="ad5800582f276d39b756d9b90609ce6f4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad5800582f276d39b756d9b90609ce6f4">&#9670;&#160;</a></span>constant</h2>
@@ -270,8 +272,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00533">533</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  533</span>{5.0};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00540">540</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  540</span>{5.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -287,8 +289,28 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00535">535</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  535</span>{<span class="keyword">false</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00542">542</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  542</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7b793c1fe0efa53d5e6d172ca789d2fa" name="a7b793c1fe0efa53d5e6d172ca789d2fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b793c1fe0efa53d5e6d172ca789d2fa">&#9670;&#160;</a></span>geometric</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::neb_options_t::spring_options_t::geometric {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parallel force k (d_next^2 - d_prev^2). </p>
+<p>A perpendicular step cancels, and the stiffness scales with the image spacing. </p>
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00546">546</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  546</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -318,8 +340,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00534">534</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  534</span>{<span class="keyword">false</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00541">541</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  541</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -335,8 +357,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00536">536</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  536</span>{<span class="keyword">false</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00543">543</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  543</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>

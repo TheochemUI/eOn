@@ -1,0 +1,778 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: eonc::tunneling::HarmonicReferenceAction Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn 3.2.0</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classeonc_1_1tunneling_1_1HarmonicReferenceAction.html','','classeonc_1_1tunneling_1_1HarmonicReferenceAction-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eonc::tunneling::HarmonicReferenceAction Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Exact nonnegative harmonic-reference links in mass-weighted coordinates.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="HarmonicReferenceAction_8h_source.html">HarmonicReferenceAction.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ac1fe7c542e58b143bf8cf6ebf38669ac" id="r_ac1fe7c542e58b143bf8cf6ebf38669ac"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ac1fe7c542e58b143bf8cf6ebf38669ac">HarmonicReferenceAction</a> (const Eigen::MatrixXd &amp;h0, const Eigen::VectorXd &amp;center, double tau)</td></tr>
+<tr class="memitem:ab86a182347ed754ca3ade2626898a62c" id="r_ab86a182347ed754ca3ade2626898a62c"><td class="memItemLeft">const Eigen::MatrixXd &amp;&#160;</td><td class="memItemRight"><a class="el" href="#ab86a182347ed754ca3ade2626898a62c">link</a> () const</td></tr>
+<tr class="memitem:a9a1cadeb1486d63521d4325b00adbb40" id="r_a9a1cadeb1486d63521d4325b00adbb40"><td class="memItemLeft">const Eigen::MatrixXd &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a9a1cadeb1486d63521d4325b00adbb40">onsite</a> () const</td></tr>
+<tr class="memitem:ac7642b043bf60e50da9027cb35300bbb" id="r_ac7642b043bf60e50da9027cb35300bbb"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ac7642b043bf60e50da9027cb35300bbb">logMeasureCorrection</a> (long beads) const</td></tr>
+<tr class="memitem:a8a95dbc0d4cfd31d6eb3d63b66c08a3a" id="r_a8a95dbc0d4cfd31d6eb3d63b66c08a3a"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a8a95dbc0d4cfd31d6eb3d63b66c08a3a">correction</a> (const Eigen::MatrixXd &amp;q) const</td></tr>
+<tr class="memdesc:a8a95dbc0d4cfd31d6eb3d63b66c08a3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rows are beads; columns are ordered mass-weighted coordinates.  <br /></td></tr>
+<tr class="memitem:a891ad32f1d56b12dc5fac0e33a9ee803" id="r_a891ad32f1d56b12dc5fac0e33a9ee803"><td class="memItemLeft">Eigen::MatrixXd&#160;</td><td class="memItemRight"><a class="el" href="#a891ad32f1d56b12dc5fac0e33a9ee803">gradientCorrection</a> (const Eigen::MatrixXd &amp;q) const</td></tr>
+<tr class="memitem:ab10c78fc477559f3ec6d1f7336588237" id="r_ab10c78fc477559f3ec6d1f7336588237"><td class="memItemLeft">Eigen::MatrixXd&#160;</td><td class="memItemRight"><a class="el" href="#ab10c78fc477559f3ec6d1f7336588237">hessianCorrection</a> (long beads) const</td></tr>
+<tr class="memdesc:ab10c78fc477559f3ec6d1f7336588237"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flattening order is bead-major, including the N=1 and N=2 cycles.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a44c9a16b612832a1d04ebe6fd0275491" id="r_a44c9a16b612832a1d04ebe6fd0275491"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a44c9a16b612832a1d04ebe6fd0275491">validate</a> (const Eigen::MatrixXd &amp;q) const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:ad86fb692915bdff7a28a0014bd83f5ba" id="r_ad86fb692915bdff7a28a0014bd83f5ba"><td class="memItemLeft">Eigen::MatrixXd&#160;</td><td class="memItemRight"><a class="el" href="#ad86fb692915bdff7a28a0014bd83f5ba">h0_</a></td></tr>
+<tr class="memitem:aa7f28bf32b4a3e458049c8eca918a4fa" id="r_aa7f28bf32b4a3e458049c8eca918a4fa"><td class="memItemLeft">Eigen::MatrixXd&#160;</td><td class="memItemRight"><a class="el" href="#aa7f28bf32b4a3e458049c8eca918a4fa">b_</a></td></tr>
+<tr class="memitem:a1b672fb0e7b90c56240dc45d0fd87c96" id="r_a1b672fb0e7b90c56240dc45d0fd87c96"><td class="memItemLeft">Eigen::MatrixXd&#160;</td><td class="memItemRight"><a class="el" href="#a1b672fb0e7b90c56240dc45d0fd87c96">d_</a></td></tr>
+<tr class="memitem:ae4854052cab8a4ceb6dc4089d310cebf" id="r_ae4854052cab8a4ceb6dc4089d310cebf"><td class="memItemLeft">Eigen::VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#ae4854052cab8a4ceb6dc4089d310cebf">center_</a></td></tr>
+<tr class="memitem:a5598ef21df8762f27aa61be04792c3ad" id="r_a5598ef21df8762f27aa61be04792c3ad"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a5598ef21df8762f27aa61be04792c3ad">logMeasurePerBead_</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Exact nonnegative harmonic-reference links in mass-weighted coordinates. </p>
+<p>tau = beta*hbar/N. Add correction(q) to the sum of physical bead energies; the physical energy zero is retained. The residual-potential splitting is second order, and is exact only when the residual commutes with the reference. This action does not define a real-time transmission factor or rate prefactor. </p>
+
+<p class="definition">Definition at line <a class="el" href="HarmonicReferenceAction_8h_source.html#l00022">22</a> of file <a class="el" href="HarmonicReferenceAction_8h_source.html">HarmonicReferenceAction.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ac1fe7c542e58b143bf8cf6ebf38669ac" name="ac1fe7c542e58b143bf8cf6ebf38669ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1fe7c542e58b143bf8cf6ebf38669ac">&#9670;&#160;</a></span>HarmonicReferenceAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eonc::tunneling::HarmonicReferenceAction::HarmonicReferenceAction </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;</td>          <td class="paramname"><span class="paramname"><em>h0</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>center</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>tau</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="HarmonicReferenceAction_8h_source.html#l00024">24</a> of file <a class="el" href="HarmonicReferenceAction_8h_source.html">HarmonicReferenceAction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   26</span>      : <a class="code hl_variable" href="#ad86fb692915bdff7a28a0014bd83f5ba">h0_</a>(h0), <a class="code hl_variable" href="#ae4854052cab8a4ceb6dc4089d310cebf">center_</a>(center) {</div>
+<div class="line"><span class="lineno">   27</span>    <span class="keywordflow">if</span> (!(tau &gt; 0.0) || !std::isfinite(tau) || center.size() == 0 ||</div>
+<div class="line"><span class="lineno">   28</span>        !center.allFinite() || h0.rows() != center.size() ||</div>
+<div class="line"><span class="lineno">   29</span>        h0.cols() != center.size() || !h0.allFinite() ||</div>
+<div class="line"><span class="lineno">   30</span>        !h0.isApprox(h0.transpose(),</div>
+<div class="line"><span class="lineno">   31</span>                     32 * std::numeric_limits&lt;double&gt;::epsilon())) {</div>
+<div class="line"><span class="lineno">   32</span>      <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">   33</span>          <span class="stringliteral">&quot;harmonic reference requires finite symmetric H0 and positive tau&quot;</span>);</div>
+<div class="line"><span class="lineno">   34</span>    }</div>
+<div class="line"><span class="lineno">   35</span>    <a class="code hl_variable" href="#ad86fb692915bdff7a28a0014bd83f5ba">h0_</a> = 0.5 * h0 + 0.5 * h0.transpose();</div>
+<div class="line"><span class="lineno">   36</span>    Eigen::SelfAdjointEigenSolver&lt;Eigen::MatrixXd&gt; eig(<a class="code hl_variable" href="#ad86fb692915bdff7a28a0014bd83f5ba">h0_</a>);</div>
+<div class="line"><span class="lineno">   37</span>    <span class="keywordflow">if</span> (eig.info() != Eigen::Success || eig.eigenvalues().minCoeff() &lt; 0.0) {</div>
+<div class="line"><span class="lineno">   38</span>      <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;harmonic reference requires nonnegative H0&quot;</span>);</div>
+<div class="line"><span class="lineno">   39</span>    }</div>
+<div class="line"><span class="lineno">   40</span>    Eigen::VectorXd b(center.size()), d(center.size());</div>
+<div class="line"><span class="lineno">   41</span>    <a class="code hl_variable" href="#a5598ef21df8762f27aa61be04792c3ad">logMeasurePerBead_</a> = 0.0;</div>
+<div class="line"><span class="lineno">   42</span>    <span class="keywordflow">for</span> (Eigen::Index i = 0; i &lt; center.size(); ++i) {</div>
+<div class="line"><span class="lineno">   43</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> omega = std::sqrt(eig.eigenvalues()[i]);</div>
+<div class="line"><span class="lineno">   44</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> z = tau * omega;</div>
+<div class="line"><span class="lineno">   45</span>      <span class="keywordflow">if</span> (!std::isfinite(z)) {</div>
+<div class="line"><span class="lineno">   46</span>        <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">   47</span>            <span class="stringliteral">&quot;harmonic reference frequency-time product overflows&quot;</span>);</div>
+<div class="line"><span class="lineno">   48</span>      }</div>
+<div class="line"><span class="lineno">   49</span>      <span class="keywordtype">double</span> logRatio;</div>
+<div class="line"><span class="lineno">   50</span>      <span class="keywordflow">if</span> (z &lt; 1e-4) {</div>
+<div class="line"><span class="lineno">   51</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> z2 = z * z;</div>
+<div class="line"><span class="lineno">   52</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> ratio = 1.0 - z2 / 6.0 + 7.0 * z2 * z2 / 360.0;</div>
+<div class="line"><span class="lineno">   53</span>        b[i] = ratio / tau / tau;</div>
+<div class="line"><span class="lineno">   54</span>        logRatio = -z2 / 6.0 + z2 * z2 / 180.0;</div>
+<div class="line"><span class="lineno">   55</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   56</span>        logRatio =</div>
+<div class="line"><span class="lineno">   57</span>            std::log(2.0) + std::log(z) - z - std::log(-std::expm1(-2 * z));</div>
+<div class="line"><span class="lineno">   58</span>        b[i] = std::exp(logRatio) / tau / tau;</div>
+<div class="line"><span class="lineno">   59</span>      }</div>
+<div class="line"><span class="lineno">   60</span>      d[i] = 2 * omega * std::tanh(z / 2) / tau;</div>
+<div class="line"><span class="lineno">   61</span>      <a class="code hl_variable" href="#a5598ef21df8762f27aa61be04792c3ad">logMeasurePerBead_</a> += 0.5 * logRatio;</div>
+<div class="line"><span class="lineno">   62</span>    }</div>
+<div class="line"><span class="lineno">   63</span>    <a class="code hl_variable" href="#aa7f28bf32b4a3e458049c8eca918a4fa">b_</a> = eig.eigenvectors() * b.asDiagonal() * eig.eigenvectors().transpose();</div>
+<div class="line"><span class="lineno">   64</span>    <a class="code hl_variable" href="#a1b672fb0e7b90c56240dc45d0fd87c96">d_</a> = eig.eigenvectors() * d.asDiagonal() * eig.eigenvectors().transpose();</div>
+<div class="line"><span class="lineno">   65</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa7f28bf32b4a3e458049c8eca918a4fa">b_</a>.allFinite() || !<a class="code hl_variable" href="#a1b672fb0e7b90c56240dc45d0fd87c96">d_</a>.allFinite() ||</div>
+<div class="line"><span class="lineno">   66</span>        !std::isfinite(<a class="code hl_variable" href="#a5598ef21df8762f27aa61be04792c3ad">logMeasurePerBead_</a>)) {</div>
+<div class="line"><span class="lineno">   67</span>      <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;harmonic reference coefficients overflow&quot;</span>);</div>
+<div class="line"><span class="lineno">   68</span>    }</div>
+<div class="line"><span class="lineno">   69</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1tunneling_1_1HarmonicReferenceAction_html_a1b672fb0e7b90c56240dc45d0fd87c96"><div class="ttname"><a href="#a1b672fb0e7b90c56240dc45d0fd87c96">eonc::tunneling::HarmonicReferenceAction::d_</a></div><div class="ttdeci">Eigen::MatrixXd d_</div><div class="ttdef"><b>Definition</b> <a href="HarmonicReferenceAction_8h_source.html#l00129">HarmonicReferenceAction.h:129</a></div></div>
+<div class="ttc" id="aclasseonc_1_1tunneling_1_1HarmonicReferenceAction_html_a5598ef21df8762f27aa61be04792c3ad"><div class="ttname"><a href="#a5598ef21df8762f27aa61be04792c3ad">eonc::tunneling::HarmonicReferenceAction::logMeasurePerBead_</a></div><div class="ttdeci">double logMeasurePerBead_</div><div class="ttdef"><b>Definition</b> <a href="HarmonicReferenceAction_8h_source.html#l00131">HarmonicReferenceAction.h:131</a></div></div>
+<div class="ttc" id="aclasseonc_1_1tunneling_1_1HarmonicReferenceAction_html_aa7f28bf32b4a3e458049c8eca918a4fa"><div class="ttname"><a href="#aa7f28bf32b4a3e458049c8eca918a4fa">eonc::tunneling::HarmonicReferenceAction::b_</a></div><div class="ttdeci">Eigen::MatrixXd b_</div><div class="ttdef"><b>Definition</b> <a href="HarmonicReferenceAction_8h_source.html#l00129">HarmonicReferenceAction.h:129</a></div></div>
+<div class="ttc" id="aclasseonc_1_1tunneling_1_1HarmonicReferenceAction_html_ad86fb692915bdff7a28a0014bd83f5ba"><div class="ttname"><a href="#ad86fb692915bdff7a28a0014bd83f5ba">eonc::tunneling::HarmonicReferenceAction::h0_</a></div><div class="ttdeci">Eigen::MatrixXd h0_</div><div class="ttdef"><b>Definition</b> <a href="HarmonicReferenceAction_8h_source.html#l00129">HarmonicReferenceAction.h:129</a></div></div>
+<div class="ttc" id="aclasseonc_1_1tunneling_1_1HarmonicReferenceAction_html_ae4854052cab8a4ceb6dc4089d310cebf"><div class="ttname"><a href="#ae4854052cab8a4ceb6dc4089d310cebf">eonc::tunneling::HarmonicReferenceAction::center_</a></div><div class="ttdeci">Eigen::VectorXd center_</div><div class="ttdef"><b>Definition</b> <a href="HarmonicReferenceAction_8h_source.html#l00130">HarmonicReferenceAction.h:130</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a8a95dbc0d4cfd31d6eb3d63b66c08a3a" name="a8a95dbc0d4cfd31d6eb3d63b66c08a3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a95dbc0d4cfd31d6eb3d63b66c08a3a">&#9670;&#160;</a></span>correction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::tunneling::HarmonicReferenceAction::correction </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;</td>          <td class="paramname"><span class="paramname"><em>q</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Rows are beads; columns are ordered mass-weighted coordinates. </p>
+
+<p class="definition">Definition at line <a class="el" href="HarmonicReferenceAction_8h_source.html#l00080">80</a> of file <a class="el" href="HarmonicReferenceAction_8h_source.html">HarmonicReferenceAction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   80</span>                                                  {</div>
+<div class="line"><span class="lineno">   81</span>    <a class="code hl_function" href="#a44c9a16b612832a1d04ebe6fd0275491">validate</a>(q);</div>
+<div class="line"><span class="lineno">   82</span>    <span class="keywordtype">double</span> value = 0.0;</div>
+<div class="line"><span class="lineno">   83</span>    <span class="keywordflow">for</span> (Eigen::Index j = 0; j &lt; q.rows(); ++j) {</div>
+<div class="line"><span class="lineno">   84</span>      <span class="keyword">const</span> Eigen::VectorXd x = q.row(j).transpose() - <a class="code hl_variable" href="#ae4854052cab8a4ceb6dc4089d310cebf">center_</a>;</div>
+<div class="line"><span class="lineno">   85</span>      <span class="keyword">const</span> Eigen::VectorXd dx =</div>
+<div class="line"><span class="lineno">   86</span>          q.row((j + 1) % q.rows()).transpose() - q.row(j).transpose();</div>
+<div class="line"><span class="lineno">   87</span>      value += 0.5 * x.dot((<a class="code hl_variable" href="#a1b672fb0e7b90c56240dc45d0fd87c96">d_</a> - <a class="code hl_variable" href="#ad86fb692915bdff7a28a0014bd83f5ba">h0_</a>) * x) + 0.5 * dx.dot(<a class="code hl_variable" href="#aa7f28bf32b4a3e458049c8eca918a4fa">b_</a> * dx);</div>
+<div class="line"><span class="lineno">   88</span>    }</div>
+<div class="line"><span class="lineno">   89</span>    <span class="keywordflow">return</span> value;</div>
+<div class="line"><span class="lineno">   90</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1tunneling_1_1HarmonicReferenceAction_html_a44c9a16b612832a1d04ebe6fd0275491"><div class="ttname"><a href="#a44c9a16b612832a1d04ebe6fd0275491">eonc::tunneling::HarmonicReferenceAction::validate</a></div><div class="ttdeci">void validate(const Eigen::MatrixXd &amp;q) const</div><div class="ttdef"><b>Definition</b> <a href="HarmonicReferenceAction_8h_source.html#l00123">HarmonicReferenceAction.h:123</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a891ad32f1d56b12dc5fac0e33a9ee803" name="a891ad32f1d56b12dc5fac0e33a9ee803"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a891ad32f1d56b12dc5fac0e33a9ee803">&#9670;&#160;</a></span>gradientCorrection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd eonc::tunneling::HarmonicReferenceAction::gradientCorrection </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;</td>          <td class="paramname"><span class="paramname"><em>q</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="HarmonicReferenceAction_8h_source.html#l00092">92</a> of file <a class="el" href="HarmonicReferenceAction_8h_source.html">HarmonicReferenceAction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   92</span>                                                                 {</div>
+<div class="line"><span class="lineno">   93</span>    <a class="code hl_function" href="#a44c9a16b612832a1d04ebe6fd0275491">validate</a>(q);</div>
+<div class="line"><span class="lineno">   94</span>    Eigen::MatrixXd result(q.rows(), q.cols());</div>
+<div class="line"><span class="lineno">   95</span>    <span class="keywordflow">for</span> (Eigen::Index j = 0; j &lt; q.rows(); ++j) {</div>
+<div class="line"><span class="lineno">   96</span>      <span class="keyword">const</span> Eigen::VectorXd x = q.row(j).transpose() - <a class="code hl_variable" href="#ae4854052cab8a4ceb6dc4089d310cebf">center_</a>;</div>
+<div class="line"><span class="lineno">   97</span>      <span class="keyword">const</span> Eigen::VectorXd lap =</div>
+<div class="line"><span class="lineno">   98</span>          2 * q.row(j).transpose() - q.row((j + 1) % q.rows()).transpose() -</div>
+<div class="line"><span class="lineno">   99</span>          q.row((j + q.rows() - 1) % q.rows()).transpose();</div>
+<div class="line"><span class="lineno">  100</span>      result.row(j) = ((<a class="code hl_variable" href="#a1b672fb0e7b90c56240dc45d0fd87c96">d_</a> - <a class="code hl_variable" href="#ad86fb692915bdff7a28a0014bd83f5ba">h0_</a>) * x + <a class="code hl_variable" href="#aa7f28bf32b4a3e458049c8eca918a4fa">b_</a> * lap).transpose();</div>
+<div class="line"><span class="lineno">  101</span>    }</div>
+<div class="line"><span class="lineno">  102</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  103</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab10c78fc477559f3ec6d1f7336588237" name="ab10c78fc477559f3ec6d1f7336588237"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab10c78fc477559f3ec6d1f7336588237">&#9670;&#160;</a></span>hessianCorrection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd eonc::tunneling::HarmonicReferenceAction::hessianCorrection </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>beads</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flattening order is bead-major, including the N=1 and N=2 cycles. </p>
+
+<p class="definition">Definition at line <a class="el" href="HarmonicReferenceAction_8h_source.html#l00106">106</a> of file <a class="el" href="HarmonicReferenceAction_8h_source.html">HarmonicReferenceAction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  106</span>                                                    {</div>
+<div class="line"><span class="lineno">  107</span>    <span class="keywordflow">if</span> (beads &lt; 1)</div>
+<div class="line"><span class="lineno">  108</span>      <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;ring requires at least one bead&quot;</span>);</div>
+<div class="line"><span class="lineno">  109</span>    <span class="keyword">const</span> Eigen::Index f = <a class="code hl_variable" href="#ae4854052cab8a4ceb6dc4089d310cebf">center_</a>.size();</div>
+<div class="line"><span class="lineno">  110</span>    Eigen::MatrixXd result = Eigen::MatrixXd::Zero(beads * f, beads * f);</div>
+<div class="line"><span class="lineno">  111</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; beads; ++j) {</div>
+<div class="line"><span class="lineno">  112</span>      <span class="keyword">const</span> <span class="keywordtype">long</span> k = (j + 1) % beads;</div>
+<div class="line"><span class="lineno">  113</span>      result.block(j * f, j * f, f, f) += <a class="code hl_variable" href="#a1b672fb0e7b90c56240dc45d0fd87c96">d_</a> - <a class="code hl_variable" href="#ad86fb692915bdff7a28a0014bd83f5ba">h0_</a>;</div>
+<div class="line"><span class="lineno">  114</span>      result.block(j * f, j * f, f, f) += <a class="code hl_variable" href="#aa7f28bf32b4a3e458049c8eca918a4fa">b_</a>;</div>
+<div class="line"><span class="lineno">  115</span>      result.block(k * f, k * f, f, f) += <a class="code hl_variable" href="#aa7f28bf32b4a3e458049c8eca918a4fa">b_</a>;</div>
+<div class="line"><span class="lineno">  116</span>      result.block(j * f, k * f, f, f) -= <a class="code hl_variable" href="#aa7f28bf32b4a3e458049c8eca918a4fa">b_</a>;</div>
+<div class="line"><span class="lineno">  117</span>      result.block(k * f, j * f, f, f) -= <a class="code hl_variable" href="#aa7f28bf32b4a3e458049c8eca918a4fa">b_</a>;</div>
+<div class="line"><span class="lineno">  118</span>    }</div>
+<div class="line"><span class="lineno">  119</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  120</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab86a182347ed754ca3ade2626898a62c" name="ab86a182347ed754ca3ade2626898a62c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab86a182347ed754ca3ade2626898a62c">&#9670;&#160;</a></span>link()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Eigen::MatrixXd &amp; eonc::tunneling::HarmonicReferenceAction::link </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="HarmonicReferenceAction_8h_source.html#l00071">71</a> of file <a class="el" href="HarmonicReferenceAction_8h_source.html">HarmonicReferenceAction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   71</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#aa7f28bf32b4a3e458049c8eca918a4fa">b_</a>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac7642b043bf60e50da9027cb35300bbb" name="ac7642b043bf60e50da9027cb35300bbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7642b043bf60e50da9027cb35300bbb">&#9670;&#160;</a></span>logMeasureCorrection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::tunneling::HarmonicReferenceAction::logMeasureCorrection </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>beads</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="HarmonicReferenceAction_8h_source.html#l00073">73</a> of file <a class="el" href="HarmonicReferenceAction_8h_source.html">HarmonicReferenceAction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   73</span>                                                {</div>
+<div class="line"><span class="lineno">   74</span>    <span class="keywordflow">if</span> (beads &lt; 1)</div>
+<div class="line"><span class="lineno">   75</span>      <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;ring requires at least one bead&quot;</span>);</div>
+<div class="line"><span class="lineno">   76</span>    <span class="keywordflow">return</span> beads * <a class="code hl_variable" href="#a5598ef21df8762f27aa61be04792c3ad">logMeasurePerBead_</a>;</div>
+<div class="line"><span class="lineno">   77</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9a1cadeb1486d63521d4325b00adbb40" name="a9a1cadeb1486d63521d4325b00adbb40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a1cadeb1486d63521d4325b00adbb40">&#9670;&#160;</a></span>onsite()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Eigen::MatrixXd &amp; eonc::tunneling::HarmonicReferenceAction::onsite </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="HarmonicReferenceAction_8h_source.html#l00072">72</a> of file <a class="el" href="HarmonicReferenceAction_8h_source.html">HarmonicReferenceAction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   72</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a1b672fb0e7b90c56240dc45d0fd87c96">d_</a>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a44c9a16b612832a1d04ebe6fd0275491" name="a44c9a16b612832a1d04ebe6fd0275491"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44c9a16b612832a1d04ebe6fd0275491">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::tunneling::HarmonicReferenceAction::validate </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;</td>          <td class="paramname"><span class="paramname"><em>q</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="HarmonicReferenceAction_8h_source.html#l00123">123</a> of file <a class="el" href="HarmonicReferenceAction_8h_source.html">HarmonicReferenceAction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  123</span>                                              {</div>
+<div class="line"><span class="lineno">  124</span>    <span class="keywordflow">if</span> (q.rows() &lt; 1 || q.cols() != <a class="code hl_variable" href="#ae4854052cab8a4ceb6dc4089d310cebf">center_</a>.size() || !q.allFinite()) {</div>
+<div class="line"><span class="lineno">  125</span>      <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  126</span>          <span class="stringliteral">&quot;ring coordinates have invalid shape or values&quot;</span>);</div>
+<div class="line"><span class="lineno">  127</span>    }</div>
+<div class="line"><span class="lineno">  128</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="aa7f28bf32b4a3e458049c8eca918a4fa" name="aa7f28bf32b4a3e458049c8eca918a4fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7f28bf32b4a3e458049c8eca918a4fa">&#9670;&#160;</a></span>b_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd eonc::tunneling::HarmonicReferenceAction::b_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="HarmonicReferenceAction_8h_source.html#l00129">129</a> of file <a class="el" href="HarmonicReferenceAction_8h_source.html">HarmonicReferenceAction.h</a>.</p>
+
+</div>
+</div>
+<a id="ae4854052cab8a4ceb6dc4089d310cebf" name="ae4854052cab8a4ceb6dc4089d310cebf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4854052cab8a4ceb6dc4089d310cebf">&#9670;&#160;</a></span>center_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd eonc::tunneling::HarmonicReferenceAction::center_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="HarmonicReferenceAction_8h_source.html#l00130">130</a> of file <a class="el" href="HarmonicReferenceAction_8h_source.html">HarmonicReferenceAction.h</a>.</p>
+
+</div>
+</div>
+<a id="a1b672fb0e7b90c56240dc45d0fd87c96" name="a1b672fb0e7b90c56240dc45d0fd87c96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b672fb0e7b90c56240dc45d0fd87c96">&#9670;&#160;</a></span>d_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd eonc::tunneling::HarmonicReferenceAction::d_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="HarmonicReferenceAction_8h_source.html#l00129">129</a> of file <a class="el" href="HarmonicReferenceAction_8h_source.html">HarmonicReferenceAction.h</a>.</p>
+
+</div>
+</div>
+<a id="ad86fb692915bdff7a28a0014bd83f5ba" name="ad86fb692915bdff7a28a0014bd83f5ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad86fb692915bdff7a28a0014bd83f5ba">&#9670;&#160;</a></span>h0_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd eonc::tunneling::HarmonicReferenceAction::h0_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="HarmonicReferenceAction_8h_source.html#l00129">129</a> of file <a class="el" href="HarmonicReferenceAction_8h_source.html">HarmonicReferenceAction.h</a>.</p>
+
+</div>
+</div>
+<a id="a5598ef21df8762f27aa61be04792c3ad" name="a5598ef21df8762f27aa61be04792c3ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5598ef21df8762f27aa61be04792c3ad">&#9670;&#160;</a></span>logMeasurePerBead_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::tunneling::HarmonicReferenceAction::logMeasurePerBead_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="HarmonicReferenceAction_8h_source.html#l00131">131</a> of file <a class="el" href="HarmonicReferenceAction_8h_source.html">HarmonicReferenceAction.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/<a class="el" href="HarmonicReferenceAction_8h_source.html">HarmonicReferenceAction.h</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceeonc.html">eonc</a></li><li class="navelem"><a href="namespaceeonc_1_1tunneling.html">tunneling</a></li><li class="navelem"><a href="classeonc_1_1tunneling_1_1HarmonicReferenceAction.html">HarmonicReferenceAction</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

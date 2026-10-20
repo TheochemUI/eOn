@@ -288,6 +288,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4ba6ee96636fdbc95059c67a10900ea7 inherit pub_methods_classeonc_1_1Job" id="r_a4ba6ee96636fdbc95059c67a10900ea7"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a4ba6ee96636fdbc95059c67a10900ea7">~Job</a> ()=default</td></tr>
 <tr class="memitem:a6a8f2fa4c5209bee4d243fec7b9db59e inherit pub_methods_classeonc_1_1Job" id="r_a6a8f2fa4c5209bee4d243fec7b9db59e"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379">JobType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a6a8f2fa4c5209bee4d243fec7b9db59e">getType</a> ()</td></tr>
 <tr class="memitem:a03a40b0e3f078b9e284220c71567e644 inherit pub_methods_classeonc_1_1Job" id="r_a03a40b0e3f078b9e284220c71567e644"><td class="memItemLeft"><a class="el" href="classeonc_1_1PotRegistry.html">PotRegistry</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a03a40b0e3f078b9e284220c71567e644">pots</a> () noexcept</td></tr>
+<tr class="memitem:a38797bdd6ab6331a21e1ebbdd4cc7e4a inherit pub_methods_classeonc_1_1Job" id="r_a38797bdd6ab6331a21e1ebbdd4cc7e4a"><td class="memItemLeft">size_t&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a38797bdd6ab6331a21e1ebbdd4cc7e4a">potRegistryForceCalls</a> () const noexcept</td></tr>
+<tr class="memdesc:a38797bdd6ab6331a21e1ebbdd4cc7e4a inherit pub_methods_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Force calls charged to pot's registry.  <br /></td></tr>
 <tr class="memitem:acdb29769b15353b093288278a05bff3c inherit pub_methods_classeonc_1_1Job" id="r_acdb29769b15353b093288278a05bff3c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#acdb29769b15353b093288278a05bff3c">releasePotential</a> ()</td></tr>
 <tr class="memdesc:acdb29769b15353b093288278a05bff3c inherit pub_methods_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop the <a class="el" href="classeonc_1_1Potential.html">Potential</a> so on_destroyed is recorded before <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a> dies.  <br /></td></tr>
 </table><table class="memberdecls">
@@ -614,12 +616,10 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Job_8h_source.html#l00103">103</a> of file <a class="el" href="Job_8h_source.html">Job.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  104</span>      : <a class="code hl_variable" href="classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f">jtype</a>{parameters.<a class="code hl_function" href="classParameters.html#a59bac76bd6b84cbdc50887d30346e129">main_options</a>().<a class="code hl_variable" href="structeonc_1_1main__options__t.html#a770019a44dcbbd245a817f5a1d9739a1">job</a>},</div>
-<div class="line"><span class="lineno">  105</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>{parameters},</div>
-<div class="line"><span class="lineno">  106</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a79f4bf70ec1c7e3e08a0a5c0ff5ee965">owned_runtime_</a>{std::make_unique&lt;Runtime&gt;()},</div>
-<div class="line"><span class="lineno">  107</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#add247a8d4ae4bb5e59ec85ecfcf1bd37">runtime_</a>{<a class="code hl_variable" href="classeonc_1_1Job.html#a79f4bf70ec1c7e3e08a0a5c0ff5ee965">owned_runtime_</a>.get()},</div>
-<div class="line"><span class="lineno">  108</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>{std::move(potPassed)} {}</div>
+<p class="definition">Definition at line <a class="el" href="Job_8h_source.html#l00101">101</a> of file <a class="el" href="Job_8h_source.html">Job.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  102</span>      : <a class="code hl_variable" href="classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f">jtype</a>{parameters.<a class="code hl_function" href="classParameters.html#a59bac76bd6b84cbdc50887d30346e129">main_options</a>().<a class="code hl_variable" href="structeonc_1_1main__options__t.html#a770019a44dcbbd245a817f5a1d9739a1">job</a>}, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>{parameters},</div>
+<div class="line"><span class="lineno">  103</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a79f4bf70ec1c7e3e08a0a5c0ff5ee965">owned_runtime_</a>{std::make_unique&lt;Runtime&gt;()},</div>
+<div class="line"><span class="lineno">  104</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#add247a8d4ae4bb5e59ec85ecfcf1bd37">runtime_</a>{<a class="code hl_variable" href="classeonc_1_1Job.html#a79f4bf70ec1c7e3e08a0a5c0ff5ee965">owned_runtime_</a>.get()}, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>{std::move(potPassed)} {}</div>
 <div class="ttc" id="aclassParameters_html_a59bac76bd6b84cbdc50887d30346e129"><div class="ttname"><a href="classParameters.html#a59bac76bd6b84cbdc50887d30346e129">Parameters::main_options</a></div><div class="ttdeci">const main_options_t &amp; main_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00075">ParametersAccess.cpp:75</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Job_html_a79f4bf70ec1c7e3e08a0a5c0ff5ee965"><div class="ttname"><a href="classeonc_1_1Job.html#a79f4bf70ec1c7e3e08a0a5c0ff5ee965">eonc::Job::owned_runtime_</a></div><div class="ttdeci">std::unique_ptr&lt; Runtime &gt; owned_runtime_</div><div class="ttdoc">Non-null when this Job owns the composition root (one-shot makeJob).</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00060">Job.h:60</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Job_html_a90e97e92096c7c2ea7dec3d9c49f485f"><div class="ttname"><a href="classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f">eonc::Job::jtype</a></div><div class="ttdeci">JobType jtype</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00057">Job.h:57</a></div></div>
@@ -653,8 +653,8 @@ Protected Attributes</h2></td></tr>
 
 <p>Own a default-constructed <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="Job_8h_source.html#l00101">101</a> of file <a class="el" href="Job_8h_source.html">Job.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  102</span>      : <a class="code hl_function" href="#a40423b75b9614f0fc81797a5d817948d">Job</a>(std::move(parameters), std::make_unique&lt;Runtime&gt;()) {}</div>
+<p class="definition">Definition at line <a class="el" href="Job_8h_source.html#l00099">99</a> of file <a class="el" href="Job_8h_source.html">Job.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  100</span>      : <a class="code hl_function" href="#a40423b75b9614f0fc81797a5d817948d">Job</a>(std::move(parameters), std::make_unique&lt;Runtime&gt;()) {}</div>
 <div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_a40423b75b9614f0fc81797a5d817948d"><div class="ttname"><a href="#a40423b75b9614f0fc81797a5d817948d">eonc::ReplicaDynamicsJob::Job</a></div><div class="ttdeci">Job(std::unique_ptr&lt; Parameters &gt; parameters, Runtime &amp;rt, ExclusivePotential)</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00071">Job.h:71</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -689,12 +689,12 @@ Protected Attributes</h2></td></tr>
 <p>Borrow: caller keeps <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a> alive (CLI stack / Python Session). </p>
 <p>The potential is shared. Point and minimization use <a class="el" href="structeonc_1_1Job_1_1ExclusivePotential.html" title="Point and Minimization keep ownedPot. Other jobs share in the public ctor.">ExclusivePotential</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="Job_8h_source.html#l00091">91</a> of file <a class="el" href="Job_8h_source.html">Job.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   92</span>      : <a class="code hl_function" href="#a40423b75b9614f0fc81797a5d817948d">Job</a>(std::move(parameters), rt, <a class="code hl_struct" href="structeonc_1_1Job_1_1ExclusivePotential.html">ExclusivePotential</a>{}) {</div>
-<div class="line"><span class="lineno">   93</span>    <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a> = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a67ab5cb7bee60443753fcae864fd27e4">helpers::sharePotential</a>(std::move(<a class="code hl_variable" href="classeonc_1_1Job.html#ae11b351685b8b2ca364f1877636328ca">ownedPot</a>));</div>
-<div class="line"><span class="lineno">   94</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="Job_8h_source.html#l00089">89</a> of file <a class="el" href="Job_8h_source.html">Job.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   90</span>      : <a class="code hl_function" href="#a40423b75b9614f0fc81797a5d817948d">Job</a>(std::move(parameters), rt, <a class="code hl_struct" href="structeonc_1_1Job_1_1ExclusivePotential.html">ExclusivePotential</a>{}) {</div>
+<div class="line"><span class="lineno">   91</span>    <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a> = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a67ab5cb7bee60443753fcae864fd27e4">helpers::sharePotential</a>(std::move(<a class="code hl_variable" href="classeonc_1_1Job.html#ae11b351685b8b2ca364f1877636328ca">ownedPot</a>));</div>
+<div class="line"><span class="lineno">   92</span>  }</div>
 <div class="ttc" id="aclasseonc_1_1Job_html_ae11b351685b8b2ca364f1877636328ca"><div class="ttname"><a href="classeonc_1_1Job.html#ae11b351685b8b2ca364f1877636328ca">eonc::Job::ownedPot</a></div><div class="ttdeci">std::unique_ptr&lt; Potential &gt; ownedPot</div><div class="ttdoc">Exclusive until a multi-owner job promotes it in the public constructor.</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00064">Job.h:64</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1helpers_html_a67ab5cb7bee60443753fcae864fd27e4"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a67ab5cb7bee60443753fcae864fd27e4">eonc::helpers::sharePotential</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; sharePotential(std::unique_ptr&lt; Potential &gt; pot)</div><div class="ttdoc">Multi-owner boundary: one instance observed by several Matters, images, or a binding.</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00249">Potential.h:249</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_a67ab5cb7bee60443753fcae864fd27e4"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a67ab5cb7bee60443753fcae864fd27e4">eonc::helpers::sharePotential</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; sharePotential(std::unique_ptr&lt; Potential &gt; pot)</div><div class="ttdoc">Multi-owner boundary: one instance observed by several Matters, images, or a binding.</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00260">Potential.h:260</a></div></div>
 <div class="ttc" id="astructeonc_1_1Job_1_1ExclusivePotential_html"><div class="ttname"><a href="structeonc_1_1Job_1_1ExclusivePotential.html">eonc::Job::ExclusivePotential</a></div><div class="ttdoc">Point and Minimization keep ownedPot. Other jobs share in the public ctor.</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00069">Job.h:69</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -732,13 +732,11 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="Job_8h_source.html#l00071">71</a> of file <a class="el" href="Job_8h_source.html">Job.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   72</span>      : <a class="code hl_variable" href="classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f">jtype</a>{parameters-&gt;main_options().job},</div>
-<div class="line"><span class="lineno">   73</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>{*std::move(parameters)},</div>
-<div class="line"><span class="lineno">   74</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a79f4bf70ec1c7e3e08a0a5c0ff5ee965">owned_runtime_</a>{},</div>
-<div class="line"><span class="lineno">   75</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#add247a8d4ae4bb5e59ec85ecfcf1bd37">runtime_</a>{&amp;rt},</div>
-<div class="line"><span class="lineno">   76</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#ae11b351685b8b2ca364f1877636328ca">ownedPot</a>{<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a5f1e0c7a3fbf2324d5e6c2b84c0ddb86">helpers::makePotential</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options().potential,</div>
-<div class="line"><span class="lineno">   77</span>                                        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, rt)} {}</div>
-<div class="ttc" id="anamespaceeonc_1_1helpers_html_a5f1e0c7a3fbf2324d5e6c2b84c0ddb86"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a5f1e0c7a3fbf2324d5e6c2b84c0ddb86">eonc::helpers::makePotential</a></div><div class="ttdeci">std::unique_ptr&lt; Potential &gt; makePotential(const Parameters &amp;params)</div><div class="ttdoc">Exclusive ownership.</div><div class="ttdef"><b>Definition</b> <a href="Potential_8cpp_source.html#l00246">Potential.cpp:246</a></div></div>
+<div class="fragment"><div class="line"><span class="lineno">   72</span>      : <a class="code hl_variable" href="classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f">jtype</a>{parameters-&gt;main_options().job}, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>{*std::move(parameters)},</div>
+<div class="line"><span class="lineno">   73</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a79f4bf70ec1c7e3e08a0a5c0ff5ee965">owned_runtime_</a>{}, <a class="code hl_variable" href="classeonc_1_1Job.html#add247a8d4ae4bb5e59ec85ecfcf1bd37">runtime_</a>{&amp;rt},</div>
+<div class="line"><span class="lineno">   74</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#ae11b351685b8b2ca364f1877636328ca">ownedPot</a>{<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a5f1e0c7a3fbf2324d5e6c2b84c0ddb86">helpers::makePotential</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options().potential,</div>
+<div class="line"><span class="lineno">   75</span>                                        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, rt)} {}</div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_a5f1e0c7a3fbf2324d5e6c2b84c0ddb86"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a5f1e0c7a3fbf2324d5e6c2b84c0ddb86">eonc::helpers::makePotential</a></div><div class="ttdeci">std::unique_ptr&lt; Potential &gt; makePotential(const Parameters &amp;params)</div><div class="ttdoc">Exclusive ownership.</div><div class="ttdef"><b>Definition</b> <a href="Potential_8cpp_source.html#l00268">Potential.cpp:268</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -771,11 +769,11 @@ Protected Attributes</h2></td></tr>
 
 <p>Own a <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a> (one-shot makeJob / rvalue). </p>
 
-<p class="definition">Definition at line <a class="el" href="Job_8h_source.html#l00096">96</a> of file <a class="el" href="Job_8h_source.html">Job.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   97</span>      : <a class="code hl_function" href="#a40423b75b9614f0fc81797a5d817948d">Job</a>(std::move(parameters), *rt) {</div>
-<div class="line"><span class="lineno">   98</span>    <a class="code hl_function" href="classeonc_1_1Job.html#a2106aabb046a746647151b5e46180631">adoptRuntime</a>(std::move(rt));</div>
-<div class="line"><span class="lineno">   99</span>  }</div>
-<div class="ttc" id="aclasseonc_1_1Job_html_a2106aabb046a746647151b5e46180631"><div class="ttname"><a href="classeonc_1_1Job.html#a2106aabb046a746647151b5e46180631">eonc::Job::adoptRuntime</a></div><div class="ttdeci">void adoptRuntime(std::unique_ptr&lt; Runtime &gt; rt)</div><div class="ttdoc">Take ownership of a Runtime previously passed as Runtime&amp;.</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00081">Job.h:81</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Job_8h_source.html#l00094">94</a> of file <a class="el" href="Job_8h_source.html">Job.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   95</span>      : <a class="code hl_function" href="#a40423b75b9614f0fc81797a5d817948d">Job</a>(std::move(parameters), *rt) {</div>
+<div class="line"><span class="lineno">   96</span>    <a class="code hl_function" href="classeonc_1_1Job.html#a2106aabb046a746647151b5e46180631">adoptRuntime</a>(std::move(rt));</div>
+<div class="line"><span class="lineno">   97</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1Job_html_a2106aabb046a746647151b5e46180631"><div class="ttname"><a href="classeonc_1_1Job.html#a2106aabb046a746647151b5e46180631">eonc::Job::adoptRuntime</a></div><div class="ttdeci">void adoptRuntime(std::unique_ptr&lt; Runtime &gt; rt)</div><div class="ttdoc">Take ownership of a Runtime previously passed as Runtime&amp;.</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00079">Job.h:79</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -890,7 +888,7 @@ Protected Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  126</span>  }</div>
 <div class="line"><span class="lineno">  127</span>  <span class="keywordflow">return</span> idx;</div>
 <div class="line"><span class="lineno">  128</span>}</div>
-<div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00106">EonLogger.h:106</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00111">EonLogger.h:111</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -962,12 +960,12 @@ Protected Attributes</h2></td></tr>
 <div class="line"><span class="lineno">   29</span>    QUILL_LOG_CRITICAL(<a class="code hl_variable" href="#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;Failed to load {}&quot;</span>, reactantFilename);</div>
 <div class="line"><span class="lineno">   30</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed to load &quot;</span> + reactantFilename);</div>
 <div class="line"><span class="lineno">   31</span>  }</div>
-<div class="line"><span class="lineno">   32</span>  (void)<a class="code hl_function" href="#ad1fd8fa8ad6ac441a6e99614c2d1bcbe">runFromMatter</a>(std::move(seed));</div>
+<div class="line"><span class="lineno">   32</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(<a class="code hl_function" href="#ad1fd8fa8ad6ac441a6e99614c2d1bcbe">runFromMatter</a>(std::move(seed)));</div>
 <div class="line"><span class="lineno">   33</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a168d1889140b473e2d0f71788f207b84">returnFiles</a>;</div>
 <div class="line"><span class="lineno">   34</span>}</div>
 <div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_a168d1889140b473e2d0f71788f207b84"><div class="ttname"><a href="#a168d1889140b473e2d0f71788f207b84">eonc::ReplicaDynamicsJob::returnFiles</a></div><div class="ttdeci">std::vector&lt; std::string &gt; returnFiles</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8h_source.html#l00063">ReplicaDynamicsJob.h:63</a></div></div>
 <div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_ad1fd8fa8ad6ac441a6e99614c2d1bcbe"><div class="ttname"><a href="#ad1fd8fa8ad6ac441a6e99614c2d1bcbe">eonc::ReplicaDynamicsJob::runFromMatter</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; runFromMatter(std::shared_ptr&lt; Matter &gt; initial)</div><div class="ttdoc">Matter-first entry: seed geometry, skip con2matter load.</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8cpp_source.html#l00037">ReplicaDynamicsJob.cpp:37</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1helpers_html_a561b68f975ecb734266063b428d6f2f2"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a561b68f975ecb734266063b428d6f2f2">eonc::helpers::getRelevantFile</a></div><div class="ttdeci">std::string getRelevantFile(std::string filename)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00122">HelperFunctions.cpp:122</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_a561b68f975ecb734266063b428d6f2f2"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a561b68f975ecb734266063b428d6f2f2">eonc::helpers::getRelevantFile</a></div><div class="ttdeci">std::string getRelevantFile(std::string filename)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00123">HelperFunctions.cpp:123</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_af66b2723d892a4095754f9b0354b4f78"><div class="ttname"><a href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a></div><div class="ttdeci">constexpr bool io_ok(IoStatus s) noexcept</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00038">ConFileIO.h:38</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -1008,7 +1006,7 @@ Protected Attributes</h2></td></tr>
 <div class="line"><span class="lineno">   51</span> </div>
 <div class="line"><span class="lineno">   52</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;Minimizing initial reactant&quot;</span>);</div>
 <div class="line"><span class="lineno">   53</span>  {</div>
-<div class="line"><span class="lineno">   54</span>    eonc::ForceCallTimer timer(<a class="code hl_variable" href="#a5ae0b01e5231f3657b4e07fff71c0b1a">minimizeFCalls</a>);</div>
+<div class="line"><span class="lineno">   54</span>    eonc::ForceCallTimer timer(<a class="code hl_variable" href="#a5ae0b01e5231f3657b4e07fff71c0b1a">minimizeFCalls</a>, *<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>);</div>
 <div class="line"><span class="lineno">   55</span>    *<a class="code hl_variable" href="#ab9e7b458ec30552def19abe4868a8009">reactant</a> = *<a class="code hl_variable" href="#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>;</div>
 <div class="line"><span class="lineno">   56</span>    <a class="code hl_variable" href="#ab9e7b458ec30552def19abe4868a8009">reactant</a>-&gt;relax();</div>
 <div class="line"><span class="lineno">   57</span>  }</div>

@@ -1,10 +1,4 @@
 var searchData=
 [
-  ['variants_5ft_0',['variants_t',['../structeonc_1_1metatomic__options__t_1_1variants__t.html',1,'eonc::metatomic_options_t']]],
-  ['vasp_1',['VASP',['../classVASP.html',1,'']]],
-  ['vec_2',['Vec',['../classVec.html',1,'']]],
-  ['vector_3',['vector',['../classvector.html',1,'']]],
-  ['vector3_4',['Vector3',['../structforcefields_1_1PotentialBase_1_1Vector3.html',1,'forcefields::PotentialBase']]],
-  ['vesinneighbors_5',['VesinNeighbors',['../classeonc_1_1VesinNeighbors.html',1,'eonc']]],
-  ['view_6',['View',['../structeonc_1_1xtsci__eindir_1_1View.html',1,'eonc::xtsci_eindir']]]
+  ['uniformspring_0',['UniformSpring',['../structeonc_1_1neb_1_1UniformSpring.html',1,'eonc::neb']]]
 ];

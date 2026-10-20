@@ -84,7 +84,6 @@ data-aria-dark="Switch to auto color mode">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../../team.html">eOn team</a></li>
-<li class="toctree-l1 _expand"><a class="reference internal" href="../../../citing.html">Citing eOn</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../install/eessi.html">Build develop on EESSI</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../install/lammps.html">LAMMPS</a></li>
@@ -123,6 +122,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/mpi_potential.html">MPI potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/algorithm_selection.html">Choosing an algorithm</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/main.html">General simulation parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/structure_input.html">Structure input formats</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/potential.html">Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/structure_comparison.html">Structure comparison</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/optimizer.html">Optimizer</a></li>
@@ -178,6 +178,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../devdocs/design/client/index.html">Client design</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../devdocs/design/client/types.html">Type system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../devdocs/design/client/exact-reduction.html">Exact reductions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../devdocs/design/client/parameters.html">Parameters system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
@@ -200,6 +201,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.contracts.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.contracts.load_outcome.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts.load_outcome</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
@@ -401,101 +406,131 @@ data-aria-dark="Switch to auto color mode">
           <h1>Source code for eon.mcamc.mcamc</h1><div class="highlight"><pre>
 <span></span><span data-line="1"><span class="ch">#!/usr/bin/env python</span>
 </span><span data-line="2"><span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
-</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">abspath</span><span class="p">,</span> <span class="n">dirname</span>
-</span><span data-line="5"><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-</span><span data-line="6"><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;mcamc&#39;</span><span class="p">)</span>
-</span><span data-line="7">
-</span><span data-line="8">
-<div class="viewcode-block" id="estimate_condition">
-<a class="viewcode-back" href="../../../apidocs/eon/eon.mcamc.mcamc.html#eon.mcamc.mcamc.estimate_condition">[docs]</a>
-</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">estimate_condition</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
-</span><span data-line="10">    <span class="n">Qflat</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
-</span><span data-line="11">    <span class="n">Qflat</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">Qflat</span><span class="p">))(</span><span class="o">*</span><span class="n">Qflat</span><span class="p">)</span>
-</span><span data-line="12">    <span class="n">Rflat</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
-</span><span data-line="13">    <span class="n">Rflat</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">Rflat</span><span class="p">))(</span><span class="o">*</span><span class="n">Rflat</span><span class="p">)</span>
-</span><span data-line="14">    <span class="n">libmcamc</span><span class="o">.</span><span class="n">estimate_condition</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span>
-</span><span data-line="15">    <span class="k">return</span> <span class="n">libmcamc</span><span class="o">.</span><span class="n">estimate_condition</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Qflat</span><span class="p">,</span> <span class="n">R</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">Rflat</span><span class="p">)</span></div>
-
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># OpenBLAS 0.3.30 deadlocks in blas_thread_init on the first threaded</span>
+</span><span data-line="6"><span class="c1"># dsymm after this process has already loaded other native libraries.</span>
+</span><span data-line="7"><span class="c1"># The numpy fallback is that call when libmcamc.so is absent. One thread</span>
+</span><span data-line="8"><span class="c1"># skips the pool setup that locks itself.</span>
+</span><span data-line="9"><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;OPENBLAS_NUM_THREADS&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+</span><span data-line="10"><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;GOTO_NUM_THREADS&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span data-line="13"><span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">abspath</span><span class="p">,</span> <span class="n">dirname</span>
+</span><span data-line="14"><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+</span><span data-line="15"><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;mcamc&#39;</span><span class="p">)</span>
 </span><span data-line="16">
 </span><span data-line="17">
+</span><span data-line="18"><span class="k">def</span><span class="w"> </span><span class="nf">_numpy_condition</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
+</span><span data-line="19"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Largest absolute row scale divided by that row&#39;s exit sum.</span>
+</span><span data-line="20">
+</span><span data-line="21"><span class="sd">    The scale of a row is the sum of that row of Q and of R. The exit</span>
+</span><span data-line="22"><span class="sd">    sum is that row of R. A zero scale or a zero exit makes the</span>
+</span><span data-line="23"><span class="sd">    condition non-finite.</span>
+</span><span data-line="24"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="25">    <span class="n">rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="26">    <span class="n">exits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="27">    <span class="n">scale</span> <span class="o">=</span> <span class="n">rates</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">exits</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="28">    <span class="n">exit_sum</span> <span class="o">=</span> <span class="n">exits</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="29">    <span class="n">zero_scale</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">scale</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">))</span>
+</span><span data-line="30">    <span class="n">zero_exit</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">exit_sum</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">))</span>
+</span><span data-line="31">    <span class="k">if</span> <span class="n">zero_scale</span> <span class="ow">or</span> <span class="n">zero_exit</span><span class="p">:</span>
+</span><span data-line="32">        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+</span><span data-line="33">    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">scale</span> <span class="o">/</span> <span class="n">exit_sum</span><span class="p">)))</span>
+</span><span data-line="34">
+</span><span data-line="35">
+<div class="viewcode-block" id="estimate_condition">
+<a class="viewcode-back" href="../../../apidocs/eon/eon.mcamc.mcamc.html#eon.mcamc.mcamc.estimate_condition">[docs]</a>
+</span><span data-line="36"><span class="k">def</span><span class="w"> </span><span class="nf">estimate_condition</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
+</span><span data-line="37">    <span class="k">if</span> <span class="n">libmcamc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="38">        <span class="k">return</span> <span class="n">_numpy_condition</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span>
+</span><span data-line="39">    <span class="n">Qflat</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+</span><span data-line="40">    <span class="n">Qflat</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">Qflat</span><span class="p">))(</span><span class="o">*</span><span class="n">Qflat</span><span class="p">)</span>
+</span><span data-line="41">    <span class="n">Rflat</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+</span><span data-line="42">    <span class="n">Rflat</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">Rflat</span><span class="p">))(</span><span class="o">*</span><span class="n">Rflat</span><span class="p">)</span>
+</span><span data-line="43">    <span class="n">libmcamc</span><span class="o">.</span><span class="n">estimate_condition</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span>
+</span><span data-line="44">    <span class="k">return</span> <span class="n">libmcamc</span><span class="o">.</span><span class="n">estimate_condition</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Qflat</span><span class="p">,</span> <span class="n">R</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">Rflat</span><span class="p">)</span></div>
+
+</span><span data-line="45">
+</span><span data-line="46">
 <div class="viewcode-block" id="guess_precision">
 <a class="viewcode-back" href="../../../apidocs/eon/eon.mcamc.mcamc.html#eon.mcamc.mcamc.guess_precision">[docs]</a>
-</span><span data-line="18"><span class="k">def</span><span class="w"> </span><span class="nf">guess_precision</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
-</span><span data-line="19">    <span class="n">cond</span> <span class="o">=</span> <span class="n">estimate_condition</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span>
-</span><span data-line="20">    <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">cond</span><span class="p">)</span>
-</span><span data-line="21">    <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">11</span><span class="p">:</span>
-</span><span data-line="22">        <span class="n">prec</span> <span class="o">=</span> <span class="s1">&#39;d&#39;</span>
-</span><span data-line="23">    <span class="k">elif</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">26</span><span class="p">:</span>
-</span><span data-line="24">        <span class="n">prec</span> <span class="o">=</span> <span class="s1">&#39;dd&#39;</span>
-</span><span data-line="25">    <span class="k">elif</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">60</span><span class="p">:</span>
-</span><span data-line="26">        <span class="n">prec</span> <span class="o">=</span> <span class="s1">&#39;qd&#39;</span>
-</span><span data-line="27">    <span class="k">else</span><span class="p">:</span>
-</span><span data-line="28">        <span class="c1">#problem is too ill-conditioned to solve accurately</span>
-</span><span data-line="29">        <span class="n">prec</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span>
-</span><span data-line="30">    <span class="k">return</span> <span class="n">prec</span></div>
+</span><span data-line="47"><span class="k">def</span><span class="w"> </span><span class="nf">guess_precision</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
+</span><span data-line="48">    <span class="n">cond</span> <span class="o">=</span> <span class="n">estimate_condition</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span>
+</span><span data-line="49">    <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">cond</span><span class="p">)</span>
+</span><span data-line="50">    <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">11</span><span class="p">:</span>
+</span><span data-line="51">        <span class="n">prec</span> <span class="o">=</span> <span class="s1">&#39;d&#39;</span>
+</span><span data-line="52">    <span class="k">elif</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">26</span><span class="p">:</span>
+</span><span data-line="53">        <span class="n">prec</span> <span class="o">=</span> <span class="s1">&#39;dd&#39;</span>
+</span><span data-line="54">    <span class="k">elif</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">60</span><span class="p">:</span>
+</span><span data-line="55">        <span class="n">prec</span> <span class="o">=</span> <span class="s1">&#39;qd&#39;</span>
+</span><span data-line="56">    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="57">        <span class="c1">#problem is too ill-conditioned to solve accurately</span>
+</span><span data-line="58">        <span class="n">prec</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span>
+</span><span data-line="59">    <span class="k">return</span> <span class="n">prec</span></div>
 
-</span><span data-line="31">
-</span><span data-line="32">
+</span><span data-line="60">
+</span><span data-line="61">
 <div class="viewcode-block" id="c_mcamc">
 <a class="viewcode-back" href="../../../apidocs/eon/eon.mcamc.mcamc.html#eon.mcamc.mcamc.c_mcamc">[docs]</a>
-</span><span data-line="33"><span class="k">def</span><span class="w"> </span><span class="nf">c_mcamc</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="s1">&#39;dd&#39;</span><span class="p">):</span>
-</span><span data-line="34">    <span class="n">Qflat</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
-</span><span data-line="35">    <span class="n">Qflat</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">Qflat</span><span class="p">))(</span><span class="o">*</span><span class="n">Qflat</span><span class="p">)</span>
-</span><span data-line="36">    <span class="n">Rflat</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
-</span><span data-line="37">    <span class="n">Rflat</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">Rflat</span><span class="p">))(</span><span class="o">*</span><span class="n">Rflat</span><span class="p">)</span>
-</span><span data-line="38">    <span class="n">cflat</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-</span><span data-line="39">    <span class="n">cflat</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">cflat</span><span class="p">))(</span><span class="o">*</span><span class="n">cflat</span><span class="p">)</span>
-</span><span data-line="40">
-</span><span data-line="41">    <span class="n">Bflat</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">Rflat</span><span class="p">))()</span>
-</span><span data-line="42">    <span class="n">tflat</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">cflat</span><span class="p">))()</span>
-</span><span data-line="43">
-</span><span data-line="44">    <span class="n">residual</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)()</span>
-</span><span data-line="45">
-</span><span data-line="46">    <span class="k">if</span> <span class="n">prec</span> <span class="o">==</span> <span class="s1">&#39;f&#39;</span><span class="p">:</span>
-</span><span data-line="47">        <span class="n">solve</span> <span class="o">=</span> <span class="n">libmcamc</span><span class="o">.</span><span class="n">solve_float</span>
-</span><span data-line="48">    <span class="k">elif</span> <span class="n">prec</span> <span class="o">==</span> <span class="s1">&#39;d&#39;</span><span class="p">:</span>
-</span><span data-line="49">        <span class="n">solve</span> <span class="o">=</span> <span class="n">libmcamc</span><span class="o">.</span><span class="n">solve_double</span>
-</span><span data-line="50">    <span class="k">elif</span> <span class="n">prec</span> <span class="o">==</span> <span class="s1">&#39;dd&#39;</span><span class="p">:</span>
-</span><span data-line="51">        <span class="n">solve</span> <span class="o">=</span> <span class="n">libmcamc</span><span class="o">.</span><span class="n">solve_double_double</span>
-</span><span data-line="52">    <span class="k">elif</span> <span class="n">prec</span> <span class="o">==</span> <span class="s1">&#39;qd&#39;</span><span class="p">:</span>
-</span><span data-line="53">        <span class="n">solve</span> <span class="o">=</span> <span class="n">libmcamc</span><span class="o">.</span><span class="n">solve_quad_double</span>
-</span><span data-line="54">    <span class="k">else</span><span class="p">:</span>
-</span><span data-line="55">        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unknown prec value &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">prec</span><span class="p">)</span>
-</span><span data-line="56">    <span class="c1"># void solve(int Qsize, double *Qflat, int Rcols, double *Rflat,</span>
-</span><span data-line="57">    <span class="c1">#           double *c_in, double *B, double *t)</span>
-</span><span data-line="58">    <span class="n">solve</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Qflat</span><span class="p">,</span> <span class="n">R</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">Rflat</span><span class="p">,</span> <span class="n">cflat</span><span class="p">,</span> <span class="n">Bflat</span><span class="p">,</span> <span class="n">tflat</span><span class="p">,</span> <span class="n">residual</span><span class="p">)</span>
-</span><span data-line="59">
-</span><span data-line="60">    <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">Bflat</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-</span><span data-line="61">    <span class="n">t</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tflat</span><span class="p">)</span>
-</span><span data-line="62">    <span class="n">residual</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">residual</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-</span><span data-line="63">
-</span><span data-line="64">    <span class="k">return</span> <span class="n">t</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">residual</span></div>
+</span><span data-line="62"><span class="k">def</span><span class="w"> </span><span class="nf">c_mcamc</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="s1">&#39;dd&#39;</span><span class="p">):</span>
+</span><span data-line="63">    <span class="n">Qflat</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+</span><span data-line="64">    <span class="n">Qflat</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">Qflat</span><span class="p">))(</span><span class="o">*</span><span class="n">Qflat</span><span class="p">)</span>
+</span><span data-line="65">    <span class="n">Rflat</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+</span><span data-line="66">    <span class="n">Rflat</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">Rflat</span><span class="p">))(</span><span class="o">*</span><span class="n">Rflat</span><span class="p">)</span>
+</span><span data-line="67">    <span class="n">cflat</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+</span><span data-line="68">    <span class="n">cflat</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">cflat</span><span class="p">))(</span><span class="o">*</span><span class="n">cflat</span><span class="p">)</span>
+</span><span data-line="69">
+</span><span data-line="70">    <span class="n">Bflat</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">Rflat</span><span class="p">))()</span>
+</span><span data-line="71">    <span class="n">tflat</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">cflat</span><span class="p">))()</span>
+</span><span data-line="72">
+</span><span data-line="73">    <span class="n">residual</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)()</span>
+</span><span data-line="74">
+</span><span data-line="75">    <span class="k">if</span> <span class="n">prec</span> <span class="o">==</span> <span class="s1">&#39;f&#39;</span><span class="p">:</span>
+</span><span data-line="76">        <span class="n">solve</span> <span class="o">=</span> <span class="n">libmcamc</span><span class="o">.</span><span class="n">solve_float</span>
+</span><span data-line="77">    <span class="k">elif</span> <span class="n">prec</span> <span class="o">==</span> <span class="s1">&#39;d&#39;</span><span class="p">:</span>
+</span><span data-line="78">        <span class="n">solve</span> <span class="o">=</span> <span class="n">libmcamc</span><span class="o">.</span><span class="n">solve_double</span>
+</span><span data-line="79">    <span class="k">elif</span> <span class="n">prec</span> <span class="o">==</span> <span class="s1">&#39;dd&#39;</span><span class="p">:</span>
+</span><span data-line="80">        <span class="n">solve</span> <span class="o">=</span> <span class="n">libmcamc</span><span class="o">.</span><span class="n">solve_double_double</span>
+</span><span data-line="81">    <span class="k">elif</span> <span class="n">prec</span> <span class="o">==</span> <span class="s1">&#39;qd&#39;</span><span class="p">:</span>
+</span><span data-line="82">        <span class="n">solve</span> <span class="o">=</span> <span class="n">libmcamc</span><span class="o">.</span><span class="n">solve_quad_double</span>
+</span><span data-line="83">    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="84">        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unknown prec value &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">prec</span><span class="p">)</span>
+</span><span data-line="85">    <span class="c1"># void solve(int Qsize, double *Qflat, int Rcols, double *Rflat,</span>
+</span><span data-line="86">    <span class="c1">#           double *c_in, double *B, double *t)</span>
+</span><span data-line="87">    <span class="n">solve</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Qflat</span><span class="p">,</span> <span class="n">R</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">Rflat</span><span class="p">,</span> <span class="n">cflat</span><span class="p">,</span> <span class="n">Bflat</span><span class="p">,</span> <span class="n">tflat</span><span class="p">,</span> <span class="n">residual</span><span class="p">)</span>
+</span><span data-line="88">
+</span><span data-line="89">    <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">Bflat</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</span><span data-line="90">    <span class="n">t</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tflat</span><span class="p">)</span>
+</span><span data-line="91">    <span class="n">residual</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">residual</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span><span data-line="92">
+</span><span data-line="93">    <span class="k">return</span> <span class="n">t</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">residual</span></div>
 
-</span><span data-line="65">
-</span><span data-line="66">
+</span><span data-line="94">
+</span><span data-line="95">
 <div class="viewcode-block" id="np_mcamc">
 <a class="viewcode-back" href="../../../apidocs/eon/eon.mcamc.mcamc.html#eon.mcamc.mcamc.np_mcamc">[docs]</a>
-</span><span data-line="67"><span class="k">def</span><span class="w"> </span><span class="nf">np_mcamc</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="s2">&quot;NA&quot;</span><span class="p">):</span>
-</span><span data-line="68">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)):</span>
-</span><span data-line="69">        <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-</span><span data-line="70">        <span class="n">Q</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-</span><span data-line="71">        <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-</span><span data-line="72">    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">Q</span>
-</span><span data-line="73">    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
-</span><span data-line="74">    <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span>
-</span><span data-line="75">    <span class="n">residual</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-</span><span data-line="76">    <span class="k">return</span> <span class="n">t</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">residual</span></div>
+</span><span data-line="96"><span class="k">def</span><span class="w"> </span><span class="nf">np_mcamc</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="s2">&quot;NA&quot;</span><span class="p">):</span>
+</span><span data-line="97">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)):</span>
+</span><span data-line="98">        <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span data-line="99">        <span class="n">Q</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span data-line="100">        <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span data-line="101">    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">Q</span>
+</span><span data-line="102">    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+</span><span data-line="103">    <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span>
+</span><span data-line="104">    <span class="n">residual</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+</span><span data-line="105">    <span class="k">return</span> <span class="n">t</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">residual</span></div>
 
-</span><span data-line="77">
-</span><span data-line="78">
-</span><span data-line="79"><span class="n">libpath</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s1">&#39;libmcamc.so&#39;</span><span class="p">)</span>
-</span><span data-line="80"><span class="k">try</span><span class="p">:</span>
-</span><span data-line="81">    <span class="n">libmcamc</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">CDLL</span><span class="p">(</span><span class="n">libpath</span><span class="p">)</span>
-</span><span data-line="82">    <span class="n">mcamc</span> <span class="o">=</span> <span class="n">c_mcamc</span>
-</span><span data-line="83"><span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-</span><span data-line="84">    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Was unable to use libmcamc, using numpy instead.&quot;</span><span class="p">)</span>
-</span><span data-line="85">    <span class="n">mcamc</span> <span class="o">=</span> <span class="n">np_mcamc</span>
+</span><span data-line="106">
+</span><span data-line="107">
+</span><span data-line="108"><span class="n">libpath</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s1">&#39;libmcamc.so&#39;</span><span class="p">)</span>
+</span><span data-line="109"><span class="n">libmcamc</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="110"><span class="k">try</span><span class="p">:</span>
+</span><span data-line="111">    <span class="n">libmcamc</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">CDLL</span><span class="p">(</span><span class="n">libpath</span><span class="p">)</span>
+</span><span data-line="112">    <span class="n">mcamc</span> <span class="o">=</span> <span class="n">c_mcamc</span>
+</span><span data-line="113"><span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+</span><span data-line="114">    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Was unable to use libmcamc, using numpy instead.&quot;</span><span class="p">)</span>
+</span><span data-line="115">    <span class="n">mcamc</span> <span class="o">=</span> <span class="n">np_mcamc</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

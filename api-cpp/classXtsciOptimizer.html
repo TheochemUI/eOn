@@ -455,75 +455,77 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  298</span>  } <span class="keywordflow">else</span> {</div>
 <div class="line"><span class="lineno">  299</span>    xts_solver_set_qn_step(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_QN_LBFGS);</div>
 <div class="line"><span class="lineno">  300</span>  }</div>
-<div class="line"><span class="lineno">  301</span>  <span class="keyword">const</span> <span class="keyword">auto</span> accept = resolved_accept(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts);</div>
-<div class="line"><span class="lineno">  302</span>  <span class="keywordflow">if</span> (accept == <span class="stringliteral">&quot;energy&quot;</span>) {</div>
-<div class="line"><span class="lineno">  303</span>    xts_solver_set_accept(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_ACCEPT_ENERGY);</div>
-<div class="line"><span class="lineno">  304</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (accept == <span class="stringliteral">&quot;nonmonotone&quot;</span>) {</div>
-<div class="line"><span class="lineno">  305</span>    xts_solver_set_accept(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_ACCEPT_NONMONOTONE);</div>
-<div class="line"><span class="lineno">  306</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  307</span>    xts_solver_set_accept(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_ACCEPT_NONE);</div>
-<div class="line"><span class="lineno">  308</span>  }</div>
-<div class="line"><span class="lineno">  309</span>  xts_solver_set_project_rigid(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, lbfgs.project_rigid ? 1 : 0);</div>
-<div class="line"><span class="lineno">  310</span>  xts_solver_set_extra_updates(</div>
-<div class="line"><span class="lineno">  311</span>      <a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(std::max&lt;long&gt;(0, lbfgs.extra_updates)));</div>
-<div class="line"><span class="lineno">  312</span>  <span class="keywordflow">if</span> (lbfgs.curvature == <span class="stringliteral">&quot;cautious&quot;</span>) {</div>
-<div class="line"><span class="lineno">  313</span>    xts_solver_set_cautious(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, lbfgs.cautious_eps, lbfgs.cautious_alpha);</div>
-<div class="line"><span class="lineno">  314</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  315</span>    xts_solver_set_cautious(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, 0.0, lbfgs.cautious_alpha);</div>
-<div class="line"><span class="lineno">  316</span>  }</div>
-<div class="line"><span class="lineno">  317</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.xtsci.highs) {</div>
-<div class="line"><span class="lineno">  318</span>    <span class="keywordflow">if</span> (xts_solver_set_highs(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, 1) != 0) {</div>
-<div class="line"><span class="lineno">  319</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  320</span>          <span class="stringliteral">&quot;Xtsci.highs needs xtsci-optimize built with --features highs&quot;</span>);</div>
-<div class="line"><span class="lineno">  321</span>    }</div>
-<div class="line"><span class="lineno">  322</span>  }</div>
-<div class="line"><span class="lineno">  323</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;mani = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.xtsci.manifold;</div>
-<div class="line"><span class="lineno">  324</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;so3&quot;</span> &amp;&amp; dim != 9) {</div>
-<div class="line"><span class="lineno">  325</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  326</span>        <span class="stringliteral">&quot;Xtsci.manifold=so3 needs length 9; a 3N cluster is &quot;</span></div>
-<div class="line"><span class="lineno">  327</span>        <span class="stringliteral">&quot;rigid_quotient (Sella R^{3N}/SE(3)), not a packed rotation&quot;</span>);</div>
-<div class="line"><span class="lineno">  328</span>  }</div>
-<div class="line"><span class="lineno">  329</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;se3&quot;</span> &amp;&amp; dim != 12) {</div>
-<div class="line"><span class="lineno">  330</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  331</span>        <span class="stringliteral">&quot;Xtsci.manifold=se3 needs length 12; a 3N cluster is &quot;</span></div>
-<div class="line"><span class="lineno">  332</span>        <span class="stringliteral">&quot;rigid_quotient (Sella R^{3N}/SE(3)), not an SE(3) prefix&quot;</span>);</div>
-<div class="line"><span class="lineno">  333</span>  }</div>
-<div class="line"><span class="lineno">  334</span>  <span class="keywordflow">if</span> ((mani == <span class="stringliteral">&quot;rigid_quotient&quot;</span> || mani == <span class="stringliteral">&quot;mw_rigid&quot;</span> || mani == <span class="stringliteral">&quot;sella&quot;</span> ||</div>
-<div class="line"><span class="lineno">  335</span>       mani == <span class="stringliteral">&quot;eckart&quot;</span> || mani == <span class="stringliteral">&quot;irc&quot;</span>) &amp;&amp;</div>
-<div class="line"><span class="lineno">  336</span>      (dim &lt; 6 || dim % 3 != 0)) {</div>
-<div class="line"><span class="lineno">  337</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Xtsci.manifold=&quot;</span> + mani +</div>
-<div class="line"><span class="lineno">  338</span>                             <span class="stringliteral">&quot; needs 3N Cartesians with N &gt;= 2&quot;</span>);</div>
-<div class="line"><span class="lineno">  339</span>  }</div>
-<div class="line"><span class="lineno">  340</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;sphere&quot;</span>) {</div>
-<div class="line"><span class="lineno">  341</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_SPHERE);</div>
-<div class="line"><span class="lineno">  342</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;so3&quot;</span>) {</div>
-<div class="line"><span class="lineno">  343</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_SO3);</div>
-<div class="line"><span class="lineno">  344</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;stiefel&quot;</span>) {</div>
-<div class="line"><span class="lineno">  345</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_STIEFEL);</div>
-<div class="line"><span class="lineno">  346</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;se3&quot;</span>) {</div>
-<div class="line"><span class="lineno">  347</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_SE3);</div>
-<div class="line"><span class="lineno">  348</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;rigid_quotient&quot;</span> || mani == <span class="stringliteral">&quot;sella&quot;</span>) {</div>
-<div class="line"><span class="lineno">  349</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_RIGID_QUOTIENT);</div>
-<div class="line"><span class="lineno">  350</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;mw_rigid&quot;</span> || mani == <span class="stringliteral">&quot;eckart&quot;</span> || mani == <span class="stringliteral">&quot;irc&quot;</span>) {</div>
-<div class="line"><span class="lineno">  351</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_MW_RIGID);</div>
-<div class="line"><span class="lineno">  352</span>    <span class="keyword">const</span> <span class="keyword">auto</span> masses = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getMasses();</div>
-<div class="line"><span class="lineno">  353</span>    <span class="keywordflow">if</span> (masses.size() &gt; 0) {</div>
-<div class="line"><span class="lineno">  354</span>      xts_solver_set_masses(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, masses.data(),</div>
-<div class="line"><span class="lineno">  355</span>                            <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(masses.size()));</div>
-<div class="line"><span class="lineno">  356</span>    }</div>
-<div class="line"><span class="lineno">  357</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  358</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_EUCLIDEAN);</div>
-<div class="line"><span class="lineno">  359</span>  }</div>
-<div class="line"><span class="lineno">  360</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;rigid_quotient&quot;</span> || mani == <span class="stringliteral">&quot;mw_rigid&quot;</span> || mani == <span class="stringliteral">&quot;sella&quot;</span> ||</div>
-<div class="line"><span class="lineno">  361</span>      mani == <span class="stringliteral">&quot;eckart&quot;</span> || mani == <span class="stringliteral">&quot;irc&quot;</span>) {</div>
-<div class="line"><span class="lineno">  362</span>    xts_solver_set_periodic(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPeriodic() ? 1 : 0);</div>
-<div class="line"><span class="lineno">  363</span>  }</div>
-<div class="line"><span class="lineno">  364</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a> == <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">  365</span>    <a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a> = <a class="code hl_function" href="namespaceeonc_1_1xtsci__eindir.html#a241058e21f4b3a9c480452b40d1234bf">xtsci_eindir::bind</a>(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>.get(), &amp;<a class="code hl_variable" href="#a5854cdd11934a6f03d601c140b38563f">m_cached_x</a>);</div>
-<div class="line"><span class="lineno">  366</span>  }</div>
-<div class="line"><span class="lineno">  367</span>}</div>
+<div class="line"><span class="lineno">  301</span>  <span class="keyword">const</span> <span class="keyword">auto</span> accept = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;gradientMatchesEnergy()</div>
+<div class="line"><span class="lineno">  302</span>                          ? resolved_accept(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts)</div>
+<div class="line"><span class="lineno">  303</span>                          : std::string(<span class="stringliteral">&quot;none&quot;</span>);</div>
+<div class="line"><span class="lineno">  304</span>  <span class="keywordflow">if</span> (accept == <span class="stringliteral">&quot;energy&quot;</span>) {</div>
+<div class="line"><span class="lineno">  305</span>    xts_solver_set_accept(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_ACCEPT_ENERGY);</div>
+<div class="line"><span class="lineno">  306</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (accept == <span class="stringliteral">&quot;nonmonotone&quot;</span>) {</div>
+<div class="line"><span class="lineno">  307</span>    xts_solver_set_accept(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_ACCEPT_NONMONOTONE);</div>
+<div class="line"><span class="lineno">  308</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  309</span>    xts_solver_set_accept(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_ACCEPT_NONE);</div>
+<div class="line"><span class="lineno">  310</span>  }</div>
+<div class="line"><span class="lineno">  311</span>  xts_solver_set_project_rigid(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, lbfgs.project_rigid ? 1 : 0);</div>
+<div class="line"><span class="lineno">  312</span>  xts_solver_set_extra_updates(</div>
+<div class="line"><span class="lineno">  313</span>      <a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(std::max&lt;long&gt;(0, lbfgs.extra_updates)));</div>
+<div class="line"><span class="lineno">  314</span>  <span class="keywordflow">if</span> (lbfgs.curvature == <span class="stringliteral">&quot;cautious&quot;</span>) {</div>
+<div class="line"><span class="lineno">  315</span>    xts_solver_set_cautious(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, lbfgs.cautious_eps, lbfgs.cautious_alpha);</div>
+<div class="line"><span class="lineno">  316</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  317</span>    xts_solver_set_cautious(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, 0.0, lbfgs.cautious_alpha);</div>
+<div class="line"><span class="lineno">  318</span>  }</div>
+<div class="line"><span class="lineno">  319</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.xtsci.highs) {</div>
+<div class="line"><span class="lineno">  320</span>    <span class="keywordflow">if</span> (xts_solver_set_highs(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, 1) != 0) {</div>
+<div class="line"><span class="lineno">  321</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  322</span>          <span class="stringliteral">&quot;Xtsci.highs needs xtsci-optimize built with --features highs&quot;</span>);</div>
+<div class="line"><span class="lineno">  323</span>    }</div>
+<div class="line"><span class="lineno">  324</span>  }</div>
+<div class="line"><span class="lineno">  325</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;mani = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.xtsci.manifold;</div>
+<div class="line"><span class="lineno">  326</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;so3&quot;</span> &amp;&amp; dim != 9) {</div>
+<div class="line"><span class="lineno">  327</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  328</span>        <span class="stringliteral">&quot;Xtsci.manifold=so3 needs length 9; a 3N cluster is &quot;</span></div>
+<div class="line"><span class="lineno">  329</span>        <span class="stringliteral">&quot;rigid_quotient (Sella R^{3N}/SE(3)), not a packed rotation&quot;</span>);</div>
+<div class="line"><span class="lineno">  330</span>  }</div>
+<div class="line"><span class="lineno">  331</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;se3&quot;</span> &amp;&amp; dim != 12) {</div>
+<div class="line"><span class="lineno">  332</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  333</span>        <span class="stringliteral">&quot;Xtsci.manifold=se3 needs length 12; a 3N cluster is &quot;</span></div>
+<div class="line"><span class="lineno">  334</span>        <span class="stringliteral">&quot;rigid_quotient (Sella R^{3N}/SE(3)), not an SE(3) prefix&quot;</span>);</div>
+<div class="line"><span class="lineno">  335</span>  }</div>
+<div class="line"><span class="lineno">  336</span>  <span class="keywordflow">if</span> ((mani == <span class="stringliteral">&quot;rigid_quotient&quot;</span> || mani == <span class="stringliteral">&quot;mw_rigid&quot;</span> || mani == <span class="stringliteral">&quot;sella&quot;</span> ||</div>
+<div class="line"><span class="lineno">  337</span>       mani == <span class="stringliteral">&quot;eckart&quot;</span> || mani == <span class="stringliteral">&quot;irc&quot;</span>) &amp;&amp;</div>
+<div class="line"><span class="lineno">  338</span>      (dim &lt; 6 || dim % 3 != 0)) {</div>
+<div class="line"><span class="lineno">  339</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Xtsci.manifold=&quot;</span> + mani +</div>
+<div class="line"><span class="lineno">  340</span>                             <span class="stringliteral">&quot; needs 3N Cartesians with N &gt;= 2&quot;</span>);</div>
+<div class="line"><span class="lineno">  341</span>  }</div>
+<div class="line"><span class="lineno">  342</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;sphere&quot;</span>) {</div>
+<div class="line"><span class="lineno">  343</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_SPHERE);</div>
+<div class="line"><span class="lineno">  344</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;so3&quot;</span>) {</div>
+<div class="line"><span class="lineno">  345</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_SO3);</div>
+<div class="line"><span class="lineno">  346</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;stiefel&quot;</span>) {</div>
+<div class="line"><span class="lineno">  347</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_STIEFEL);</div>
+<div class="line"><span class="lineno">  348</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;se3&quot;</span>) {</div>
+<div class="line"><span class="lineno">  349</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_SE3);</div>
+<div class="line"><span class="lineno">  350</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;rigid_quotient&quot;</span> || mani == <span class="stringliteral">&quot;sella&quot;</span>) {</div>
+<div class="line"><span class="lineno">  351</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_RIGID_QUOTIENT);</div>
+<div class="line"><span class="lineno">  352</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;mw_rigid&quot;</span> || mani == <span class="stringliteral">&quot;eckart&quot;</span> || mani == <span class="stringliteral">&quot;irc&quot;</span>) {</div>
+<div class="line"><span class="lineno">  353</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_MW_RIGID);</div>
+<div class="line"><span class="lineno">  354</span>    <span class="keyword">const</span> <span class="keyword">auto</span> masses = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getMasses();</div>
+<div class="line"><span class="lineno">  355</span>    <span class="keywordflow">if</span> (masses.size() &gt; 0) {</div>
+<div class="line"><span class="lineno">  356</span>      xts_solver_set_masses(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, masses.data(),</div>
+<div class="line"><span class="lineno">  357</span>                            <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(masses.size()));</div>
+<div class="line"><span class="lineno">  358</span>    }</div>
+<div class="line"><span class="lineno">  359</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  360</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_EUCLIDEAN);</div>
+<div class="line"><span class="lineno">  361</span>  }</div>
+<div class="line"><span class="lineno">  362</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;rigid_quotient&quot;</span> || mani == <span class="stringliteral">&quot;mw_rigid&quot;</span> || mani == <span class="stringliteral">&quot;sella&quot;</span> ||</div>
+<div class="line"><span class="lineno">  363</span>      mani == <span class="stringliteral">&quot;eckart&quot;</span> || mani == <span class="stringliteral">&quot;irc&quot;</span>) {</div>
+<div class="line"><span class="lineno">  364</span>    xts_solver_set_periodic(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPeriodic() ? 1 : 0);</div>
+<div class="line"><span class="lineno">  365</span>  }</div>
+<div class="line"><span class="lineno">  366</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a> == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  367</span>    <a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a> = <a class="code hl_function" href="namespaceeonc_1_1xtsci__eindir.html#a241058e21f4b3a9c480452b40d1234bf">xtsci_eindir::bind</a>(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>.get(), &amp;<a class="code hl_variable" href="#a5854cdd11934a6f03d601c140b38563f">m_cached_x</a>);</div>
+<div class="line"><span class="lineno">  368</span>  }</div>
+<div class="line"><span class="lineno">  369</span>}</div>
 <div class="ttc" id="aclassXtsciOptimizer_html_a5854cdd11934a6f03d601c140b38563f"><div class="ttname"><a href="#a5854cdd11934a6f03d601c140b38563f">XtsciOptimizer::m_cached_x</a></div><div class="ttdeci">Eigen::VectorXd m_cached_x</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8h_source.html#l00044">XtsciOptimizer.h:44</a></div></div>
-<div class="ttc" id="aclassXtsciOptimizer_html_ac8fa0e20cc86e1240da7e50af7ccd249"><div class="ttname"><a href="#ac8fa0e20cc86e1240da7e50af7ccd249">XtsciOptimizer::step</a></div><div class="ttdeci">int step(double a_maxMove) override</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8cpp_source.html#l00369">XtsciOptimizer.cpp:369</a></div></div>
+<div class="ttc" id="aclassXtsciOptimizer_html_ac8fa0e20cc86e1240da7e50af7ccd249"><div class="ttname"><a href="#ac8fa0e20cc86e1240da7e50af7ccd249">XtsciOptimizer::step</a></div><div class="ttdeci">int step(double a_maxMove) override</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8cpp_source.html#l00371">XtsciOptimizer.cpp:371</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Optimizer_html_a3bfcee12036bd655e29a065e8e1c1f4d"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">eonc::Optimizer::m_optConfig</a></div><div class="ttdeci">const OptimizerConfig m_optConfig</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00070">Optimizer.h:70</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Optimizer_html_ac396cbda1caadf57ff9df7eda4db1822"><div class="ttname"><a href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">eonc::Optimizer::m_objf</a></div><div class="ttdeci">std::shared_ptr&lt; ObjectiveFunction &gt; m_objf</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00071">Optimizer.h:71</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1xtsci__eindir_html_a241058e21f4b3a9c480452b40d1234bf"><div class="ttname"><a href="namespaceeonc_1_1xtsci__eindir.html#a241058e21f4b3a9c480452b40d1234bf">eonc::xtsci_eindir::bind</a></div><div class="ttdeci">State * bind(ObjectiveFunction *objective, Eigen::VectorXd *cached)</div><div class="ttdoc">Borrow an ObjectiveFunction as an eindir objective.</div><div class="ttdef"><b>Definition</b> <a href="XtsciEindir_8cpp_source.html#l00189">XtsciEindir.cpp:189</a></div></div>
@@ -584,50 +586,50 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1Optimizer.html#a94dd8b89c732857574c03586efa25273">eonc::Optimizer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8cpp_source.html#l00420">420</a> of file <a class="el" href="XtsciOptimizer_8cpp_source.html">XtsciOptimizer.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  420</span>                                                                {</div>
-<div class="line"><span class="lineno">  421</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;degreesOfFreedom() &lt;= 0 || a_maxIterations == 0) {</div>
-<div class="line"><span class="lineno">  422</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
-<div class="line"><span class="lineno">  423</span>  }</div>
-<div class="line"><span class="lineno">  424</span>  <a class="code hl_function" href="classeonc_1_1XtsciOptimizer.html#a4c35607672825155d0cda735ae84e118">ensureSolver</a>(a_maxMove);</div>
-<div class="line"><span class="lineno">  425</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;lbfgs = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs;</div>
-<div class="line"><span class="lineno">  426</span>  std::string precon = resolved_precon(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts);</div>
-<div class="line"><span class="lineno">  427</span>  <span class="keyword">const</span> xts_method_t method = method_from_name(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.xtsci.method);</div>
-<div class="line"><span class="lineno">  428</span>  <span class="keywordflow">if</span> (method == XTS_DOGLEG &amp;&amp; !is_host_precon(precon)) {</div>
-<div class="line"><span class="lineno">  429</span>    precon = <span class="stringliteral">&quot;pair&quot;</span>;</div>
-<div class="line"><span class="lineno">  430</span>  }</div>
-<div class="line"><span class="lineno">  431</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> want_hess = method == XTS_NEWTON || method == XTS_RFO ||</div>
-<div class="line"><span class="lineno">  432</span>                         method == XTS_DOGLEG || is_host_precon(precon);</div>
-<div class="line"><span class="lineno">  433</span>  <span class="comment">// A full minimize without a host Hessian goes through the eindir entry.</span></div>
-<div class="line"><span class="lineno">  434</span>  <span class="comment">// step() stays one session iteration so the host loop keeps its memory.</span></div>
-<div class="line"><span class="lineno">  435</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a> != <span class="keyword">nullptr</span> &amp;&amp; !want_hess) {</div>
-<div class="line"><span class="lineno">  436</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size() == 0) {</div>
-<div class="line"><span class="lineno">  437</span>      <a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a> = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPositions();</div>
-<div class="line"><span class="lineno">  438</span>    }</div>
-<div class="line"><span class="lineno">  439</span>    <span class="keywordtype">double</span> value = 0.0;</div>
-<div class="line"><span class="lineno">  440</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> status = <a class="code hl_function" href="namespaceeonc_1_1xtsci__eindir.html#a0d7100dd1f75bdc61523a7d2f8827a14">xtsci_eindir::minimize</a>(</div>
-<div class="line"><span class="lineno">  441</span>        <a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a>, <a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.data(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size()), a_maxIterations,</div>
-<div class="line"><span class="lineno">  442</span>        <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.converged_force, std::max(a_maxMove, 1.0e-12),</div>
-<div class="line"><span class="lineno">  443</span>        <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(std::max&lt;long&gt;(0, lbfgs.memory)),</div>
-<div class="line"><span class="lineno">  444</span>        <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(method), &amp;value);</div>
-<div class="line"><span class="lineno">  445</span>    <span class="keywordflow">if</span> (status != XTS_SUCCESS) {</div>
-<div class="line"><span class="lineno">  446</span>      <span class="keywordflow">throw</span> std::runtime_error(xts_last_error());</div>
-<div class="line"><span class="lineno">  447</span>    }</div>
-<div class="line"><span class="lineno">  448</span>    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>);</div>
-<div class="line"><span class="lineno">  449</span>    <a class="code hl_variable" href="#a5854cdd11934a6f03d601c140b38563f">m_cached_x</a> = <a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>;</div>
-<div class="line"><span class="lineno">  450</span>    (void)value;</div>
-<div class="line"><span class="lineno">  451</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
-<div class="line"><span class="lineno">  452</span>  }</div>
-<div class="line"><span class="lineno">  453</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; a_maxIterations; ++i) {</div>
-<div class="line"><span class="lineno">  454</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classeonc_1_1XtsciOptimizer.html#ac8fa0e20cc86e1240da7e50af7ccd249">step</a>(a_maxMove) != 0) {</div>
-<div class="line"><span class="lineno">  455</span>      <span class="keywordflow">return</span> 1;</div>
-<div class="line"><span class="lineno">  456</span>    }</div>
-<div class="line"><span class="lineno">  457</span>  }</div>
-<div class="line"><span class="lineno">  458</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
-<div class="line"><span class="lineno">  459</span>}</div>
+<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8cpp_source.html#l00422">422</a> of file <a class="el" href="XtsciOptimizer_8cpp_source.html">XtsciOptimizer.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  422</span>                                                                {</div>
+<div class="line"><span class="lineno">  423</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;degreesOfFreedom() &lt;= 0 || a_maxIterations == 0) {</div>
+<div class="line"><span class="lineno">  424</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  425</span>  }</div>
+<div class="line"><span class="lineno">  426</span>  <a class="code hl_function" href="classeonc_1_1XtsciOptimizer.html#a4c35607672825155d0cda735ae84e118">ensureSolver</a>(a_maxMove);</div>
+<div class="line"><span class="lineno">  427</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;lbfgs = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs;</div>
+<div class="line"><span class="lineno">  428</span>  std::string precon = resolved_precon(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts);</div>
+<div class="line"><span class="lineno">  429</span>  <span class="keyword">const</span> xts_method_t method = method_from_name(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.xtsci.method);</div>
+<div class="line"><span class="lineno">  430</span>  <span class="keywordflow">if</span> (method == XTS_DOGLEG &amp;&amp; !is_host_precon(precon)) {</div>
+<div class="line"><span class="lineno">  431</span>    precon = <span class="stringliteral">&quot;pair&quot;</span>;</div>
+<div class="line"><span class="lineno">  432</span>  }</div>
+<div class="line"><span class="lineno">  433</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> want_hess = method == XTS_NEWTON || method == XTS_RFO ||</div>
+<div class="line"><span class="lineno">  434</span>                         method == XTS_DOGLEG || is_host_precon(precon);</div>
+<div class="line"><span class="lineno">  435</span>  <span class="comment">// A full minimize without a host Hessian goes through the eindir entry.</span></div>
+<div class="line"><span class="lineno">  436</span>  <span class="comment">// step() stays one session iteration so the host loop keeps its memory.</span></div>
+<div class="line"><span class="lineno">  437</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a> != <span class="keyword">nullptr</span> &amp;&amp; !want_hess) {</div>
+<div class="line"><span class="lineno">  438</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size() == 0) {</div>
+<div class="line"><span class="lineno">  439</span>      <a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a> = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  440</span>    }</div>
+<div class="line"><span class="lineno">  441</span>    <span class="keywordtype">double</span> value = 0.0;</div>
+<div class="line"><span class="lineno">  442</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> status = <a class="code hl_function" href="namespaceeonc_1_1xtsci__eindir.html#a0d7100dd1f75bdc61523a7d2f8827a14">xtsci_eindir::minimize</a>(</div>
+<div class="line"><span class="lineno">  443</span>        <a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a>, <a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.data(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size()), a_maxIterations,</div>
+<div class="line"><span class="lineno">  444</span>        <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.converged_force, std::max(a_maxMove, 1.0e-12),</div>
+<div class="line"><span class="lineno">  445</span>        <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(std::max&lt;long&gt;(0, lbfgs.memory)),</div>
+<div class="line"><span class="lineno">  446</span>        <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(method), &amp;value);</div>
+<div class="line"><span class="lineno">  447</span>    <span class="keywordflow">if</span> (status != XTS_SUCCESS) {</div>
+<div class="line"><span class="lineno">  448</span>      <span class="keywordflow">throw</span> std::runtime_error(xts_last_error());</div>
+<div class="line"><span class="lineno">  449</span>    }</div>
+<div class="line"><span class="lineno">  450</span>    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>);</div>
+<div class="line"><span class="lineno">  451</span>    <a class="code hl_variable" href="#a5854cdd11934a6f03d601c140b38563f">m_cached_x</a> = <a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>;</div>
+<div class="line"><span class="lineno">  452</span>    <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(value);</div>
+<div class="line"><span class="lineno">  453</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  454</span>  }</div>
+<div class="line"><span class="lineno">  455</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; a_maxIterations; ++i) {</div>
+<div class="line"><span class="lineno">  456</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classeonc_1_1XtsciOptimizer.html#ac8fa0e20cc86e1240da7e50af7ccd249">step</a>(a_maxMove) != 0) {</div>
+<div class="line"><span class="lineno">  457</span>      <span class="keywordflow">return</span> 1;</div>
+<div class="line"><span class="lineno">  458</span>    }</div>
+<div class="line"><span class="lineno">  459</span>  }</div>
+<div class="line"><span class="lineno">  460</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  461</span>}</div>
 <div class="ttc" id="aclassXtsciOptimizer_html_a92eeff22e2007615935c6de6fb9983b7"><div class="ttname"><a href="#a92eeff22e2007615935c6de6fb9983b7">XtsciOptimizer::m_x</a></div><div class="ttdeci">Eigen::VectorXd m_x</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8h_source.html#l00047">XtsciOptimizer.h:47</a></div></div>
 <div class="ttc" id="aclasseonc_1_1XtsciOptimizer_html_a4c35607672825155d0cda735ae84e118"><div class="ttname"><a href="classeonc_1_1XtsciOptimizer.html#a4c35607672825155d0cda735ae84e118">eonc::XtsciOptimizer::ensureSolver</a></div><div class="ttdeci">void ensureSolver(double a_maxMove)</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8cpp_source.html#l00258">XtsciOptimizer.cpp:258</a></div></div>
-<div class="ttc" id="aclasseonc_1_1XtsciOptimizer_html_ac8fa0e20cc86e1240da7e50af7ccd249"><div class="ttname"><a href="classeonc_1_1XtsciOptimizer.html#ac8fa0e20cc86e1240da7e50af7ccd249">eonc::XtsciOptimizer::step</a></div><div class="ttdeci">int step(double a_maxMove) override</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8cpp_source.html#l00369">XtsciOptimizer.cpp:369</a></div></div>
+<div class="ttc" id="aclasseonc_1_1XtsciOptimizer_html_ac8fa0e20cc86e1240da7e50af7ccd249"><div class="ttname"><a href="classeonc_1_1XtsciOptimizer.html#ac8fa0e20cc86e1240da7e50af7ccd249">eonc::XtsciOptimizer::step</a></div><div class="ttdeci">int step(double a_maxMove) override</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8cpp_source.html#l00371">XtsciOptimizer.cpp:371</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1xtsci__eindir_html_a0d7100dd1f75bdc61523a7d2f8827a14"><div class="ttname"><a href="namespaceeonc_1_1xtsci__eindir.html#a0d7100dd1f75bdc61523a7d2f8827a14">eonc::xtsci_eindir::minimize</a></div><div class="ttdeci">int minimize(State *state, double *x, std::size_t n, std::size_t maxiter, double gtol, double istep, std::size_t memory, int method, double *value_out)</div><div class="ttdoc">xts_minimize_eindir on a caller-owned buffer. The caller keeps State.</div><div class="ttdef"><b>Definition</b> <a href="XtsciEindir_8cpp_source.html#l00290">XtsciEindir.cpp:290</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -657,57 +659,57 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1Optimizer.html#aa66365f3f15e6d4b9829e555cfc9f2b5">eonc::Optimizer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8cpp_source.html#l00369">369</a> of file <a class="el" href="XtsciOptimizer_8cpp_source.html">XtsciOptimizer.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  369</span>                                         {</div>
-<div class="line"><span class="lineno">  370</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;degreesOfFreedom() &lt;= 0) {</div>
-<div class="line"><span class="lineno">  371</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
-<div class="line"><span class="lineno">  372</span>  }</div>
-<div class="line"><span class="lineno">  373</span>  <a class="code hl_function" href="classeonc_1_1XtsciOptimizer.html#a4c35607672825155d0cda735ae84e118">ensureSolver</a>(a_maxMove);</div>
-<div class="line"><span class="lineno">  374</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a> == <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">  375</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
-<div class="line"><span class="lineno">  376</span>  }</div>
-<div class="line"><span class="lineno">  377</span>  <span class="comment">// Native LBFGS clips by the largest per-atom move, not ||d||_2.</span></div>
-<div class="line"><span class="lineno">  378</span>  xts_solver_set_maxmove(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, 0.0);</div>
-<div class="line"><span class="lineno">  379</span>  xts_solver_set_atom_maxmove(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, std::max(a_maxMove, 0.0));</div>
-<div class="line"><span class="lineno">  380</span> </div>
-<div class="line"><span class="lineno">  381</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size() == 0) {</div>
-<div class="line"><span class="lineno">  382</span>    <a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a> = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPositions();</div>
-<div class="line"><span class="lineno">  383</span>  }</div>
-<div class="line"><span class="lineno">  384</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size() != <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;degreesOfFreedom()) {</div>
-<div class="line"><span class="lineno">  385</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;xtsci objective position dimension mismatch&quot;</span>);</div>
-<div class="line"><span class="lineno">  386</span>  }</div>
-<div class="line"><span class="lineno">  387</span>  <span class="keyword">auto</span> *tensor =</div>
-<div class="line"><span class="lineno">  388</span>      xts_tensor_borrow_cpu_f64(<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.data(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size()));</div>
-<div class="line"><span class="lineno">  389</span>  <span class="keywordflow">if</span> (tensor == <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">  390</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;could not allocate xtsci objective tensor&quot;</span>);</div>
-<div class="line"><span class="lineno">  391</span>  }</div>
-<div class="line"><span class="lineno">  392</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;lbfgs = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs;</div>
-<div class="line"><span class="lineno">  393</span>  std::string precon = resolved_precon(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts);</div>
-<div class="line"><span class="lineno">  394</span>  <span class="keyword">const</span> xts_method_t method = method_from_name(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.xtsci.method);</div>
-<div class="line"><span class="lineno">  395</span>  <span class="keywordflow">if</span> (method == XTS_DOGLEG &amp;&amp; !is_host_precon(precon)) {</div>
-<div class="line"><span class="lineno">  396</span>    precon = <span class="stringliteral">&quot;pair&quot;</span>;</div>
-<div class="line"><span class="lineno">  397</span>  }</div>
-<div class="line"><span class="lineno">  398</span>  XtsObjectiveContext context{</div>
-<div class="line"><span class="lineno">  399</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>.get(),    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.potential, precon,      lbfgs.precon_A,</div>
-<div class="line"><span class="lineno">  400</span>      lbfgs.precon_mu, lbfgs.precon_rcut,     &amp;<a class="code hl_variable" href="#a5854cdd11934a6f03d601c140b38563f">m_cached_x</a>, <a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a>,</div>
-<div class="line"><span class="lineno">  401</span>  };</div>
-<div class="line"><span class="lineno">  402</span>  xts_report_t report{};</div>
-<div class="line"><span class="lineno">  403</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> want_hess = method == XTS_NEWTON || method == XTS_RFO ||</div>
-<div class="line"><span class="lineno">  404</span>                         method == XTS_DOGLEG || is_host_precon(precon);</div>
-<div class="line"><span class="lineno">  405</span>  xts_status_t status;</div>
-<div class="line"><span class="lineno">  406</span>  <span class="keywordflow">if</span> (want_hess) {</div>
-<div class="line"><span class="lineno">  407</span>    status = xts_solver_step_hess_fg(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, evaluate_gradient, hessian,</div>
-<div class="line"><span class="lineno">  408</span>                                     &amp;context, tensor, &amp;report);</div>
-<div class="line"><span class="lineno">  409</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  410</span>    status = xts_solver_step_fg(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, evaluate_gradient, &amp;context, tensor,</div>
-<div class="line"><span class="lineno">  411</span>                                &amp;report);</div>
-<div class="line"><span class="lineno">  412</span>  }</div>
-<div class="line"><span class="lineno">  413</span>  xts_tensor_free(tensor);</div>
-<div class="line"><span class="lineno">  414</span>  <span class="keywordflow">if</span> (status != XTS_SUCCESS) {</div>
-<div class="line"><span class="lineno">  415</span>    <span class="keywordflow">throw</span> std::runtime_error(xts_last_error());</div>
-<div class="line"><span class="lineno">  416</span>  }</div>
-<div class="line"><span class="lineno">  417</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
-<div class="line"><span class="lineno">  418</span>}</div>
+<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8cpp_source.html#l00371">371</a> of file <a class="el" href="XtsciOptimizer_8cpp_source.html">XtsciOptimizer.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  371</span>                                         {</div>
+<div class="line"><span class="lineno">  372</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;degreesOfFreedom() &lt;= 0) {</div>
+<div class="line"><span class="lineno">  373</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  374</span>  }</div>
+<div class="line"><span class="lineno">  375</span>  <a class="code hl_function" href="classeonc_1_1XtsciOptimizer.html#a4c35607672825155d0cda735ae84e118">ensureSolver</a>(a_maxMove);</div>
+<div class="line"><span class="lineno">  376</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a> == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  377</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  378</span>  }</div>
+<div class="line"><span class="lineno">  379</span>  <span class="comment">// Native LBFGS clips by the largest per-atom move, not ||d||_2.</span></div>
+<div class="line"><span class="lineno">  380</span>  xts_solver_set_maxmove(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, 0.0);</div>
+<div class="line"><span class="lineno">  381</span>  xts_solver_set_atom_maxmove(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, std::max(a_maxMove, 0.0));</div>
+<div class="line"><span class="lineno">  382</span> </div>
+<div class="line"><span class="lineno">  383</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size() == 0) {</div>
+<div class="line"><span class="lineno">  384</span>    <a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a> = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  385</span>  }</div>
+<div class="line"><span class="lineno">  386</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size() != <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;degreesOfFreedom()) {</div>
+<div class="line"><span class="lineno">  387</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;xtsci objective position dimension mismatch&quot;</span>);</div>
+<div class="line"><span class="lineno">  388</span>  }</div>
+<div class="line"><span class="lineno">  389</span>  <span class="keyword">auto</span> *tensor =</div>
+<div class="line"><span class="lineno">  390</span>      xts_tensor_borrow_cpu_f64(<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.data(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size()));</div>
+<div class="line"><span class="lineno">  391</span>  <span class="keywordflow">if</span> (tensor == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  392</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;could not allocate xtsci objective tensor&quot;</span>);</div>
+<div class="line"><span class="lineno">  393</span>  }</div>
+<div class="line"><span class="lineno">  394</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;lbfgs = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs;</div>
+<div class="line"><span class="lineno">  395</span>  std::string precon = resolved_precon(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts);</div>
+<div class="line"><span class="lineno">  396</span>  <span class="keyword">const</span> xts_method_t method = method_from_name(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.xtsci.method);</div>
+<div class="line"><span class="lineno">  397</span>  <span class="keywordflow">if</span> (method == XTS_DOGLEG &amp;&amp; !is_host_precon(precon)) {</div>
+<div class="line"><span class="lineno">  398</span>    precon = <span class="stringliteral">&quot;pair&quot;</span>;</div>
+<div class="line"><span class="lineno">  399</span>  }</div>
+<div class="line"><span class="lineno">  400</span>  XtsObjectiveContext context{</div>
+<div class="line"><span class="lineno">  401</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>.get(),    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.potential, precon,      lbfgs.precon_A,</div>
+<div class="line"><span class="lineno">  402</span>      lbfgs.precon_mu, lbfgs.precon_rcut,     &amp;<a class="code hl_variable" href="#a5854cdd11934a6f03d601c140b38563f">m_cached_x</a>, <a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a>,</div>
+<div class="line"><span class="lineno">  403</span>  };</div>
+<div class="line"><span class="lineno">  404</span>  xts_report_t report{};</div>
+<div class="line"><span class="lineno">  405</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> want_hess = method == XTS_NEWTON || method == XTS_RFO ||</div>
+<div class="line"><span class="lineno">  406</span>                         method == XTS_DOGLEG || is_host_precon(precon);</div>
+<div class="line"><span class="lineno">  407</span>  xts_status_t status;</div>
+<div class="line"><span class="lineno">  408</span>  <span class="keywordflow">if</span> (want_hess) {</div>
+<div class="line"><span class="lineno">  409</span>    status = xts_solver_step_hess_fg(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, evaluate_gradient, hessian,</div>
+<div class="line"><span class="lineno">  410</span>                                     &amp;context, tensor, &amp;report);</div>
+<div class="line"><span class="lineno">  411</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  412</span>    status = xts_solver_step_fg(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, evaluate_gradient, &amp;context, tensor,</div>
+<div class="line"><span class="lineno">  413</span>                                &amp;report);</div>
+<div class="line"><span class="lineno">  414</span>  }</div>
+<div class="line"><span class="lineno">  415</span>  xts_tensor_free(tensor);</div>
+<div class="line"><span class="lineno">  416</span>  <span class="keywordflow">if</span> (status != XTS_SUCCESS) {</div>
+<div class="line"><span class="lineno">  417</span>    <span class="keywordflow">throw</span> std::runtime_error(xts_last_error());</div>
+<div class="line"><span class="lineno">  418</span>  }</div>
+<div class="line"><span class="lineno">  419</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  420</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

@@ -10,6 +10,7 @@ var classeonc_1_1ObjectiveFunction =
     [ "getMasses", "classeonc_1_1ObjectiveFunction.html#a8f2672688adbd931070f00fa29b72be8", null ],
     [ "getPeriodic", "classeonc_1_1ObjectiveFunction.html#a9026e74111d5f55078d5c5f8a47501aa", null ],
     [ "getPositions", "classeonc_1_1ObjectiveFunction.html#aa06776d23dd7b6ffa23db1555d657261", null ],
+    [ "gradientMatchesEnergy", "classeonc_1_1ObjectiveFunction.html#aa9f96f1fb32c3cdf731ce3ee44050f4c", null ],
     [ "isConverged", "classeonc_1_1ObjectiveFunction.html#a90d7874f2d2686d628c9d6057f841925", null ],
     [ "knownCurvature", "classeonc_1_1ObjectiveFunction.html#aa52b364b8d8eb6fcb6cddc409aaa6691", null ],
     [ "minimumImage", "classeonc_1_1ObjectiveFunction.html#af3271abcddd3c2ec4808a5b3f25e4b77", null ],

@@ -252,6 +252,10 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:a8fd9e177d2816783656110c9f80f5838"><td class="mdescLeft">&#160;</td><td class="mdescRight">When false, NEB/dimer/process_search never share one <a class="el" href="classeonc_1_1Potential.html">Potential</a> across threads, even if the backend reports isThreadSafe().  <br /></td></tr>
 <tr class="memitem:af2d628521f966cc4022af4f2c31ffdfd" id="r_af2d628521f966cc4022af4f2c31ffdfd"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#af2d628521f966cc4022af4f2c31ffdfd">extPotPath</a> {&quot;./ext_pot&quot;}</td></tr>
 <tr class="memitem:a511ee05ffc7b3df07cd89c9ce8a801f1" id="r_a511ee05ffc7b3df07cd89c9ce8a801f1"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a511ee05ffc7b3df07cd89c9ce8a801f1">potentialsPath</a></td></tr>
+<tr class="memitem:a7a3d330c58a55ce416de7cfda5da1b75" id="r_a7a3d330c58a55ce416de7cfda5da1b75"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a7a3d330c58a55ce416de7cfda5da1b75">pairSwitchWidth</a> {0.0}</td></tr>
+<tr class="memdesc:a7a3d330c58a55ce416de7cfda5da1b75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Width (Angstrom) of the C^2 quintic switch that takes the lj, ljcluster and morse_pt pair terms to zero at their cutoff.  <br /></td></tr>
+<tr class="memitem:acda4a16d6c5d839aa6878bbb4c098d1a" id="r_acda4a16d6c5d839aa6878bbb4c098d1a"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#acda4a16d6c5d839aa6878bbb4c098d1a">pairCutoff</a> {0.0}</td></tr>
+<tr class="memdesc:acda4a16d6c5d839aa6878bbb4c098d1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cutoff (Angstrom) of the lj, ljcluster and morse_pt pair terms.  <br /></td></tr>
 <tr class="memitem:aaaf5bbabc7588ad37229eb8ce4505927" id="r_aaaf5bbabc7588ad37229eb8ce4505927"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#aaaf5bbabc7588ad37229eb8ce4505927">MPIPotentialRank</a> {-1}</td></tr>
 <tr class="memitem:a87cc638d8bdacb04e502fdc8d000d59c" id="r_a87cc638d8bdacb04e502fdc8d000d59c"><td class="memItemLeft">std::uintptr_t&#160;</td><td class="memItemRight"><a class="el" href="#a87cc638d8bdacb04e502fdc8d000d59c">MPIClientComm</a> {0}</td></tr>
 <tr class="memdesc:a87cc638d8bdacb04e502fdc8d000d59c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opaque MPI_Comm bits. Read/write with <a class="el" href="ParametersMpi_8h.html">ParametersMpi.h</a> in MPI TUs.  <br /></td></tr>
@@ -359,8 +363,8 @@ Public Attributes</h2></td></tr>
 
 <p>Opaque MPI_Comm bits. Read/write with <a class="el" href="ParametersMpi_8h.html">ParametersMpi.h</a> in MPI TUs. </p>
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00065">65</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   65</span>{0};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00072">72</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   72</span>{0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -393,8 +397,48 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00063">63</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   63</span>{-1};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00070">70</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   70</span>{-1};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="acda4a16d6c5d839aa6878bbb4c098d1a" name="acda4a16d6c5d839aa6878bbb4c098d1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acda4a16d6c5d839aa6878bbb4c098d1a">&#9670;&#160;</a></span>pairCutoff</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::potential_options_t::pairCutoff {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cutoff (Angstrom) of the lj, ljcluster and morse_pt pair terms. </p>
+<p>0 keeps each potential's own cutoff (15 for LJ, 9.5 for Morse). </p>
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00069">69</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   69</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7a3d330c58a55ce416de7cfda5da1b75" name="a7a3d330c58a55ce416de7cfda5da1b75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a3d330c58a55ce416de7cfda5da1b75">&#9670;&#160;</a></span>pairSwitchWidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::potential_options_t::pairSwitchWidth {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Width (Angstrom) of the C^2 quintic switch that takes the lj, ljcluster and morse_pt pair terms to zero at their cutoff. </p>
+<p>0 keeps the shifted truncation, whose force jumps at the cutoff. </p>
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00066">66</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   66</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>

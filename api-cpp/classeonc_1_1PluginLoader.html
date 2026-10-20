@@ -250,6 +250,10 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classeonc_1_1P
   </map>
 </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:Key" id="r_Key"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1PluginLoader_1_1Key.html">Key</a></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a38fabb0e7664a9f17407bde238b592ae" id="r_a38fabb0e7664a9f17407bde238b592ae"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a38fabb0e7664a9f17407bde238b592ae">add_config_paths</a> (const std::string &amp;colon_paths) override</td></tr>
@@ -263,6 +267,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afdfc9e7539756a768eaf0b1adaf924c7" id="r_afdfc9e7539756a768eaf0b1adaf924c7"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#afdfc9e7539756a768eaf0b1adaf924c7">~PluginLoader</a> () override</td></tr>
 <tr class="memitem:aaad69ae4eb4ee99ddc995e04d924d839" id="r_aaad69ae4eb4ee99ddc995e04d924d839"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#aaad69ae4eb4ee99ddc995e04d924d839">PluginLoader</a> (const PluginLoader &amp;)=delete</td></tr>
 <tr class="memitem:affd2e90557ca235406b6111e3f89501a" id="r_affd2e90557ca235406b6111e3f89501a"><td class="memItemLeft"><a class="el" href="#aaad69ae4eb4ee99ddc995e04d924d839">PluginLoader</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#affd2e90557ca235406b6111e3f89501a">operator=</a> (const <a class="el" href="#aaad69ae4eb4ee99ddc995e04d924d839">PluginLoader</a> &amp;)=delete</td></tr>
+<tr class="memitem:ae37f362d1693b84ee64e1466fddf3f02" id="r_ae37f362d1693b84ee64e1466fddf3f02"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ae37f362d1693b84ee64e1466fddf3f02">PluginLoader</a> (<a class="el" href="classeonc_1_1PluginLoader_1_1Key.html">Key</a>)</td></tr>
 <tr class="inherit_header pub_methods_classeonc_1_1IPluginLoader"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1IPluginLoader')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1IPluginLoader.html">eonc::IPluginLoader</a></td></tr>
 <tr class="memitem:a61ffe0ca50db9936876e963ccfeda324 inherit pub_methods_classeonc_1_1IPluginLoader" id="r_a61ffe0ca50db9936876e963ccfeda324"><td class="memTemplParams" colspan="2">template&lt;typename Fn&gt; </td></tr>
 <tr class="memitem:a61ffe0ca50db9936876e963ccfeda324 inherit pub_methods_classeonc_1_1IPluginLoader template"><td class="memItemLeft">Fn&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IPluginLoader.html#a61ffe0ca50db9936876e963ccfeda324">load_sym</a> (const char *lib_base, const char *sym_name)</td></tr>
@@ -328,19 +333,19 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PluginLoader_8cpp_source.html#l00038">38</a> of file <a class="el" href="PluginLoader_8cpp_source.html">PluginLoader.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   38</span>                            {</div>
-<div class="line"><span class="lineno">   39</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;[name, handle] : <a class="code hl_variable" href="#af8eee3ec7c45a6b9cc1bdb7a44d5eb2e">m_handles</a>) {</div>
-<div class="line"><span class="lineno">   40</span>    <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">dynlib::close</a>(handle);</div>
-<div class="line"><span class="lineno">   41</span>  }</div>
-<div class="line"><span class="lineno">   42</span>}</div>
-<div class="ttc" id="aclasseonc_1_1PluginLoader_html_af8eee3ec7c45a6b9cc1bdb7a44d5eb2e"><div class="ttname"><a href="#af8eee3ec7c45a6b9cc1bdb7a44d5eb2e">eonc::PluginLoader::m_handles</a></div><div class="ttdeci">std::unordered_map&lt; std::string, dynlib::Handle &gt; m_handles</div><div class="ttdef"><b>Definition</b> <a href="PluginLoader_8h_source.html#l00121">PluginLoader.h:121</a></div></div>
+<p class="definition">Definition at line <a class="el" href="PluginLoader_8cpp_source.html#l00041">41</a> of file <a class="el" href="PluginLoader_8cpp_source.html">PluginLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   41</span>                            {</div>
+<div class="line"><span class="lineno">   42</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;[name, handle] : <a class="code hl_variable" href="#af8eee3ec7c45a6b9cc1bdb7a44d5eb2e">m_handles</a>) {</div>
+<div class="line"><span class="lineno">   43</span>    <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">dynlib::close</a>(handle);</div>
+<div class="line"><span class="lineno">   44</span>  }</div>
+<div class="line"><span class="lineno">   45</span>}</div>
+<div class="ttc" id="aclasseonc_1_1PluginLoader_html_af8eee3ec7c45a6b9cc1bdb7a44d5eb2e"><div class="ttname"><a href="#af8eee3ec7c45a6b9cc1bdb7a44d5eb2e">eonc::PluginLoader::m_handles</a></div><div class="ttdeci">std::unordered_map&lt; std::string, dynlib::Handle &gt; m_handles</div><div class="ttdef"><b>Definition</b> <a href="PluginLoader_8h_source.html#l00129">PluginLoader.h:129</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1dynlib_html_aaaf1d7f945f57fb1f9303e58ae88d832"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">eonc::dynlib::close</a></div><div class="ttdeci">void close(Handle h) noexcept</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00077">DynLib.h:77</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
 <a id="aaad69ae4eb4ee99ddc995e04d924d839" name="aaad69ae4eb4ee99ddc995e04d924d839"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaad69ae4eb4ee99ddc995e04d924d839">&#9670;&#160;</a></span>PluginLoader() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aaad69ae4eb4ee99ddc995e04d924d839">&#9670;&#160;</a></span>PluginLoader() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -365,7 +370,7 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <a id="a4b63585096e96d7bf5dd9e48e2f09853" name="a4b63585096e96d7bf5dd9e48e2f09853"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4b63585096e96d7bf5dd9e48e2f09853">&#9670;&#160;</a></span>PluginLoader() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b63585096e96d7bf5dd9e48e2f09853">&#9670;&#160;</a></span>PluginLoader() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -387,20 +392,49 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="PluginLoader_8cpp_source.html#l00028">28</a> of file <a class="el" href="PluginLoader_8cpp_source.html">PluginLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   28</span>                           {</div>
+<div class="line"><span class="lineno">   29</span>  <span class="comment">// Seed from EON_POTENTIALS_PATH env var (colon-separated on POSIX).</span></div>
+<div class="line"><span class="lineno">   30</span>  <span class="comment">// Config-file paths are prepended later via add_config_paths().</span></div>
+<div class="line"><span class="lineno">   31</span>  <span class="keyword">const</span> <span class="keywordtype">char</span> *env = std::getenv(<span class="stringliteral">&quot;EON_POTENTIALS_PATH&quot;</span>);</div>
+<div class="line"><span class="lineno">   32</span>  <span class="keywordflow">if</span> (env &amp;&amp; *env) {</div>
+<div class="line"><span class="lineno">   33</span><span class="preprocessor">#ifdef _WIN32</span></div>
+<div class="line"><span class="lineno">   34</span>    <a class="code hl_function" href="#a8d3f636e5289cebf412b685a441d70c0">append_paths</a>(env, <span class="charliteral">&#39;;&#39;</span>);</div>
+<div class="line"><span class="lineno">   35</span><span class="preprocessor">#else</span></div>
+<div class="line"><span class="lineno">   36</span>    <a class="code hl_function" href="#a8d3f636e5289cebf412b685a441d70c0">append_paths</a>(env, <span class="charliteral">&#39;:&#39;</span>);</div>
+<div class="line"><span class="lineno">   37</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">   38</span>  }</div>
+<div class="line"><span class="lineno">   39</span>}</div>
+<div class="ttc" id="aclasseonc_1_1PluginLoader_html_a8d3f636e5289cebf412b685a441d70c0"><div class="ttname"><a href="#a8d3f636e5289cebf412b685a441d70c0">eonc::PluginLoader::append_paths</a></div><div class="ttdeci">void append_paths(const std::string &amp;path_str, char sep)</div><div class="ttdef"><b>Definition</b> <a href="PluginLoader_8cpp_source.html#l00047">PluginLoader.cpp:47</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae37f362d1693b84ee64e1466fddf3f02" name="ae37f362d1693b84ee64e1466fddf3f02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae37f362d1693b84ee64e1466fddf3f02">&#9670;&#160;</a></span>PluginLoader() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eonc::PluginLoader::PluginLoader </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1PluginLoader_1_1Key.html">Key</a></td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
 <p class="definition">Definition at line <a class="el" href="PluginLoader_8cpp_source.html#l00025">25</a> of file <a class="el" href="PluginLoader_8cpp_source.html">PluginLoader.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   25</span>                           {</div>
-<div class="line"><span class="lineno">   26</span>  <span class="comment">// Seed from EON_POTENTIALS_PATH env var (colon-separated on POSIX).</span></div>
-<div class="line"><span class="lineno">   27</span>  <span class="comment">// Config-file paths are prepended later via add_config_paths().</span></div>
-<div class="line"><span class="lineno">   28</span>  <span class="keyword">const</span> <span class="keywordtype">char</span> *env = std::getenv(<span class="stringliteral">&quot;EON_POTENTIALS_PATH&quot;</span>);</div>
-<div class="line"><span class="lineno">   29</span>  <span class="keywordflow">if</span> (env &amp;&amp; *env) {</div>
-<div class="line"><span class="lineno">   30</span><span class="preprocessor">#ifdef _WIN32</span></div>
-<div class="line"><span class="lineno">   31</span>    <a class="code hl_function" href="#a8d3f636e5289cebf412b685a441d70c0">append_paths</a>(env, <span class="charliteral">&#39;;&#39;</span>);</div>
-<div class="line"><span class="lineno">   32</span><span class="preprocessor">#else</span></div>
-<div class="line"><span class="lineno">   33</span>    <a class="code hl_function" href="#a8d3f636e5289cebf412b685a441d70c0">append_paths</a>(env, <span class="charliteral">&#39;:&#39;</span>);</div>
-<div class="line"><span class="lineno">   34</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">   35</span>  }</div>
-<div class="line"><span class="lineno">   36</span>}</div>
-<div class="ttc" id="aclasseonc_1_1PluginLoader_html_a8d3f636e5289cebf412b685a441d70c0"><div class="ttname"><a href="#a8d3f636e5289cebf412b685a441d70c0">eonc::PluginLoader::append_paths</a></div><div class="ttdeci">void append_paths(const std::string &amp;path_str, char sep)</div><div class="ttdef"><b>Definition</b> <a href="PluginLoader_8cpp_source.html#l00044">PluginLoader.cpp:44</a></div></div>
+<div class="fragment"><div class="line"><span class="lineno">   26</span>    : <a class="code hl_function" href="#a4b63585096e96d7bf5dd9e48e2f09853">PluginLoader</a>() {}</div>
+<div class="ttc" id="aclasseonc_1_1PluginLoader_html_a4b63585096e96d7bf5dd9e48e2f09853"><div class="ttname"><a href="#a4b63585096e96d7bf5dd9e48e2f09853">eonc::PluginLoader::PluginLoader</a></div><div class="ttdeci">PluginLoader()</div><div class="ttdef"><b>Definition</b> <a href="PluginLoader_8cpp_source.html#l00028">PluginLoader.cpp:28</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -438,42 +472,42 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1IPluginLoader.html#a73c5351ae91875f2a83dd1b214f5fa81">eonc::IPluginLoader</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="PluginLoader_8cpp_source.html#l00066">66</a> of file <a class="el" href="PluginLoader_8cpp_source.html">PluginLoader.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   66</span>                                                                {</div>
-<div class="line"><span class="lineno">   67</span>  <span class="keywordflow">if</span> (colon_paths.empty())</div>
-<div class="line"><span class="lineno">   68</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">   69</span>  std::lock_guard&lt;std::mutex&gt; lock(<a class="code hl_variable" href="#ace82f8c6ca1d5b10945d44172c88d4d1">m_mutex</a>);</div>
-<div class="line"><span class="lineno">   70</span>  <span class="comment">// Config paths have higher priority than env-var paths: insert at front.</span></div>
-<div class="line"><span class="lineno">   71</span>  std::vector&lt;std::string&gt; new_paths;</div>
-<div class="line"><span class="lineno">   72</span><span class="preprocessor">#ifdef _WIN32</span></div>
-<div class="line"><span class="lineno">   73</span>  <span class="keyword">const</span> <span class="keywordtype">char</span> sep = <span class="charliteral">&#39;;&#39;</span>;</div>
-<div class="line"><span class="lineno">   74</span><span class="preprocessor">#else</span></div>
-<div class="line"><span class="lineno">   75</span>  <span class="keyword">const</span> <span class="keywordtype">char</span> sep = <span class="charliteral">&#39;:&#39;</span>;</div>
-<div class="line"><span class="lineno">   76</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">   77</span>  std::string::size_type start = 0;</div>
-<div class="line"><span class="lineno">   78</span>  <span class="keywordflow">while</span> (start &lt; colon_paths.size()) {</div>
-<div class="line"><span class="lineno">   79</span>    <span class="keyword">auto</span> pos = colon_paths.find(sep, start);</div>
-<div class="line"><span class="lineno">   80</span>    <span class="keywordflow">if</span> (pos == std::string::npos)</div>
-<div class="line"><span class="lineno">   81</span>      pos = colon_paths.size();</div>
-<div class="line"><span class="lineno">   82</span>    <span class="keywordflow">if</span> (pos &gt; start) {</div>
-<div class="line"><span class="lineno">   83</span>      std::string p = colon_paths.substr(start, pos - start);</div>
-<div class="line"><span class="lineno">   84</span>      <span class="keywordtype">bool</span> dup = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   85</span>      <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;existing : <a class="code hl_variable" href="#a16bd90726d73769972c85319bbe518e7">m_search_paths</a>) {</div>
-<div class="line"><span class="lineno">   86</span>        <span class="keywordflow">if</span> (existing == p) {</div>
-<div class="line"><span class="lineno">   87</span>          dup = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   88</span>          <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">   89</span>        }</div>
-<div class="line"><span class="lineno">   90</span>      }</div>
-<div class="line"><span class="lineno">   91</span>      <span class="keywordflow">if</span> (!dup)</div>
-<div class="line"><span class="lineno">   92</span>        new_paths.push_back(std::move(p));</div>
-<div class="line"><span class="lineno">   93</span>    }</div>
-<div class="line"><span class="lineno">   94</span>    start = pos + 1;</div>
-<div class="line"><span class="lineno">   95</span>  }</div>
-<div class="line"><span class="lineno">   96</span>  <a class="code hl_variable" href="#a16bd90726d73769972c85319bbe518e7">m_search_paths</a>.insert(<a class="code hl_variable" href="#a16bd90726d73769972c85319bbe518e7">m_search_paths</a>.begin(), new_paths.begin(),</div>
-<div class="line"><span class="lineno">   97</span>                        new_paths.end());</div>
-<div class="line"><span class="lineno">   98</span>}</div>
-<div class="ttc" id="aclasseonc_1_1PluginLoader_html_a16bd90726d73769972c85319bbe518e7"><div class="ttname"><a href="#a16bd90726d73769972c85319bbe518e7">eonc::PluginLoader::m_search_paths</a></div><div class="ttdeci">std::vector&lt; std::string &gt; m_search_paths</div><div class="ttdef"><b>Definition</b> <a href="PluginLoader_8h_source.html#l00119">PluginLoader.h:119</a></div></div>
-<div class="ttc" id="aclasseonc_1_1PluginLoader_html_ace82f8c6ca1d5b10945d44172c88d4d1"><div class="ttname"><a href="#ace82f8c6ca1d5b10945d44172c88d4d1">eonc::PluginLoader::m_mutex</a></div><div class="ttdeci">std::mutex m_mutex</div><div class="ttdef"><b>Definition</b> <a href="PluginLoader_8h_source.html#l00120">PluginLoader.h:120</a></div></div>
+<p class="definition">Definition at line <a class="el" href="PluginLoader_8cpp_source.html#l00069">69</a> of file <a class="el" href="PluginLoader_8cpp_source.html">PluginLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   69</span>                                                                {</div>
+<div class="line"><span class="lineno">   70</span>  <span class="keywordflow">if</span> (colon_paths.empty())</div>
+<div class="line"><span class="lineno">   71</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   72</span>  std::lock_guard&lt;std::mutex&gt; lock(<a class="code hl_variable" href="#ace82f8c6ca1d5b10945d44172c88d4d1">m_mutex</a>);</div>
+<div class="line"><span class="lineno">   73</span>  <span class="comment">// Config paths have higher priority than env-var paths: insert at front.</span></div>
+<div class="line"><span class="lineno">   74</span>  std::vector&lt;std::string&gt; new_paths;</div>
+<div class="line"><span class="lineno">   75</span><span class="preprocessor">#ifdef _WIN32</span></div>
+<div class="line"><span class="lineno">   76</span>  <span class="keyword">const</span> <span class="keywordtype">char</span> sep = <span class="charliteral">&#39;;&#39;</span>;</div>
+<div class="line"><span class="lineno">   77</span><span class="preprocessor">#else</span></div>
+<div class="line"><span class="lineno">   78</span>  <span class="keyword">const</span> <span class="keywordtype">char</span> sep = <span class="charliteral">&#39;:&#39;</span>;</div>
+<div class="line"><span class="lineno">   79</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">   80</span>  std::string::size_type start = 0;</div>
+<div class="line"><span class="lineno">   81</span>  <span class="keywordflow">while</span> (start &lt; colon_paths.size()) {</div>
+<div class="line"><span class="lineno">   82</span>    <span class="keyword">auto</span> pos = colon_paths.find(sep, start);</div>
+<div class="line"><span class="lineno">   83</span>    <span class="keywordflow">if</span> (pos == std::string::npos)</div>
+<div class="line"><span class="lineno">   84</span>      pos = colon_paths.size();</div>
+<div class="line"><span class="lineno">   85</span>    <span class="keywordflow">if</span> (pos &gt; start) {</div>
+<div class="line"><span class="lineno">   86</span>      std::string p = colon_paths.substr(start, pos - start);</div>
+<div class="line"><span class="lineno">   87</span>      <span class="keywordtype">bool</span> dup = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   88</span>      <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;existing : <a class="code hl_variable" href="#a16bd90726d73769972c85319bbe518e7">m_search_paths</a>) {</div>
+<div class="line"><span class="lineno">   89</span>        <span class="keywordflow">if</span> (existing == p) {</div>
+<div class="line"><span class="lineno">   90</span>          dup = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   91</span>          <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">   92</span>        }</div>
+<div class="line"><span class="lineno">   93</span>      }</div>
+<div class="line"><span class="lineno">   94</span>      <span class="keywordflow">if</span> (!dup)</div>
+<div class="line"><span class="lineno">   95</span>        new_paths.push_back(std::move(p));</div>
+<div class="line"><span class="lineno">   96</span>    }</div>
+<div class="line"><span class="lineno">   97</span>    start = pos + 1;</div>
+<div class="line"><span class="lineno">   98</span>  }</div>
+<div class="line"><span class="lineno">   99</span>  <a class="code hl_variable" href="#a16bd90726d73769972c85319bbe518e7">m_search_paths</a>.insert(<a class="code hl_variable" href="#a16bd90726d73769972c85319bbe518e7">m_search_paths</a>.begin(), new_paths.begin(),</div>
+<div class="line"><span class="lineno">  100</span>                        new_paths.end());</div>
+<div class="line"><span class="lineno">  101</span>}</div>
+<div class="ttc" id="aclasseonc_1_1PluginLoader_html_a16bd90726d73769972c85319bbe518e7"><div class="ttname"><a href="#a16bd90726d73769972c85319bbe518e7">eonc::PluginLoader::m_search_paths</a></div><div class="ttdeci">std::vector&lt; std::string &gt; m_search_paths</div><div class="ttdef"><b>Definition</b> <a href="PluginLoader_8h_source.html#l00127">PluginLoader.h:127</a></div></div>
+<div class="ttc" id="aclasseonc_1_1PluginLoader_html_ace82f8c6ca1d5b10945d44172c88d4d1"><div class="ttname"><a href="#ace82f8c6ca1d5b10945d44172c88d4d1">eonc::PluginLoader::m_mutex</a></div><div class="ttdeci">std::mutex m_mutex</div><div class="ttdef"><b>Definition</b> <a href="PluginLoader_8h_source.html#l00128">PluginLoader.h:128</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -504,28 +538,28 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PluginLoader_8cpp_source.html#l00044">44</a> of file <a class="el" href="PluginLoader_8cpp_source.html">PluginLoader.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   44</span>                                                                   {</div>
-<div class="line"><span class="lineno">   45</span>  std::string::size_type start = 0;</div>
-<div class="line"><span class="lineno">   46</span>  <span class="keywordflow">while</span> (start &lt; path_str.size()) {</div>
-<div class="line"><span class="lineno">   47</span>    <span class="keyword">auto</span> pos = path_str.find(sep, start);</div>
-<div class="line"><span class="lineno">   48</span>    <span class="keywordflow">if</span> (pos == std::string::npos)</div>
-<div class="line"><span class="lineno">   49</span>      pos = path_str.size();</div>
-<div class="line"><span class="lineno">   50</span>    <span class="keywordflow">if</span> (pos &gt; start) {</div>
-<div class="line"><span class="lineno">   51</span>      std::string p = path_str.substr(start, pos - start);</div>
-<div class="line"><span class="lineno">   52</span>      <span class="keywordtype">bool</span> dup = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   53</span>      <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;existing : <a class="code hl_variable" href="#a16bd90726d73769972c85319bbe518e7">m_search_paths</a>) {</div>
-<div class="line"><span class="lineno">   54</span>        <span class="keywordflow">if</span> (existing == p) {</div>
-<div class="line"><span class="lineno">   55</span>          dup = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   56</span>          <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">   57</span>        }</div>
-<div class="line"><span class="lineno">   58</span>      }</div>
-<div class="line"><span class="lineno">   59</span>      <span class="keywordflow">if</span> (!dup)</div>
-<div class="line"><span class="lineno">   60</span>        <a class="code hl_variable" href="#a16bd90726d73769972c85319bbe518e7">m_search_paths</a>.push_back(std::move(p));</div>
-<div class="line"><span class="lineno">   61</span>    }</div>
-<div class="line"><span class="lineno">   62</span>    start = pos + 1;</div>
-<div class="line"><span class="lineno">   63</span>  }</div>
-<div class="line"><span class="lineno">   64</span>}</div>
+<p class="definition">Definition at line <a class="el" href="PluginLoader_8cpp_source.html#l00047">47</a> of file <a class="el" href="PluginLoader_8cpp_source.html">PluginLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   47</span>                                                                   {</div>
+<div class="line"><span class="lineno">   48</span>  std::string::size_type start = 0;</div>
+<div class="line"><span class="lineno">   49</span>  <span class="keywordflow">while</span> (start &lt; path_str.size()) {</div>
+<div class="line"><span class="lineno">   50</span>    <span class="keyword">auto</span> pos = path_str.find(sep, start);</div>
+<div class="line"><span class="lineno">   51</span>    <span class="keywordflow">if</span> (pos == std::string::npos)</div>
+<div class="line"><span class="lineno">   52</span>      pos = path_str.size();</div>
+<div class="line"><span class="lineno">   53</span>    <span class="keywordflow">if</span> (pos &gt; start) {</div>
+<div class="line"><span class="lineno">   54</span>      std::string p = path_str.substr(start, pos - start);</div>
+<div class="line"><span class="lineno">   55</span>      <span class="keywordtype">bool</span> dup = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   56</span>      <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;existing : <a class="code hl_variable" href="#a16bd90726d73769972c85319bbe518e7">m_search_paths</a>) {</div>
+<div class="line"><span class="lineno">   57</span>        <span class="keywordflow">if</span> (existing == p) {</div>
+<div class="line"><span class="lineno">   58</span>          dup = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   59</span>          <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">   60</span>        }</div>
+<div class="line"><span class="lineno">   61</span>      }</div>
+<div class="line"><span class="lineno">   62</span>      <span class="keywordflow">if</span> (!dup)</div>
+<div class="line"><span class="lineno">   63</span>        <a class="code hl_variable" href="#a16bd90726d73769972c85319bbe518e7">m_search_paths</a>.push_back(std::move(p));</div>
+<div class="line"><span class="lineno">   64</span>    }</div>
+<div class="line"><span class="lineno">   65</span>    start = pos + 1;</div>
+<div class="line"><span class="lineno">   66</span>  }</div>
+<div class="line"><span class="lineno">   67</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -586,19 +620,19 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PluginLoader_8cpp_source.html#l00100">100</a> of file <a class="el" href="PluginLoader_8cpp_source.html">PluginLoader.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  100</span>                                                                       {</div>
-<div class="line"><span class="lineno">  101</span>  std::vector&lt;std::string&gt; names;</div>
-<div class="line"><span class="lineno">  102</span><span class="preprocessor">#ifdef _WIN32</span></div>
-<div class="line"><span class="lineno">  103</span>  names.push_back(std::string(lib_base) + <span class="stringliteral">&quot;.dll&quot;</span>);</div>
-<div class="line"><span class="lineno">  104</span>  names.push_back(std::string(<span class="stringliteral">&quot;lib&quot;</span>) + lib_base + <span class="stringliteral">&quot;.dll&quot;</span>);</div>
-<div class="line"><span class="lineno">  105</span><span class="preprocessor">#elif defined(__APPLE__)</span></div>
-<div class="line"><span class="lineno">  106</span>  names.push_back(std::string(<span class="stringliteral">&quot;lib&quot;</span>) + lib_base + <span class="stringliteral">&quot;.dylib&quot;</span>);</div>
-<div class="line"><span class="lineno">  107</span><span class="preprocessor">#else</span></div>
-<div class="line"><span class="lineno">  108</span>  names.push_back(std::string(<span class="stringliteral">&quot;lib&quot;</span>) + lib_base + <span class="stringliteral">&quot;.so&quot;</span>);</div>
-<div class="line"><span class="lineno">  109</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  110</span>  <span class="keywordflow">return</span> names;</div>
-<div class="line"><span class="lineno">  111</span>}</div>
+<p class="definition">Definition at line <a class="el" href="PluginLoader_8cpp_source.html#l00103">103</a> of file <a class="el" href="PluginLoader_8cpp_source.html">PluginLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  103</span>                                                                       {</div>
+<div class="line"><span class="lineno">  104</span>  std::vector&lt;std::string&gt; names;</div>
+<div class="line"><span class="lineno">  105</span><span class="preprocessor">#ifdef _WIN32</span></div>
+<div class="line"><span class="lineno">  106</span>  names.push_back(std::string(lib_base) + <span class="stringliteral">&quot;.dll&quot;</span>);</div>
+<div class="line"><span class="lineno">  107</span>  names.push_back(std::string(<span class="stringliteral">&quot;lib&quot;</span>) + lib_base + <span class="stringliteral">&quot;.dll&quot;</span>);</div>
+<div class="line"><span class="lineno">  108</span><span class="preprocessor">#elif defined(__APPLE__)</span></div>
+<div class="line"><span class="lineno">  109</span>  names.push_back(std::string(<span class="stringliteral">&quot;lib&quot;</span>) + lib_base + <span class="stringliteral">&quot;.dylib&quot;</span>);</div>
+<div class="line"><span class="lineno">  110</span><span class="preprocessor">#else</span></div>
+<div class="line"><span class="lineno">  111</span>  names.push_back(std::string(<span class="stringliteral">&quot;lib&quot;</span>) + lib_base + <span class="stringliteral">&quot;.so&quot;</span>);</div>
+<div class="line"><span class="lineno">  112</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  113</span>  <span class="keywordflow">return</span> names;</div>
+<div class="line"><span class="lineno">  114</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -630,20 +664,20 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1IPluginLoader.html#aff1d3fc72a1292349c0fc1ee523bd4c5">eonc::IPluginLoader</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="PluginLoader_8cpp_source.html#l00164">164</a> of file <a class="el" href="PluginLoader_8cpp_source.html">PluginLoader.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  164</span>                                                         {</div>
-<div class="line"><span class="lineno">  165</span>  std::lock_guard&lt;std::mutex&gt; lock(<a class="code hl_variable" href="#ace82f8c6ca1d5b10945d44172c88d4d1">m_mutex</a>);</div>
-<div class="line"><span class="lineno">  166</span>  <span class="keyword">auto</span> names = <a class="code hl_function" href="#ac36e2b27fbc329928c8490940908714e">lib_names</a>(lib_base);</div>
-<div class="line"><span class="lineno">  167</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;dir : <a class="code hl_variable" href="#a16bd90726d73769972c85319bbe518e7">m_search_paths</a>) {</div>
-<div class="line"><span class="lineno">  168</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;name : names) {</div>
-<div class="line"><span class="lineno">  169</span>      std::error_code ec;</div>
-<div class="line"><span class="lineno">  170</span>      <span class="keywordflow">if</span> (std::filesystem::exists(std::filesystem::path(dir) / name, ec))</div>
-<div class="line"><span class="lineno">  171</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  172</span>    }</div>
-<div class="line"><span class="lineno">  173</span>  }</div>
-<div class="line"><span class="lineno">  174</span>  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  175</span>}</div>
-<div class="ttc" id="aclasseonc_1_1PluginLoader_html_ac36e2b27fbc329928c8490940908714e"><div class="ttname"><a href="#ac36e2b27fbc329928c8490940908714e">eonc::PluginLoader::lib_names</a></div><div class="ttdeci">std::vector&lt; std::string &gt; lib_names(const char *lib_base) const</div><div class="ttdef"><b>Definition</b> <a href="PluginLoader_8cpp_source.html#l00100">PluginLoader.cpp:100</a></div></div>
+<p class="definition">Definition at line <a class="el" href="PluginLoader_8cpp_source.html#l00167">167</a> of file <a class="el" href="PluginLoader_8cpp_source.html">PluginLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  167</span>                                                         {</div>
+<div class="line"><span class="lineno">  168</span>  std::lock_guard&lt;std::mutex&gt; lock(<a class="code hl_variable" href="#ace82f8c6ca1d5b10945d44172c88d4d1">m_mutex</a>);</div>
+<div class="line"><span class="lineno">  169</span>  <span class="keyword">auto</span> names = <a class="code hl_function" href="#ac36e2b27fbc329928c8490940908714e">lib_names</a>(lib_base);</div>
+<div class="line"><span class="lineno">  170</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;dir : <a class="code hl_variable" href="#a16bd90726d73769972c85319bbe518e7">m_search_paths</a>) {</div>
+<div class="line"><span class="lineno">  171</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;name : names) {</div>
+<div class="line"><span class="lineno">  172</span>      std::error_code ec;</div>
+<div class="line"><span class="lineno">  173</span>      <span class="keywordflow">if</span> (std::filesystem::exists(std::filesystem::path(dir) / name, ec))</div>
+<div class="line"><span class="lineno">  174</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  175</span>    }</div>
+<div class="line"><span class="lineno">  176</span>  }</div>
+<div class="line"><span class="lineno">  177</span>  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  178</span>}</div>
+<div class="ttc" id="aclasseonc_1_1PluginLoader_html_ac36e2b27fbc329928c8490940908714e"><div class="ttname"><a href="#ac36e2b27fbc329928c8490940908714e">eonc::PluginLoader::lib_names</a></div><div class="ttdeci">std::vector&lt; std::string &gt; lib_names(const char *lib_base) const</div><div class="ttdef"><b>Definition</b> <a href="PluginLoader_8cpp_source.html#l00103">PluginLoader.cpp:103</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -672,59 +706,59 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1IPluginLoader.html#a6df7f84bba6a4a7cdfd3595ac62ae624">eonc::IPluginLoader</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="PluginLoader_8cpp_source.html#l00113">113</a> of file <a class="el" href="PluginLoader_8cpp_source.html">PluginLoader.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  113</span>                                                        {</div>
-<div class="line"><span class="lineno">  114</span>  std::lock_guard&lt;std::mutex&gt; lock(<a class="code hl_variable" href="#ace82f8c6ca1d5b10945d44172c88d4d1">m_mutex</a>);</div>
-<div class="line"><span class="lineno">  115</span> </div>
-<div class="line"><span class="lineno">  116</span>  <span class="keyword">auto</span> it = <a class="code hl_variable" href="#af8eee3ec7c45a6b9cc1bdb7a44d5eb2e">m_handles</a>.find(lib_base);</div>
-<div class="line"><span class="lineno">  117</span>  <span class="keywordflow">if</span> (it != <a class="code hl_variable" href="#af8eee3ec7c45a6b9cc1bdb7a44d5eb2e">m_handles</a>.end()) {</div>
-<div class="line"><span class="lineno">  118</span>    <span class="keywordflow">return</span> it-&gt;second;</div>
-<div class="line"><span class="lineno">  119</span>  }</div>
-<div class="line"><span class="lineno">  120</span> </div>
-<div class="line"><span class="lineno">  121</span>  <span class="keyword">auto</span> names = <a class="code hl_function" href="#ac36e2b27fbc329928c8490940908714e">lib_names</a>(lib_base);</div>
-<div class="line"><span class="lineno">  122</span>  <a class="code hl_typedef" href="namespaceeonc_1_1dynlib.html#a77fed09f5c75a2dc000c73773884df69">dynlib::Handle</a> h{};</div>
-<div class="line"><span class="lineno">  123</span>  std::string last_err;</div>
-<div class="line"><span class="lineno">  124</span>  <span class="keywordtype">bool</span> any_file = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  125</span> </div>
-<div class="line"><span class="lineno">  126</span>  <span class="comment">// Probe the filesystem first. dlopen of a present plugin runs that</span></div>
-<div class="line"><span class="lineno">  127</span>  <span class="comment">// library&#39;s static initializers (Fortran / LAMMPS banners), so skip</span></div>
-<div class="line"><span class="lineno">  128</span>  <span class="comment">// names that are not on disk.</span></div>
-<div class="line"><span class="lineno">  129</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;dir : <a class="code hl_variable" href="#a16bd90726d73769972c85319bbe518e7">m_search_paths</a>) {</div>
-<div class="line"><span class="lineno">  130</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;name : names) {</div>
-<div class="line"><span class="lineno">  131</span>      std::string full = (std::filesystem::path(dir) / name).<span class="keywordtype">string</span>();</div>
-<div class="line"><span class="lineno">  132</span>      std::error_code ec;</div>
-<div class="line"><span class="lineno">  133</span>      <span class="keywordflow">if</span> (!std::filesystem::exists(full, ec))</div>
-<div class="line"><span class="lineno">  134</span>        <span class="keywordflow">continue</span>;</div>
-<div class="line"><span class="lineno">  135</span>      any_file = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  136</span>      h = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a93da3d2fc737506fa3ef45cf3c3a6a10">dynlib::open</a>(full.c_str());</div>
-<div class="line"><span class="lineno">  137</span>      <span class="keywordflow">if</span> (h) {</div>
-<div class="line"><span class="lineno">  138</span>        <a class="code hl_variable" href="#af8eee3ec7c45a6b9cc1bdb7a44d5eb2e">m_handles</a>[lib_base] = h;</div>
-<div class="line"><span class="lineno">  139</span>        <span class="keywordflow">return</span> h;</div>
-<div class="line"><span class="lineno">  140</span>      }</div>
-<div class="line"><span class="lineno">  141</span>      <span class="comment">// Capture immediately after LoadLibrary/dlopen (GetLastError/dlerror).</span></div>
-<div class="line"><span class="lineno">  142</span>      last_err = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">dynlib::error</a>();</div>
-<div class="line"><span class="lineno">  143</span>    }</div>
-<div class="line"><span class="lineno">  144</span>  }</div>
-<div class="line"><span class="lineno">  145</span> </div>
-<div class="line"><span class="lineno">  146</span>  <span class="comment">// Fall back to system search (LD_LIBRARY_PATH, etc.)</span></div>
-<div class="line"><span class="lineno">  147</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;name : names) {</div>
-<div class="line"><span class="lineno">  148</span>    h = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a93da3d2fc737506fa3ef45cf3c3a6a10">dynlib::open</a>(name.c_str());</div>
-<div class="line"><span class="lineno">  149</span>    <span class="keywordflow">if</span> (h) {</div>
-<div class="line"><span class="lineno">  150</span>      <a class="code hl_variable" href="#af8eee3ec7c45a6b9cc1bdb7a44d5eb2e">m_handles</a>[lib_base] = h;</div>
-<div class="line"><span class="lineno">  151</span>      <span class="keywordflow">return</span> h;</div>
-<div class="line"><span class="lineno">  152</span>    }</div>
-<div class="line"><span class="lineno">  153</span>    last_err = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">dynlib::error</a>();</div>
-<div class="line"><span class="lineno">  154</span>  }</div>
-<div class="line"><span class="lineno">  155</span> </div>
-<div class="line"><span class="lineno">  156</span>  <span class="comment">// Stash diagnostics for throw_not_found (thread-local; open is</span></div>
-<div class="line"><span class="lineno">  157</span>  <span class="comment">// mutex-guarded).</span></div>
-<div class="line"><span class="lineno">  158</span>  <a class="code hl_variable" href="#aa5069ee9b157d1cf19b5639e7bec61c2">m_last_load_error</a> = last_err;</div>
-<div class="line"><span class="lineno">  159</span>  <a class="code hl_variable" href="#a1f6bbd9e2cd1f844718eff1eec3c069d">m_last_load_saw_file</a> = any_file;</div>
-<div class="line"><span class="lineno">  160</span>  <a class="code hl_variable" href="#af8eee3ec7c45a6b9cc1bdb7a44d5eb2e">m_handles</a>[lib_base] = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">  161</span>  <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">  162</span>}</div>
-<div class="ttc" id="aclasseonc_1_1PluginLoader_html_a1f6bbd9e2cd1f844718eff1eec3c069d"><div class="ttname"><a href="#a1f6bbd9e2cd1f844718eff1eec3c069d">eonc::PluginLoader::m_last_load_saw_file</a></div><div class="ttdeci">bool m_last_load_saw_file</div><div class="ttdef"><b>Definition</b> <a href="PluginLoader_8h_source.html#l00124">PluginLoader.h:124</a></div></div>
-<div class="ttc" id="aclasseonc_1_1PluginLoader_html_aa5069ee9b157d1cf19b5639e7bec61c2"><div class="ttname"><a href="#aa5069ee9b157d1cf19b5639e7bec61c2">eonc::PluginLoader::m_last_load_error</a></div><div class="ttdeci">std::string m_last_load_error</div><div class="ttdoc">Last dynlib::error() from a failed open (for throw_not_found).</div><div class="ttdef"><b>Definition</b> <a href="PluginLoader_8h_source.html#l00123">PluginLoader.h:123</a></div></div>
+<p class="definition">Definition at line <a class="el" href="PluginLoader_8cpp_source.html#l00116">116</a> of file <a class="el" href="PluginLoader_8cpp_source.html">PluginLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  116</span>                                                        {</div>
+<div class="line"><span class="lineno">  117</span>  std::lock_guard&lt;std::mutex&gt; lock(<a class="code hl_variable" href="#ace82f8c6ca1d5b10945d44172c88d4d1">m_mutex</a>);</div>
+<div class="line"><span class="lineno">  118</span> </div>
+<div class="line"><span class="lineno">  119</span>  <span class="keyword">auto</span> it = <a class="code hl_variable" href="#af8eee3ec7c45a6b9cc1bdb7a44d5eb2e">m_handles</a>.find(lib_base);</div>
+<div class="line"><span class="lineno">  120</span>  <span class="keywordflow">if</span> (it != <a class="code hl_variable" href="#af8eee3ec7c45a6b9cc1bdb7a44d5eb2e">m_handles</a>.end()) {</div>
+<div class="line"><span class="lineno">  121</span>    <span class="keywordflow">return</span> it-&gt;second;</div>
+<div class="line"><span class="lineno">  122</span>  }</div>
+<div class="line"><span class="lineno">  123</span> </div>
+<div class="line"><span class="lineno">  124</span>  <span class="keyword">auto</span> names = <a class="code hl_function" href="#ac36e2b27fbc329928c8490940908714e">lib_names</a>(lib_base);</div>
+<div class="line"><span class="lineno">  125</span>  <a class="code hl_typedef" href="namespaceeonc_1_1dynlib.html#a77fed09f5c75a2dc000c73773884df69">dynlib::Handle</a> h{};</div>
+<div class="line"><span class="lineno">  126</span>  std::string last_err;</div>
+<div class="line"><span class="lineno">  127</span>  <span class="keywordtype">bool</span> any_file = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  128</span> </div>
+<div class="line"><span class="lineno">  129</span>  <span class="comment">// Probe the filesystem first. dlopen of a present plugin runs that</span></div>
+<div class="line"><span class="lineno">  130</span>  <span class="comment">// library&#39;s static initializers (Fortran / LAMMPS banners), so skip</span></div>
+<div class="line"><span class="lineno">  131</span>  <span class="comment">// names that are not on disk.</span></div>
+<div class="line"><span class="lineno">  132</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;dir : <a class="code hl_variable" href="#a16bd90726d73769972c85319bbe518e7">m_search_paths</a>) {</div>
+<div class="line"><span class="lineno">  133</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;name : names) {</div>
+<div class="line"><span class="lineno">  134</span>      std::string full = (std::filesystem::path(dir) / name).<span class="keywordtype">string</span>();</div>
+<div class="line"><span class="lineno">  135</span>      std::error_code ec;</div>
+<div class="line"><span class="lineno">  136</span>      <span class="keywordflow">if</span> (!std::filesystem::exists(full, ec))</div>
+<div class="line"><span class="lineno">  137</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  138</span>      any_file = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  139</span>      h = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a93da3d2fc737506fa3ef45cf3c3a6a10">dynlib::open</a>(full.c_str());</div>
+<div class="line"><span class="lineno">  140</span>      <span class="keywordflow">if</span> (h) {</div>
+<div class="line"><span class="lineno">  141</span>        <a class="code hl_variable" href="#af8eee3ec7c45a6b9cc1bdb7a44d5eb2e">m_handles</a>[lib_base] = h;</div>
+<div class="line"><span class="lineno">  142</span>        <span class="keywordflow">return</span> h;</div>
+<div class="line"><span class="lineno">  143</span>      }</div>
+<div class="line"><span class="lineno">  144</span>      <span class="comment">// Capture immediately after LoadLibrary/dlopen (GetLastError/dlerror).</span></div>
+<div class="line"><span class="lineno">  145</span>      last_err = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">dynlib::error</a>();</div>
+<div class="line"><span class="lineno">  146</span>    }</div>
+<div class="line"><span class="lineno">  147</span>  }</div>
+<div class="line"><span class="lineno">  148</span> </div>
+<div class="line"><span class="lineno">  149</span>  <span class="comment">// Fall back to system search (LD_LIBRARY_PATH, etc.)</span></div>
+<div class="line"><span class="lineno">  150</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;name : names) {</div>
+<div class="line"><span class="lineno">  151</span>    h = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a93da3d2fc737506fa3ef45cf3c3a6a10">dynlib::open</a>(name.c_str());</div>
+<div class="line"><span class="lineno">  152</span>    <span class="keywordflow">if</span> (h) {</div>
+<div class="line"><span class="lineno">  153</span>      <a class="code hl_variable" href="#af8eee3ec7c45a6b9cc1bdb7a44d5eb2e">m_handles</a>[lib_base] = h;</div>
+<div class="line"><span class="lineno">  154</span>      <span class="keywordflow">return</span> h;</div>
+<div class="line"><span class="lineno">  155</span>    }</div>
+<div class="line"><span class="lineno">  156</span>    last_err = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">dynlib::error</a>();</div>
+<div class="line"><span class="lineno">  157</span>  }</div>
+<div class="line"><span class="lineno">  158</span> </div>
+<div class="line"><span class="lineno">  159</span>  <span class="comment">// Stash diagnostics for throw_not_found (thread-local; open is</span></div>
+<div class="line"><span class="lineno">  160</span>  <span class="comment">// mutex-guarded).</span></div>
+<div class="line"><span class="lineno">  161</span>  <a class="code hl_variable" href="#aa5069ee9b157d1cf19b5639e7bec61c2">m_last_load_error</a> = last_err;</div>
+<div class="line"><span class="lineno">  162</span>  <a class="code hl_variable" href="#a1f6bbd9e2cd1f844718eff1eec3c069d">m_last_load_saw_file</a> = any_file;</div>
+<div class="line"><span class="lineno">  163</span>  <a class="code hl_variable" href="#af8eee3ec7c45a6b9cc1bdb7a44d5eb2e">m_handles</a>[lib_base] = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  164</span>  <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  165</span>}</div>
+<div class="ttc" id="aclasseonc_1_1PluginLoader_html_a1f6bbd9e2cd1f844718eff1eec3c069d"><div class="ttname"><a href="#a1f6bbd9e2cd1f844718eff1eec3c069d">eonc::PluginLoader::m_last_load_saw_file</a></div><div class="ttdeci">bool m_last_load_saw_file</div><div class="ttdef"><b>Definition</b> <a href="PluginLoader_8h_source.html#l00132">PluginLoader.h:132</a></div></div>
+<div class="ttc" id="aclasseonc_1_1PluginLoader_html_aa5069ee9b157d1cf19b5639e7bec61c2"><div class="ttname"><a href="#aa5069ee9b157d1cf19b5639e7bec61c2">eonc::PluginLoader::m_last_load_error</a></div><div class="ttdeci">std::string m_last_load_error</div><div class="ttdoc">Last dynlib::error() from a failed open (for throw_not_found).</div><div class="ttdef"><b>Definition</b> <a href="PluginLoader_8h_source.html#l00131">PluginLoader.h:131</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1dynlib_html_a77fed09f5c75a2dc000c73773884df69"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a77fed09f5c75a2dc000c73773884df69">eonc::dynlib::Handle</a></div><div class="ttdeci">void * Handle</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00060">DynLib.h:60</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1dynlib_html_a793e2f7806f01afcc170a5b8054f4e6f"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">eonc::dynlib::error</a></div><div class="ttdeci">std::string error()</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00082">DynLib.h:82</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1dynlib_html_a93da3d2fc737506fa3ef45cf3c3a6a10"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a93da3d2fc737506fa3ef45cf3c3a6a10">eonc::dynlib::open</a></div><div class="ttdeci">Handle open(const char *name) noexcept</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00062">DynLib.h:62</a></div></div>
@@ -821,38 +855,38 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1IPluginLoader.html#a5ff80c6c45c791eef93cfcff7f33ba64">eonc::IPluginLoader</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="PluginLoader_8cpp_source.html#l00177">177</a> of file <a class="el" href="PluginLoader_8cpp_source.html">PluginLoader.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  178</span>                                                                  {</div>
-<div class="line"><span class="lineno">  179</span>  <span class="keyword">auto</span> names = <a class="code hl_function" href="#ac36e2b27fbc329928c8490940908714e">lib_names</a>(lib_base);</div>
-<div class="line"><span class="lineno">  180</span>  std::ostringstream oss;</div>
-<div class="line"><span class="lineno">  181</span>  oss &lt;&lt; description &lt;&lt; <span class="stringliteral">&quot; requested but library not found.\n&quot;</span></div>
-<div class="line"><span class="lineno">  182</span>      &lt;&lt; <span class="stringliteral">&quot;Looked for: &quot;</span>;</div>
-<div class="line"><span class="lineno">  183</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; names.size(); ++i) {</div>
-<div class="line"><span class="lineno">  184</span>    <span class="keywordflow">if</span> (i &gt; 0)</div>
-<div class="line"><span class="lineno">  185</span>      oss &lt;&lt; <span class="stringliteral">&quot;, &quot;</span>;</div>
-<div class="line"><span class="lineno">  186</span>    oss &lt;&lt; names[i];</div>
-<div class="line"><span class="lineno">  187</span>  }</div>
-<div class="line"><span class="lineno">  188</span>  oss &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  189</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a16bd90726d73769972c85319bbe518e7">m_search_paths</a>.empty()) {</div>
-<div class="line"><span class="lineno">  190</span>    oss &lt;&lt; <span class="stringliteral">&quot;Search paths (config potentials_path + EON_POTENTIALS_PATH):\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  191</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;p : <a class="code hl_variable" href="#a16bd90726d73769972c85319bbe518e7">m_search_paths</a>) {</div>
-<div class="line"><span class="lineno">  192</span>      oss &lt;&lt; <span class="stringliteral">&quot;  &quot;</span> &lt;&lt; p &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  193</span>    }</div>
-<div class="line"><span class="lineno">  194</span>  }</div>
-<div class="line"><span class="lineno">  195</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a1f6bbd9e2cd1f844718eff1eec3c069d">m_last_load_saw_file</a>) {</div>
-<div class="line"><span class="lineno">  196</span>    oss &lt;&lt; <span class="stringliteral">&quot;A matching file was present but LoadLibrary/dlopen failed&quot;</span>;</div>
-<div class="line"><span class="lineno">  197</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa5069ee9b157d1cf19b5639e7bec61c2">m_last_load_error</a>.empty())</div>
-<div class="line"><span class="lineno">  198</span>      oss &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; <a class="code hl_variable" href="#aa5069ee9b157d1cf19b5639e7bec61c2">m_last_load_error</a>;</div>
-<div class="line"><span class="lineno">  199</span>    oss &lt;&lt; <span class="stringliteral">&quot;\n(often a missing flang_rt / FortranRuntime dependency on &quot;</span></div>
-<div class="line"><span class="lineno">  200</span>           <span class="stringliteral">&quot;PATH).\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  201</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa5069ee9b157d1cf19b5639e7bec61c2">m_last_load_error</a>.empty()) {</div>
-<div class="line"><span class="lineno">  202</span>    oss &lt;&lt; <span class="stringliteral">&quot;Loader error: &quot;</span> &lt;&lt; <a class="code hl_variable" href="#aa5069ee9b157d1cf19b5639e7bec61c2">m_last_load_error</a> &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  203</span>  }</div>
-<div class="line"><span class="lineno">  204</span>  oss &lt;&lt; <span class="stringliteral">&quot;Set [Potential] potentials_path in config.ini, &quot;</span></div>
-<div class="line"><span class="lineno">  205</span>         <span class="stringliteral">&quot;or set EON_POTENTIALS_PATH,\n&quot;</span></div>
-<div class="line"><span class="lineno">  206</span>         <span class="stringliteral">&quot;or ensure the libraries are in LD_LIBRARY_PATH.&quot;</span>;</div>
-<div class="line"><span class="lineno">  207</span>  <span class="keywordflow">throw</span> std::runtime_error(oss.str());</div>
-<div class="line"><span class="lineno">  208</span>}</div>
+<p class="definition">Definition at line <a class="el" href="PluginLoader_8cpp_source.html#l00180">180</a> of file <a class="el" href="PluginLoader_8cpp_source.html">PluginLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  181</span>                                                                  {</div>
+<div class="line"><span class="lineno">  182</span>  <span class="keyword">auto</span> names = <a class="code hl_function" href="#ac36e2b27fbc329928c8490940908714e">lib_names</a>(lib_base);</div>
+<div class="line"><span class="lineno">  183</span>  std::ostringstream oss;</div>
+<div class="line"><span class="lineno">  184</span>  oss &lt;&lt; description &lt;&lt; <span class="stringliteral">&quot; requested but library not found.\n&quot;</span></div>
+<div class="line"><span class="lineno">  185</span>      &lt;&lt; <span class="stringliteral">&quot;Looked for: &quot;</span>;</div>
+<div class="line"><span class="lineno">  186</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; names.size(); ++i) {</div>
+<div class="line"><span class="lineno">  187</span>    <span class="keywordflow">if</span> (i &gt; 0)</div>
+<div class="line"><span class="lineno">  188</span>      oss &lt;&lt; <span class="stringliteral">&quot;, &quot;</span>;</div>
+<div class="line"><span class="lineno">  189</span>    oss &lt;&lt; names[i];</div>
+<div class="line"><span class="lineno">  190</span>  }</div>
+<div class="line"><span class="lineno">  191</span>  oss &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  192</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a16bd90726d73769972c85319bbe518e7">m_search_paths</a>.empty()) {</div>
+<div class="line"><span class="lineno">  193</span>    oss &lt;&lt; <span class="stringliteral">&quot;Search paths (config potentials_path + EON_POTENTIALS_PATH):\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  194</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;p : <a class="code hl_variable" href="#a16bd90726d73769972c85319bbe518e7">m_search_paths</a>) {</div>
+<div class="line"><span class="lineno">  195</span>      oss &lt;&lt; <span class="stringliteral">&quot;  &quot;</span> &lt;&lt; p &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  196</span>    }</div>
+<div class="line"><span class="lineno">  197</span>  }</div>
+<div class="line"><span class="lineno">  198</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a1f6bbd9e2cd1f844718eff1eec3c069d">m_last_load_saw_file</a>) {</div>
+<div class="line"><span class="lineno">  199</span>    oss &lt;&lt; <span class="stringliteral">&quot;A matching file was present but LoadLibrary/dlopen failed&quot;</span>;</div>
+<div class="line"><span class="lineno">  200</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa5069ee9b157d1cf19b5639e7bec61c2">m_last_load_error</a>.empty())</div>
+<div class="line"><span class="lineno">  201</span>      oss &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; <a class="code hl_variable" href="#aa5069ee9b157d1cf19b5639e7bec61c2">m_last_load_error</a>;</div>
+<div class="line"><span class="lineno">  202</span>    oss &lt;&lt; <span class="stringliteral">&quot;\n(often a missing flang_rt / FortranRuntime dependency on &quot;</span></div>
+<div class="line"><span class="lineno">  203</span>           <span class="stringliteral">&quot;PATH).\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  204</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa5069ee9b157d1cf19b5639e7bec61c2">m_last_load_error</a>.empty()) {</div>
+<div class="line"><span class="lineno">  205</span>    oss &lt;&lt; <span class="stringliteral">&quot;Loader error: &quot;</span> &lt;&lt; <a class="code hl_variable" href="#aa5069ee9b157d1cf19b5639e7bec61c2">m_last_load_error</a> &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  206</span>  }</div>
+<div class="line"><span class="lineno">  207</span>  oss &lt;&lt; <span class="stringliteral">&quot;Set [Potential] potentials_path in config.ini, &quot;</span></div>
+<div class="line"><span class="lineno">  208</span>         <span class="stringliteral">&quot;or set EON_POTENTIALS_PATH,\n&quot;</span></div>
+<div class="line"><span class="lineno">  209</span>         <span class="stringliteral">&quot;or ensure the libraries are in LD_LIBRARY_PATH.&quot;</span>;</div>
+<div class="line"><span class="lineno">  210</span>  <span class="keywordflow">throw</span> std::runtime_error(oss.str());</div>
+<div class="line"><span class="lineno">  211</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -902,7 +936,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PluginLoader_8h_source.html#l00121">121</a> of file <a class="el" href="PluginLoader_8h_source.html">PluginLoader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PluginLoader_8h_source.html#l00129">129</a> of file <a class="el" href="PluginLoader_8h_source.html">PluginLoader.h</a>.</p>
 
 </div>
 </div>
@@ -928,7 +962,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Last <a class="el" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">dynlib::error()</a> from a failed open (for throw_not_found). </p>
 
-<p class="definition">Definition at line <a class="el" href="PluginLoader_8h_source.html#l00123">123</a> of file <a class="el" href="PluginLoader_8h_source.html">PluginLoader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PluginLoader_8h_source.html#l00131">131</a> of file <a class="el" href="PluginLoader_8h_source.html">PluginLoader.h</a>.</p>
 
 </div>
 </div>
@@ -952,7 +986,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PluginLoader_8h_source.html#l00124">124</a> of file <a class="el" href="PluginLoader_8h_source.html">PluginLoader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PluginLoader_8h_source.html#l00132">132</a> of file <a class="el" href="PluginLoader_8h_source.html">PluginLoader.h</a>.</p>
 
 </div>
 </div>
@@ -976,7 +1010,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PluginLoader_8h_source.html#l00120">120</a> of file <a class="el" href="PluginLoader_8h_source.html">PluginLoader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PluginLoader_8h_source.html#l00128">128</a> of file <a class="el" href="PluginLoader_8h_source.html">PluginLoader.h</a>.</p>
 
 </div>
 </div>
@@ -1000,7 +1034,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PluginLoader_8h_source.html#l00119">119</a> of file <a class="el" href="PluginLoader_8h_source.html">PluginLoader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PluginLoader_8h_source.html#l00127">127</a> of file <a class="el" href="PluginLoader_8h_source.html">PluginLoader.h</a>.</p>
 
 </div>
 </div>

@@ -14,7 +14,7 @@ var searchData=
   ['ase_5fnwchem_2eh_11',['ASE_NWCHEM.h',['../ASE__NWCHEM_8h.html',1,'']]],
   ['ase_5forca_2ecpp_12',['ASE_ORCA.cpp',['../ASE__ORCA_8cpp.html',1,'']]],
   ['ase_5forca_2eh_13',['ASE_ORCA.h',['../ASE__ORCA_8h.html',1,'']]],
-  ['atomicgpdimer_2ecpp_14',['AtomicGPDimer.cpp',['../AtomicGPDimer_8cpp.html',1,'']]],
-  ['atomicgpdimer_2eh_15',['AtomicGPDimer.h',['../AtomicGPDimer_8h.html',1,'']]],
-  ['atoms_2eh_16',['Atoms.h',['../Atoms_8h.html',1,'']]]
+  ['atomicfile_2eh_14',['AtomicFile.h',['../AtomicFile_8h.html',1,'']]],
+  ['atomicgpdimer_2ecpp_15',['AtomicGPDimer.cpp',['../AtomicGPDimer_8cpp.html',1,'']]],
+  ['atomicgpdimer_2eh_16',['AtomicGPDimer.h',['../AtomicGPDimer_8h.html',1,'']]]
 ];

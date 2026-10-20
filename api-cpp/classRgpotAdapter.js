@@ -12,6 +12,7 @@ var classRgpotAdapter =
     [ "finiteCutoff", "classRgpotAdapter.html#ad1777f60faa4e44fefedb5380730627b", null ],
     [ "force", "classRgpotAdapter.html#a350328b66270a821ccb8e1d764d7e5d1", null ],
     [ "forceBatch", "classRgpotAdapter.html#ae5c9470c08c2505cc3d9f557e014b9eb", null ],
+    [ "isSharedInstanceThreadSafe", "classRgpotAdapter.html#a47e5303efdd1eb6ce47bdbfe59310c18", null ],
     [ "isThreadSafe", "classRgpotAdapter.html#a055a5f208ff16306b35632596a161674", null ],
     [ "kernel", "classRgpotAdapter.html#a5d2b00bf64a722a4829e19076f82fb2d", null ],
     [ "needsPerImageInstance", "classRgpotAdapter.html#a9c53cdefdb91580b0ed424b3cb90946f", null ],

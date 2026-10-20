@@ -17,6 +17,7 @@ var structeonc_1_1neb__options__t =
     [ "max_iterations", "structeonc_1_1neb__options__t.html#af42c8e53fdb87e29a64f87d7ca05e6cc", null ],
     [ "mmf_peaks", "structeonc_1_1neb__options__t.html#af41a8500fae2621a5a272ccac3eb90b0", null ],
     [ "opt_method", "structeonc_1_1neb__options__t.html#ab4ca42e1373ab66e18b01f70000af6fd", null ],
+    [ "quantum_temperature", "structeonc_1_1neb__options__t.html#ab6ae07e7f6eb7baf0b3d41c8a1fbd8f2", null ],
     [ "solid_state", "structeonc_1_1neb__options__t.html#a943bfb1885f304d7faec4288ef79a322", null ],
     [ "spring", "structeonc_1_1neb__options__t.html#a7ddcef2df030ddca7e0ee7b7aedfe2da", null ],
     [ "zoom", "structeonc_1_1neb__options__t.html#a25d97fc22a3afb5d8301ed36665b183b", null ]

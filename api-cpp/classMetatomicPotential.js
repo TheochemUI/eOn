@@ -2,6 +2,7 @@ var classMetatomicPotential =
 [
     [ "CloneTag", "structMetatomicPotential_1_1CloneTag.html", null ],
     [ "MetatomicPotential", "classMetatomicPotential.html#a6c59f3f7770e46cd8436fb885541733c", null ],
+    [ "MetatomicPotential", "classMetatomicPotential.html#ac2fc7932f8caf09391567e7cc648e1b0", null ],
     [ "~MetatomicPotential", "classMetatomicPotential.html#abd9f0b8c2238a5108f710ab4830eb031", null ],
     [ "MetatomicPotential", "classMetatomicPotential.html#a4fe781e6cb31e7447f5493dd40042e22", null ],
     [ "clonePotential", "classMetatomicPotential.html#ac35d7288268507729edb8d784f4fcc7b", null ],

@@ -3,6 +3,7 @@ var classeonc_1_1IRACompare =
     [ "MatchResult", "structeonc_1_1IRACompare_1_1MatchResult.html", "structeonc_1_1IRACompare_1_1MatchResult" ],
     [ "SymmetryResult", "structeonc_1_1IRACompare_1_1SymmetryResult.html", "structeonc_1_1IRACompare_1_1SymmetryResult" ],
     [ "alignReactantToProduct", "classeonc_1_1IRACompare.html#a7c6c66314351424a25a90f0cf45fdd03", null ],
+    [ "alignReactantToProduct", "classeonc_1_1IRACompare.html#a87c14cce114ac8f18f83b1ba88709872", null ],
     [ "findSymmetry", "classeonc_1_1IRACompare.html#a6a75b65ba17ac0d5261f0bb5530cd294", null ],
     [ "findSymmetry", "classeonc_1_1IRACompare.html#a6a60fb6abf491638ea5406a750dfec2a", null ],
     [ "match", "classeonc_1_1IRACompare.html#af9638321bda62003544718d562de264c", null ],

@@ -247,7 +247,6 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('RGPotEngine_8c
 <code>#include &lt;cstdlib&gt;</code><br />
 <code>#include &lt;cstring&gt;</code><br />
 <code>#include &lt;fstream&gt;</code><br />
-<code>#include &lt;mutex&gt;</code><br />
 <code>#include &lt;stdexcept&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;tuple&gt;</code><br />
@@ -280,6 +279,8 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a25201f4817b3dfe10e18dfcccc64a5bc" id="r_a25201f4817b3dfe10e18dfcccc64a5bc"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a25201f4817b3dfe10e18dfcccc64a5bc">nwchemDftInputBlock</a> (const std::string &amp;theory, const std::string &amp;scfType, int multiplicity, const std::string &amp;existing)</td></tr>
+<tr class="memdesc:a25201f4817b3dfe10e18dfcccc64a5bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">NWChem input block for a DFT theory.  <br /></td></tr>
 <tr class="memitem:a88599a5d2e9211bdc4d4614035f4e73a" id="r_a88599a5d2e9211bdc4d4614035f4e73a"><td class="memItemLeft">::CPMDParams::Builder&#160;</td><td class="memItemRight"><a class="el" href="namespaceeon.html#a88599a5d2e9211bdc4d4614035f4e73a">eon::fillCpmdParams</a> (::capnp::MallocMessageBuilder &amp;msg, const <a class="el" href="structRGPotEngineOptions.html">RGPotEngineOptions</a> &amp;opt)</td></tr>
 </table>
 <a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
@@ -297,6 +298,59 @@ Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00006">6</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
 
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a25201f4817b3dfe10e18dfcccc64a5bc" name="a25201f4817b3dfe10e18dfcccc64a5bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25201f4817b3dfe10e18dfcccc64a5bc">&#9670;&#160;</a></span>nwchemDftInputBlock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string nwchemDftInputBlock </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>theory</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>scfType</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>multiplicity</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>existing</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>NWChem input block for a DFT theory. </p>
+<p>Empty when <span class="tt">existing</span> is set or the theory is not DFT. <span class="tt">theory</span> is matched without regard to case. </p>
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00181">181</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  183</span>                                                           {</div>
+<div class="line"><span class="lineno">  184</span>  <span class="keywordflow">if</span> (!existing.empty()) {</div>
+<div class="line"><span class="lineno">  185</span>    <span class="keywordflow">return</span> existing;</div>
+<div class="line"><span class="lineno">  186</span>  }</div>
+<div class="line"><span class="lineno">  187</span>  <span class="keyword">const</span> std::string theoryKey = to_lower(theory);</div>
+<div class="line"><span class="lineno">  188</span>  <span class="keyword">const</span> std::string scfKey = to_lower(scfType);</div>
+<div class="line"><span class="lineno">  189</span>  <span class="keywordflow">if</span> (theoryKey == <span class="stringliteral">&quot;dft&quot;</span> &amp;&amp; looks_like_dft_xc(scfKey)) {</div>
+<div class="line"><span class="lineno">  190</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;dft\n  xc &quot;</span> + scfType + <span class="stringliteral">&quot;\n  mult &quot;</span> + std::to_string(multiplicity) +</div>
+<div class="line"><span class="lineno">  191</span>           <span class="stringliteral">&quot;\nend&quot;</span>;</div>
+<div class="line"><span class="lineno">  192</span>  }</div>
+<div class="line"><span class="lineno">  193</span>  <span class="keywordflow">if</span> (looks_like_dft_xc(theoryKey)) {</div>
+<div class="line"><span class="lineno">  194</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;dft\n  xc &quot;</span> + theory + <span class="stringliteral">&quot;\n  mult &quot;</span> + std::to_string(multiplicity) +</div>
+<div class="line"><span class="lineno">  195</span>           <span class="stringliteral">&quot;\nend&quot;</span>;</div>
+<div class="line"><span class="lineno">  196</span>  }</div>
+<div class="line"><span class="lineno">  197</span>  <span class="keywordflow">return</span> {};</div>
+<div class="line"><span class="lineno">  198</span>}</div>
+</div><!-- fragment -->
 </div>
 </div>
 </div><!-- contents -->
