@@ -613,6 +613,10 @@ _deps += dl_dep
 # dependency('rgpot') with default allow_fallback configures the wrap once
 # with *default* options before eOn can pass its own; get_variable() then
 # fails for anything the default profile skipped. Force pkg-config-only.
+# rgpot 3.5.1 is the minimum. 3.5.0 changed the C++ layout of PotCaps,
+# LJConfig, LJClusterConfig and MorseConfig but kept soversion 3, so a
+# caller built against 3.4.0 crashes. 3.5.1 publishes that layout as
+# librgpot.so.4. eOn compiles the inline caps() into librgpot_pot.so.
 _rgpot_proj = []
 _have_rgpot_wrap = false
 _rgpot_pkg = dependency(
