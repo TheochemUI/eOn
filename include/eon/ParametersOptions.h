@@ -245,7 +245,7 @@ struct optimizer_options_t {
     std::string method{"lbfgs"};
     std::string qn_step{"lbfgs"};
     std::string precon{"none"};
-    std::string accept{"energy"};
+    std::string accept{"none"};
     bool highs{false};
     std::string manifold{"euclidean"};
   } xtsci;
@@ -279,7 +279,7 @@ struct optimizer_options_t {
     std::string precon{"none"};
     std::string step{"lbfgs"};
     std::string h0{"sy_yy"};
-    std::string accept{"energy"};
+    std::string accept{"none"};
     long extra_updates{0};
     double cautious_eps{1.0e-6};
     double cautious_alpha{0.01};
