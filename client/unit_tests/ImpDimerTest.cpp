@@ -385,4 +385,112 @@ TEST_CASE("Mild mode curvature yields to the effective-force probe",
   REQUIRE(calls == 4);
 }
 
+// Saddle along x, with a wall on the far side of the saddle. A long
+// steepest-descent step crosses the wall. max_energy stays 20.
+class FarWallPot final : public eonc::Potential {
+public:
+  FarWallPot()
+      : Potential(PotType::UNKNOWN) {}
+
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    static_cast<void>(nAtoms);
+    static_cast<void>(atomicNrs);
+    static_cast<void>(box);
+    const double x = positions[0];
+    const double y = positions[1];
+    const double z = positions[2];
+    double e = -2.0 * x * x + 20.0 * y * y + 20.0 * z * z;
+    double fx = 4.0 * x;
+    double fy = -40.0 * y;
+    double fz = -40.0 * z;
+    if (x < -0.05) {
+      const double w = x + 0.05;
+      e += 400.0 + 2000.0 * w * w;
+      fx += -4000.0 * w;
+    }
+    forces[0] = fx;
+    forces[1] = fy;
+    forces[2] = fz;
+    *energy = e;
+    if (variance != nullptr) {
+      *variance = 0.0;
+    }
+  }
+};
+
+class AlwaysHotPot final : public eonc::Potential {
+public:
+  AlwaysHotPot()
+      : Potential(PotType::UNKNOWN) {}
+
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    static_cast<void>(nAtoms);
+    static_cast<void>(atomicNrs);
+    static_cast<void>(box);
+    const double x = positions[0];
+    forces[0] = -x;
+    forces[1] = 0.0;
+    forces[2] = 0.0;
+    *energy = 100.0 + 0.5 * x * x;
+    if (variance != nullptr) {
+      *variance = 0.0;
+    }
+  }
+};
+
+static void prepareWallSearch(Parameters &parameters) {
+  ParametersLoadAccess::main_options(parameters).parallel = false;
+  ParametersLoadAccess::main_options(parameters).finiteDifference = 0.001;
+  ParametersLoadAccess::main_options(parameters).removeNetForce = false;
+  ParametersLoadAccess::optimizer_options(parameters).method = OptType::SD;
+  ParametersLoadAccess::optimizer_options(parameters).max_move = 0.5;
+  ParametersLoadAccess::optimizer_options(parameters).sd.alpha = 0.5;
+  ParametersLoadAccess::optimizer_options(parameters).sd.two_point = false;
+  ParametersLoadAccess::dimer_options(parameters).opt_method = OptType::CG;
+  ParametersLoadAccess::dimer_options(parameters).improved = true;
+  ParametersLoadAccess::dimer_options(parameters).converged_angle = 5.0;
+  ParametersLoadAccess::dimer_options(parameters).rotations_max = 8;
+  ParametersLoadAccess::dimer_options(parameters).rotations_min = 1;
+  ParametersLoadAccess::saddle_search_options(parameters).minmode_method =
+      LowestEigenmode::MINMODE_DIMER;
+  ParametersLoadAccess::saddle_search_options(parameters).converged_force =
+      1.0e-3;
+  ParametersLoadAccess::saddle_search_options(parameters).max_energy = 20.0;
+}
+
+TEST_CASE("Min-mode shortens a translation that crosses max_energy",
+          "[MinMode][max_energy]") {
+  Parameters parameters;
+  prepareWallSearch(parameters);
+  auto pot = std::make_shared<FarWallPot>();
+  auto matter = oneAtom(pot, parameters, Eigen::Vector3d(0.2, 0.0, 0.0));
+  AtomMatrix mode(1, 3);
+  mode << 1.0, 0.0, 0.0;
+  eonc::MinModeSaddleSearch search(matter, mode, 0.0, parameters, pot);
+  const int status = search.run(40);
+  const double x = matter->getPositions()(0, 0);
+  const double energy = matter->getPotentialEnergy();
+  INFO("status " << status << " x " << x << " energy " << energy);
+  REQUIRE(status == eonc::MinModeSaddleSearch::STATUS_GOOD);
+  REQUIRE(std::abs(x) < 0.02);
+  REQUIRE(energy < 20.0);
+}
+
+TEST_CASE("Min-mode still aborts when every point is past max_energy",
+          "[MinMode][max_energy]") {
+  Parameters parameters;
+  prepareWallSearch(parameters);
+  auto pot = std::make_shared<AlwaysHotPot>();
+  auto matter = oneAtom(pot, parameters, Eigen::Vector3d(0.1, 0.0, 0.0));
+  AtomMatrix mode(1, 3);
+  mode << 1.0, 0.0, 0.0;
+  eonc::MinModeSaddleSearch search(matter, mode, 0.0, parameters, pot);
+  const int status = search.run(8);
+  REQUIRE(status == eonc::MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY);
+}
+
 } /* namespace tests */
