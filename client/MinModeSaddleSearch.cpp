@@ -63,6 +63,10 @@ public:
     return -c;
   }
 
+  // The translation force has its component along the mode reversed, so
+  // the search climbs the potential energy that getEnergy() returns.
+  bool gradientMatchesEnergy() const override { return false; }
+
   // A new centre and the mode solver's first displaced image along the
   // current mode are independent evaluations; a batching potential takes
   // them together, and compute() then finds the image evaluated.

@@ -298,7 +298,9 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
   } else {
     xts_solver_set_qn_step(m_solver, XTS_QN_LBFGS);
   }
-  const auto accept = resolved_accept(m_optConfig.opts);
+  const auto accept = m_objf->gradientMatchesEnergy()
+                          ? resolved_accept(m_optConfig.opts)
+                          : std::string("none");
   if (accept == "energy") {
     xts_solver_set_accept(m_solver, XTS_ACCEPT_ENERGY);
   } else if (accept == "nonmonotone") {

@@ -165,6 +165,9 @@ public:
   VectorXd getMasses() const override;
   // The band residual rotates with its tangent and is not a PES gradient.
   bool supportsFiniteDifferenceCurvature() const override { return false; }
+  // getEnergy() sums the image energies; the springs are not in it and the
+  // climbing image moves up it.
+  bool gradientMatchesEnergy() const override { return false; }
   NudgedElasticBand::NEBStatus status;
 
 private:

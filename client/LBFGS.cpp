@@ -312,7 +312,8 @@ int LBFGS::update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
   const double H0 = std::max(cfg.inverse_curvature, 1.0e-16);
   const double ss = eonc::exact::squaredNorm(s0);
 
-  if (cfg.secant == "zhangxu" && ss > kLbfgsEps) {
+  if (cfg.secant == "zhangxu" && m_objf->gradientMatchesEnergy() &&
+      ss > kLbfgsEps) {
     // Zhang, Deng, Chen, JOTA 102, 147 (1999); Zhang and Xu, JOTA 2001.
     // t = 6(f_k - f_{k+1}) + 3(g_k + g_{k+1})·s, ŷ = y + (t - y·s)/||s||^2 s.
     // Forces f = -g, so (g_k + g_{k+1})·s = -(f0 + f1)·s.
@@ -397,8 +398,20 @@ int LBFGS::step(double a_maxMove) {
   Eigen::VectorXd r = m_objf->getPositions();
   Eigen::VectorXd f = -m_objf->getGradient();
   const std::string &accept = m_optConfig.opts.lbfgs.accept;
-  const bool energyAccept = accept == "energy" || accept == "nonmonotone";
-  const bool needE = energyAccept || m_optConfig.opts.lbfgs.secant == "zhangxu";
+  const bool energyTests = m_objf->gradientMatchesEnergy();
+  const bool energyRequested = accept == "energy" || accept == "nonmonotone" ||
+                               m_optConfig.opts.lbfgs.secant == "zhangxu";
+  if (energyRequested && !energyTests && m_iteration == 0) {
+    EONC_LOG_WARNING("[LBFGS] energy tests off (lbfgs_accept = {}, "
+                     "lbfgs_secant = {}): a band or saddle objective's "
+                     "gradient is not its energy gradient",
+                     accept, m_optConfig.opts.lbfgs.secant);
+  }
+  const bool energyAccept =
+      energyTests && (accept == "energy" || accept == "nonmonotone");
+  const bool needE =
+      energyAccept ||
+      (energyTests && m_optConfig.opts.lbfgs.secant == "zhangxu");
   const double e0 = needE ? m_objf->getEnergy() : 0.0;
 
   if (m_iteration > 0) {
