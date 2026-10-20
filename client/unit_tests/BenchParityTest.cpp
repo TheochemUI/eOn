@@ -193,10 +193,10 @@ TEST_CASE("Min-mode L-BFGS saddle searches match eOn 3.5.0",
     double saddleEnergy;
   };
   // LJ13 dimer was 390 and Lanczos 115 under the one-rotation CG
-  // restart and the 30 eV/A^2 probe cutoff. Carrying CG after every
-  // translation, and probing whenever 1/|C_tau| exceeds max_move, uses
-  // 310 and 135 calls. The saddles are unchanged. The ±10% window is
-  // the same width around those counts.
+  // restart and an H0 taken from |C_tau|. Carrying CG after every
+  // translation, and taking the first step from a finite-difference
+  // probe of F_eff, uses 310 and 135 calls. The saddles are unchanged.
+  // The ±10% window is the same width around those counts.
   const auto c =
       GENERATE(Case{"lj13_saddle", "lj", "dimer", 0.1, 310, -38.963676},
                Case{"lj13_saddle", "lj", "lanczos", 0.1, 135, -39.036018},
@@ -245,9 +245,10 @@ TEST_CASE("Saddle and process searches count per-image potential calls",
   }
   if (process) {
     // The search stops at the LJ13 prefactor; the saddle calls are in.
-    // Carrying the conjugate direction on every translation, and probing
-    // F_eff whenever 1/|C_tau| exceeds max_move, uses 309 saddle calls.
-    // The total is one more. The ±10% window stays on that total.
+    // Carrying the conjugate direction on every translation, and taking
+    // the first step from a finite-difference probe of F_eff, uses 309
+    // saddle calls. The total is one more. The ±10% window stays on
+    // that total.
     const long saddleCalls = std::stol(results.at("force_calls_saddle"));
     REQUIRE(saddleCalls == 309);
     requireNear350(saddleCalls + 1, 310);

@@ -210,10 +210,10 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
       m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale
           ? m_objf->knownCurvature()
           : std::nullopt;
-  // |C_τ| is the mode scale. The translated force on a negative mode is
-  // F - 2 (F·τ) τ. When H0 = 1/|C_τ| already asks for more than max_move,
-  // the cap chooses the length and the first step leaves the basin r2549
-  // finds with one finite-difference probe of F_eff.
+  // A reported curvature is the curvature of this objective's gradient.
+  // |C_tau| is not that number for a min-mode search, so min-mode does
+  // not report it. When a reported scale already asks for more than
+  // max_move, the cap would choose the length and the probe below runs.
   bool knownFits = false;
   if (known && std::isfinite(*known) && *known > 0.0) {
     double hKnown = 1.0 / *known;
