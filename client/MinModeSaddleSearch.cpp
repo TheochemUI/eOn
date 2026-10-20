@@ -49,9 +49,10 @@ public:
 
   ~MinModeObjectiveFunction() override = default;
 
-  // The lowest mode's curvature, once the mode is known and negative: the
-  // saddle direction's own scale, so the optimizer's first step needs no
-  // finite-difference probe.
+  // The lowest mode's curvature, once the mode is known and negative.
+  // L-BFGS keeps it when the step fits in max_move, and when the mode
+  // is milder than the steep-mode probe. A steep mode whose |C_τ| step
+  // exceeds max_move is measured with the finite-difference probe.
   std::optional<double> knownCurvature() const override {
     if (iteration == 0 || !minModeMethod) {
       return std::nullopt;

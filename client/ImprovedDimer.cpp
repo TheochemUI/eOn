@@ -247,13 +247,22 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     return;
   }
 
+  // L-BFGS pairs belong to one estimate: the centre has moved, so the
+  // stored (s, y) are not the curvature here.
   if (params.dimer_options().opt_method == OptType::LBFGS) {
     s.clear();
     y.clear();
     rho.clear();
     init_lbfgs = true;
   }
-  if (params.dimer_options().opt_method == OptType::CG) {
+  // CG across translations is the r2549 recurrence, and it matters when a
+  // loose angle tolerance allows only one rotation: that rotation has to
+  // inherit F_R_Old and thetaOld or it is steepest descent every time.
+  // Once an estimate has rotated more than once, those vectors are the
+  // conjugate solution at the previous centre. The next centre is a
+  // different rotational objective; carrying them makes the first angles
+  // large and spends the rotation budget climbing back. Restart then.
+  if (params.dimer_options().opt_method == OptType::CG && statsRotations > 1) {
     init_cg = true;
   }
 

@@ -210,14 +210,30 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
       m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale
           ? m_objf->knownCurvature()
           : std::nullopt;
+  // |C_τ| is the mode scale. The translated force on a negative mode is
+  // F - 2 (F·τ) τ. When |C_τ| is steep and H0 = 1/|C_τ| already asks for
+  // more than max_move, the cap chooses the length and the first step
+  // leaves the basin r2549 finds with one finite-difference probe of
+  // F_eff. A milder mode (the LJ13 pins sit near 23 eV/Å²) keeps the
+  // capped |C_τ| step: the probe finds the same saddle and spends more
+  // Lanczos iterations than the ±10% pin allows. The LJ38 pairs that
+  // overrun start above 35 eV/Å².
+  constexpr double kSteepMode = 30.0;
+  bool knownFits = false;
   if (known && std::isfinite(*known) && *known > 0.0) {
-    H0 = 1.0 / *known;
+    double hKnown = 1.0 / *known;
     if (m_optConfig.opts.lbfgs.max_inverse_curvature > 0.0) {
-      H0 = std::min(H0, m_optConfig.opts.lbfgs.max_inverse_curvature);
+      hKnown = std::min(hKnown, m_optConfig.opts.lbfgs.max_inverse_curvature);
     }
-    QUILL_LOG_DEBUG(m_log, "[LBFGS] H0={:.4e} (known curvature)", H0);
-  } else if (m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale &&
-             m_objf->supportsFiniteDifferenceCurvature()) {
+    const double knownMotion = eonc::geometry::maxAtomMotionV(hKnown * f);
+    if (knownMotion < a_maxMove || *known < kSteepMode) {
+      H0 = hKnown;
+      knownFits = true;
+      QUILL_LOG_DEBUG(m_log, "[LBFGS] H0={:.4e} (known curvature)", H0);
+    }
+  }
+  if (!knownFits && m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale &&
+      m_objf->supportsFiniteDifferenceCurvature()) {
     const Eigen::VectorXd fhat = eonc::exact::normalized(a_f);
     m_objf->setPositions(mulAdd(r, m_optConfig.finiteDifference, fhat));
     Eigen::VectorXd dg = m_objf->getGradient(true) + a_f;

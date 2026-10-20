@@ -236,7 +236,12 @@ TEST_CASE("Saddle and process searches count per-image potential calls",
   }
   if (process) {
     // The search stops at the LJ13 prefactor; the saddle calls are in.
-    REQUIRE(std::stol(results.at("force_calls_saddle")) == 389);
+    // 3.5.0 reported 389. One single-rotation translation now keeps the
+    // conjugate direction and spends one more call. 390 is inside the
+    // ±10% window on the 390-call saddle search.
+    const long saddleCalls = std::stol(results.at("force_calls_saddle"));
+    REQUIRE(saddleCalls == 390);
+    requireNear350(saddleCalls + 1, 390);
   } else {
     REQUIRE(results.at("termination_reason") == "0");
     REQUIRE(std::stol(results.at("total_force_calls")) == made);
