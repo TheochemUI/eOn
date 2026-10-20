@@ -50,6 +50,11 @@ private:
 
   /// Compute rotational force and return curvature along the dimer.
   double calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce);
+
+  /// Rotational force and curvature from the image A and center forces.
+  double rotationalForceAndCurvature(AtomMatrix forceA,
+                                     const AtomMatrix &forceCenter,
+                                     AtomMatrix &rotationalForce) const;
 };
 
 } // namespace eonc

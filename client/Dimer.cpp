@@ -105,9 +105,55 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
   statsAngle = 0;
   double lengthRotationalForceOld = 0.0;
 
-  // Two force calls per rotation iteration
+  const auto doneAt = [&](double t) {
+    return (t > params.dimer_options().torque_max &&
+            rotations >= params.dimer_options().rotations_max) ||
+           (t < params.dimer_options().torque_max &&
+            t >= params.dimer_options().torque_min &&
+            rotations >= params.dimer_options().rotations_min) ||
+           (t < params.dimer_options().torque_min);
+  };
+
+  // The image force at the rotated direction is a sine interpolation of the
+  // two images already evaluated (Heyden, Bell, Keil, JCP 2005). It decides
+  // termination and the reported curvature; another rotation evaluates the
+  // image fresh, since chaining estimates amplifies their error.
+  const bool interpolate = !params.dimer_options().remove_rotation;
+  bool haveEstimate = false;
+  AtomMatrix forceA0, forceA1, forceCenter;
+  double estimateAngle = 0.0;
+
   bool doneRotating = false;
   while (!doneRotating) {
+    if (haveEstimate) {
+      haveEstimate = false;
+      const double trialAngle = params.dimer_options().rotation_angle;
+      const double sinTrial = std::sin(trialAngle);
+      if (std::abs(sinTrial) > 0.0) {
+        AtomMatrix dA0 = forceA0 - forceCenter;
+        AtomMatrix dA1 = forceA1 - forceCenter;
+        AtomMatrix forceEstimate =
+            forceCenter + std::cos(estimateAngle) * dA0 +
+            std::sin(estimateAngle) * (dA1 - std::cos(trialAngle) * dA0) /
+                sinTrial;
+        AtomMatrix rotationalForceEstimate(nAtoms, 3);
+        double curvatureEstimate = rotationalForceAndCurvature(
+            forceEstimate, forceCenter, rotationalForceEstimate);
+        double torqueEstimate = rotationalForceEstimate.norm();
+        if (std::isfinite(torqueEstimate) && std::isfinite(curvatureEstimate) &&
+            doneAt(torqueEstimate)) {
+          curvature = curvatureEstimate;
+          torque = torqueEstimate;
+          QUILL_LOG_DEBUG(log,
+                          "[DimerRot]   -----   ---------   ----------------   "
+                          "---------  {:9.3e}  {:9.3e}  {:9.3e}   ---------\n",
+                          curvature, torque,
+                          rotationAngle * (180.0 / eonc::helpers::pi));
+          break;
+        }
+      }
+    }
+
     curvature = calcRotationalForceReturnCurvature(rotationalForce);
 
     determineRotationalPlane(rotationalForce, rotationalForceOld,
@@ -117,24 +163,23 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
     // torque == 0 is a valid aligned dimer; isnormal(0) is false.
     assert(std::isfinite(torque));
 
-    // Convergence: stop if torque is below threshold or max rotations reached
-    if ((torque > params.dimer_options().torque_max &&
-         rotations >= params.dimer_options().rotations_max) ||
-        (torque < params.dimer_options().torque_max &&
-         torque >= params.dimer_options().torque_min &&
-         rotations >= params.dimer_options().rotations_min) ||
-        (torque < params.dimer_options().torque_min)) {
-      doneRotating = true;
-    }
+    doneRotating = doneAt(torque);
 
     // A probe after acceptance would return rotation_angle off the
     // direction whose curvature was just measured.
     if (!doneRotating) {
+      if (interpolate) {
+        forceA0 = matterDimer->getForces();
+      }
       double rotForce1 = matDot(rotationalForce, rotationalPlane);
       rotate(params.dimer_options().rotation_angle);
 
       curvature = calcRotationalForceReturnCurvature(rotationalForce);
       double rotForce2 = matDot(rotationalForce, rotationalPlane);
+      if (interpolate) {
+        forceA1 = matterDimer->getForces();
+        forceCenter = matterCenter->getForces();
+      }
 
       double rotForceChange =
           (rotForce1 - rotForce2) / params.dimer_options().rotation_angle;
@@ -152,6 +197,10 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
       rotate(rotationAngle);
       rotationalPlaneOld = rotationalPlane;
       rotations++;
+      if (interpolate) {
+        estimateAngle = params.dimer_options().rotation_angle + rotationAngle;
+        haveEstimate = true;
+      }
     }
     QUILL_LOG_DEBUG(log,
                     "[DimerRot]   -----   ---------   ----------------   "
@@ -250,6 +299,12 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce) {
     forceA = matterDimer->getForces();
     forceCenter = matterCenter->getForces();
   }
+  return rotationalForceAndCurvature(forceA, forceCenter, rotationalForce);
+}
+
+double Dimer::rotationalForceAndCurvature(AtomMatrix forceA,
+                                          const AtomMatrix &forceCenter,
+                                          AtomMatrix &rotationalForce) const {
   AtomMatrix forceB = 2.0 * forceCenter - forceA;
 
   double projA = matDot(direction, forceA);
