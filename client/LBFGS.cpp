@@ -211,14 +211,9 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
           ? m_objf->knownCurvature()
           : std::nullopt;
   // |C_τ| is the mode scale. The translated force on a negative mode is
-  // F - 2 (F·τ) τ. When |C_τ| is steep and H0 = 1/|C_τ| already asks for
-  // more than max_move, the cap chooses the length and the first step
-  // leaves the basin r2549 finds with one finite-difference probe of
-  // F_eff. A milder mode (the LJ13 pins sit near 23 eV/Å²) keeps the
-  // capped |C_τ| step: the probe finds the same saddle and spends more
-  // Lanczos iterations than the ±10% pin allows. The LJ38 pairs that
-  // overrun start above 35 eV/Å².
-  constexpr double kSteepMode = 30.0;
+  // F - 2 (F·τ) τ. When H0 = 1/|C_τ| already asks for more than max_move,
+  // the cap chooses the length and the first step leaves the basin r2549
+  // finds with one finite-difference probe of F_eff.
   bool knownFits = false;
   if (known && std::isfinite(*known) && *known > 0.0) {
     double hKnown = 1.0 / *known;
@@ -226,7 +221,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
       hKnown = std::min(hKnown, m_optConfig.opts.lbfgs.max_inverse_curvature);
     }
     const double knownMotion = eonc::geometry::maxAtomMotionV(hKnown * f);
-    if (knownMotion < a_maxMove || *known < kSteepMode) {
+    if (knownMotion < a_maxMove) {
       H0 = hKnown;
       knownFits = true;
       QUILL_LOG_DEBUG(m_log, "[LBFGS] H0={:.4e} (known curvature)", H0);

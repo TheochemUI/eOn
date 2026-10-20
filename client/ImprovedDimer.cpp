@@ -255,16 +255,10 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     rho.clear();
     init_lbfgs = true;
   }
-  // CG across translations is the r2549 recurrence, and it matters when a
-  // loose angle tolerance allows only one rotation: that rotation has to
-  // inherit F_R_Old and thetaOld or it is steepest descent every time.
-  // Once an estimate has rotated more than once, those vectors are the
-  // conjugate solution at the previous centre. The next centre is a
-  // different rotational objective; carrying them makes the first angles
-  // large and spends the rotation budget climbing back. Restart then.
-  if (params.dimer_options().opt_method == OptType::CG && statsRotations > 1) {
-    init_cg = true;
-  }
+  // CG state belongs to the dimer, not to one centre. r2549 keeps
+  // init_cg, F_R_Old and thetaOld across translations, including after
+  // an estimate that rotated more than once. Resetting here makes the
+  // next rotation steepest descent.
 
   VectorXd x1_rp, x1_r, tau_prime, tau_Old, g1_prime;
   double phi_tol =
