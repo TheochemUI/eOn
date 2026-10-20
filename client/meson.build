@@ -571,7 +571,9 @@ if not chemfiles_dep.found() and not _chfl_feature.disabled()
     # the project c++20. string-view-lite then aliases std::string_view.
     # That type's MSVC iterator is not a pointer, and it has no to_string().
     # c++14 is the oldest ISO mode cl.exe still exposes; below C++17 the
-    # lite header keeps its own string_view.
+    # lite header keeps its own string_view. The parse.hpp patch declares
+    # the int64_t specializations first: MSVC instantiates them from
+    # parse_integer before the original declarations (C2908).
     if is_windows and cppc.get_id() == 'msvc'
         chfl_opts.set_override_option('cpp_std', 'c++14')
         message('chemfiles wrap: MSVC cpp_std=c++14')

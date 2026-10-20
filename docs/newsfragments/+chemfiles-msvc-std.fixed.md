@@ -1,1 +1,1 @@
-Windows pyeonclient wheels compile the chemfiles wrap as C++14. MSVC can build the string_view helpers that fail when that C++11 library inherits the project's C++20 mode.
+Windows pyeonclient wheels compile the chemfiles wrap as C++14. MSVC can build the string_view helpers that fail when that C++11 library inherits the project's C++20 mode, and the integer parse specializations are declared before that compiler instantiates them.
