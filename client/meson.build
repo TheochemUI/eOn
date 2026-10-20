@@ -543,8 +543,17 @@ endif
 # chemfiles: XYZ/extxyz/PDB/CIF/GRO/LAMMPS data/... structure ingress
 # (ChemfilesIO.cpp). .con stays readcon's. Prefer the pixi/conda-forge
 # chemfiles-lib (CMake config or pkg-config), then the CMake wrap.
+# allow_fallback is off: the wheel's wrap_mode=forcefallback would
+# configure the wrap from dependency() with default options, and a later
+# cmake.subproject() would reuse that build. The MSVC standard below
+# would never be applied.
 _chfl_feature = get_option('with_chemfiles')
-chemfiles_dep = dependency('chemfiles', version: '>=0.10', required: false)
+chemfiles_dep = dependency(
+    'chemfiles',
+    version: '>=0.10',
+    required: false,
+    allow_fallback: false,
+)
 if not chemfiles_dep.found() and not _chfl_feature.disabled()
     chfl_opts = cmake.subproject_options()
     chfl_opts.add_cmake_defines({
@@ -559,13 +568,13 @@ if not chemfiles_dep.found() and not _chfl_feature.disabled()
     })
     # chemfiles 0.10.4 is C++11. GCC records -std=c++11 and Meson honors
     # that. MSVC has no such flag in CompilerFlags.cmake, so the wrap keeps
-    # the project c++20. string-view-lite then aliases std::string_view, and
-    # MSVC's iterator is not a pointer, so trim() does not compile. c++14 is
-    # the oldest ISO mode cl.exe still exposes; below C++17 the lite header
-    # keeps its pointer implementation. The utils.hpp patch covers a TU that
-    # still sees std::string_view.
+    # the project c++20. string-view-lite then aliases std::string_view.
+    # That type's MSVC iterator is not a pointer, and it has no to_string().
+    # c++14 is the oldest ISO mode cl.exe still exposes; below C++17 the
+    # lite header keeps its own string_view.
     if is_windows and cppc.get_id() == 'msvc'
         chfl_opts.set_override_option('cpp_std', 'c++14')
+        message('chemfiles wrap: MSVC cpp_std=c++14')
     endif
     chfl_proj = cmake.subproject(
         'chemfiles',
