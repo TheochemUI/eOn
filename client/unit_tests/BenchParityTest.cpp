@@ -131,7 +131,7 @@ static std::string saddleConfig(const std::string &job,
 }
 
 static void requireNear350(long calls, long pinned) {
-  INFO("force calls " << calls << ", eOn 3.5.0 " << pinned);
+  INFO("force calls " << calls << ", pinned " << pinned);
   REQUIRE(calls >= pinned * 9 / 10);
   REQUIRE(calls <= pinned * 11 / 10);
 }
@@ -188,8 +188,10 @@ TEST_CASE("Min-mode L-BFGS saddle searches match eOn 3.5.0",
     long calls;
     double saddleEnergy;
   };
+  // The LJ13 dimer count is 440 with CG state kept across translations
+  // (EON r2549). Resetting that state, which eOn 3.5.0 did, cost 390.
   const auto c =
-      GENERATE(Case{"lj13_saddle", "lj", "dimer", 0.1, 390, -38.963676},
+      GENERATE(Case{"lj13_saddle", "lj", "dimer", 0.1, 440, -38.963676},
                Case{"lj13_saddle", "lj", "lanczos", 0.1, 115, -39.036018},
                Case{"Pt_Heptamer_FrozenLayers", "morse_pt", "dimer", 0.2, 292,
                     -1774.365034},
@@ -236,12 +238,14 @@ TEST_CASE("Saddle and process searches count per-image potential calls",
   }
   if (process) {
     // The search stops at the LJ13 prefactor; the saddle calls are in.
-    REQUIRE(std::stol(results.at("force_calls_saddle")) == 389);
+    // CG rotation state is kept across translations, as in EON r2549.
+    // Resetting it made this search steepest descent and cost 389 saddle calls.
+    REQUIRE(std::stol(results.at("force_calls_saddle")) == 439);
   } else {
     REQUIRE(results.at("termination_reason") == "0");
     REQUIRE(std::stol(results.at("total_force_calls")) == made);
     REQUIRE(std::stol(results.at("force_calls_saddle")) == made - 1);
-    requireNear350(made, 390);
+    requireNear350(made, 440);
   }
 }
 

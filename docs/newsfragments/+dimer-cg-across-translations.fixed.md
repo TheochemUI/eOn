@@ -1,0 +1,1 @@
+Improved dimer conjugate-gradient rotation keeps `init_cg`, `F_R_Old`, and `thetaOld` across translations, as in EON r2549. Resetting that state at the start of every `compute()` made each rotation steepest descent.

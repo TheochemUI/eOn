@@ -253,9 +253,9 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     rho.clear();
     init_lbfgs = true;
   }
-  if (params.dimer_options().opt_method == OptType::CG) {
-    init_cg = true;
-  }
+  // CG state belongs to the dimer, not to one centre. r2549 keeps
+  // init_cg, F_R_Old and thetaOld across translations. Resetting here
+  // makes the next rotation steepest descent.
 
   VectorXd x1_rp, x1_r, tau_prime, tau_Old, g1_prime;
   double phi_tol =

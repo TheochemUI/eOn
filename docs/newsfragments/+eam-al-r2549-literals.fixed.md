@@ -1,0 +1,1 @@
+`eam_al` stores the EON r2549 `potinit.f` default-real literals at single precision. Keeping the extra printed digits raised the four 0.233 eV hTST aluminium barriers by about 0.01 meV, so each rate window needed many more rare processes.
