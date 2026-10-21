@@ -31,22 +31,77 @@
 
 namespace eonc {
 
+namespace {
+
+// Twenty halvings leave 2^-20 of the attempted step, about 10^-6.
+// For the default max_move of 0.2 Å that remainder is 2e-7 Å, which
+// is still above the motion floor, so this ceiling is what stops a
+// long step. The floor stops a shorter one first.
+constexpr int kMaxEnergyHalvings = 20;
+
+// Each stall reseeds and halves the cap, and the seed sign alternates.
+// Six stalls is three tries of each sign, and the cap has dropped by
+// 64. Both seeds have been repeated at three step sizes.
+constexpr int kMaxEnergyStalls = 6;
+
+// A kept fraction below 1/64 has been halved more than six times.
+// The mode was estimated for the full step. A piece that small is a
+// different displacement, so the rotational CG or L-BFGS state is
+// dropped and the next estimate starts from the original tangent.
+constexpr double kMaxEnergyReseedAlpha = 1.0 / 64.0;
+
+// Smallest translation cap, in Å. The default finite-difference
+// distance is 1e-2 Å and the saddle ini files use 1e-3 Å. A cap
+// below 1e-4 Å is smaller than those probes. Holding it here keeps
+// the next attempt a real move, and it stays above the motion floor.
+constexpr double kMaxEnergyStepFloor = 1.0e-4;
+
+// Max-atom motion, in Å, below which a probe repeats a geometry
+// already evaluated. L-BFGS uses the same 1e-8 scale to drop a
+// secant pair whose overlap is numerical noise.
+constexpr double kMaxEnergyMotionFloor = 1.0e-8;
+
+// One doubling per accepted under-limit step, the inverse of the
+// probe halving. Each legal step gives back one factor the wall
+// removed. The default max_move of 0.2 Å returns from the step
+// floor in ceil(log2(0.2/1e-4)) = 11 legal steps.
+constexpr double kMaxEnergyCapRegrowth = 2.0;
+
+// Crossings of max_energy in one search, whether a probe was found
+// or the centre was restored. Six consecutive stalls already stop a
+// search that never finds a legal point. A found probe, or one
+// under-limit step, resets that counter and the cap doubles back,
+// so a search sitting on the limit crosses once a regrowth cycle
+// until max_iterations. Sixteen is more than one full regrowth of
+// a 0.2 Å cap from the step floor (11) and more than the stall
+// budget. The LJ38 dimer start this recovery finishes crosses
+// once, so the cap does not cut that search off. Past sixteen the
+// search is pinned and ends with the high-energy status. The
+// default max_iterations is 1000, and each crossing can spend 20
+// probes.
+constexpr int kMaxEnergyWallEvents = 16;
+
+} // namespace
+
 class MinModeObjectiveFunction : public ObjectiveFunction {
 private:
   std::shared_ptr<Matter> matter;
   AtomMatrix eigenvector;
   std::shared_ptr<EigenmodeStrategy> minModeMethod;
   int iteration{0};
+  double reactantEnergy{0.0};
 
 public:
   MinModeObjectiveFunction(
       std::shared_ptr<Matter> matterPassed,
       std::shared_ptr<EigenmodeStrategy> minModeMethodPassed,
-      AtomMatrix modePassed, const Parameters &paramsPassed)
+      AtomMatrix modePassed, double reactantEnergyPassed,
+      const Parameters &paramsPassed)
       : ObjectiveFunction(paramsPassed),
         matter{std::move(matterPassed)},
+        eigenvector{std::move(modePassed)},
         minModeMethod{minModeMethodPassed},
-        eigenvector{std::move(modePassed)} {}
+        reactantEnergy{reactantEnergyPassed} {}
 
   ~MinModeObjectiveFunction() override = default;
 
@@ -70,6 +125,15 @@ public:
     if (matter->needsForceUpdate()) {
       minModeMethod->evaluateWithProbe(matter, eigenvector);
     }
+  }
+
+  // The centre (and a batching solver's first image) is evaluated
+  // here. FIRE then skips getGradient() when this is true, so the
+  // mode is not rotated at a point the search will pull back.
+  bool pastClimbCeiling() override {
+    evaluateCentre();
+    return getEnergy() - reactantEnergy >
+           params.saddle_search_options().max_energy;
   }
 
   VectorXd getGradient(bool fdstep = false) {
@@ -333,7 +397,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
     AtomMatrix initialPosition = matter->getPositions();
 
     auto objf = std::make_shared<MinModeObjectiveFunction>(
-        matter, minModeMethod, mode, params);
+        matter, minModeMethod, mode, reactantEnergy, params);
     auto write_climb_frame = [&](uint64_t frameIndex, bool append,
                                  double stepSize, double de, double conv,
                                  double eigenval, double torque, double angle,
@@ -401,19 +465,29 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
     const double stockMove = params.optimizer_options().max_move;
     double translationCap = stockMove;
     int wallStalls = 0;
+    int wallEvents = 0;
     int reseeds = 0;
+    int probeForceCalls = 0;
+    auto probedEnergy = [&]() {
+      const long beforeCalls = matter->getForceCalls();
+      const double energy = objf->getEnergy();
+      probeForceCalls +=
+          static_cast<int>(matter->getForceCalls() - beforeCalls);
+      return energy;
+    };
     auto pullUnderEnergy = [&](const VectorXd &before) -> bool {
       const double limit = params.saddle_search_options().max_energy;
       const VectorXd after = objf->getPositions();
       const VectorXd delta = objf->difference(after, before);
       double alpha = 0.5;
       bool found = false;
-      for (int probe = 0; probe < 20; ++probe) {
-        if (eonc::geometry::maxAtomMotionV(alpha * delta) < 1.0e-8) {
+      for (int probe = 0; probe < kMaxEnergyHalvings; ++probe) {
+        if (eonc::geometry::maxAtomMotionV(alpha * delta) <
+            kMaxEnergyMotionFloor) {
           break;
         }
         objf->setPositions(before + alpha * delta);
-        if (objf->getEnergy() - reactantEnergy <= limit) {
+        if (probedEnergy() - reactantEnergy <= limit) {
           found = true;
           break;
         }
@@ -429,9 +503,11 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       };
       if (found) {
         wallStalls = 0;
+        ++wallEvents;
         const double accepted = eonc::geometry::maxAtomMotionV(alpha * delta);
-        translationCap = std::min(stockMove, std::max(accepted, 1.0e-4));
-        if (alpha < (1.0 / 64.0)) {
+        translationCap =
+            std::min(stockMove, std::max(accepted, kMaxEnergyStepFloor));
+        if (alpha < kMaxEnergyReseedAlpha) {
           freshMode();
           QUILL_LOG_DEBUG(
               log,
@@ -444,21 +520,36 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
                           "the translation to {:.3e}",
                           limit, accepted);
         }
+        if (wallEvents >= kMaxEnergyWallEvents) {
+          QUILL_LOG_DEBUG(log,
+                          "[MinMode] {} crossings of max_energy {:.4f}, "
+                          "ending the search",
+                          wallEvents, limit);
+          return false;
+        }
         return true;
       }
       objf->setPositions(before);
-      if (objf->getEnergy() - reactantEnergy > limit) {
+      if (probedEnergy() - reactantEnergy > limit) {
         return false;
       }
+      ++wallEvents;
       ++wallStalls;
-      translationCap =
-          std::min(stockMove, std::max(translationCap * 0.5, 1.0e-4));
+      translationCap = std::min(
+          stockMove, std::max(translationCap * 0.5, kMaxEnergyStepFloor));
       freshMode();
       QUILL_LOG_DEBUG(log,
                       "[MinMode] translation stays above max_energy {:.4f}, "
                       "restored the centre and re-initialised the mode",
                       limit);
-      return wallStalls < 6;
+      if (wallEvents >= kMaxEnergyWallEvents) {
+        QUILL_LOG_DEBUG(log,
+                        "[MinMode] {} crossings of max_energy {:.4f}, "
+                        "ending the search",
+                        wallEvents, limit);
+        return false;
+      }
+      return wallStalls < kMaxEnergyStalls;
     };
 
     while (!objf->isConverged() || iteration == 0) {
@@ -521,8 +612,11 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       double de = objf->getEnergy() - reactantEnergy;
       const double energyLimit = params.saddle_search_options().max_energy;
       if (de > energyLimit) {
-        if (!pullUnderEnergy(posBefore) ||
-            objf->getEnergy() - reactantEnergy > energyLimit) {
+        const bool kept = pullUnderEnergy(posBefore);
+        if (kept) {
+          optim->onTranslationPulledBack();
+        }
+        if (!kept || objf->getEnergy() - reactantEnergy > energyLimit) {
           status = STATUS_BAD_HIGH_ENERGY;
           // Count the attempt so a first-step abort does not fall through
           // to the iteration == 0 mode estimate below.
@@ -531,7 +625,8 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
         }
         de = objf->getEnergy() - reactantEnergy;
       } else if (translationCap < stockMove) {
-        translationCap = std::min(stockMove, translationCap * 2.0);
+        translationCap =
+            std::min(stockMove, translationCap * kMaxEnergyCapRegrowth);
         wallStalls = 0;
       }
 
@@ -611,7 +706,8 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       QUILL_LOG_DEBUG(log, "[MinModeSaddleSearch] eigenvalue not negative");
       status = STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
     }
-    forcecalls = eonc::eigenmodeTotalForceCalls(*minModeMethod);
+    forcecalls = static_cast<int>(
+        eonc::eigenmodeTotalForceCalls(*minModeMethod) + probeForceCalls);
   }
 
   return status;

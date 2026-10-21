@@ -31,6 +31,7 @@ public:
 
   int step(double a_maxMove) override;
   int run(size_t a_maxIterations, double a_maxMove) override;
+  void onTranslationPulledBack() override;
 
 private:
   double m_dt, m_dt_max, m_max_move;

@@ -95,6 +95,11 @@ public:
   virtual ~Optimizer() = default;
   virtual int step(double a_maxMove) = 0;
   virtual int run(size_t a_maxIterations, double a_maxMove) = 0;
+  // A min-mode search calls this after it shortens or restores a
+  // translation that crossed max_energy. CG and FIRE drop the memory
+  // that pointed along that step. L-BFGS stored the step's start, so
+  // the next secant pair stays consistent and the default keeps it.
+  virtual void onTranslationPulledBack() {}
 };
 
 namespace helpers::create {

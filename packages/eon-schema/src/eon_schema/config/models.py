@@ -1228,7 +1228,7 @@ class SaddleSearchConfig(BaseModel):
     )
     max_energy: float = Field(
         default=20.0,
-        description="The energy at which a saddle search is considered bad and terminated.",
+        description="Rise above the reactant, in eV. A min-mode translation that crosses it is shortened to the longest fraction still under the limit and the search continues. The centre is restored when no shorter step is legal. Repeated crossings end the search. The default of 20 is unchanged.",
     )
     max_step_size: float = Field(
         default=0.2,

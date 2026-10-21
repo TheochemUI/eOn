@@ -405,7 +405,11 @@ public:
     double fx = 4.0 * x;
     double fy = -40.0 * y;
     double fz = -40.0 * z;
+    if (x < minX) {
+      minX = x;
+    }
     if (x < -0.05) {
+      ++belowWall;
       const double w = x + 0.05;
       e += 400.0 + 2000.0 * w * w;
       fx += -4000.0 * w;
@@ -418,6 +422,9 @@ public:
       *variance = 0.0;
     }
   }
+
+  mutable double minX{1.0e9};
+  mutable int belowWall{0};
 };
 
 class AlwaysHotPot final : public eonc::Potential {
@@ -478,6 +485,10 @@ TEST_CASE("Min-mode shortens a translation that crosses max_energy",
   REQUIRE(status == eonc::MinModeSaddleSearch::STATUS_GOOD);
   REQUIRE(std::abs(x) < 0.02);
   REQUIRE(energy < 20.0);
+  // The first halving accepts. That probe is not in the eigenmode
+  // counter, and getForceCalls() has to include it.
+  REQUIRE(pot->belowWall >= 1);
+  REQUIRE(search.getForceCalls() >= 1);
 }
 
 TEST_CASE("Min-mode still aborts when every point is past max_energy",
@@ -491,6 +502,361 @@ TEST_CASE("Min-mode still aborts when every point is past max_energy",
   eonc::MinModeSaddleSearch search(matter, mode, 0.0, parameters, pot);
   const int status = search.run(8);
   REQUIRE(status == eonc::MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY);
+}
+
+// Energy is under the limit only at the starting point. Every probe
+// misses, so the stall counter climbs without a reset.
+class CentreColdPot final : public eonc::Potential {
+public:
+  explicit CentreColdPot(double x0)
+      : Potential(PotType::UNKNOWN),
+        x0_{x0} {}
+
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    static_cast<void>(nAtoms);
+    static_cast<void>(atomicNrs);
+    static_cast<void>(box);
+    const double x = positions[0];
+    const double y = positions[1];
+    const double z = positions[2];
+    forces[0] = 4.0 * x + 2.0;
+    forces[1] = -80.0 * y;
+    forces[2] = -80.0 * z;
+    const bool atCentre = std::abs(x - x0_) < 1.0e-12 &&
+                          std::abs(y) < 1.0e-12 && std::abs(z) < 1.0e-12;
+    *energy = atCentre ? 0.0 : 100.0;
+    if (variance != nullptr) {
+      *variance = 0.0;
+    }
+  }
+
+private:
+  double x0_;
+};
+
+// Legal for x >= 0. Above x = 0.12 the climb points at the wall, and
+// at or below 0.12 it points back into the legal region. A crossing
+// therefore accepts half the step, the next step stays under the
+// limit, and the cap doubles. The stall counter resets on both, so
+// six consecutive stalls never happen. The curvature along x stays
+// negative on each piece, and y and z are stiff.
+class HalfLinePot final : public eonc::Potential {
+public:
+  HalfLinePot()
+      : Potential(PotType::UNKNOWN) {}
+
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    static_cast<void>(nAtoms);
+    static_cast<void>(atomicNrs);
+    static_cast<void>(box);
+    const double x = positions[0];
+    const double y = positions[1];
+    const double z = positions[2];
+    const double push = x > 0.12 ? 2.0 : -2.0;
+    forces[0] = push + 0.1 * x;
+    forces[1] = -80.0 * y;
+    forces[2] = -80.0 * z;
+    *energy = x >= 0.0 ? 0.0 : 100.0;
+    if (x >= 0.0 && x < 0.14) {
+      ++shortAccepted;
+    }
+    if (variance != nullptr) {
+      *variance = 0.0;
+    }
+  }
+
+  mutable int shortAccepted{0};
+};
+
+// Legal for x >= 0. Above x = 0.1 the climb points at the wall.
+// At or below 0.1 it points back into the legal region, so the next
+// step stays under the limit and the cap doubles.
+class RegrowthPot final : public eonc::Potential {
+public:
+  RegrowthPot()
+      : Potential(PotType::UNKNOWN) {}
+
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    static_cast<void>(nAtoms);
+    static_cast<void>(atomicNrs);
+    static_cast<void>(box);
+    const double x = positions[0];
+    const double y = positions[1];
+    const double z = positions[2];
+    const double push = x > 0.1 ? 2.0 : -2.0;
+    forces[0] = push + 0.1 * x;
+    forces[1] = -200.0 * y;
+    forces[2] = -200.0 * z;
+    *energy = x >= 0.0 ? 0.0 : 100.0;
+    if (x < minX) {
+      minX = x;
+    }
+    if (x > maxX) {
+      maxX = x;
+    }
+    if (x < -0.05) {
+      ++hot;
+    }
+    if (variance != nullptr) {
+      *variance = 0.0;
+    }
+  }
+
+  mutable double minX{1.0e9};
+  mutable double maxX{-1.0e9};
+  mutable int hot{0};
+};
+
+// Saddle at x = 0, with a softening x^4 term. A curvature step from
+// x = 0.2 is longer than the distance to the saddle, so it crosses
+// the wall at x < -0.05. Steepest descent with a fixed step does too.
+class SoftWallPot final : public eonc::Potential {
+public:
+  SoftWallPot()
+      : Potential(PotType::UNKNOWN) {}
+
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    static_cast<void>(nAtoms);
+    static_cast<void>(atomicNrs);
+    static_cast<void>(box);
+    const double x = positions[0];
+    const double y = positions[1];
+    const double z = positions[2];
+    double e = -2.0 * x * x + 5.0 * x * x * x * x + 20.0 * y * y + 20.0 * z * z;
+    double fx = 4.0 * x - 20.0 * x * x * x;
+    double fy = -40.0 * y;
+    double fz = -40.0 * z;
+    if (x < minX) {
+      minX = x;
+    }
+    if (x < -0.05) {
+      const double w = x + 0.05;
+      e += 400.0 + 2000.0 * w * w;
+      fx += -4000.0 * w;
+    }
+    forces[0] = fx;
+    forces[1] = fy;
+    forces[2] = fz;
+    *energy = e;
+    if (variance != nullptr) {
+      *variance = 0.0;
+    }
+  }
+
+  mutable double minX{1.0e9};
+};
+
+// Reported energy is hot for x below wallX. An x^2 y term tilts the
+// soft mode, so one dimer rotation does not finish the estimate.
+class XWallPot final : public eonc::Potential {
+public:
+  explicit XWallPot(double wallX)
+      : Potential(PotType::UNKNOWN),
+        wallX_{wallX} {}
+
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    static_cast<void>(nAtoms);
+    static_cast<void>(atomicNrs);
+    static_cast<void>(box);
+    const double x = positions[0];
+    const double y = positions[1];
+    const double z = positions[2];
+    // E = -2 x^2 + 8 y^2 + 8 z^2 + 20 x^2 y, plus the wall.
+    forces[0] = 4.0 * x - 40.0 * x * y;
+    forces[1] = -16.0 * y - 20.0 * x * x;
+    forces[2] = -16.0 * z;
+    const double mechanical =
+        -2.0 * x * x + 8.0 * y * y + 8.0 * z * z + 20.0 * x * x * y;
+    *energy = x < wallX_ ? 100.0 : mechanical;
+    if (variance != nullptr) {
+      *variance = 0.0;
+    }
+  }
+
+private:
+  double wallX_;
+};
+
+TEST_CASE("Min-mode aborts after six consecutive energy stalls",
+          "[MinMode][max_energy]") {
+  Parameters parameters;
+  prepareWallSearch(parameters);
+  ParametersLoadAccess::optimizer_options(parameters).sd.alpha = 1.0;
+  ParametersLoadAccess::optimizer_options(parameters).max_move = 0.2;
+  auto pot = std::make_shared<CentreColdPot>(0.2);
+  auto matter = oneAtom(pot, parameters, Eigen::Vector3d(0.2, 0.0, 0.0));
+  AtomMatrix mode(1, 3);
+  mode << 1.0, 0.0, 0.0;
+  eonc::MinModeSaddleSearch search(matter, mode, 0.0, parameters, pot);
+  const int status = search.run(40);
+  INFO("status " << status << " iterations " << search.getIterationCount());
+  REQUIRE(status == eonc::MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY);
+  // Six restores, not the iteration cap.
+  REQUIRE(search.getIterationCount() == 6);
+  REQUIRE(search.getForceCalls() >= 6);
+}
+
+TEST_CASE("Min-mode stops a pinned search after the wall-event bound",
+          "[MinMode][max_energy]") {
+  Parameters parameters;
+  prepareWallSearch(parameters);
+  ParametersLoadAccess::optimizer_options(parameters).sd.alpha = 1.0;
+  ParametersLoadAccess::optimizer_options(parameters).max_move = 0.2;
+  auto pot = std::make_shared<HalfLinePot>();
+  auto matter = oneAtom(pot, parameters, Eigen::Vector3d(0.35, 0.0, 0.0));
+  AtomMatrix mode(1, 3);
+  mode << 1.0, 0.0, 0.0;
+  eonc::MinModeSaddleSearch search(matter, mode, 0.0, parameters, pot);
+  const int status = search.run(200);
+  INFO("status " << status << " iterations " << search.getIterationCount()
+                 << " short " << pot->shortAccepted);
+  REQUIRE(status == eonc::MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY);
+  // One legal step, then pairs of (found probe, under-limit regrowth).
+  // The 16th crossing is the 32nd step. Six stalls would stop at 6,
+  // and the old path would run to the 200-iteration cap.
+  REQUIRE(search.getIterationCount() == 32);
+  REQUIRE(search.getIterationCount() < 200);
+  REQUIRE(pot->shortAccepted >= 16);
+  // Improved-dimer force accounting does not include these probes.
+  REQUIRE(search.getForceCalls() >= 16);
+}
+
+TEST_CASE("Min-mode regrows the translation cap after an under-limit step",
+          "[MinMode][max_energy]") {
+  Parameters parameters;
+  prepareWallSearch(parameters);
+  ParametersLoadAccess::optimizer_options(parameters).sd.alpha = 1.0;
+  ParametersLoadAccess::optimizer_options(parameters).max_move = 0.4;
+  auto pot = std::make_shared<RegrowthPot>();
+  auto matter = oneAtom(pot, parameters, Eigen::Vector3d(0.25, 0.0, 0.0));
+  AtomMatrix mode(1, 3);
+  mode << 1.0, 0.0, 0.0;
+  eonc::MinModeSaddleSearch search(matter, mode, 0.0, parameters, pot);
+  const int status = search.run(3);
+  INFO("status " << status << " min " << pot->minX << " max " << pot->maxX
+                 << " hot " << pot->hot);
+  // The away step is still on the shortened cap, so x stays below 0.3.
+  // The doubled cap then crosses the wall a second time.
+  REQUIRE(pot->maxX < 0.35);
+  REQUIRE(pot->hot >= 2);
+  REQUIRE(search.getIterationCount() == 3);
+  static_cast<void>(status);
+}
+
+TEST_CASE("A very short accepted step re-initialises the mode",
+          "[MinMode][max_energy]") {
+  const Eigen::Vector3d tau(1.0, 0.3, 0.0);
+  const Eigen::Vector3d tauHat = tau.normalized();
+  auto dotMode = [&](double wallX) {
+    Parameters parameters;
+    prepareWallSearch(parameters);
+    ParametersLoadAccess::optimizer_options(parameters).sd.alpha = 1.0;
+    ParametersLoadAccess::optimizer_options(parameters).max_move = 0.4;
+    // CG keeps rotational memory across translations. A reseed drops it
+    // and puts the original tangent back. SD would rebuild the same
+    // step from the force, so the two paths would match.
+    ParametersLoadAccess::dimer_options(parameters).opt_method = OptType::CG;
+    ParametersLoadAccess::dimer_options(parameters).rotations_max = 1;
+    ParametersLoadAccess::dimer_options(parameters).converged_angle = 1.0e-8;
+    ParametersLoadAccess::saddle_search_options(parameters).converged_force =
+        1.0e-12;
+    auto pot = std::make_shared<XWallPot>(wallX);
+    auto matter = oneAtom(pot, parameters, Eigen::Vector3d(0.5, 0.0, 0.0));
+    AtomMatrix mode(1, 3);
+    mode.row(0) = tauHat.transpose();
+    eonc::MinModeSaddleSearch search(matter, mode, 0.0, parameters, pot);
+    const int status = search.run(2);
+    const AtomMatrix ev = search.getEigenvector();
+    const double dot =
+        ev(0, 0) * tauHat.x() + ev(0, 1) * tauHat.y() + ev(0, 2) * tauHat.z();
+    INFO("wall " << wallX << " status " << status << " dot " << dot << " ev "
+                 << ev(0, 0) << " " << ev(0, 1));
+    REQUIRE(status != eonc::MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY);
+    return std::abs(dot);
+  };
+  // x < 0.499 needs more than six halvings, so the mode is seeded
+  // again. x < 0.2 accepts at 1/2 and keeps the rotational CG state.
+  // The fresh rotation moves farther from the original tangent, toward
+  // the soft mode. The stale CG step does not.
+  const double reseeded = dotMode(0.499);
+  const double kept = dotMode(0.2);
+  REQUIRE(kept > reseeded + 0.05);
+}
+
+static void requireRecovered(OptType method, bool lanczos) {
+  Parameters parameters;
+  prepareWallSearch(parameters);
+  ParametersLoadAccess::optimizer_options(parameters).method = method;
+  if (method == OptType::FIRE) {
+    // |F| is about 0.6. dt^2 times that force, capped by max_move,
+    // has to pass the saddle and the wall.
+    ParametersLoadAccess::optimizer_options(parameters).time_step = 1.0;
+    ParametersLoadAccess::optimizer_options(parameters).max_time_step = 2.0;
+  }
+  if (lanczos) {
+    ParametersLoadAccess::saddle_search_options(parameters).minmode_method =
+        LowestEigenmode::MINMODE_LANCZOS;
+    ParametersLoadAccess::lanczos_options(parameters).max_iterations = 6;
+    ParametersLoadAccess::lanczos_options(parameters).tolerance = 0.05;
+  }
+  // The softening well makes a curvature step overshoot the saddle.
+  // Lanczos reports linear dependence on that well, so it climbs the
+  // quadratic wall instead. Steepest descent still overshoots there.
+  std::shared_ptr<eonc::Potential> pot;
+  double *minX = nullptr;
+  if (lanczos) {
+    auto far = std::make_shared<FarWallPot>();
+    minX = &far->minX;
+    pot = far;
+  } else {
+    auto soft = std::make_shared<SoftWallPot>();
+    minX = &soft->minX;
+    pot = soft;
+  }
+  auto matter = oneAtom(pot, parameters, Eigen::Vector3d(0.2, 0.0, 0.0));
+  AtomMatrix mode(1, 3);
+  mode << 1.0, 0.0, 0.0;
+  eonc::MinModeSaddleSearch search(matter, mode, 0.0, parameters, pot);
+  const int status = search.run(40);
+  const double x = matter->getPositions()(0, 0);
+  const double energy = matter->getPotentialEnergy();
+  INFO("method " << static_cast<int>(method) << " lanczos " << lanczos
+                 << " status " << status << " x " << x << " energy " << energy
+                 << " min " << *minX << " calls " << search.getForceCalls());
+  REQUIRE(status == eonc::MinModeSaddleSearch::STATUS_GOOD);
+  REQUIRE(energy < 20.0);
+  REQUIRE(*minX < -0.05);
+  REQUIRE(search.getForceCalls() >= 1);
+}
+
+TEST_CASE("LBFGS translation recovers a step that crosses max_energy",
+          "[MinMode][max_energy]") {
+  requireRecovered(OptType::LBFGS, false);
+}
+
+TEST_CASE("CG translation recovers a step that crosses max_energy",
+          "[MinMode][max_energy]") {
+  requireRecovered(OptType::CG, false);
+}
+
+TEST_CASE("FIRE translation recovers a step that crosses max_energy",
+          "[MinMode][max_energy]") {
+  requireRecovered(OptType::FIRE, false);
+}
+
+TEST_CASE("Lanczos translation recovers a step that crosses max_energy",
+          "[MinMode][max_energy]") {
+  requireRecovered(OptType::SD, true);
 }
 
 } /* namespace tests */
