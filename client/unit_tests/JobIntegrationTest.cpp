@@ -636,10 +636,9 @@ max_energy = 10.0
   // Eigenvalue must be negative (true saddle point).
   // final_eigenvalue is the pre-final estimate: the min-mode curvature at
   // the geometry before the converged step, since convergence is judged on
-  // the forces alone. SVN printed -1.014995. Dimer::rotate now updates the
-  // plane from the pre-rotation direction; the host dimer's pre-final
-  // estimate on this fixture is -1.010564. Energy still matches the SVN
-  // saddle.
+  // the forces alone. SVN prints -1.014995. That is this dimer's pre-final
+  // estimate when a one-rotation translation keeps the conjugate direction.
+  // Energy still matches the SVN saddle.
   double eigenvalue = std::stod(results["final_eigenvalue"]);
   REQUIRE(eigenvalue < 0.0);
 #ifdef WITH_RGSADDLE
@@ -650,7 +649,7 @@ max_energy = 10.0
   // and the central-difference Hessian gives -1.0102.
   REQUIRE(eigenvalue == Catch::Approx(-1.013461).epsilon(1e-3));
 #else
-  REQUIRE(eigenvalue == Catch::Approx(-1.010564).epsilon(1e-3));
+  REQUIRE(eigenvalue == Catch::Approx(-1.014995).epsilon(1e-3));
 #endif
 
   // Reactant energy must match

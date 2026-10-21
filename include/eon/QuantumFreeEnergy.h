@@ -44,9 +44,9 @@ double perpendicularHarmonicFreeEnergy(const Eigen::MatrixXd &hessian,
 /// every vibration counts, the one along the band included; between them
 /// the band tangent is the reaction coordinate and leaves the sum. The
 /// tangent is the Cartesian NEB tangent, mass-weighted inside.
-std::vector<double> quantumFreeEnergies(
-    const std::vector<std::shared_ptr<Matter>> &path,
-    const std::vector<std::shared_ptr<AtomMatrix>> &tangent, double temperature,
-    const Parameters &params);
+std::vector<double>
+quantumFreeEnergies(const std::vector<std::shared_ptr<Matter>> &path,
+                    const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
+                    double temperature, const Parameters &params);
 
 } // namespace eonc

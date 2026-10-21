@@ -532,9 +532,9 @@ struct RateInstanton {
   /// ln of the ring's rotational partition function over the reactant's,
   /// included in logRateTimesZr; zero when no rotation is free.
   double logRotationRatio = 0.0;
-  double logZr = 0.0;          ///< ln Z_r
-  double logRate = 0.0;        ///< ln k, k in 1 / time
-  double rate = 0.0;           ///< k in 1 / s
+  double logZr = 0.0;   ///< ln Z_r
+  double logRate = 0.0; ///< ln k, k in 1 / time
+  double rate = 0.0;    ///< k in 1 / s
   /// -kB T ln(2 pi hbar beta k): the barrier an Eyring rate would need, eV.
   double effectiveBarrier = 0.0;
   /// Classical harmonic transition-state theory at the same T, 1 / s,
