@@ -55,8 +55,11 @@ public:
   // Help is the walked image's raw force, not band convergenceForce().
   // After a downhill dimer step maxEnergyImage can hop; the band CI
   // force is then a neighbor and is the wrong score for restore.
+  // Status -1 left the band tangent. A lower walked force on that
+  // abort is not help; run() keeps the image and applies the linear
+  // penalty. Status -2 is positive curvature.
   static bool walkHelped(double walkedForce, double convForce, int mmfStatus) {
-    return walkedForce < convForce && mmfStatus != -2;
+    return walkedForce < convForce && mmfStatus != -1 && mmfStatus != -2;
   }
 
   // Positive curvature (status -2) is a well, not a saddle. A band
