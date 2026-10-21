@@ -22,6 +22,7 @@
 #include "eon/Lanczos.h"
 #include "eon/EonLogger.h"
 #include "eon/FiniteDifference.h"
+#include "eon/GeometryAnalysis.h"
 #include "eon/HelperFunctions.h"
 #include "eon/MobileAtoms.h"
 #include "eon/Potential.h"
@@ -110,11 +111,40 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
     lowestEw = 0.0;
     return;
   }
+  const bool removeRigidModes =
+      !matter->getPeriodic() && mobile.size() == matter->numberOfAtoms();
 
   const long maxIters = std::max(1L, params.lanczos_options().max_iterations);
   MatrixXd T(size, maxIters), Q(size, maxIters);
   T.setZero();
   VectorXd u(size), r = packMobileRows(direction, mobile);
+  auto projectRigid = [&](VectorXd &v) {
+    if (!removeRigidModes || v.size() != size) {
+      return;
+    }
+    AtomMatrix full = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
+    unpackMobileRows(v, mobile, full);
+    VectorXd fullVec = VectorXd::Map(full.data(), 3 * matter->numberOfAtoms());
+    eonc::geometry::projectOutRotTrans(fullVec, matter->getPositions());
+    const AtomMatrix projected =
+        AtomMatrix::Map(fullVec.data(), matter->numberOfAtoms(), 3);
+    v = packMobileRows(projected, mobile);
+  };
+  auto projectRigidStable = [&](VectorXd &v) {
+    if (!removeRigidModes || v.size() != size) {
+      return;
+    }
+    const VectorXd raw = v;
+    projectRigid(v);
+    if (raw.norm() > eonc::safemath::eps &&
+        v.norm() < 1.0e-8 * raw.norm()) {
+      // A near-total projection wipeout means this trial vector is almost
+      // entirely rigid-body. Keep the original so Lanczos can still return
+      // the closed-Krylov Ritz pair in synthetic or constrained tests.
+      v = raw;
+    }
+  };
+  projectRigidStable(r);
 
   double alpha, beta = r.norm();
   if (beta < eonc::safemath::eps) {
@@ -153,12 +183,21 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
       probe.reset();
       return mobileForces(tmpMatter.get(), mobile);
     };
-    return fdHessianVector(hvpScheme, dr, force0, at);
+    VectorXd hv = fdHessianVector(hvpScheme, dr, force0, at);
+    projectRigidStable(hv);
+    return hv;
   };
 
   for (int i = 0; i < size; i++) {
     statsRotations = i;
-    Q.col(i) = r / beta;
+    VectorXd q = r / beta;
+    projectRigidStable(q);
+    const double qnorm = q.norm();
+    if (qnorm < eonc::safemath::eps) {
+      QUILL_LOG_ERROR(log, "[ILanczos] ERROR: rigid-mode collapse");
+      break;
+    }
+    Q.col(i) = q / qnorm;
 
     u = applyH(Q.col(i));
 
@@ -167,8 +206,10 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
     } else {
       r = u - beta * Q.col(i - 1);
     }
+    projectRigidStable(r);
     alpha = Q.col(i).dot(r);
     r = r - alpha * Q.col(i);
+    projectRigidStable(r);
 
     T(i, i) = alpha;
     if (i > 0) {
