@@ -153,8 +153,8 @@ int ConjugateGradients::single_step(double a_maxMove) {
         pos += eonc::geometry::maxMotionAppliedV(stepSize * m_directionNorm,
                                                  a_maxMove);
       } else {
-        pos += eonc::geometry::maxAtomMotionAppliedV(
-            stepSize * m_directionNorm, a_maxMove);
+        pos += eonc::geometry::maxAtomMotionAppliedV(stepSize * m_directionNorm,
+                                                     a_maxMove);
       }
       m_objf->setPositions(pos);
     } else {
@@ -279,8 +279,8 @@ int ConjugateGradients::single_step(double a_maxMove) {
           if (dsn < 1e-12) {
             continue;
           }
-          const auto df = m_secantForce.segment(3 * a, 3) -
-                          m_force.segment(3 * a, 3);
+          const auto df =
+              m_secantForce.segment(3 * a, 3) - m_force.segment(3 * a, 3);
           const double c = df.dot(dsAtom) / dsn;
           if (c > 0.05) {
             m_atomCurv[static_cast<size_t>(a)] = c;
@@ -337,8 +337,8 @@ int ConjugateGradients::single_step(double a_maxMove) {
     }
     m_objf->setPositions(pos);
     m_lastForceNorm = std::sqrt(eonc::exact::squaredNorm(m_force));
-    m_lastMotion = eonc::geometry::maxAtomMotionV(
-        m_objf->difference(pos, posBefore));
+    m_lastMotion =
+        eonc::geometry::maxAtomMotionV(m_objf->difference(pos, posBefore));
     m_secantPos = posBefore;
     m_secantForce = m_force;
     m_secantDir = m_directionNorm;
