@@ -15,6 +15,7 @@
 #include "eon/EonLogger.h"
 #include "eon/EpiCenters.h"
 #include "eon/HelperFunctions.h"
+#include "eon/LBFGS.h"
 #include "eon/ObjectiveFunction.h"
 #include "eon/SaddleSearchJob.h"
 #include "eon/SafeMath.h"
@@ -25,6 +26,7 @@
 #include <format>
 #include <fstream>
 #include <memory>
+#include <optional>
 #include <stdexcept>
 #include <string>
 
@@ -378,6 +380,11 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
 
     auto optim = eonc::helpers::create::mkOptim(
         objf, params.optimizer_options().method, params);
+    auto resetTranslationOptimizer = [&]() {
+      optim = eonc::helpers::create::mkOptim(
+          objf, params.optimizer_options().method, params);
+    };
+    std::optional<bool> wasPositiveMode;
 
     while (!objf->isConverged() || iteration == 0) {
       matter->pollCancel("saddle");
@@ -410,6 +417,18 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       }
 
       AtomMatrix pos = matter->getPositions();
+      const bool isPositiveMode = eonc::eigenmodeGetEigenvalue(*minModeMethod) > 0.0;
+      if (wasPositiveMode.has_value() && *wasPositiveMode != isPositiveMode &&
+          params.optimizer_options().method == OptType::LBFGS) {
+        if (auto *lbfgs = dynamic_cast<LBFGS *>(optim.get())) {
+          QUILL_LOG_DEBUG(
+              log,
+              "[MinModeSaddleSearch] reset translation LBFGS memory after "
+              "mode-sign change");
+          lbfgs->reset();
+        }
+      }
+      wasPositiveMode = isPositiveMode;
 
       try {
         if (params.saddle_search_options().confine_positive.bowl_breakout &&
@@ -436,6 +455,41 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       }
 
       double de = objf->getEnergy() - reactantEnergy;
+      if (de > params.saddle_search_options().max_energy &&
+          params.optimizer_options().method == OptType::LBFGS) {
+        const double maxMove = std::abs(params.optimizer_options().max_move);
+        bool accepted = false;
+        for (int retry = 1; retry <= 8; ++retry) {
+          const double trialMaxMove = std::ldexp(maxMove, -retry);
+          if (trialMaxMove <= 0.0) {
+            break;
+          }
+          QUILL_LOG_DEBUG(
+              log,
+              "[MinModeSaddleSearch] retry high-energy LBFGS step "
+              "(delta_e={:.4f} > {:.4f}) with max_move {:.6f}",
+              de, params.saddle_search_options().max_energy, trialMaxMove);
+          matter->setPositions(pos);
+          resetTranslationOptimizer();
+          optStatus = optim->step(trialMaxMove);
+          if (optStatus < 0) {
+            status = STATUS_OPTIMIZER_ERROR;
+            break;
+          }
+          de = objf->getEnergy() - reactantEnergy;
+          if (de <= params.saddle_search_options().max_energy) {
+            accepted = true;
+            break;
+          }
+        }
+        if (status == STATUS_OPTIMIZER_ERROR) {
+          break;
+        }
+        if (!accepted && de > params.saddle_search_options().max_energy) {
+          status = STATUS_BAD_HIGH_ENERGY;
+          break;
+        }
+      }
 
       // Melander, Laasonen, Jonsson, JCTC 11(3), 1055-1062, 2015
       if (params.saddle_search_options().remove_rotation) {
