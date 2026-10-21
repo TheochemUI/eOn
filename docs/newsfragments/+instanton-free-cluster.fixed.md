@@ -1,0 +1,1 @@
+An instanton job treats a free cluster in a periodic cell as free to rotate, makes it whole across cell faces, aligns the computed steepest-descent path as a read one is, and writes the symmetry flags on every instanton.con.
