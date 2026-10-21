@@ -112,7 +112,7 @@
       "type": "string"
     },
     "initializer": {
-      "default": "linear",
+      "default": "idpp",
       "description": "Initialization strategy.\n\nOptions:\n- ``linear``: Euclidean distance based image interpolation for initial NEB paths.\n- ``idpp``: Image depedent pair potential initialzation :cite:t:`neb-smidstrupImprovedInitialGuess2014`.\n- ``idpp_collective``: IDPP as a potential initialized with the NEB.\n- ``sidpp``: Sequential Image depedent pair potential initialzation :cite:t:`neb-schmerwitzImprovedInitializationOptimal2024`.\n- ``file``: Start from an arbitrary path, needs initial_path_in set as well.",
       "enum": [
         "linear",
@@ -159,8 +159,8 @@
       "type": "number"
     },
     "ci_mmf": {
-      "default": false,
-      "description": "Use an MMF method for the CI.",
+      "default": true,
+      "description": "Refine the climbing image with the dimer (OCI-NEB). Goswami, Gunde, and Jonsson, Front. Chem. 14:1807063 (2026), doi:10.3389/fchem.2026.1807063, Algorithm 1.",
       "type": "boolean"
     },
     "ci_mmf_after": {
@@ -179,8 +179,8 @@
       "type": "integer"
     },
     "ci_mmf_angle": {
-      "default": 0.8,
-      "description": "Alignment threshold w.r.t NEB mode.",
+      "default": 0.85,
+      "description": "Alignment threshold of the dimer mode against the NEB tangent. 0.85 is the Frontiers operating point. 1/sqrt(2) is the bound.",
       "type": "number"
     },
     "ci_mmf_restore_unhelpful": {

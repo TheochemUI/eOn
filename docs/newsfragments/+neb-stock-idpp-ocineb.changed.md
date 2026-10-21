@@ -1,0 +1,1 @@
+The stock nudged elastic band starts from an IDPP path and refines the climbing image with the dimer once that image is stable. The conjugate-gradient band step takes later lengths from the previous displacement. A converged climbing image stays fixed for the rest of the band.
