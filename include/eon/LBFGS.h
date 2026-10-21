@@ -16,6 +16,7 @@
 #include "Matter.h"
 #include "ObjectiveFunction.h"
 #include "Optimizer.h"
+#include "PairHessian.h"
 #include "Parameters.h"
 
 #include <deque>
@@ -56,9 +57,15 @@ private:
                                         const Eigen::VectorXd &pos) const;
   [[nodiscard]] Eigen::VectorXd hessianStep(double a_maxMove,
                                             const Eigen::VectorXd &a_f);
+  [[nodiscard]] bool autoModel() const;
+  [[nodiscard]] bool leaveSaddle(double a_maxMove);
+  void noteModel(const Eigen::VectorXd &pos, const Eigen::VectorXd &force);
 
   int m_iteration{0};
   int m_memory{0};
+  int m_escapes{0};
+  bool m_modelChecked{false};
+  pairhess::KnownPair m_known{pairhess::KnownPair::None};
 
   std::deque<Eigen::VectorXd> m_s;
   std::deque<Eigen::VectorXd> m_y;

@@ -1,0 +1,1 @@
+L-BFGS and FIRE take the initial step from the Lennard-Jones or Morse pair Hessian when the objective force matches that potential, and a converged point with negative pair curvature is stepped off that mode. Other objectives keep finite-difference scaling and the steepest fallback.

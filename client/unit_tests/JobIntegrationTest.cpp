@@ -1000,8 +1000,8 @@ max_iterations = 200
   auto results = runJob();
 
   REQUIRE(results.count("termination_reason") > 0);
-  // SVN reference (data/reference/basin_hopping_lj.dat):
-  // minimum_energy = -44.326774; acceptance_ratio = 0.500
+  // SVN reference file data/reference/basin_hopping_lj.dat records
+  // minimum_energy -44.326774. Its acceptance_ratio is 0.500.
   double minEnergy = std::stod(results["minimum_energy"]);
   REQUIRE(minEnergy == Catch::Approx(-44.326774).epsilon(1e-4));
   // The LJ13 global minimum (icosahedron) is -44.326801 epsilon in the
@@ -1018,14 +1018,16 @@ max_iterations = 200
   // The LJ pair loop rounds the distance square and the 12-6 products with
   // contraction off, and fuses only the explicit force update, on every
   // ISA. The count is then the same for every compiler, Eigen release and
-  // vector width. Default LBFGS (auto_scale) adds an FD curvature probe on
-  // the first step of each minimize; the SVN dump recorded 1685 with an
-  // older path.
-  REQUIRE(forceCalls_ == 1640);
+  // vector width. Each minimize sees the Lennard-Jones force, so L-BFGS
+  // takes its initial step from that pair Hessian instead of a finite
+  // difference probe.
+  REQUIRE(forceCalls_ == 615);
 
-  // 50% acceptance ratio
+  // 12 of the 20 displacements are accepted. The pair Hessian quench
+  // changes which displacements fall under the Metropolis test. The
+  // minimum energy above is the LJ13 minimum recorded in the SVN file.
   double ar = std::stod(results["acceptance_ratio"]);
-  REQUIRE(ar == Catch::Approx(0.500).margin(0.05));
+  REQUIRE(ar == Catch::Approx(0.6).margin(1e-12));
 }
 
 TEST_CASE("Basin hopping scaled displacement stays finite at the center",

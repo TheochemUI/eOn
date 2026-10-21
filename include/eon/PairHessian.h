@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -357,6 +358,145 @@ inline Eigen::MatrixXd build(const Eigen::VectorXd &pos,
   const double shift = 1.0e-6 * std::max(1.0, P.diagonal().mean());
   P.diagonal().array() += shift;
   return P;
+}
+
+/// Pair potential whose analytic force matches an objective force.
+/// Lennard-Jones uses epsilon = sigma = 1. Morse uses D0 0.7102, alpha
+/// 1.6047, r0 2.897. Both are the curvatures `build` already evaluates.
+enum class KnownPair { None, LennardJones, Morse };
+
+inline PotType knownPot(KnownPair known) {
+  return known == KnownPair::Morse ? PotType::MORSE_PT : PotType::LJ;
+}
+
+inline Eigen::VectorXd withoutNetForce(Eigen::VectorXd force) {
+  const int nat = static_cast<int>(force.size() / 3);
+  if (nat <= 1) {
+    return force;
+  }
+  Eigen::Vector3d mean = Eigen::Vector3d::Zero();
+  for (int i = 0; i < nat; ++i) {
+    mean += force.segment<3>(3L * i);
+  }
+  mean /= static_cast<double>(nat);
+  for (int i = 0; i < nat; ++i) {
+    force.segment<3>(3L * i) -= mean;
+  }
+  return force;
+}
+
+/// Analytic pair force, f = -dV/dx, with the mean force removed.
+inline Eigen::VectorXd analyticPairForce(const Eigen::VectorXd &pos,
+                                         ObjectiveFunction &objf, bool morse,
+                                         double cutoff) {
+  const int nat = static_cast<int>(pos.size() / 3);
+  Eigen::VectorXd force = Eigen::VectorXd::Zero(pos.size());
+  for (int i = 0; i < nat; ++i) {
+    for (int j = i + 1; j < nat; ++j) {
+      Eigen::Vector3d dr = pos.segment<3>(3L * i) - pos.segment<3>(3L * j);
+      objf.minimumImage(dr);
+      const double r = dr.norm();
+      if (!(r > 1.0e-14 && r < cutoff)) {
+        continue;
+      }
+      double vp = 0.0;
+      double vpp = 0.0;
+      if (morse) {
+        morseDerivs(r, 0.7102, 1.6047, 2.897, vp, vpp);
+      } else {
+        ljDerivs(r, 1.0, 1.0, vp, vpp);
+      }
+      if (!std::isfinite(vp)) {
+        continue;
+      }
+      const Eigen::Vector3d u = dr / r;
+      force.segment<3>(3L * i) -= vp * u;
+      force.segment<3>(3L * j) += vp * u;
+    }
+  }
+  return withoutNetForce(std::move(force));
+}
+
+/// Lennard-Jones cutoffs 15 and 40, and Morse cutoffs 7 and 9.5.
+/// A match needs a force above 1 and a relative residual below 1e-5,
+/// so a near-zero force is not claimed as every pair model at once.
+inline KnownPair matchKnownPair(const Eigen::VectorXd &pos,
+                                const Eigen::VectorXd &force,
+                                ObjectiveFunction &objf) {
+  if (pos.size() < 6 || pos.size() % 3 != 0 || force.size() != pos.size()) {
+    return KnownPair::None;
+  }
+  const Eigen::VectorXd observed = withoutNetForce(force);
+  const double scale = observed.norm();
+  if (!(scale > 1.0) || !observed.allFinite()) {
+    return KnownPair::None;
+  }
+  struct Cand {
+    KnownPair kind;
+    bool morse;
+    double cutoff;
+  };
+  const Cand cands[] = {
+      {KnownPair::LennardJones, false, 15.0},
+      {KnownPair::LennardJones, false, 40.0},
+      {KnownPair::Morse, true, 7.0},
+      {KnownPair::Morse, true, 9.5},
+  };
+  KnownPair best = KnownPair::None;
+  double bestRel = 1.0e-5;
+  for (const Cand &cand : cands) {
+    const Eigen::VectorXd model =
+        analyticPairForce(pos, objf, cand.morse, cand.cutoff);
+    if (!model.allFinite()) {
+      continue;
+    }
+    const double rel = (model - observed).norm() / scale;
+    if (rel < bestRel) {
+      bestRel = rel;
+      best = cand.kind;
+    }
+  }
+  return best;
+}
+
+/// P^{-1} f for the positive pair Hessian. Returns `force` if the
+/// factorisation is not finite.
+inline Eigen::VectorXd pairNewtonForce(const Eigen::VectorXd &pos,
+                                       const Eigen::VectorXd &force,
+                                       KnownPair known,
+                                       ObjectiveFunction &objf) {
+  if (known == KnownPair::None || pos.size() < 6 || pos.size() % 3 != 0) {
+    return force;
+  }
+  const Eigen::MatrixXd P =
+      build(pos, "pair", knownPot(known), 3.0, 1.0, 0.0, objf);
+  Eigen::PartialPivLU<Eigen::MatrixXd> lu(P);
+  const Eigen::VectorXd step = lu.solve(force);
+  if (!step.allFinite()) {
+    return force;
+  }
+  return step;
+}
+
+/// Unit vector of the lowest signed pair curvature, when it lies below
+/// `-threshold`.
+inline std::optional<Eigen::VectorXd>
+pairNegativeMode(const Eigen::VectorXd &pos, KnownPair known,
+                 ObjectiveFunction &objf, double threshold) {
+  if (known == KnownPair::None || !(threshold > 0.0) || pos.size() < 6 ||
+      pos.size() % 3 != 0) {
+    return std::nullopt;
+  }
+  const Eigen::MatrixXd P =
+      build(pos, "pair_full", knownPot(known), 3.0, 1.0, 0.0, objf);
+  Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(P);
+  if (solver.info() != Eigen::Success || solver.eigenvalues().size() == 0) {
+    return std::nullopt;
+  }
+  if (solver.eigenvalues()(0) >= -threshold) {
+    return std::nullopt;
+  }
+  return solver.eigenvectors().col(0);
 }
 
 } // namespace pairhess

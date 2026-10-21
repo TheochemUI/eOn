@@ -11,6 +11,7 @@
 */
 
 #include "eon/Optimizer.h"
+#include "eon/PairHessian.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/ConjugateGradients.h"
@@ -279,6 +280,91 @@ TEST_CASE("FIRE zero-force step stays finite", "[optimizer][fire]") {
   REQUIRE_NOTHROW(
       opt.step(ParametersLoadAccess::optimizer_options(params).max_move));
   REQUIRE(std::isfinite(objf->getPositions().norm()));
+}
+
+class BareObjective : public eonc::ObjectiveFunction {
+public:
+  explicit BareObjective(const Parameters &parameters)
+      : ObjectiveFunction(parameters) {}
+  double getEnergy() override { return 0.0; }
+  VectorXd getGradient(bool) override { return VectorXd(); }
+  void setPositions(const VectorXd &) override {}
+  VectorXd getPositions() override { return VectorXd(); }
+  int degreesOfFreedom() override { return 0; }
+  bool isConverged() override { return false; }
+  double getConvergence() override { return 0.0; }
+  VectorXd difference(const VectorXd &a, const VectorXd &b) override {
+    return a - b;
+  }
+};
+
+TEST_CASE("known pair force match selects LJ and Morse",
+          "[optimizer][lbfgs][pair]") {
+  auto params = makeOptParams();
+  BareObjective obj(params);
+  VectorXd pos(9);
+  pos << 0.0, 0.0, 0.0, 1.2, 0.0, 0.0, 0.2, 1.1, 0.0;
+  const VectorXd lj =
+      eonc::pairhess::analyticPairForce(pos, obj, false, 40.0);
+  REQUIRE(lj.norm() > 1.0);
+  REQUIRE(eonc::pairhess::matchKnownPair(pos, lj, obj) ==
+          eonc::pairhess::KnownPair::LennardJones);
+  const VectorXd morse =
+      eonc::pairhess::analyticPairForce(pos, obj, true, 7.0);
+  REQUIRE(morse.norm() > 1.0);
+  REQUIRE(eonc::pairhess::matchKnownPair(pos, morse, obj) ==
+          eonc::pairhess::KnownPair::Morse);
+  REQUIRE(eonc::pairhess::matchKnownPair(pos, VectorXd::Constant(9, 2.0),
+                                         obj) ==
+          eonc::pairhess::KnownPair::None);
+  REQUIRE(eonc::pairhess::matchKnownPair(pos, VectorXd::Zero(9), obj) ==
+          eonc::pairhess::KnownPair::None);
+}
+
+class LjTriangleObjective : public eonc::ObjectiveFunction {
+  VectorXd m_positions;
+  int m_calls{0};
+
+public:
+  explicit LjTriangleObjective(const Parameters &parameters)
+      : ObjectiveFunction(parameters), m_positions(VectorXd::Zero(9)) {}
+
+  double getEnergy() override { return 0.0; }
+  VectorXd getGradient(bool) override {
+    ++m_calls;
+    return -eonc::pairhess::analyticPairForce(m_positions, *this, false, 40.0);
+  }
+  void setPositions(const VectorXd &x) override { m_positions = x; }
+  VectorXd getPositions() override { return m_positions; }
+  int degreesOfFreedom() override { return 9; }
+  bool isConverged() override {
+    return getConvergence() <
+           ParametersLoadAccess::optimizer_options(params).converged_force;
+  }
+  double getConvergence() override {
+    return eonc::pairhess::analyticPairForce(m_positions, *this, false, 40.0)
+        .norm();
+  }
+  VectorXd difference(const VectorXd &a, const VectorXd &b) override {
+    return a - b;
+  }
+  int calls() const { return m_calls; }
+};
+
+TEST_CASE("LBFGS pair model converges a Lennard-Jones triangle",
+          "[optimizer][lbfgs][pair]") {
+  auto params = makeOptParams();
+  ParametersLoadAccess::optimizer_options(params).converged_force = 0.01;
+  auto objf = std::make_shared<LjTriangleObjective>(params);
+  VectorXd start(9);
+  start << 0.0, 0.0, 0.0, 1.5, 0.1, 0.0, 0.2, 1.4, 0.05;
+  objf->setPositions(start);
+
+  LBFGS opt(objf, params);
+  const int status = opt.run(40, 0.2);
+  REQUIRE(status == 1);
+  REQUIRE(objf->getConvergence() <= 0.01);
+  REQUIRE(objf->calls() < 40);
 }
 
 TEST_CASE("SteepestDescent optimizer converges on quadratic",

@@ -85,7 +85,29 @@ Eigen::Vector3d LBFGS::micRij(const Eigen::VectorXd &pos, int i, int j) const {
   return dr;
 }
 
+bool LBFGS::autoModel() const {
+  return m_known != pairhess::KnownPair::None &&
+         m_optConfig.opts.lbfgs.precon == "none";
+}
+
+void LBFGS::noteModel(const Eigen::VectorXd &pos, const Eigen::VectorXd &force) {
+  if (m_modelChecked) {
+    return;
+  }
+  m_modelChecked = true;
+  if (m_optConfig.opts.lbfgs.precon != "none") {
+    return;
+  }
+  m_known = pairhess::matchKnownPair(pos, force, *m_objf);
+  if (autoModel()) {
+    QUILL_LOG_DEBUG(m_log, "[LBFGS] pair initial Hessian from the objective force");
+  }
+}
+
 bool LBFGS::usesPrecon() const {
+  if (autoModel()) {
+    return true;
+  }
   const std::string &p = m_optConfig.opts.lbfgs.precon;
   return p == "exp" || p == "c1" || p == "lindh" || p == "lindh_full" ||
          p == "pair" || p == "pair_abs" || p == "pair_full" || p == "fischer" ||
@@ -94,8 +116,38 @@ bool LBFGS::usesPrecon() const {
 
 Eigen::MatrixXd LBFGS::buildPrecon(const Eigen::VectorXd &pos) const {
   const auto &cfg = m_optConfig.opts.lbfgs;
+  if (autoModel()) {
+    return pairhess::build(pos, "pair", pairhess::knownPot(m_known),
+                           cfg.precon_A, cfg.precon_mu, cfg.precon_rcut,
+                           *m_objf);
+  }
   return pairhess::build(pos, cfg.precon, m_optConfig.potential, cfg.precon_A,
                          cfg.precon_mu, cfg.precon_rcut, *m_objf);
+}
+
+bool LBFGS::leaveSaddle(double a_maxMove) {
+  bool moved = false;
+  const double threshold = m_optConfig.opts.converged_force;
+  while (autoModel() && m_escapes < 4 && m_objf->isConverged()) {
+    const Eigen::VectorXd pos = m_objf->getPositions();
+    const std::optional<Eigen::VectorXd> mode = pairhess::pairNegativeMode(
+        pos, m_known, *m_objf, threshold);
+    if (!mode) {
+      break;
+    }
+    Eigen::VectorXd step =
+        eonc::geometry::maxAtomMotionAppliedV(*mode, a_maxMove);
+    const Eigen::VectorXd force = -m_objf->getGradient();
+    if (eonc::exact::dot(step, force) < 0.0) {
+      step = -step;
+    }
+    m_objf->setPositions(pos + step);
+    reset();
+    ++m_escapes;
+    moved = true;
+    QUILL_LOG_DEBUG(m_log, "[LBFGS] leave negative pair curvature");
+  }
+  return moved;
 }
 
 Eigen::VectorXd LBFGS::applyH0(const Eigen::VectorXd &q, double H0,
@@ -185,6 +237,13 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
       if (m_optConfig.opts.lbfgs.curvature == "reset") {
         reset();
       }
+      // A matched pair Hessian already carries that curvature. Stepping
+      // along it keeps the quasi-Newton metric. The scalar fallback stays
+      // a full max-move steepest step.
+      if (autoModel()) {
+        return eonc::geometry::maxAtomMotionAppliedV(applyH0(f, H0, r),
+                                                     a_maxMove);
+      }
       return eonc::geometry::maxAtomMotionAppliedV(1000 * f, a_maxMove);
     }
 
@@ -228,7 +287,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
     }
   }
   if (!knownFits && m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale &&
-      m_objf->supportsFiniteDifferenceCurvature()) {
+      !autoModel() && m_objf->supportsFiniteDifferenceCurvature()) {
     const Eigen::VectorXd fhat = eonc::exact::normalized(a_f);
     m_objf->setPositions(mulAdd(r, m_optConfig.finiteDifference, fhat));
     Eigen::VectorXd dg = m_objf->getGradient(true) + a_f;
@@ -280,7 +339,9 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
                     "[LBFGS] reset memory, proposed step too large: {:.4f}",
                     distance);
     reset();
-    return eonc::geometry::maxAtomMotionAppliedV(H0 * f, a_maxMove);
+    const Eigen::VectorXd fallback =
+        autoModel() ? applyH0(f, H0, r) : Eigen::VectorXd(H0 * f);
+    return eonc::geometry::maxAtomMotionAppliedV(fallback, a_maxMove);
   }
 
   double vd =
@@ -296,7 +357,9 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
                     "force too large: {:.4f}",
                     angle);
     reset();
-    return eonc::geometry::maxAtomMotionAppliedV(H0 * f, a_maxMove);
+    const Eigen::VectorXd fallback =
+        autoModel() ? applyH0(f, H0, r) : Eigen::VectorXd(H0 * f);
+    return eonc::geometry::maxAtomMotionAppliedV(fallback, a_maxMove);
   }
 
   maybeProjectRigid(d, r, m_optConfig.opts.lbfgs.project_rigid);
@@ -408,6 +471,7 @@ int LBFGS::step(double a_maxMove) {
   int status = 0;
   Eigen::VectorXd r = m_objf->getPositions();
   Eigen::VectorXd f = -m_objf->getGradient();
+  noteModel(r, f);
   const std::string &accept = m_optConfig.opts.lbfgs.accept;
   const bool energyTests = m_objf->gradientMatchesEnergy();
   const bool energyRequested = accept == "energy" || accept == "nonmonotone" ||
@@ -471,6 +535,9 @@ int LBFGS::step(double a_maxMove) {
 
   m_iteration++;
 
+  if (m_objf->isConverged() && leaveSaddle(a_maxMove)) {
+    return 0;
+  }
   return m_objf->isConverged() ? 1 : 0;
 }
 

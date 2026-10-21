@@ -12,6 +12,7 @@
 #pragma once
 #include "EonLogger.h"
 #include "Optimizer.h"
+#include "PairHessian.h"
 #include "Parameters.h"
 
 namespace eonc {
@@ -33,6 +34,10 @@ public:
   int run(size_t a_maxIterations, double a_maxMove) override;
 
 private:
+  void noteModel(const Eigen::VectorXd &force);
+  [[nodiscard]] Eigen::VectorXd metric(const Eigen::VectorXd &force) const;
+  [[nodiscard]] bool leaveSaddle(double a_maxMove);
+
   double m_dt, m_dt_max, m_max_move;
   size_t m_N_min, m_N;
   Eigen::VectorXd m_vel;
@@ -42,6 +47,9 @@ private:
   double m_f_dec;
   double m_f_a;
   size_t m_iteration;
+  int m_escapes{0};
+  bool m_modelChecked{false};
+  pairhess::KnownPair m_known{pairhess::KnownPair::None};
   eonc::log::FileScoped m_log{"fire", "_fire.log"};
 };
 
