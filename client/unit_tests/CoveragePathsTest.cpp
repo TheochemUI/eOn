@@ -2310,7 +2310,8 @@ struct ProfileCacheQuartic final : Potential {
   std::array<int, 3> profileCalls{};
   bool preservedFrozen = true;
   ProfileCacheQuartic(const Parameters &params, AtomMatrix positions)
-      : Potential(PotType::LJ, params), reference(std::move(positions)) {}
+      : Potential(PotType::LJ, params),
+        reference(std::move(positions)) {}
   using Potential::force;
   void force(long nAtoms, const double *positions, const int *, double *forces,
              double *energy, double *variance, const double *) override {
@@ -2327,8 +2328,8 @@ struct ProfileCacheQuartic final : Potential {
     }
     for (long i = 1; i < nAtoms; ++i) {
       for (int c = 0; c < 3; ++c) {
-        preservedFrozen = preservedFrozen &&
-            std::abs(positions[3 * i + c] - reference(i, c)) < 1e-8;
+        preservedFrozen = preservedFrozen && std::abs(positions[3 * i + c] -
+                                                      reference(i, c)) < 1e-8;
       }
     }
     for (int k = 0; k < 3; ++k) {
@@ -3265,10 +3266,19 @@ TEST_CASE("a dynamics search keeps the barrier after one step",
 #ifndef _WIN32
 TEST_CASE("the client rejects an unknown flag and a missing structure",
           "[client][args]") {
-  const auto client =
-      std::filesystem::read_symlink("/proc/self/exe").parent_path() /
-      "eonclient";
-  if (!std::filesystem::exists(client)) {
+  // Meson puts the built client in EONCLIENT. /proc/self/exe is Linux
+  // only; reading it on macOS throws and fails the case.
+  std::filesystem::path client;
+  if (const char *env = std::getenv("EONCLIENT")) {
+    client = env;
+  }
+#if defined(__linux__)
+  if (client.empty() && std::filesystem::is_symlink("/proc/self/exe")) {
+    client = std::filesystem::read_symlink("/proc/self/exe").parent_path() /
+             "eonclient";
+  }
+#endif
+  if (client.empty() || !std::filesystem::exists(client)) {
     return;
   }
   Workdir work;
@@ -3310,7 +3320,6 @@ TEST_CASE("the client rejects an unknown flag and a missing structure",
 #endif
 
 } // namespace tests
-
 
 namespace tests {
 TEST_CASE("instanton references share constraints and the mass metric",
@@ -3355,9 +3364,8 @@ TEST_CASE("instanton references share constraints and the mass metric",
     INFO(mode);
     ParametersLoadAccess::instanton_options(params).mode = mode;
     eonc::InstantonJob job(pot, params);
-    REQUIRE_THROWS_WITH(
-        job.run(),
-        Catch::Matchers::ContainsSubstring("instanton: reference surface differs"));
+    REQUIRE_THROWS_WITH(job.run(), Catch::Matchers::ContainsSubstring(
+                                       "instanton: reference surface differs"));
   }
 }
 } // namespace tests

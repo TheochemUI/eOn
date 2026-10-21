@@ -422,8 +422,13 @@ private:
 /// image pool (eonc::forEachImage) when no two of them share an instance
 /// that is unsafe to share. Each system's result is the one its own
 /// serial evaluation gives.
+///
+/// ``owners``, when given, holds one identity per system (a NEB image),
+/// which a batch passes to forceBatchOwned so the potential keeps
+/// per-system state (stored orbitals) under it; empty, the batch carries
+/// no owners.
 void evaluateTogether(Potential &pot, std::span<Matter *const> systems,
-                      bool threads = false);
+                      bool threads = false, std::span<const long> owners = {});
 
 /// True when the systems can compute on separate threads at once: every
 /// potential instance that two of them share is safe to share.

@@ -378,11 +378,24 @@ A Hessian or a prefactor with an empty `checkpoint_path` sends its
 displaced structures through these groups the same way.
 
 Each group stores the converged orbitals of every system it evaluates.
-The key is the image index for a band and the bead index for a ring
-polymer. A system without an owner uses its position in the batch, and
-every single request shares one key. The next self-consistent field
-(SCF) cycle of an image or a bead starts from its own orbitals of the
-previous step. One group (`ranks_per_image = 0`) batches as well, so the
+The key is the bead index for a ring polymer. For a band, intermediate
+image i has key i - 1, the reactant `images` and the product `images + 1`,
+whichever optimizer steps the band. A system without an owner uses its
+position in the batch, and every single request shares one key. The next
+self-consistent field (SCF) cycle of an image or a bead starts from its
+own orbitals of the previous step.
+
+libcpmdc starts an SCF from stored orbitals only when they converged
+within `CPMDC_WARM_RMSD` of the new geometry: the root-mean-square
+distance per atom, 0.15 Angstrom by default. It takes the nearest stored
+orbitals of any key on that group; past the limit the SCF starts from the
+deck's atomic guess. On the Si3N4 band below, neighbouring images lie
+0.47 Angstrom apart, and starting an image from its neighbour's orbitals
+took 5 to 19 more SCF steps than the guess. Starting an interior image
+from an endpoint's orbitals took 31 to 283 steps, where the guess takes
+25 to 52. A band
+step moves an atom at most `max_move` (0.1 Angstrom), so an image that
+returns to its own key stays inside the limit. One group (`ranks_per_image = 0`) batches as well, so the
 keys apply there too. The engine needs `cpmdc_session_select_orbitals`.
 An older libcpmdc keeps one stored copy per group, and so does rgpot
 3.4.0 or older, which lacks `CPMDPot::selectOrbitals`. On a 16-bead water

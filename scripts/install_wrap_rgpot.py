@@ -3,7 +3,7 @@
 
 rgpot sets install: not meson.is_subproject(). eOn CI uses
 meson install --skip-subprojects. eonclient then looks for
-librgpot.3.dylib (soversion 3 in rgpot 3.2.0) next to the prefix.
+librgpot.<kCxxSoversion> (currently 4) next to the prefix.
 """
 from __future__ import annotations
 
@@ -53,7 +53,7 @@ def main() -> int:
                 dest.symlink_to(os.readlink(path))
             else:
                 shutil.copy2(path, dest)
-            # Wheel NEEDED is librgpot.so.3; wrap file is librgpot.so.3.2.0.
+            # Wheel NEEDED is librgpot.so.<soversion>; the wrap file is versioned.
             if ".so." in name:
                 soname = name.split(".so.")[0] + ".so." + name.split(".so.")[1].split(".")[0]
                 alias = dest_dir / soname

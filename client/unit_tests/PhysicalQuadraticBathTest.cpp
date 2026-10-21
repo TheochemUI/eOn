@@ -251,69 +251,84 @@ TEST_CASE("scalar RBF jets preserve energy differences with cancelling weights",
           "[instanton][physical-bath][interpolation][shift]") {
   const double shift = -std::ldexp(1.0, 46);
   const double weight = std::ldexp(1.0, 24);
-  const nlohmann::json data = {
-      {"kind", "derivative_rbf"}, {"length_scales", {.8}},
-      {"constant", {shift}}, {"sites", {{-.2},{-.2},{-.2}}},
-      {"weights", {{weight},{1.0},{-weight}}},
-      {"derivative_orders", {{0},{0},{0}}}};
+  const nlohmann::json data = {{"kind", "derivative_rbf"},
+                               {"length_scales", {.8}},
+                               {"constant", {shift}},
+                               {"sites", {{-.2}, {-.2}, {-.2}}},
+                               {"weights", {{weight}, {1.0}, {-weight}}},
+                               {"derivative_orders", {{0}, {0}, {0}}}};
   const auto model = DerivativeRbfModel::fromJson(data);
-  const double x=.3, dx=x+.2, inverse=1/(.8*.8);
-  const double gaussian=std::exp(-.5*dx*dx*inverse);
-  const auto value=model.evaluate(VectorXd::Constant(1,x),shift);
-  REQUIRE(std::abs(value.value[0]-gaussian)<2e-10);
-  REQUIRE(std::abs(value.jacobian(0,0)+dx*inverse*gaussian)<2e-10);
-  REQUIRE(std::abs(value.hessians[0](0,0)-
-      (dx*dx*inverse*inverse-inverse)*gaussian)<2e-10);
-  const double step=1e-4;
-  const auto plus=model.evaluate(VectorXd::Constant(1,x+step),shift);
-  const auto minus=model.evaluate(VectorXd::Constant(1,x-step),shift);
-  REQUIRE(std::abs((plus.value[0]-minus.value[0])/(2*step)-value.jacobian(0,0))<5e-8);
-  REQUIRE(std::abs((plus.jacobian(0,0)-minus.jacobian(0,0))/(2*step)-
-      value.hessians[0](0,0))<5e-8);
+  const double x = .3, dx = x + .2, inverse = 1 / (.8 * .8);
+  const double gaussian = std::exp(-.5 * dx * dx * inverse);
+  const auto value = model.evaluate(VectorXd::Constant(1, x), shift);
+  REQUIRE(std::abs(value.value[0] - gaussian) < 2e-10);
+  REQUIRE(std::abs(value.jacobian(0, 0) + dx * inverse * gaussian) < 2e-10);
+  REQUIRE(std::abs(value.hessians[0](0, 0) -
+                   (dx * dx * inverse * inverse - inverse) * gaussian) < 2e-10);
+  const double step = 1e-4;
+  const auto plus = model.evaluate(VectorXd::Constant(1, x + step), shift);
+  const auto minus = model.evaluate(VectorXd::Constant(1, x - step), shift);
+  REQUIRE(std::abs((plus.value[0] - minus.value[0]) / (2 * step) -
+                   value.jacobian(0, 0)) < 5e-8);
+  REQUIRE(std::abs((plus.jacobian(0, 0) - minus.jacobian(0, 0)) / (2 * step) -
+                   value.hessians[0](0, 0)) < 5e-8);
 }
 
 TEST_CASE("analytic physical curvature avoids finite difference force sampling",
           "[instanton][physical-bath][analytic]") {
-  long samples=0,curvatures=0;
-  BatchPotential potential=[&](const std::vector<VectorXd>& q,
-      std::vector<double>& v,std::vector<VectorXd>& g) {
-    samples+=q.size();v.resize(q.size());g.resize(q.size());
-    for (size_t j=0;j<q.size();++j) {
-      const double x=q[j][0];
-      v[j]=.25*std::pow(x*x-1,2);
-      g[j]=VectorXd::Constant(1,x*(x*x-1));
+  long samples = 0, curvatures = 0;
+  BatchPotential potential = [&](const std::vector<VectorXd> &q,
+                                 std::vector<double> &v,
+                                 std::vector<VectorXd> &g) {
+    samples += q.size();
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j][0];
+      v[j] = .25 * std::pow(x * x - 1, 2);
+      g[j] = VectorXd::Constant(1, x * (x * x - 1));
     }
   };
   RateInstantonOptions options;
-  options.beads=64;options.maxIterations=500;options.forceTolerance=1e-9;
-  options.halfRing=false;options.checkOddSector=false;options.maxStep=.2;
-  options.collapseFraction=0;
-  std::vector<VectorXd> guess(options.beads,VectorXd::Zero(1));
-  for (long j=0;j<options.beads;++j)
-    guess[j][0]=.9*std::cos(2*std::numbers::pi*j/options.beads);
-  const VectorXd saddle=VectorXd::Zero(1);
-  const MatrixXd hs=MatrixXd::Constant(1,1,-1);
-  const double beta=10/kHbar;
-  const auto finite=optimizeRateInstanton(saddle,hs,beta,guess,potential,options);
+  options.beads = 64;
+  options.maxIterations = 500;
+  options.forceTolerance = 1e-9;
+  options.halfRing = false;
+  options.checkOddSector = false;
+  options.maxStep = .2;
+  options.collapseFraction = 0;
+  std::vector<VectorXd> guess(options.beads, VectorXd::Zero(1));
+  for (long j = 0; j < options.beads; ++j)
+    guess[j][0] = .9 * std::cos(2 * std::numbers::pi * j / options.beads);
+  const VectorXd saddle = VectorXd::Zero(1);
+  const MatrixXd hs = MatrixXd::Constant(1, 1, -1);
+  const double beta = 10 / kHbar;
+  const auto finite =
+      optimizeRateInstanton(saddle, hs, beta, guess, potential, options);
   REQUIRE(finite.converged);
-  const long finiteSamples=samples;
-  samples=0;
-  options.physicalHessian=[&](const VectorXd& q)->MatrixXd {
-    ++curvatures;return MatrixXd::Constant(1,1,3*q[0]*q[0]-1);
+  const long finiteSamples = samples;
+  samples = 0;
+  options.physicalHessian = [&](const VectorXd &q) -> MatrixXd {
+    ++curvatures;
+    return MatrixXd::Constant(1, 1, 3 * q[0] * q[0] - 1);
   };
-  auto exact=optimizeRateInstanton(saddle,hs,beta,guess,potential,options);
+  auto exact =
+      optimizeRateInstanton(saddle, hs, beta, guess, potential, options);
   REQUIRE(exact.converged);
-  REQUIRE(curvatures>0);
-  REQUIRE(samples<finiteSamples);
-  REQUIRE(std::abs(exact.ringPotential-finite.ringPotential)<1e-8);
-  RingBeadHessian hessian=[](long,const VectorXd& q)->MatrixXd {
-    return MatrixXd::Constant(1,1,3*q[0]*q[0]-1);
+  REQUIRE(curvatures > 0);
+  REQUIRE(samples < finiteSamples);
+  REQUIRE(std::abs(exact.ringPotential - finite.ringPotential) < 1e-8);
+  RingBeadHessian hessian = [](long, const VectorXd &q) -> MatrixXd {
+    return MatrixXd::Constant(1, 1, 3 * q[0] * q[0] - 1);
   };
-  instantonRate(exact,hessian,MatrixXd::Constant(1,1,2),0);
-  REQUIRE(exact.negativeModes==1);
+  instantonRate(exact, hessian, MatrixXd::Constant(1, 1, 2), 0);
+  REQUIRE(exact.negativeModes == 1);
   REQUIRE(exact.phaseZeroVerified);
   REQUIRE(exact.rateValid);
-  options.physicalHessian=[](const VectorXd&)->MatrixXd {return MatrixXd::Zero(2,2);};
-  REQUIRE_THROWS_AS(optimizeRateInstanton(saddle,hs,beta,guess,potential,options),
-                    std::invalid_argument);
+  options.physicalHessian = [](const VectorXd &) -> MatrixXd {
+    return MatrixXd::Zero(2, 2);
+  };
+  REQUIRE_THROWS_AS(
+      optimizeRateInstanton(saddle, hs, beta, guess, potential, options),
+      std::invalid_argument);
 }

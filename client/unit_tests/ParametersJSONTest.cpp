@@ -540,7 +540,7 @@ TEST_CASE("Rate optimizer limit and reference Hessian paths round trip",
           "[params][json][NewtonLimit]") {
   Parameters defaults;
   REQUIRE(defaults.instanton_options().newton_limit ==
-          std::numeric_limits<long>::max());
+          std::numeric_limits<std::int64_t>::max());
   REQUIRE(defaults.instanton_options().reactant_hessian_filename.empty());
   REQUIRE(defaults.instanton_options().saddle_hessian_filename.empty());
   Parameters ini;

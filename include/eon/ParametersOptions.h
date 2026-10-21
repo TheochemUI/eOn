@@ -64,6 +64,9 @@ struct potential_options_t {
   /// ljcluster and morse_pt pair terms to zero at their cutoff. 0 keeps
   /// the shifted truncation, whose force jumps at the cutoff.
   double pairSwitchWidth{0.0};
+  /// Cutoff (Angstrom) of the lj, ljcluster and morse_pt pair terms. 0
+  /// keeps each potential's own cutoff (15 for LJ, 9.5 for Morse).
+  double pairCutoff{0.0};
   int MPIPotentialRank{-1};
   /// Opaque MPI_Comm bits. Read/write with ParametersMpi.h in MPI TUs.
   std::uintptr_t MPIClientComm{0};
@@ -242,7 +245,7 @@ struct optimizer_options_t {
     std::string method{"lbfgs"};
     std::string qn_step{"lbfgs"};
     std::string precon{"none"};
-    std::string accept{"energy"};
+    std::string accept{"none"};
     bool highs{false};
     std::string manifold{"euclidean"};
   } xtsci;
@@ -276,7 +279,7 @@ struct optimizer_options_t {
     std::string precon{"none"};
     std::string step{"lbfgs"};
     std::string h0{"sy_yy"};
-    std::string accept{"energy"};
+    std::string accept{"none"};
     long extra_updates{0};
     double cautious_eps{1.0e-6};
     double cautious_alpha{0.01};
@@ -857,7 +860,9 @@ struct instanton_options_t {
   // takes 2 f gradient calls per bead first.
   std::string initial_hessians{"saddle"};
   // Maximum active coordinates for dense Newton; zero selects the dimer.
-  long newton_limit{std::numeric_limits<long>::max()};
+  // int64, not long: Windows long is 32 bits, and this default is the
+  // 64-bit maximum on every platform.
+  std::int64_t newton_limit{std::numeric_limits<std::int64_t>::max()};
   // Directional Lanczos displacement, sqrt(amu) Angstrom.
   double lanczos_step{1e-4};
   std::string reactant_hessian_filename{};

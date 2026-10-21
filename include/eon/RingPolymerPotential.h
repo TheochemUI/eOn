@@ -55,19 +55,23 @@ public:
   [[nodiscard]] long structureAtoms() const { return nAtoms_; }
   [[nodiscard]] long activeBeads() const { return nActive_; }
   void setPhysicalBath(std::shared_ptr<const PhysicalQuadraticBath> bath) {
-    if (bath && fold_) throw std::invalid_argument("physical bath uses the full ring");
-    if (bath) bath->validate(dof_);
+    if (bath && fold_)
+      throw std::invalid_argument("physical bath uses the full ring");
+    if (bath)
+      bath->validate(dof_);
     physicalBath_ = std::move(bath);
   }
 
   void setDiscretization(std::vector<double> weights) {
     if (!weights.empty()) {
       if (fold_ || static_cast<long>(weights.size()) != nBeads_) {
-        throw std::invalid_argument("link weights require one value per full-ring bead");
+        throw std::invalid_argument(
+            "link weights require one value per full-ring bead");
       }
       for (double value : weights) {
         if (!(value > 0.0) || !std::isfinite(value)) {
-          throw std::invalid_argument("link weights must be positive and finite");
+          throw std::invalid_argument(
+              "link weights must be positive and finite");
         }
       }
     }

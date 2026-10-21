@@ -132,6 +132,9 @@ int load_ini(const INIReader &ini, Parameters &params) {
   ParametersLoadAccess::potential_options(params).pairSwitchWidth = ini.GetReal(
       "Potential", "pair_switch_width",
       ParametersLoadAccess::potential_options(params).pairSwitchWidth);
+  ParametersLoadAccess::potential_options(params).pairCutoff =
+      ini.GetReal("Potential", "pair_cutoff",
+                  ParametersLoadAccess::potential_options(params).pairCutoff);
 
   if (params.potential_options().potential == PotType::MPI ||
       params.potential_options().potential == PotType::VASP) {
@@ -1809,7 +1812,7 @@ int load_ini(const INIReader &ini, Parameters &params) {
                                   o.initial_hessians);
     }
     o.newton_limit =
-        ini.GetInteger("Instanton", "newton_limit", o.newton_limit);
+        ini.GetInteger64("Instanton", "newton_limit", o.newton_limit);
     if (o.newton_limit < 0) {
       throw std::invalid_argument(
           "[Instanton] newton_limit must be nonnegative");

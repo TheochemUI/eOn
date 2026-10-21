@@ -1,0 +1,6 @@
+#!/bin/sh
+# eOn ExtPot entry for the in-repo H2 point job. CPMD_WRAPPER names
+# examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py, which writes the deck,
+# runs cpmd.x, and converts Hartree to eV.
+set -eu
+exec "${CPMD_PYTHON:-python3}" "${CPMD_WRAPPER:?set CPMD_WRAPPER to cpmd_extpot.py}"

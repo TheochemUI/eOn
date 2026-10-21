@@ -75,8 +75,7 @@ inline bool isModelHess(const std::string &kind) {
 
 /// Rank-1 update \f$k\,(\nabla q)(\nabla q)^\top\f$ for a scalar internal.
 inline void addScalarInternal(Eigen::MatrixXd &P, const int *atoms,
-                              const Eigen::Vector3d *g, int n_atoms,
-                              double k) {
+                              const Eigen::Vector3d *g, int n_atoms, double k) {
   if (!(k > 0.0) || !std::isfinite(k)) {
     return;
   }
@@ -209,10 +208,10 @@ inline void addModelHess(Eigen::MatrixXd &P, const Eigen::VectorXd &pos,
         const double rkj = rjk.norm();
         double kang = 0.16 * scale;
         if (kind == "fischer") {
-          kang = scale * (0.089 + 0.11 *
-                                      std::pow(r_cov * r_cov, -0.42) *
-                                      std::exp(-0.44 * ((rij - r_cov) +
-                                                        (rkj - r_cov))));
+          kang =
+              scale *
+              (0.089 + 0.11 * std::pow(r_cov * r_cov, -0.42) *
+                           std::exp(-0.44 * ((rij - r_cov) + (rkj - r_cov))));
         } else if (kind == "lindh_full" || kind == "swart") {
           kang = 0.15 * scale * lindhRho(rij, r_nn, alpha) *
                  lindhRho(rkj, r_nn, alpha);
@@ -275,9 +274,10 @@ inline void addModelHess(Eigen::MatrixXd &P, const Eigen::VectorXd &pos,
 
 /// Analytic pair or model Hessian. `kind` is pair / pair_abs / pair_full /
 /// lindh / lindh_full / exp / c1 / fischer / schlegel / swart.
-inline Eigen::MatrixXd
-build(const Eigen::VectorXd &pos, const std::string &kind, PotType pot,
-      double A, double mu, double rcut_in, ObjectiveFunction &objf) {
+inline Eigen::MatrixXd build(const Eigen::VectorXd &pos,
+                             const std::string &kind, PotType pot, double A,
+                             double mu, double rcut_in,
+                             ObjectiveFunction &objf) {
   const int n = static_cast<int>(pos.size());
   const int nat = n / 3;
   std::vector<double> nn(static_cast<size_t>(nat),

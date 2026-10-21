@@ -1,0 +1,35 @@
+--- a/CppCore/meson.build
++++ b/CppCore/meson.build
+@@ -359,13 +359,25 @@
+     # Subproject consumers (eOn's wrap fallback) take the umbrella through
+     # this variable; pkg-config consumers get the same surface from
+     # rgpot.pc.
+-    rgpot_dep = declare_dependency(
+-        link_with: rgpot,
+-        dependencies: rgpot_deps,
+-        include_directories: _incdirs,
+-        compile_args: _args,
+-    )
+-
++    #
++    # A Windows shared build exports only rgpot_library_version. The C++
++    # pots live in the archives link_whole'd above, so consumers of the
++    # import library cannot resolve EMTPot and the Fortran faces.
++    if host_system == 'windows' and get_option('default_library') != 'static'
++        rgpot_dep = declare_dependency(
++            link_whole: [rgpot_core] + _linkto + _rpc_whole,
++            dependencies: rgpot_deps,
++            include_directories: _incdirs,
++            compile_args: _args,
++        )
++    else
++        rgpot_dep = declare_dependency(
++            link_with: rgpot,
++            dependencies: rgpot_deps,
++            include_directories: _incdirs,
++            compile_args: _args,
++        )
++    endif
+     # The Fortran kernels must stay invisible outside librgpot: an
+     # exported legacy name is how two potentials used to bind to the same
+     # symbol.

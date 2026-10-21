@@ -29,16 +29,16 @@ constants and converters.
 The default system of units is selected at compilation by setting the macro
 #FORCEFIELDS_UNIT_SYSTEM_HPP .
 
-The content of the constants called @ref xtb_units "unit name constants" and @ref
-xtb_converters "converters" depends on the system chosen. \n The default system like
-the SI is based on the four dimensions distance, mass, time, electric current.
-All other units are extracted from the four units chosen for these four
-dimensions. For example if the default system is SI, the unit of energy will be
-Joule because @f$ 1\ J = 1\ m^2\ kg\ s^{-2}  @f$ . As well the unit of pressure
-will be Pascal ( @f$ 1\ Pa=1\ m^{-1}\ kg\ s^{-2} @f$ ). Quantities of same
-dimensions are always expressed with the same units. For instance the
-temperature has the dimension of the energy, therefore is default unit is the
-unit of the energy (Joule if SI is the default system).
+The content of the constants called @ref xtb_units "unit name constants" and
+@ref xtb_converters "converters" depends on the system chosen. \n The default
+system like the SI is based on the four dimensions distance, mass, time,
+electric current. All other units are extracted from the four units chosen for
+these four dimensions. For example if the default system is SI, the unit of
+energy will be Joule because @f$ 1\ J = 1\ m^2\ kg\ s^{-2}  @f$ . As well the
+unit of pressure will be Pascal ( @f$ 1\ Pa=1\ m^{-1}\ kg\ s^{-2} @f$ ).
+Quantities of same dimensions are always expressed with the same units. For
+instance the temperature has the dimension of the energy, therefore is default
+unit is the unit of the energy (Joule if SI is the default system).
 
 @section xtb_units Default unit names:
 A unit constant is a constant string of characters named after a quantity (e.g.

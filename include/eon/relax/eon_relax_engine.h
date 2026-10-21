@@ -78,8 +78,7 @@ typedef struct {
   uint32_t minor;
 } eon_relax_version_t;
 
-#define EON_RELAX_VERSION_INIT                                                 \
-  { EON_RELAX_ABI_MAJOR, EON_RELAX_ABI_MINOR }
+#define EON_RELAX_VERSION_INIT {EON_RELAX_ABI_MAJOR, EON_RELAX_ABI_MINOR}
 
 typedef enum {
   EON_RELAX_KIND_INVALID = 0,

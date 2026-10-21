@@ -65,4 +65,4 @@ Probes::
 
 Neither path requires conda-forge.
 
-The base wheel bundles `librgpot` as `libeon_rgpot.so.3`. It does not link the `rgpot` wheel. CI installs both packages and imports them in one process.
+The base wheel bundles `librgpot` as `libeon_rgpot.so.4` (rgpot's `kCxxSoversion`). It does not link the `rgpot` wheel. CI installs both packages and imports them in one process.

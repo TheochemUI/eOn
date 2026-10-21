@@ -69,10 +69,8 @@ protected:
   struct ExclusivePotential {};
 
   Job(std::unique_ptr<Parameters> parameters, Runtime &rt, ExclusivePotential)
-      : jtype{parameters->main_options().job},
-        params{*std::move(parameters)},
-        owned_runtime_{},
-        runtime_{&rt},
+      : jtype{parameters->main_options().job}, params{*std::move(parameters)},
+        owned_runtime_{}, runtime_{&rt},
         ownedPot{helpers::makePotential(params.potential_options().potential,
                                         params, rt)} {}
 
@@ -101,16 +99,17 @@ public:
   explicit Job(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters), std::make_unique<Runtime>()) {}
   Job(std::shared_ptr<Potential> potPassed, const Parameters &parameters)
-      : jtype{parameters.main_options().job},
-        params{parameters},
+      : jtype{parameters.main_options().job}, params{parameters},
         owned_runtime_{std::make_unique<Runtime>()},
-        runtime_{owned_runtime_.get()},
-        pot{std::move(potPassed)} {}
+        runtime_{owned_runtime_.get()}, pot{std::move(potPassed)} {}
   virtual ~Job() = default;
   //! Virtual run; used solely for dynamic dispatch
   virtual std::vector<std::string> run() = 0;
   [[nodiscard]] JobType getType() { return this->jtype; };
   [[nodiscard]] PotRegistry &pots() noexcept { return runtime_->pots(); }
+  /// Force calls charged to pot's registry. Per-image clones of pot
+  /// (Main.parallel) charge it too; pot->forceCallCounter sees only pot.
+  [[nodiscard]] size_t potRegistryForceCalls() const noexcept;
   /// Drop the Potential so on_destroyed is recorded before Runtime dies.
   void releasePotential() { pot.reset(); }
 };

@@ -135,6 +135,7 @@ def test_internal_motion_and_inprocess_parameters(tmp_path):
     moved = atoms.internal_motion(left, right)
     assert len(moved) == 3
     assert np.all(np.isfinite(moved.r))
+    pytest.importorskip("pyeonclient")
     pc = _require_pyeonclient()
     params = _params_from_invariants(
         pc, {"config.ini": (StringIO("[Main]\njob = akmc\n"), 0o644)}

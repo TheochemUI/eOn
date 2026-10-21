@@ -11,7 +11,6 @@ Parity is enforced by tests/test_params_ssot.py.
 
 import math
 import random
-import struct
 from pathlib import Path
 from typing import Any, Optional, Union, get_args
 
@@ -563,6 +562,15 @@ class PotentialConfig(BaseModel):
             " ljcluster and morse_pt pair terms, and those terms of expr, to"
             " zero at their cutoff. 0 keeps the shifted truncation, whose"
             " force jumps at the cutoff."
+        ),
+    )
+    pair_cutoff: float = Field(
+        default=0.0,
+        ge=0.0,
+        description=(
+            "Cutoff in Angstrom of the lj, ljcluster and morse_pt pair terms,"
+            " and those terms of expr. 0 keeps each potential's own cutoff:"
+            " 15 for LJ, 9.5 for Morse."
         ),
     )
     potential: Literal[
@@ -2756,11 +2764,12 @@ class InstantonConfig(BaseModel):
         ),
     )
     newton_limit: int = Field(
-        default=(1 << (8 * struct.calcsize("l") - 1)) - 1,
+        default=9223372036854775807,
         ge=0,
         description=(
             "Maximum active ring coordinates for dense Newton; zero selects"
-            " the matrix-free dimer search. The default is LONG_MAX."
+            " the matrix-free dimer search. The default is the 64-bit"
+            " maximum, including on Windows where long is 32 bits."
         ),
     )
     lanczos_step: float = Field(

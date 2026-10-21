@@ -5,4 +5,4 @@ url = https://github.com/OmniPotentRPC/rgpot.git
 # the same rgpot revision for every eOn potential factory arm.
 revision = e40fd175f5230098d56333bf2aff38cd839dc810
 depth = 1
-diff_files = rgpot-capnp-includes.patch
+diff_files = rgpot-capnp-includes.patch, rgpot-lj-fp-contract.patch, rgpot-windows-link-whole.patch, rgpot-windows-flang-rt.patch

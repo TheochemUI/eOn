@@ -34,6 +34,10 @@ public:
   virtual VectorXd difference(const VectorXd &a, const VectorXd &b) = 0;
   // Allow the initial finite-difference curvature estimate used by L-BFGS.
   virtual bool supportsFiniteDifferenceCurvature() const { return true; }
+  // True when getGradient() is the gradient of getEnergy(). Only then can
+  // an energy test accept or shape a step (lbfgs_accept, the Zhang-Xu
+  // secant); an objective that climbs its energy rejects every good step.
+  virtual bool gradientMatchesEnergy() const { return true; }
   // A curvature the objective already knows (eV / A^2, magnitude), so
   // L-BFGS can seed H0 from it instead of spending a force call on the
   // finite-difference probe. Empty when nothing is known.

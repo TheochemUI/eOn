@@ -8,7 +8,6 @@
 #define EON_MTA_BUILD
 #include "eon/potentials/Metatomic/metatomic_c_abi.h"
 
-#include "eon/Parameters.h"
 #include "eon/potentials/Metatomic/MetatomicPotential.h"
 
 #include <cstdio>
@@ -39,10 +38,7 @@ EonMtaPot *eon_mta_pot_create(const EonMtaConfig *cfg, char *errbuf,
     return nullptr;
   }
   try {
-    eonc::Parameters params;
-    eonc::ParametersLoadAccess::potential_options(params).potential =
-        eonc::PotType::METATOMIC;
-    auto &o = eonc::ParametersLoadAccess::metatomic_options(params);
+    eonc::Parameters::metatomic_options_t o;
     o.model_path = cfg->model_path;
     o.device = nz(cfg->device)[0] ? cfg->device : "cpu";
     o.length_unit = nz(cfg->length_unit)[0] ? cfg->length_unit : "angstrom";
@@ -63,7 +59,7 @@ EonMtaPot *eon_mta_pot_create(const EonMtaConfig *cfg, char *errbuf,
     o.variant.force = nz(cfg->variant_force);
 
     auto pot = std::make_unique<EonMtaPot>();
-    pot->impl = std::make_unique<MetatomicPotential>(params);
+    pot->impl = std::make_unique<MetatomicPotential>(o);
     return pot.release();
   } catch (const std::exception &e) {
     set_err(errbuf, errlen, e.what());

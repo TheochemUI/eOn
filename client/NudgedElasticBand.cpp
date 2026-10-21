@@ -258,7 +258,8 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
   // Both endpoints in one call, so two calculator groups take one each.
   {
     Matter *const ends[] = {path[0].get(), path[numImages + 1].get()};
-    eonc::evaluateTogether(*pot, ends);
+    const long owners[] = {imageOwner(0), imageOwner(numImages + 1)};
+    eonc::evaluateTogether(*pot, ends, false, owners);
   }
   reactantEnergy = path[0]->getPotentialEnergy();
   climbingImage = 0;
@@ -726,11 +727,12 @@ void NudgedElasticBand::updateForces(bool ci_active) {
       }
 
       std::vector<double> energies(nDirty), variances(nDirty);
-      // Image i is system i - 1 to the potential's router, whether or not
-      // the images before it are dirty.
+      // Image i is system i - 1 to the potential's router (imageOwner),
+      // whether or not the images before it are dirty.
       std::vector<long> owners(static_cast<size_t>(nDirty));
       for (long j = 0; j < nDirty; j++) {
-        owners[static_cast<size_t>(j)] = dirty[static_cast<size_t>(j)] - 1;
+        owners[static_cast<size_t>(j)] =
+            imageOwner(static_cast<size_t>(dirty[static_cast<size_t>(j)]));
       }
       pot->forceBatchOwned(nDirty, atoms, posVec.data(), nrsVec.data(),
                            frcVec.data(), energies.data(), variances.data(),
@@ -920,6 +922,33 @@ void NudgedElasticBand::updateForces(bool ci_active) {
   }
 
   movedAfterForceCall = ci_active != ci_enabled_;
+}
+
+void NudgedElasticBand::adoptSessionProjection(long ciIndex) {
+  long highest = 1;
+  for (long i = 2; i <= numImages; ++i) {
+    if (path[i]->getPotentialEnergy() > path[highest]->getPotentialEnergy()) {
+      highest = i;
+    }
+  }
+  maxEnergyImage = static_cast<size_t>(highest);
+  climbingImage = (ciIndex > 0 && ciIndex <= numImages) ? ciIndex : 0;
+  for (long i = 1; i <= numImages; ++i) {
+    const AtomMatrix &pos = path[i]->getPositions();
+    const AtomMatrix posDiffNext =
+        path[i]->pbc(path[i + 1]->getPositions() - pos);
+    const AtomMatrix posDiffPrev =
+        path[i]->pbc(pos - path[i - 1]->getPositions());
+    const double energy = path[i]->getPotentialEnergy();
+    const double energyPrev = path[i - 1]->getPotentialEnergy();
+    const double energyNext = path[i + 1]->getPotentialEnergy();
+    *tangent[i] = std::visit(
+        [&](auto &t) {
+          return t.compute(posDiffNext, posDiffPrev, energy, energyPrev,
+                           energyNext);
+        },
+        tangentStrat_);
+  }
 }
 
 // Thin wrappers delegating to eonc::neb:: free functions

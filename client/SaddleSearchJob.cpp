@@ -138,8 +138,8 @@ std::shared_ptr<Matter> SaddleSearchJob::runPrepared(const AtomMatrix &mode) {
 
 int SaddleSearchJob::doSaddleSearch() {
   long status;
-  int f1{0};
-  f1 = this->pot->forceCallCounter;
+  const size_t registryBefore = potRegistryForceCalls();
+  const size_t potBefore = this->pot->forceCallCounter;
   try {
     status = saddleSearch->run();
   } catch (int e) {
@@ -161,7 +161,9 @@ int SaddleSearchJob::doSaddleSearch() {
   } else if (params.saddle_search_options().method == "artn") {
     fCallsSaddle = saddleSearch->getForceCalls();
   } else {
-    fCallsSaddle += this->pot->forceCallCounter - f1;
+    const size_t calls = potRegistryForceCalls() - registryBefore;
+    fCallsImages = calls - (this->pot->forceCallCounter - potBefore);
+    fCallsSaddle += static_cast<int>(calls);
   }
 
   return status;
@@ -182,7 +184,7 @@ void SaddleSearchJob::saveData(int status) {
         "{} potential_type\n",
         magic_enum::enum_name<PotType>(params.potential_options().potential));
     out << std::format("{} total_force_calls\n",
-                       this->pot->forceCallCounter.load());
+                       this->pot->forceCallCounter.load() + fCallsImages);
     out << std::format("{} force_calls_saddle\n", fCallsSaddle);
     out << std::format("{} iterations\n", saddleSearch->getIterationCount());
     if (status != MinModeSaddleSearch::STATUS_POTENTIAL_FAILED) {
