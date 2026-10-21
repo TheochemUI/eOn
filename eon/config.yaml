@@ -76,6 +76,22 @@ Main:
             kind: boolean
             default: True
 
+        input_format:
+            kind: string
+            default: ""
+
+        cell:
+            kind: string
+            default: ""
+
+        pbc:
+            kind: boolean
+            default: true
+
+        default_vacuum:
+            kind: float
+            default: 10.0
+
 ################################################################################
 
 Potential:

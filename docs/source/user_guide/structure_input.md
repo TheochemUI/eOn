@@ -68,3 +68,9 @@ cell = 20 20 20
 pbc = true
 default_vacuum = 10.0
 ```
+
+The four keys are `[Main]` parameters on the client `Parameters` object.
+They round-trip through JSON and appear in the config schema and in
+{any}`eon.schema.MainConfig`. A config load, and a pyeonclient assignment,
+publishes them process-wide: a structure read does not carry a Parameters
+object. `con` or an empty `input_format` keeps readcon.

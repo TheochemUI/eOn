@@ -44,6 +44,17 @@ struct main_options_t {
   /// (enables force+energy co-load on restart); classic readers such as
   /// ASE's eon parser reject frames that carry them.
   bool writeConForces{false};
+  /// Chemfiles format substituted for a `.con` request. Empty or `con`
+  /// keeps readcon. Output stays `.con`.
+  std::string inputFormat;
+  /// Fallback cell when a foreign file carries none: "a b c" or nine
+  /// row-major lattice numbers. Empty leaves it unset.
+  std::string cell;
+  /// Periodicity of that fallback cell.
+  bool pbc{true};
+  /// Vacuum (Angstrom) on every side of the box built when neither the
+  /// file nor `cell` supplies one.
+  double defaultVacuum{10.0};
 };
 
 // [Potential] //

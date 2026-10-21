@@ -37,6 +37,13 @@ struct MainOptions {
   writeConForces @11 :Bool = false;
   # Client-only parallel force evaluation (not in server yaml)
   parallel @12 :Bool = true;
+  # Structure reads do not see Parameters, so a load publishes these
+  # process-wide. Empty inputFormat keeps readcon. cell is three lengths
+  # or nine lattice numbers. defaultVacuum pads a box when both are absent.
+  inputFormat @13 :Text = "";
+  cell @14 :Text = "";
+  pbc @15 :Bool = true;
+  defaultVacuum @16 :Float64 = 10.0;
 }
 
 # ---------------------------------------------------------------------
