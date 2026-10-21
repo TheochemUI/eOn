@@ -206,6 +206,9 @@ struct saddle_search_options_t {
   std::string minmode_method{"dimer"};
   std::string displace_type{"load"};
   std::vector<long> displace_atom_list;
+  // Rise above the reactant, in eV. A min-mode translation that crosses
+  // it is shortened until the energy is back under the limit. The
+  // default 20 is not an abort on the first crossing.
   double max_energy{20.0};
   double displace_magnitude{0.1};
   double max_single_displace{10.0};

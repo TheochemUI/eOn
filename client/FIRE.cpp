@@ -36,6 +36,16 @@ int FIRE::step(double a_maxMove) {
   dx = eonc::geometry::maxAtomMotionAppliedV(dx, a_maxMove);
   m_objf->setPositions(x + dx);
 
+  // A climbing objective may already be past max_energy. Rotating the
+  // mode here spends a dimer or Lanczos solve the search will discard,
+  // and the rotation can throw before the pull-back runs. The centre
+  // was evaluated by the check, so a point under the limit still shares
+  // a batching solver's first image with the gradient below.
+  if (m_objf->pastClimbCeiling()) {
+    m_iteration++;
+    return 0;
+  }
+
   f = -m_objf->getGradient();
   const double fnorm = eonc::exact::norm(f);
   Eigen::VectorXd f_unit = Eigen::VectorXd::Zero(f.size());
@@ -72,6 +82,11 @@ int FIRE::step(double a_maxMove) {
 
   m_iteration++;
   return m_objf->isConverged() ? 1 : 0;
+}
+
+void FIRE::onTranslationPulledBack() {
+  // The velocity was kicked toward the step that crossed the limit.
+  m_vel.setZero();
 }
 
 int FIRE::run(size_t a_maxIterations, double a_maxMove) {
