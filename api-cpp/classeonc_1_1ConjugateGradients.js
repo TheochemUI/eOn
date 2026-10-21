@@ -4,6 +4,7 @@ var classeonc_1_1ConjugateGradients =
     [ "~ConjugateGradients", "classeonc_1_1ConjugateGradients.html#a32f6e1640c158c52e3eaa3529d62aa8c", null ],
     [ "getStep", "classeonc_1_1ConjugateGradients.html#a2b14c37392a348a66b5a9daf8c6f2ce2", null ],
     [ "line_search", "classeonc_1_1ConjugateGradients.html#aead405d6c123ea69cb3947c2d9fcf496", null ],
+    [ "onTranslationPulledBack", "classeonc_1_1ConjugateGradients.html#a90e3911a5b7c612d188fa108568a0af0", null ],
     [ "run", "classeonc_1_1ConjugateGradients.html#a3ac964ba30a70201233f36389f22e2c9", null ],
     [ "single_step", "classeonc_1_1ConjugateGradients.html#a1f4829d27c30d3e950c7525e564a9c92", null ],
     [ "step", "classeonc_1_1ConjugateGradients.html#ab6c546fa19fce2191794cc2f771b7abc", null ],

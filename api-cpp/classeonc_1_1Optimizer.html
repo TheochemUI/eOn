@@ -267,6 +267,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9ea80e9f5f70262118bad3c9dd08a2ca" id="r_a9ea80e9f5f70262118bad3c9dd08a2ca"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#a9ea80e9f5f70262118bad3c9dd08a2ca">~Optimizer</a> ()=default</td></tr>
 <tr class="memitem:aa66365f3f15e6d4b9829e555cfc9f2b5" id="r_aa66365f3f15e6d4b9829e555cfc9f2b5"><td class="memItemLeft">virtual int&#160;</td><td class="memItemRight"><a class="el" href="#aa66365f3f15e6d4b9829e555cfc9f2b5">step</a> (double a_maxMove)=0</td></tr>
 <tr class="memitem:a94dd8b89c732857574c03586efa25273" id="r_a94dd8b89c732857574c03586efa25273"><td class="memItemLeft">virtual int&#160;</td><td class="memItemRight"><a class="el" href="#a94dd8b89c732857574c03586efa25273">run</a> (size_t a_maxIterations, double a_maxMove)=0</td></tr>
+<tr class="memitem:aeb79a3ed8110cc8bac62043d49a6296e" id="r_aeb79a3ed8110cc8bac62043d49a6296e"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aeb79a3ed8110cc8bac62043d49a6296e">onTranslationPulledBack</a> ()</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -456,6 +457,36 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="aeb79a3ed8110cc8bac62043d49a6296e" name="aeb79a3ed8110cc8bac62043d49a6296e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb79a3ed8110cc8bac62043d49a6296e">&#9670;&#160;</a></span>onTranslationPulledBack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eonc::Optimizer::onTranslationPulledBack </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classeonc_1_1ConjugateGradients.html#a90e3911a5b7c612d188fa108568a0af0">eonc::ConjugateGradients</a>, and <a class="el" href="classeonc_1_1FIRE.html#a15b80c571ec702f23d8d83edb6febabc">eonc::FIRE</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00102">102</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  102</span>{}</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="a94dd8b89c732857574c03586efa25273" name="a94dd8b89c732857574c03586efa25273"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a94dd8b89c732857574c03586efa25273">&#9670;&#160;</a></span>run()</h2>
 

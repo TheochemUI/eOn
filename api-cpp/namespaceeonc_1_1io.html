@@ -276,6 +276,8 @@ Functions</h2></td></tr>
 <tr class="memitem:af8f777838fc5489c52acabbca7a291d4" id="r_af8f777838fc5489c52acabbca7a291d4"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#af8f777838fc5489c52acabbca7a291d4">set_default_vacuum</a> (double angstrom)</td></tr>
 <tr class="memdesc:af8f777838fc5489c52acabbca7a291d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vacuum padding per side (Angstrom) for the bounding-box default cell.  <br /></td></tr>
 <tr class="memitem:aae7e48be37c3a225d9f355eeb3bed714" id="r_aae7e48be37c3a225d9f355eeb3bed714"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#aae7e48be37c3a225d9f355eeb3bed714">default_vacuum</a> () noexcept</td></tr>
+<tr class="memitem:aa1b691c0b136cac2ce7b52f9818f49ff" id="r_aa1b691c0b136cac2ce7b52f9818f49ff"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aa1b691c0b136cac2ce7b52f9818f49ff">publish_structure_input</a> (std::string format, const std::string &amp;cell, bool pbc, double vacuum)</td></tr>
+<tr class="memdesc:aa1b691c0b136cac2ce7b52f9818f49ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish [Main] input_format, cell, pbc, and default_vacuum to the process-wide readers.  <br /></td></tr>
 <tr class="memitem:a8e13915603174b115f9ed284d47b057e" id="r_a8e13915603174b115f9ed284d47b057e"><td class="memItemLeft">const std::string &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a8e13915603174b115f9ed284d47b057e">last_cell_warning</a> () noexcept</td></tr>
 <tr class="memdesc:a8e13915603174b115f9ed284d47b057e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the first frame of any chemfiles-supported file into <a class="el" href="classeonc_1_1Matter.html">Matter</a>.  <br /></td></tr>
 <tr class="memitem:a80aaf6fe7ba1eb27a75f8fe8a39718e4" id="r_a80aaf6fe7ba1eb27a75f8fe8a39718e4"><td class="memItemLeft"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="#a80aaf6fe7ba1eb27a75f8fe8a39718e4">inp2matter</a> (<a class="el" href="classMatter.html">Matter</a> &amp;m, const std::string &amp;filename)</td></tr>
@@ -537,14 +539,14 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ChemfilesIO_8cpp_source.html#l00417">417</a> of file <a class="el" href="ChemfilesIO_8cpp_source.html">ChemfilesIO.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  418</span>                                             {</div>
-<div class="line"><span class="lineno">  419</span>  <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Cannot read {}: this eonclient was built without chemfiles. &quot;</span></div>
-<div class="line"><span class="lineno">  420</span>                 <span class="stringliteral">&quot;Install chemfiles-lib and reconfigure with &quot;</span></div>
-<div class="line"><span class="lineno">  421</span>                 <span class="stringliteral">&quot;-Dwith_chemfiles=enabled, or convert the file to .con.&quot;</span>,</div>
-<div class="line"><span class="lineno">  422</span>                 filename);</div>
-<div class="line"><span class="lineno">  423</span>  <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">IoStatus::InvalidArgument</a>;</div>
-<div class="line"><span class="lineno">  424</span>}</div>
+<p class="definition">Definition at line <a class="el" href="ChemfilesIO_8cpp_source.html#l00428">428</a> of file <a class="el" href="ChemfilesIO_8cpp_source.html">ChemfilesIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  429</span>                                             {</div>
+<div class="line"><span class="lineno">  430</span>  <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Cannot read {}: this eonclient was built without chemfiles. &quot;</span></div>
+<div class="line"><span class="lineno">  431</span>                 <span class="stringliteral">&quot;Install chemfiles-lib and reconfigure with &quot;</span></div>
+<div class="line"><span class="lineno">  432</span>                 <span class="stringliteral">&quot;-Dwith_chemfiles=enabled, or convert the file to .con.&quot;</span>,</div>
+<div class="line"><span class="lineno">  433</span>                 filename);</div>
+<div class="line"><span class="lineno">  434</span>  <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">IoStatus::InvalidArgument</a>;</div>
+<div class="line"><span class="lineno">  435</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -808,7 +810,7 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">  657</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9adf9be6f7af7c3f7196c5c3e731de0a87">IoStatus::ReadError</a>;</div>
 <div class="line"><span class="lineno">  658</span>  }</div>
 <div class="line"><span class="lineno">  659</span>}</div>
-<div class="ttc" id="anamespaceeonc_1_1io_html_a5841ade43a72a67a43ea26f80f459ae6"><div class="ttname"><a href="#a5841ade43a72a67a43ea26f80f459ae6">eonc::io::chemfiles2matter</a></div><div class="ttdeci">IoStatus chemfiles2matter(Matter &amp;, const std::string &amp;filename, const std::string &amp;)</div><div class="ttdef"><b>Definition</b> <a href="ChemfilesIO_8cpp_source.html#l00417">ChemfilesIO.cpp:417</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_a5841ade43a72a67a43ea26f80f459ae6"><div class="ttname"><a href="#a5841ade43a72a67a43ea26f80f459ae6">eonc::io::chemfiles2matter</a></div><div class="ttdeci">IoStatus chemfiles2matter(Matter &amp;, const std::string &amp;filename, const std::string &amp;)</div><div class="ttdef"><b>Definition</b> <a href="ChemfilesIO_8cpp_source.html#l00428">ChemfilesIO.cpp:428</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_a6f13ca53e923b1a8dbb98436987c984c"><div class="ttname"><a href="#a6f13ca53e923b1a8dbb98436987c984c">eonc::io::con2matter</a></div><div class="ttdeci">IoStatus con2matter(Matter &amp;m, std::string filename)</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8cpp_source.html#l00643">ConFileIO.cpp:643</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_aa96f30005b3cd2485a5da4371602a1c9"><div class="ttname"><a href="#aa96f30005b3cd2485a5da4371602a1c9">eonc::io::IoStatus</a></div><div class="ttdeci">IoStatus</div><div class="ttdoc">Structured I/O result for the client surface (nanobind-friendly).</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00029">ConFileIO.h:29</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_abc75e22aaffd22817956f2c37fac7bac"><div class="ttname"><a href="#abc75e22aaffd22817956f2c37fac7bac">eonc::io::mirror_con_corpus</a></div><div class="ttdeci">void mirror_con_corpus(const std::string &amp;path)</div><div class="ttdoc">Copy a con file into the run readcon-db corpus when libreadcon_db loads.</div><div class="ttdef"><b>Definition</b> <a href="ReadconDbMirror_8cpp_source.html#l00251">ReadconDbMirror.cpp:251</a></div></div>
@@ -922,18 +924,18 @@ Functions</h2></td></tr>
 <p>Input entry point: .con/.convel (and .gz/.zst) go to readcon, everything else goes to chemfiles. </p>
 <p>An unknown extension is treated as .con, as before. </p>
 
-<p class="definition">Definition at line <a class="el" href="ChemfilesIO_8cpp_source.html#l00254">254</a> of file <a class="el" href="ChemfilesIO_8cpp_source.html">ChemfilesIO.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  254</span>                                                          {</div>
-<div class="line"><span class="lineno">  255</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="#a76929c6051d3126fc12dc660eb147342">is_chemfiles_path</a>(filename)) {</div>
-<div class="line"><span class="lineno">  256</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#a5841ade43a72a67a43ea26f80f459ae6">chemfiles2matter</a>(m, filename);</div>
-<div class="line"><span class="lineno">  257</span>  }</div>
-<div class="line"><span class="lineno">  258</span>  <span class="keyword">const</span> <span class="keyword">auto</span> name = lower(fs::path(filename).filename().<span class="keywordtype">string</span>());</div>
-<div class="line"><span class="lineno">  259</span>  <span class="keywordflow">if</span> (name.ends_with(<span class="stringliteral">&quot;.convel&quot;</span>) || name.ends_with(<span class="stringliteral">&quot;.convel.gz&quot;</span>) ||</div>
-<div class="line"><span class="lineno">  260</span>      name.ends_with(<span class="stringliteral">&quot;.convel.zst&quot;</span>)) {</div>
-<div class="line"><span class="lineno">  261</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#a2b29146d14c962659dbda7d6db479c38">convel2matter</a>(m, filename);</div>
-<div class="line"><span class="lineno">  262</span>  }</div>
-<div class="line"><span class="lineno">  263</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#a6f13ca53e923b1a8dbb98436987c984c">con2matter</a>(m, filename);</div>
-<div class="line"><span class="lineno">  264</span>}</div>
+<p class="definition">Definition at line <a class="el" href="ChemfilesIO_8cpp_source.html#l00265">265</a> of file <a class="el" href="ChemfilesIO_8cpp_source.html">ChemfilesIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  265</span>                                                          {</div>
+<div class="line"><span class="lineno">  266</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="#a76929c6051d3126fc12dc660eb147342">is_chemfiles_path</a>(filename)) {</div>
+<div class="line"><span class="lineno">  267</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#a5841ade43a72a67a43ea26f80f459ae6">chemfiles2matter</a>(m, filename);</div>
+<div class="line"><span class="lineno">  268</span>  }</div>
+<div class="line"><span class="lineno">  269</span>  <span class="keyword">const</span> <span class="keyword">auto</span> name = lower(fs::path(filename).filename().<span class="keywordtype">string</span>());</div>
+<div class="line"><span class="lineno">  270</span>  <span class="keywordflow">if</span> (name.ends_with(<span class="stringliteral">&quot;.convel&quot;</span>) || name.ends_with(<span class="stringliteral">&quot;.convel.gz&quot;</span>) ||</div>
+<div class="line"><span class="lineno">  271</span>      name.ends_with(<span class="stringliteral">&quot;.convel.zst&quot;</span>)) {</div>
+<div class="line"><span class="lineno">  272</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#a2b29146d14c962659dbda7d6db479c38">convel2matter</a>(m, filename);</div>
+<div class="line"><span class="lineno">  273</span>  }</div>
+<div class="line"><span class="lineno">  274</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#a6f13ca53e923b1a8dbb98436987c984c">con2matter</a>(m, filename);</div>
+<div class="line"><span class="lineno">  275</span>}</div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_a2b29146d14c962659dbda7d6db479c38"><div class="ttname"><a href="#a2b29146d14c962659dbda7d6db479c38">eonc::io::convel2matter</a></div><div class="ttdeci">IoStatus convel2matter(Matter &amp;m, std::string filename)</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8cpp_source.html#l00811">ConFileIO.cpp:811</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_a76929c6051d3126fc12dc660eb147342"><div class="ttname"><a href="#a76929c6051d3126fc12dc660eb147342">eonc::io::is_chemfiles_path</a></div><div class="ttdeci">bool is_chemfiles_path(std::string_view filename)</div><div class="ttdoc">True for structure paths routed to chemfiles: a known extension (xyz, extxyz, pdb,...</div><div class="ttdef"><b>Definition</b> <a href="ChemfilesIO_8cpp_source.html#l00188">ChemfilesIO.cpp:188</a></div></div>
 </div><!-- fragment -->
@@ -1126,8 +1128,8 @@ Functions</h2></td></tr>
 <p>Cell precedence: the file's own cell (periodic); else [Main] cell with [Main] pbc; else a loud WARNING naming the file and both keys, and an orthorhombic, non-periodic box spanning the atoms plus [Main] default_vacuum (10 Angstrom) on every side.</p>
 <p><span class="tt">format</span> overrides chemfiles' extension guess ("" = guess). Text of the last default-cell warning on this thread ("" when the last read needed none). Lets tests and callers surface it. </p>
 
-<p class="definition">Definition at line <a class="el" href="ChemfilesIO_8cpp_source.html#l00252">252</a> of file <a class="el" href="ChemfilesIO_8cpp_source.html">ChemfilesIO.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  252</span>{ <span class="keywordflow">return</span> g_last_cell_warning; }</div>
+<p class="definition">Definition at line <a class="el" href="ChemfilesIO_8cpp_source.html#l00263">263</a> of file <a class="el" href="ChemfilesIO_8cpp_source.html">ChemfilesIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  263</span>{ <span class="keywordflow">return</span> g_last_cell_warning; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1464,7 +1466,7 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">  546</span>  }</div>
 <div class="line"><span class="lineno">  547</span>  <span class="keywordflow">return</span> meta;</div>
 <div class="line"><span class="lineno">  548</span>}</div>
-<div class="ttc" id="aParametersJSON_8cpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="ParametersJSON_8cpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> <a href="ParametersJSON_8cpp_source.html#l00028">ParametersJSON.cpp:28</a></div></div>
+<div class="ttc" id="aParametersJSON_8cpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="ParametersJSON_8cpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> <a href="ParametersJSON_8cpp_source.html#l00029">ParametersJSON.cpp:29</a></div></div>
 <div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html">eonc::io::ConFrameMetadata</a></div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00071">ConFileIO.h:71</a></div></div>
 <div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_a1c066326eb4ccd15a01e3606e4abf5bd"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#a1c066326eb4ccd15a01e3606e4abf5bd">eonc::io::ConFrameMetadata::frame_index</a></div><div class="ttdeci">std::optional&lt; uint64_t &gt; frame_index</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00072">ConFileIO.h:72</a></div></div>
 <div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_a1e3ec7c95a8f840aab609450248a3ce8"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#a1e3ec7c95a8f840aab609450248a3ce8">eonc::io::ConFrameMetadata::neb_band</a></div><div class="ttdeci">std::optional&lt; uint64_t &gt; neb_band</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00077">ConFileIO.h:77</a></div></div>
@@ -1580,6 +1582,56 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">  229</span>  }</div>
 <div class="line"><span class="lineno">  230</span>  <span class="keywordflow">return</span> out;</div>
 <div class="line"><span class="lineno">  231</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa1b691c0b136cac2ce7b52f9818f49ff" name="aa1b691c0b136cac2ce7b52f9818f49ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1b691c0b136cac2ce7b52f9818f49ff">&#9670;&#160;</a></span>publish_structure_input()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::io::publish_structure_input </td>
+          <td>(</td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>format</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>cell</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>pbc</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>vacuum</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Publish [Main] input_format, cell, pbc, and default_vacuum to the process-wide readers. </p>
+<p>Structure reads do not carry a <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> object. Throws std::invalid_argument before changing any reader when cell is not empty, 3, or 9 numbers, or when default_vacuum is negative. "con" clears the format, as set_structure_input_format does. </p>
+
+<p class="definition">Definition at line <a class="el" href="ChemfilesIO_8cpp_source.html#l00252">252</a> of file <a class="el" href="ChemfilesIO_8cpp_source.html">ChemfilesIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  253</span>                                                      {</div>
+<div class="line"><span class="lineno">  254</span>  <span class="keyword">const</span> <span class="keyword">auto</span> values = <a class="code hl_function" href="#a821a2300015afdd2412003e66626f203">parse_cell_values</a>(cell);</div>
+<div class="line"><span class="lineno">  255</span>  <span class="keywordflow">if</span> (!(vacuum &gt;= 0.0)) {</div>
+<div class="line"><span class="lineno">  256</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;[Main] default_vacuum must be &gt;= 0&quot;</span>);</div>
+<div class="line"><span class="lineno">  257</span>  }</div>
+<div class="line"><span class="lineno">  258</span>  <a class="code hl_function" href="#a1348c2cdbe96f42c921df07f3da07dd0">set_structure_input_format</a>(std::move(format));</div>
+<div class="line"><span class="lineno">  259</span>  <a class="code hl_function" href="#aeb6dda641455afb1f8e8eaf951b614ae">set_config_cell</a>(values, <a class="code hl_namespace" href="namespaceeonc_1_1pbc.html">pbc</a>);</div>
+<div class="line"><span class="lineno">  260</span>  <a class="code hl_function" href="#af8f777838fc5489c52acabbca7a291d4">set_default_vacuum</a>(vacuum);</div>
+<div class="line"><span class="lineno">  261</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_a1348c2cdbe96f42c921df07f3da07dd0"><div class="ttname"><a href="#a1348c2cdbe96f42c921df07f3da07dd0">eonc::io::set_structure_input_format</a></div><div class="ttdeci">void set_structure_input_format(std::string fmt)</div><div class="ttdoc">[Main] input_format: empty or &quot;con&quot; keeps readcon only.</div><div class="ttdef"><b>Definition</b> <a href="ChemfilesIO_8cpp_source.html#l00202">ChemfilesIO.cpp:202</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_a821a2300015afdd2412003e66626f203"><div class="ttname"><a href="#a821a2300015afdd2412003e66626f203">eonc::io::parse_cell_values</a></div><div class="ttdeci">std::vector&lt; double &gt; parse_cell_values(const std::string &amp;text)</div><div class="ttdoc">Parse &quot;a b c&quot; or nine numbers; throws std::invalid_argument.</div><div class="ttdef"><b>Definition</b> <a href="ChemfilesIO_8cpp_source.html#l00210">ChemfilesIO.cpp:210</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_aeb6dda641455afb1f8e8eaf951b614ae"><div class="ttname"><a href="#aeb6dda641455afb1f8e8eaf951b614ae">eonc::io::set_config_cell</a></div><div class="ttdeci">void set_config_cell(const std::vector&lt; double &gt; &amp;values, bool pbc)</div><div class="ttdoc">Fallback cell for foreign files that carry none ([Main] cell / pbc).</div><div class="ttdef"><b>Definition</b> <a href="ChemfilesIO_8cpp_source.html#l00233">ChemfilesIO.cpp:233</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_af8f777838fc5489c52acabbca7a291d4"><div class="ttname"><a href="#af8f777838fc5489c52acabbca7a291d4">eonc::io::set_default_vacuum</a></div><div class="ttdeci">void set_default_vacuum(double angstrom)</div><div class="ttdoc">Vacuum padding per side (Angstrom) for the bounding-box default cell.</div><div class="ttdef"><b>Definition</b> <a href="ChemfilesIO_8cpp_source.html#l00242">ChemfilesIO.cpp:242</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pbc_html"><div class="ttname"><a href="namespaceeonc_1_1pbc.html">eonc::pbc</a></div><div class="ttdef"><b>Definition</b> <a href="MinimumImage_8cpp_source.html#l00006">MinimumImage.cpp:6</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1717,7 +1769,6 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">  238</span>  config_cell().values = values;</div>
 <div class="line"><span class="lineno">  239</span>  config_cell().pbc = <a class="code hl_namespace" href="namespaceeonc_1_1pbc.html">pbc</a>;</div>
 <div class="line"><span class="lineno">  240</span>}</div>
-<div class="ttc" id="anamespaceeonc_1_1pbc_html"><div class="ttname"><a href="namespaceeonc_1_1pbc.html">eonc::pbc</a></div><div class="ttdef"><b>Definition</b> <a href="MinimumImage_8cpp_source.html#l00006">MinimumImage.cpp:6</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

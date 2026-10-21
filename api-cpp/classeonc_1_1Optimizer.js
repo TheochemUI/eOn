@@ -5,6 +5,7 @@ var classeonc_1_1Optimizer =
     [ "Optimizer", "classeonc_1_1Optimizer.html#a7359cf3da3da63ba17b3564de5428e18", null ],
     [ "Optimizer", "classeonc_1_1Optimizer.html#a0799f30a0b8940646966008020d93e6d", null ],
     [ "~Optimizer", "classeonc_1_1Optimizer.html#a9ea80e9f5f70262118bad3c9dd08a2ca", null ],
+    [ "onTranslationPulledBack", "classeonc_1_1Optimizer.html#aeb79a3ed8110cc8bac62043d49a6296e", null ],
     [ "run", "classeonc_1_1Optimizer.html#a94dd8b89c732857574c03586efa25273", null ],
     [ "step", "classeonc_1_1Optimizer.html#aa66365f3f15e6d4b9829e555cfc9f2b5", null ],
     [ "m_objf", "classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822", null ],

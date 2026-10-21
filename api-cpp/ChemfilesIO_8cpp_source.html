@@ -489,187 +489,200 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('ChemfilesIO_8c
 <div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span> </div>
 <div class="line"><a id="l00250" name="l00250"></a><span class="lineno"><a class="line" href="namespaceeonc_1_1io.html#aae7e48be37c3a225d9f355eeb3bed714">  250</a></span><span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeonc_1_1io.html#aae7e48be37c3a225d9f355eeb3bed714">default_vacuum</a>() noexcept { <span class="keywordflow">return</span> config_cell().vacuum; }</div>
 <div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span> </div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno"><a class="line" href="namespaceeonc_1_1io.html#a8e13915603174b115f9ed284d47b057e">  252</a></span><span class="keyword">const</span> std::string &amp;<a class="code hl_function" href="namespaceeonc_1_1io.html#a8e13915603174b115f9ed284d47b057e">last_cell_warning</a>() noexcept { <span class="keywordflow">return</span> g_last_cell_warning; }</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span> </div>
-<div class="foldopen" id="foldopen00254" data-start="{" data-end="}">
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno"><a class="line" href="namespaceeonc_1_1io.html#a80aaf6fe7ba1eb27a75f8fe8a39718e4">  254</a></span><a class="code hl_enumeration" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> <a class="code hl_function" href="namespaceeonc_1_1io.html#a80aaf6fe7ba1eb27a75f8fe8a39718e4">inp2matter</a>(<a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;m, <span class="keyword">const</span> std::string &amp;filename) {</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeonc_1_1io.html#a76929c6051d3126fc12dc660eb147342">is_chemfiles_path</a>(filename)) {</div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1io.html#a5841ade43a72a67a43ea26f80f459ae6">chemfiles2matter</a>(m, filename);</div>
+<div class="foldopen" id="foldopen00252" data-start="{" data-end="}">
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno"><a class="line" href="namespaceeonc_1_1io.html#aa1b691c0b136cac2ce7b52f9818f49ff">  252</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc_1_1io.html#aa1b691c0b136cac2ce7b52f9818f49ff">publish_structure_input</a>(std::string format, <span class="keyword">const</span> std::string &amp;cell,</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>                             <span class="keywordtype">bool</span> <a class="code hl_namespace" href="namespaceeonc_1_1pbc.html">pbc</a>, <span class="keywordtype">double</span> vacuum) {</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>  <span class="keyword">const</span> <span class="keyword">auto</span> values = <a class="code hl_function" href="namespaceeonc_1_1io.html#a821a2300015afdd2412003e66626f203">parse_cell_values</a>(cell);</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>  <span class="keywordflow">if</span> (!(vacuum &gt;= 0.0)) {</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;[Main] default_vacuum must be &gt;= 0&quot;</span>);</div>
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>  }</div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>  <span class="keyword">const</span> <span class="keyword">auto</span> name = lower(fs::path(filename).filename().<span class="keywordtype">string</span>());</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>  <span class="keywordflow">if</span> (name.ends_with(<span class="stringliteral">&quot;.convel&quot;</span>) || name.ends_with(<span class="stringliteral">&quot;.convel.gz&quot;</span>) ||</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>      name.ends_with(<span class="stringliteral">&quot;.convel.zst&quot;</span>)) {</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1io.html#a2b29146d14c962659dbda7d6db479c38">convel2matter</a>(m, filename);</div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>  }</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1io.html#a6f13ca53e923b1a8dbb98436987c984c">con2matter</a>(m, filename);</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>}</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>  <a class="code hl_function" href="namespaceeonc_1_1io.html#a1348c2cdbe96f42c921df07f3da07dd0">set_structure_input_format</a>(std::move(format));</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>  <a class="code hl_function" href="namespaceeonc_1_1io.html#aeb6dda641455afb1f8e8eaf951b614ae">set_config_cell</a>(values, <a class="code hl_namespace" href="namespaceeonc_1_1pbc.html">pbc</a>);</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>  <a class="code hl_function" href="namespaceeonc_1_1io.html#af8f777838fc5489c52acabbca7a291d4">set_default_vacuum</a>(vacuum);</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>}</div>
 </div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span><span class="preprocessor">#ifdef WITH_CHEMFILES</span></div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span> </div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span><a class="code hl_enumeration" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> <a class="code hl_function" href="namespaceeonc_1_1io.html#a5841ade43a72a67a43ea26f80f459ae6">chemfiles2matter</a>(<a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;m, <span class="keyword">const</span> std::string &amp;filename,</div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>                          <span class="keyword">const</span> std::string &amp;format) {</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>  quiet_chemfiles();</div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    <span class="comment">// chemfiles&#39; cell-angle math divides by a zero length while building the</span></div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    <span class="comment">// default UnitCell (calc_angles_from_cell_matrix). eonclient arms FP</span></div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    <span class="comment">// traps; that invalid op is a continuable SIGFPE on Linux and a fatal</span></div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>    <span class="comment">// SIGILL on Apple Silicon. External libraries run with soft IEEE, the</span></div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    <span class="comment">// same contract as LAMMPS and ASE.</span></div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1FPEGuard.html">eonc::FPEGuard</a> fpe;</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    chemfiles::Trajectory traj(filename, <span class="charliteral">&#39;r&#39;</span>,</div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>                               format_for_path(filename, format));</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    <span class="keywordflow">if</span> (traj.nsteps() == 0) {</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;{} holds no frames&quot;</span>, filename);</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>      <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9adf9be6f7af7c3f7196c5c3e731de0a87">IoStatus::ReadError</a>;</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    }</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    <span class="keyword">const</span> chemfiles::Frame frame = traj.read();</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span> </div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    g_last_cell_warning.clear();</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;cell = frame.cell();</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> file_has_cell = cell.shape() != chemfiles::UnitCell::INFINITE;</div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    <span class="keyword">const</span> <span class="keyword">auto</span> n = <span class="keyword">static_cast&lt;</span>Eigen::Index<span class="keyword">&gt;</span>(frame.size());</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    m.<a class="code hl_function" href="classeonc_1_1Matter.html#a7b74bf87e3bcea63f9be761ee4ba1a62">resize</a>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(n));</div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span> </div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> positions(n, 3);</div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    VectorXd masses(n);</div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    VectorXi atomic_nrs(n);</div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;pos = frame.positions();</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    <span class="keywordflow">for</span> (Eigen::Index i = 0; i &lt; n; ++i) {</div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>      <span class="keyword">const</span> <span class="keyword">auto</span> &amp;atom = frame[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)];</div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>      <span class="keyword">const</span> <span class="keyword">auto</span> z = atom.atomic_number();</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>      <span class="keywordflow">if</span> (!z) {</div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>        <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;{}: atom {} has type &#39;{}&#39;, which is not an element&quot;</span>,</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>                       filename, i, atom.type());</div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">IoStatus::InvalidArgument</a>;</div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>      }</div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>      atomic_nrs(i) = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(*z);</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>      masses(i) = atom.mass();</div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; 3; ++k) {</div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>        positions(i, k) = pos[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)][k];</div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>      }</div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>      std::array&lt;bool, 3&gt; mask{<span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>};</div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>      <span class="keywordflow">if</span> (<span class="keyword">auto</span> p = atom.get(<span class="stringliteral">&quot;fixed&quot;</span>)) {</div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        mask_from_property(*p, <span class="comment">/*frozen_when_true=*/</span><span class="keyword">true</span>, mask);</div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">auto</span> p = atom.get(<span class="stringliteral">&quot;move_mask&quot;</span>)) {</div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>        mask_from_property(*p, <span class="comment">/*frozen_when_true=*/</span><span class="keyword">false</span>, mask);</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span> </div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno"><a class="line" href="namespaceeonc_1_1io.html#a8e13915603174b115f9ed284d47b057e">  263</a></span><span class="keyword">const</span> std::string &amp;<a class="code hl_function" href="namespaceeonc_1_1io.html#a8e13915603174b115f9ed284d47b057e">last_cell_warning</a>() noexcept { <span class="keywordflow">return</span> g_last_cell_warning; }</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span> </div>
+<div class="foldopen" id="foldopen00265" data-start="{" data-end="}">
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno"><a class="line" href="namespaceeonc_1_1io.html#a80aaf6fe7ba1eb27a75f8fe8a39718e4">  265</a></span><a class="code hl_enumeration" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> <a class="code hl_function" href="namespaceeonc_1_1io.html#a80aaf6fe7ba1eb27a75f8fe8a39718e4">inp2matter</a>(<a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;m, <span class="keyword">const</span> std::string &amp;filename) {</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeonc_1_1io.html#a76929c6051d3126fc12dc660eb147342">is_chemfiles_path</a>(filename)) {</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1io.html#a5841ade43a72a67a43ea26f80f459ae6">chemfiles2matter</a>(m, filename);</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>  }</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>  <span class="keyword">const</span> <span class="keyword">auto</span> name = lower(fs::path(filename).filename().<span class="keywordtype">string</span>());</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>  <span class="keywordflow">if</span> (name.ends_with(<span class="stringliteral">&quot;.convel&quot;</span>) || name.ends_with(<span class="stringliteral">&quot;.convel.gz&quot;</span>) ||</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>      name.ends_with(<span class="stringliteral">&quot;.convel.zst&quot;</span>)) {</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1io.html#a2b29146d14c962659dbda7d6db479c38">convel2matter</a>(m, filename);</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>  }</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1io.html#a6f13ca53e923b1a8dbb98436987c984c">con2matter</a>(m, filename);</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>}</div>
+</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span> </div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span><span class="preprocessor">#ifdef WITH_CHEMFILES</span></div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span> </div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span><a class="code hl_enumeration" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> <a class="code hl_function" href="namespaceeonc_1_1io.html#a5841ade43a72a67a43ea26f80f459ae6">chemfiles2matter</a>(<a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;m, <span class="keyword">const</span> std::string &amp;filename,</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>                          <span class="keyword">const</span> std::string &amp;format) {</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>  quiet_chemfiles();</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    <span class="comment">// chemfiles&#39; cell-angle math divides by a zero length while building the</span></div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    <span class="comment">// default UnitCell (calc_angles_from_cell_matrix). eonclient arms FP</span></div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>    <span class="comment">// traps; that invalid op is a continuable SIGFPE on Linux and a fatal</span></div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    <span class="comment">// SIGILL on Apple Silicon. External libraries run with soft IEEE, the</span></div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>    <span class="comment">// same contract as LAMMPS and ASE.</span></div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1FPEGuard.html">eonc::FPEGuard</a> fpe;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    chemfiles::Trajectory traj(filename, <span class="charliteral">&#39;r&#39;</span>,</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>                               format_for_path(filename, format));</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    <span class="keywordflow">if</span> (traj.nsteps() == 0) {</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;{} holds no frames&quot;</span>, filename);</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>      <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9adf9be6f7af7c3f7196c5c3e731de0a87">IoStatus::ReadError</a>;</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    }</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    <span class="keyword">const</span> chemfiles::Frame frame = traj.read();</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    g_last_cell_warning.clear();</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;cell = frame.cell();</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> file_has_cell = cell.shape() != chemfiles::UnitCell::INFINITE;</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    <span class="keyword">const</span> <span class="keyword">auto</span> n = <span class="keyword">static_cast&lt;</span>Eigen::Index<span class="keyword">&gt;</span>(frame.size());</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>    m.<a class="code hl_function" href="classeonc_1_1Matter.html#a7b74bf87e3bcea63f9be761ee4ba1a62">resize</a>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(n));</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span> </div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> positions(n, 3);</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>    VectorXd masses(n);</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    VectorXi atomic_nrs(n);</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;pos = frame.positions();</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    <span class="keywordflow">for</span> (Eigen::Index i = 0; i &lt; n; ++i) {</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>      <span class="keyword">const</span> <span class="keyword">auto</span> &amp;atom = frame[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)];</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>      <span class="keyword">const</span> <span class="keyword">auto</span> z = atom.atomic_number();</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>      <span class="keywordflow">if</span> (!z) {</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;{}: atom {} has type &#39;{}&#39;, which is not an element&quot;</span>,</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>                       filename, i, atom.type());</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">IoStatus::InvalidArgument</a>;</div>
 <div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>      }</div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>      m.<a class="code hl_function" href="classeonc_1_1Matter.html#a208264740254b22df69f490d7e8618d5">setFixedMask</a>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(i), mask);</div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>      m.<a class="code hl_function" href="classeonc_1_1Matter.html#a6d6d51b783b4d307f500fa07d8ff46be">setAtomIndex</a>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(i), <span class="keyword">static_cast&lt;</span>std::int64_t<span class="keyword">&gt;</span>(i));</div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    }</div>
-<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    <span class="comment">// chemfiles keeps file order, so the file-to-Matter map is the identity.</span></div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    std::vector&lt;long&gt; identity(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(n));</div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    <span class="keywordflow">for</span> (Eigen::Index i = 0; i &lt; n; ++i) {</div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>      identity[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(i);</div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    }</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    m.<a class="code hl_function" href="classeonc_1_1Matter.html#ae8c48ba57b2d1dd345464054b54be67a">setFileToMatter</a>(std::move(identity));</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span> </div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> box = Matrix3d::Zero();</div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    <span class="keywordtype">bool</span> periodic = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>    <span class="keyword">const</span> ConfigCell cfg = [] {</div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>      <span class="keyword">const</span> std::lock_guard&lt;std::mutex&gt; g(format_mutex());</div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>      <span class="keywordflow">return</span> config_cell();</div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    }();</div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>    <span class="keywordflow">if</span> (file_has_cell) {</div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>      <span class="comment">// chemfiles stores cell vectors as columns; Matter stores rows.</span></div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>      <span class="keyword">const</span> <span class="keyword">auto</span> cm = cell.matrix();</div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 3; ++i) {</div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 3; ++j) {</div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>          box(i, j) = cm[j][i];</div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>        }</div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>      }</div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!cfg.values.empty()) {</div>
-<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>      box = matrix_from_values(cfg.values);</div>
-<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>      periodic = cfg.pbc;</div>
-<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>      <span class="comment">// Bounding box plus vacuum, shifted so every atom sits inside.</span></div>
-<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>      Eigen::RowVector3d lo = Eigen::RowVector3d::Zero();</div>
-<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>      Eigen::RowVector3d hi = Eigen::RowVector3d::Zero();</div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>      <span class="keywordflow">if</span> (n &gt; 0) {</div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>        lo = positions.colwise().minCoeff();</div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>        hi = positions.colwise().maxCoeff();</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>      atomic_nrs(i) = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(*z);</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>      masses(i) = atom.mass();</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; 3; ++k) {</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>        positions(i, k) = pos[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)][k];</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>      }</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>      std::array&lt;bool, 3&gt; mask{<span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>};</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>      <span class="keywordflow">if</span> (<span class="keyword">auto</span> p = atom.get(<span class="stringliteral">&quot;fixed&quot;</span>)) {</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>        mask_from_property(*p, <span class="comment">/*frozen_when_true=*/</span><span class="keyword">true</span>, mask);</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">auto</span> p = atom.get(<span class="stringliteral">&quot;move_mask&quot;</span>)) {</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>        mask_from_property(*p, <span class="comment">/*frozen_when_true=*/</span><span class="keyword">false</span>, mask);</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>      }</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>      m.<a class="code hl_function" href="classeonc_1_1Matter.html#a208264740254b22df69f490d7e8618d5">setFixedMask</a>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(i), mask);</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>      m.<a class="code hl_function" href="classeonc_1_1Matter.html#a6d6d51b783b4d307f500fa07d8ff46be">setAtomIndex</a>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(i), <span class="keyword">static_cast&lt;</span>std::int64_t<span class="keyword">&gt;</span>(i));</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    }</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>    <span class="comment">// chemfiles keeps file order, so the file-to-Matter map is the identity.</span></div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    std::vector&lt;long&gt; identity(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(n));</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>    <span class="keywordflow">for</span> (Eigen::Index i = 0; i &lt; n; ++i) {</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>      identity[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(i);</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>    }</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>    m.<a class="code hl_function" href="classeonc_1_1Matter.html#ae8c48ba57b2d1dd345464054b54be67a">setFileToMatter</a>(std::move(identity));</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span> </div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>    <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> box = Matrix3d::Zero();</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>    <span class="keywordtype">bool</span> periodic = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>    <span class="keyword">const</span> ConfigCell cfg = [] {</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>      <span class="keyword">const</span> std::lock_guard&lt;std::mutex&gt; g(format_mutex());</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>      <span class="keywordflow">return</span> config_cell();</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>    }();</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>    <span class="keywordflow">if</span> (file_has_cell) {</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>      <span class="comment">// chemfiles stores cell vectors as columns; Matter stores rows.</span></div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>      <span class="keyword">const</span> <span class="keyword">auto</span> cm = cell.matrix();</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 3; ++i) {</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 3; ++j) {</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>          box(i, j) = cm[j][i];</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>        }</div>
 <div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>      }</div>
-<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; 3; ++k) {</div>
-<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>        box(k, k) = (hi(k) - lo(k)) + 2.0 * cfg.vacuum;</div>
-<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>        <span class="comment">// A flat or single-atom axis still gets a positive length.</span></div>
-<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>        <span class="keywordflow">if</span> (box(k, k) &lt;= 0.0) {</div>
-<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>          box(k, k) = 1.0;</div>
-<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>        }</div>
-<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>      }</div>
-<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>      positions.rowwise() -= (lo - Eigen::RowVector3d::Constant(cfg.vacuum));</div>
-<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>      periodic = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>      g_last_cell_warning = std::format(</div>
-<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>          <span class="stringliteral">&quot;WARNING: {} has no unit cell and [Main] cell is not set. Using a &quot;</span></div>
-<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>          <span class="stringliteral">&quot;non-periodic orthorhombic box of {:.3f} x {:.3f} x {:.3f} A &quot;</span></div>
-<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>          <span class="stringliteral">&quot;(atom bounding box plus {} A vacuum per side, [Main] &quot;</span></div>
-<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>          <span class="stringliteral">&quot;default_vacuum); atoms were shifted into it. Set [Main] cell and &quot;</span></div>
-<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>          <span class="stringliteral">&quot;[Main] pbc, or add a cell to the file, for a periodic system.&quot;</span>,</div>
-<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>          filename, box(0, 0), box(1, 1), box(2, 2), cfg.vacuum);</div>
-<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;{}&quot;</span>, g_last_cell_warning);</div>
-<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>    }</div>
-<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>    m.<a class="code hl_function" href="classeonc_1_1Matter.html#a3c4002006e09f4e4b7fa2ffbf191db26">setCell</a>(box);</div>
-<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>    <span class="keywordflow">if</span> (!periodic) {</div>
-<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>      m.<a class="code hl_function" href="classeonc_1_1Matter.html#a5206e37570d8949d5d4ecf3316db34f9">setPeriodic</a>(<span class="keyword">false</span>); <span class="comment">// never force PBC onto an isolated-layout pot</span></div>
-<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>    }</div>
-<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>    m.<a class="code hl_function" href="classeonc_1_1Matter.html#a97e9d4eabead6da0942e6af4e3de24cb">setMasses</a>(masses);</div>
-<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>    m.<a class="code hl_function" href="classeonc_1_1Matter.html#a660f01f6f3f8aa1e5c7f3a9edd689881">setAtomicNrs</a>(atomic_nrs);</div>
-<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>    m.<a class="code hl_function" href="classeonc_1_1Matter.html#a271f1a697333162ba3705bff86dfef06">setPositions</a>(positions);</div>
-<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span> </div>
-<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>    <span class="comment">// Frame::velocities() is set by formats that store velocities as a</span></div>
-<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>    <span class="comment">// trajectory array. The XYZ reader does not (FormatMetadata::velocities</span></div>
-<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>    <span class="comment">// is false): an extxyz `velo` column is an atom property of kind</span></div>
-<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>    <span class="comment">// VECTOR3D, so read that when the frame has no velocity array.</span></div>
-<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> v(n, 3);</div>
-<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>    <span class="keywordtype">bool</span> have_velocities = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span> vel = frame.velocities()) {</div>
-<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>      have_velocities = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>      <span class="keywordflow">for</span> (Eigen::Index i = 0; i &lt; n; ++i) {</div>
-<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; 3; ++k) {</div>
-<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>          v(i, k) = (*vel)[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)][k];</div>
-<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>        }</div>
-<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>      }</div>
-<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>      v.setZero();</div>
-<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>      <span class="keywordflow">for</span> (Eigen::Index i = 0; i &lt; n; ++i) {</div>
-<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;atom = frame[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)];</div>
-<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>        <span class="keyword">const</span> <span class="keyword">auto</span> prop = atom.get(<span class="stringliteral">&quot;velo&quot;</span>);</div>
-<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>        <span class="keywordflow">if</span> (!prop || prop-&gt;kind() != chemfiles::Property::VECTOR3D) {</div>
-<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>          <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>        }</div>
-<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>        have_velocities = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>        <span class="keyword">const</span> <span class="keyword">auto</span> vec = prop-&gt;as_vector3d();</div>
-<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; 3; ++k) {</div>
-<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>          v(i, k) = vec[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)];</div>
-<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>        }</div>
-<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>      }</div>
-<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>    }</div>
-<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>    <span class="keywordflow">if</span> (have_velocities) {</div>
-<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>      m.<a class="code hl_function" href="classeonc_1_1Matter.html#a69d20fcae2a18061f3c9d7fe7333682d">setVelocities</a>(v);</div>
-<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>    }</div>
-<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>    <span class="comment">// resize/setPositions leave the potential dirty; no file forces here.</span></div>
-<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9aa60852f204ed8028c1c58808b746d115">IoStatus::Ok</a>;</div>
-<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
-<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Failed to read {} with chemfiles: {}&quot;</span>, filename, e.what());</div>
-<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9adf9be6f7af7c3f7196c5c3e731de0a87">IoStatus::ReadError</a>;</div>
-<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>  }</div>
-<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>}</div>
-<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span> </div>
-<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span><span class="preprocessor">#else </span><span class="comment">// !WITH_CHEMFILES</span></div>
-<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span> </div>
-<div class="foldopen" id="foldopen00417" data-start="{" data-end="}">
-<div class="line"><a id="l00417" name="l00417"></a><span class="lineno"><a class="line" href="namespaceeonc_1_1io.html#a5841ade43a72a67a43ea26f80f459ae6">  417</a></span><a class="code hl_enumeration" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> <a class="code hl_function" href="namespaceeonc_1_1io.html#a5841ade43a72a67a43ea26f80f459ae6">chemfiles2matter</a>(<a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;, <span class="keyword">const</span> std::string &amp;filename,</div>
-<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>                          <span class="keyword">const</span> std::string &amp;) {</div>
-<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>  <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Cannot read {}: this eonclient was built without chemfiles. &quot;</span></div>
-<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>                 <span class="stringliteral">&quot;Install chemfiles-lib and reconfigure with &quot;</span></div>
-<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>                 <span class="stringliteral">&quot;-Dwith_chemfiles=enabled, or convert the file to .con.&quot;</span>,</div>
-<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>                 filename);</div>
-<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span>  <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">IoStatus::InvalidArgument</a>;</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!cfg.values.empty()) {</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>      box = matrix_from_values(cfg.values);</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>      periodic = cfg.pbc;</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>      <span class="comment">// Bounding box plus vacuum, shifted so every atom sits inside.</span></div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>      Eigen::RowVector3d lo = Eigen::RowVector3d::Zero();</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>      Eigen::RowVector3d hi = Eigen::RowVector3d::Zero();</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>      <span class="keywordflow">if</span> (n &gt; 0) {</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>        lo = positions.colwise().minCoeff();</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>        hi = positions.colwise().maxCoeff();</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>      }</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; 3; ++k) {</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>        box(k, k) = (hi(k) - lo(k)) + 2.0 * cfg.vacuum;</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>        <span class="comment">// A flat or single-atom axis still gets a positive length.</span></div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>        <span class="keywordflow">if</span> (box(k, k) &lt;= 0.0) {</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>          box(k, k) = 1.0;</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>        }</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>      }</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>      positions.rowwise() -= (lo - Eigen::RowVector3d::Constant(cfg.vacuum));</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>      periodic = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>      g_last_cell_warning = std::format(</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>          <span class="stringliteral">&quot;WARNING: {} has no unit cell and [Main] cell is not set. Using a &quot;</span></div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>          <span class="stringliteral">&quot;non-periodic orthorhombic box of {:.3f} x {:.3f} x {:.3f} A &quot;</span></div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>          <span class="stringliteral">&quot;(atom bounding box plus {} A vacuum per side, [Main] &quot;</span></div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>          <span class="stringliteral">&quot;default_vacuum); atoms were shifted into it. Set [Main] cell and &quot;</span></div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>          <span class="stringliteral">&quot;[Main] pbc, or add a cell to the file, for a periodic system.&quot;</span>,</div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>          filename, box(0, 0), box(1, 1), box(2, 2), cfg.vacuum);</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;{}&quot;</span>, g_last_cell_warning);</div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>    }</div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>    m.<a class="code hl_function" href="classeonc_1_1Matter.html#a3c4002006e09f4e4b7fa2ffbf191db26">setCell</a>(box);</div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>    <span class="keywordflow">if</span> (!periodic) {</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>      m.<a class="code hl_function" href="classeonc_1_1Matter.html#a5206e37570d8949d5d4ecf3316db34f9">setPeriodic</a>(<span class="keyword">false</span>); <span class="comment">// never force PBC onto an isolated-layout pot</span></div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>    }</div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>    m.<a class="code hl_function" href="classeonc_1_1Matter.html#a97e9d4eabead6da0942e6af4e3de24cb">setMasses</a>(masses);</div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>    m.<a class="code hl_function" href="classeonc_1_1Matter.html#a660f01f6f3f8aa1e5c7f3a9edd689881">setAtomicNrs</a>(atomic_nrs);</div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>    m.<a class="code hl_function" href="classeonc_1_1Matter.html#a271f1a697333162ba3705bff86dfef06">setPositions</a>(positions);</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span> </div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>    <span class="comment">// Frame::velocities() is set by formats that store velocities as a</span></div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>    <span class="comment">// trajectory array. The XYZ reader does not (FormatMetadata::velocities</span></div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>    <span class="comment">// is false): an extxyz `velo` column is an atom property of kind</span></div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>    <span class="comment">// VECTOR3D, so read that when the frame has no velocity array.</span></div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> v(n, 3);</div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>    <span class="keywordtype">bool</span> have_velocities = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span> vel = frame.velocities()) {</div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>      have_velocities = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>      <span class="keywordflow">for</span> (Eigen::Index i = 0; i &lt; n; ++i) {</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; 3; ++k) {</div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>          v(i, k) = (*vel)[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)][k];</div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>        }</div>
+<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>      }</div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>      v.setZero();</div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>      <span class="keywordflow">for</span> (Eigen::Index i = 0; i &lt; n; ++i) {</div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;atom = frame[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)];</div>
+<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>        <span class="keyword">const</span> <span class="keyword">auto</span> prop = atom.get(<span class="stringliteral">&quot;velo&quot;</span>);</div>
+<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>        <span class="keywordflow">if</span> (!prop || prop-&gt;kind() != chemfiles::Property::VECTOR3D) {</div>
+<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>          <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>        }</div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>        have_velocities = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>        <span class="keyword">const</span> <span class="keyword">auto</span> vec = prop-&gt;as_vector3d();</div>
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; 3; ++k) {</div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>          v(i, k) = vec[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)];</div>
+<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>        }</div>
+<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>      }</div>
+<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>    }</div>
+<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>    <span class="keywordflow">if</span> (have_velocities) {</div>
+<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>      m.<a class="code hl_function" href="classeonc_1_1Matter.html#a69d20fcae2a18061f3c9d7fe7333682d">setVelocities</a>(v);</div>
+<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>    }</div>
+<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>    <span class="comment">// resize/setPositions leave the potential dirty; no file forces here.</span></div>
+<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9aa60852f204ed8028c1c58808b746d115">IoStatus::Ok</a>;</div>
+<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Failed to read {} with chemfiles: {}&quot;</span>, filename, e.what());</div>
+<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9adf9be6f7af7c3f7196c5c3e731de0a87">IoStatus::ReadError</a>;</div>
+<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span>  }</div>
 <div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span>}</div>
-</div>
 <div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span> </div>
-<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span><span class="preprocessor">#else </span><span class="comment">// !WITH_CHEMFILES</span></div>
 <div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span> </div>
-<div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span>} <span class="comment">// namespace eonc::io</span></div>
+<div class="foldopen" id="foldopen00428" data-start="{" data-end="}">
+<div class="line"><a id="l00428" name="l00428"></a><span class="lineno"><a class="line" href="namespaceeonc_1_1io.html#a5841ade43a72a67a43ea26f80f459ae6">  428</a></span><a class="code hl_enumeration" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> <a class="code hl_function" href="namespaceeonc_1_1io.html#a5841ade43a72a67a43ea26f80f459ae6">chemfiles2matter</a>(<a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;, <span class="keyword">const</span> std::string &amp;filename,</div>
+<div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span>                          <span class="keyword">const</span> std::string &amp;) {</div>
+<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span>  <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Cannot read {}: this eonclient was built without chemfiles. &quot;</span></div>
+<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span>                 <span class="stringliteral">&quot;Install chemfiles-lib and reconfigure with &quot;</span></div>
+<div class="line"><a id="l00432" name="l00432"></a><span class="lineno">  432</span>                 <span class="stringliteral">&quot;-Dwith_chemfiles=enabled, or convert the file to .con.&quot;</span>,</div>
+<div class="line"><a id="l00433" name="l00433"></a><span class="lineno">  433</span>                 filename);</div>
+<div class="line"><a id="l00434" name="l00434"></a><span class="lineno">  434</span>  <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">IoStatus::InvalidArgument</a>;</div>
+<div class="line"><a id="l00435" name="l00435"></a><span class="lineno">  435</span>}</div>
+</div>
+<div class="line"><a id="l00436" name="l00436"></a><span class="lineno">  436</span> </div>
+<div class="line"><a id="l00437" name="l00437"></a><span class="lineno">  437</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00438" name="l00438"></a><span class="lineno">  438</span> </div>
+<div class="line"><a id="l00439" name="l00439"></a><span class="lineno">  439</span>} <span class="comment">// namespace eonc::io</span></div>
 </div>
 <div class="ttc" id="aChemfilesIO_8h_html"><div class="ttname"><a href="ChemfilesIO_8h.html">ChemfilesIO.h</a></div></div>
 <div class="ttc" id="aEigen_8h_html_a5a21583e98df78e5b867b370291714d0"><div class="ttname"><a href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 3, 3, eOnStorageOrder &gt; Matrix3d</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00035">Eigen.h:35</a></div></div>
@@ -695,13 +708,14 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('ChemfilesIO_8c
 <div class="ttc" id="anamespaceeonc_1_1io_html"><div class="ttname"><a href="namespaceeonc_1_1io.html">eonc::io</a></div><div class="ttdef"><b>Definition</b> <a href="#l00031">ChemfilesIO.cpp:31</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_a1348c2cdbe96f42c921df07f3da07dd0"><div class="ttname"><a href="namespaceeonc_1_1io.html#a1348c2cdbe96f42c921df07f3da07dd0">eonc::io::set_structure_input_format</a></div><div class="ttdeci">void set_structure_input_format(std::string fmt)</div><div class="ttdoc">[Main] input_format: empty or &quot;con&quot; keeps readcon only.</div><div class="ttdef"><b>Definition</b> <a href="#l00202">ChemfilesIO.cpp:202</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_a2b29146d14c962659dbda7d6db479c38"><div class="ttname"><a href="namespaceeonc_1_1io.html#a2b29146d14c962659dbda7d6db479c38">eonc::io::convel2matter</a></div><div class="ttdeci">IoStatus convel2matter(Matter &amp;m, std::string filename)</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8cpp_source.html#l00811">ConFileIO.cpp:811</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1io_html_a5841ade43a72a67a43ea26f80f459ae6"><div class="ttname"><a href="namespaceeonc_1_1io.html#a5841ade43a72a67a43ea26f80f459ae6">eonc::io::chemfiles2matter</a></div><div class="ttdeci">IoStatus chemfiles2matter(Matter &amp;, const std::string &amp;filename, const std::string &amp;)</div><div class="ttdef"><b>Definition</b> <a href="#l00417">ChemfilesIO.cpp:417</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_a5841ade43a72a67a43ea26f80f459ae6"><div class="ttname"><a href="namespaceeonc_1_1io.html#a5841ade43a72a67a43ea26f80f459ae6">eonc::io::chemfiles2matter</a></div><div class="ttdeci">IoStatus chemfiles2matter(Matter &amp;, const std::string &amp;filename, const std::string &amp;)</div><div class="ttdef"><b>Definition</b> <a href="#l00428">ChemfilesIO.cpp:428</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_a6f13ca53e923b1a8dbb98436987c984c"><div class="ttname"><a href="namespaceeonc_1_1io.html#a6f13ca53e923b1a8dbb98436987c984c">eonc::io::con2matter</a></div><div class="ttdeci">IoStatus con2matter(Matter &amp;m, std::string filename)</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8cpp_source.html#l00643">ConFileIO.cpp:643</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_a76929c6051d3126fc12dc660eb147342"><div class="ttname"><a href="namespaceeonc_1_1io.html#a76929c6051d3126fc12dc660eb147342">eonc::io::is_chemfiles_path</a></div><div class="ttdeci">bool is_chemfiles_path(std::string_view filename)</div><div class="ttdoc">True for structure paths routed to chemfiles: a known extension (xyz, extxyz, pdb,...</div><div class="ttdef"><b>Definition</b> <a href="#l00188">ChemfilesIO.cpp:188</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1io_html_a80aaf6fe7ba1eb27a75f8fe8a39718e4"><div class="ttname"><a href="namespaceeonc_1_1io.html#a80aaf6fe7ba1eb27a75f8fe8a39718e4">eonc::io::inp2matter</a></div><div class="ttdeci">IoStatus inp2matter(Matter &amp;m, const std::string &amp;filename)</div><div class="ttdoc">Input entry point: .con/.convel (and .gz/.zst) go to readcon, everything else goes to chemfiles.</div><div class="ttdef"><b>Definition</b> <a href="#l00254">ChemfilesIO.cpp:254</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_a80aaf6fe7ba1eb27a75f8fe8a39718e4"><div class="ttname"><a href="namespaceeonc_1_1io.html#a80aaf6fe7ba1eb27a75f8fe8a39718e4">eonc::io::inp2matter</a></div><div class="ttdeci">IoStatus inp2matter(Matter &amp;m, const std::string &amp;filename)</div><div class="ttdoc">Input entry point: .con/.convel (and .gz/.zst) go to readcon, everything else goes to chemfiles.</div><div class="ttdef"><b>Definition</b> <a href="#l00265">ChemfilesIO.cpp:265</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_a821a2300015afdd2412003e66626f203"><div class="ttname"><a href="namespaceeonc_1_1io.html#a821a2300015afdd2412003e66626f203">eonc::io::parse_cell_values</a></div><div class="ttdeci">std::vector&lt; double &gt; parse_cell_values(const std::string &amp;text)</div><div class="ttdoc">Parse &quot;a b c&quot; or nine numbers; throws std::invalid_argument.</div><div class="ttdef"><b>Definition</b> <a href="#l00210">ChemfilesIO.cpp:210</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1io_html_a8e13915603174b115f9ed284d47b057e"><div class="ttname"><a href="namespaceeonc_1_1io.html#a8e13915603174b115f9ed284d47b057e">eonc::io::last_cell_warning</a></div><div class="ttdeci">const std::string &amp; last_cell_warning() noexcept</div><div class="ttdoc">Read the first frame of any chemfiles-supported file into Matter.</div><div class="ttdef"><b>Definition</b> <a href="#l00252">ChemfilesIO.cpp:252</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_a8e13915603174b115f9ed284d47b057e"><div class="ttname"><a href="namespaceeonc_1_1io.html#a8e13915603174b115f9ed284d47b057e">eonc::io::last_cell_warning</a></div><div class="ttdeci">const std::string &amp; last_cell_warning() noexcept</div><div class="ttdoc">Read the first frame of any chemfiles-supported file into Matter.</div><div class="ttdef"><b>Definition</b> <a href="#l00263">ChemfilesIO.cpp:263</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_a971abb81afe66981123e5e12336cdf7f"><div class="ttname"><a href="namespaceeonc_1_1io.html#a971abb81afe66981123e5e12336cdf7f">eonc::io::chemfiles_available</a></div><div class="ttdeci">bool chemfiles_available() noexcept</div><div class="ttdoc">True when this build links chemfiles (-Dwith_chemfiles found it).</div><div class="ttdef"><b>Definition</b> <a href="#l00168">ChemfilesIO.cpp:168</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_aa1b691c0b136cac2ce7b52f9818f49ff"><div class="ttname"><a href="namespaceeonc_1_1io.html#aa1b691c0b136cac2ce7b52f9818f49ff">eonc::io::publish_structure_input</a></div><div class="ttdeci">void publish_structure_input(std::string format, const std::string &amp;cell, bool pbc, double vacuum)</div><div class="ttdoc">Publish [Main] input_format, cell, pbc, and default_vacuum to the process-wide readers.</div><div class="ttdef"><b>Definition</b> <a href="#l00252">ChemfilesIO.cpp:252</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_aa96f30005b3cd2485a5da4371602a1c9"><div class="ttname"><a href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">eonc::io::IoStatus</a></div><div class="ttdeci">IoStatus</div><div class="ttdoc">Structured I/O result for the client surface (nanobind-friendly).</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00029">ConFileIO.h:29</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">eonc::io::IoStatus::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00035">ConFileIO.h:35</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_aa96f30005b3cd2485a5da4371602a1c9aa60852f204ed8028c1c58808b746d115"><div class="ttname"><a href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9aa60852f204ed8028c1c58808b746d115">eonc::io::IoStatus::Ok</a></div><div class="ttdeci">@ Ok</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00030">ConFileIO.h:30</a></div></div>

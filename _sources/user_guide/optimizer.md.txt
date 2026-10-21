@@ -42,6 +42,13 @@ Each of the optimizer methods have their own settings as well.
 .. autopydantic_model:: eon.schema.LBFGSConfig
 ```
 
+For min-mode saddle searches (for example, `min_mode_method = dimer`), the
+dimer mode curvature (`|C_tau|`) is not used as a known first-step Hessian
+scale for translation. The translation objective climbs on an effective
+force, so the initial L-BFGS scale still follows the usual `[LBFGS]`
+controls (`lbfgs_inverse_curvature`, `lbfgs_auto_scale`) and its own
+finite-difference probe, with `max_move` as the final cap.
+
 ### QuickMin
 
 ```{code-block} ini

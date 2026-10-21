@@ -1,6 +1,6 @@
 var classeonc_1_1MinModeObjectiveFunction =
 [
-    [ "MinModeObjectiveFunction", "classeonc_1_1MinModeObjectiveFunction.html#aaf13764d907c1b1670eda5f3ecc91498", null ],
+    [ "MinModeObjectiveFunction", "classeonc_1_1MinModeObjectiveFunction.html#a343f001665f8a6643a6252fa43668e36", null ],
     [ "~MinModeObjectiveFunction", "classeonc_1_1MinModeObjectiveFunction.html#a281673240d4987bccffecba1736e2d74", null ],
     [ "degreesOfFreedom", "classeonc_1_1MinModeObjectiveFunction.html#a61906eb047a60894ec776d64b05e2573", null ],
     [ "difference", "classeonc_1_1MinModeObjectiveFunction.html#a916915d7c2933667ade677719a6f1b38", null ],
@@ -12,9 +12,12 @@ var classeonc_1_1MinModeObjectiveFunction =
     [ "gradientMatchesEnergy", "classeonc_1_1MinModeObjectiveFunction.html#ad775d84fb0a3be0eba00b75a1fcb05ac", null ],
     [ "isConverged", "classeonc_1_1MinModeObjectiveFunction.html#ae78b175b373a4f92d7e4cb2dce0577f7", null ],
     [ "knownCurvature", "classeonc_1_1MinModeObjectiveFunction.html#aae1a7855290a56b2b53965b9c3d738b9", null ],
+    [ "pastClimbCeiling", "classeonc_1_1MinModeObjectiveFunction.html#ae0cf5aa43bd5c6a24bcb7a016747a7da", null ],
+    [ "reseedMode", "classeonc_1_1MinModeObjectiveFunction.html#a8842d7f0f4d8dd471a0cd8c207c59be0", null ],
     [ "setPositions", "classeonc_1_1MinModeObjectiveFunction.html#ae5821ab7860f4d031604c92eecc99138", null ],
     [ "eigenvector", "classeonc_1_1MinModeObjectiveFunction.html#a48516dcffc1135b65369fb82c5b19e39", null ],
     [ "iteration", "classeonc_1_1MinModeObjectiveFunction.html#a8d4b093baa13243bd2a7a30aaf2abf2f", null ],
     [ "matter", "classeonc_1_1MinModeObjectiveFunction.html#af62737aa3ba51d841b8e2a24555eeead", null ],
-    [ "minModeMethod", "classeonc_1_1MinModeObjectiveFunction.html#a92439c44b795cec8ccf262835b28ed2b", null ]
+    [ "minModeMethod", "classeonc_1_1MinModeObjectiveFunction.html#a92439c44b795cec8ccf262835b28ed2b", null ],
+    [ "reactantEnergy", "classeonc_1_1MinModeObjectiveFunction.html#a86176941c15c209e78c6e9ab42b85803", null ]
 ];

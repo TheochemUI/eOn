@@ -256,11 +256,38 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a75af4b974ecda59c75b5425a71001e32" id="r_a75af4b974ecda59c75b5425a71001e32"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a75af4b974ecda59c75b5425a71001e32">parallel</a> {true}</td></tr>
 <tr class="memitem:a340ebb5b9c98d611ffb32c5ec57fd13f" id="r_a340ebb5b9c98d611ffb32c5ec57fd13f"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a340ebb5b9c98d611ffb32c5ec57fd13f">writeConForces</a> {false}</td></tr>
 <tr class="memdesc:a340ebb5b9c98d611ffb32c5ec57fd13f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opt-in "Forces of Component" sections in written .con frames (enables force+energy co-load on restart); classic readers such as <a class="el" href="classASE.html">ASE</a>'s eon parser reject frames that carry them.  <br /></td></tr>
+<tr class="memitem:a29f15e9aaa1523fac5a8149581b56ce1" id="r_a29f15e9aaa1523fac5a8149581b56ce1"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a29f15e9aaa1523fac5a8149581b56ce1">inputFormat</a></td></tr>
+<tr class="memdesc:a29f15e9aaa1523fac5a8149581b56ce1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chemfiles format substituted for a <span class="tt">.con</span> request.  <br /></td></tr>
+<tr class="memitem:af9b82e17632dec8ad11bd15eb56d0d82" id="r_af9b82e17632dec8ad11bd15eb56d0d82"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#af9b82e17632dec8ad11bd15eb56d0d82">cell</a></td></tr>
+<tr class="memdesc:af9b82e17632dec8ad11bd15eb56d0d82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fallback cell when a foreign file carries none: "a b c" or nine row-major lattice numbers.  <br /></td></tr>
+<tr class="memitem:a286d12f6d93dc230e3fac7bf02dbcf2c" id="r_a286d12f6d93dc230e3fac7bf02dbcf2c"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a286d12f6d93dc230e3fac7bf02dbcf2c">pbc</a> {true}</td></tr>
+<tr class="memdesc:a286d12f6d93dc230e3fac7bf02dbcf2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Periodicity of that fallback cell.  <br /></td></tr>
+<tr class="memitem:a0030907d5a7b59584d2680db794924be" id="r_a0030907d5a7b59584d2680db794924be"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a0030907d5a7b59584d2680db794924be">defaultVacuum</a> {10.0}</td></tr>
+<tr class="memdesc:a0030907d5a7b59584d2680db794924be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vacuum (Angstrom) on every side of the box built when neither the file nor <span class="tt"><a class="el" href="#af9b82e17632dec8ad11bd15eb56d0d82" title="Fallback cell when a foreign file carries none: &quot;a b c&quot; or nine row-major lattice numbers.">cell</a></span> supplies one.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00030">30</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
 </div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="af9b82e17632dec8ad11bd15eb56d0d82" name="af9b82e17632dec8ad11bd15eb56d0d82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9b82e17632dec8ad11bd15eb56d0d82">&#9670;&#160;</a></span>cell</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::main_options_t::cell</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fallback cell when a foreign file carries none: "a b c" or nine row-major lattice numbers. </p>
+<p>Empty leaves it unset. </p>
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00052">52</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+
+</div>
+</div>
 <a id="a24663a7c2adc7189128ba2f36c9b3015" name="a24663a7c2adc7189128ba2f36c9b3015"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a24663a7c2adc7189128ba2f36c9b3015">&#9670;&#160;</a></span>checkpoint</h2>
 
@@ -292,6 +319,25 @@ Public Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00038">38</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">   38</span>{<span class="stringliteral">&quot;pos.con&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0030907d5a7b59584d2680db794924be" name="a0030907d5a7b59584d2680db794924be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0030907d5a7b59584d2680db794924be">&#9670;&#160;</a></span>defaultVacuum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::main_options_t::defaultVacuum {10.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Vacuum (Angstrom) on every side of the box built when neither the file nor <span class="tt"><a class="el" href="#af9b82e17632dec8ad11bd15eb56d0d82" title="Fallback cell when a foreign file carries none: &quot;a b c&quot; or nine row-major lattice numbers.">cell</a></span> supplies one. </p>
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00057">57</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   57</span>{10.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -327,6 +373,25 @@ Public Attributes</h2></td></tr>
 <p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00037">37</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">   37</span>{<span class="stringliteral">&quot;config.ini&quot;</span>};</div>
 </div><!-- fragment -->
+</div>
+</div>
+<a id="a29f15e9aaa1523fac5a8149581b56ce1" name="a29f15e9aaa1523fac5a8149581b56ce1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29f15e9aaa1523fac5a8149581b56ce1">&#9670;&#160;</a></span>inputFormat</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::main_options_t::inputFormat</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Chemfiles format substituted for a <span class="tt">.con</span> request. </p>
+<p>Empty or <span class="tt">con</span> keeps readcon. Output stays <span class="tt">.con</span>. </p>
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00049">49</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+
 </div>
 </div>
 <a id="a770019a44dcbbd245a817f5a1d9739a1" name="a770019a44dcbbd245a817f5a1d9739a1"></a>
@@ -378,6 +443,25 @@ Public Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00042">42</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">   42</span>{<span class="keyword">true</span>}; <span class="comment">// parallel force evaluation via std::jthread</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a286d12f6d93dc230e3fac7bf02dbcf2c" name="a286d12f6d93dc230e3fac7bf02dbcf2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a286d12f6d93dc230e3fac7bf02dbcf2c">&#9670;&#160;</a></span>pbc</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::main_options_t::pbc {true}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Periodicity of that fallback cell. </p>
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00054">54</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   54</span>{<span class="keyword">true</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>

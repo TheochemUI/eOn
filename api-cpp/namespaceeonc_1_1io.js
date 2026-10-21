@@ -32,6 +32,7 @@ var namespaceeonc_1_1io =
     [ "metadata_from_frame", "namespaceeonc_1_1io.html#a525b12eff16ef9d00847fc3482745e38", null ],
     [ "mirror_con_corpus", "namespaceeonc_1_1io.html#abc75e22aaffd22817956f2c37fac7bac", null ],
     [ "parse_cell_values", "namespaceeonc_1_1io.html#a821a2300015afdd2412003e66626f203", null ],
+    [ "publish_structure_input", "namespaceeonc_1_1io.html#aa1b691c0b136cac2ce7b52f9818f49ff", null ],
     [ "readcon_db_loaded_version", "namespaceeonc_1_1io.html#a53595fddf895a0a3818f0cf77409209f", null ],
     [ "readcon_db_mirror_ok", "namespaceeonc_1_1io.html#a0d1cb66c52c93a1ced57ded56051ba30", null ],
     [ "readcon_db_mirror_reset", "namespaceeonc_1_1io.html#a2ed15da96ab956544a69342720cd0a4a", null ],

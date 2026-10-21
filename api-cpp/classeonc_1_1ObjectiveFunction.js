@@ -14,6 +14,7 @@ var classeonc_1_1ObjectiveFunction =
     [ "isConverged", "classeonc_1_1ObjectiveFunction.html#a90d7874f2d2686d628c9d6057f841925", null ],
     [ "knownCurvature", "classeonc_1_1ObjectiveFunction.html#aa52b364b8d8eb6fcb6cddc409aaa6691", null ],
     [ "minimumImage", "classeonc_1_1ObjectiveFunction.html#af3271abcddd3c2ec4808a5b3f25e4b77", null ],
+    [ "pastClimbCeiling", "classeonc_1_1ObjectiveFunction.html#aed670e2d912830cd74f380930905a874", null ],
     [ "setPositions", "classeonc_1_1ObjectiveFunction.html#ab285e512e05c11a1438a93d72a0ec527", null ],
     [ "supportsFiniteDifferenceCurvature", "classeonc_1_1ObjectiveFunction.html#a1b411c5e39f354a9ec1058e84c172e54", null ],
     [ "params", "classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871", null ]
