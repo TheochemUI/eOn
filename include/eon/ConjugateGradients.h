@@ -35,6 +35,17 @@ namespace eonc {
  * Decleration of the Conjugate Gradients optimizer
  */
 
+// Enables a secant step length inside ConjugateGradients for the enclosing
+// scope. Parallel replica uses it for basin quenches. Other minimizations
+// leave it unset and keep the finite-difference curvature probe.
+class BasinQuenchSecant {
+public:
+  BasinQuenchSecant();
+  ~BasinQuenchSecant();
+  BasinQuenchSecant(const BasinQuenchSecant &) = delete;
+  BasinQuenchSecant &operator=(const BasinQuenchSecant &) = delete;
+};
+
 class ConjugateGradients final : public Optimizer {
 public:
   //! Conjugate Gradients optimizer constructor
@@ -83,6 +94,10 @@ private:
 
   //! Counts the number of discrete steps until algorithm convergence
   size_t m_cg_i{0};
+  // Previous free-atom position and force, for a basin-quench secant.
+  Eigen::VectorXd m_secantPos;
+  Eigen::VectorXd m_secantForce;
+  bool m_secantHave{false};
 
   //! Steps the conjugate gradient
   /**

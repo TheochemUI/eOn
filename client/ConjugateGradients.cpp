@@ -15,7 +15,17 @@
 
 #include <cmath>
 
+namespace {
+// Depth of BasinQuenchSecant scopes on this thread. Zero keeps the
+// finite-difference curvature probe.
+thread_local int basinQuenchSecantDepth = 0;
+} // namespace
+
 namespace eonc {
+
+BasinQuenchSecant::BasinQuenchSecant() { ++basinQuenchSecantDepth; }
+
+BasinQuenchSecant::~BasinQuenchSecant() { --basinQuenchSecantDepth; }
 
 Eigen::VectorXd ConjugateGradients::getStep() {
   double a = std::abs(eonc::exact::dot(m_force, m_forceOld));
@@ -126,17 +136,48 @@ int ConjugateGradients::single_step(double a_maxMove) {
   pos = m_objf->getPositions();
   getStep();
 
-  // move system an infinitesimal step to determine the optimal step size along
-  // the search line
-  posStep = pos + m_directionNorm * m_optConfig.finiteDifference;
-  m_objf->setPositions(posStep);
-  forceAfterStep = -m_objf->getGradient(true);
-
-  // Determine curvature
   double projectedForce1 = eonc::exact::dot(m_force, m_directionNorm);
-  double projectedForce2 = eonc::exact::dot(forceAfterStep, m_directionNorm);
-  double curvature = eonc::safemath::safe_div(
-      projectedForce1 - projectedForce2, m_optConfig.finiteDifference, 0.0);
+  double projectedForce2 = 0.0;
+  double curvature = 0.0;
+
+  // Basin quenches reuse the previous step as a secant when that step had
+  // positive curvature. A non-positive secant, and every minimization outside
+  // BasinQuenchSecant, keeps the finite-difference probe below.
+  const bool secantOk = basinQuenchSecantDepth > 0 && m_secantHave &&
+                        !m_optConfig.opts.cg.no_overshooting;
+  bool usedSecant = false;
+  if (secantOk) {
+    const Eigen::VectorXd displacement = pos - m_secantPos;
+    const double span = eonc::exact::squaredNorm(displacement);
+    if (span > 1.0e-24) {
+      const double drop = eonc::exact::dot(m_secantForce, displacement) -
+                          eonc::exact::dot(m_force, displacement);
+      const double secant = drop / span;
+      if (std::isfinite(secant) && secant > 0.0) {
+        curvature = secant;
+        usedSecant = true;
+      }
+    }
+  }
+
+  if (!usedSecant) {
+    // move system an infinitesimal step to determine the optimal step size
+    // along the search line
+    posStep = pos + m_directionNorm * m_optConfig.finiteDifference;
+    m_objf->setPositions(posStep);
+    forceAfterStep = -m_objf->getGradient(true);
+
+    // Determine curvature
+    projectedForce2 = eonc::exact::dot(forceAfterStep, m_directionNorm);
+    curvature = eonc::safemath::safe_div(
+        projectedForce1 - projectedForce2, m_optConfig.finiteDifference, 0.0);
+  }
+
+  if (basinQuenchSecantDepth > 0) {
+    m_secantPos = pos;
+    m_secantForce = m_force;
+    m_secantHave = true;
+  }
 
   double stepSize = a_maxMove;
 

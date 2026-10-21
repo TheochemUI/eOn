@@ -12,11 +12,22 @@
 #include "eon/ParallelReplicaJob.h"
 #include "eon/BaseStructures.h"
 #include "eon/BondBoost.h"
+#include "eon/ConjugateGradients.h"
 #include "eon/Dynamics.h"
 #include "eon/ForceCallTimer.h"
 #include "eon/HelperFunctions.h"
 #include "eon/Matter.h"
+#include <functional>
 #include <stdexcept>
+
+namespace eonc::helpers {
+bool relaxMatterAccepted(Matter &matter, const Parameters &params, bool quiet,
+                         bool writeMovie, bool checkpoint,
+                         std::string prefixMovie,
+                         std::string prefixCheckpoint,
+                         std::vector<readcon::ConFrame> *outFrames,
+                         std::function<bool(Matter &, double)> accept);
+}
 
 #include <cmath>
 #include <format>
@@ -46,11 +57,16 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
   }
   reactant = initial;
   reactant->setPotential(pot);
+  profile_ = {};
 
   QUILL_LOG_DEBUG(log, "[ParallelReplica] Minimizing initial position");
-  reactant->relax();
-  if (!eonc::io::io_ok(reactant->matter2con("reactant.con"))) {
-    QUILL_LOG_ERROR(log, "Failed to write reactant.con");
+  {
+    const size_t at = pot->forceCallCounter.load();
+    reactant->relax();
+    if (!eonc::io::io_ok(reactant->matter2con("reactant.con"))) {
+      QUILL_LOG_ERROR(log, "Failed to write reactant.con");
+    }
+    profile_.initial = pot->forceCallCounter.load() - at;
   }
 
   auto trajectory = std::make_shared<Matter>(pot, params);
@@ -100,6 +116,7 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
   }
 
   for (int step = 1; step <= params.dynamics_options().steps; step++) {
+    const size_t mdAt = pot->forceCallCounter.load();
     if (params.hyperdynamics_options().bias_potential ==
         Hyperdynamics::BOND_BOOST) {
       // oneStep() evaluates accelerations (and therefore boost()) more than
@@ -143,6 +160,7 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
             kinE, potE + boostPotential, kinE + potE + boostPotential, kinT);
       }
     }
+    profile_.md += pot->forceCallCounter.load() - mdAt;
 
     // Snapshots for refinement
     if (step % recordInterval == 0 &&
@@ -160,7 +178,17 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
 
       Matter minimized(pot, params);
       minimized = *trajectory;
-      minimized.relax();
+      ++profile_.stateChecks;
+      const double distTol =
+          params.structure_comparison_options().distance_difference;
+      if (distTol > 0.0 && minimized.perAtomNorm(*reactant) < distTol) {
+        ++profile_.hotInside;
+      }
+      {
+        const size_t quenchAt = pot->forceCallCounter.load();
+        basinRelax(minimized, false);
+        profile_.stateCheck += pot->forceCallCounter.load() - quenchAt;
+      }
 
       if (!minimized.compare(*reactant) && transitionTime == 0) {
         QUILL_LOG_DEBUG(log, "[ParallelReplica] Transition occurred");
@@ -229,14 +257,22 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
     }
     QUILL_LOG_DEBUG(log, "[ParallelReplica] Decorrelating: {} steps",
                     decorrelationSteps);
-    for (int dstep = 1; dstep <= decorrelationSteps; ++dstep) {
-      dynamics.oneStep(dstep);
+    {
+      const size_t decorAt = pot->forceCallCounter.load();
+      for (int dstep = 1; dstep <= decorrelationSteps; ++dstep) {
+        dynamics.oneStep(dstep);
+      }
+      profile_.decorrelate = pot->forceCallCounter.load() - decorAt;
     }
     product = std::make_unique<Matter>(pot, params);
     *product = *trajectory;
-    product->relax();
-    if (!eonc::io::io_ok(product->matter2con("product.con"))) {
-      QUILL_LOG_ERROR(log, "Failed to write product.con");
+    {
+      const size_t productAt = pot->forceCallCounter.load();
+      product->relax();
+      if (!eonc::io::io_ok(product->matter2con("product.con"))) {
+        QUILL_LOG_ERROR(log, "Failed to write product.con");
+      }
+      profile_.product = pot->forceCallCounter.load() - productAt;
     }
   }
 
@@ -253,8 +289,26 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
       out << std::format("{:f} potential_energy_reactant\n",
                          reactant->getPotentialEnergy());
       out << std::format("{} force_calls_refine\n", refineForceCalls);
-      out << std::format("{} total_force_calls\n",
-                         pot->forceCallCounter.load());
+      const size_t totalCalls = pot->forceCallCounter.load();
+      out << std::format("{} total_force_calls\n", totalCalls);
+      out << std::format("{} force_calls_initial_minimize\n", profile_.initial);
+      out << std::format("{} force_calls_dephase_md\n", profile_.dephaseMd);
+      out << std::format("{} force_calls_dephase_quench\n",
+                         profile_.dephaseQuench);
+      out << std::format("{} force_calls_md\n", profile_.md);
+      out << std::format("{} force_calls_state_check\n", profile_.stateCheck);
+      out << std::format("{} force_calls_decorrelate\n", profile_.decorrelate);
+      out << std::format("{} force_calls_product_minimize\n", profile_.product);
+      const size_t accounted = profile_.initial + profile_.dephaseMd +
+                               profile_.dephaseQuench + profile_.md +
+                               profile_.stateCheck + refineForceCalls +
+                               profile_.decorrelate + profile_.product;
+      const long gap =
+          static_cast<long>(totalCalls) - static_cast<long>(accounted);
+      out << std::format("{} force_calls_other\n", gap);
+      out << std::format("{} state_checks\n", profile_.stateChecks);
+      out << std::format("{} state_checks_hot_inside\n", profile_.hotInside);
+      out << std::format("{} basin_early_accepts\n", profile_.earlyAccepts);
 
       if (transitionTime == 0) {
         out << "0 transition_found\n";
@@ -315,13 +369,21 @@ void ParallelReplicaJob::dephase(Matter &trajectory, BondBoost *bias) {
     trajectory.assignKeepingBias(initial);
     dynamics.setThermalVelocity();
 
-    for (int step = 1; step <= dephaseSteps; step++) {
-      dynamics.oneStep(step);
+    {
+      const size_t mdAt = pot->forceCallCounter.load();
+      for (int step = 1; step <= dephaseSteps; step++) {
+        dynamics.oneStep(step);
+      }
+      profile_.dephaseMd += pot->forceCallCounter.load() - mdAt;
     }
 
     Matter minimized(pot, params);
     minimized = trajectory;
-    minimized.relax();
+    {
+      const size_t quenchAt = pot->forceCallCounter.load();
+      basinRelax(minimized, false);
+      profile_.dephaseQuench += pot->forceCallCounter.load() - quenchAt;
+    }
 
     if (minimized.compare(*reactant)) {
       QUILL_LOG_DEBUG(log, "[ParallelReplica] Dephasing successful");
@@ -344,7 +406,7 @@ int ParallelReplicaJob::refineTransition(
   while ((hi - lo) > 1) {
     int mid = lo + (hi - lo) / 2;
     Matter snapshot(*snapshots[mid]);
-    snapshot.relax(true);
+    basinRelax(snapshot, true);
 
     bool stillReactant;
     if (!fake) {
@@ -361,6 +423,43 @@ int ParallelReplicaJob::refineTransition(
   }
 
   return (lo + hi) / 2 + 1;
+}
+
+void ParallelReplicaJob::basinRelax(Matter &matter, bool quiet) {
+  if (params.optimizer_options().method != OptType::CG) {
+    matter.relax(quiet);
+    return;
+  }
+  // The finite-difference curvature probe is one force call per CG step.
+  // Basin identity does not need that probe once a previous step has a
+  // positive curvature, and it does not need the norm driven to the usual
+  // tolerance once the trial is inside the reactant ball with a small force
+  // and a step that fits in the remaining margin.
+  BasinQuenchSecant secant;
+  const double distTol =
+      params.structure_comparison_options().distance_difference;
+  const double forceGate = params.optimizer_options().converged_force;
+  auto accept = [&](Matter &trial, double stepSize) -> bool {
+    if (!(distTol > 0.0)) {
+      return false;
+    }
+    const double dist = trial.perAtomNorm(*reactant);
+    if (!(dist < distTol)) {
+      return false;
+    }
+    const double margin = distTol - dist;
+    if (!(stepSize <= 0.5 * margin)) {
+      return false;
+    }
+    if (!(trial.maxForce() <= forceGate)) {
+      return false;
+    }
+    ++profile_.earlyAccepts;
+    return true;
+  };
+  eonc::helpers::relaxMatterAccepted(matter, params, quiet, false, false,
+                                     std::string(), std::string(), nullptr,
+                                     accept);
 }
 
 } // namespace eonc

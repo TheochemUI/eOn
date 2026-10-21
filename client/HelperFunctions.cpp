@@ -27,6 +27,7 @@
 #include <ctime>
 #include <filesystem>
 #include <format>
+#include <functional>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -444,13 +445,12 @@ public:
     dr = m.row(0).transpose();
   }
 };
-} // namespace
 
-bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
-                                bool quiet, bool writeMovie, bool checkpoint,
-                                std::string prefixMovie,
-                                std::string prefixCheckpoint,
-                                std::vector<readcon::ConFrame> *outFrames) {
+bool relaxMatterImpl(
+    eonc::Matter &matter, const eonc::Parameters &params, bool quiet,
+    bool writeMovie, bool checkpoint, std::string prefixMovie,
+    std::string prefixCheckpoint, std::vector<readcon::ConFrame> *outFrames,
+    const std::function<bool(eonc::Matter &, double)> &accept) {
   eonc::log::Scoped m_log;
   auto objf = std::make_shared<MatterObjectiveFunction>(matter, params);
   auto optim = eonc::helpers::create::mkOptim(
@@ -533,6 +533,10 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
         QUILL_LOG_WARNING(m_log, "Failed to write checkpoint {}", chk.str());
       }
     }
+
+    if (accept && accept(matter, stepSize)) {
+      return true;
+    }
   }
 
   if (iteration == 0) {
@@ -543,4 +547,29 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
     }
   }
   return objf->isConverged();
+}
+
+} // namespace
+
+bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
+                                bool quiet, bool writeMovie, bool checkpoint,
+                                std::string prefixMovie,
+                                std::string prefixCheckpoint,
+                                std::vector<readcon::ConFrame> *outFrames) {
+  return relaxMatterImpl(matter, params, quiet, writeMovie, checkpoint,
+                         std::move(prefixMovie), std::move(prefixCheckpoint),
+                         outFrames, {});
+}
+
+namespace eonc::helpers {
+bool relaxMatterAccepted(Matter &matter, const Parameters &params, bool quiet,
+                         bool writeMovie, bool checkpoint,
+                         std::string prefixMovie,
+                         std::string prefixCheckpoint,
+                         std::vector<readcon::ConFrame> *outFrames,
+                         std::function<bool(Matter &, double)> accept) {
+  return relaxMatterImpl(matter, params, quiet, writeMovie, checkpoint,
+                         std::move(prefixMovie), std::move(prefixCheckpoint),
+                         outFrames, accept);
+}
 }
