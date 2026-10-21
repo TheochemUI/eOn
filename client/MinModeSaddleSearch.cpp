@@ -735,8 +735,7 @@ bool MinModeSaddleSearch::atKnownSaddle() const {
     return false;
   }
   const double energy = matter->getPotentialEnergy();
-  const double eps =
-      params.structure_comparison_options().energy_difference;
+  const double eps = params.structure_comparison_options().energy_difference;
   for (size_t k = 0; k < knownSaddleEnergies_.size(); ++k) {
     if (std::abs(energy - knownSaddleEnergies_[k]) > eps) {
       continue;
