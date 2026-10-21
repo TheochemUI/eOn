@@ -59,11 +59,14 @@ than kT doubles kT. A cluster with more than one element
 and `swap_probability` left at 0 swaps elements with probability one half.
 `jump_steps` left at 0 takes five steps when a jump fires.
 
-A cluster made only of water, each oxygen within 1.35 Å of two hydrogens, is
-moved as rigid bodies: the whole molecule is translated and rotated, and the
-quench varies the center of mass and the angle-axis rotation. Molecules that
-would sit on top of each other are pushed apart before the quench. Any other
-geometry keeps the Cartesian displacement.
+A cluster made only of oxygen and hydrogen, two hydrogens for each oxygen, is
+moved as rigid bodies when every oxygen can be paired with two hydrogens
+inside 1.6 Å. The pair is the one whose bond lengths sit nearest 0.9572 Å and
+whose angle sits nearest 104.52 degrees, so a contact shorter than a bond
+does not take a hydrogen from another molecule. The whole molecule is
+translated and rotated, and the quench varies the center of mass and the
+angle-axis rotation. Molecules that would sit on top of each other are pushed
+apart before the quench. Any other geometry keeps the Cartesian displacement.
 
 ## Configuration
 

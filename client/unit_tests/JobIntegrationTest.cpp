@@ -1425,6 +1425,63 @@ TEST_CASE("Basin hopping rigid move keeps bond lengths and separates clashes",
   REQUIRE(closest >= 1.6 - 1.0e-5);
 }
 
+TEST_CASE("Basin hopping water pairing keeps a bond that is longer than a contact",
+          "[job][basin_hopping][unit]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  eonc::Runtime runtime;
+  Matter matter(pot, params);
+  matter.resize(6);
+  matter.setCell(40.0 * Matrix3d::Identity());
+  matter.setPeriodic(false);
+  const long z[6] = {8, 1, 1, 8, 1, 1};
+  for (long atom = 0; atom < 6; ++atom) {
+    matter.setAtomicNr(atom, z[atom]);
+  }
+  // Molecule A at the origin. Molecule B sits so one of its hydrogens is
+  // closer to oxygen A than that hydrogen is to its own oxygen.
+  matter.setPosition(0, 0, 0.0);
+  matter.setPosition(0, 1, 0.0);
+  matter.setPosition(0, 2, 0.0);
+  matter.setPosition(1, 0, 0.0);
+  matter.setPosition(1, 1, 0.9572);
+  matter.setPosition(1, 2, 0.0);
+  matter.setPosition(2, 0, 0.0);
+  matter.setPosition(2, 1, -0.239987);
+  matter.setPosition(2, 2, 0.926627);
+  matter.setPosition(3, 0, 1.7);
+  matter.setPosition(3, 1, 0.0);
+  matter.setPosition(3, 2, 0.0);
+  matter.setPosition(4, 0, 0.7428);
+  matter.setPosition(4, 1, 0.0);
+  matter.setPosition(4, 2, 0.0);
+  matter.setPosition(5, 0, 1.7);
+  matter.setPosition(5, 1, 0.926627);
+  matter.setPosition(5, 2, 0.239987);
+
+  auto owned = std::make_unique<Parameters>(params);
+  BasinHoppingJob job(std::move(owned), runtime);
+  eonc::BasinHoppingDisplaceAccess::copyCurrent(job, matter);
+  REQUIRE(eonc::BasinHoppingDisplaceAccess::prepareWater(job));
+  const double contact =
+      (matter.getPositions().row(0) - matter.getPositions().row(4)).norm();
+  const double bond =
+      (matter.getPositions().row(3) - matter.getPositions().row(4)).norm();
+  REQUIRE(contact < bond);
+  eonc::rng::random(19);
+  eonc::BasinHoppingDisplaceAccess::moveRigid(job, 0.3, 0.4);
+  const AtomMatrix after = eonc::BasinHoppingDisplaceAccess::positions(job);
+  auto distance = [&after](long a, long b) {
+    return (after.row(a) - after.row(b)).norm();
+  };
+  REQUIRE(distance(0, 1) == Catch::Approx(0.9572).margin(1.0e-6));
+  REQUIRE(distance(0, 2) == Catch::Approx(0.9572).margin(1.0e-4));
+  REQUIRE(distance(3, 4) == Catch::Approx(bond).margin(1.0e-8));
+  REQUIRE(distance(3, 5) == Catch::Approx(0.9572).margin(1.0e-4));
+}
+
 TEST_CASE_METHOD(JobIntegrationFixture,
                  "BasinHoppingJob stock defaults quench a Lennard-Jones cluster",
                  "[job][basin_hopping][integration]") {

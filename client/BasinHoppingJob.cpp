@@ -531,42 +531,90 @@ bool BasinHoppingJob::prepareRigidWater() {
   if (oxygens.empty() || hydrogens.size() != oxygens.size() * 2) {
     return false;
   }
-  std::vector<char> used(hydrogens.size(), 0);
   const AtomMatrix pos = current->getPositions();
-  constexpr double kBond = 1.35;
+  // A contact can sit closer than a real O-H bond. Pair by water geometry:
+  // both distances near 0.9572 Å and the angle near 104.52 degrees.
+  constexpr double kRoh = 0.9572;
+  constexpr double kTheta = 104.52 * M_PI / 180.0;
+  constexpr double kCut = 1.6;
+  constexpr double kAngleWeight = 0.05;
+  struct Candidate {
+    double cost;
+    long oxygen;
+    long first;
+    long second;
+  };
+  std::vector<Candidate> candidates;
+  candidates.reserve(oxygens.size() * hydrogens.size() * hydrogens.size() / 2);
   for (long oxygen : oxygens) {
-    int first = -1;
-    int second = -1;
-    double firstDist = kBond;
-    double secondDist = kBond;
-    const Vector3d ro(pos(oxygen, 0), pos(oxygen, 1), pos(oxygen, 2));
-    for (size_t h = 0; h < hydrogens.size(); ++h) {
-      if (used[h]) {
+    const Vector3d origin(pos(oxygen, 0), pos(oxygen, 1), pos(oxygen, 2));
+    for (size_t left = 0; left < hydrogens.size(); ++left) {
+      const long h1 = hydrogens[left];
+      const Vector3d bond1(pos(h1, 0) - origin[0], pos(h1, 1) - origin[1],
+                           pos(h1, 2) - origin[2]);
+      const double d1 = bond1.norm();
+      if (!(d1 > 1.0e-8) || d1 >= kCut) {
         continue;
       }
-      const long hydrogen = hydrogens[h];
-      const Vector3d rh(pos(hydrogen, 0), pos(hydrogen, 1), pos(hydrogen, 2));
-      const double dist = (rh - ro).norm();
-      if (dist < firstDist) {
-        second = first;
-        secondDist = firstDist;
-        first = static_cast<int>(h);
-        firstDist = dist;
-      } else if (dist < secondDist) {
-        second = static_cast<int>(h);
-        secondDist = dist;
+      for (size_t right = left + 1; right < hydrogens.size(); ++right) {
+        const long h2 = hydrogens[right];
+        const Vector3d bond2(pos(h2, 0) - origin[0], pos(h2, 1) - origin[1],
+                             pos(h2, 2) - origin[2]);
+        const double d2 = bond2.norm();
+        if (!(d2 > 1.0e-8) || d2 >= kCut) {
+          continue;
+        }
+        const double cosine = std::clamp(bond1.dot(bond2) / (d1 * d2), -1.0, 1.0);
+        const double angle = std::acos(cosine);
+        const double cost = (d1 - kRoh) * (d1 - kRoh) + (d2 - kRoh) * (d2 - kRoh) +
+                            kAngleWeight * (angle - kTheta) * (angle - kTheta);
+        const long first = std::min(h1, h2);
+        const long second = std::max(h1, h2);
+        candidates.push_back(Candidate{cost, oxygen, first, second});
       }
     }
-    if (first < 0 || second < 0) {
-      rigidBodies_.clear();
-      return false;
+  }
+  std::sort(candidates.begin(), candidates.end(),
+            [](const Candidate &left, const Candidate &right) {
+              if (left.cost != right.cost) {
+                return left.cost < right.cost;
+              }
+              if (left.oxygen != right.oxygen) {
+                return left.oxygen < right.oxygen;
+              }
+              if (left.first != right.first) {
+                return left.first < right.first;
+              }
+              return left.second < right.second;
+            });
+  std::vector<char> oxygenUsed(static_cast<size_t>(nAtoms), 0);
+  std::vector<char> hydrogenUsed(static_cast<size_t>(nAtoms), 0);
+  std::vector<std::array<long, 2>> chosen(static_cast<size_t>(nAtoms));
+  size_t paired = 0;
+  for (const Candidate &candidate : candidates) {
+    if (oxygenUsed[static_cast<size_t>(candidate.oxygen)] ||
+        hydrogenUsed[static_cast<size_t>(candidate.first)] ||
+        hydrogenUsed[static_cast<size_t>(candidate.second)]) {
+      continue;
     }
-    used[static_cast<size_t>(first)] = 1;
-    used[static_cast<size_t>(second)] = 1;
+    oxygenUsed[static_cast<size_t>(candidate.oxygen)] = 1;
+    hydrogenUsed[static_cast<size_t>(candidate.first)] = 1;
+    hydrogenUsed[static_cast<size_t>(candidate.second)] = 1;
+    chosen[static_cast<size_t>(candidate.oxygen)] = {candidate.first, candidate.second};
+    paired++;
+    if (paired == oxygens.size()) {
+      break;
+    }
+  }
+  if (paired != oxygens.size()) {
+    rigidBodies_.clear();
+    return false;
+  }
+  for (long oxygen : oxygens) {
     RigidBody body;
     body.atom[0] = oxygen;
-    body.atom[1] = hydrogens[static_cast<size_t>(first)];
-    body.atom[2] = hydrogens[static_cast<size_t>(second)];
+    body.atom[1] = chosen[static_cast<size_t>(oxygen)][0];
+    body.atom[2] = chosen[static_cast<size_t>(oxygen)][1];
     rigidBodies_.push_back(body);
   }
   rigidWater_ = rigidBodies_.size() == oxygens.size();
