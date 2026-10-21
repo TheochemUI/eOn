@@ -133,6 +133,10 @@ public:
     return job.temperature_;
   }
 
+  static void seedRigid(BasinHoppingJob &job, double energy) {
+    job.seedRigidTemperature(energy);
+  }
+
   static double lift(BasinHoppingJob &job, double deltaE) {
     job.liftTemperature(deltaE);
     return job.temperature_;
@@ -1400,6 +1404,12 @@ TEST_CASE("Basin hopping rigid move keeps bond lengths and separates clashes",
   BasinHoppingJob job(std::move(owned), runtime);
   eonc::BasinHoppingDisplaceAccess::copyCurrent(job, matter);
   REQUIRE(eonc::BasinHoppingDisplaceAccess::prepareWater(job));
+  eonc::BasinHoppingDisplaceAccess::setStock(job, true);
+  REQUIRE(eonc::BasinHoppingDisplaceAccess::swapProbability(job, {1, 8}) ==
+          Catch::Approx(0.0));
+  eonc::BasinHoppingDisplaceAccess::seedRigid(job, -400.0);
+  REQUIRE(eonc::BasinHoppingDisplaceAccess::temperature(job) * 8.6173324e-5 ==
+          Catch::Approx(6.0).margin(1.0e-6));
 
   auto bond = [](const AtomMatrix &pos, long a, long b) {
     return (pos.row(a) - pos.row(b)).norm();

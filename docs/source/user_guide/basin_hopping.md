@@ -57,6 +57,7 @@ short step raises it, so one temperature setting can search a surface whose
 energy unit is not kelvin. A rejected hop whose gap is still much larger
 than kT doubles kT. A cluster with more than one element
 and `swap_probability` left at 0 swaps elements with probability one half.
+A rigid water cluster does not swap, so each hydrogen stays on its oxygen.
 `jump_steps` left at 0 takes five steps when a jump fires.
 
 A cluster made only of oxygen and hydrogen, two hydrogens for each oxygen, is
@@ -64,9 +65,13 @@ moved as rigid bodies when every oxygen can be paired with two hydrogens
 inside 1.6 Å. The pair is the one whose bond lengths sit nearest 0.9572 Å and
 whose angle sits nearest 104.52 degrees, so a contact shorter than a bond
 does not take a hydrogen from another molecule. The whole molecule is
-translated and rotated, and the quench varies the center of mass and the
-angle-axis rotation. Molecules that would sit on top of each other are pushed
-apart before the quench. Any other geometry keeps the Cartesian displacement.
+translated by the configured displacement and rotated by 0.9 radians, and
+the quench varies the center of mass and the angle-axis rotation. The Monte
+Carlo temperature is seeded from the depth of the quenched well and stays
+there while hops are still being accepted. It rises only when acceptance
+falls below the target. Molecules that would sit on top of
+each other are pushed apart before the quench. Any other geometry keeps the
+Cartesian displacement.
 
 ## Configuration
 

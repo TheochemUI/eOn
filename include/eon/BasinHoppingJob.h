@@ -58,6 +58,8 @@ private:
   bool quenchCartesian(Matter &matter, bool wantTight, double bestEnergy);
   bool quenchRigid(Matter &matter, bool wantTight, double bestEnergy);
   void adaptStockStep(double &step, int recentAccept, int period);
+  void adaptRigidStep(double &step, int recentAccept, int period);
+  void seedRigidTemperature(double energy);
   void liftTemperature(double deltaE);
   [[nodiscard]] double hopTemperature() const;
   [[nodiscard]] double swapProbability(const std::vector<long> &elements) const;
@@ -81,6 +83,8 @@ private:
   double angularDisplacement_{0.5};
   double initialDisplacement_{0.5};
   double initialAngular_{0.5};
+  /// kT seeded from the quenched well of a rigid water cluster.
+  double rigidScale_{0.0};
   std::vector<RigidBody> rigidBodies_;
 
   std::vector<std::shared_ptr<Matter>> uniqueStructures;

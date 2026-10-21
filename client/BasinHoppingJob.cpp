@@ -96,6 +96,12 @@ std::vector<std::string> BasinHoppingJob::run() {
   angularDisplacement_ = initialAngular_;
   if (stock_) {
     prepareRigidWater();
+    if (rigidWater_) {
+      // Translation uses the configured displacement. A molecule also
+      // needs a turn of about a radian; half a radian barely reorients it.
+      initialAngular_ = 0.9;
+      angularDisplacement_ = initialAngular_;
+    }
     if (!rigidWater_ && !current->getPeriodic()) {
       bool fixed = false;
       for (long i = 0; i < current->numberOfAtoms(); ++i) {
@@ -116,6 +122,9 @@ std::vector<std::string> BasinHoppingJob::run() {
 
   double currentEnergy = current->getPotentialEnergy();
   double minimumEnergy = currentEnergy;
+  if (stock_ && rigidWater_) {
+    seedRigidTemperature(minimumEnergy);
+  }
 
   auto minimumEnergyStructure = std::make_shared<Matter>(pot, params);
   *minimumEnergyStructure = *current;
@@ -211,6 +220,9 @@ std::vector<std::string> BasinHoppingJob::run() {
 
       if (currentEnergy < minimumEnergy) {
         minimumEnergy = currentEnergy;
+        if (rigidWater_) {
+          seedRigidTemperature(minimumEnergy);
+        }
         *minimumEnergyStructure = *minTrial;
         if (!eonc::io::io_ok(minimumEnergyStructure->matter2con("min.con"))) {
           QUILL_LOG_WARNING(log, "Failed to write min.con");
@@ -304,6 +316,9 @@ std::vector<std::string> BasinHoppingJob::run() {
           currentEnergy = current->getPotentialEnergy();
           if (std::isfinite(currentEnergy) && currentEnergy < minimumEnergy) {
             minimumEnergy = currentEnergy;
+            if (rigidWater_) {
+              seedRigidTemperature(minimumEnergy);
+            }
             *minimumEnergyStructure = *current;
           }
         }
@@ -315,7 +330,9 @@ std::vector<std::string> BasinHoppingJob::run() {
     // A zero period is not an interval; the modulo would divide by zero.
     if (nadjust != 0 && (step + 1) % nadjust == 0 &&
         params.basin_hopping_options().adjust_displacement) {
-      if (stock_) {
+      if (stock_ && rigidWater_) {
+        adaptRigidStep(curDisplacement, recentAccept, nadjust);
+      } else if (stock_) {
         adaptStockStep(curDisplacement, recentAccept, nadjust);
       } else {
         double recentRatio =
@@ -821,6 +838,60 @@ bool BasinHoppingJob::quenchRigid(Matter &matter, bool wantTight,
   return quenchIsUsable(matter, converged);
 }
 
+void BasinHoppingJob::seedRigidTemperature(double energy) {
+  const double kB = params.constants().kB;
+  const double depth = std::abs(energy);
+  if (!(kB > 0.0) || !(depth > 1.0) || !std::isfinite(depth)) {
+    return;
+  }
+  const double seeded = 0.015 * depth;
+  if (rigidScale_ == 0.0) {
+    rigidScale_ = seeded;
+    temperature_ = std::min(seeded / kB, 1.0e8);
+    // The rigid-body schedule owns the temperature. A rejected hop must
+    // not double it on top of that schedule.
+    temperatureHeld_ = true;
+    return;
+  }
+  if (seeded > rigidScale_) {
+    rigidScale_ = seeded;
+  }
+}
+
+void BasinHoppingJob::adaptRigidStep(double &step, int recentAccept,
+                                     int period) {
+  if (period <= 0 || !(rigidScale_ > 0.0)) {
+    adaptStockStep(step, recentAccept, period);
+    return;
+  }
+  const double ratio =
+      static_cast<double>(recentAccept) / static_cast<double>(period);
+  const double target = params.basin_hopping_options().target_ratio;
+  const double kB = params.constants().kB;
+  const double stepAim =
+      std::min(1.0, std::max(initialDisplacement_, 1.0e-6));
+  const double angAim = std::min(1.5, std::max(initialAngular_, 1.0e-6));
+  // The translational and rotational amplitudes stay at the rigid-body
+  // step. Acceptance is carried by the temperature, inside a band set
+  // by the quenched well.
+  step = stepAim;
+  angularDisplacement_ = angAim;
+  if (!(kB > 0.0)) {
+    return;
+  }
+  // High acceptance on a rigid cluster is a run of downhill quenches,
+  // not a temperature that is too high. Cooling through that run
+  // freezes the search above the global minimum. Hold kT at the
+  // well-depth seed, and raise it only when acceptance falls short.
+  const double capKT = std::max(4.0 * rigidScale_, rigidScale_);
+  double kT = rigidScale_;
+  if (ratio + 1.0e-12 < target) {
+    kT = std::min(std::max(kB * temperature_ * 1.5, rigidScale_), capKT);
+  }
+  temperature_ = std::min(kT / kB, 1.0e8);
+  temperatureHeld_ = true;
+}
+
 void BasinHoppingJob::adaptStockStep(double &step, int recentAccept,
                                      int period) {
   if (period <= 0) {
@@ -891,6 +962,11 @@ double BasinHoppingJob::hopTemperature() const {
 }
 
 double BasinHoppingJob::swapProbability(const std::vector<long> &elements) const {
+  // Oxygen and hydrogen are two elements, but exchanging them pulls a
+  // molecule apart. Binary clusters are the ones that swap.
+  if (rigidWater_) {
+    return 0.0;
+  }
   const double configured = params.basin_hopping_options().swap_probability;
   if (stock_ && configured == 0.0 && elements.size() > 1) {
     return 0.5;
