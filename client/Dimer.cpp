@@ -153,9 +153,9 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
           (rotForce1 - rotForce2) / params.dimer_options().rotation_angle;
       double forceDimer = (rotForce1 + rotForce2) / 2.0;
 
-      rotationAngle = atanRatioOrHalfPi(2.0 * forceDimer, rotForceChange) /
-                          2.0 -
-                      params.dimer_options().rotation_angle / 2.0;
+      rotationAngle =
+          atanRatioOrHalfPi(2.0 * forceDimer, rotForceChange) / 2.0 -
+          params.dimer_options().rotation_angle / 2.0;
 
       if (rotForceChange < 0) {
         rotationAngle += eonc::helpers::pi / 2.0;
