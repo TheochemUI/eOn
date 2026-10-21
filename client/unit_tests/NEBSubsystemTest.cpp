@@ -216,6 +216,9 @@ TEST_CASE("OCINEB walkHelped scores the walked image", "[neb][ocineb]") {
   REQUIRE_FALSE(OCINEBController::walkHelped(3.8373, 2.3855, 0));
   // Bicyclobutane: alignment reject, walked force rose.
   REQUIRE_FALSE(OCINEBController::walkHelped(3.5028, 1.4958, -1));
+  // Alignment reject, walked force fell (status -1). The linear
+  // penalty runs; this is not a successful walk.
+  REQUIRE_FALSE(OCINEBController::walkHelped(1.1455, 12.5317, -1));
   // Positive curvature never counts as help.
   REQUIRE_FALSE(OCINEBController::walkHelped(0.01, 2.0, -2));
   REQUIRE_FALSE(OCINEBController::walkHelped(2.3855, 2.3855, 0));
