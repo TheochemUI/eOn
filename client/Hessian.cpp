@@ -255,6 +255,9 @@ MobileColoring buildMobileColoring(const Matter &matter, const VectorXi &atoms,
 
   // Square of the cutoff graph on the mobile set: atoms whose closed
   // neighborhoods intersect cannot move in the same finite-difference.
+  // Each adjacency row is deduplicated as it is filled. Pushing every
+  // toucher pair and sorting afterwards stores O(sum t_k^2) integers,
+  // which is the whole cell at a many-body range.
   std::vector<std::vector<int>> touchers(static_cast<std::size_t>(nMobile));
   for (int ia = 0; ia < nMobile; ++ia) {
     for (int k : out.closed[static_cast<std::size_t>(ia)]) {
@@ -262,18 +265,23 @@ MobileColoring buildMobileColoring(const Matter &matter, const VectorXi &atoms,
     }
   }
   std::vector<std::vector<int>> adj(static_cast<std::size_t>(nMobile));
-  for (int k = 0; k < nMobile; ++k) {
-    const auto &t = touchers[static_cast<std::size_t>(k)];
-    for (size_t a = 0; a < t.size(); ++a) {
-      for (size_t b = a + 1; b < t.size(); ++b) {
-        adj[static_cast<std::size_t>(t[a])].push_back(t[b]);
-        adj[static_cast<std::size_t>(t[b])].push_back(t[a]);
+  std::vector<int> seen(static_cast<std::size_t>(nMobile), 0);
+  int epoch = 0;
+  for (int ia = 0; ia < nMobile; ++ia) {
+    ++epoch;
+    auto &row = adj[static_cast<std::size_t>(ia)];
+    for (int k : out.closed[static_cast<std::size_t>(ia)]) {
+      for (int j : touchers[static_cast<std::size_t>(k)]) {
+        if (j == ia) {
+          continue;
+        }
+        if (seen[static_cast<std::size_t>(j)] == epoch) {
+          continue;
+        }
+        seen[static_cast<std::size_t>(j)] = epoch;
+        row.push_back(j);
       }
     }
-  }
-  for (auto &row : adj) {
-    std::sort(row.begin(), row.end());
-    row.erase(std::unique(row.begin(), row.end()), row.end());
   }
   out.color = greedyColorCutoffGraph(adj);
   return out;
@@ -375,13 +383,14 @@ bool Hessian::calculate() {
   }
   const bool netCoupled =
       parameters.main_options().removeNetForce && nAtoms > 1 && !anyFixed;
-  double cutoff = 0.0;
+  // hessianRange is the distance past which every block is exactly
+  // zero. An interaction cutoff is not that distance.
+  double range = 0.0;
   if (matter->getPotential()) {
-    cutoff = matter->getPotential()->finiteCutoff();
+    range = matter->getPotential()->hessianRange();
   }
-  if (!netCoupled && ckptPath.empty() && cutoff > 0.0 &&
-      std::isfinite(cutoff)) {
-    if (calculateColored(cutoff, dr, scheme)) {
+  if (!netCoupled && ckptPath.empty() && range > 0.0 && std::isfinite(range)) {
+    if (calculateColored(range, dr, scheme)) {
       return true;
     }
     hessian.setZero();
@@ -489,11 +498,11 @@ bool Hessian::calculateBatched(double dr, FdScheme scheme) {
   return finalizeHessian(size);
 }
 
-bool Hessian::calculateColored(double cutoff, double dr, FdScheme scheme) {
+bool Hessian::calculateColored(double range, double dr, FdScheme scheme) {
   const int nAtoms = static_cast<int>(matter->numberOfAtoms());
   const int nMobile = static_cast<int>(atoms.rows());
   const int size = nMobile * 3;
-  const MobileColoring coloring = buildMobileColoring(*matter, atoms, cutoff);
+  const MobileColoring coloring = buildMobileColoring(*matter, atoms, range);
   if (static_cast<int>(coloring.color.size()) != nMobile ||
       static_cast<int>(coloring.closed.size()) != nMobile) {
     return false;
@@ -509,8 +518,14 @@ bool Hessian::calculateColored(double cutoff, double dr, FdScheme scheme) {
   if (nColors <= 0) {
     return false;
   }
+  // One color per mobile atom does not reduce the force count, and this
+  // loop does not batch. Leave the matrix to the column path.
+  if (nColors >= nMobile) {
+    return false;
+  }
   QUILL_LOG_DEBUG(log,
-                  "[Hessian] cutoff coloring: {} colors for {} mobile atoms\n",
+                  "[Hessian] hessian-range coloring: {} colors for {} mobile "
+                  "atoms\n",
                   nColors, nMobile);
 
   std::vector<std::vector<int>> members(static_cast<std::size_t>(nColors));

@@ -67,8 +67,11 @@ struct ScanOptions {
 
 struct Plane {
   double s{0.0};
-  /// dF/ds = -<n . M^(-1/2) f_centroid>, eV / (amu^0.5 Angstrom), and its
-  /// block standard error.
+  /// dF/ds = -<a . f_centroid> / |a|^2, a = M^(1/2) n the plane's
+  /// Cartesian normal, eV / (amu^0.5 Angstrom), and its block standard
+  /// error. Any u with a . u = 1, M^(-1/2) n among them, has the same mean,
+  /// since the force within the plane averages to zero; the normal
+  /// component is the estimator.
   double meanForce{0.0};
   double meanForceError{0.0};
   /// F(s) - F(s_0) by the trapezoid rule over the planes, eV, and its
@@ -85,7 +88,9 @@ struct Plane {
 
 /// Samples one ring per plane and integrates the mean force. One ring is
 /// carried from plane to plane: its centroid moves to the next seed and the
-/// internal modes keep their state.
+/// internal modes keep their state. A step is one force batch over the
+/// beads; moving to a plane costs one more, so a plane takes
+/// equilibration + production + 1.
 std::vector<Plane> scan(Potential &pot, const Coordinate &coordinate,
                         const ScanOptions &options);
 
@@ -94,9 +99,10 @@ std::vector<Plane> scan(Potential &pot, const Coordinate &coordinate,
 void integrate(std::vector<Plane> &planes);
 
 struct Rate {
-  /// Index of the plane with the lowest F, the reactant.
+  /// Index of the plane with the lowest F before s*, the reactant.
   long reactant{0};
-  /// F(s*) - F(reactant), eV, and its error.
+  /// F(s*) - F(reactant), eV, and its error; not positive when s* is no
+  /// barrier on the centroid free energy.
   double barrier{0.0};
   double barrierError{0.0};
   /// ln k with k in inverse eOn time units (sqrt(amu Angstrom^2 / eV)),
@@ -151,9 +157,11 @@ struct Recrossing {
 };
 
 /// Bennett-Chandler transmission at s*: parents sampled with the centroid
-/// held on the plane, children with Maxwell-Boltzmann ring momenta at
-/// beta / P and the plane released, propagated by RPMD. The centroid
-/// velocity along s is sdot = n . M^(1/2) v_centroid.
+/// held on the plane under PILE, whatever ring.thermostat says, children
+/// with Maxwell-Boltzmann ring momenta at beta / P and the plane released,
+/// propagated by RPMD. The centroid velocity along s is
+/// sdot = n . M^(1/2) v_centroid. Each child run costs steps + 1 force
+/// batches: the first force at the parent's beads, then one per step.
 Recrossing recrossing(Potential &pot, const Coordinate &coordinate,
                       const RecrossingOptions &options);
 

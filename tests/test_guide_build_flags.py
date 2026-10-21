@@ -57,7 +57,7 @@ def test_homepage_command_starts_from_pos_con():
     assert "The working directory needs pos.con." in page
     assert "eonclient # reads config.ini and runs" in page
     assert "python -m eon.server" in page
-    assert "rgpot>=3.2.0" in page
+    assert "rgpot>=3.5.1" in page
 
 
 def test_install_page_records_the_pixi_version():

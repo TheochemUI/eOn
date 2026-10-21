@@ -1,0 +1,1 @@
+`Potential::finiteCutoff()` is deprecated. Override `hessianRange()` with the distance beyond which every Hessian block is zero. The default `hessianRange()` returns `finiteCutoff()`, so an existing override still colors the finite-difference Hessian.

@@ -84,3 +84,24 @@ def test_an_import_already_beside_the_engine_is_still_walked(tmp_path: Path):
     (torch_dir / "uv.dll").write_bytes(b"torch-uv")
     mod.stage(engine, [torch_dir], tmp_path / "stamp.txt")
     assert (tmp_path / "uv.dll").read_bytes() == b"torch-uv"
+
+
+def test_pick_source_skips_a_dll_that_lacks_the_symbol(tmp_path: Path):
+    mod = _mod()
+    bad_dir = tmp_path / "pixi"
+    good_dir = tmp_path / "torch"
+    bad_dir.mkdir()
+    good_dir.mkdir()
+    bad = bad_dir / "c10.dll"
+    good = good_dir / "c10.dll"
+    bad.write_bytes(b"MZ-incomplete")
+    good.write_bytes(b"MZ-complete")
+
+    def fake_missing(path: Path, needed: list[str]) -> list[str]:
+        if path == bad:
+            return ["MissingSym"]
+        return []
+
+    mod._missing = fake_missing
+    assert mod.pick_source("c10.dll", ["MissingSym"], [bad_dir, good_dir]) == good
+    assert mod.pick_source("c10.dll", ["MissingSym"], [bad_dir]) == bad
