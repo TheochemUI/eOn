@@ -1,0 +1,1 @@
+Stock basin hopping on a single-element cluster seeds the temperature from the energy per atom. After the best energy stops improving, steps replace the Cartesian kick with a point-group projection or a rotation of the outer shell. A quench that is still far above the best minimum stops early. A free cluster stored in a bounding cell is treated as isolated for those moves.

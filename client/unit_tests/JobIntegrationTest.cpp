@@ -141,6 +141,10 @@ public:
     job.liftTemperature(deltaE);
     return job.temperature_;
   }
+
+  static bool project(BasinHoppingJob &job, AtomMatrix &positions) {
+    return job.projectSymmetry(positions);
+  }
 };
 } // namespace eonc
 
@@ -1283,6 +1287,45 @@ max_iterations = 200
   REQUIRE(std::stod(results["total_normal_displacement_steps"]) ==
           Catch::Approx(1.0));
   REQUIRE(std::stod(results["total_jump_steps"]) == Catch::Approx(0.0));
+}
+
+TEST_CASE("Basin hopping symmetry projection repairs a broken center",
+          "[job][basin_hopping][unit]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  eonc::Runtime runtime;
+  Matter matter(pot, params);
+  matter.resize(8);
+  int cursor = 0;
+  for (double x : {-1.0, 1.0}) {
+    for (double y : {-1.0, 1.0}) {
+      for (double z : {-1.0, 1.0}) {
+        matter.setPosition(cursor, 0, x);
+        matter.setPosition(cursor, 1, y);
+        matter.setPosition(cursor, 2, z);
+        cursor++;
+      }
+    }
+  }
+  matter.setPosition(0, 0, 1.7);
+  matter.setPosition(0, 1, 0.8);
+  matter.setPosition(0, 2, 1.3);
+  auto owned = std::make_unique<Parameters>(params);
+  BasinHoppingJob job(std::move(owned), runtime);
+  AtomMatrix broken = matter.getPositions();
+  REQUIRE(eonc::BasinHoppingDisplaceAccess::project(job, broken));
+  double shift = 0.0;
+  const AtomMatrix original = matter.getPositions();
+  for (int atom = 0; atom < 8; ++atom) {
+    shift += (broken.row(atom) - original.row(atom)).squaredNorm();
+  }
+  REQUIRE(std::sqrt(shift / 8.0) >= 0.08);
+
+  AtomMatrix symmetric(4, 3);
+  symmetric << 1.0, 0.2, 0.0, -1.0, -0.2, 0.0, 0.0, 1.0, 0.3, 0.0, -1.0, -0.3;
+  REQUIRE_FALSE(eonc::BasinHoppingDisplaceAccess::project(job, symmetric));
 }
 
 TEST_CASE("Basin hopping angle-axis Jacobian matches a central difference",

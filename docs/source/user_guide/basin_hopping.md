@@ -47,15 +47,21 @@ for this job. That quench uses energy acceptance, a memory of at least 20,
 automatic scaling, and damped curvature. An isolated cluster with no fixed
 atoms projects out rigid translation and rotation. The convergence measure is
 the root-mean-square force, and the trial step is 0.4. Each hop takes a
-loose tolerance of 0.01 for up to 400 iterations. A hop whose energy is near
-the best, and the first quench, then takes a tolerance of 0.001 for up to 500
-iterations.
+loose tolerance of 0.01. A hop that is still far above the best minimum
+stops early. A hop whose energy is near the best, and the first quench,
+then takes a tolerance of 0.001.
 
-The step length stays near its initial value. Acceptance above the target
-at that step lowers the temperature, and acceptance below the target at a
-short step raises it, so one temperature setting can search a surface whose
-energy unit is not kelvin. A rejected hop whose gap is still much larger
-than kT doubles kT. A cluster with more than one element
+The temperature of a single-element cluster is seeded from one fifth of
+the quenched well depth per atom, which is a reduced temperature near 1
+for a Lennard-Jones cluster. The step length stays near its initial value.
+Acceptance above the target at that step lowers the temperature, and
+acceptance below the target at a short step raises it, so one temperature
+setting can search a surface whose energy unit is not kelvin. A rejected
+hop whose gap is still much larger than kT doubles kT. Once the best
+energy has not improved for several steps, a single-element cluster
+replaces some Cartesian kicks with a point-group projection or a rotation
+of the atoms outside the median radius. A free cluster kept in a bounding
+cell is still isolated for those moves. A cluster with more than one element
 and `swap_probability` left at 0 swaps elements with probability one half.
 A rigid water cluster does not swap, so each hydrogen stays on its oxygen.
 `jump_steps` left at 0 takes five steps when a jump fires.

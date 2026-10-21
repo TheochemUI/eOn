@@ -19,6 +19,7 @@
 #include <limits>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include "eon/BaseStructures.h"
 #include "eon/BasinHoppingJob.h"
@@ -124,6 +125,8 @@ std::vector<std::string> BasinHoppingJob::run() {
   double minimumEnergy = currentEnergy;
   if (stock_ && rigidWater_) {
     seedRigidTemperature(minimumEnergy);
+  } else if (stock_) {
+    seedAtomicTemperature(minimumEnergy);
   }
 
   auto minimumEnergyStructure = std::make_shared<Matter>(pot, params);
@@ -140,8 +143,10 @@ std::vector<std::string> BasinHoppingJob::run() {
 
   int recentAccept = 0;
   double curDisplacement = params.basin_hopping_options().displacement;
+  int stale = 0;
 
   for (int step = 0; step < nsteps; step++) {
+    const double bestBefore = minimumEnergy;
 
     // Swap or displace
     const double swapP = swapProbability(Elements);
@@ -157,6 +162,10 @@ std::vector<std::string> BasinHoppingJob::run() {
       }
       *trial = *current;
       displaceRigid(trial.get(), curDisplacement, angularDisplacement_);
+      swapMove = false;
+      *minTrial = *trial;
+    } else if (step < params.basin_hopping_options().steps &&
+               stockSymmetryStep(stale)) {
       swapMove = false;
       *minTrial = *trial;
     } else {
@@ -346,6 +355,11 @@ std::vector<std::string> BasinHoppingJob::run() {
 
       recentAccept = 0;
     }
+    if (minimumEnergy < bestBefore - 1.0e-12) {
+      stale = 0;
+    } else {
+      stale++;
+    }
   }
   /* Save Results */
 
@@ -382,6 +396,8 @@ std::vector<std::string> BasinHoppingJob::run() {
     if (stock_) {
       env.extras.emplace_back("stock_temperature", temperature_);
       env.extras.emplace_back("stock_displacement", curDisplacement);
+      env.extras.emplace_back("total_symmetry_steps",
+                              static_cast<double>(symmetry_count));
     }
     env.writeResultsDat(resultsFilename);
     returnFiles.push_back(resultsFilename);
@@ -789,9 +805,21 @@ bool BasinHoppingJob::quenchCartesian(Matter &matter, bool wantTight,
   };
   // Loose RMS first, enough iterations to finish a cluster quench.
   // A tight RMS follows only for a hop that might improve the best
-  // energy, so the other hops stay cheap.
-  bool converged = stage(0.01, 400);
+  // energy, so the other hops stay cheap. A geometry that is still
+  // far above every bound minimum after the first block is not a basin
+  // worth finishing.
+  bool converged = stage(0.01, 60);
   double energy = matter.getPotentialEnergy();
+  if (!wantTight && std::isfinite(bestEnergy) && std::isfinite(energy) &&
+      energy > bestEnergy + 100.0) {
+    opt.converged_force = savedTol;
+    opt.max_iterations = savedIter;
+    return false;
+  }
+  if (!converged) {
+    converged = stage(0.01, 340);
+    energy = matter.getPotentialEnergy();
+  }
   if (wantTight || energyWorthTightening(energy, bestEnergy)) {
     converged = stage(1.0e-3, 500);
     energy = matter.getPotentialEnergy();
@@ -836,6 +864,21 @@ bool BasinHoppingJob::quenchRigid(Matter &matter, bool wantTight,
   opt.max_iterations = savedIter;
   opt.lbfgs.project_rigid = savedProject;
   return quenchIsUsable(matter, converged);
+}
+
+void BasinHoppingJob::seedAtomicTemperature(double energy) {
+  const double kB = params.constants().kB;
+  const double count = static_cast<double>(current->numberOfAtoms());
+  const double depth = std::abs(energy);
+  if (!(kB > 0.0) || !(count > 0.0) || !(depth > 1.0) ||
+      !std::isfinite(depth)) {
+    return;
+  }
+  // One fifth of the well depth per atom. On a Lennard-Jones cluster
+  // that is a reduced temperature near 1, so uphill hops between minima
+  // are accepted from the first step.
+  const double kT = 0.2 * depth / count;
+  temperature_ = std::min(kT / kB, 1.0e8);
 }
 
 void BasinHoppingJob::seedRigidTemperature(double energy) {
@@ -1049,6 +1092,317 @@ double BasinHoppingJob::metropolisProbability(double de, double kB,
     return 0.0;
   }
   return std::exp(-de / (kB * temperature));
+}
+
+namespace {
+
+// Column assigned to each row, minimizing the sum of an n-by-n cost.
+std::vector<int> hungarianAssign(const std::vector<double> &cost, int n) {
+  constexpr double kInf = 1.0e100;
+  std::vector<double> u(static_cast<size_t>(n + 1), 0.0);
+  std::vector<double> v(static_cast<size_t>(n + 1), 0.0);
+  std::vector<int> parent(static_cast<size_t>(n + 1), 0);
+  std::vector<int> way(static_cast<size_t>(n + 1), 0);
+  for (int row = 1; row <= n; ++row) {
+    parent[0] = row;
+    int column = 0;
+    std::vector<double> slack(static_cast<size_t>(n + 1), kInf);
+    std::vector<char> used(static_cast<size_t>(n + 1), 0);
+    int guard = 0;
+    do {
+      if (++guard > n * n + 5) {
+        std::vector<int> identity(static_cast<size_t>(n));
+        for (int atom = 0; atom < n; ++atom) {
+          identity[static_cast<size_t>(atom)] = atom;
+        }
+        return identity;
+      }
+      used[static_cast<size_t>(column)] = 1;
+      const int current = parent[static_cast<size_t>(column)];
+      int next = 0;
+      double delta = kInf;
+      for (int candidate = 1; candidate <= n; ++candidate) {
+        if (used[static_cast<size_t>(candidate)]) {
+          continue;
+        }
+        const double value =
+            cost[static_cast<size_t>((current - 1) * n + (candidate - 1))] -
+            u[static_cast<size_t>(current)] - v[static_cast<size_t>(candidate)];
+        if (value < slack[static_cast<size_t>(candidate)]) {
+          slack[static_cast<size_t>(candidate)] = value;
+          way[static_cast<size_t>(candidate)] = column;
+        }
+        if (slack[static_cast<size_t>(candidate)] < delta) {
+          delta = slack[static_cast<size_t>(candidate)];
+          next = candidate;
+        }
+      }
+      for (int j = 0; j <= n; ++j) {
+        if (used[static_cast<size_t>(j)]) {
+          u[static_cast<size_t>(parent[static_cast<size_t>(j)])] += delta;
+          v[static_cast<size_t>(j)] -= delta;
+        } else {
+          slack[static_cast<size_t>(j)] -= delta;
+        }
+      }
+      column = next;
+    } while (parent[static_cast<size_t>(column)] != 0);
+    do {
+      const int previous = way[static_cast<size_t>(column)];
+      parent[static_cast<size_t>(column)] = parent[static_cast<size_t>(previous)];
+      column = previous;
+    } while (column != 0);
+  }
+  std::vector<int> assign(static_cast<size_t>(n), 0);
+  for (int column = 1; column <= n; ++column) {
+    const int row = parent[static_cast<size_t>(column)];
+    if (row > 0) {
+      assign[static_cast<size_t>(row - 1)] = column - 1;
+    }
+  }
+  return assign;
+}
+
+Matrix3d rodrigues(const Vector3d &axis, double angle) {
+  const double cosine = std::cos(angle);
+  const double sine = std::sin(angle);
+  Matrix3d cross = Matrix3d::Zero();
+  cross(0, 1) = -axis[2];
+  cross(0, 2) = axis[1];
+  cross(1, 0) = axis[2];
+  cross(1, 2) = -axis[0];
+  cross(2, 0) = -axis[1];
+  cross(2, 1) = axis[0];
+  return cosine * Matrix3d::Identity() + sine * cross +
+         (1.0 - cosine) * (axis * axis.transpose());
+}
+
+} // namespace
+
+bool BasinHoppingJob::projectSymmetry(AtomMatrix &positions) const {
+  const int count = static_cast<int>(positions.rows());
+  if (count < 4 || count > 256) {
+    return false;
+  }
+  Vector3d com = positions.colwise().sum() / static_cast<double>(count);
+  std::vector<Vector3d> centered(static_cast<size_t>(count));
+  double radius = 0.0;
+  for (int atom = 0; atom < count; ++atom) {
+    centered[static_cast<size_t>(atom)] =
+        Vector3d(positions(atom, 0), positions(atom, 1), positions(atom, 2)) -
+        com;
+    radius = std::max(radius, centered[static_cast<size_t>(atom)].norm());
+  }
+  if (!(radius > 1.0e-8)) {
+    return false;
+  }
+  Matrix3d inertia = Matrix3d::Zero();
+  for (const Vector3d &point : centered) {
+    inertia += point.squaredNorm() * Matrix3d::Identity() - point * point.transpose();
+  }
+  Eigen::SelfAdjointEigenSolver<Matrix3d> axes(inertia);
+  if (axes.info() != Eigen::Success) {
+    return false;
+  }
+
+  std::vector<Matrix3d> operations;
+  operations.push_back(-Matrix3d::Identity());
+  for (int axis = 0; axis < 3; ++axis) {
+    Vector3d direction = axes.eigenvectors().col(axis);
+    if (direction.norm() < 1.0e-8) {
+      continue;
+    }
+    direction.normalize();
+    const Matrix3d outer = direction * direction.transpose();
+    operations.push_back(2.0 * outer - Matrix3d::Identity());
+    operations.push_back(Matrix3d::Identity() - 2.0 * outer);
+  }
+
+  double bestMove = std::numeric_limits<double>::infinity();
+  std::vector<Vector3d> best;
+  for (const Matrix3d &operation : operations) {
+    std::vector<Vector3d> image(static_cast<size_t>(count));
+    std::vector<double> cost(static_cast<size_t>(count * count));
+    for (int atom = 0; atom < count; ++atom) {
+      image[static_cast<size_t>(atom)] = operation * centered[static_cast<size_t>(atom)];
+    }
+    for (int left = 0; left < count; ++left) {
+      for (int right = 0; right < count; ++right) {
+        cost[static_cast<size_t>(left * count + right)] =
+            (centered[static_cast<size_t>(left)] - image[static_cast<size_t>(right)])
+                .squaredNorm();
+      }
+    }
+    const std::vector<int> partner = hungarianAssign(cost, count);
+    std::vector<Vector3d> symmetric(static_cast<size_t>(count));
+    double residual = 0.0;
+    for (int atom = 0; atom < count; ++atom) {
+      symmetric[static_cast<size_t>(atom)] =
+          0.5 * (centered[static_cast<size_t>(atom)] +
+                 image[static_cast<size_t>(partner[static_cast<size_t>(atom)])]);
+      residual += (symmetric[static_cast<size_t>(atom)] -
+                   centered[static_cast<size_t>(atom)])
+                      .squaredNorm();
+    }
+    const double rms = std::sqrt(residual / static_cast<double>(count));
+    // A projection that barely moves is the symmetry the cluster already
+    // has. One that scrambles every neighbour is not a useful proposal.
+    if (rms < 0.08 || rms > std::max(2.5, 0.75 * radius)) {
+      continue;
+    }
+    if (rms < bestMove) {
+      bestMove = rms;
+      best = std::move(symmetric);
+    }
+  }
+  if (!std::isfinite(bestMove) || best.empty()) {
+    return false;
+  }
+  for (int atom = 0; atom < count; ++atom) {
+    positions(atom, 0) = best[static_cast<size_t>(atom)][0] + com[0];
+    positions(atom, 1) = best[static_cast<size_t>(atom)][1] + com[1];
+    positions(atom, 2) = best[static_cast<size_t>(atom)][2] + com[2];
+  }
+  return true;
+}
+
+bool BasinHoppingJob::rotateOuterShell(AtomMatrix &positions) const {
+  const int count = static_cast<int>(positions.rows());
+  if (count < 4) {
+    return false;
+  }
+  Vector3d com = positions.colwise().sum() / static_cast<double>(count);
+  std::vector<Vector3d> centered(static_cast<size_t>(count));
+  std::vector<double> radius(static_cast<size_t>(count));
+  for (int atom = 0; atom < count; ++atom) {
+    centered[static_cast<size_t>(atom)] =
+        Vector3d(positions(atom, 0), positions(atom, 1), positions(atom, 2)) -
+        com;
+    radius[static_cast<size_t>(atom)] = centered[static_cast<size_t>(atom)].norm();
+  }
+  std::vector<double> ordered = radius;
+  std::sort(ordered.begin(), ordered.end());
+  const double cutoff = ordered[static_cast<size_t>(count / 2)];
+  Matrix3d inertia = Matrix3d::Zero();
+  for (const Vector3d &point : centered) {
+    inertia += point.squaredNorm() * Matrix3d::Identity() - point * point.transpose();
+  }
+  Eigen::SelfAdjointEigenSolver<Matrix3d> axes(inertia);
+  if (axes.info() != Eigen::Success) {
+    return false;
+  }
+  double residual = 0.0;
+  int moved = 0;
+  bool turned = false;
+  for (int attempt = 0; attempt < 4 && !turned; ++attempt) {
+    Vector3d direction =
+        axes.eigenvectors().col(eonc::rng::randomInt(0, 2));
+    if (direction.norm() < 1.0e-12) {
+      continue;
+    }
+    direction.normalize();
+    const int order = 2 + eonc::rng::randomInt(0, 3);
+    // A pure point-group angle maps a symmetric shell onto itself.
+    // A fraction of a turn leaves that shell and still keeps the core.
+    const double angle =
+        (2.0 * M_PI / static_cast<double>(order)) * (0.35 + 0.3 * attempt);
+    const Matrix3d turn = rodrigues(direction, angle);
+    residual = 0.0;
+    moved = 0;
+    std::vector<Vector3d> trial = centered;
+    for (int atom = 0; atom < count; ++atom) {
+      if (radius[static_cast<size_t>(atom)] + 1.0e-8 < cutoff) {
+        continue;
+      }
+      const Vector3d next = turn * trial[static_cast<size_t>(atom)];
+      residual += (next - trial[static_cast<size_t>(atom)]).squaredNorm();
+      trial[static_cast<size_t>(atom)] = next;
+      moved++;
+    }
+    if (moved == 0) {
+      continue;
+    }
+    if (std::sqrt(residual / static_cast<double>(count)) < 0.05) {
+      continue;
+    }
+    centered = std::move(trial);
+    turned = true;
+  }
+  if (!turned) {
+    return false;
+  }
+  for (int atom = 0; atom < count; ++atom) {
+    positions(atom, 0) = centered[static_cast<size_t>(atom)][0] + com[0];
+    positions(atom, 1) = centered[static_cast<size_t>(atom)][1] + com[1];
+    positions(atom, 2) = centered[static_cast<size_t>(atom)][2] + com[2];
+  }
+  return true;
+}
+
+bool BasinHoppingJob::isolatedCluster() const {
+  if (!current->getPeriodic()) {
+    return true;
+  }
+  const AtomMatrix pos = current->getPositions();
+  const long count = pos.rows();
+  if (count < 2) {
+    return false;
+  }
+  Vector3d low = pos.row(0);
+  Vector3d high = pos.row(0);
+  for (long atom = 1; atom < count; ++atom) {
+    for (int axis = 0; axis < 3; ++axis) {
+      low[axis] = std::min(low[axis], pos(atom, axis));
+      high[axis] = std::max(high[axis], pos(atom, axis));
+    }
+  }
+  const Matrix3d cell = current->getCell();
+  const double edge = std::min(cell(0, 0), std::min(cell(1, 1), cell(2, 2)));
+  // A cluster that does not reach its periodic images is free, even
+  // when the coordinate file stores a bounding cell.
+  return (high - low).maxCoeff() + 1.0 < edge;
+}
+
+bool BasinHoppingJob::stockSymmetryStep(int stale) {
+  if (!stock_ || rigidWater_ || !isolatedCluster()) {
+    return false;
+  }
+  const long atoms = current->numberOfAtoms();
+  if (atoms < 4 || atoms > 256) {
+    return false;
+  }
+  for (long atom = 0; atom < atoms; ++atom) {
+    if (current->getFixed(atom)) {
+      return false;
+    }
+  }
+  if (getElements(current.get()).size() != 1) {
+    return false;
+  }
+  // The first hops stay Cartesian. A run that has stopped improving
+  // spends most of its steps on a point-group projection or an outer
+  // shell rotation, which is what leaves a symmetric funnel.
+  if (stale < 8) {
+    return false;
+  }
+  const double chance = std::min(0.8, 0.15 * static_cast<double>(stale - 7));
+  if (eonc::rng::randomDouble(1.0) > chance) {
+    return false;
+  }
+  AtomMatrix positions = current->getPositions();
+  bool moved = projectSymmetry(positions);
+  if (!moved) {
+    moved = rotateOuterShell(positions);
+  }
+  if (!moved) {
+    return false;
+  }
+  trial->setPositions(positions);
+  eonc::geometry::pushApart(trial,
+                            params.basin_hopping_options().push_apart_distance);
+  disp_count++;
+  symmetry_count++;
+  return true;
 }
 
 AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {

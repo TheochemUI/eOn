@@ -60,11 +60,23 @@ private:
   void adaptStockStep(double &step, int recentAccept, int period);
   void adaptRigidStep(double &step, int recentAccept, int period);
   void seedRigidTemperature(double energy);
+  void seedAtomicTemperature(double energy);
   void liftTemperature(double deltaE);
   [[nodiscard]] double hopTemperature() const;
   [[nodiscard]] double swapProbability(const std::vector<long> &elements) const;
   [[nodiscard]] long jumpStepCount() const;
   void separateWaters(AtomMatrix &positions) const;
+  /// Point-group projection. False when the geometry is already symmetric
+  /// or the projection does not move the atoms.
+  bool projectSymmetry(AtomMatrix &positions) const;
+  /// Rotate atoms outside the median radius about a principal axis.
+  bool rotateOuterShell(AtomMatrix &positions) const;
+  /// One stock symmetry step written into `trial`. False leaves the
+  /// caller to take an ordinary Cartesian displacement. `stale` is the
+  /// number of steps since the best energy improved.
+  bool stockSymmetryStep(int stale);
+  /// True for a free cluster, including one stored in a large cell.
+  [[nodiscard]] bool isolatedCluster() const;
   std::shared_ptr<Matter> current;
   std::shared_ptr<Matter> trial; // initial configuration
   std::vector<long> getElements(Matter *matter);
@@ -73,6 +85,7 @@ private:
   int jump_count{0}; // count of jump moves
   int disp_count{0}; // count of displacement moves
   int swap_count{0}; // count of swap moves
+  int symmetry_count{0}; // point-group and outer-shell steps
   int fcalls{0};
   bool stock_{false};
   bool rigidWater_{false};
