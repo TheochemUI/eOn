@@ -51,6 +51,18 @@ namespace {
 /// One unit of imaginary time, sqrt(amu Angstrom^2 / eV), in fs.
 constexpr double kTimeUnitFs = 10.180505717871193;
 
+/// The positions of m with every atom at its minimum image from atom 0. A
+/// cluster that straddles a cell face is wrapped into the cell on read;
+/// whole again, a rotation about its centre of mass is a rotation of it.
+AtomMatrix wholePositions(const Matter &m) {
+  const AtomMatrix r = m.getPositions();
+  AtomMatrix diff = r;
+  diff.rowwise() -= r.row(0);
+  AtomMatrix out = m.pbc(diff);
+  out.rowwise() += r.row(0);
+  return out;
+}
+
 /// Mass-weighted coordinates over the free atoms, measured from a reference
 /// structure under its minimum image.
 class MassWeighted {
@@ -131,7 +143,7 @@ public:
   MatrixXd rigidGenerators(const Matter &m) const {
     const long n = dimension();
     MatrixXd b = MatrixXd::Zero(n, 6);
-    const AtomMatrix r = m.getPositions();
+    const AtomMatrix r = wholePositions(m);
     Eigen::RowVector3d com = Eigen::RowVector3d::Zero();
     double total = 0.0;
     for (size_t k = 0; k < free_.size(); ++k) {
@@ -193,9 +205,10 @@ public:
     return qr.householderQ() * MatrixXd::Identity(n, rank);
   }
   const std::vector<double> &sqrtMasses() const { return sqrtMass_; }
-  /// Cartesian positions of the free atoms of the reference, 3 per atom.
+  /// Cartesian positions of the free atoms of the reference, made whole, 3
+  /// per atom.
   VectorXd referenceFree() const {
-    const AtomMatrix r = ref_.getPositions();
+    const AtomMatrix r = wholePositions(ref_);
     VectorXd out(dimension());
     for (size_t k = 0; k < free_.size(); ++k) {
       for (int c = 0; c < 3; ++c) {
@@ -262,10 +275,12 @@ void requireMatchingReferenceSurface(const Matter &ref, const Matter &image) {
 }
 
 /// With no atom fixed, removes the rigid part of m's displacement from
-/// ref: the mass-weighted mean (translation), and for a cluster the
+/// ref: the mass-weighted mean (translation), and with `rotate` the
 /// mass-weighted best rotation (Kabsch). A path that carried either would
-/// pay kinetic action for motion that costs no energy.
-void alignRigid(const Matter &ref, Matter &m) {
+/// pay kinetic action for motion that costs no energy. Whether the
+/// structure turns freely is the reactant Hessian's call (a cluster in a
+/// periodic cell does), not the periodic flag.
+void alignRigid(const Matter &ref, Matter &m, bool rotate) {
   const long n = ref.numberOfAtoms();
   for (long i = 0; i < n; ++i) {
     if (ref.getFixed(i)) {
@@ -280,9 +295,9 @@ void alignRigid(const Matter &ref, Matter &m) {
   const double total = w.sum();
   const Eigen::RowVector3d shift = (w.transpose() * d) / total;
   d.rowwise() -= shift;
-  if (!ref.getPeriodic()) {
-    const Eigen::RowVector3d com = (w.transpose() * ref.getPositions()) / total;
-    AtomMatrix x = ref.getPositions();
+  if (rotate) {
+    AtomMatrix x = wholePositions(ref);
+    const Eigen::RowVector3d com = (w.transpose() * x) / total;
     x.rowwise() -= com;
     const AtomMatrix y = x + d;
     const Eigen::Matrix3d h = y.transpose() * w.asDiagonal() * x;
@@ -480,7 +495,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   // Highest first, so each ring can start the colder one.
   std::sort(temperatures.begin(), temperatures.end(), std::greater<>());
   requireMatchingReferenceSurface(reactant, saddle);
-  alignRigid(reactant, saddle);
+  const bool rotate = rotationZero[0] || rotationZero[1] || rotationZero[2];
+  alignRigid(reactant, saddle, rotate);
   const long fullDimension = mw.dimension();
   std::optional<tunneling::PhysicalBathModel> physicalModel;
   if (!o.physical_bath_filename.empty()) {
@@ -755,7 +771,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         throw std::runtime_error("instanton: " + o.initial_path +
                                  " differs in atom count");
       }
-      alignRigid(reactant, image);
+      alignRigid(reactant, image, rotate);
       pathQ.push_back(project(mw.toQ(image)));
       const auto energy = frame.energy_opt();
       haveEnergies = haveEnergies && !physicalModel && energy.has_value() &&
@@ -816,6 +832,14 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     steepestDescentPath(qSaddle, vSaddle, hSaddle, mw.sqrtMasses(), evaluate,
                         pathQ, pathV);
     sdPathForceCalls = pot->forceCallCounter.load() - before;
+    // A path read back from file is aligned frame by frame; this one is
+    // aligned the same way, so a job that reuses it starts from this ring.
+    for (auto &q : pathQ) {
+      Matter image(reactant);
+      mw.place(q, image);
+      alignRigid(reactant, image, rotate);
+      q = project(mw.toQ(image));
+    }
     std::vector<double> arc(pathQ.size(), 0.0);
     for (size_t k = 1; k < pathQ.size(); ++k) {
       arc[k] = arc[k - 1] + (pathQ[k] - pathQ[k - 1]).norm();
@@ -892,6 +916,17 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     }
   };
 
+  // A free cluster's rigid bodies: its rotational partition functions enter
+  // the rates as ratios of the ring's, or the saddle's, moments of inertia
+  // to the reactant's.
+  tunneling::RingRigidBodies freeBodies;
+  if (static_cast<long>(mw.sqrtMasses().size()) == reactant.numberOfAtoms()) {
+    freeBodies.sqrtMasses = mw.sqrtMasses();
+    freeBodies.reference = mw.referenceFree();
+    freeBodies.rotations = rotationZero;
+    freeBodies.saddle = qSaddle;
+  }
+
   std::vector<VectorXd> ring;
   if (!o.initial_ring.empty()) {
     const auto positions =
@@ -928,9 +963,13 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
               physicalModel
                   ? MatrixXd(physicalModel->bath->fullHessian(qSaddle, hSaddle))
                   : hSaddle;
-          const double logQhtst = tunneling::quantumHarmonicTstLogRate(
-              harmonicReactant, harmonicSaddle, beta, vSaddle - vReactant,
-              rigidModes);
+          const double logQhtst =
+              tunneling::quantumHarmonicTstLogRate(
+                  harmonicReactant, harmonicSaddle, beta, vSaddle - vReactant,
+                  rigidModes) +
+              (physicalModel
+                   ? 0.0
+                   : tunneling::logRotationalRatio({qSaddle}, freeBodies));
           const double logPar = logQhtst + std::log(factor);
           const double logPerSecond = logPar - logSecond;
           if (!std::isfinite(logPerSecond) ||
@@ -956,7 +995,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
           }
           wrote = true;
         } catch (const std::exception &ex) {
-          EONC_LOG_ERROR("[Instanton] {}", ex.what());
+          EONC_LOG_ERROR("[Instanton] no parabolic rate at {:.4g} K: {}",
+                         temperature, ex.what());
         }
       }
       if (!wrote) {
@@ -1031,11 +1071,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     ro.frictionEta = o.friction_eta;
     ro.frictionEtaBeads = o.friction_eta_beads;
     ro.collapseFraction = o.collapse_fraction;
-    if (!physicalModel &&
-        static_cast<long>(mw.sqrtMasses().size()) == reactant.numberOfAtoms()) {
-      ro.rigidSqrtMasses = mw.sqrtMasses();
-      ro.rigidReference = mw.referenceFree();
-      ro.rigidRotations = rotationZero;
+    if (!physicalModel && !freeBodies.sqrtMasses.empty()) {
+      ro.rigidSqrtMasses = freeBodies.sqrtMasses;
+      ro.rigidReference = freeBodies.reference;
+      ro.rigidRotations = freeBodies.rotations;
     }
     std::vector<VectorXd> guess = ring;
     if (guess.empty() && profile && !physicalModel) {
@@ -1058,7 +1097,16 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       }
     }
     long ladderIterations = 0;
-    if (guess.empty() && o.bead_ladder && o.beads >= 16) {
+    // Lists of one value per bead belong to the full ring; a coarser rung
+    // has no values for its beads, so the ladder is skipped.
+    const bool beadLists =
+        !o.discretization.empty() || o.friction == "explicit";
+    if (guess.empty() && o.bead_ladder && beadLists) {
+      EONC_LOG_INFO("[Instanton] bead_ladder skipped: discretization and "
+                    "explicit friction give one value per bead of the full "
+                    "ring");
+    }
+    if (guess.empty() && o.bead_ladder && o.beads >= 16 && !beadLists) {
       long coarse = o.beads / 4;
       if (coarse % 2 != 0) {
         ++coarse;
@@ -1100,6 +1148,17 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                   "iterations{}",
                   temperature, inst.ringPotential, inst.iterations,
                   inst.converged ? "" : " (not converged)");
+    // A cooling walk whose budget ran out early returns the coldest ring
+    // it reached, which belongs to that stage's temperature.
+    const bool reached =
+        std::abs(inst.temperature - temperature) <= 1e-9 * temperature;
+    if (!reached) {
+      EONC_LOG_WARNING("[Instanton] {:.4g} K: the cooling walk stopped at "
+                       "{:.4g} K; that ring is written under its own "
+                       "temperature",
+                       temperature, inst.temperature);
+      inst.converged = false;
+    }
 
     if (inst.collapsed) {
       EONC_LOG_ERROR("[Instanton] {:.4g} K: the ring collapsed after {} "
@@ -1168,6 +1227,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         bodies.sqrtMasses = ro.rigidSqrtMasses;
         bodies.reference = ro.rigidReference;
         bodies.rotations = ro.rigidRotations;
+        bodies.saddle = qSaddle;
         tunneling::instantonRate(
             inst, beadHessian, hReactant, vReactant - o.energy_shift, hSaddle,
             vSaddle - o.energy_shift, rigidModes, 4096, bodies);
@@ -1216,7 +1276,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                          "not one: the ring is not a first-order saddle of U_N",
                          inst.negativeModes);
         }
-      } catch (const std::runtime_error &ex) {
+      } catch (const std::exception &ex) {
         EONC_LOG_ERROR("[Instanton] {}", ex.what());
       }
     }
@@ -1227,8 +1287,13 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                     inst.classicalLogRate - logSecond, inst.effectiveBarrier);
     }
     table << temperature << ' ' << tc << ' ' << o.beads << ' '
-          << (inst.converged ? 1 : 0) << ' ' << inst.iterations << ' '
-          << inst.ringPotential << ' ' << inst.negativeModes << ' ';
+          << (inst.converged ? 1 : 0) << ' ' << inst.iterations << ' ';
+    if (reached) {
+      table << inst.ringPotential;
+    } else {
+      table << "nan";
+    }
+    table << ' ' << inst.negativeModes << ' ';
     if (rateOk) {
       table << inst.logRate - logSecond << ' ' << inst.rate << ' '
             << inst.classicalLogRate - logSecond << ' '
@@ -1290,7 +1355,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
               {"imaginary_time_fs", static_cast<double>(j) * inst.betaN *
                                         tunneling::kHbar * kTimeUnitFs}};
           if (j == 0) {
-            meta.scalars.push_back({"instanton_temperature_K", temperature});
+            meta.scalars.push_back(
+                {"instanton_temperature_K", inst.temperature});
             meta.scalars.push_back({"instanton_crossover_K", tc});
             meta.scalars.push_back(
                 {"instanton_converged", inst.converged ? 1.0 : 0.0});
@@ -1351,6 +1417,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       extras.emplace_back("rate_htst_log", inst.classicalLogRate - logSecond);
       extras.emplace_back("barrier_effective_instanton", inst.effectiveBarrier);
       extras.emplace_back("instanton_zero_mode", inst.zeroEigenvalue);
+      extras.emplace_back("instanton_rotation_ratio_log",
+                          inst.logRotationRatio);
     } else {
       rateFailed = true;
       status = inst.converged ? RunStatus::FAIL_POTENTIAL_FAILED
@@ -1517,7 +1585,9 @@ std::vector<std::string> InstantonJob::run(void) {
     throw std::runtime_error("instanton: the minima differ in atom count");
   }
   requireMatchingReferenceSurface(*reactant, *product);
-  alignRigid(*reactant, *product);
+  const MatrixXd hStart = hessianAt(qStart);
+  const bool rotate = rotationZero[0] || rotationZero[1] || rotationZero[2];
+  alignRigid(*reactant, *product, rotate);
   const VectorXd qEnd = mw.toQ(*product);
 
   // Starting path: a band from file, else the straight line.
@@ -1529,7 +1599,7 @@ std::vector<std::string> InstantonJob::run(void) {
       if (!io::io_ok(io::con2matter(m, frame))) {
         throw std::runtime_error("instanton: cannot read " + o.initial_path);
       }
-      alignRigid(*reactant, m);
+      alignRigid(*reactant, m, rotate);
       guess.push_back(mw.toQ(m));
     }
     if (guess.size() >= 2) {
@@ -1538,8 +1608,11 @@ std::vector<std::string> InstantonJob::run(void) {
     }
   }
 
-  const MatrixXd hStart = hessianAt(qStart);
   const MatrixXd hEnd = hessianAt(qEnd);
+  // Both Hessians lost the same rigid motions. The zero-point energy the
+  // product well holds above the reactant's belongs in the asymmetry.
+  const double zeroPoint = tunneling::zeroPointDifference(
+      hStart, hEnd, mw.rigidBasis(*reactant, rotationZero).cols());
   const double omega = tunneling::pathOmega(hStart, hEnd, qStart, qEnd);
   const double betaHbar = o.beta_hbar_omega / omega;
   tunneling::InstantonOptions opt;
@@ -1551,32 +1624,61 @@ std::vector<std::string> InstantonJob::run(void) {
                 "of freedom",
                 o.beads, betaHbar * kTimeUnitFs, n);
 
-  tunneling::Instanton inst = tunneling::optimizeInstanton(
-      qStart, qEnd, betaHbar, guess, evaluate, opt);
-  EONC_LOG_INFO("[Instanton] action {:.6f} after {} iterations{}", inst.action,
-                inst.iterations, inst.converged ? "" : " (not converged)");
+  // Minima of different energy tunnel on the surface with that difference
+  // switched off along the path; the bias leaves both minima and their
+  // Hessians alone.
+  std::vector<double> vEnds;
+  std::vector<VectorXd> gEnds;
+  evaluate({qStart, qEnd}, vEnds, gEnds);
+  const double dV = vEnds.at(1) - vEnds.at(0);
+  const bool symmetrized = o.symmetrize && dV != 0.0;
+  const tunneling::EnergyBias bias(qStart, qEnd, symmetrized ? dV : 0.0);
+  const tunneling::BatchPotential surface = [&](const std::vector<VectorXd> &q,
+                                                std::vector<double> &v,
+                                                std::vector<VectorXd> &grad) {
+    evaluate(q, v, grad);
+    for (size_t j = 0; symmetrized && j < q.size(); ++j) {
+      v[j] -= bias.value(q[j]);
+      grad[j] -= bias.gradient(q[j]);
+    }
+  };
+  tunneling::Instanton inst =
+      tunneling::optimizeInstanton(qStart, qEnd, betaHbar, guess, surface, opt);
+  inst.asymmetry = dV;
+  for (size_t j = 0; j < inst.path.size(); ++j) {
+    inst.energies[j] += bias.value(inst.path[j]);
+  }
+  EONC_LOG_INFO("[Instanton] action {:.6f} after {} iterations{}{}",
+                inst.action, inst.iterations,
+                inst.converged ? "" : " (not converged)",
+                symmetrized ? ", wells levelled" : "");
 
   bool splitOk = false;
   std::string failure;
-  // beta |delta|: the propagator ratio reads delta0 only when the wells
-  // lie within a small fraction of kB T of each other.
-  const double betaAsymmetry =
-      std::abs(inst.asymmetry) * betaHbar / tunneling::kHbar;
-  if (inst.converged && !inst.symmetricEnough) {
+  // beta |delta|: without the levelled surface, the propagator ratio reads
+  // delta0 only when the wells lie within a small fraction of kB T of each
+  // other.
+  const double betaAsymmetry = std::abs(dV) * betaHbar / tunneling::kHbar;
+  inst.symmetricEnough = betaAsymmetry < 0.1;
+  const bool splittable = symmetrized || inst.symmetricEnough;
+  if (inst.converged && !splittable) {
     EONC_LOG_WARNING("[Instanton] beta |delta| = {:.3g}: the wells differ by "
                      "{:.4g} eV, too far for the splitting; the path and "
                      "action are written, the splitting is not",
                      betaAsymmetry, inst.asymmetry);
   }
-  if (inst.converged && inst.symmetricEnough) {
+  if (inst.converged && splittable) {
     const long stride = std::max<long>(1, o.hessian_stride);
     const long P = o.beads;
     std::map<long, MatrixXd> anchors;
+    // The splitting is the J = 0 one: every bead loses its rotations, as the
+    // two minima do. A closed rate ring keeps them on its beads, because
+    // there a rotation of every bead at once is the zero mode it lifts.
     auto anchor = [&](long j) -> const MatrixXd & {
       auto it = anchors.find(j);
       if (it == anchors.end()) {
-        it = anchors.emplace(j, hessianAt(inst.path[static_cast<size_t>(j)]))
-                 .first;
+        const VectorXd &q = inst.path[static_cast<size_t>(j)];
+        it = anchors.emplace(j, hessianAt(q) - bias.hessian(q)).first;
       }
       return it->second;
     };
@@ -1604,6 +1706,7 @@ std::vector<std::string> InstantonJob::run(void) {
 
   // The path, one frame per bead; the splitting on the first frame.
   const double kelvin = tunneling::kHbar / (tunneling::kBoltzmann * betaHbar);
+  const double asymmetryZpe = inst.asymmetry + zeroPoint;
   Matter frame(*reactant);
   for (size_t j = 0; j < inst.path.size(); ++j) {
     mw.place(inst.path[j], frame);
@@ -1621,15 +1724,19 @@ std::vector<std::string> InstantonJob::run(void) {
       meta.scalars.push_back(
           {"instanton_converged", inst.converged ? 1.0 : 0.0});
       meta.scalars.push_back({"tunnel_asymmetry", inst.asymmetry});
+      meta.scalars.push_back({"tunnel_asymmetry_zpe", asymmetryZpe});
+      meta.scalars.push_back(
+          {"instanton_symmetrized", symmetrized ? 1.0 : 0.0});
+      meta.scalars.push_back(
+          {"instanton_symmetric", inst.symmetricEnough ? 1.0 : 0.0});
+      meta.scalars.push_back({"instanton_beta_asymmetry", betaAsymmetry});
       if (splitOk) {
         meta.scalars.push_back({"tunnel_splitting_instanton", inst.delta0});
         meta.scalars.push_back(
-            {"tls_energy_instanton", std::hypot(inst.asymmetry, inst.delta0)});
+            {"tls_energy_instanton", std::hypot(asymmetryZpe, inst.delta0)});
         meta.scalars.push_back({"instanton_zero_mode", inst.zeroMode});
         meta.scalars.push_back(
             {"instanton_mode_separation", inst.modeSeparation});
-        meta.scalars.push_back(
-            {"instanton_symmetric", inst.symmetricEnough ? 1.0 : 0.0});
       }
     }
     if (!io::io_ok(frame.matter2con(pathFile, j > 0, &meta))) {
@@ -1644,7 +1751,7 @@ std::vector<std::string> InstantonJob::run(void) {
 
   // A converged path between wells too far apart is a result, not a
   // failure: the flags say why no splitting was written.
-  const bool good = splitOk || (inst.converged && !inst.symmetricEnough);
+  const bool good = splitOk || (inst.converged && !splittable);
   const auto status = good ? RunStatus::GOOD
                            : (inst.converged ? RunStatus::FAIL_POTENTIAL_FAILED
                                              : RunStatus::FAIL_MAX_ITERATIONS);
@@ -1659,11 +1766,15 @@ std::vector<std::string> InstantonJob::run(void) {
   env.extras.emplace_back("instanton_action", inst.action);
   env.extras.emplace_back("instanton_temperature_K", kelvin);
   env.extras.emplace_back("tunnel_asymmetry", inst.asymmetry);
+  env.extras.emplace_back("tunnel_asymmetry_zpe", asymmetryZpe);
   env.extras.emplace_back("instanton_beta_asymmetry", betaAsymmetry);
   env.extras.emplace_back("instanton_symmetric",
                           inst.symmetricEnough ? 1.0 : 0.0);
+  env.extras.emplace_back("instanton_symmetrized", symmetrized ? 1.0 : 0.0);
   if (splitOk) {
     env.extras.emplace_back("tunnel_splitting_instanton", inst.delta0);
+    env.extras.emplace_back("tls_energy_instanton",
+                            std::hypot(asymmetryZpe, inst.delta0));
     env.extras.emplace_back("instanton_mode_separation", inst.modeSeparation);
   }
   env.writeResultsDat(resultsFile);

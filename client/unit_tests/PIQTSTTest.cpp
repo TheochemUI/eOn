@@ -290,6 +290,31 @@ TEST_CASE("The PI-QTST rate of a harmonic profile is harmonic TST",
   REQUIRE(r.logRateError == 0.0);
 }
 
+// F falling all the way to s*: the reactant is the lowest plane before s*,
+// so the barrier comes out negative, where the minimum over every plane
+// took s* itself and reported a barrier of zero. The rate does not depend
+// on the reference.
+TEST_CASE("PI-QTST takes the reactant before the dividing plane", "[PIQTST]") {
+  std::vector<piqtst::Plane> planes(5);
+  for (long j = 0; j < 5; ++j) {
+    planes[static_cast<size_t>(j)].s = 0.25 * static_cast<double>(j);
+    planes[static_cast<size_t>(j)].meanForce = -0.4;
+  }
+  piqtst::integrate(planes);
+  const piqtst::Rate r = piqtst::rate(planes, 10.0);
+  REQUIRE(r.reactant == 3);
+  REQUIRE_THAT(r.barrier, Catch::Matchers::WithinAbs(-0.1, 1e-14));
+  double z = 0.0;
+  for (long j = 0; j < 5; ++j) {
+    const double width = j == 0 || j == 4 ? 0.125 : 0.25;
+    z += width * std::exp(-10.0 * planes[static_cast<size_t>(j)].freeEnergy);
+  }
+  const double expected =
+      std::log(0.5 * std::sqrt(2.0 / (std::numbers::pi * 10.0))) -
+      10.0 * planes.back().freeEnergy - std::log(z);
+  REQUIRE_THAT(r.logRate, Catch::Matchers::WithinAbs(expected, 1e-12));
+}
+
 TEST_CASE("PI-QTST errors propagate through the trapezoid rule", "[PIQTST]") {
   std::vector<piqtst::Plane> planes(3);
   for (long j = 0; j < 3; ++j) {
@@ -552,6 +577,27 @@ TEST_CASE("The transmission curve starts at one", "[PIQTST][recrossing]") {
   REQUIRE_THAT(k.kappa.front(), Catch::Matchers::WithinAbs(1.0, 1e-14));
   for (const double v : k.kappa) {
     REQUIRE(std::isfinite(v));
+  }
+}
+
+// The parents sample the ring polymer's own distribution under PILE even
+// when the scan asked for PIGLET, so a PIGLET request without a GLE matrix
+// still yields a transmission curve.
+TEST_CASE("Recrossing parents take PILE whatever the scan's thermostat",
+          "[PIQTST][recrossing]") {
+  const Eckart pes;
+  const double tc = tunneling::crossoverTemperature(pes.hessian_at_top());
+  EckartPot pot;
+  pot.k0 = 1.0;
+  auto o = recrossingAtTop(0.8 * tc, 8, 4, 4);
+  o.steps = 20;
+  const auto pile = piqtst::recrossing(pot, line(true), o);
+  o.ring.thermostat = pathintegral::Thermostat::Piglet;
+  o.ring.gleFile.clear();
+  const auto asked = piqtst::recrossing(pot, line(true), o);
+  REQUIRE(asked.kappa.size() == pile.kappa.size());
+  for (size_t i = 0; i < pile.kappa.size(); ++i) {
+    REQUIRE(asked.kappa[i] == pile.kappa[i]);
   }
 }
 
