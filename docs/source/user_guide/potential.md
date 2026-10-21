@@ -60,7 +60,8 @@ FeHe
 : Iron-hydrides
 
 EAM_Al
-: Embedded atom method parameterized for Aluminum.
+: Embedded atom method parameterized for Aluminum. The rgpot kernel stores
+  the EON r2549 parameter literals at single precision.
 
 EMT
 : Effective medium theory, for metals.

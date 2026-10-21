@@ -1,0 +1,73 @@
+diff --git a/CppCore/rgpot/fortran/rgpot_eam_al.f90 b/CppCore/rgpot/fortran/rgpot_eam_al.f90
+index d1e88d0..015bc3e 100644
+--- a/CppCore/rgpot/fortran/rgpot_eam_al.f90
++++ b/CppCore/rgpot/fortran/rgpot_eam_al.f90
+@@ -26,6 +26,7 @@
+ !! is one scalar per atom, not a sum that has to be rebuilt by walking
+ !! atom `j`'s own neighbour list.
+ module rgpot_eam_al
++   use iso_fortran_env, only: real32
+    use rgpot_kinds, only: wp, ip
+    use rgpot_neighbors, only: neighbor_table_t
+    implicit none
+@@ -44,35 +45,40 @@ module rgpot_eam_al
+    !! there, which is what the aluminium parameters were fitted against.
+    real(wp), parameter :: truncation_fraction = 0.9999_wp
+ 
+-   !> Double-exponential EAM parameters. Defaults are eOn's aluminium set.
++   !> Double-exponential EAM parameters.
++   !!
++   !! The numbers written in EON r2549 `potinit.f` are default-real
++   !! literals. A double-precision build still stores the single-precision
++   !! rounding of each one. These defaults are that rounding. Keeping the
++   !! extra printed digits moves the four-atom cluster by 1.76e-6 eV.
+    type :: eam_al_params_t
+       !> Gauge shift `g` shared by the pair and embedding terms.
+-      real(wp) :: g_transform = -0.60647886749203_wp
++      real(wp) :: g_transform = real(-0.60647886749203, real32)
+       !> Pair amplitudes (eV) and decay rates (1/Angstrom).
+-      real(wp) :: pair_amp_a = 2294.3609145535_wp
+-      real(wp) :: pair_decay_a = 3.0205380362464_wp
+-      real(wp) :: pair_amp_b = -192.06894637533_wp
+-      real(wp) :: pair_decay_b = 1.5102690181232_wp
++      real(wp) :: pair_amp_a = real(2294.3609145535, real32)
++      real(wp) :: pair_decay_a = real(3.0205380362464, real32)
++      real(wp) :: pair_amp_b = real(-192.06894637533, real32)
++      real(wp) :: pair_decay_b = real(1.5102690181232, real32)
+       !> Overall scale on the atomic electron density.
+-      real(wp) :: density_scale = 0.87928364657088_wp
++      real(wp) :: density_scale = real(0.87928364657088, real32)
+       !> Density decay rates (1/Angstrom) and the second term's weight.
+-      real(wp) :: density_decay_a = 3.3068828537934_wp
+-      real(wp) :: density_decay_b = 6.6137657075868_wp
+-      real(wp) :: density_weight_b = 512.0_wp
++      real(wp) :: density_decay_a = real(3.3068828537934, real32)
++      real(wp) :: density_decay_b = real(6.6137657075868, real32)
++      real(wp) :: density_weight_b = real(512.0, real32)
+       !> Power of `r` multiplying the density's exponentials.
+       integer :: density_power = 6
+       !> Embedding coefficients `c_k` in `F(rho) = g rho + sum_k c_k rho^k`.
+       real(wp) :: embed_coeff(embed_order) = [ &
+-                  4.4572157051836_wp, &
+-                  193.21775368064_wp, &
+-                  -1173.6502684704_wp, &
+-                  4203.3500116196_wp, &
+-                  -8785.1680280827_wp, &
+-                  10632.994102532_wp, &
+-                  -6921.0410455328_wp, &
+-                  1875.2698365752_wp]
+-      !> Pair cutoff (Angstrom).
+-      real(wp) :: rcut = 7.1_wp
++                  real(4.4572157051836, real32), &
++                  real(193.21775368064, real32), &
++                  real(-1173.6502684704, real32), &
++                  real(4203.3500116196, real32), &
++                  real(-8785.1680280827, real32), &
++                  real(10632.994102532, real32), &
++                  real(-6921.0410455328, real32), &
++                  real(1875.2698365752, real32)]
++      !> Pair cutoff (Angstrom). `7.1` as a default-real literal.
++      real(wp) :: rcut = real(7.1, real32)
+    contains
+       procedure :: cutoff => eam_al_cutoff
+    end type eam_al_params_t
