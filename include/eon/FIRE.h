@@ -23,6 +23,7 @@ public:
   FIRE(std::shared_ptr<ObjectiveFunction> a_objf, const Parameters &a_params)
       : Optimizer(a_objf, OptType::FIRE, OptimizerConfig::fromParams(a_params)),
         m_dt{a_params.optimizer_options().time_step},
+        m_dt_init{a_params.optimizer_options().time_step},
         m_dt_max{a_params.optimizer_options().max_time_step},
         m_max_move{a_params.optimizer_options().max_move}, m_N_min{5}, m_N{0},
         m_vel{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
@@ -38,7 +39,7 @@ private:
   [[nodiscard]] Eigen::VectorXd metric(const Eigen::VectorXd &force) const;
   [[nodiscard]] bool leaveSaddle(double a_maxMove);
 
-  double m_dt, m_dt_max, m_max_move;
+  double m_dt, m_dt_init, m_dt_max, m_max_move;
   size_t m_N_min, m_N;
   Eigen::VectorXd m_vel;
   double m_alpha_start;
@@ -49,6 +50,7 @@ private:
   size_t m_iteration;
   int m_escapes{0};
   bool m_modelChecked{false};
+  bool m_pairDrive{true};
   pairhess::KnownPair m_known{pairhess::KnownPair::None};
   double m_cutoff{0.0};
   eonc::log::FileScoped m_log{"fire", "_fire.log"};

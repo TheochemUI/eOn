@@ -13,6 +13,7 @@
 
 #include "BaseStructures.h"
 #include "Eigen.h"
+#include "GeometryAnalysis.h"
 #include "ObjectiveFunction.h"
 
 #include <algorithm>
@@ -466,22 +467,89 @@ inline PairMatch matchKnownPair(const Eigen::VectorXd &pos,
   return best;
 }
 
-/// P^{-1} f for the positive pair Hessian. Returns `force` if the
-/// factorisation is not finite.
+/// True when a rigid rotation lies in the near-null space of `P`.
+/// A free cluster does. A periodic crystal does not.
+inline bool rotationIsNull(const Eigen::MatrixXd &P,
+                           const Eigen::VectorXd &pos) {
+  const int nat = static_cast<int>(pos.size() / 3);
+  if (nat < 3 || P.rows() != pos.size()) {
+    return false;
+  }
+  Eigen::Vector3d com = Eigen::Vector3d::Zero();
+  for (int i = 0; i < nat; ++i) {
+    com += pos.segment<3>(3L * i);
+  }
+  com /= static_cast<double>(nat);
+  double diag = 0.0;
+  for (int i = 0; i < P.rows(); ++i) {
+    diag += std::abs(P(i, i));
+  }
+  diag /= static_cast<double>(P.rows());
+  const double scale = std::max(diag, 1.0e-8);
+  bool saw = false;
+  for (int axis = 0; axis < 3; ++axis) {
+    Eigen::VectorXd rot = Eigen::VectorXd::Zero(pos.size());
+    for (int i = 0; i < nat; ++i) {
+      const double x = pos(3L * i) - com(0);
+      const double y = pos(3L * i + 1) - com(1);
+      const double z = pos(3L * i + 2) - com(2);
+      if (axis == 0) {
+        rot(3L * i + 1) = -z;
+        rot(3L * i + 2) = y;
+      } else if (axis == 1) {
+        rot(3L * i) = z;
+        rot(3L * i + 2) = -x;
+      } else {
+        rot(3L * i) = -y;
+        rot(3L * i + 1) = x;
+      }
+    }
+    const double nrm = rot.norm();
+    if (!(nrm > 1.0e-8)) {
+      continue;
+    }
+    saw = true;
+    const double curv = (P * rot).norm() / nrm;
+    if (curv > 1.0e-3 * scale) {
+      return false;
+    }
+  }
+  return saw;
+}
+
+/// P^{-1} f for the positive pair Hessian. Rigid motion in the near-null
+/// space is removed first, so a net force is not amplified by the diagonal
+/// shift. Returns `force` if the factorisation is not finite.
 inline Eigen::VectorXd pairNewtonForce(const Eigen::VectorXd &pos,
                                        const Eigen::VectorXd &force,
                                        KnownPair known,
                                        ObjectiveFunction &objf,
                                        double cutoff) {
-  if (known == KnownPair::None || pos.size() < 6 || pos.size() % 3 != 0) {
+  if (known == KnownPair::None || pos.size() < 6 || pos.size() % 3 != 0 ||
+      force.size() != pos.size()) {
     return force;
   }
   const Eigen::MatrixXd P =
       build(pos, "pair", knownPot(known), 3.0, 1.0, cutoff, objf);
+  Eigen::VectorXd rhs = force;
+  const bool freeRot = rotationIsNull(P, pos);
+  const long nat = pos.size() / 3;
+  const AtomMatrix coords =
+      Eigen::Map<const AtomMatrix>(pos.data(), nat, 3);
+  if (freeRot) {
+    eonc::geometry::projectOutRotTrans(rhs, coords);
+  } else {
+    rhs = withoutNetForce(std::move(rhs));
+  }
   Eigen::PartialPivLU<Eigen::MatrixXd> lu(P);
-  const Eigen::VectorXd step = lu.solve(force);
+  Eigen::VectorXd step = lu.solve(rhs);
   if (!step.allFinite()) {
     return force;
+  }
+  if (freeRot) {
+    eonc::geometry::projectOutRotTrans(step, coords);
+  } else {
+    step = withoutNetForce(std::move(step));
   }
   return step;
 }

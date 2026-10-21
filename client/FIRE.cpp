@@ -35,7 +35,7 @@ void FIRE::noteModel(const Eigen::VectorXd &force) {
 }
 
 Eigen::VectorXd FIRE::metric(const Eigen::VectorXd &force) const {
-  if (m_known == pairhess::KnownPair::None) {
+  if (m_known == pairhess::KnownPair::None || !m_pairDrive) {
     return force;
   }
   return pairhess::pairNewtonForce(m_objf->getPositions(), force, m_known,
@@ -120,12 +120,24 @@ int FIRE::step(double a_maxMove) {
     m_N = 0;
   }
 
-  // add a sanity check on m_dt
+  // A start that is already below the floor still throws. A collapse
+  // from a safe start restores that start and stops using the pair
+  // metric, which amplifies a force component in a near-null mode.
   if (m_dt < 1e-6) {
-    QUILL_LOG_CRITICAL(m_log, "[FIRE] [critical] m_dt is too small: {:.4f}",
-                       m_dt);
-    throw std::runtime_error(
-        std::format("[FIRE] m_dt is too small: {:.4f}", m_dt));
+    if (m_dt_init >= 1e-6) {
+      m_dt = m_dt_init;
+      m_vel.setZero();
+      m_alpha = m_alpha_start;
+      m_N = 0;
+      m_pairDrive = false;
+      QUILL_LOG_DEBUG(m_log,
+                      "[FIRE] time step collapsed, using the raw force");
+    } else {
+      QUILL_LOG_CRITICAL(m_log, "[FIRE] [critical] m_dt is too small: {:.4f}",
+                         m_dt);
+      throw std::runtime_error(
+          std::format("[FIRE] m_dt is too small: {:.4f}", m_dt));
+    }
   }
 
   m_iteration++;

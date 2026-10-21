@@ -352,6 +352,59 @@ public:
   int calls() const { return m_calls; }
 };
 
+class LjTriangleRigidBias : public LjTriangleObjective {
+public:
+  using LjTriangleObjective::LjTriangleObjective;
+  VectorXd getGradient(bool fd) override {
+    VectorXd g = LjTriangleObjective::getGradient(fd);
+    if (calls() > 1) {
+      for (Eigen::Index i = 0; i < g.size(); i += 3) {
+        g(i) += 0.25;
+      }
+    }
+    return g;
+  }
+};
+
+TEST_CASE("pair Newton step ignores a rigid force on a free cluster",
+          "[optimizer][fire][pair]") {
+  auto params = makeOptParams();
+  BareObjective obj(params);
+  VectorXd pos(9);
+  pos << 0.0, 0.0, 0.0, 1.2, 0.0, 0.0, 0.2, 1.1, 0.0;
+  const VectorXd lj = eonc::pairhess::analyticPairForce(pos, obj, false, 40.0);
+  const auto match = eonc::pairhess::matchKnownPair(pos, lj, obj);
+  REQUIRE(match.kind == eonc::pairhess::KnownPair::LennardJones);
+  VectorXd biased = lj;
+  for (Eigen::Index i = 0; i < biased.size(); i += 3) {
+    biased(i) += 0.25;
+  }
+  const VectorXd raw = eonc::pairhess::pairNewtonForce(
+      pos, biased, match.kind, obj, match.cutoff);
+  const VectorXd clean =
+      eonc::pairhess::pairNewtonForce(pos, lj, match.kind, obj, match.cutoff);
+  const Eigen::MatrixXd P = eonc::pairhess::build(
+      pos, "pair", eonc::pairhess::knownPot(match.kind), 3.0, 1.0, match.cutoff,
+      obj);
+  const Eigen::VectorXd blown = Eigen::PartialPivLU<Eigen::MatrixXd>(P).solve(biased);
+  REQUIRE(eonc::geometry::maxAtomMotionV(blown) > 10.0);
+  REQUIRE((raw - clean).norm() < 1e-8);
+  REQUIRE(raw.allFinite());
+}
+
+TEST_CASE("FIRE keeps a finite step when a rigid bias appears",
+          "[optimizer][fire][pair]") {
+  auto params = makeOptParams();
+  ParametersLoadAccess::optimizer_options(params).converged_force = 1e-8;
+  auto objf = std::make_shared<LjTriangleRigidBias>(params);
+  VectorXd start(9);
+  start << 0.0, 0.0, 0.0, 1.5, 0.1, 0.0, 0.2, 1.4, 0.05;
+  objf->setPositions(start);
+  FIRE opt(objf, params);
+  REQUIRE_NOTHROW(opt.run(40, 0.2));
+  REQUIRE(objf->getPositions().allFinite());
+}
+
 TEST_CASE("LBFGS pair model converges a Lennard-Jones triangle",
           "[optimizer][lbfgs][pair]") {
   auto params = makeOptParams();

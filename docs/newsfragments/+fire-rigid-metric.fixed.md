@@ -1,0 +1,1 @@
+FIRE removes rigid motion from the pair-Hessian drive before integrating it. A free cluster drops translation and rotation. A periodic cell drops the mean force. If the time step still falls through 1e-6 from a safe start, FIRE restores that start and continues on the raw force.
