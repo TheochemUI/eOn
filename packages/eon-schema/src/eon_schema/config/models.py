@@ -283,7 +283,7 @@ class BasinHoppingConfig(BaseModel):
     )
     swap_probability: float = Field(
         default=0.0,
-        description="Probability (in range [0,1]) that a swapping step takes place instead of a displacement step.",
+        description="Probability (in range [0,1]) that a swapping step takes place instead of a displacement step. Left at 0, a stock quench (optimizer block still at its defaults) uses 0.5 when the cluster has more than one element.",
     )
     """
     The swap step selects two atoms of different elements and swaps their position.
@@ -307,7 +307,7 @@ class BasinHoppingConfig(BaseModel):
     """Implements the method of :cite:t:`bh-whiteInvestigationTwoApproaches1998`."""
     jump_steps: int = Field(
         default=0,
-        description="Number of jump steps to take after jump_max consecutive rejections.",
+        description="Number of jump steps to take after jump_max consecutive rejections. Left at 0, a stock quench takes five.",
     )
 
 

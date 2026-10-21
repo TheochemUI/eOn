@@ -39,6 +39,32 @@ the factor.
   is also implemented, and is controlled by
   {any}`jump_max <eon.schema.BasinHoppingConfig.jump_max>`.
 
+## Stock quench
+
+Leaving the optimizer block at its defaults (conjugate gradients, 1000
+iterations, force tolerance 0.01, maximum move 0.2) selects an L-BFGS quench
+for this job. That quench uses energy acceptance, a memory of at least 20,
+automatic scaling, and damped curvature. An isolated cluster with no fixed
+atoms projects out rigid translation and rotation. The convergence measure is
+the root-mean-square force, and the trial step is 0.4. Each hop takes a
+loose tolerance of 0.01 for up to 400 iterations. A hop whose energy is near
+the best, and the first quench, then takes a tolerance of 0.001 for up to 500
+iterations.
+
+The step length stays near its initial value. Acceptance above the target
+at that step lowers the temperature, and acceptance below the target at a
+short step raises it, so one temperature setting can search a surface whose
+energy unit is not kelvin. A rejected hop whose gap is still much larger
+than kT doubles kT. A cluster with more than one element
+and `swap_probability` left at 0 swaps elements with probability one half.
+`jump_steps` left at 0 takes five steps when a jump fires.
+
+A cluster made only of water, each oxygen within 1.35 Å of two hydrogens, is
+moved as rigid bodies: the whole molecule is translated and rotated, and the
+quench varies the center of mass and the angle-axis rotation. Molecules that
+would sit on top of each other are pushed apart before the quench. Any other
+geometry keeps the Cartesian displacement.
+
 ## Configuration
 
 ```{code-block} ini

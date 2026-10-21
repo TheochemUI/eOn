@@ -88,6 +88,55 @@ public:
   static void swap(BasinHoppingJob &job, Matter *matter) {
     job.randomSwap(matter);
   }
+
+  static bool configureStock(BasinHoppingJob &job) {
+    return job.configureStockQuench();
+  }
+
+  static void setStock(BasinHoppingJob &job, bool stock) { job.stock_ = stock; }
+
+  static OptType method(const BasinHoppingJob &job) {
+    return job.params.optimizer_options().method;
+  }
+
+  static const optimizer_options_t &optimizer(const BasinHoppingJob &job) {
+    return job.params.optimizer_options();
+  }
+
+  static double swapProbability(const BasinHoppingJob &job,
+                                const std::vector<long> &elements) {
+    return job.swapProbability(elements);
+  }
+
+  static long jumpSteps(const BasinHoppingJob &job) {
+    return job.jumpStepCount();
+  }
+
+  static void copyCurrent(BasinHoppingJob &job, const Matter &matter) {
+    *job.current = matter;
+    *job.trial = matter;
+  }
+
+  static bool prepareWater(BasinHoppingJob &job) {
+    return job.prepareRigidWater();
+  }
+
+  static void moveRigid(BasinHoppingJob &job, double translation, double angle) {
+    job.displaceRigid(job.current.get(), translation, angle);
+  }
+
+  static AtomMatrix positions(const BasinHoppingJob &job) {
+    return job.current->getPositions();
+  }
+
+  static double temperature(const BasinHoppingJob &job) {
+    return job.temperature_;
+  }
+
+  static double lift(BasinHoppingJob &job, double deltaE) {
+    job.liftTemperature(deltaE);
+    return job.temperature_;
+  }
 };
 } // namespace eonc
 
@@ -1230,6 +1279,220 @@ max_iterations = 200
   REQUIRE(std::stod(results["total_normal_displacement_steps"]) ==
           Catch::Approx(1.0));
   REQUIRE(std::stod(results["total_jump_steps"]) == Catch::Approx(0.0));
+}
+
+TEST_CASE("Basin hopping angle-axis Jacobian matches a central difference",
+          "[job][basin_hopping][unit]") {
+  using Job = eonc::BasinHoppingJob;
+  const Vector3d point(0.4, -0.2, 0.7);
+  const Vector3d axes[] = {Vector3d::Zero(), Vector3d(1.0e-10, -2.0e-10, 3.0e-10),
+                           Vector3d(0.3, -0.5, 0.8), Vector3d(0.0, 0.0, 1.2)};
+  REQUIRE((Job::rotateAngleAxis(point, Vector3d::Zero()) - point).norm() ==
+          Catch::Approx(0.0).margin(0.0));
+  const double step = 1.0e-6;
+  for (const Vector3d &omega : axes) {
+    const Matrix3d jacobian = Job::rotateAngleAxisJacobian(point, omega);
+    for (int axis = 0; axis < 3; ++axis) {
+      Vector3d plus = omega;
+      Vector3d minus = omega;
+      plus[axis] += step;
+      minus[axis] -= step;
+      const Vector3d numeric =
+          (Job::rotateAngleAxis(point, plus) -
+           Job::rotateAngleAxis(point, minus)) /
+          (2.0 * step);
+      REQUIRE((jacobian.col(axis) - numeric).norm() < 1.0e-6);
+    }
+  }
+}
+
+TEST_CASE("Basin hopping stock quench keeps an explicit optimizer",
+          "[job][basin_hopping][unit]") {
+  eonc::Runtime runtime;
+  auto fresh = std::make_unique<Parameters>();
+  ParametersLoadAccess::potential_options(*fresh).potential = PotType::LJ;
+  BasinHoppingJob stock(std::move(fresh), runtime);
+  REQUIRE(eonc::BasinHoppingDisplaceAccess::configureStock(stock));
+  const auto &opt = eonc::BasinHoppingDisplaceAccess::optimizer(stock);
+  REQUIRE(eonc::BasinHoppingDisplaceAccess::method(stock) == OptType::LBFGS);
+  REQUIRE(opt.lbfgs.accept == "energy");
+  REQUIRE(opt.lbfgs.curvature == "damped");
+  REQUIRE(opt.lbfgs.memory >= 20);
+  REQUIRE(opt.lbfgs.auto_scale);
+  REQUIRE(opt.convergence_metric == "rms");
+
+  auto pinned = std::make_unique<Parameters>();
+  ParametersLoadAccess::potential_options(*pinned).potential = PotType::LJ;
+  ParametersLoadAccess::optimizer_options(*pinned).max_iterations = 200;
+  BasinHoppingJob kept(std::move(pinned), runtime);
+  REQUIRE_FALSE(eonc::BasinHoppingDisplaceAccess::configureStock(kept));
+  REQUIRE(eonc::BasinHoppingDisplaceAccess::method(kept) == OptType::CG);
+
+  const std::vector<long> binary{1, 8};
+  const std::vector<long> one{8};
+  REQUIRE(eonc::BasinHoppingDisplaceAccess::swapProbability(stock, binary) ==
+          Catch::Approx(0.0));
+  eonc::BasinHoppingDisplaceAccess::setStock(stock, true);
+  REQUIRE(eonc::BasinHoppingDisplaceAccess::swapProbability(stock, binary) ==
+          Catch::Approx(0.5));
+  REQUIRE(eonc::BasinHoppingDisplaceAccess::swapProbability(stock, one) ==
+          Catch::Approx(0.0));
+  REQUIRE(eonc::BasinHoppingDisplaceAccess::jumpSteps(stock) == 5);
+  eonc::BasinHoppingDisplaceAccess::setStock(stock, false);
+  REQUIRE(eonc::BasinHoppingDisplaceAccess::jumpSteps(stock) == 0);
+
+  // 300 K is far below a gap of 2. Doubling stops once kT is no
+  // longer a small fraction of that gap, so one clash cannot run away.
+  const double cold =
+      eonc::BasinHoppingDisplaceAccess::temperature(stock);
+  REQUIRE(cold == Catch::Approx(300.0));
+  const double warmed = eonc::BasinHoppingDisplaceAccess::lift(stock, 2.0);
+  REQUIRE(warmed > cold);
+  for (int hop = 0; hop < 8; ++hop) {
+    eonc::BasinHoppingDisplaceAccess::lift(stock, 2.0);
+  }
+  const double kB = 8.6173324e-5;
+  const double kT =
+      eonc::BasinHoppingDisplaceAccess::temperature(stock) * kB;
+  REQUIRE(kT > 0.05);
+  REQUIRE(kT < 0.5);
+}
+
+TEST_CASE("Basin hopping rigid move keeps bond lengths and separates clashes",
+          "[job][basin_hopping][unit]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  eonc::Runtime runtime;
+  Matter matter(pot, params);
+  matter.resize(6);
+  matter.setCell(40.0 * Matrix3d::Identity());
+  matter.setPeriodic(false);
+  const long z[6] = {8, 1, 1, 8, 1, 1};
+  for (long atom = 0; atom < 6; ++atom) {
+    matter.setAtomicNr(atom, z[atom]);
+  }
+  // Two waters, far enough apart that each oxygen owns its own hydrogens.
+  const double ox = 5.0;
+  const double oy = 5.0;
+  const double oz = 5.0;
+  const double hx = 0.9572;
+  const double hy = 0.239987;
+  const double hz = 0.926627;
+  const double shift = 4.0;
+  matter.setPosition(0, 0, ox);
+  matter.setPosition(0, 1, oy);
+  matter.setPosition(0, 2, oz);
+  matter.setPosition(1, 0, ox + hx);
+  matter.setPosition(1, 1, oy);
+  matter.setPosition(1, 2, oz);
+  matter.setPosition(2, 0, ox - hy);
+  matter.setPosition(2, 1, oy + hz);
+  matter.setPosition(2, 2, oz);
+  for (int site = 0; site < 3; ++site) {
+    matter.setPosition(3 + site, 0, matter.getPosition(site, 0) + shift);
+    matter.setPosition(3 + site, 1, matter.getPosition(site, 1));
+    matter.setPosition(3 + site, 2, matter.getPosition(site, 2));
+  }
+
+  auto owned = std::make_unique<Parameters>(params);
+  BasinHoppingJob job(std::move(owned), runtime);
+  eonc::BasinHoppingDisplaceAccess::copyCurrent(job, matter);
+  REQUIRE(eonc::BasinHoppingDisplaceAccess::prepareWater(job));
+
+  auto bond = [](const AtomMatrix &pos, long a, long b) {
+    return (pos.row(a) - pos.row(b)).norm();
+  };
+  const AtomMatrix before =
+      eonc::BasinHoppingDisplaceAccess::positions(job);
+  const double oh1 = bond(before, 0, 1);
+  const double oh2 = bond(before, 0, 2);
+  eonc::rng::random(17);
+  eonc::BasinHoppingDisplaceAccess::moveRigid(job, 0.4, 0.35);
+  eonc::BasinHoppingDisplaceAccess::moveRigid(job, 0.2, 0.8);
+  const AtomMatrix after = eonc::BasinHoppingDisplaceAccess::positions(job);
+  REQUIRE(bond(after, 0, 1) == Catch::Approx(oh1).margin(1.0e-8));
+  REQUIRE(bond(after, 0, 2) == Catch::Approx(oh2).margin(1.0e-8));
+  REQUIRE(bond(after, 3, 4) == Catch::Approx(oh1).margin(1.0e-8));
+  REQUIRE(bond(after, 3, 5) == Catch::Approx(oh2).margin(1.0e-8));
+  double closest = 1.0e9;
+  for (int a = 0; a < 3; ++a) {
+    for (int b = 3; b < 6; ++b) {
+      closest = std::min(closest, bond(after, a, b));
+    }
+  }
+  REQUIRE(closest >= 1.6 - 1.0e-5);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "BasinHoppingJob stock defaults quench a Lennard-Jones cluster",
+                 "[job][basin_hopping][integration]") {
+  EON_REQUIRE_TEST_DATA(".");
+  writeConfig(R"(
+[Main]
+job = basin_hopping
+random_seed = 42
+
+[Potential]
+potential = lj
+
+[Basin Hopping]
+steps = 2
+temperature = 300.0
+displacement = 0.5
+push_apart_distance = 0.4
+)");
+  std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+  auto results = runJob();
+  REQUIRE(results.count("termination_reason") > 0);
+  REQUIRE(std::isfinite(std::stod(results["minimum_energy"])));
+  REQUIRE(std::stod(results["minimum_energy"]) < 0.0);
+  REQUIRE(std::stod(results["acceptance_ratio"]) >= 0.0);
+  REQUIRE(std::stod(results["acceptance_ratio"]) <= 1.0);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "BasinHoppingJob stock defaults swap a binary cluster",
+                 "[job][basin_hopping][integration]") {
+  {
+    Parameters writeParams;
+    ParametersLoadAccess::potential_options(writeParams).potential =
+        PotType::LJ;
+    auto pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, writeParams));
+    Matter cluster(pot, writeParams);
+    cluster.resize(4);
+    cluster.setCell(30.0 * Matrix3d::Identity());
+    cluster.setAtomicNr(0, 1);
+    cluster.setAtomicNr(1, 1);
+    cluster.setAtomicNr(2, 2);
+    cluster.setAtomicNr(3, 2);
+    cluster.setPosition(1, 0, 1.2);
+    cluster.setPosition(2, 1, 1.2);
+    cluster.setPosition(3, 0, 1.2);
+    cluster.setPosition(3, 1, 1.2);
+    REQUIRE(eonc::io::io_ok(cluster.matter2con((workdir / "pos.con").string())));
+  }
+  writeConfig(R"(
+[Main]
+job = basin_hopping
+random_seed = 3
+
+[Potential]
+potential = lj
+
+[Basin Hopping]
+steps = 20
+temperature = 300.0
+displacement = 0.4
+push_apart_distance = 0.4
+adjust_displacement = false
+)");
+  auto results = runJob();
+  REQUIRE(std::isfinite(std::stod(results["minimum_energy"])));
+  REQUIRE(std::stod(results["total_swap_steps"]) > 0.0);
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,

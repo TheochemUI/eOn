@@ -32,12 +32,37 @@ public:
   /// Divides by `kB * temperature` only for an uphill hop when both are
   /// positive. Non-positive temperature or `kB` refuses that hop.
   static double metropolisProbability(double de, double kB, double temperature);
+  /// Angle-axis map. `omega` is the rotation vector in radians.
+  /// A zero vector returns `point`.
+  static Vector3d rotateAngleAxis(const Vector3d &point, const Vector3d &omega);
+  /// Column k is d(rotateAngleAxis)/d(omega_k).
+  static Matrix3d rotateAngleAxisJacobian(const Vector3d &point,
+                                         const Vector3d &omega);
+
+  /// One rigid water molecule: oxygen and its two hydrogens.
+  struct RigidBody {
+    long atom[3]{};
+  };
 
 private:
   friend class BasinHoppingDisplaceAccess;
   VectorXd calculateDistanceFromCenter(Matter *matter);
   AtomMatrix displaceRandom(double maxDisplacement);
   void randomSwap(Matter *matter);
+  /// True when the optimizer section is still the client default.
+  /// Switches that default quench to L-BFGS.
+  bool configureStockQuench();
+  bool prepareRigidWater();
+  void displaceRigid(Matter *matter, double translation, double angle);
+  bool quench(Matter &matter, bool wantTight, double bestEnergy);
+  bool quenchCartesian(Matter &matter, bool wantTight, double bestEnergy);
+  bool quenchRigid(Matter &matter, bool wantTight, double bestEnergy);
+  void adaptStockStep(double &step, int recentAccept, int period);
+  void liftTemperature(double deltaE);
+  [[nodiscard]] double hopTemperature() const;
+  [[nodiscard]] double swapProbability(const std::vector<long> &elements) const;
+  [[nodiscard]] long jumpStepCount() const;
+  void separateWaters(AtomMatrix &positions) const;
   std::shared_ptr<Matter> current;
   std::shared_ptr<Matter> trial; // initial configuration
   std::vector<long> getElements(Matter *matter);
@@ -47,6 +72,16 @@ private:
   int disp_count{0}; // count of displacement moves
   int swap_count{0}; // count of swap moves
   int fcalls{0};
+  bool stock_{false};
+  bool rigidWater_{false};
+  /// Recent acceptance is already at the target, so a clash must not
+  /// keep raising the temperature.
+  bool temperatureHeld_{false};
+  double temperature_{300.0};
+  double angularDisplacement_{0.5};
+  double initialDisplacement_{0.5};
+  double initialAngular_{0.5};
+  std::vector<RigidBody> rigidBodies_;
 
   std::vector<std::shared_ptr<Matter>> uniqueStructures;
   std::vector<double> uniqueEnergies;

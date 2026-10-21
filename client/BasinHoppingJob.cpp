@@ -11,9 +11,12 @@
 */
 
 #include "eon/EonLogger.h"
+#include <algorithm>
+#include <array>
 #include <cmath>
 #include <format>
 #include <fstream>
+#include <limits>
 #include <stdexcept>
 #include <string>
 
@@ -22,6 +25,7 @@
 #include "eon/Dynamics.h"
 #include "eon/HelperFunctions.h"
 #include "eon/JobResult.h"
+#include "eon/LBFGS.h"
 #include "eon/ObjectiveFunction.h"
 #include "eon/Optimizer.h"
 #include "eon/PotRegistry.h"
@@ -86,7 +90,29 @@ std::vector<std::string> BasinHoppingJob::run() {
   *trial = *current;
   *minTrial = *current;
 
-  current->relax(true);
+  stock_ = configureStockQuench();
+  temperature_ = params.main_options().temperature;
+  initialDisplacement_ = params.basin_hopping_options().displacement;
+  angularDisplacement_ = initialAngular_;
+  if (stock_) {
+    prepareRigidWater();
+    if (!rigidWater_ && !current->getPeriodic()) {
+      bool fixed = false;
+      for (long i = 0; i < current->numberOfAtoms(); ++i) {
+        if (current->getFixed(i)) {
+          fixed = true;
+          break;
+        }
+      }
+      if (!fixed) {
+        ParametersLoadAccess::optimizer_options(params).lbfgs.project_rigid =
+            true;
+      }
+    }
+    quench(*current, true, std::numeric_limits<double>::infinity());
+  } else {
+    current->relax(true);
+  }
 
   double currentEnergy = current->getPotentialEnergy();
   double minimumEnergy = currentEnergy;
@@ -109,13 +135,21 @@ std::vector<std::string> BasinHoppingJob::run() {
   for (int step = 0; step < nsteps; step++) {
 
     // Swap or displace
-    if (eonc::rng::randomDouble(1.0) <
-            params.basin_hopping_options().swap_probability &&
+    const double swapP = swapProbability(Elements);
+    if (eonc::rng::randomDouble(1.0) < swapP &&
         step < params.basin_hopping_options().steps) {
       *swapTrial = *current;
       randomSwap(swapTrial.get());
       swapMove = true;
       *minTrial = *swapTrial;
+    } else if (rigidWater_) {
+      if (step >= params.basin_hopping_options().steps) {
+        quench_displacements++;
+      }
+      *trial = *current;
+      displaceRigid(trial.get(), curDisplacement, angularDisplacement_);
+      swapMove = false;
+      *minTrial = *trial;
     } else {
       AtomMatrix displacement;
       displacement = displaceRandom(curDisplacement);
@@ -137,22 +171,26 @@ std::vector<std::string> BasinHoppingJob::run() {
       }
     }
 
-    minTrial->relax(true);
-
-    double deltaE = minTrial->getPotentialEnergy() - currentEnergy;
+    const bool converged =
+        quench(*minTrial, false, minimumEnergy);
+    const double trialEnergy = minTrial->getPotentialEnergy();
+    const bool finiteTrial = std::isfinite(trialEnergy);
+    double deltaE = finiteTrial ? trialEnergy - currentEnergy : 0.0;
     double p = 0.0;
-    if (step >= params.basin_hopping_options().steps) {
-      if (deltaE <= 0.0) {
-        p = 1.0;
+    if (converged && finiteTrial) {
+      if (step >= params.basin_hopping_options().steps) {
+        if (deltaE <= 0.0) {
+          p = 1.0;
+        }
+      } else {
+        // Divide only for an uphill hop at positive temperature.
+        p = metropolisProbability(deltaE, params.constants().kB,
+                                  hopTemperature());
       }
-    } else {
-      // Divide only for an uphill hop at positive temperature.
-      p = metropolisProbability(deltaE, params.constants().kB,
-                                params.main_options().temperature);
     }
 
     bool accepted = false;
-    if (eonc::rng::randomDouble(1.0) < p) {
+    if (converged && finiteTrial && eonc::rng::randomDouble(1.0) < p) {
       accepted = true;
       if (params.basin_hopping_options().significant_structure) {
         *current = *minTrial;
@@ -220,6 +258,10 @@ std::vector<std::string> BasinHoppingJob::run() {
 
       consecutive_rejected_trials = 0; // STC: I think this should go here.
     } else {
+      if (stock_ && converged && finiteTrial && deltaE > 0.0 &&
+          step < params.basin_hopping_options().steps) {
+        liftTemperature(deltaE);
+      }
       consecutive_rejected_trials++;
     }
 
@@ -238,18 +280,29 @@ std::vector<std::string> BasinHoppingJob::run() {
         step < params.basin_hopping_options().steps) {
       consecutive_rejected_trials = 0;
       AtomMatrix jump;
-      for (int j = 0; j < params.basin_hopping_options().jump_steps; j++) {
+      const long nJump = jumpStepCount();
+      for (int j = 0; j < nJump; j++) {
         jump_count++;
-        jump = displaceRandom(curDisplacement);
-        current->setPositions(current->getPositions() + jump);
+        if (rigidWater_) {
+          displaceRigid(current.get(), curDisplacement, angularDisplacement_);
+        } else {
+          jump = displaceRandom(curDisplacement);
+          current->setPositions(current->getPositions() + jump);
+        }
         // Only a minimized jump is a basin. The raw geometry must not become
         // the Metropolis reference or the stored global minimum.
         if (params.basin_hopping_options().significant_structure) {
-          eonc::geometry::pushApart(
-              current, params.basin_hopping_options().push_apart_distance);
-          current->relax(true);
+          if (!rigidWater_) {
+            eonc::geometry::pushApart(
+                current, params.basin_hopping_options().push_apart_distance);
+          }
+          if (stock_) {
+            quench(*current, false, minimumEnergy);
+          } else {
+            current->relax(true);
+          }
           currentEnergy = current->getPotentialEnergy();
-          if (currentEnergy < minimumEnergy) {
+          if (std::isfinite(currentEnergy) && currentEnergy < minimumEnergy) {
             minimumEnergy = currentEnergy;
             *minimumEnergyStructure = *current;
           }
@@ -262,12 +315,16 @@ std::vector<std::string> BasinHoppingJob::run() {
     // A zero period is not an interval; the modulo would divide by zero.
     if (nadjust != 0 && (step + 1) % nadjust == 0 &&
         params.basin_hopping_options().adjust_displacement) {
-      double recentRatio =
-          static_cast<double>(recentAccept) / static_cast<double>(nadjust);
-      if (recentRatio > params.basin_hopping_options().target_ratio) {
-        curDisplacement *= 1.0 + adjustFraction;
+      if (stock_) {
+        adaptStockStep(curDisplacement, recentAccept, nadjust);
       } else {
-        curDisplacement *= 1.0 - adjustFraction;
+        double recentRatio =
+            static_cast<double>(recentAccept) / static_cast<double>(nadjust);
+        if (recentRatio > params.basin_hopping_options().target_ratio) {
+          curDisplacement *= 1.0 + adjustFraction;
+        } else {
+          curDisplacement *= 1.0 - adjustFraction;
+        }
       }
 
       recentAccept = 0;
@@ -293,7 +350,7 @@ std::vector<std::string> BasinHoppingJob::run() {
     const double nsteps_ratio = params.basin_hopping_options().steps;
     env.extras.emplace_back("acceptance_ratio",
                             nsteps_ratio ? totalAccept / nsteps_ratio : 0.0);
-    if (params.basin_hopping_options().swap_probability > 0) {
+    if (params.basin_hopping_options().swap_probability > 0 || swap_count > 0) {
       env.extras.emplace_back(
           "swap_acceptance_ratio",
           swap_count ? swap_accept / static_cast<double>(swap_count) : 0.0);
@@ -305,6 +362,10 @@ std::vector<std::string> BasinHoppingJob::run() {
                             static_cast<double>(jump_count));
     env.extras.emplace_back("total_swap_steps",
                             static_cast<double>(swap_count));
+    if (stock_) {
+      env.extras.emplace_back("stock_temperature", temperature_);
+      env.extras.emplace_back("stock_displacement", curDisplacement);
+    }
     env.writeResultsDat(resultsFilename);
     returnFiles.push_back(resultsFilename);
   }
@@ -318,6 +379,541 @@ std::vector<std::string> BasinHoppingJob::run() {
 
   // minTrial and swapTrial automatically cleaned up by unique_ptr
   return returnFiles;
+}
+
+namespace {
+
+class RigidBodyObjective : public ObjectiveFunction {
+public:
+  RigidBodyObjective(Matter &matter, const Parameters &parameters,
+                     const std::vector<BasinHoppingJob::RigidBody> &bodies)
+      : ObjectiveFunction(parameters), matter_(matter), bodies_(bodies) {
+    x_ = VectorXd::Zero(6 * static_cast<Eigen::Index>(bodies_.size()));
+    reference_.resize(bodies_.size());
+    const AtomMatrix pos = matter_.getPositions();
+    for (size_t b = 0; b < bodies_.size(); ++b) {
+      Vector3d com = Vector3d::Zero();
+      for (int site = 0; site < 3; ++site) {
+        const long atom = bodies_[b].atom[site];
+        com[0] += pos(atom, 0);
+        com[1] += pos(atom, 1);
+        com[2] += pos(atom, 2);
+      }
+      com /= 3.0;
+      x_.segment<3>(static_cast<Eigen::Index>(6 * b)) = com;
+      for (int site = 0; site < 3; ++site) {
+        const long atom = bodies_[b].atom[site];
+        reference_[b][site] =
+            Vector3d(pos(atom, 0), pos(atom, 1), pos(atom, 2)) - com;
+      }
+    }
+    apply(x_);
+  }
+
+  double getEnergy() override { return matter_.getPotentialEnergy(); }
+
+  VectorXd getGradient(bool /*fdstep*/ = false) override {
+    const AtomMatrix forces = matter_.getForces();
+    VectorXd gradient =
+        VectorXd::Zero(6 * static_cast<Eigen::Index>(bodies_.size()));
+    for (size_t b = 0; b < bodies_.size(); ++b) {
+      const Vector3d omega =
+          x_.segment<3>(static_cast<Eigen::Index>(6 * b + 3));
+      Vector3d dCom = Vector3d::Zero();
+      Vector3d dOmega = Vector3d::Zero();
+      for (int site = 0; site < 3; ++site) {
+        const long atom = bodies_[b].atom[site];
+        const Vector3d dEdr(-forces(atom, 0), -forces(atom, 1),
+                            -forces(atom, 2));
+        dCom += dEdr;
+        const Matrix3d jacobian =
+            BasinHoppingJob::rotateAngleAxisJacobian(reference_[b][site], omega);
+        dOmega += jacobian.transpose() * dEdr;
+      }
+      gradient.segment<3>(static_cast<Eigen::Index>(6 * b)) = dCom;
+      gradient.segment<3>(static_cast<Eigen::Index>(6 * b + 3)) = dOmega;
+    }
+    return gradient;
+  }
+
+  void setPositions(const VectorXd &x) override {
+    x_ = x;
+    apply(x_);
+  }
+  VectorXd getPositions() override { return x_; }
+  int degreesOfFreedom() override { return static_cast<int>(x_.size()); }
+  bool isConverged() override {
+    return getConvergence() < params.optimizer_options().converged_force;
+  }
+  double getConvergence() override {
+    const VectorXd gradient = getGradient();
+    const double n = static_cast<double>(gradient.size());
+    return n > 0.0 ? gradient.norm() / std::sqrt(n) : 0.0;
+  }
+  VectorXd difference(const VectorXd &a, const VectorXd &b) override {
+    return a - b;
+  }
+  bool getPeriodic() const override { return false; }
+
+private:
+  void apply(const VectorXd &x) {
+    AtomMatrix pos = matter_.getPositions();
+    for (size_t b = 0; b < bodies_.size(); ++b) {
+      const Vector3d com = x.segment<3>(static_cast<Eigen::Index>(6 * b));
+      const Vector3d omega =
+          x.segment<3>(static_cast<Eigen::Index>(6 * b + 3));
+      for (int site = 0; site < 3; ++site) {
+        const Vector3d placed =
+            com + BasinHoppingJob::rotateAngleAxis(reference_[b][site], omega);
+        const long atom = bodies_[b].atom[site];
+        pos(atom, 0) = placed[0];
+        pos(atom, 1) = placed[1];
+        pos(atom, 2) = placed[2];
+      }
+    }
+    matter_.setPositions(pos);
+  }
+
+  Matter &matter_;
+  std::vector<BasinHoppingJob::RigidBody> bodies_;
+  std::vector<std::array<Vector3d, 3>> reference_;
+  VectorXd x_;
+};
+
+} // namespace
+
+bool BasinHoppingJob::configureStockQuench() {
+  auto &opt = ParametersLoadAccess::optimizer_options(params);
+  if (opt.method != OptType::CG || opt.max_iterations != 1000 ||
+      opt.converged_force != 0.01 || opt.max_move != 0.2) {
+    return false;
+  }
+  opt.method = OptType::LBFGS;
+  opt.lbfgs.accept = "energy";
+  if (opt.lbfgs.memory < 20) {
+    opt.lbfgs.memory = 20;
+  }
+  opt.lbfgs.auto_scale = true;
+  opt.lbfgs.curvature = "damped";
+  // RMS so the same tolerance means the same force per coordinate at
+  // every cluster size. The norm of the force vector tightens as N grows.
+  opt.convergence_metric = "rms";
+  // A larger trial step reaches the basin in fewer iterations. Energy
+  // acceptance still rejects a step that raises the energy.
+  opt.max_move = 0.4;
+  return true;
+}
+
+bool BasinHoppingJob::prepareRigidWater() {
+  rigidBodies_.clear();
+  rigidWater_ = false;
+  const long nAtoms = current->numberOfAtoms();
+  if (nAtoms < 3 || nAtoms % 3 != 0) {
+    return false;
+  }
+  std::vector<long> oxygens;
+  std::vector<long> hydrogens;
+  oxygens.reserve(static_cast<size_t>(nAtoms / 3));
+  hydrogens.reserve(static_cast<size_t>(2 * nAtoms / 3));
+  for (long atom = 0; atom < nAtoms; ++atom) {
+    if (current->getFixed(atom)) {
+      return false;
+    }
+    const long z = current->getAtomicNr(atom);
+    if (z == 8) {
+      oxygens.push_back(atom);
+    } else if (z == 1) {
+      hydrogens.push_back(atom);
+    } else {
+      return false;
+    }
+  }
+  if (oxygens.empty() || hydrogens.size() != oxygens.size() * 2) {
+    return false;
+  }
+  std::vector<char> used(hydrogens.size(), 0);
+  const AtomMatrix pos = current->getPositions();
+  constexpr double kBond = 1.35;
+  for (long oxygen : oxygens) {
+    int first = -1;
+    int second = -1;
+    double firstDist = kBond;
+    double secondDist = kBond;
+    const Vector3d ro(pos(oxygen, 0), pos(oxygen, 1), pos(oxygen, 2));
+    for (size_t h = 0; h < hydrogens.size(); ++h) {
+      if (used[h]) {
+        continue;
+      }
+      const long hydrogen = hydrogens[h];
+      const Vector3d rh(pos(hydrogen, 0), pos(hydrogen, 1), pos(hydrogen, 2));
+      const double dist = (rh - ro).norm();
+      if (dist < firstDist) {
+        second = first;
+        secondDist = firstDist;
+        first = static_cast<int>(h);
+        firstDist = dist;
+      } else if (dist < secondDist) {
+        second = static_cast<int>(h);
+        secondDist = dist;
+      }
+    }
+    if (first < 0 || second < 0) {
+      rigidBodies_.clear();
+      return false;
+    }
+    used[static_cast<size_t>(first)] = 1;
+    used[static_cast<size_t>(second)] = 1;
+    RigidBody body;
+    body.atom[0] = oxygen;
+    body.atom[1] = hydrogens[static_cast<size_t>(first)];
+    body.atom[2] = hydrogens[static_cast<size_t>(second)];
+    rigidBodies_.push_back(body);
+  }
+  rigidWater_ = rigidBodies_.size() == oxygens.size();
+  return rigidWater_;
+}
+
+void BasinHoppingJob::separateWaters(AtomMatrix &positions) const {
+  // Keep atoms of different molecules from sitting on each other. A
+  // hydrogen bond is longer than this, so the push only breaks clashes.
+  constexpr double kMinPair = 1.6;
+  constexpr int kPasses = 12;
+  for (int pass = 0; pass < kPasses; ++pass) {
+    bool moved = false;
+    for (size_t left = 0; left < rigidBodies_.size(); ++left) {
+      for (size_t right = left + 1; right < rigidBodies_.size(); ++right) {
+        double best = kMinPair;
+        Vector3d delta = Vector3d::Zero();
+        bool hit = false;
+        for (int siteA = 0; siteA < 3; ++siteA) {
+          const long atomA = rigidBodies_[left].atom[siteA];
+          const Vector3d ra(positions(atomA, 0), positions(atomA, 1),
+                            positions(atomA, 2));
+          for (int siteB = 0; siteB < 3; ++siteB) {
+            const long atomB = rigidBodies_[right].atom[siteB];
+            const Vector3d rb(positions(atomB, 0), positions(atomB, 1),
+                              positions(atomB, 2));
+            const Vector3d step = ra - rb;
+            const double dist = step.norm();
+            if (dist < best) {
+              best = dist;
+              delta = step;
+              hit = true;
+            }
+          }
+        }
+        if (!hit) {
+          continue;
+        }
+        const double dist = delta.norm();
+        const Vector3d dir =
+            dist > 1.0e-8 ? (delta / dist) : Vector3d(1.0, 0.0, 0.0);
+        const double push = 0.5 * (kMinPair - dist) + 1.0e-6;
+        for (int site = 0; site < 3; ++site) {
+          const long a = rigidBodies_[left].atom[site];
+          const long b = rigidBodies_[right].atom[site];
+          for (int axis = 0; axis < 3; ++axis) {
+            positions(a, axis) += push * dir[axis];
+            positions(b, axis) -= push * dir[axis];
+          }
+        }
+        moved = true;
+      }
+    }
+    if (!moved) {
+      break;
+    }
+  }
+}
+
+void BasinHoppingJob::displaceRigid(Matter *matter, double translation,
+                                    double angle) {
+  disp_count++;
+  AtomMatrix positions = matter->getPositions();
+  int only = -1;
+  if (params.basin_hopping_options().single_atom_displace &&
+      !rigidBodies_.empty()) {
+    only = static_cast<int>(eonc::rng::randomInt(
+        0, static_cast<int>(rigidBodies_.size()) - 1));
+  }
+  for (size_t body = 0; body < rigidBodies_.size(); ++body) {
+    if (only >= 0 && static_cast<int>(body) != only) {
+      continue;
+    }
+    Vector3d com = Vector3d::Zero();
+    std::array<Vector3d, 3> local;
+    for (int site = 0; site < 3; ++site) {
+      const long atom = rigidBodies_[body].atom[site];
+      local[static_cast<size_t>(site)] = Vector3d(
+          positions(atom, 0), positions(atom, 1), positions(atom, 2));
+      com += local[static_cast<size_t>(site)];
+    }
+    com /= 3.0;
+    Vector3d shift;
+    Vector3d omega;
+    for (int axis = 0; axis < 3; ++axis) {
+      shift[axis] = eonc::rng::randomDouble(2.0 * translation) - translation;
+      omega[axis] = eonc::rng::randomDouble(2.0 * angle) - angle;
+    }
+    for (int site = 0; site < 3; ++site) {
+      local[static_cast<size_t>(site)] -= com;
+    }
+    com += shift;
+    for (int site = 0; site < 3; ++site) {
+      const Vector3d placed =
+          com + rotateAngleAxis(local[static_cast<size_t>(site)], omega);
+      const long atom = rigidBodies_[body].atom[site];
+      positions(atom, 0) = placed[0];
+      positions(atom, 1) = placed[1];
+      positions(atom, 2) = placed[2];
+    }
+  }
+  separateWaters(positions);
+  matter->setPositions(positions);
+}
+
+bool BasinHoppingJob::quench(Matter &matter, bool wantTight,
+                             double bestEnergy) {
+  if (!stock_) {
+    matter.relax(true);
+    return std::isfinite(matter.getPotentialEnergy());
+  }
+  if (rigidWater_) {
+    return quenchRigid(matter, wantTight, bestEnergy);
+  }
+  return quenchCartesian(matter, wantTight, bestEnergy);
+}
+
+namespace {
+
+bool quenchIsUsable(const Matter &matter, bool converged) {
+  if (!std::isfinite(matter.getPotentialEnergy())) {
+    return false;
+  }
+  if (converged) {
+    return true;
+  }
+  const double n = std::max(
+      1.0, 3.0 * static_cast<double>(matter.numberOfAtoms()));
+  const double rms = matter.getForces().norm() / std::sqrt(n);
+  return std::isfinite(rms) && rms < 0.05;
+}
+
+bool energyWorthTightening(double energy, double bestEnergy) {
+  if (!std::isfinite(energy) || !std::isfinite(bestEnergy)) {
+    return false;
+  }
+  // A loose quench that has reached the basin floor is already within
+  // a few hundredths of its minimum. Only those candidates pay for a
+  // second, tighter minimization.
+  const double window = std::max(0.02, 1.0e-4 * std::abs(bestEnergy));
+  return energy < bestEnergy + window;
+}
+
+} // namespace
+
+bool BasinHoppingJob::quenchCartesian(Matter &matter, bool wantTight,
+                                      double bestEnergy) {
+  auto &opt = ParametersLoadAccess::optimizer_options(params);
+  const double savedTol = opt.converged_force;
+  const size_t savedIter = opt.max_iterations;
+  auto stage = [&](double tolerance, size_t iterations) {
+    opt.converged_force = tolerance;
+    opt.max_iterations = iterations;
+    return matter.relax(true);
+  };
+  // Loose RMS first, enough iterations to finish a cluster quench.
+  // A tight RMS follows only for a hop that might improve the best
+  // energy, so the other hops stay cheap.
+  bool converged = stage(0.01, 400);
+  double energy = matter.getPotentialEnergy();
+  if (wantTight || energyWorthTightening(energy, bestEnergy)) {
+    converged = stage(1.0e-3, 500);
+    energy = matter.getPotentialEnergy();
+    if (!converged) {
+      converged = stage(1.0e-2, 200);
+      energy = matter.getPotentialEnergy();
+    }
+  }
+  opt.converged_force = savedTol;
+  opt.max_iterations = savedIter;
+  return quenchIsUsable(matter, converged);
+}
+
+bool BasinHoppingJob::quenchRigid(Matter &matter, bool wantTight,
+                                  double bestEnergy) {
+  auto &opt = ParametersLoadAccess::optimizer_options(params);
+  const double savedTol = opt.converged_force;
+  const size_t savedIter = opt.max_iterations;
+  const bool savedProject = opt.lbfgs.project_rigid;
+  // The coordinate chart is already translation and rotation. Projecting
+  // Cartesian rigid modes out of those six numbers is the wrong null space.
+  opt.lbfgs.project_rigid = false;
+  auto stage = [&](double tolerance, size_t iterations) {
+    opt.converged_force = tolerance;
+    opt.max_iterations = iterations;
+    auto objective =
+        std::make_shared<RigidBodyObjective>(matter, params, rigidBodies_);
+    LBFGS solver(objective, params);
+    return solver.run(iterations, opt.max_move) > 0;
+  };
+  bool converged = stage(0.01, 400);
+  double energy = matter.getPotentialEnergy();
+  if (wantTight || energyWorthTightening(energy, bestEnergy)) {
+    converged = stage(1.0e-3, 500);
+    energy = matter.getPotentialEnergy();
+    if (!converged) {
+      converged = stage(1.0e-2, 200);
+      energy = matter.getPotentialEnergy();
+    }
+  }
+  opt.converged_force = savedTol;
+  opt.max_iterations = savedIter;
+  opt.lbfgs.project_rigid = savedProject;
+  return quenchIsUsable(matter, converged);
+}
+
+void BasinHoppingJob::adaptStockStep(double &step, int recentAccept,
+                                     int period) {
+  if (period <= 0) {
+    return;
+  }
+  const double ratio =
+      static_cast<double>(recentAccept) / static_cast<double>(period);
+  const double fraction = params.basin_hopping_options().adjust_fraction;
+  const double target = params.basin_hopping_options().target_ratio;
+  constexpr double kDispMax = 1.5;
+  constexpr double kAngMax = 1.5;
+  // Hold the step near its initial length. Growing it to the hard cap
+  // while the temperature is high randomises the cluster every hop.
+  const double stepAim = std::min(kDispMax, std::max(initialDisplacement_, 1.0e-6));
+  const double angAim = std::min(kAngMax, std::max(initialAngular_, 1.0e-6));
+  const double stepFloor = std::max(0.15, 0.5 * stepAim);
+  const double angFloor = std::max(0.15, 0.5 * angAim);
+  temperatureHeld_ = ratio + 1.0e-12 >= target && target > 0.0;
+  if (ratio == 0.0) {
+    temperature_ = std::min(temperature_ * 2.0, 1.0e8);
+    step = stepAim;
+    angularDisplacement_ = angAim;
+  } else if (ratio + 1.0e-12 >= target) {
+    if (step < stepAim * 0.98) {
+      step = std::min(stepAim, step * (1.0 + fraction));
+      angularDisplacement_ = std::min(angAim, angularDisplacement_ * (1.0 + fraction));
+    } else {
+      temperature_ = std::max(temperature_ / 1.25, 1.0);
+      if (step > stepAim) {
+        step = std::max(stepAim, step * (1.0 - fraction));
+      }
+      if (angularDisplacement_ > angAim) {
+        angularDisplacement_ =
+            std::max(angAim, angularDisplacement_ * (1.0 - fraction));
+      }
+    }
+  } else if (step > stepFloor * 1.001) {
+    step = std::max(stepFloor, step * (1.0 - fraction));
+    angularDisplacement_ =
+        std::max(angFloor, angularDisplacement_ * (1.0 - fraction));
+  } else {
+    temperature_ = std::min(temperature_ * 1.5, 1.0e8);
+    step = stepAim;
+    angularDisplacement_ = angAim;
+  }
+}
+
+void BasinHoppingJob::liftTemperature(double deltaE) {
+  const double kB = params.constants().kB;
+  if (temperatureHeld_) {
+    return;
+  }
+  if (!(deltaE > 0.0) || !(kB > 0.0) || !(temperature_ > 0.0)) {
+    return;
+  }
+  const double kT = kB * temperature_;
+  // kB is in eV/K. A surface in another unit rejects ordinary uphill
+  // hops at 300 K. Double kT only while the gap is still enormous
+  // compared with kT. A clash at the working temperature must not
+  // ratchet kT upward; the acceptance period owns that adjustment.
+  if (deltaE > 20.0 * kT) {
+    temperature_ = std::min((kT * 2.0) / kB, 1.0e8);
+  }
+}
+
+double BasinHoppingJob::hopTemperature() const {
+  return stock_ ? temperature_ : params.main_options().temperature;
+}
+
+double BasinHoppingJob::swapProbability(const std::vector<long> &elements) const {
+  const double configured = params.basin_hopping_options().swap_probability;
+  if (stock_ && configured == 0.0 && elements.size() > 1) {
+    return 0.5;
+  }
+  return configured;
+}
+
+long BasinHoppingJob::jumpStepCount() const {
+  const long configured = params.basin_hopping_options().jump_steps;
+  if (stock_ && configured == 0) {
+    return 5;
+  }
+  return configured;
+}
+
+Vector3d BasinHoppingJob::rotateAngleAxis(const Vector3d &point,
+                                          const Vector3d &omega) {
+  const double alpha2 = omega.squaredNorm();
+  const double alpha = std::sqrt(alpha2);
+  double cosine = 1.0;
+  double c3 = -0.5;
+  double sineOver = 1.0;
+  if (alpha >= 1.0e-8) {
+    cosine = std::cos(alpha);
+    c3 = (cosine - 1.0) / alpha2;
+    sineOver = std::sin(alpha) / alpha;
+  }
+  const double projection = omega.dot(point);
+  const Vector3d crossed = omega.cross(point);
+  return cosine * point - c3 * projection * omega - sineOver * crossed;
+}
+
+Matrix3d BasinHoppingJob::rotateAngleAxisJacobian(const Vector3d &point,
+                                                 const Vector3d &omega) {
+  const double alpha2 = omega.squaredNorm();
+  const double alpha = std::sqrt(alpha2);
+  const bool small = alpha < 1.0e-8;
+  double c3 = -0.5;
+  double sineOver = 1.0;
+  double dCosine = 0.0;
+  double dC3 = 0.0;
+  double dSine = 0.0;
+  Vector3d dAlpha = Vector3d::Zero();
+  if (!small) {
+    const double cosine = std::cos(alpha);
+    const double sine = std::sin(alpha);
+    c3 = (cosine - 1.0) / alpha2;
+    sineOver = sine / alpha;
+    dCosine = -sine;
+    dC3 = (-sine * alpha2 - (cosine - 1.0) * 2.0 * alpha) / (alpha2 * alpha2);
+    dSine = (cosine * alpha - sine) / alpha2;
+    dAlpha = omega / alpha;
+  }
+  const double projection = omega.dot(point);
+  const Vector3d crossed = omega.cross(point);
+  Matrix3d jacobian;
+  for (int axis = 0; axis < 3; ++axis) {
+    Vector3d unit = Vector3d::Zero();
+    unit[axis] = 1.0;
+    const double scaleCosine = small ? 0.0 : dCosine * dAlpha[axis];
+    const double scaleC3 = small ? 0.0 : dC3 * dAlpha[axis];
+    const double scaleSine = small ? 0.0 : dSine * dAlpha[axis];
+    Vector3d term = scaleCosine * point;
+    term -= scaleC3 * projection * omega;
+    term -= c3 * point[axis] * omega;
+    term -= c3 * projection * unit;
+    term -= scaleSine * crossed;
+    term -= sineOver * unit.cross(point);
+    jacobian.col(axis) = term;
+  }
+  return jacobian;
 }
 
 double BasinHoppingJob::metropolisProbability(double de, double kB,
