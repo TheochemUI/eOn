@@ -172,7 +172,9 @@ std::vector<std::string> ProcessSearchJob::run() {
     {
       auto minMode = std::make_unique<MinModeSaddleSearch>(
           saddle, mode, initial->getPotentialEnergy(), params, pot);
-      loadKnownSaddles("known_saddles.dat", *initial, *minMode);
+      if (params.process_search_options().known_saddles) {
+        loadKnownSaddles("known_saddles.dat", *initial, *minMode);
+      }
       saddleSearch = std::move(minMode);
     }
 #ifdef WITH_ARTN

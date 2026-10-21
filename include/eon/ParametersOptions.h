@@ -196,6 +196,7 @@ using structure_comparison_options_t = StructureComparisonOptions;
 struct process_search_options_t {
   bool minimize_first{true};
   double minimization_offset{0.2}; // resolved to optimizer_options.max_move
+  bool known_saddles{true};
 };
 
 // [Saddle Search] //

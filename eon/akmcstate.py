@@ -759,7 +759,8 @@ class AKMCState(state.State):
         termination = result["results"]["termination_reason"]
         self.append_search_result(result, result_state_code[termination], superbasin)
 
-        if termination in self.KNOWN_BAD_TERMINATIONS and "saddle.con" in result:
+        if (self.config.process_search_known_saddles
+                and termination in self.KNOWN_BAD_TERMINATIONS and "saddle.con" in result):
             self.store_known_bad_saddle(result)
 
         # If a MD saddle search is too short add it to the total clock time.

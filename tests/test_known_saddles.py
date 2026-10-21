@@ -47,6 +47,14 @@ def test_failed_saddles_are_stored_once_and_listed(tmp_path):
     assert np.allclose(known[1][1].r, saddle.r)
 
 
+def test_failed_saddles_are_not_stored_when_disabled(tmp_path):
+    cfg, _, state, _, _, reactant = _states(tmp_path)
+    assert cfg.process_search_known_saddles is True
+    cfg.process_search_known_saddles = False
+    state.register_bad_saddle(_bad(reactant, _atoms(2.9), 6, wuid=5))
+    assert not state.known_bad_path.exists()
+
+
 def test_known_saddle_result_is_a_repeat_or_a_failed_saddle(tmp_path):
     _, _, state, _, proc, reactant = _states(tmp_path)
     repeats = state.procs[proc]["repeats"]

@@ -102,6 +102,8 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << params.process_search_options().minimize_first << std::endl;
   os << "processSearchMinimizationOffset: "
      << params.process_search_options().minimization_offset << std::endl;
+  os << "processSearchKnownSaddles: " << std::boolalpha
+     << params.process_search_options().known_saddles << std::endl;
 
   os << "\n[Saddle Search]" << std::endl;
   os << "saddleMaxJumpAttempts: "

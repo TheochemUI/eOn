@@ -368,6 +368,10 @@ int load_ini(const INIReader &ini, Parameters &params) {
       ini.GetReal("Process Search", "minimization_offset",
                   ParametersLoadAccess::process_search_options(params)
                       .minimization_offset);
+  ParametersLoadAccess::process_search_options(params).known_saddles =
+      ini.GetBoolean(
+          "Process Search", "known_saddles",
+          ParametersLoadAccess::process_search_options(params).known_saddles);
 
   // [Optimizers] //
   auto inp_optMethod =

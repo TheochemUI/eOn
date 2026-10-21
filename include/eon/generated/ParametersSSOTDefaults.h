@@ -39,6 +39,7 @@ struct GeneratedDefaults {
   static constexpr auto STRUCTURE_COMPARISON_BRUTE_NEIGHBORS = false;
   static constexpr auto PROCESS_SEARCH_MINIMIZE_FIRST = true;
   static constexpr auto PROCESS_SEARCH_MINIMIZATION_OFFSET = 0.2;
+  static constexpr auto PROCESS_SEARCH_KNOWN_SADDLES = true;
   static constexpr auto OPTIMIZER_LBFGS_MEMORY = 20;
   static constexpr auto OPTIMIZER_LBFGS_INVERSE_CURVATURE = 0.01;
   static constexpr auto OPTIMIZER_LBFGS_MAX_INVERSE_CURVATURE = 0.0;

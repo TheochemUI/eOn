@@ -486,6 +486,22 @@ class ProcessSearchConfig(BaseModel):
         default=True,
         description="Every time a process search is run by a client the reactant will be minimized first before doing any saddle searches.",
     )
+    known_saddles: bool = Field(
+        default=True,
+        description="Stop a min-mode climb that reaches a saddle the state already has.",
+    )
+    """
+    The server sends each min-mode process search the saddles found from
+    its state: the processes, and the saddles of searches that converged
+    but failed afterwards (not connected, bad prefactor, barrier out of
+    window, unconverged minima, failed prefactor, negative barrier). A
+    climb point with negative curvature that matches one of them in energy
+    and structure, under the structure comparison, ends the search with
+    status 23 before the endpoint minimizations. The server records it as a
+    repeat of that process or as the same failed saddle again. Both the
+    server and the client read the key; with it false the server sends no
+    list and the client ignores one.
+    """
 
 
 class PrefactorConfig(BaseModel):

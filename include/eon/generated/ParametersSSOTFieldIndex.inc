@@ -103,6 +103,7 @@
     "Potential.pair_switch_width",
     "Potential.potential",
     "Potential.potentials_path",
+    "Process Search.known_saddles",
     "Process Search.minimization_offset",
     "Process Search.minimize_first",
     "RgpotPot.accuracy",

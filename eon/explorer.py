@@ -207,7 +207,7 @@ class ClientMinModeExplorer(MinModeExplorer):
             file_permission = 0o644
         invariants['pos.con'] = (reactIO, file_permission)
 
-        if self.config.saddle_method == 'min_mode':
+        if self.config.process_search_known_saddles and self.config.saddle_method == 'min_mode':
             known = self.state.known_saddles()
             if known:
                 knownIO = io.StringIO()

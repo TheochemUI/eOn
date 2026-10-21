@@ -61,6 +61,7 @@ removeTranslation: true
 [Process Search]
 processSearchMinimizeFirst: true
 processSearchMinimizationOffset: 0.200000000000000011
+processSearchKnownSaddles: true
 
 [Saddle Search]
 saddleMaxJumpAttempts: 3

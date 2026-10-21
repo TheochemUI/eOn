@@ -116,6 +116,7 @@ FIELD_SNAKE = {
     "bruteNeighbors": "brute_neighbors",
     "minimizeFirst": "minimize_first",
     "minimizationOffset": "minimization_offset",
+    "knownSaddles": "known_saddles",
     "optMethod": "opt_method",
     "convergenceMetric": "convergence_metric",
     "maxIterations": "max_iterations",
