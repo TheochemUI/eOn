@@ -46,8 +46,67 @@ class AKMCState(state.State):
                              reactant_path, self.config)
 
         self.bad_procdata_path = str(Path(self.path) / "badprocdata")
+        self.known_bad_path = Path(self.path) / "knownbad"
 
         self.con_cache = {}
+        self._known_bad = None
+
+    # Searches that converged a saddle but failed afterwards: not connected,
+    # bad prefactor, barrier out of window, endpoint minima unconverged,
+    # failed prefactor, negative barrier.
+    KNOWN_BAD_TERMINATIONS = (6, 7, 8, 9, 10, 14)
+    KNOWN_SADDLE = 23
+
+    def _matches(self, a, b):
+        return atoms.match(a, b, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, False,
+                           check_rotation=self.config.comp_check_rotation,
+                           use_identical=self.config.comp_use_identical,
+                           remove_translation=self.config.comp_remove_translation)
+
+    def load_known_bad_saddles(self):
+        """(saddle energy, structure) of each distinct failed saddle stored."""
+        if self._known_bad is None:
+            self._known_bad = []
+            index = self.known_bad_path / "index"
+            if index.is_file():
+                for line in index.read_text().splitlines():
+                    wuid, energy = line.split()
+                    saddle = io.loadcon(str(self.known_bad_path / ("saddle_%s.con" % wuid)))
+                    self._known_bad.append((float(energy), saddle))
+        return self._known_bad
+
+    def store_known_bad_saddle(self, result):
+        energy = result["results"]["potential_energy_saddle"]
+        saddle = io.loadcon(result["saddle.con"])
+        for known_energy, known in self.load_known_bad_saddles():
+            if abs(known_energy - energy) <= self.config.comp_eps_e and self._matches(saddle, known):
+                return
+        self.known_bad_path.mkdir(exist_ok=True)
+        with io.atomic_write(str(self.known_bad_path / ("saddle_%d.con" % result["wuid"]))) as f:
+            f.writelines(result["saddle.con"].getvalue())
+        with open(self.known_bad_path / "index", "a") as f:
+            f.write("%d %.10f\n" % (result["wuid"], energy))
+        self._known_bad.append((energy, saddle))
+
+    def known_saddles(self):
+        """(saddle energy, structure) of every saddle found from this state."""
+        self.load_process_table()
+        known = []
+        for id, proc in self.procs.items():
+            if id not in self.con_cache:
+                self.con_cache[id] = io.loadcon(self.proc_saddle_path(id))
+            known.append((proc["saddle_energy"], self.con_cache[id]))
+        return known + list(self.load_known_bad_saddles())
+
+    def register_known_saddle(self, result, superbasin=None):
+        """A climb that stopped on a known saddle: a repeat, or a failed saddle again."""
+        energy = self.get_energy()
+        if energy is not None:
+            barrier = result["results"]["potential_energy_saddle"] - energy
+            if self.find_repeat(result["saddle.con"], barrier) is not None:
+                return self.add_process(result, superbasin)
+        self.register_bad_saddle(result, superbasin=superbasin)
+        return None
 
 
     def find_repeat(self, saddle_file, barrier):
@@ -690,10 +749,18 @@ class AKMCState(state.State):
                              "No Negative Mode at Saddle",
                              "No Forward Barrier in Minimized Band",
                              "MinMode Zero Mode Abort",
-                             "Optimizer Error"
+                             "Optimizer Error",
+                             "Dimer Lost Mode",
+                             "Dimer Restored Best",
+                             "ARTn Error",
+                             "Known Saddle"
                              ]
         self.set_bad_saddle_count(self.get_bad_saddle_count() + 1)
-        self.append_search_result(result, result_state_code[result["results"]["termination_reason"]], superbasin)
+        termination = result["results"]["termination_reason"]
+        self.append_search_result(result, result_state_code[termination], superbasin)
+
+        if termination in self.KNOWN_BAD_TERMINATIONS and "saddle.con" in result:
+            self.store_known_bad_saddle(result)
 
         # If a MD saddle search is too short add it to the total clock time.
         if 'simulation_time' in result['results']:

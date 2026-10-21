@@ -207,6 +207,13 @@ class ClientMinModeExplorer(MinModeExplorer):
             file_permission = 0o644
         invariants['pos.con'] = (reactIO, file_permission)
 
+        if self.config.saddle_method == 'min_mode':
+            known = self.state.known_saddles()
+            if known:
+                knownIO = io.StringIO()
+                io.save_known_saddles(knownIO, known, self.reactant)
+                invariants['known_saddles.dat'] = (knownIO, file_permission)
+
         t1 = time()
         if self.config.saddle_method == 'dynamics' and \
                 self.config.recycling_on and \
@@ -358,6 +365,8 @@ class ClientMinModeExplorer(MinModeExplorer):
             result['results'] = results_mapping(result)
             if result['results']['termination_reason'] == 0:
                 state.add_process(result, self.superbasin)
+            elif result['results']['termination_reason'] == state.KNOWN_SADDLE:
+                state.register_known_saddle(result, self.superbasin)
             else:
                 state.register_bad_saddle(result, self.config.debug_keep_bad_saddles, superbasin=self.superbasin)
             num_registered += 1
@@ -613,7 +622,8 @@ class ProcessSearch:
                                   "no_negative_mode_at_saddle",
                                   "no_barrier", "zero_mode_abort",
                                   "optimizer_error", "dimer_lost_mode",
-                                  "dimer_restored_best", "artn_error"],
+                                  "dimer_restored_best", "artn_error",
+                                  "known_saddle"],
                 'minimization':[ "good", "max_iterations", "potential_failed", ]}
 
         self.finished_jobs = []
