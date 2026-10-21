@@ -815,9 +815,10 @@ static void requireRecovered(OptType method, bool lanczos) {
   std::shared_ptr<eonc::Potential> pot;
   double *minX = nullptr;
   if (lanczos) {
-    auto far = std::make_shared<FarWallPot>();
-    minX = &far->minX;
-    pot = far;
+    // windef.h defines far as an empty macro, which MSVC expands away.
+    auto farWall = std::make_shared<FarWallPot>();
+    minX = &farWall->minX;
+    pot = farWall;
   } else {
     auto soft = std::make_shared<SoftWallPot>();
     minX = &soft->minX;
