@@ -32,7 +32,7 @@ Cap'n Proto messages passed into the C ABI. The `rgpot` Meson subproject is
 `subprojects/rgpot.wrap`, and the build pulls `nwchempot_dep` and
 `cpmdpot_dep`. Serve mode uses `ptlrpc_dep` under `-Dwith_serve`.
 
-`dependency('rgpot')` prefers an installed rgpot at 3.2.0 or newer. The Meson
+`dependency('rgpot')` prefers an installed rgpot at 3.5.1 or newer. The Meson
 wrap is the fallback. A CPMD run that splits ranks uses the flag in the CPMD
 section.
 

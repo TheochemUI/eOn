@@ -88,6 +88,8 @@ struct Capabilities {
   dlpackMajor    @15 :UInt16; # DLPack callback major revision.
   dlpackMinor    @16 :UInt16; # DLPack callback minor revision.
   bridgeFeatures @17 :UInt64; # eindir bridge feature bitset.
+  buildVersion   @18 :Text; # Version of the build that produced this message; empty when unknown.
+  buildRevision  @19 :Text; # Source revision of that build (e.g. a git commit); empty when unknown.
 
   enum Operation {
     energy         @0;
@@ -1960,6 +1962,22 @@ struct MetatomicParams {
     perAtom           @1 :Bool = false;
     explicitGradients @2 :List(Text); # Gradient names, e.g. "positions", "strain".
   }
+
+  # Tensor runtime, applied once when the engine creates the model. A value
+  # below 1 leaves the runtime's own setting alone.
+  intraopThreads @7 :Int32 = 1;  # torch intra-op worker threads.
+  interopThreads @8 :Int32 = 1;  # torch inter-op worker threads (settable once per process).
+
+  # Mirrors rgpot's MetatomicConfig. 0 / false keep the model's own behaviour.
+  nSymmetryRotations @9  :Int64 = 0;  # Rotations averaged per evaluation; 0 disables.
+  randomRotation     @10 :Bool = false; # Draw the averaging rotations at random.
+  so3ProbeScatter    @11 :Bool = false; # Probe the SO(3) scatter path.
+  torchDeterminism   @12 :TorchDeterminism = fast;
+
+  enum TorchDeterminism {
+    fast          @0; # Leave the process-global torch flags alone.
+    deterministic @1; # Deterministic algorithms, math SDP attention, no TF32.
+  }
 }
 
 # @struct UmaParams
@@ -1975,6 +1993,12 @@ struct UmaParams {
   spin         @4 :Int32 = 1;     # Spin multiplicity.
   cutoff       @5 :Float64 = 0.0; # Angstrom; <=0 keeps UmaConfig/sidecar value.
   maxNeighbors @6 :Int32 = 0;     # <=0 keeps UmaConfig/sidecar value.
+
+  # Tensor runtime, applied once when the engine creates the model. A thread
+  # count below 1 leaves the runtime's own setting alone.
+  intraopThreads          @7 :Int32 = 1; # torch intra-op worker threads.
+  interopThreads          @8 :Int32 = 1; # torch inter-op worker threads (settable once per process).
+  deterministicAlgorithms @9 :Bool = false; # Request deterministic torch algorithms.
 }
 
 # @struct PotentialSpec
@@ -2586,4 +2610,9 @@ interface Potential {
   # @brief Compute potential energy and nuclear gradient for this geometry.
   # @return PotentialResult.energy and PotentialResult.gradient.
   calculateGradient @11 (fip :ForceInput) -> (result :PotentialResult);
+
+  # @brief Capabilities of this server, read before any calculate call.
+  # @return The protocol, schema, eindir bridge, DLPack and build identity.
+  # buildVersion and buildRevision are empty when the build does not know them.
+  getCapabilities @12 () -> (capabilities :Capabilities);
 }

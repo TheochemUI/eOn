@@ -64,8 +64,10 @@ def test_build_wheel_script_variants_disambiguated():
     rtext = repair.read_text()
     assert "patchelf" in rtext
     assert "libcapnp" in rtext or "vendor" in rtext
-    # One bundled SONAME. Lennard-Jones is not its own shared object.
-    assert "[librgpot.so.3]=libeon_rgpot.so.3" in rtext
+    # One bundled SONAME, taken from the NEEDED entry. rgpot 3.5.1
+    # records librgpot.so.4. Lennard-Jones is not its own shared object.
+    assert 'soname_map["$needed"]="libeon_rgpot.so.${BASH_REMATCH[1]}"' in rtext
+    assert "[librgpot.so.3]=libeon_rgpot.so.3" not in rtext
     assert "liblennard_jones.so" not in rtext
     assert "does not link the pip rgpot wheel" in rtext
     # A host ~/.cargo/config.toml naming an absolute linker reaches the
@@ -85,7 +87,7 @@ def test_workflow_publish_excludes_metatomic_local_version():
     assert "pyeonclient_joint_import.py" in text
     probe = (ROOT / "scripts" / "pyeonclient_joint_import.py").read_text()
     assert "JOINT_IMPORT_OK" in probe
-    assert "libeon_rgpot.so.3" in probe
+    assert r"libeon_rgpot\.so\.[0-9]+" in probe
     assert "rgpot wheel lost the librgpot SONAME" in probe
 
 

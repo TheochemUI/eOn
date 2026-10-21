@@ -136,7 +136,7 @@ repair_one() {
               resolved="$d/$needed"
               break
             fi
-            # SONAME librgpot.so.3 vs file librgpot.so.3.2.0
+            # SONAME librgpot.so.N vs file librgpot.so.N.X.Y
             local cand
             cand="$(ls -1 "$d/$needed".[0-9]* 2>/dev/null | head -1 || true)"
             if [[ -n "$cand" && -f "$cand" ]]; then
@@ -149,6 +149,20 @@ repair_one() {
         if [[ -z "${resolved:-}" || ! -f "$resolved" ]]; then
           # still missing — try find under search roots (SONAME or so.N.X.Y)
           resolved="$(find ${search//:/ } -maxdepth 6 \( -name "$needed" -o -name "${needed}.*" \) 2>/dev/null | head -1 || true)"
+        fi
+        # rgpot 3.5.1's file is librgpot.so.3.5.1 and its SONAME is
+        # librgpot.so.4. A copy named for the project version does not
+        # match the NEEDED entry. Take the file whose SONAME does.
+        if [[ -z "${resolved:-}" || ! -f "$resolved" ]] && [[ "$needed" == librgpot.so.* ]]; then
+          local cand soname
+          while IFS= read -r -d '' cand; do
+            soname="$(readelf -d "$cand" 2>/dev/null | sed -n 's/.*Library soname: \[\(.*\)\]/\1/p' || true)"
+            if [[ "$soname" == "$needed" ]]; then
+              resolved="$cand"
+              break
+            fi
+          done < <(find "$work" "${PYEONCLIENT_BUILD_ROOT:-$PWD}" /project \
+            \( -name 'librgpot.so' -o -name 'librgpot.so.*' \) -print0 2>/dev/null)
         fi
         if [[ -z "${resolved:-}" || ! -f "$resolved" ]]; then
           echo "WARNING: cannot resolve NEEDED $needed (from $(basename "$so"))" >&2
@@ -234,14 +248,20 @@ repair_one() {
 
   # The vendored librgpot is the wrap build, without the potentials the pip
   # rgpot wheel carries (D3Pot and others). Under the shared SONAME
-  # librgpot.so.3 the copy loaded first serves both, so `import rgpot` after
+  # librgpot.so.N the copy loaded first serves both, so `import rgpot` after
   # `import pyeonclient` failed with an undefined rgpot::D3Pot typeinfo.
   # pyeonclient bundles librgpot. It does not link the pip rgpot wheel.
-  # The bundled copy takes one private SONAME so both packages can load.
-  local old_soname new_soname so
-  declare -A soname_map=(
-    [librgpot.so.3]=libeon_rgpot.so.3
-  )
+  # The bundled copy takes one private SONAME, libeon_rgpot.so.N, with the
+  # same N the link recorded. rgpot 3.5.1 records librgpot.so.4.
+  local old_soname new_soname so needed
+  declare -A soname_map=()
+  while IFS= read -r -d '' so; do
+    while IFS= read -r needed; do
+      if [[ "$needed" =~ ^librgpot\.so\.([0-9]+)$ ]]; then
+        soname_map["$needed"]="libeon_rgpot.so.${BASH_REMATCH[1]}"
+      fi
+    done < <(needed_libs "$so")
+  done < <(find "$work" -type f \( -name '*.so' -o -name '*.so.*' \) -print0)
   local src
   for old_soname in "${!soname_map[@]}"; do
     new_soname="${soname_map[$old_soname]}"
@@ -271,8 +291,8 @@ repair_one() {
   done < <(find "$work" -type f \( -name '*.so' -o -name '*.so.*' \) -print0)
 
   # Copies under the other librgpot names, here or next to _core in the
-  # package directory, are unused once .so.3 is renamed; left in place they
-  # would still carry the colliding SONAME on _core's $ORIGIN RUNPATH.
+  # package directory, are unused once the SONAME is renamed; left in place
+  # they would still carry the colliding SONAME on _core's $ORIGIN RUNPATH.
   local extra
   while IFS= read -r -d '' extra; do
     rm -f "$extra"
