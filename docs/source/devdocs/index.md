@@ -25,6 +25,7 @@ abi-surface
 relax-engine
 rgpot-migration
 porting_potentials
+hessian
 docbuild
 svn
 svn-migration

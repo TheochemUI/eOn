@@ -30,6 +30,10 @@ mass-weighted lengths are in amu^0.5 Å.
 
 Every nudged elastic band (NEB) job writes `reaction_coordinate_mw`, the mass-weighted arc length, on
 each frame of `neb.con`. The first frame also carries the band's Wentzel-Kramers-Brillouin (WKB) estimate.
+Every band variant eOn runs carries them, the off-path climbing image band
+{cite:p}`inst-goswamiEnhancedClimbingImage2026` among them. How eOn finds the
+minima and saddles these jobs start from is set out in
+{cite:t}`inst-goswamiEfficientExplorationChemical2025`.
 The keys are:
 
 | Key | Meaning |
@@ -37,6 +41,7 @@ The keys are:
 | `hbar_omega_reactant`, `hbar_omega_product` | Wells: {math}`\hbar\omega` of each well along the band, from a fit of {math}`a s^2 + b s^3` to the images within half the barrier |
 | `tunnel_action` | Action: {math}`S = \hbar^{-1} \int \sqrt{2 (V(s) - E)}\, ds` over the forbidden region |
 | `tunnel_splitting` | Estimate: {math}`\Delta_0 = (\hbar\omega / \pi) e^{-S}`, with {math}`\omega` the geometric mean of the wells |
+| `tunnel_asymmetry_zpe` | Asymmetry: {math}`\Delta = V_p - V_r + (\hbar\omega_p - \hbar\omega_r)/2`, the difference of the two local ground states |
 | `tls_energy` | Energy: {math}`\sqrt{\Delta^2 + \Delta_0^2}` |
 | `tunnel_deep_wells` | Flag: 1 when both barriers exceed {math}`\hbar\omega`; below that, WKB is the wrong tool |
 
@@ -44,11 +49,64 @@ The profile between images is a monotone cubic, so it cannot dip below the
 data. The level {math}`E` is the higher of the two harmonic ground states. A
 structure without masses, or a band whose end is flat, leaves these keys out.
 
-WKB along the band is exact in one dimension up to its semiclassical error.
-When the path curves, the tunnelling cuts the corner, and the transverse
-zero-point energy changes along the way. In the two-dimensional test valley
-below, both effects together put the band estimate a factor of 2.8 below the
-exact splitting.
+{math}`\Delta` is the diagonal term of the two-level Hamiltonian
+{cite:p}`inst-andersonAnomalousLowtemperatureThermal1972`, the eq. S9 of
+{cite:t}`inst-khomenkoDepletionTwoLevelSystems2020`. A tilt changes the
+curvature of each well as well as its depth: on a quartic double well tilted
+by 1 meV, the difference of the minima alone puts the energy 6 percent above
+the exact gap, and {math}`\Delta` within 0.6 percent.
+
+## The band solved in one dimension
+
+The same frame carries the exact levels of the one-dimensional problem
+along the band, {math}`-\tfrac{\hbar^2}{2} \partial_s^2 + V(s)` in the
+mass-weighted coordinate, the protocol of the glass two-level-system
+studies {cite:p}`inst-khomenkoDepletionTwoLevelSystems2020,inst-mocanuMicroscopicObservationTwolevel2023`.
+The keys are:
+
+| Key | Meaning |
+|---|---|
+| `tls_energy_dvr` | Energy: {math}`E_2 - E_1` of the two lowest levels, eV |
+| `tunnel_asymmetry_dvr` | Asymmetry: {math}`E \cos 2\theta`, positive when the product well lies higher, eV |
+| `tunnel_splitting_dvr` | Matrix element: {math}`\Delta_0 = E \sin 2\theta`, eV |
+| `tunnel_wall_sampled` | Flag: 1 when the outer walls were sampled, below |
+| `tunnel_double_well` | Flag: 1 when the images rise to one maximum and fall, a double well and no more |
+
+The kinetic energy is the fourth-order central difference on a uniform grid
+of 20 points per oscillator length {math}`\hbar / \sqrt{\hbar\omega}` of the
+stiffer well, at most 1500 points, reaching seven such lengths past each
+minimum. On a quartic double well, symmetric or tilted, the gap lands
+within {math}`10^{-5}` of a converged grid. {math}`\theta` rotates the two
+lowest states into the pair most localised on either side of the barrier
+top. That rotation cancels the tail each state leaves across the barrier,
+so on a tilted quartic {math}`\Delta_0` stays within {math}`10^{-3}` of the
+gap of the level wells with the asymmetry thousands of times larger, where
+the ground state's weight on each side alone would overshoot fourfold.
+
+A band runs from minimum to minimum and never sees the outer walls. Past
+each end the profile continues by the fit of that well, its cubic or its
+parabola, whichever is stiffer; on a quartic double well that keeps the gap
+within 6 percent. `[Nudged Elastic Band] tunnel_wall_points` above 0 samples
+the real walls instead, the linear extrapolation of the reaction path of
+{cite:t}`inst-khomenkoDepletionTwoLevelSystems2020`: that many force calls
+past each minimum along the band's end segment continued outward, out to
+seven oscillator lengths, once the band has converged. The fit stays as the
+model and the residual of the samples, a cubic spline flat at the minimum,
+is added to it. Eight samples bring the quartic within 1.5 percent of the
+exact gap, the rest being the band's own images.
+
+```{code-block} ini
+[Nudged Elastic Band]
+images = 13
+tunnel_wall_points = 8
+```
+
+Either solution stays one-dimensional; WKB along the band is exact in one
+dimension up to its semiclassical error. When the path curves, the
+tunnelling cuts the corner, and the transverse zero-point energy changes
+along the way. In the two-dimensional test valley below, both effects
+together put the WKB band estimate a factor of 2.8 below the exact
+splitting. For both, run the instanton job on the pair.
 
 ## The instanton job
 
@@ -127,16 +185,51 @@ calculator groups the same way a NEB spreads its images.
 |---|---|
 | `tunnel_splitting_instanton` | Splitting: {math}`\Delta_0`, eV |
 | `instanton_action` | Action: {math}`(S - S_\text{well})/\hbar` |
-| `tls_energy_instanton` | Energy: {math}`\sqrt{\Delta^2 + \Delta_0^2}`, eV |
+| `tls_energy_instanton` | Energy: {math}`\sqrt{\Delta^2 + \Delta_0^2}` with {math}`\Delta` the zero-point asymmetry below, eV |
 | `tunnel_asymmetry` | Asymmetry: {math}`V(\text{product}) - V(\text{reactant})`, eV |
+| `tunnel_asymmetry_zpe` | Asymmetry of the local ground states: {math}`V_p - V_r + \tfrac{\hbar}{2}\left(\sum_k \omega_k^{p} - \sum_k \omega_k^{r}\right)` over every vibration of the two minimum Hessians, eV |
 | `instanton_temperature_K` | Temperature: {math}`1/(k_B \beta)` for the imaginary time used |
 | `instanton_mode_separation` | Separation: how well the kink's translation separates from the other modes |
-| `instanton_symmetric` | Symmetry: 1 when {math}`\beta|\Delta| < 0.1` |
-| `instanton_beta_asymmetry` | Magnitude: {math}`\beta|\Delta|` |
+| `instanton_symmetric` | Symmetry: 1 when {math}`\beta|V_p - V_r| < 0.1` |
+| `instanton_beta_asymmetry` | Magnitude: {math}`\beta|V_p - V_r|` |
+| `instanton_symmetrized` | Levelled: 1 when the instanton ran on the levelled surface below |
 
-The propagator ratio measures the splitting {math}`\Delta_0` when the two wells lie within
-a small fraction of {math}`k_B T` of each other. `instanton_symmetric = 0`
-flags a pair outside that window. The job still writes the path and the
+Two minima of one energy can still hold different zero-point energies,
+when an isotope or the cage around a defect makes one well stiffer than the
+other. Then {math}`\Delta_0` is the tunnelling matrix element taken with the
+geometric mean of the two well kernels, and the levels split by
+{math}`\sqrt{\Delta^2 + \Delta_0^2}` with the harmonic zero-point
+difference in {math}`\Delta`
+{cite:p}`inst-jahrInstantonTheoryTunneling2020`. On a valley whose
+transverse stiffness differs by 10 percent between the wells, that
+difference splits the levels 140 times further than tunnelling does, and
+{math}`\sqrt{\Delta^2 + \Delta_0^2}` lands within 6 percent of the exact
+gap.
+
+Most two-level systems in a glass also have minima of different energy,
+with the asymmetry comparable to the splitting. On such a surface no kink
+joins the two minima at rest, and the propagator ratio measures
+{math}`\Delta_0` only while the wells lie within a small fraction of
+{math}`k_B T` of each other. The job therefore levels the wells first. It
+subtracts {math}`(V_p - V_r)\,\sigma(\xi)`, with {math}`\xi` the projection
+of {math}`q` on the line from the reactant to the product (0 at one, 1 at
+the other) and {math}`\sigma = 6\xi^5 - 15\xi^4 + 10\xi^3`. Both minima
+stay stationary with their Hessians, since {math}`\sigma`, {math}`\sigma'`
+and {math}`\sigma''` vanish at both ends, and the instanton of the levelled
+surface gives the tunnelling matrix element. The difference of the minima
+goes back into {math}`\Delta`, so moving the bias out of the path and into
+the asymmetry, as
+{cite:t}`inst-erakovicVibrationalTunnelingSpectra2022` do for the coupling
+of nondegenerate well states. That holds while {math}`|V_p - V_r|` is small
+against the barrier, the regime of a two-level system. On a quartic double
+well tilted until {math}`\beta |V_p - V_r| = 0.47`, the matrix element stays
+within 1 percent of the level wells' and {math}`\sqrt{\Delta^2 + \Delta_0^2}`
+within 2 percent of the exact gap. `instanton_action` is then the action on
+the levelled surface, and the frames of `instanton.con` keep the energies of
+the real one.
+
+`symmetrize = false` keeps the bare surface. `instanton_symmetric = 0` then
+flags a pair outside the window. The job still writes the path and the
 action, but no `tunnel_splitting_instanton`, and reports success: the flag
 says why. For such a pair, set `mode = rate`, give the saddle and a
 temperature below the crossover, and read the rate in the next sections.
@@ -167,6 +260,9 @@ different calculation again, and this page does not implement it.
 ## The rate below the crossover
 
 `mode = rate` reads the reactant and `saddle_filename` (default `saddle.con`).
+Any eOn saddle search can supply it, the Gaussian process accelerated dimer
+{cite:p}`inst-goswamiEfficientImplementationGaussian2025,inst-goswamiAdaptivePruningIncreased2025b`
+among them.
 The instanton is a closed ring, a first-order saddle of the ring-polymer
 potential, with one negative eigenvalue and one zero eigenvalue that cycles
 the beads. {cite:t}`inst-richardsonRingpolymerMolecularDynamics2009` give
@@ -251,6 +347,9 @@ subtracted from every bead potential and from the reactant and saddle
 energies in the rate. An empty `discretization` keeps every spring equal.
 A comma-separated list of one positive weight per bead divides the spring
 from that bead to the next. A half ring keeps the uniform spring.
+`friction` adds the fixed quadratic bath described under
+"Fixed bath coefficients and physical units".
+
 
 The search is an index-1 Newton step on the ring Hessian while the active
 coordinate count is within the Newton limit. Past that limit the ring is one
@@ -268,13 +367,17 @@ the saddle as the temperature drops. Where it does not, the search walks
 to a neighbouring saddle, so a converged ring that fails the channel test
 described with the `results.dat` keys below is refused and no rate is
 written. The step climbs the mode that overlaps
-the last climb and turns every other negative curvature downhill; the
-imaginary-time cycle and the rigid motions of the whole ring, rebuilt
-from the current beads, are held in place and left out of the step. A
-converged gradient is classified with finite-difference bead Hessians,
-since the Bofill blocks can carry negative curvatures the surface does
-not have; a second negative curvature that survives is a higher-index
-stationary ring, and the search steps down that mode. The ring Hessian is block cyclic
+the last climb and turns every other negative curvature downhill. The
+rigid motions of the whole ring, rebuilt from the current beads, are left
+out of the step; the imaginary-time cycle keeps its component, on its own
+curvature, and is lifted to a spring-sized curvature only while that
+curvature is near zero. A
+converged gradient is classified with finite-difference bead Hessians
+before it counts: the Bofill blocks learn curvature only along the steps
+taken, so they can carry negative curvatures the surface does not have and
+miss ones it does. A second negative curvature that survives is a
+higher-index stationary ring, and the search steps down that mode by a
+trust-sized displacement. The ring Hessian is block cyclic
 tridiagonal in the beads, and every solve, determinant and inertia count
 goes through a block LU of the open chain plus a low-rank Woodbury
 correction for the closure, the cycle, the rigid modes and each
@@ -283,11 +386,15 @@ freedom, and the search never forms the {math}`Nf \times Nf` matrix, so the same
 step serves a seven-atom cluster and a 254-atom cell. The lowest ring
 modes come from Lanczos on matrix-vector products. The bead curvature
 blocks start from the saddle Hessian (`initial_hessians = saddle`, no force
-calls) and follow accepted moves with a Bofill update. Finite differences
-rebuild them up to three times when the trust radius reaches its floor.
-Known rigid motions enter an explicit quotient and solve
-stabilization. A small saddle curvature alone does not identify a rigid
-motion and is retained in the physical ring inertia. `initial_hessians = finite_difference` takes
+calls) and follow accepted moves with a Bofill update, rebuilt from finite
+differences when their count of negative curvatures grows and up to three
+times when the trust radius reaches its floor. Below the crossover the
+copied blocks already hold a negative curvature in the ring's slowest
+mode, so the first entry rebuilds them, and `saddle` costs the same force
+calls as `finite_difference`. Known rigid motions enter an explicit quotient
+and solve stabilization. A small saddle curvature alone does not identify a
+rigid motion and is retained in the physical ring inertia.
+`initial_hessians = finite_difference` takes
 {math}`2f` gradient calls per
 bead first. Between rebuilds each block keeps the number of negative
 curvatures its last finite-difference version had: a Bofill update that
@@ -464,9 +571,17 @@ the ring's centre of mass: a rotation moves each bead by a different
 amount, so the reactant's rotation copied to every bead is not a zero mode
 of the ring. The bead Hessians keep their rotational curvature, which
 balances the springs on a bead that is not a minimum, and lose only their
-translations. Omitting the rotations on both sides treats the rotational
-partition functions of the ring and the reactant as equal, which neglects
-the change in the moments of inertia along the ring.
+translations. The omitted rotations come back as the ratio of the
+classical rotational partition functions: the square root of the product
+of the ring's principal moments of inertia, every bead's atoms about the
+ring's centre of mass, over the same product for the reactant repeated on
+every bead. That is the moment of inertia of the ring polymer averaged
+over its beads, as the ring-polymer instanton rate takes it for a
+molecule that turns freely. `instanton_rotation_ratio_log` reports its
+logarithm. The classical comparison `rate_htst_log` and the parabolic rate
+above {math}`T_c` take the saddle's ratio, so all three rates count the
+rotations alike. A linear structure keeps the two moments perpendicular to
+its axis.
 
 `results.dat` reports the rate. The keys are:
 
@@ -481,6 +596,7 @@ the change in the moments of inertia along the ring.
 | `instanton_crossover_K` | {math}`T_c`, K |
 | `instanton_negative_modes` | negative eigenvalues of the ring Hessian; a first-order saddle has 1 |
 | `instanton_zero_mode` | the eigenvalue left out |
+| `instanton_rotation_ratio_log` | ln of the ring's rotational partition function over the reactant's; 0 when no rotation is free |
 | `instanton_s_min`, `instanton_s_max` | the turning points along the saddle's unstable mode, amu^0.5 Angstrom from the saddle |
 | `instanton_chord_overlap` | cosine of the angle between the chord joining the turning points and the unstable mode |
 | `instanton_collapsed` | 1 when the search stopped because the beads fell onto one point (B_N below `collapse_fraction` of the starting ring's) |
@@ -543,9 +659,10 @@ amu^0.5 Å. The reactant sits at {math}`s = 0` and the saddle at
 default) takes {math}`\hat n` from the unstable eigenvector of the saddle's
 mass-weighted Hessian, oriented toward the saddle, so the last plane is the
 dividing surface normal to the barrier mode. When that mode makes more than
-60 degrees with the reactant-saddle line, or the saddle has no negative
-eigenvalue, the job warns and uses `pi_direction = line`, the straight
-mass-weighted line from the reactant to the saddle. One normal serves every
+60 degrees with the reactant-saddle line, the job warns and uses
+`pi_direction = line`, the straight mass-weighted line from the reactant to
+the saddle. (A saddle with no negative eigenvalue has no crossover
+temperature, and the job stops before the planes.) One normal serves every
 plane, so {math}`s` is a linear coordinate and its mean force integrates to
 its free energy with no metric correction. The planes are fixed in the reactant's frame. Translations
 of a structure with no atom fixed lie within every plane, because the
@@ -564,29 +681,39 @@ the next plane and its internal modes keep their thermalised state.
 The free-ring springs are propagated exactly, so `pi_time_step` is
 limited by the physical vibrations, as for classical dynamics.
 `pi_equilibration_steps` are discarded, then `pi_sampling_steps` steps of
-`pi_time_step` fs record {math}`n \cdot f_c`, the centroid force along the
-plane normal. The bead forces of a step are one batch, so a calculator
-group carries the beads. `pi_thermostat = pile` puts PILE on the internal
+`pi_time_step` fs record {math}`\hat a \cdot f_c`, the centroid force along
+the plane's Cartesian normal {math}`a = M^{1/2} \hat n`. The bead forces of
+a step are one batch, so a calculator group carries the beads. `pi_thermostat = pile` puts PILE on the internal
 modes and a Langevin thermostat of time `pi_pile_tau` fs on the centroid
 within the plane, and `pi_pile_scale` (default 1) scales the critical
 damping of the internal modes. Below the crossover the lowest ring modes
 are soft at the barrier and overdamped at critical damping; on the Eckart
 check 0.5 cuts the mean-force error at 0.7 {math}`T_c` by a third. `piglet` reads a normal-mode GLE from `pi_gle_file`, in
 the same format and with the same meaning as `[Dynamics] path_gle_file`.
-`pi_seed` seeds the noise.
+`pi_seed` seeds the noise. PIGLET tunes the internal modes so that bead
+averages converge with fewer beads; the centroid free energy assumes the
+ring polymer's own Boltzmann distribution, so treat a `piglet` barrier as
+an approximation and check it against `pile`. The transmission factor's
+parents always take `pile`.
 
 The free energy. The mean force on the plane at {math}`s` is
 
 ```{math}
-F'(s) = -\left\langle \hat n \cdot M^{-1/2} f_c \right\rangle_s ,
+F'(s) = -\frac{\left\langle a \cdot f_c \right\rangle_s}{|a|^2} ,
+\qquad a = M^{1/2} \hat n ,
 ```
 
-in eV per amu^0.5 Å, and {math}`F(s)` is its trapezoid integral from
+in eV per amu^0.5 Å. Any vector {math}`u` with {math}`a \cdot u = 1`,
+{math}`M^{-1/2} \hat n` among them, gives the same mean, because the force
+within the plane averages to zero; the normal component is the estimator
+the job records. {math}`F(s)` is the trapezoid integral of {math}`F'` from
 {math}`s_0`. The production run is cut into ten equal blocks. The standard
 error of the block means is the error of {math}`F'(s)`. The errors of
 {math}`F` and of the rate follow by linear propagation, with the planes
 taken as independent. The quantum free-energy barrier is
-{math}`\Delta F = F(s^*) - \min_{s < s^*} F(s)`. The log and `results.dat`
+{math}`\Delta F = F(s^*) - \min_{s < s^*} F(s)`, the minimum over the
+planes before {math}`s^*`; the job warns when it is not positive, since
+{math}`s^*` is then no barrier on the centroid free energy. The log and `results.dat`
 give it beside the classical barrier
 {math}`V(\mathrm{saddle}) - V(\mathrm{reactant})` and the instanton's
 effective barrier.
@@ -639,8 +766,9 @@ the bead count. A run at more than one temperature also writes
 | `piqtst_first_plane_kT` | {math}`\beta (F(s_0) - \min F)` |
 | `piqtst_temperature_K`, `piqtst_planes`, `piqtst_beads` | the run |
 
-Cost: `pi_planes` times (`pi_equilibration_steps` plus `pi_sampling_steps`)
-steps per temperature, each step two force batches of `pi_beads` beads.
+Cost: `pi_planes` times (`pi_equilibration_steps` plus `pi_sampling_steps`
+plus 1) force batches of `pi_beads` beads per temperature: one per step,
+and one when the ring moves to a plane.
 
 ### Recrossing and the RPMD rate
 
@@ -664,8 +792,10 @@ pi_recrossing_spacing = 50
 ```
 
 The parents. A ring with its centroid held on the top plane {math}`s^*`,
-the dividing surface of the scan, is thermostatted as in the scan for
-`pi_equilibration_steps`. Every `pi_recrossing_spacing` steps after that its
+the dividing surface of the scan, is thermostatted with PILE for
+`pi_equilibration_steps`, as the scan's `pile` is: Bennett-Chandler needs
+the ring polymer's own constrained distribution, which PIGLET does not
+sample. Every `pi_recrossing_spacing` steps after that its
 beads are one parent, `pi_recrossing_parents` in all.
 
 The children. Each parent launches `pi_recrossing_children` momentum draws.
@@ -723,10 +853,11 @@ plane of a temperature. `results.dat` gains:
 | `pi_recrossing_time` | 100 | fs per child, at least four `pi_time_step` |
 | `pi_recrossing_spacing` | 50 | thermostatted steps between parents |
 
-Cost: `pi_equilibration_steps` plus `pi_recrossing_parents` times
-`pi_recrossing_spacing` constrained steps (two force batches each), and
-`2 * pi_recrossing_parents * pi_recrossing_children * pi_recrossing_time /
-pi_time_step` child steps (one force batch each) per temperature.
+Cost per temperature: `pi_equilibration_steps` plus
+`pi_recrossing_parents` times `pi_recrossing_spacing` constrained steps,
+one force batch each, and `2 * pi_recrossing_parents * pi_recrossing_children`
+child runs of `pi_recrossing_time / pi_time_step + 1` force batches each,
+the first at the parent's beads.
 
 ## Centroid and spread
 

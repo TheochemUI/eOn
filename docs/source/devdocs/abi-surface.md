@@ -10,13 +10,18 @@ Eigen types). Treat only these as the extension contract:
 
 | Type | Pure virtuals | Notes |
 |---|---|---|
-| `Potential` | `force(...)` | Raw C arrays stay the Fortran/FFI adapter. `get_ef` is Eigen. |
+| `Potential` | `force(...)` | Raw C arrays stay the Fortran/FFI adapter. `get_ef` is Eigen. `hessianRange()` is a defaulted virtual appended after the existing methods. |
 | `Job` | `run()` | `runFromMatter` is extra, not required. |
 | `Optimizer` | `step`, `run` | New methods must be defaulted virtuals, not new pures. |
 
-Capability queries (`isThreadSafe`, `layoutFlags`, `supportsBatchEvaluation`)
-are defaulted virtuals. Do not add another `= 0` without a towncrier
-breaking fragment.
+Capability queries (`isThreadSafe`, `layoutFlags`, `supportsBatchEvaluation`,
+`hessianRange`) are defaulted virtuals. Do not add another `= 0` without a
+towncrier breaking fragment.
+
+`finiteCutoff()` stays in its original slot and is deprecated. The default
+`hessianRange()` returns it, so an out-of-tree override of `finiteCutoff()`
+still colors after a recompile. Override `hessianRange()` for a new
+potential. A many-body kernel must not report its interaction cutoff there.
 
 CI should keep grepping that those three pures still exist and that new
 pures are not added silently.
