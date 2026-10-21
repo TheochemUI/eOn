@@ -1,0 +1,1 @@
+Pixi 0.82.1 refuses to load the manifest because the metatomic `mkeon` task depends on `setupeon` in an environment named `eon`, and that environment is not defined. The dependency now resolves `setupeon` in the environment that runs `mkeon`, which is how pixi 0.82.0 already ran it.

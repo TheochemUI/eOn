@@ -259,8 +259,12 @@ cmd = "python scripts/plot_metatomic_backend_bench.py"
 
 [feature.metatomic.tasks.mkeon]
 args = ["buildtype"]
+# setupeon lives on the metatomic feature. Leaving the environment unset runs
+# it in the environment that invoked mkeon (dev-mta, ci-mta, metatomic, ...).
+# environment = "eon" never named a real environment: pixi 0.82.0 ignored it,
+# and pixi 0.82.1 rejects the manifest while loading.
 depends-on = [
-  { task = "setupeon", environment = "eon", "args" = ["{{buildtype}}"] },
+  { task = "setupeon", "args" = ["{{buildtype}}"] },
 ]
 cmd = """
 meson compile -C bbdir && \
