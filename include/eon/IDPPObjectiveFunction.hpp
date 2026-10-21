@@ -86,6 +86,7 @@ public:
   double getEnergy() override { return 0.0; }
 
   VectorXd getGradient(bool fdstep = false) override;
+  bool gradientMatchesEnergy() const override { return false; }
 
   void setPositions(const VectorXd &x) override {
     const int nfree = static_cast<int>(path[0].numberOfFreeAtoms());
