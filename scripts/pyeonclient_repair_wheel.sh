@@ -55,15 +55,33 @@ repair_one() {
   if [[ -z "$search" ]]; then
     search="${LD_LIBRARY_PATH:-}:${LIBRARY_PATH:-}:/usr/local/lib:/usr/local/lib64:/usr/lib:/usr/lib64"
   fi
-  # meson-python leaves the wrap cdylib under .mesonpy-*/ or cargo-target/.
+  # meson-python leaves wrap cdylibs under .mesonpy-*/ or cargo-target/.
+  # readcon-core is inside the umbrella staticlib. The extension NEEDs
+  # libreadcon_db.so. Cargo's deps directory names that file
+  # libreadcon_db-<hash>.so; the wheel copy uses the SONAME.
   local found
   while IFS= read -r found; do
     [[ -z "$found" ]] && continue
     search="${search}:$(dirname "$found")"
+    case "$(basename "$found")" in
+      libreadcon_db.so|libreadcon_db.so.*|libreadcon_db-*.so|libreadcon_db.dylib)
+        if [[ ! -f "$libs_dir/libreadcon_db.so" ]]; then
+          echo "seed-readcon-db: $found"
+          cp -aL "$found" "$libs_dir/libreadcon_db.so"
+          chmod u+w "$libs_dir/libreadcon_db.so" 2>/dev/null || true
+        fi
+        ;;
+    esac
   done < <(
     find "$work" "${PYEONCLIENT_BUILD_ROOT:-$PWD}" /project \
-      \( -name 'libreadcon_core.so' -o -name 'libreadcon_core.so.*' \) \
-      2>/dev/null | head -20
+      \( -name 'libreadcon_db.so' -o -name 'libreadcon_db.so.*' \
+         -o -name 'libreadcon_db-*.so' -o -name 'libreadcon_db.dylib' \) \
+      2>/dev/null
+  )
+  while IFS= read -r found; do
+    [[ -z "$found" ]] && continue
+    search="${search}:$(dirname "$found")"
+  done < <(
     find "$work" "${PYEONCLIENT_BUILD_ROOT:-$PWD}" /project \
       \( -name 'librgpot.so' -o -name 'librgpot.so.*' \) \
       2>/dev/null | head -40
@@ -136,7 +154,7 @@ repair_one() {
               resolved="$d/$needed"
               break
             fi
-            # SONAME librgpot.so.3 vs file librgpot.so.3.2.0
+            # SONAME librgpot.so.N vs file librgpot.so.N.M.P
             local cand
             cand="$(ls -1 "$d/$needed".[0-9]* 2>/dev/null | head -1 || true)"
             if [[ -n "$cand" && -f "$cand" ]]; then
@@ -234,13 +252,14 @@ repair_one() {
 
   # The vendored librgpot is the wrap build, without the potentials the pip
   # rgpot wheel carries (D3Pot and others). Under the shared SONAME
-  # librgpot.so.3 the copy loaded first serves both, so `import rgpot` after
+  # librgpot.so.N the copy loaded first serves both, so `import rgpot` after
   # `import pyeonclient` failed with an undefined rgpot::D3Pot typeinfo.
   # pyeonclient bundles librgpot. It does not link the pip rgpot wheel.
   # The bundled copy takes one private SONAME so both packages can load.
+  # N is kCxxSoversion in rgpot's CxxLayout.hpp (4 on the current pin).
   local old_soname new_soname so
   declare -A soname_map=(
-    [librgpot.so.3]=libeon_rgpot.so.3
+    [librgpot.so.4]=libeon_rgpot.so.4
   )
   local src
   for old_soname in "${!soname_map[@]}"; do
@@ -271,8 +290,8 @@ repair_one() {
   done < <(find "$work" -type f \( -name '*.so' -o -name '*.so.*' \) -print0)
 
   # Copies under the other librgpot names, here or next to _core in the
-  # package directory, are unused once .so.3 is renamed; left in place they
-  # would still carry the colliding SONAME on _core's $ORIGIN RUNPATH.
+  # package directory, are unused once the SONAME is renamed; left in place
+  # they would still carry the colliding SONAME on _core's $ORIGIN RUNPATH.
   local extra
   while IFS= read -r -d '' extra; do
     rm -f "$extra"

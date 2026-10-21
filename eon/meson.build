@@ -1,6 +1,7 @@
 py.install_sources(
     [
         'akmc.py',
+        'approach.py',
         'akmcstatelist.py',
         'akmcstate.py',
         'amsel_superbasin_gate.py',
@@ -48,6 +49,7 @@ py.install_sources(
         'state.py',
         'superbasin.py',
         'superbasinscheme.py',
+        '_forksafe.py',
         '_utils.py',
     ],
     pure: false,  # install next to compiled extension

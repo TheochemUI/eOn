@@ -11,6 +11,7 @@
 */
 #include "eon/GeometryAnalysis.h"
 #include "eon/EonLogger.h"
+#include "eon/ExactReduction.h"
 #include "eon/Matter.h"
 #include "eon/SafeMath.h"
 
@@ -267,7 +268,11 @@ void eonc::geometry::translationRemove(Matter &m1, const Matter &m2) {
 }
 
 double eonc::geometry::maxAtomMotion(const AtomMatrix v1) {
-  return v1.rowwise().norm().maxCoeff();
+  double max = 0.0;
+  for (Eigen::Index i = 0; i < v1.rows(); ++i) {
+    max = std::max(max, eonc::exact::orderedNorm(v1.row(i)));
+  }
+  return max;
 }
 
 double eonc::geometry::maxAtomMotionV(const VectorXd v1) {
@@ -275,10 +280,10 @@ double eonc::geometry::maxAtomMotionV(const VectorXd v1) {
   long n = v1.rows();
   if (n < 3) {
     // Vector too short for 3D atom grouping; treat as single displacement
-    return v1.norm();
+    return eonc::exact::norm(v1);
   }
   for (long i = 0; i + 3 <= n; i += 3) {
-    double norm = v1.segment<3>(i).norm();
+    double norm = eonc::exact::orderedNorm(v1.segment<3>(i));
     if (max < norm) {
       max = norm;
     }
@@ -286,7 +291,7 @@ double eonc::geometry::maxAtomMotionV(const VectorXd v1) {
   // Handle trailing elements (vector size not multiple of 3)
   long rem = n % 3;
   if (rem > 0) {
-    double norm = v1.tail(rem).norm();
+    double norm = eonc::exact::orderedNorm(v1.tail(rem));
     if (max < norm) {
       max = norm;
     }
@@ -331,7 +336,7 @@ AtomMatrix eonc::geometry::maxMotionApplied(const AtomMatrix v1,
                                             double maxMotion) {
   AtomMatrix v2(v1);
 
-  double max = v1.norm();
+  double max = eonc::exact::norm(v1);
   if (max > maxMotion) {
     v2 *= maxMotion / max;
   }
@@ -342,7 +347,7 @@ VectorXd eonc::geometry::maxMotionAppliedV(const VectorXd v1,
                                            double maxMotion) {
   VectorXd v2(v1);
 
-  double max = v1.norm();
+  double max = eonc::exact::norm(v1);
   if (max > maxMotion) {
     v2 *= maxMotion / max;
   }
@@ -524,7 +529,7 @@ void eonc::geometry::pushApart(std::shared_ptr<Matter> m1, double minDistance) {
         AtomMatrix delta(1, 3);
         delta.row(0) = r1.row(i) - r1.row(j);
         delta = m1->pbc(delta);
-        const double d = delta.norm();
+        const double d = eonc::exact::orderedNorm(delta);
         if (!(d < cut)) {
           continue;
         }

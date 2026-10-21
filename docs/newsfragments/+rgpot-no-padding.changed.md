@@ -1,0 +1,1 @@
+RGPOT calculator groups no longer repeat a system to match the busiest group's engine calls, and a single request runs on one group instead of on all of them. rgpot 3.5.1, the pkg-config floor, and the wrap keep the CPMD error agreement inside each calculator.

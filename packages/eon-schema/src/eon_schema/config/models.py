@@ -554,6 +554,25 @@ class PotentialConfig(BaseModel):
     ext_pot_path: str = Field(
         default="ext_pot", description="Path for the external potential."
     )
+    pair_switch_width: float = Field(
+        default=0.0,
+        ge=0.0,
+        description=(
+            "Width in Angstrom of the C^2 quintic switch that takes the lj,"
+            " ljcluster and morse_pt pair terms, and those terms of expr, to"
+            " zero at their cutoff. 0 keeps the shifted truncation, whose"
+            " force jumps at the cutoff."
+        ),
+    )
+    pair_cutoff: float = Field(
+        default=0.0,
+        ge=0.0,
+        description=(
+            "Cutoff in Angstrom of the lj, ljcluster and morse_pt pair terms,"
+            " and those terms of expr. 0 keeps each potential's own cutoff:"
+            " 15 for LJ, 9.5 for Morse."
+        ),
+    )
     potential: Literal[
         "ams",
         "ase_pot",
@@ -2158,11 +2177,19 @@ class DimerConfig(BaseModel):
 
     converged_angle: float = Field(
         default=5.0,
-        description="The dimer is considered converged if it will be rotated fewer degrees than this angle.",
+        description=(
+            "The dimer is considered converged if it will be rotated fewer"
+            " degrees than this angle. min_mode_method = xtsci passes it to"
+            " rgsaddle as rotation_angle_tol, in radians."
+        ),
     )
     rotations_max: int = Field(
         default=10,
-        description="This is the maximum number of rotations allowed for the dimer for each minimum mode estimation.",
+        description=(
+            "This is the maximum number of rotations allowed for the dimer for"
+            " each minimum mode estimation, and the rotation budget of"
+            " min_mode_method = xtsci."
+        ),
     )
 
     finite_angle: float = Field(
@@ -2179,7 +2206,11 @@ class DimerConfig(BaseModel):
         description="Minimum number of rotations for the dimer. [not improved]",
     )
     dimer_torque_min: float = Field(
-        default=0.1, description="Minimum torque for the dimer. [not improved]"
+        default=0.1,
+        description=(
+            "Minimum torque for the dimer. [not improved] min_mode_method ="
+            " xtsci passes it to rgsaddle as rotation_tol."
+        ),
     )
     dimer_torque_max: float = Field(
         default=1.0, description="Maximum torque for the dimer. [not improved]"
@@ -2613,6 +2644,18 @@ class HessianConfig(BaseModel):
     zero_freq_value: float = Field(
         default=1e-6, description="The value assigned to zero frequencies."
     )
+    fd_scheme: Literal[
+        "one_sided", "central", "fourth", "fourth_order", "central4"
+    ] = Field(
+        default="one_sided",
+        description=(
+            "Finite-difference stencil of the assembled Hessian and of the"
+            " Lanczos and Davidson Hessian-vector products: one_sided,"
+            " central, or fourth (fourth_order, central4). min_mode_method ="
+            " xtsci takes forward differences for one_sided and central"
+            " differences for central and fourth."
+        ),
+    )
     write_modes: bool = Field(
         default=True,
         description=(
@@ -2647,6 +2690,18 @@ class InstantonConfig(BaseModel):
             "A multi-frame con file (neb.con) to start the path from; empty"
             " starts from the straight line between the minima."
         ),
+    )
+    initial_ring: str = Field(
+        default="",
+        description=(
+            "Rate mode: closed-ring geometry seed with exactly beads CON frames. "
+            "Coordinates are checked against the reference surface; cached "
+            "energies and forces are ignored."
+        ),
+    )
+    physical_bath_filename: str = Field(
+        default="",
+        description="Rate mode: physical bath model and mass-weighted retained-coordinate mapping.",
     )
     beads: int = Field(
         default=256,
@@ -2717,6 +2772,41 @@ class InstantonConfig(BaseModel):
             " half. An odd count evaluates every bead."
         ),
     )
+    physical_hessian_step: float = Field(
+        default=1e-4,
+        gt=0,
+        allow_inf_nan=False,
+        description=(
+            "Physical bead-Hessian central displacement in sqrt(amu) Angstrom;"
+            " independent of directional Lanczos finite differences."
+        ),
+    )
+    newton_limit: int = Field(
+        default=9223372036854775807,
+        ge=0,
+        description=(
+            "Maximum active ring coordinates for dense Newton; zero selects"
+            " the matrix-free dimer search. The default is the 64-bit"
+            " maximum, including on Windows where long is 32 bits."
+        ),
+    )
+    lanczos_step: float = Field(
+        default=1e-4,
+        gt=0,
+        allow_inf_nan=False,
+        description=(
+            "Directional Lanczos displacement in sqrt(amu) Angstrom;"
+            " independent of physical_hessian_step."
+        ),
+    )
+    reactant_hessian_filename: str = Field(
+        default="",
+        description="Optional saved reactant Hessian; empty computes it.",
+    )
+    saddle_hessian_filename: str = Field(
+        default="",
+        description="Optional saved saddle Hessian; empty computes it.",
+    )
     initial_hessians: Literal["saddle", "finite_difference"] = Field(
         default="saddle",
         description=(
@@ -2732,12 +2822,8 @@ class InstantonConfig(BaseModel):
     discretization: str = Field(
         default="",
         description=(
-            "Mode rate: empty keeps every imaginary-time step equal. One"
-            " positive weight per bead, comma-separated and scaled to a mean"
-            " of one, is the time step of the link to the next bead: an"
-            " adaptive grid whose spring is c / w_j and whose bead potential"
-            " is weighted (w_{j-1} + w_j) / 2. Weights keep the whole ring"
-            " and take no friction bath."
+            "Empty keeps every spring equal. One positive weight per bead,"
+            " comma-separated, divides the spring from that bead to the next."
         ),
     )
     friction: Literal["none", "implicit", "explicit"] = Field(
@@ -2745,25 +2831,42 @@ class InstantonConfig(BaseModel):
         description=(
             "Mode rate: Litman friction bath. none leaves the ring"
             " potential unchanged. implicit uses friction_eta on every"
-            " bead. explicit uses friction_eta_beads, one value per bead;"
-            " the ring is searched under it, but the rate needs one eta"
-            " and is not written."
+            " bead. explicit uses friction_eta_beads, one value per bead."
         ),
     )
     friction_eta: float = Field(
         default=0.0,
         ge=0.0,
         description=(
-            "Implicit bath strength, the same on every bead: friction per"
-            " unit mass, eta / m, in 1 / time with time in"
-            " sqrt(amu Angstrom^2 / eV) (10.18 fs)."
+            "Fixed bath curvature eta_eff in eV/(amu Angstrom^2), equal on every bead."
+            " For physical scalar Ohmic damping use eta_eff=gamma_internal/(beta_P*kHbar)."
+            " Raw coefficients are not rescaled across temperature or bead count."
         ),
     )
     friction_eta_beads: str = Field(
         default="",
         description=(
-            "Explicit bath: comma-separated eta, one value per bead, in the"
-            " units of friction_eta."
+            "Fixed bath curvatures in eV/(amu Angstrom^2), comma-separated, one per bead."
+            " Values stay fixed while differentiating the quadratic bead operator."
+        ),
+    )
+    collapse_fraction: float = Field(
+        default=1e-4,
+        ge=0.0,
+        lt=1.0,
+        description=(
+            "Mode rate: the search stops, with instanton_collapsed = 1, when"
+            " B_N falls below this fraction of the starting ring's. 0 never"
+            " stops."
+        ),
+    )
+    rotation_zero_fraction: float = Field(
+        default=0.1,
+        gt=0.0,
+        description=(
+            "A reactant rotation is a zero mode when its curvature"
+            " r^T H r / r^T r is at most this fraction of the softest"
+            " vibration."
         ),
     )
     bead_ladder: bool = Field(

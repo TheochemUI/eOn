@@ -1,0 +1,25 @@
+--- a/meson.build
++++ b/meson.build
+@@ -207,6 +207,22 @@
+             endif
+         endif
+     endforeach
++    # Meson 1.12 passes -Werror=implicit-function-declaration to flang-new.
++    # flang 19 rejects that flag, so find_library never sees the runtime
++    # even when the import libraries sit beside the compiler.
++    if host_system == 'windows' and fortran_rt_deps.length() == 0 and _fc_rt_dirs.length() > 0
++        _fs_win_rt = import('fs')
++        foreach _lib : ['FortranRuntime.dynamic.lib', 'FortranDecimal.dynamic.lib']
++            foreach _dir : _fc_rt_dirs
++                _cand = _dir / _lib
++                if _fs_win_rt.exists(_cand)
++                    fortran_rt_deps += declare_dependency(link_args: [_cand])
++                    message('fortran runtime (file): ' + _cand)
++                    break
++                endif
++            endforeach
++        endforeach
++    endif
+     # A toolchain that ships only the versioned runtime (conda's
+     # libgfortran.so.5 without the libgfortran.so link) is invisible to
+     # find_library; ask the compiler where its runtime lives and link that

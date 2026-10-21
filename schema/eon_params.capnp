@@ -51,6 +51,13 @@ struct PotentialOptions {
   logPotential @5 :Bool = false;
   extPotPath @6 :Text = "./ext_pot";
   potentialsPath @7 :Text = "";
+  # Width in Angstrom of the C^2 quintic switch that takes the lj,
+  # ljcluster and morse_pt pair terms (and those terms of expr) to zero
+  # at their cutoff. 0 keeps the shifted truncation.
+  pairSwitchWidth @8 :Float64 = 0.0;
+  # Cutoff in Angstrom of the lj, ljcluster and morse_pt pair terms (and
+  # those terms of expr). 0 keeps each potential's own cutoff.
+  pairCutoff @9 :Float64 = 0.0;
 }
 
 # ---------------------------------------------------------------------

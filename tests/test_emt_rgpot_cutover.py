@@ -17,4 +17,4 @@ def test_emt_is_the_rgpot_adapter():
     assert "5.129167" in pin
     assert "1.914263" in pin
     wrap = (ROOT / "subprojects" / "rgpot.wrap").read_text(encoding="utf-8")
-    assert "f92f2914738bfc122e6e7a05ebe1179ec728b2b9" in wrap
+    assert "e40fd175f5230098d56333bf2aff38cd839dc810" in wrap

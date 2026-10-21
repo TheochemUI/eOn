@@ -62,7 +62,7 @@ jobs:
         if: runner.os != 'Windows'
         shell: pixi run -e dev-mta bash -e {0}
         run: |
-          meson test -C bbdir --suite eon --print-errorlogs
+          meson test -C bbdir --suite eon --print-errorlogs --max-lines 100000
 
       # --- Windows: follow metatomic/metatensor torch CI ---
       # setup-python + pip CPU torch + MSVC. Do NOT load pip torch from a
@@ -259,4 +259,4 @@ jobs:
           unset LDFLAGS CFLAGS CXXFLAGS FCFLAGS || true
           which meson
           meson --version
-          meson test -C bbdir --suite eon --print-errorlogs
+          meson test -C bbdir --suite eon --print-errorlogs --max-lines 100000

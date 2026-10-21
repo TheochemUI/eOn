@@ -47,9 +47,6 @@ TEST_CASE("Windows continue MxCsr sets exception masks and clears sticky flags",
 
 TEST_CASE("enableFPE then divide-by-zero continues once (no re-trap storm)",
           "[fpe]") {
-#if defined(__APPLE__) && defined(__aarch64__)
-  SKIP("Apple Silicon raises SIGILL for FE traps, not SIGFPE");
-#else
   eonc::enableFPE();
 
   volatile double num = 1.0;
@@ -66,7 +63,6 @@ TEST_CASE("enableFPE then divide-by-zero continues once (no re-trap storm)",
   eonc::disableFPE();
   // Restore a clean environment for later tests in the same process.
   feclearexcept(FE_ALL_EXCEPT);
-#endif
 }
 
 // #DE points at the DIV. Masking MXCSR and returning re-executes it.
@@ -114,11 +110,7 @@ TEST_CASE("enableFPE integer divide does not restart the faulting instruction",
 #endif
 }
 
-TEST_CASE("enableFPE reports overflow and an invalid operation once",
-          "[fpe]") {
-#if defined(__APPLE__) && defined(__aarch64__)
-  SKIP("Apple Silicon raises SIGILL for FE traps, not SIGFPE");
-#else
+TEST_CASE("enableFPE reports overflow and an invalid operation once", "[fpe]") {
   eonc::enableFPE();
   volatile double huge = 1.0e300;
   volatile double overflow = huge * huge;
@@ -128,7 +120,6 @@ TEST_CASE("enableFPE reports overflow and an invalid operation once",
   REQUIRE(std::isnan(invalid));
   eonc::disableFPE();
   feclearexcept(FE_ALL_EXCEPT);
-#endif
 }
 
 TEST_CASE("enableFPE steps past a prefixed integer divide", "[fpe][prefix]") {

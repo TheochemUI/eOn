@@ -116,8 +116,8 @@ std::vector<std::string> PrefactorJob::run() {
 
   auto env = JobResultEnvelope::fromMinimization(
       failed ? RunStatus::FAIL_POTENTIAL_FAILED : RunStatus::GOOD,
-      params.potential_options().potential,
-      PotRegistry::get().total_force_calls(), false, 0.0);
+      params.potential_options().potential, pots().total_force_calls(), false,
+      0.0);
   env.provenance = provenanceForJob(params);
   env.job_type = "prefactor";
   env.tags.emplace_back("good", failed ? "false" : "true");

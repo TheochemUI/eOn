@@ -435,7 +435,8 @@ void bind_potential(nb::module_ &m) {
             const size_t rows = static_cast<size_t>(forces.rows());
             const size_t cols = 3;
             auto owned = std::make_unique<double[]>(rows * cols);
-            std::memcpy(owned.get(), forces.data(), rows * cols * sizeof(double));
+            std::memcpy(owned.get(), forces.data(),
+                        rows * cols * sizeof(double));
             double *buf = owned.release();
             nb::capsule owner(buf, [](void *p) noexcept {
               std::unique_ptr<double[]> reclaim(static_cast<double *>(p));

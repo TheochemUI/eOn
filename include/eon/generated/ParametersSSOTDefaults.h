@@ -26,6 +26,8 @@ struct GeneratedDefaults {
   static constexpr auto POTENTIAL_LOG_POTENTIAL = false;
   static constexpr auto POTENTIAL_EXT_POT_PATH = std::string_view{"./ext_pot"};
   static constexpr auto POTENTIAL_POTENTIALS_PATH = std::string_view{""};
+  static constexpr auto POTENTIAL_PAIR_SWITCH_WIDTH = 0.0;
+  static constexpr auto POTENTIAL_PAIR_CUTOFF = 0.0;
   static constexpr auto STRUCTURE_COMPARISON_DISTANCE_DIFFERENCE = 0.1;
   static constexpr auto STRUCTURE_COMPARISON_NEIGHBOR_CUTOFF = 3.3;
   static constexpr auto STRUCTURE_COMPARISON_CHECK_ROTATION = false;

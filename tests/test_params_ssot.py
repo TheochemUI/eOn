@@ -266,6 +266,54 @@ def test_parity_potential_structure_process_models():
         assert not missing, f"{model_name} not in SSoT: {missing}"
 
 
+def test_potential_keys_reach_every_layer():
+    """Each [Potential] SSoT key is read from INI, written and read as JSON,
+    declared in config.yaml and modelled by eon_schema.PotentialConfig."""
+    from eon import params_ssot
+
+    ini = (REPO / "client" / "ParametersINI.cpp").read_text()
+    js = (REPO / "client" / "ParametersJSON.cpp").read_text()
+    yaml_keys = set(_load_yaml_options("Potential"))
+    model_keys = _pydantic_model_fields(SCHEMA_MODELS, "PotentialConfig")
+    # potentials_path is a client search path; the server writes none.
+    yaml_exempt = {"potentials_path"}
+    for field in params_ssot.scalar_fields("Potential"):
+        key = field["snake"]
+        assert f'"Potential", "{key}"' in ini, f"INI never reads [Potential] {key}"
+        assert js.count(f'"{key}"') >= 2, f"JSON does not write and read {key}"
+        assert key in model_keys, f"PotentialConfig lacks {key}"
+        if key not in yaml_exempt:
+            assert key in yaml_keys, f"config.yaml [Potential] lacks {key}"
+
+
+def test_pair_switch_width_defaults_agree():
+    from eon import params_ssot
+
+    assert params_ssot.defaults_for("Potential")["pair_switch_width"] == 0.0
+    m = re.search(
+        r"pair_switch_width:\s*float\s*=\s*Field\(\s*default=([0-9.]+)",
+        SCHEMA_MODELS.read_text(),
+    )
+    assert m, "PotentialConfig.pair_switch_width not found"
+    assert float(m.group(1)) == 0.0
+    opts = _load_yaml_options("Potential")
+    assert float(opts["pair_switch_width"]["default"]) == 0.0
+
+
+def test_pair_cutoff_defaults_agree():
+    from eon import params_ssot
+
+    assert params_ssot.defaults_for("Potential")["pair_cutoff"] == 0.0
+    m = re.search(
+        r"pair_cutoff:\s*float\s*=\s*Field\(\s*default=([0-9.]+)",
+        SCHEMA_MODELS.read_text(),
+    )
+    assert m, "PotentialConfig.pair_cutoff not found"
+    assert float(m.group(1)) == 0.0
+    opts = _load_yaml_options("Potential")
+    assert float(opts["pair_cutoff"]["default"]) == 0.0
+
+
 def test_parity_parameters_json_main_keys():
     from eon import params_ssot
 

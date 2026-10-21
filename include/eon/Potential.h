@@ -56,6 +56,12 @@ private:
 public:
   std::atomic<size_t> forceCallCounter;
 
+  /// Charge one evaluated geometry to this potential and its owning registry.
+  void recordForceCall() noexcept;
+
+  /// The registry this potential charges its force calls to.
+  [[nodiscard]] IPotRegistry &registry() const noexcept { return registry_; }
+
   /// Production default: construction-scope registry, else PotRegistry::get().
   explicit Potential(PotType a_ptype);
 
@@ -233,8 +239,7 @@ public:
             boxes[i]);
       if (variances)
         variances[i] = var;
-      forceCallCounter++;
-      registry_.on_force_call(ptype);
+      recordForceCall();
     }
   }
 };
@@ -242,7 +247,8 @@ public:
 namespace helpers {
 /// Exclusive ownership. Share only at a multi-owner boundary via
 /// sharePotential().
-[[nodiscard]] std::unique_ptr<Potential> makePotential(const Parameters &params);
+[[nodiscard]] std::unique_ptr<Potential>
+makePotential(const Parameters &params);
 [[nodiscard]] std::unique_ptr<Potential>
 makePotential(PotType ptype, const Parameters &params);
 [[nodiscard]] std::unique_ptr<Potential>
@@ -254,6 +260,14 @@ makePotential(PotType ptype, const Parameters &params, Runtime &runtime);
 sharePotential(std::unique_ptr<Potential> pot) {
   return std::shared_ptr<Potential>(std::move(pot));
 }
+
+/// A separate instance of ``pot`` for one image of a band, dimer or pair
+/// of minimizations: a clone when the backend can clone, else a new
+/// instance built from ``params``. It charges its force calls to the
+/// registry that counts ``pot``'s, so a job's force-call total includes
+/// every image.
+[[nodiscard]] std::shared_ptr<Potential>
+makeImagePotential(const Potential &pot, const Parameters &params);
 } // namespace helpers
 
 } // namespace eonc

@@ -120,7 +120,6 @@ public:
   explicit PluginLoader(Key);
 
 private:
-
   dynlib::Handle open_lib(const char *lib_base) override;
   std::vector<std::string> lib_names(const char *lib_base) const;
   void append_paths(const std::string &path_str, char sep);

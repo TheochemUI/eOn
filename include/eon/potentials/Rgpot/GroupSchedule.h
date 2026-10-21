@@ -11,6 +11,8 @@
 */
 #pragma once
 
+#include "eon/PbcSimd.h"
+
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
@@ -48,8 +50,7 @@ public:
   }
 
   /// Groups for a batch of systems with these keys.
-  [[nodiscard]] std::vector<int>
-  assign(const std::vector<std::int64_t> &keys) {
+  [[nodiscard]] std::vector<int> assign(const std::vector<std::int64_t> &keys) {
     const long m = static_cast<long>(keys.size());
     const long cap = (m + groups_ - 1) / groups_;
     std::vector<long> load(static_cast<size_t>(groups_), 0);
@@ -75,25 +76,42 @@ public:
   }
 
   /// Remember the geometry a key was last evaluated at.
-  void record(std::int64_t key, const double *positions, long n3) {
+  void record(std::int64_t key, const double *positions, long n3,
+              const double *cell = nullptr) {
     auto &stored = last_[key];
     stored.assign(positions, positions + n3);
+    if (cell)
+      cells_[key].assign(cell, cell + 9);
+    else
+      cells_.erase(key);
   }
 
   /// The group for a single request: the home of the recorded geometry
   /// nearest to `positions` (root-mean-square over coordinates), group 0
   /// when nothing of this size is recorded.
-  [[nodiscard]] int nearest(const double *positions, long n3) const {
+  [[nodiscard]] int nearest(const double *positions, long n3,
+                            const double *cell = nullptr) const {
     double best = std::numeric_limits<double>::infinity();
     int group = 0;
     for (const auto &[key, stored] : last_) {
       if (static_cast<long>(stored.size()) != n3)
         continue;
-      double d2 = 0.0;
+      const auto recordedCell = cells_.find(key);
+      if (cell && recordedCell != cells_.end() &&
+          !std::equal(recordedCell->second.begin(), recordedCell->second.end(),
+                      cell))
+        continue;
+      std::vector<double> differences(static_cast<size_t>(n3));
       for (long i = 0; i < n3; ++i) {
-        const double d = stored[static_cast<size_t>(i)] - positions[i];
-        d2 += d * d;
+        differences[static_cast<size_t>(i)] =
+            stored[static_cast<size_t>(i)] - positions[i];
       }
+      if (cell &&
+          std::any_of(cell, cell + 9, [](double x) { return x != 0.0; }))
+        pbc::closestDisplacements(differences.data(), differences.size(), cell);
+      double d2 = 0.0;
+      for (double d : differences)
+        d2 += d * d;
       const auto home = home_.find(key);
       if (d2 < best && home != home_.end()) {
         best = d2;
@@ -115,6 +133,7 @@ private:
   int groups_;
   std::map<std::int64_t, int> home_;
   std::map<std::int64_t, std::vector<double>> last_;
+  std::map<std::int64_t, std::vector<double>> cells_;
 };
 
 } // namespace eonc

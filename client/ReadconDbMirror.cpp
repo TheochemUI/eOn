@@ -27,14 +27,24 @@
 #define EON_READCON_DB_VERSION ""
 #endif
 
-#if !defined(_WIN32)
+#if defined(_WIN32)
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+using LibHandle = HMODULE;
+#else
 #include <dlfcn.h>
+using LibHandle = void *;
 
 extern "C" int rkrdb_open(const char *, std::size_t *);
 // The mirror looks the symbol up with dlsym. Naming it here keeps the
 // linked libreadcon_db.so on the link line under --as-needed.
 [[maybe_unused]] static int (*const kLinkedOpen)(const char *,
-                                                  std::size_t *) = rkrdb_open;
+                                                 std::size_t *) = rkrdb_open;
 #endif
 
 namespace eonc::io {
@@ -75,13 +85,12 @@ corpus_dir(const std::filesystem::path &con_path) {
   return std::nullopt;
 }
 
-#if !defined(_WIN32)
 using OpenFn = int (*)(const char *, std::size_t *);
 using AppendFn = int (*)(std::size_t, std::uint64_t, const char *, const char *,
                          std::uint32_t *);
 
 struct Api {
-  void *lib = nullptr;
+  LibHandle lib = nullptr;
   OpenFn open = nullptr;
   AppendFn append_str = nullptr;
   bool missing = false;
@@ -94,17 +103,51 @@ int &mirror_epoch() {
   return epoch;
 }
 
-void clear_api(Api &out) {
-  if (out.lib != nullptr && !out.from_process) {
-    dlclose(out.lib);
+void release_lib(LibHandle lib, bool from_process) {
+  if (lib == nullptr || from_process) {
+    return;
   }
+#if defined(_WIN32)
+  FreeLibrary(lib);
+#else
+  dlclose(lib);
+#endif
+}
+
+void *symbol(LibHandle handle, const char *name) {
+#if defined(_WIN32)
+  return reinterpret_cast<void *>(GetProcAddress(handle, name));
+#else
+  return dlsym(handle, name);
+#endif
+}
+
+LibHandle open_named(const char *name) {
+#if defined(_WIN32)
+  return LoadLibraryA(name);
+#else
+  return dlopen(name, RTLD_LAZY | RTLD_LOCAL);
+#endif
+}
+
+const char *open_error() {
+#if defined(_WIN32)
+  return "LoadLibrary failed";
+#else
+  const char *err = dlerror();
+  return err != nullptr ? err : "dlopen returned null";
+#endif
+}
+
+void clear_api(Api &out) {
+  release_lib(out.lib, out.from_process);
   out = Api{};
 }
 
-bool resolve_symbols(Api &out, void *handle) {
-  out.open = reinterpret_cast<OpenFn>(dlsym(handle, "rkrdb_open"));
-  out.append_str = reinterpret_cast<AppendFn>(
-      dlsym(handle, "rkrdb_append_trajectory_str"));
+bool resolve_symbols(Api &out, LibHandle handle) {
+  out.open = reinterpret_cast<OpenFn>(symbol(handle, "rkrdb_open"));
+  out.append_str =
+      reinterpret_cast<AppendFn>(symbol(handle, "rkrdb_append_trajectory_str"));
   return out.open != nullptr && out.append_str != nullptr;
 }
 
@@ -126,31 +169,46 @@ Api &api() {
       out.missing = true;
       return out;
     }
-    out.lib = dlopen(forced, RTLD_LAZY | RTLD_LOCAL);
-  } else if (resolve_symbols(out, RTLD_DEFAULT)) {
-    out.from_process = true;
-    return out;
+    out.lib = open_named(forced);
   } else {
+#if !defined(_WIN32)
+    if (resolve_symbols(out, RTLD_DEFAULT)) {
+      out.from_process = true;
+      return out;
+    }
     out.open = nullptr;
     out.append_str = nullptr;
     const char *names[] = {"libreadcon_db.so", "libreadcon_db.so.0",
                            "libreadcon_db.dylib"};
+#else
+    // The import library does not pull the DLL in unless some object
+    // references rkrdb_*. Load it from PATH (the test runner puts the
+    // build directory there) or from an earlier LoadLibrary.
+    HMODULE loaded = GetModuleHandleA("readcon_db.dll");
+    if (loaded != nullptr && resolve_symbols(out, loaded)) {
+      out.lib = loaded;
+      out.from_process = true;
+      return out;
+    }
+    out.open = nullptr;
+    out.append_str = nullptr;
+    const char *names[] = {"readcon_db.dll"};
+#endif
     for (const char *name : names) {
-      out.lib = dlopen(name, RTLD_LAZY | RTLD_LOCAL);
+      out.lib = open_named(name);
       if (out.lib != nullptr) {
         break;
       }
     }
   }
   if (out.lib == nullptr) {
-    const char *err = dlerror();
     EONC_LOG_WARNING("[readcon-db] libreadcon_db.so failed to load: {}",
-                     err != nullptr ? err : "dlopen returned null");
+                     open_error());
     out.missing = true;
     return out;
   }
   if (!resolve_symbols(out, out.lib)) {
-    dlclose(out.lib);
+    release_lib(out.lib, false);
     out.lib = nullptr;
     out.open = nullptr;
     out.append_str = nullptr;
@@ -187,12 +245,10 @@ std::size_t corpus_handle(const std::filesystem::path &dir) {
   handles().emplace(key, id);
   return id;
 }
-#endif
 
 } // namespace
 
 void mirror_con_corpus(const std::string &path) {
-#if !defined(_WIN32)
   namespace fs = std::filesystem;
   std::error_code ec;
   if (!fs::is_regular_file(path, ec) || ec) {
@@ -224,25 +280,14 @@ void mirror_con_corpus(const std::string &path) {
   const std::uint64_t tid = fnv1a(resolved + '\0' + text);
   std::uint32_t nframes = 0;
   api().append_str(id, tid, text.c_str(), resolved.c_str(), &nframes);
-#else
-  static_cast<void>(path);
-#endif
 }
 
 bool readcon_db_mirror_ok() {
-#if !defined(_WIN32)
   const Api &fns = api();
   return !fns.missing && fns.open != nullptr && fns.append_str != nullptr;
-#else
-  return false;
-#endif
 }
 
-void readcon_db_mirror_reset() {
-#if !defined(_WIN32)
-  mirror_epoch()++;
-#endif
-}
+void readcon_db_mirror_reset() { mirror_epoch()++; }
 
 const char *readcon_db_loaded_version() {
   if (!readcon_db_mirror_ok()) {

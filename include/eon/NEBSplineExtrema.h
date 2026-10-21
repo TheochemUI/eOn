@@ -56,7 +56,8 @@ void printImageData(
     const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
     long numImages, bool estimateEigenvalues, bool writeToFile, size_t idx,
-    eonc::log::Scoped log, double referenceEnergy = std::numeric_limits<double>::quiet_NaN());
+    eonc::log::Scoped log,
+    double referenceEnergy = std::numeric_limits<double>::quiet_NaN());
 
 /// Build stamped ConFrames for a NEB band (same metadata as writePathCon).
 /// Empty on invalid path size. Does not write to disk.

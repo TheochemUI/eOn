@@ -91,12 +91,61 @@ Via the surrogate potential interface, a native C++ implementation of the Gaussi
 - Modular strategy pattern for tangent, projection, and spring force components.
 ```
 
-### Geometric spring
+### Spring law
 
-`geometric_spring = true` replaces the Hookean parallel spring with
-`k` times the difference of the squared neighbour distances. A step
-perpendicular to the band does not change that force, and the
-stiffness falls in proportion to the image spacing.
+The default parallel spring force on image $i$ is Hooke's law,
+
+$$
+F_i^{s\parallel} = k\left(|R_{i+1} - R_i| - |R_i - R_{i-1}|\right)\hat\tau_i ,
+$$
+
+as {cite:t}`neb-henkelmanImprovedTangentEstimate2000` write it with the
+improved tangent and {cite:t}`neb-henkelmanClimbingImageNudged2000` use it
+for the climbing image. {cite:t}`neb-jonssonNudgedElasticBand1998` project
+the spring difference $(R_{i+1} - R_i) - (R_i - R_{i-1})$ onto the tangent,
+which is linear in the distances as well.
+It vanishes when the two neighbour distances are equal, and its stiffness
+there is `k` whatever the image spacing.
+
+`geometric_spring = true` selects
+
+$$
+F_i^{s\parallel} = k\left(|R_{i+1} - R_i|^2 - |R_i - R_{i-1}|^2\right)\hat\tau_i ,
+$$
+
+the form of the SVN client (tag `svn-Jul_01_2024`, where both distances are
+`squaredNorm()`), and the default until 6a89efd32 moved to Hooke's law (gh-210).
+It is Hooke's law times $|R_{i+1} - R_i| + |R_i - R_{i-1}|$, so it has the
+same fixed point, equal neighbour distances, with a stiffness of
+$2k|R_{i+1} - R_i|$ there: it softens as the band gets denser.
+`client/validation/neb_spring_fixed_point.py` derives both fixed points,
+shows that on a curved path equal chords are equal arc lengths, and shows
+the effect described below.
+
+With every atom free the client removes the net translation from each
+projected force. When the tangent itself carries a translation, as it does
+when the endpoints differ by the motion of one atom, a band converges with
+its perpendicular force and spring cancelling up to a common translation,
+so the converged spacing is unequal and depends on the spring law. On the
+LJ13 pair with atom 0 displaced 0.5 A (the SVN parity case, 3 images),
+Hooke's law converges with chords from 0.093 to 0.289 A and image energies
+0.000049, 0.259018 and 2.851935 eV in 236 force calls; the squared law with
+SVN's first-step finite-difference L-BFGS scaling converges to SVN's band,
+0.000135, 0.056816 and 1.800656 eV, in 209.
+
+For a climbing-image band the spacing carries no answer: the climbing
+image does, the barrier and the saddle geometry, and both laws give the
+same climbing image. Unequal spacing at convergence is acceptable there;
+spacing matters for a plain NEB.
+
+On a well-posed path the two laws agree. For the LJ13 reactant and product
+in `client/unit_tests/data/systems/neb_lj13`, with the climbing image on
+and 3, 7, 15 and 31 images, the climbing image lies within 5e-6 eV and
+7e-4 A (RMSD) of the eonclient dimer saddle (-38.963676 eV) under both
+laws, and the largest distance of an image from the steepest-descent path
+off that saddle falls from 0.032 to 0.010 A. Hooke's law keeps the
+spacing closer to even: the longest over the shortest chord is 1.12,
+1.18, 1.30 and 1.48, against 1.12, 1.25, 2.53 and 1.77 for the squared law.
 
 ### Onsager-Machlup NEB
 
@@ -223,6 +272,29 @@ reads the stress the potential returned with each image's force call, so an
 iteration costs one call per moved image. A potential that does not report
 the Cauchy stress is refused. The band does not estimate that tensor.
 
+#### A reference case, and why its cell has two atoms
+
+`client/unit_tests/SolidStateBainTest.cpp` runs the band on a transformation
+whose saddle is known without a band. The case is the Bain path from bcc to
+fcc of LJ (u0 1 eV, psi 1 Angstrom), switched to zero over [2.0, 2.2]
+Angstrom. Both atoms of the body-centred tetragonal cell diag(a, a, c) sit on
+inversion centres, so the atomic force vanishes at any cell. A relaxed scan of
+the energy over c/a (`validation/bain_lj_reference.py` in rgsaddle, spacing
+2.5e-4) puts the saddle at c/a 1.09331985, 0.0590356373 eV/atom above bcc.
+The band reaches c/a 1.09331984 and the same barrier to ten digits, in 187
+iterations and 1311 force calls.
+
+That saddle is unstable to the k = (1/2, 0, 1/2) phonon, which shuffles
+alternate planes (eigenvalue -51.5 eV/Angstrom^2). The two-atom cell has no
+wave vector but k = 0, so its saddle is the scan's. A supercell does carry
+the shuffle. A 5 x 5 x 4 supercell (200 atoms, `pair_cutoff = 2.2`,
+`pair_switch_width = 0.2`) has k = (2/5, 0, 1/2) with eigenvalue -38.4. Its
+band first settles on the tetragonal saddle. Rounding then seeds the shuffle,
+the cells shear, and the band moves to a lower path near 0.026 eV/atom. That
+path is a correct NEB answer for the supercell, but the scan does not
+describe it. A solid-state test should use a cell whose only soft mode is the
+strain it studies.
+
 A ring on this band is one centroid and one cell. The force and the stress
 the band follows are the averages of that image's beads. The band spring
 stays on the centroids, and the ring springs stay inside the image. The
@@ -230,6 +302,13 @@ Jacobian remains the fixed factor from the two endpoint volumes. The dimer
 on the physical potential finds the classical saddle. A dimer on the
 ring-polymer potential is the instanton, so it is not a step of this band.
 The transmission coefficient is not a band iteration.
+
+With `-Dwith_rgsaddle=true`, `opt_method` lbfgs, fire and xtsci step the
+band on rgsaddle's solid-state band (rgsaddle ABI minor 17 or newer). The
+image cells move with the atoms, rgsaddle reads each image's Cauchy stress
+from the same force call, and eOn rebuilds its own joint projection for
+the convergence test after every step. An older rgsaddle refuses a
+solid-state band instead of stepping it with the cells fixed.
 
 `ci_mmf`, `zoom_neb`, `onsager_machlup`, `neb_doubly_nudged`, and
 `neb_elastic_band` are refused. The climbing image itself is the joint-space

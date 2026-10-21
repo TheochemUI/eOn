@@ -175,9 +175,9 @@ std::vector<std::string> NudgedElasticBandJob::run() {
     }
   }
 
-  f1 = PotRegistry::get().total_force_calls();
+  f1 = pots().total_force_calls();
   status = neb->compute();
-  fCallsNEB += PotRegistry::get().total_force_calls() - f1;
+  fCallsNEB += pots().total_force_calls() - f1;
 
   if (status == NudgedElasticBand::NEBStatus::GOOD) {
     neb->printImageData();
@@ -216,8 +216,8 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
         status == NudgedElasticBand::NEBStatus::GOOD
             ? RunStatus::GOOD
             : RunStatus::FAIL_MAX_ITERATIONS,
-        params.potential_options().potential,
-        PotRegistry::get().total_force_calls(), true, neb->reactantEnergy);
+        params.potential_options().potential, pots().total_force_calls(), true,
+        neb->reactantEnergy);
     env.provenance = provenanceForJob(params);
     env.job_type = "neb";
     env.extras.emplace_back("force_calls_neb", static_cast<double>(fCallsNEB));

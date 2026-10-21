@@ -13,6 +13,7 @@
 // Based on the SteepestDescent minimizer written in ASE.
 
 #include "eon/SteepestDescent.h"
+#include "eon/ExactReduction.h"
 #include "eon/SafeMath.h"
 
 namespace eonc {
@@ -26,7 +27,8 @@ int SteepestDescent::step(double a_maxMove) {
   if (m_optConfig.opts.sd.two_point && iteration > 0) {
     Eigen::VectorXd dx = m_objf->difference(r, m_rPrev);
     Eigen::VectorXd dg = -f + m_fPrev;
-    alpha = eonc::safemath::safe_div(dx.dot(dx), dx.dot(dg), 0.0);
+    alpha = eonc::safemath::safe_div(eonc::exact::squaredNorm(dx),
+                                     eonc::exact::dot(dx, dg), 0.0);
     if (alpha < 0) {
       alpha = m_optConfig.opts.sd.alpha;
     }

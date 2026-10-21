@@ -109,8 +109,10 @@ message('pyeonclient: version @0@'.format(_pyec_version))
 _nb_cpp_args = _args + [
     '-DNB_DOMAIN=pyeonclient',
     '-DPYEONCLIENT_VERSION="' + _pyec_version + '"',
-    '-Wno-unused-parameter',
 ]
+# cl rejects -Wno-unused-parameter (D8021). Keep it only where the
+# compiler accepts it; MSVC does not treat an unused parameter as an error.
+_nb_cpp_args += cppc.get_supported_arguments(['-Wno-unused-parameter'])
 
 if _nb_free_threaded
     # Free-threaded nanobind ABI (no abi3 until PEP 803)
@@ -190,13 +192,71 @@ py.install_sources(
 
 # Wrap librgpot is not in the meson-python RECORD if we only copy it from
 # an install script into prefix/lib. custom_target+install ships the
-# SONAME next to _core.so so the wheel dlopens it.
+# SONAME next to _core so the wheel dlopens it. The number is
+# kCxxSoversion (librgpot.so.N / librgpot.N.dylib), not the project
+# version in the real filename librgpot.so.3.5.1. Windows has no cp -a.
 if not _rgpot_pkg.found()
+    _rgpot_sover = _rgpot_proj.get_variable('rgpot_cxx_soversion')
+    if host_system == 'darwin'
+        _rgpot_wheel_name = 'librgpot.' + _rgpot_sover + '.dylib'
+    elif host_system == 'windows'
+        _rgpot_wheel_name = 'rgpot.dll'
+    else
+        _rgpot_wheel_name = 'librgpot.so.' + _rgpot_sover
+    endif
     _rgpot_for_py = custom_target(
-        'librgpot-so3-for-pyeonclient',
+        'librgpot-soname-for-pyeonclient',
         input: _rgpot_proj.get_variable('rgpot'),
-        output: 'librgpot.so.3',
-        command: [find_program('cp'), '-a', '@INPUT@', '@OUTPUT@'],
+        output: _rgpot_wheel_name,
+        command: [
+            py,
+            '-c',
+            'import shutil, sys; shutil.copy2(sys.argv[1], sys.argv[2])',
+            '@INPUT@',
+            '@OUTPUT@',
+        ],
+        install: true,
+        install_dir: py.get_install_dir() / 'pyeonclient',
+        build_by_default: true,
+    )
+endif
+
+# The extension imports readcon_db.dll / NEEDs libreadcon_db.so. The
+# subproject install is skipped, and the repair step runs after
+# meson-python has removed the build tree, so the wheel copies the
+# cdylib beside the extension.
+if host_system == 'windows' and _readcon_db_wheel_dll.length() > 0
+    custom_target(
+        'readcon-db-for-pyeonclient',
+        input: _readcon_db_wheel_dll,
+        output: 'readcon_db.dll',
+        command: [
+            py,
+            '-c',
+            'import shutil, sys; shutil.copy2(sys.argv[1], sys.argv[2])',
+            '@INPUT@',
+            '@OUTPUT@',
+        ],
+        install: true,
+        install_dir: py.get_install_dir() / 'pyeonclient',
+        build_by_default: true,
+    )
+elif _readcon_db_wheel_so.length() > 0
+    _readcon_db_wheel_name = 'libreadcon_db.so'
+    if host_system == 'darwin'
+        _readcon_db_wheel_name = 'libreadcon_db.dylib'
+    endif
+    custom_target(
+        'readcon-db-for-pyeonclient',
+        input: _readcon_db_wheel_so,
+        output: _readcon_db_wheel_name,
+        command: [
+            py,
+            '-c',
+            'import shutil, sys; shutil.copy2(sys.argv[1], sys.argv[2])',
+            '@INPUT@',
+            '@OUTPUT@',
+        ],
         install: true,
         install_dir: py.get_install_dir() / 'pyeonclient',
         build_by_default: true,

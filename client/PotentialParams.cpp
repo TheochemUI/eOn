@@ -38,4 +38,9 @@ Potential::Potential(PotType a_ptype, const Parameters &p)
 Potential::Potential(const Parameters &a_params)
     : Potential(a_params.potential_options().potential, a_params) {}
 
+void Potential::recordForceCall() noexcept {
+  forceCallCounter++;
+  registry_.on_force_call(ptype);
+}
+
 } // namespace eonc

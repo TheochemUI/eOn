@@ -1,0 +1,21 @@
+--- a/CppCore/rgpot/LennardJones/meson.build
++++ b/CppCore/rgpot/LennardJones/meson.build
+@@ -1,10 +1,17 @@
+ # Static convenience lib; ships inside the librgpot umbrella (link_whole).
++# The x86 build compiles this loop in accumulateHw, which is
++# target("fma") and fp-contract off, and the force update is an explicit
++# fma. ARM's base ISA already has FMA, so that clone is not built and the
++# same statements are compiled with the compiler's default contraction.
++# Clang then fuses the distance square and the 12-6 products, and the LJ13
++# basin hop takes a different number of force calls. _fp_contract_off is
++# the flag the min-image objects already use. __builtin_fma is unaffected.
+ lennard_jones = static_library(
+     'lennard_jones',
+     'LJPot.cc',
+     'LJClusterPot.cc',
+     dependencies: _deps,
+-    cpp_args: _args,
++    cpp_args: _args + _fp_contract_off,
+     include_directories: ['../../'],
+     pic: true,
+     install: false,

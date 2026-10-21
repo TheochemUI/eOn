@@ -21,8 +21,10 @@
 // amu^0.5 Angstrom and hbar is kHbar.
 
 #include "Matter.h"
+#include "PhysicalQuadraticBath.h"
 
 #include <array>
+#include <cstdint>
 #include <functional>
 #include <limits>
 #include <memory>
@@ -237,6 +239,11 @@ using BatchPotential =
     std::function<void(const std::vector<VectorXd> &q, std::vector<double> &v,
                        std::vector<VectorXd> &grad)>;
 
+/// Explicit electronic-state owners for each evaluated geometry.
+using OwnedBatchPotential = std::function<void(
+    const std::vector<VectorXd> &q, std::vector<double> &v,
+    std::vector<VectorXd> &grad, const std::vector<long> &owners)>;
+
 /// The mass-weighted Hessian d2V/dq2 at interior bead j (1..P-1).
 using BeadHessian = std::function<MatrixXd(long j, const VectorXd &q)>;
 
@@ -375,16 +382,29 @@ double quantumHarmonicTstLogRate(const MatrixXd &hessReactant,
                                  double barrier, long rigidModes);
 
 struct RateInstantonOptions {
+  /// Stable bead identities and bounded derivative scratch slots. Empty
+  /// preserves the BatchPotential callback contract.
+  OwnedBatchPotential ownedPotential;
+  /// Fixed physical quadratic bath, eliminated on the same primitive ring.
+  /// The potential callback supplies retained coordinates and the declared
+  /// frozen-bath or relaxed potential of this model.
+  std::shared_ptr<const PhysicalQuadraticBath> physicalBath;
+  /// Exact physical potential Hessian at a retained bead, excluding springs
+  /// and the eliminated bath. Empty selects finite differences and Bofill.
+  std::function<MatrixXd(const VectorXd &)> physicalHessian;
   long beads = 32;              ///< N, beads on the ring
   long maxIterations = 1000;    ///< translation steps
   double forceTolerance = 1e-3; ///< largest per-bead |dU_N/dq|,
                                 ///< eV / (amu^0.5 Angstrom)
   long lanczosFirst = 30;       ///< Lanczos steps for the first minimum mode
   long lanczosRestart = 6;      ///< Lanczos steps from the previous mode
-  double lanczosStep = 1e-4;    ///< finite-difference step, amu^0.5 Angstrom
-  double maxStep = 0.05;        ///< largest bead move per step,
-                                ///< amu^0.5 Angstrom
-  long memory = 10;             ///< L-BFGS correction pairs
+  /// Central physical bead-Hessian displacement in sqrt(amu) Angstrom.
+  /// Independent of the Lanczos directional finite-difference step.
+  double physicalHessianStep = 1e-4;
+  double lanczosStep = 1e-4; ///< finite-difference step, amu^0.5 Angstrom
+  double maxStep = 0.05;     ///< largest bead move per step,
+                             ///< amu^0.5 Angstrom
+  long memory = 10;          ///< L-BFGS correction pairs
   /// Even N, when the guess already matches under j -> N - j: evaluate
   /// the potential from one turning point to the other and copy it.
   /// An odd N, or a guess without that symmetry, evaluates every bead.
@@ -395,19 +415,19 @@ struct RateInstantonOptions {
   /// gradient calls; the search then finishes on the whole ring. A cooling
   /// schedule probes only its last temperature.
   bool checkOddSector = true;
+  /// The search stops, with RateInstanton::collapsed set, when B_N falls
+  /// below this fraction of the starting ring's. 0 never stops.
+  double collapseFraction = 1e-4;
   double energyShift = 0.0; ///< subtracted from every bead potential, eV
-  /// Empty keeps every time step beta_N hbar. Otherwise one positive weight
-  /// per bead, scaled to a mean of one: the link from bead j to bead j + 1
-  /// lasts w_j beta_N hbar, so its spring is c / w_j, and bead j carries
-  /// (w_{j-1} + w_j) / 2 of its potential (the trapezoidal action of the
-  /// adaptive grid, Rommel and Kaestner, J. Chem. Phys. 134, 184107
-  /// (2011)). Weights keep the whole ring, take the Newton search and no
-  /// friction bath.
+  /// Empty keeps every spring equal. Otherwise one positive weight per
+  /// bead: the spring from bead j to bead j + 1 is divided by that weight.
+  /// A half ring keeps the uniform spring and refuses a weight list.
   std::vector<double> discretization;
   /// Active coordinates at or below this take the Newton step. Zero keeps
   /// minimum-mode following. The step solves through the block chain, so
   /// the default admits every size a batch potential can evaluate.
-  long newtonLimit = std::numeric_limits<long>::max();
+  /// int64, not long, so the Windows default matches the 64-bit maximum.
+  std::int64_t newtonLimit = std::numeric_limits<std::int64_t>::max();
   /// Where the bead Hessian blocks start: "saddle" copies the saddle's
   /// Hessian to every bead and lets the Bofill update carry it;
   /// "finite_difference" takes 2 f gradient calls per bead first. Below the
@@ -436,22 +456,16 @@ struct RateInstantonOptions {
   std::vector<double> frictionEtaBeads;
 };
 
-/// The friction bath of a closed ring, Litman et al., J. Chem. Phys. 156,
-/// 194106 (2022), Eqs. 20 and 35: sum_l (omega_l / 2) |G_l|^2 over the
-/// ring's normal modes l != 0, with omega_l = 2 omega_P |sin(pi l / N)|,
-/// omega_P = 1 / (beta_N hbar), and G the normal modes of g_j, the line
-/// integral of sqrt(eta) up to bead j. eta is a friction per unit mass in
-/// 1 / time: one value, position-independent, or one per bead, whose links
-/// are closed around the ring so that no bead is the start. Empty or
-/// all-zero eta leaves u and grad unchanged; a negative eta is refused.
+/// Position-independent (one eta) or bead-wise friction on a closed ring.
+/// Empty or all-zero eta leaves u and grad unchanged. A negative eta is
+/// refused. J. Chem. Phys. 156, 194106 (2022).
 void addFrictionBath(const std::vector<VectorXd> &q, double &u,
                      std::vector<VectorXd> &grad,
-                     const std::vector<double> &eta, double omegaP);
+                     const std::vector<double> &eta);
 
-/// U_N of a closed ring. An empty discretization is the uniform ring.
-/// Otherwise one positive weight per bead, scaled to a mean of one, is the
-/// time step of the link that leaves that bead, as in
-/// RateInstantonOptions::discretization.
+/// U_N of a closed ring. An empty discretization is the uniform spring.
+/// Otherwise one positive weight per bead divides the spring that leaves
+/// that bead.
 double closedRingPotential(const std::vector<VectorXd> &beads, double spring,
                            const BatchPotential &potential,
                            const std::vector<double> &discretization = {});
@@ -477,29 +491,41 @@ RingSpectrum ringSpectrum(const std::vector<MatrixXd> &beadHessians, double c,
                           const std::vector<VectorXd> &tau);
 
 struct RateInstanton {
-  std::vector<VectorXd> beads;     ///< N beads, q_N = q_0 implied
-  std::vector<double> energies;    ///< V at every bead, eV
-  double beta = 0.0;               ///< 1 / (kB T), 1 / eV
-  double betaN = 0.0;              ///< beta / N
-  double temperature = 0.0;        ///< K
-  double crossover = 0.0;          ///< T_c, K
-  double ringPotential = 0.0;      ///< U_N, eV
-  /// sum_j |q_{j+1} - q_j|^2 / w_j^2, amu Angstrom^2: the squared speed of
-  /// the ring's time shift times (beta_N hbar)^2, w_j = 1 on a uniform ring.
-  double bN = 0.0;
-  /// The time steps the ring was found on, scaled to a mean of one; empty
-  /// for the uniform ring.
+  std::shared_ptr<const PhysicalQuadraticBath> physicalBath;
+  std::vector<VectorXd> beads;  ///< N beads, q_N = q_0 implied
+  std::vector<double> energies; ///< V at every bead, eV
+  double beta = 0.0;            ///< 1 / (kB T), 1 / eV
+  double betaN = 0.0;           ///< beta / N
+  double temperature = 0.0;     ///< K
+  double crossover = 0.0;       ///< T_c, K
+  double ringPotential = 0.0;   ///< U_N, eV
+  double bN = 0.0;              ///< sum_j |q_{j+1} - q_j|^2, amu Angstrom^2
+  /// Empty keeps every spring equal. Otherwise one positive weight per bead.
   std::vector<double> discretization;
-  /// The friction bath the ring was found under (addFrictionBath's eta);
-  /// empty without one.
-  std::vector<double> frictionEta;
+  /// Resolved fixed bath coefficients: empty, one value or one per bead.
+  std::vector<double> bathEta;
+  /// Exact finite bath fluctuation diagnostics after declared rigid projection.
+  std::vector<double> bathSignedCurvatures;
+  double bathLogAbsDet = std::numeric_limits<double>::quiet_NaN();
+  double bathReactantLogAbsDet = std::numeric_limits<double>::quiet_NaN();
+  double bathSymmetryResidual = std::numeric_limits<double>::quiet_NaN();
+  double bathRoundoffScale = std::numeric_limits<double>::quiet_NaN();
+  double phaseEigenResidual = std::numeric_limits<double>::quiet_NaN();
+  /// Absolute labelled-saddle Gaussian weight, without contour/rate factors.
+  double logAbsoluteGaussianWeight = std::numeric_limits<double>::quiet_NaN();
+  bool phaseZeroVerified = false;
+  /// A physical rate requires a converged index-one stationary ring.
+  /// Numerical zero-bath prefactor diagnostics can be finite when false.
+  bool rateValid = false;
+  std::string rateValidity = "not_evaluated";
+
   double negativeEigenvalue = 0.0; ///< of the ring Hessian, 1 / time^2
   double zeroEigenvalue = 0.0;     ///< the eigenvalue left out
   long negativeModes = 0;          ///< eigenvalues below the zero mode
   long iterations = 0;
   bool converged = false;
-  /// The search stopped because B_N fell below 1e-4 of the starting
-  /// ring's: the beads fell together onto one point (a minimum or the
+  /// The search stopped because B_N fell below collapseFraction of the
+  /// starting ring's: the beads fell together onto one point (a minimum or the
   /// saddle), which is no instanton.
   bool collapsed = false;
   double logRateTimesZr = 0.0; ///< ln(k Z_r), k in 1 / time
@@ -562,7 +588,8 @@ RingChannel ringChannel(const std::vector<VectorXd> &beads,
 /// Hessian. `generators` holds three translations then three rotations as
 /// columns (a zero column for a rotation a linear molecule lacks). A
 /// rotation r is a zero mode when its Rayleigh quotient r^T H r / r^T r is
-/// at most kRotationZeroFraction of the softest vibration, the lowest
+/// at most `fraction` (default kRotationZeroFraction) of the softest
+/// vibration, the lowest
 /// eigenvalue of H on the complement of all six generators. Both sides
 /// scale with H and neither grows with the atom count, unlike a comparison
 /// with ||H||_F. The residual reported is that ratio; a structure with no
@@ -574,7 +601,16 @@ struct RotationZeroModes {
   double softestVibration = 0.0; ///< lowest eigenvalue on the complement
 };
 RotationZeroModes rotationZeroModes(const MatrixXd &hess,
-                                    const MatrixXd &generators);
+                                    const MatrixXd &generators,
+                                    double fraction = kRotationZeroFraction);
+
+/// The Bofill update of a bead block (Powell symmetric Broyden and SR1
+/// mixed by the angle between the secant residual and the step), then any
+/// negative eigenvalues beyond `allowedNegatives`, the count the block's
+/// last exact (finite-difference) version had, mirrored to their absolute
+/// value. A negative count applies the plain update.
+void bofillKeepingInertia(MatrixXd &h, const VectorXd &dq, const VectorXd &dg,
+                          long allowedNegatives);
 
 /// The mass-weighted Hessian d2V/dq2 at ring bead j (0..N-1).
 using RingBeadHessian = std::function<MatrixXd(long j, const VectorXd &q)>;

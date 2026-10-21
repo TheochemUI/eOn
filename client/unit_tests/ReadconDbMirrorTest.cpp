@@ -22,22 +22,37 @@
 #include <string>
 
 namespace tests {
+namespace {
+
+void set_library_override(const char *path) {
+#if defined(_WIN32)
+  _putenv_s("EON_READCON_DB_LIBRARY", path == nullptr ? "" : path);
+#else
+  if (path == nullptr) {
+    unsetenv("EON_READCON_DB_LIBRARY");
+  } else {
+    setenv("EON_READCON_DB_LIBRARY", path, 1);
+  }
+#endif
+}
+
+} // namespace
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 TEST_CASE("loaded rkrdb_open matches the python package version",
           "[readcon-db]") {
-#ifndef _WIN32
-  unsetenv("EON_READCON_DB_LIBRARY");
-#endif
+  set_library_override(nullptr);
   eonc::io::readcon_db_mirror_reset();
   REQUIRE(eonc::io::readcon_db_mirror_ok());
   REQUIRE(std::string(eonc::io::readcon_db_loaded_version()) == "0.1.6");
 }
 
 TEST_CASE("missing readcon-db leaves IoStatus unchanged", "[readcon-db]") {
-#ifndef _WIN32
-  setenv("EON_READCON_DB_LIBRARY", "/no/such/libreadcon_db.so", 1);
+#if defined(_WIN32)
+  set_library_override("C:/no/such/readcon_db.dll");
+#else
+  set_library_override("/no/such/libreadcon_db.so");
 #endif
   eonc::io::readcon_db_mirror_reset();
 
@@ -46,7 +61,8 @@ TEST_CASE("missing readcon-db leaves IoStatus unchanged", "[readcon-db]") {
   auto pot = eonc::helpers::sharePotential(
       eonc::helpers::makePotential(PotType::LJ, params));
   Matter matter(pot, params);
-  const eonc::io::IoStatus status = matter.con2matter(std::string("reactant.con"));
+  const eonc::io::IoStatus status =
+      matter.con2matter(std::string("reactant.con"));
   REQUIRE(status == eonc::io::IoStatus::Ok);
   REQUIRE_FALSE(eonc::io::readcon_db_mirror_ok());
 }

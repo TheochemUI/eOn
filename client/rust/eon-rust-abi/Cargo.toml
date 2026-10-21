@@ -1,0 +1,31 @@
+[package]
+name = "eon-rust-abi"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "One staticlib re-exporting the readcon-core, linkcell, and minimage C ABIs"
+
+[lib]
+name = "eon_rust_abi"
+crate-type = ["staticlib"]
+
+[workspace]
+
+# The umbrella is the cargo root, so a dependency's [profile.release]
+# (codegen-units = 1 in minimage and linkcell) is ignored. Match it here.
+# LTO stays off: it drops unreferenced no_mangle C symbols from the rlibs.
+[profile.release]
+codegen-units = 1
+lto = false
+
+[dependencies]
+# default-features off: the client meson forwards no cargo features, and a
+# future default (chemfiles, cuda) must not appear only in this archive.
+readcon-core = { path = "../../../subprojects/readcon-core", default-features = false }
+linkcell = { path = "../../../subprojects/linkcell", features = ["capi", "parallel"] }
+minimage = { path = "../../../subprojects/minimage", features = ["capi"] }
+
+# linkcell depends on minimage from crates.io with the C ABI off. One path
+# copy, features unified, so the archive does not carry two minimage crates.
+[patch.crates-io]
+minimage = { path = "../../../subprojects/minimage" }

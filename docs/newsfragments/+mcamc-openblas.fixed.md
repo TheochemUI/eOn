@@ -1,0 +1,1 @@
+The test suite and the MCAMC numpy fallback set OpenBLAS to one thread before NumPy loads. OpenBLAS 0.3.30 otherwise deadlocks in its thread setup on the first solve after the client libraries are loaded.

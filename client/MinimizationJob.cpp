@@ -43,7 +43,7 @@ std::vector<std::string> MinimizationJob::run() {
   returnFiles.push_back(posOutFilename);
 
   auto pos = std::make_shared<Matter>(std::move(ownedPot), params);
-  if (!eonc::io::io_ok(pos->con2matter(posInFilename))) {
+  if (!eonc::io::io_ok(pos->inp2matter(posInFilename))) {
     QUILL_LOG_CRITICAL(log, "Failed to load {}", posInFilename);
     throw std::runtime_error("failed to load " + posInFilename);
   }

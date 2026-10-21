@@ -315,16 +315,9 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
     backend_ = "cpmdc";
     impl_->backend = Impl::Backend::Cpmdc;
     std::string local_error;
+    ::capnp::MallocMessageBuilder msg;
     try {
-      ::capnp::MallocMessageBuilder msg;
-      ::CPMDParams::Builder params = eon::fillCpmdParams(msg, opt);
-      impl_->cpmd = std::make_unique<rgpot::CPMDPot>(params.asReader());
-      pin_cpmd_library(opt.engine_path.empty() ? opt.engine_library
-                                               : opt.engine_path);
-      if (!impl_->cpmd->available())
-        throw std::runtime_error(
-            "RGPOT(cpmdc): engine not available (set CPMDC_LIBRARY / "
-            "RGPOT_CPMDC_ENGINE or [RgpotPot] engine_path)");
+      static_cast<void>(eon::fillCpmdParams(msg, opt));
     } catch (const std::exception &ex) {
       local_error = ex.what();
     }
@@ -345,8 +338,11 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
     if (!local_error.empty())
       throw std::runtime_error(local_error);
     if (::rgpot::calculatorsUseMpi()) {
-      // Collective on MPI_COMM_WORLD, before the first force: the engine
-      // installs the group communicator ahead of CPMD's mp_start.
+      // Collective on MPI_COMM_WORLD, before the engine holds a session.
+      // cpmdc adopts a calculator communicator only while no session is
+      // live, and CPMD's mp_start reads that communicator. The CPMDPot
+      // built below finds the split made and hands its engine the group
+      // communicator before it creates its session.
       // ranks_per_image = 0 is one calculator on the whole world.
       const rgpot::CalculatorGroup g =
           ::rgpot::bindCalculators(opt.ranks_per_image);
@@ -366,6 +362,27 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
           "RGPOT(cpmdc): ranks_per_image needs rgpot built with MPI "
           "(-Drgpot:with_mpi=enabled)");
     }
+    try {
+      impl_->cpmd = std::make_unique<rgpot::CPMDPot>(
+          msg.getRoot<::CPMDParams>().asReader());
+      pin_cpmd_library(opt.engine_path.empty() ? opt.engine_library
+                                               : opt.engine_path);
+      if (!impl_->cpmd->available())
+        throw std::runtime_error(
+            "RGPOT(cpmdc): engine not available (set CPMDC_LIBRARY / "
+            "RGPOT_CPMDC_ENGINE or [RgpotPot] engine_path)");
+    } catch (const std::exception &ex) {
+      local_error = ex.what();
+    }
+    // A rank whose engine did not load or refused the group communicator
+    // must not leave the others waiting in the first force.
+    if (mpi_world_hint() > 1 && !agree_construction(local_error))
+      throw std::runtime_error(
+          local_error.empty()
+              ? std::string("RGPOT(cpmdc): a rank failed to load the engine")
+              : local_error);
+    if (!local_error.empty())
+      throw std::runtime_error(local_error);
   } else if (backend_ == "metatomic" || backend_ == "mta" ||
              backend_ == "metatomicpot") {
     backend_ = "metatomic";

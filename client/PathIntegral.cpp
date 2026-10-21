@@ -34,6 +34,7 @@
 #include <cctype>
 #include <cmath>
 #include <fstream>
+#include <limits>
 #include <numbers>
 #include <numeric>
 #include <sstream>
@@ -230,10 +231,25 @@ VectorXd ecoFit(long nBeads, double xmax) {
 }
 
 MatrixXd factorCovariance(const MatrixXd &cov) {
+  if (cov.rows() == 0 || cov.rows() != cov.cols() || !cov.allFinite()) {
+    throw std::runtime_error("GLE covariance must be finite and square");
+  }
+  const double symmetryTolerance = 64.0 *
+                                   std::numeric_limits<double>::epsilon() *
+                                   cov.rows() * cov.cwiseAbs().maxCoeff();
+  if ((cov - cov.transpose()).cwiseAbs().maxCoeff() > symmetryTolerance) {
+    throw std::runtime_error("GLE covariance must be symmetric");
+  }
   const MatrixXd sym = 0.5 * (cov + cov.transpose());
   Eigen::SelfAdjointEigenSolver<MatrixXd> es(sym);
   if (es.info() != Eigen::Success) {
     throw std::runtime_error("GLE covariance factorisation failed");
+  }
+  const double tolerance = 64.0 * std::numeric_limits<double>::epsilon() *
+                           cov.rows() * es.eigenvalues().cwiseAbs().maxCoeff();
+  if (!es.eigenvalues().allFinite() ||
+      es.eigenvalues().minCoeff() < -tolerance) {
+    throw std::runtime_error("GLE covariance is not positive semidefinite");
   }
   return es.eigenvectors() *
          es.eigenvalues().cwiseMax(0.0).cwiseSqrt().asDiagonal();
@@ -451,24 +467,23 @@ RingPolymer::RingPolymer(long nAtoms, std::vector<double> masses,
 }
 
 void RingPolymer::initGle() {
-  if (nBeads_ == 1) {
+  if (nBeads_ == 1 && opt_.gleFile.empty()) {
+    gle_.resize(1);
     return;
   }
   if (opt_.gleFile.empty()) {
     throw std::invalid_argument("normal-mode GLE needs a matrix file");
   }
   const GleFile file = readGle(opt_.gleFile);
-  long first = 0;
-  if (file.nModes == nBeads_) {
-    first = 1;
-  } else if (file.nModes != nBeads_ - 1) {
+  const long first = file.nModes == nBeads_ ? 0 : 1;
+  if (file.nModes != nBeads_ && file.nModes != nBeads_ - 1) {
     throw std::invalid_argument(
         "GLE matrix count must be the bead count or one less");
   }
   const double h = 0.5 * opt_.dt;
-  gle_.resize(static_cast<size_t>(nBeads_ - 1));
-  for (long k = 1; k < nBeads_; ++k) {
-    const long src = first + (k - 1);
+  gle_.resize(static_cast<size_t>(nBeads_));
+  for (long k = first; k < nBeads_; ++k) {
+    const long src = k - first;
     ModeGle mode;
     mode.drift = file.drift[static_cast<size_t>(src)];
     mode.covariance = file.covariance[static_cast<size_t>(src)];
@@ -480,7 +495,7 @@ void RingPolymer::initGle() {
     mode.extended = MatrixXd::Zero(file.dim, nFree_);
     mode.draw = MatrixXd::Zero(file.dim, nFree_);
     mode.acc = MatrixXd::Zero(file.dim, nFree_);
-    gle_[static_cast<size_t>(k - 1)] = std::move(mode);
+    gle_[static_cast<size_t>(k)] = std::move(mode);
   }
 }
 
@@ -570,7 +585,8 @@ void RingPolymer::thermalMomenta() {
   toNormal(p_, pnm_);
   const double tSim = static_cast<double>(nBeads_) * opt_.kB * opt_.temperature;
   for (long k = 0; k < nBeads_; ++k) {
-    const bool gleMode = opt_.thermostat == Thermostat::Piglet && k > 0;
+    const bool gleMode = opt_.thermostat == Thermostat::Piglet &&
+                         gle_[static_cast<size_t>(k)].extended.rows() > 0;
     if (gleMode) {
       continue;
     }
@@ -580,8 +596,11 @@ void RingPolymer::thermalMomenta() {
     }
   }
   if (opt_.thermostat == Thermostat::Piglet) {
-    for (long k = 1; k < nBeads_; ++k) {
-      ModeGle &mode = gle_[static_cast<size_t>(k - 1)];
+    for (long k = 0; k < nBeads_; ++k) {
+      ModeGle &mode = gle_[static_cast<size_t>(k)];
+      if (mode.extended.rows() == 0) {
+        continue;
+      }
       const MatrixXd factor = factorCovariance(opt_.kB * mode.covariance);
       MatrixXd noise(mode.extended.rows(), mode.extended.cols());
       for (long r = 0; r < noise.rows(); ++r) {
@@ -598,6 +617,7 @@ void RingPolymer::thermalMomenta() {
     }
   }
   fromNormal(pnm_, p_);
+  projectMomentum();
   haveForces_ = false;
 }
 
@@ -746,10 +766,10 @@ void RingPolymer::thermostat(double h) {
       pnm_[static_cast<size_t>(k)][a] = pms * sm;
     }
   };
-  langevin(0, opt_.pileTau);
-  for (long k = 1; k < nBeads_; ++k) {
-    if (opt_.thermostat == Thermostat::Piglet) {
-      ModeGle &mode = gle_[static_cast<size_t>(k - 1)];
+  for (long k = 0; k < nBeads_; ++k) {
+    if (opt_.thermostat == Thermostat::Piglet &&
+        gle_[static_cast<size_t>(k)].extended.rows() > 0) {
+      ModeGle &mode = gle_[static_cast<size_t>(k)];
       for (long col = 0; col < nFree_; ++col) {
         const long a = freeIndex_[static_cast<size_t>(col)];
         mode.extended(0, col) = pnm_[static_cast<size_t>(k)][a] /
@@ -770,7 +790,8 @@ void RingPolymer::thermostat(double h) {
             mode.extended(0, col) * std::sqrt(mass_[static_cast<size_t>(a)]);
       }
     } else {
-      const double tau = 1.0 / (2.0 * opt_.pileScale * omegaK_[k]);
+      const double tau =
+          k == 0 ? opt_.pileTau : 1.0 / (2.0 * opt_.pileScale * omegaK_[k]);
       langevin(k, tau);
     }
   }
@@ -781,7 +802,8 @@ void RingPolymer::kick(double h, bool dropParallel) {
   if (!(dropParallel && constrain_)) {
     for (long bead = 0; bead < nBeads_; ++bead) {
       for (long a : freeIndex_) {
-        p_[static_cast<size_t>(bead)][a] += f_[static_cast<size_t>(bead)][a] * h;
+        p_[static_cast<size_t>(bead)][a] +=
+            f_[static_cast<size_t>(bead)][a] * h;
       }
     }
     return;
@@ -876,6 +898,24 @@ void RingPolymer::projectMomentum() {
     for (long bead = 0; bead < nBeads_; ++bead) {
       for (long a : freeIndex_) {
         p_[static_cast<size_t>(bead)][a] -= shift * planeNormal_[a];
+      }
+    }
+    if (opt_.thermostat == Thermostat::Piglet && !gle_.empty()) {
+      auto &state = gle_[0].extended;
+      // The spatial constraint projector acts on every auxiliary row.
+      // It commutes with the OU matrix, which acts on auxiliary indices.
+      for (long row = 0; row < state.rows(); ++row) {
+        double along = 0.0;
+        for (long col = 0; col < nFree_; ++col) {
+          const long a = freeIndex_[static_cast<size_t>(col)];
+          along += state(row, col) * planeNormal_[a] /
+                   std::sqrt(mass_[static_cast<size_t>(a)]);
+        }
+        for (long col = 0; col < nFree_; ++col) {
+          const long a = freeIndex_[static_cast<size_t>(col)];
+          state(row, col) -= along / den * planeNormal_[a] /
+                             std::sqrt(mass_[static_cast<size_t>(a)]);
+        }
       }
     }
   }

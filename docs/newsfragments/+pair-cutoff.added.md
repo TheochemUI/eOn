@@ -1,0 +1,1 @@
+`[Potential] pair_cutoff` (Angstrom, default 0) sets the cutoff of `lj`, `ljcluster` and `morse_pt` and of those terms of `expr`; 0 keeps each potential's own, 15 Angstrom for LJ and 9.5 Angstrom for Morse. The key is in the Cap'n Proto parameter schema, the INI and JSON readers, `config.yaml` and `eon_schema.PotentialConfig`. A negative or non-finite cutoff is refused.
