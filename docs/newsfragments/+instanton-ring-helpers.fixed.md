@@ -1,0 +1,1 @@
+`ringSpectrum` removes the cycle by a spring-sized lift, the cyclic ring determinant reports a numerically singular ring, a straight ring keeps two rigid rotations, and the seed scans refuse a potential that returns the wrong count.

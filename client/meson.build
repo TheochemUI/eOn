@@ -613,6 +613,10 @@ _deps += dl_dep
 # dependency('rgpot') with default allow_fallback configures the wrap once
 # with *default* options before eOn can pass its own; get_variable() then
 # fails for anything the default profile skipped. Force pkg-config-only.
+# rgpot 3.5.1 is the minimum. 3.5.0 changed the C++ layout of PotCaps,
+# LJConfig, LJClusterConfig and MorseConfig but kept soversion 3, so a
+# caller built against 3.4.0 crashes. 3.5.1 publishes that layout as
+# librgpot.so.4. eOn compiles the inline caps() into librgpot_pot.so.
 _rgpot_proj = []
 _have_rgpot_wrap = false
 _rgpot_pkg = dependency(
@@ -2465,6 +2469,7 @@ if get_option('with_tests')
     # same place the Fortran pot DLLs sit.
     _stage_engine_imports = []
     _have_staged_engine_imports = false
+    _relax_front = []
     if is_windows
         # Torch directories come first. The prefix also has uv.dll.
         # The copy kept is the first one that exports every imported
@@ -2515,6 +2520,21 @@ if get_option('with_tests')
             ] + _stage_search,
             build_by_default: true,
         )
+        # Meson puts metatomic wheel bins ahead of PATH. Their c10.dll
+        # is missing an entry point, and test_relax_engine exits
+        # 0xC0000139. Copying those DLLs beside every test breaks the
+        # rest of the suite. Prepend the prefix and the linked torch
+        # directory for this test only. Torch directories stay first on
+        # the staged search list above.
+        if get_option('with_metatomic') and get_option('pip_metatomic')
+            if fs.is_dir(_lbin)
+                _relax_front += _lbin
+            endif
+            if fs.is_dir(_pbin)
+                _relax_front += _pbin
+            endif
+            _relax_front += [LIB_TORCH_LIB_PATH, LIB_TORCH_BIN_PATH]
+        endif
         _have_staged_engine_imports = true
     endif
     if _fortran_pot_dirs.length() > 0
@@ -2582,29 +2602,41 @@ if get_option('with_tests')
             _case_env.set('EONCLIENT', ec.full_path())
             _case_depends = [ec]
         endif
+        _test_exe = executable(
+            test.get(0),
+            sources: [
+                'unit_tests/' + test.get(1),
+                'thirdparty/catch2/catch_amalgamated.cpp',
+            ],
+            include_directories: test.get(0) == 'test_relax_engine'
+            ? _incdirs + [include_directories('.')]
+            : _incdirs,
+            cpp_args: test_args,
+            # Include /STACK:16M (Windows) so EAM Al Fortran pots do not
+            # SIGSEGV with STATUS_STACK_OVERFLOW (default stack is 1 MB).
+            link_args: _linkargs,
+            dependencies: test.get(0) == 'test_relax_engine'
+            ? test_deps + [capnp_dep]
+            : test_deps,
+            link_with: test.get(0) == 'test_relax_engine'
+            ? test_link + [eon_relax_engine]
+            : test_link,
+            build_rpath: ':'.join(_runtime_rpath),
+        )
+        _test_prog = _test_exe
+        _test_args = []
+        if test.get(0) == 'test_relax_engine' and _relax_front.length() > 0
+            _test_prog = py
+            _test_args = [
+                meson.project_source_root() / 'scripts' / 'ci' / 'win_relax_engine_test.py',
+                _test_exe.full_path(),
+            ] + _relax_front
+            _case_depends += [_test_exe]
+        endif
         test(
             test.get(0),
-            executable(
-                test.get(0),
-                sources: [
-                    'unit_tests/' + test.get(1),
-                    'thirdparty/catch2/catch_amalgamated.cpp',
-                ],
-                include_directories: test.get(0) == 'test_relax_engine'
-                ? _incdirs + [include_directories('.')]
-                : _incdirs,
-                cpp_args: test_args,
-                # Include /STACK:16M (Windows) so EAM Al Fortran pots do not
-                # SIGSEGV with STATUS_STACK_OVERFLOW (default stack is 1 MB).
-                link_args: _linkargs,
-                dependencies: test.get(0) == 'test_relax_engine'
-                ? test_deps + [capnp_dep]
-                : test_deps,
-                link_with: test.get(0) == 'test_relax_engine'
-                ? test_link + [eon_relax_engine]
-                : test_link,
-                build_rpath: ':'.join(_runtime_rpath),
-            ),
+            _test_prog,
+            args: _test_args,
             workdir: meson.project_source_root() + '/client/unit_tests/data/systems/' + test.get(
                 2,
             ),

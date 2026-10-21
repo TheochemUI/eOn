@@ -1,4 +1,4 @@
-"""A rate instanton can divide each spring by a positive link weight."""
+"""A rate instanton takes one positive weight per spring."""
 
 from pathlib import Path
 
@@ -11,6 +11,7 @@ def test_link_weights_divide_one_spring():
     assert "double closedRingPotential(" in header
     source = (ROOT / "client" / "Tunneling.cpp").read_text(encoding="utf-8")
     assert "const double cj = c / wj;" in source
+    assert "const double share = 0.5 * (wj + wp);" not in source
     assert "ro.discretization = o.discretization;" in (
         ROOT / "client" / "InstantonJob.cpp"
     ).read_text(encoding="utf-8")
@@ -21,7 +22,10 @@ def test_link_weights_divide_one_spring():
     )
     assert "A link weight divides one spring of a closed ring" in case
     assert "0.75 * c" in case
-    guide = (ROOT / "docs" / "source" / "user_guide" / "instanton.md").read_text(
-        encoding="utf-8"
+    guide = " ".join(
+        (ROOT / "docs" / "source" / "user_guide" / "instanton.md")
+        .read_text(encoding="utf-8")
+        .split()
     )
     assert "one positive weight per bead" in guide
+    assert "divides the spring" in guide

@@ -1,0 +1,1 @@
+The rate instanton's Newton search classifies a converged ring with finite-difference bead Hessians before accepting it, steps off a stationary ring of the wrong index, reaches the odd-sector probe of a half ring, and writes an early-stopped cooling ring under its own temperature.
