@@ -1,0 +1,1 @@
+The client and unit test sources outside the tunneling and instanton code follow the repository clang-format style. The only other change is include order, plus one duplicate include removed from the Matter test.
