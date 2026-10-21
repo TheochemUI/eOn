@@ -1,0 +1,1 @@
+The classic dimer decides rotation termination and reports the curvature from the image force interpolated from the trial rotation (Heyden, Bell, Keil, JCP 2005), instead of a further force call at the rotated direction. With `remove_rotation` the evaluated path is kept.
