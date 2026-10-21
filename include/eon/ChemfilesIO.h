@@ -56,6 +56,16 @@ void set_default_vacuum(double angstrom);
 [[nodiscard]] double default_vacuum() noexcept;
 
 /**
+ * Publish [Main] input_format, cell, pbc, and default_vacuum to the
+ * process-wide readers. Structure reads do not carry a Parameters object.
+ * Throws std::invalid_argument before changing any reader when cell is not
+ * empty, 3, or 9 numbers, or when default_vacuum is negative. "con" clears
+ * the format, as set_structure_input_format does.
+ */
+void publish_structure_input(std::string format, const std::string &cell,
+                             bool pbc, double vacuum);
+
+/**
  * Input entry point: .con/.convel (and .gz/.zst) go to readcon, everything
  * else goes to chemfiles. An unknown extension is treated as .con, as before.
  */

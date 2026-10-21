@@ -1,0 +1,1 @@
+`[Main] input_format`, `cell`, `pbc`, and `default_vacuum` are stored on Parameters and round-trip through JSON, `config.yaml`, and `eon_schema.MainConfig`. Loading a config, or setting the properties from pyeonclient, still publishes them process-wide, because a structure read does not see a Parameters object.

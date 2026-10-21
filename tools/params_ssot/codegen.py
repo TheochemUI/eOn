@@ -98,6 +98,8 @@ FIELD_SNAKE = {
     "maxForceCalls": "max_force_calls",
     "removeNetForce": "remove_net_force",
     "writeConForces": "write_con_forces",
+    "inputFormat": "input_format",
+    "defaultVacuum": "default_vacuum",
     "mpiPollPeriod": "mpi_poll_period",
     "lammpsLogging": "lammps_logging",
     "lammpsThreads": "lammps_threads",

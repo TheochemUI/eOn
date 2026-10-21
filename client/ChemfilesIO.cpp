@@ -249,6 +249,17 @@ void set_default_vacuum(double angstrom) {
 
 double default_vacuum() noexcept { return config_cell().vacuum; }
 
+void publish_structure_input(std::string format, const std::string &cell,
+                             bool pbc, double vacuum) {
+  const auto values = parse_cell_values(cell);
+  if (!(vacuum >= 0.0)) {
+    throw std::invalid_argument("[Main] default_vacuum must be >= 0");
+  }
+  set_structure_input_format(std::move(format));
+  set_config_cell(values, pbc);
+  set_default_vacuum(vacuum);
+}
+
 const std::string &last_cell_warning() noexcept { return g_last_cell_warning; }
 
 IoStatus inp2matter(Matter &m, const std::string &filename) {

@@ -63,6 +63,7 @@ public:
    * parameters \return whether or not the algorithm has converged
    */
   int step(double a_maxMove) override;
+  void onTranslationPulledBack() override;
   //! Runs the conjugate gradient
   /**
    * \todo method should also return an error code and message if the algorithm

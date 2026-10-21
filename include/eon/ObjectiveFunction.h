@@ -38,6 +38,14 @@ public:
   // an energy test accept or shape a step (lbfgs_accept, the Zhang-Xu
   // secant); an objective that climbs its energy rejects every good step.
   virtual bool gradientMatchesEnergy() const { return true; }
+  // True when the current geometry is already past the climbing energy
+  // limit. FIRE asks before the post-step getGradient(), which would
+  // rotate the mode at a point the search is about to pull back.
+  // The default is a minimization: the gradient descends the energy
+  // and there is no such limit. A true answer has already evaluated
+  // the centre, and a batching mode solver's first displaced image
+  // with it, so a following getGradient() still uses that image.
+  virtual bool pastClimbCeiling() { return false; }
   // The band reuses the previous displacement as a secant. A minimizer
   // and a dimer translation keep a finite-difference probe each step.
   virtual bool reuseDisplacementCurvature() const { return false; }

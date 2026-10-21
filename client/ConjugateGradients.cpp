@@ -46,6 +46,13 @@ Eigen::VectorXd ConjugateGradients::getStep() {
   return m_direction;
 }
 
+void ConjugateGradients::onTranslationPulledBack() {
+  // getStep() already mixed the rejected direction into the history.
+  m_directionOld.setZero();
+  m_forceOld.setZero();
+  m_cg_i = 0;
+}
+
 int ConjugateGradients::step(double a_maxMove) {
   bool converged;
   if (m_optConfig.opts.cg.line_search) {
