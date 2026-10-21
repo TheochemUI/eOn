@@ -72,12 +72,21 @@ int load_ini(const INIReader &ini, Parameters &params) {
   // Process-wide io mode; same pattern as the RNG seeding below.
   eonc::io::set_write_con_forces(
       ParametersLoadAccess::main_options(params).writeConForces);
-  // chemfiles ingress, process-wide like the flag above. Output stays .con.
-  eonc::io::set_structure_input_format(ini.Get("Main", "input_format", ""));
-  eonc::io::set_config_cell(
-      eonc::io::parse_cell_values(ini.Get("Main", "cell", "")),
-      ini.GetBoolean("Main", "pbc", true));
-  eonc::io::set_default_vacuum(ini.GetReal("Main", "default_vacuum", 10.0));
+  // Structure reads do not see Parameters, so the stored values are
+  // published process-wide. Output stays .con.
+  {
+    auto &main = ParametersLoadAccess::main_options(params);
+    const auto inputFormat = ini.Get("Main", "input_format", main.inputFormat);
+    const auto cell = ini.Get("Main", "cell", main.cell);
+    const auto pbc = ini.GetBoolean("Main", "pbc", main.pbc);
+    const auto vacuum =
+        ini.GetReal("Main", "default_vacuum", main.defaultVacuum);
+    eonc::io::publish_structure_input(inputFormat, cell, pbc, vacuum);
+    main.inputFormat = inputFormat;
+    main.cell = cell;
+    main.pbc = pbc;
+    main.defaultVacuum = vacuum;
+  }
   ParametersLoadAccess::main_options(params).finiteDifference =
       ini.GetReal("Main", "finite_difference",
                   ParametersLoadAccess::main_options(params).finiteDifference);

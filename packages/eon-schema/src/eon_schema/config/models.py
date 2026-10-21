@@ -116,6 +116,33 @@ class MainConfig(BaseModel):
         default=True,
         description="If True, ensures that the net force on the system of atoms is zero by adjusting the force on each free atom.",
     )
+    input_format: str = Field(
+        default="",
+        description=(
+            "When set to a chemfiles format such as xyz, a request for"
+            " pos.con reads pos.<format> when that file exists. Empty or"
+            " con keeps readcon. Output stays .con."
+        ),
+    )
+    cell: str = Field(
+        default="",
+        description=(
+            "Fallback cell for a foreign file that carries none: three"
+            " numbers a b c, or nine row-major lattice numbers. Empty"
+            " leaves the cell unset."
+        ),
+    )
+    pbc: bool = Field(
+        default=True,
+        description="Periodicity of the fallback cell supplied by cell.",
+    )
+    default_vacuum: float = Field(
+        default=10.0,
+        description=(
+            "Angstrom of vacuum on every side of the non-periodic box"
+            " built when a foreign file and cell both omit a cell."
+        ),
+    )
 
 
 class StructureComparisonConfig(BaseModel):

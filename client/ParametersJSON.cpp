@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/ParametersJSON.h"
+#include "eon/ChemfilesIO.h"
 #include "eon/HelperFunctions.h"
 #include "eon/PIQTST.h"
 #include "eon/Parameters.h"
@@ -70,6 +71,10 @@ json to_json(const Parameters &p) {
        ParametersLoadAccess::main_options(p).removeNetForce},
       {"write_con_forces",
        ParametersLoadAccess::main_options(p).writeConForces},
+      {"input_format", ParametersLoadAccess::main_options(p).inputFormat},
+      {"cell", ParametersLoadAccess::main_options(p).cell},
+      {"pbc", ParametersLoadAccess::main_options(p).pbc},
+      {"default_vacuum", ParametersLoadAccess::main_options(p).defaultVacuum},
   };
 
   // [Potential]
@@ -493,6 +498,21 @@ void from_json(const json &j, Parameters &p) {
              ParametersLoadAccess::main_options(p).removeNetForce);
     JSON_OPT(m, "write_con_forces",
              ParametersLoadAccess::main_options(p).writeConForces);
+    auto &main = ParametersLoadAccess::main_options(p);
+    auto inputFormat = main.inputFormat;
+    auto cell = main.cell;
+    auto pbc = main.pbc;
+    auto vacuum = main.defaultVacuum;
+    JSON_OPT(m, "input_format", inputFormat);
+    JSON_OPT(m, "cell", cell);
+    JSON_OPT(m, "pbc", pbc);
+    JSON_OPT(m, "default_vacuum", vacuum);
+    // Readers consult the process copies, not this object.
+    eonc::io::publish_structure_input(inputFormat, cell, pbc, vacuum);
+    main.inputFormat = std::move(inputFormat);
+    main.cell = std::move(cell);
+    main.pbc = pbc;
+    main.defaultVacuum = vacuum;
   }
 
   // [Potential]

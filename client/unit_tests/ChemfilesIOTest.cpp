@@ -16,6 +16,7 @@
 #include "eon/HelperFunctions.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
+#include "eon/ParametersJSON.h"
 
 #include <chrono>
 #include <filesystem>
@@ -431,4 +432,56 @@ TEST_CASE("eonclient minimizes and evaluates a point from pos.xyz",
       CHECK(fs::exists(dir / "results.dat"));
     }
   }
+}
+
+TEST_CASE("Main structure input is stored and published",
+          "[chemfiles][config]") {
+  const std::string format = eonc::io::structure_input_format();
+  const double vacuum = eonc::io::default_vacuum();
+  struct Restore {
+    std::string format;
+    double vacuum;
+    ~Restore() {
+      eonc::io::set_structure_input_format(format);
+      eonc::io::set_config_cell({}, true);
+      eonc::io::set_default_vacuum(vacuum);
+    }
+  } restore{format, vacuum};
+
+  Parameters loaded;
+  REQUIRE(loaded.load_ini_text("[Main]\n"
+                               "input_format = xyz\n"
+                               "cell = 20 21 22\n"
+                               "pbc = false\n"
+                               "default_vacuum = 7.5\n") == 0);
+  REQUIRE(loaded.main_options().inputFormat == "xyz");
+  REQUIRE(loaded.main_options().cell == "20 21 22");
+  REQUIRE_FALSE(loaded.main_options().pbc);
+  REQUIRE(loaded.main_options().defaultVacuum == Catch::Approx(7.5));
+  REQUIRE(eonc::io::structure_input_format() == "xyz");
+  REQUIRE(eonc::io::default_vacuum() == Catch::Approx(7.5));
+
+  eonc::io::set_structure_input_format("");
+  eonc::io::set_default_vacuum(10.0);
+  Parameters round;
+  eonc::config::from_json(eonc::config::to_json(loaded), round);
+  REQUIRE(round.main_options().inputFormat == "xyz");
+  REQUIRE(round.main_options().cell == "20 21 22");
+  REQUIRE_FALSE(round.main_options().pbc);
+  REQUIRE(round.main_options().defaultVacuum == Catch::Approx(7.5));
+  REQUIRE(eonc::io::structure_input_format() == "xyz");
+  REQUIRE(eonc::io::default_vacuum() == Catch::Approx(7.5));
+
+  Parameters con;
+  REQUIRE(con.load_ini_text("[Main]\ninput_format = con\n") == 0);
+  REQUIRE(con.main_options().inputFormat == "con");
+  REQUIRE(eonc::io::structure_input_format().empty());
+
+  Parameters bad;
+  REQUIRE_THROWS_AS(bad.load_ini_text("[Main]\ncell = 1 2\n"),
+                    std::invalid_argument);
+  REQUIRE_THROWS_AS(bad.load_ini_text("[Main]\ndefault_vacuum = -1\n"),
+                    std::invalid_argument);
+  REQUIRE(bad.main_options().cell.empty());
+  REQUIRE(bad.main_options().defaultVacuum == Catch::Approx(10.0));
 }

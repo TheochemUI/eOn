@@ -350,6 +350,34 @@ CATALOG = {
           "ordinal": 12,
           "snake": "parallel",
           "type": "Bool"
+        },
+        {
+          "capnp": "inputFormat",
+          "default": "",
+          "ordinal": 13,
+          "snake": "input_format",
+          "type": "Text"
+        },
+        {
+          "capnp": "cell",
+          "default": "",
+          "ordinal": 14,
+          "snake": "cell",
+          "type": "Text"
+        },
+        {
+          "capnp": "pbc",
+          "default": True,
+          "ordinal": 15,
+          "snake": "pbc",
+          "type": "Bool"
+        },
+        {
+          "capnp": "defaultVacuum",
+          "default": 10.0,
+          "ordinal": 16,
+          "snake": "default_vacuum",
+          "type": "Float64"
         }
       ],
       "struct": "MainOptions"

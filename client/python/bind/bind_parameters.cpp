@@ -1,3 +1,4 @@
+#include "eon/ChemfilesIO.h"
 #include "eon/ConFileIO.h"
 #include "eon/HelperFunctions.h"
 #include "eon/Parameters.h"
@@ -198,6 +199,49 @@ void bind_parameters(nb::module_ &m) {
           },
           [](eonc::Parameters &s, bool v) {
             eonc::ParametersLoadAccess::main_options(s).writeConForces = v;
+          })
+      .def_prop_rw(
+          "input_format",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::main_options(s).inputFormat;
+          },
+          [](eonc::Parameters &s, const std::string &v) {
+            auto &m = eonc::ParametersLoadAccess::main_options(s);
+            eonc::io::publish_structure_input(v, m.cell, m.pbc,
+                                              m.defaultVacuum);
+            m.inputFormat = v;
+          })
+      .def_prop_rw(
+          "cell",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::main_options(s).cell;
+          },
+          [](eonc::Parameters &s, const std::string &v) {
+            auto &m = eonc::ParametersLoadAccess::main_options(s);
+            eonc::io::publish_structure_input(m.inputFormat, v, m.pbc,
+                                              m.defaultVacuum);
+            m.cell = v;
+          })
+      .def_prop_rw(
+          "pbc",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::main_options(s).pbc;
+          },
+          [](eonc::Parameters &s, bool v) {
+            auto &m = eonc::ParametersLoadAccess::main_options(s);
+            eonc::io::publish_structure_input(m.inputFormat, m.cell, v,
+                                              m.defaultVacuum);
+            m.pbc = v;
+          })
+      .def_prop_rw(
+          "default_vacuum",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::main_options(s).defaultVacuum;
+          },
+          [](eonc::Parameters &s, double v) {
+            auto &m = eonc::ParametersLoadAccess::main_options(s);
+            eonc::io::publish_structure_input(m.inputFormat, m.cell, m.pbc, v);
+            m.defaultVacuum = v;
           })
       .def_prop_rw(
           "con_filename",
