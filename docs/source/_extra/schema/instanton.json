@@ -1,0 +1,294 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/instanton.json",
+  "title": "Instanton",
+  "description": "config.ini [Instanton] section (InstantonConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "mode": {
+      "default": "splitting",
+      "description": "splitting: the tunnelling splitting between two minima. rate: the thermal rate out of the reactant through the saddle: the ring below the crossover temperature, and the parabolic barrier factor above it.",
+      "enum": [
+        "splitting",
+        "rate"
+      ],
+      "type": "string"
+    },
+    "reactant_filename": {
+      "default": "reactant.con",
+      "description": "The first minimum.",
+      "type": "string"
+    },
+    "product_filename": {
+      "default": "product.con",
+      "description": "The second minimum.",
+      "type": "string"
+    },
+    "initial_path": {
+      "default": "",
+      "description": "A multi-frame con file (neb.con) to start the path from; empty starts from the straight line between the minima.",
+      "type": "string"
+    },
+    "initial_ring": {
+      "default": "",
+      "description": "Rate mode: closed-ring geometry seed with exactly beads CON frames. Coordinates are checked against the reference surface; cached energies and forces are ignored.",
+      "type": "string"
+    },
+    "physical_bath_filename": {
+      "default": "",
+      "description": "Rate mode: physical bath model and mass-weighted retained-coordinate mapping.",
+      "type": "string"
+    },
+    "beads": {
+      "default": 256,
+      "description": "Beads on the path. The splitting uses this many segments between the minima; the rate uses this many on the closed ring.",
+      "minimum": 4,
+      "type": "integer"
+    },
+    "beta_hbar_omega": {
+      "default": 30.0,
+      "description": "Imaginary time the path spans, in units of 1 / omega of the stiffer minimum along the line between them.",
+      "exclusiveMinimum": 0.0,
+      "type": "number"
+    },
+    "max_iterations": {
+      "default": 5000,
+      "description": "Steps of the ring search.",
+      "type": "integer"
+    },
+    "force_tolerance": {
+      "default": 0.001,
+      "description": "Largest bead residual at convergence, eV / (amu^0.5 Angstrom).",
+      "type": "number"
+    },
+    "hessian_stride": {
+      "default": 1,
+      "description": "Finite-difference Hessians on every stride-th bead, linear in between; 1 takes one on every bead.",
+      "minimum": 1,
+      "type": "integer"
+    },
+    "saddle_filename": {
+      "default": "saddle.con",
+      "description": "Mode rate: the first-order saddle out of the reactant.",
+      "type": "string"
+    },
+    "temperature": {
+      "default": 0.0,
+      "description": "Mode rate: T in K. Below the crossover the job optimises the ring. Above it the job writes the parabolic barrier factor. 0 leaves it unset, and mode rate then refuses to run unless temperatures is set.",
+      "minimum": 0.0,
+      "type": "number"
+    },
+    "temperatures": {
+      "default": "",
+      "description": "Mode rate: comma-separated temperatures in K. The highest is searched first and each ring starts the next. Empty uses temperature.",
+      "type": "string"
+    },
+    "half_ring": {
+      "default": true,
+      "description": "Mode rate: an even bead count evaluates the potential from one turning point to the other and copies it onto the other half. An odd count evaluates every bead.",
+      "type": "boolean"
+    },
+    "physical_hessian_step": {
+      "default": 0.0001,
+      "description": "Physical bead-Hessian central displacement in sqrt(amu) Angstrom; independent of directional Lanczos finite differences.",
+      "exclusiveMinimum": 0,
+      "type": "number"
+    },
+    "newton_limit": {
+      "default": 9223372036854775807,
+      "description": "Maximum active ring coordinates for dense Newton; zero selects the matrix-free dimer search. The default is the 64-bit maximum, including on Windows where long is 32 bits.",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "lanczos_step": {
+      "default": 0.0001,
+      "description": "Directional Lanczos displacement in sqrt(amu) Angstrom; independent of physical_hessian_step.",
+      "exclusiveMinimum": 0,
+      "type": "number"
+    },
+    "reactant_hessian_filename": {
+      "default": "",
+      "description": "Optional saved reactant Hessian; empty computes it.",
+      "type": "string"
+    },
+    "saddle_hessian_filename": {
+      "default": "",
+      "description": "Optional saved saddle Hessian; empty computes it.",
+      "type": "string"
+    },
+    "initial_hessians": {
+      "default": "saddle",
+      "description": "Mode rate: where the bead Hessian blocks start. saddle copies the saddle Hessian to every bead at no force calls; finite_difference takes 2 f gradient calls per bead first.",
+      "enum": [
+        "saddle",
+        "finite_difference"
+      ],
+      "type": "string"
+    },
+    "energy_shift": {
+      "default": 0.0,
+      "description": "Subtracted from every bead potential, in eV.",
+      "type": "number"
+    },
+    "discretization": {
+      "default": "",
+      "description": "Empty keeps every spring equal. One positive weight per bead, comma-separated, divides the spring from that bead to the next.",
+      "type": "string"
+    },
+    "friction": {
+      "default": "none",
+      "description": "Mode rate: Litman friction bath. none leaves the ring potential unchanged. implicit uses friction_eta on every bead. explicit uses friction_eta_beads, one value per bead.",
+      "enum": [
+        "none",
+        "implicit",
+        "explicit"
+      ],
+      "type": "string"
+    },
+    "friction_eta": {
+      "default": 0.0,
+      "description": "Fixed bath curvature eta_eff in eV/(amu Angstrom^2), equal on every bead. For physical scalar Ohmic damping use eta_eff=gamma_internal/(beta_P*kHbar). Raw coefficients are not rescaled across temperature or bead count.",
+      "minimum": 0.0,
+      "type": "number"
+    },
+    "friction_eta_beads": {
+      "default": "",
+      "description": "Fixed bath curvatures in eV/(amu Angstrom^2), comma-separated, one per bead. Values stay fixed while differentiating the quadratic bead operator.",
+      "type": "string"
+    },
+    "collapse_fraction": {
+      "default": 0.0001,
+      "description": "Mode rate: the search stops, with instanton_collapsed = 1, when B_N falls below this fraction of the starting ring's. 0 never stops.",
+      "exclusiveMaximum": 1.0,
+      "minimum": 0.0,
+      "type": "number"
+    },
+    "rotation_zero_fraction": {
+      "default": 0.1,
+      "description": "A reactant rotation is a zero mode when its curvature r^T H r / r^T r is at most this fraction of the softest vibration.",
+      "exclusiveMinimum": 0.0,
+      "type": "number"
+    },
+    "bead_ladder": {
+      "default": false,
+      "description": "Mode rate: start at a quarter of the beads and double up to the requested count. Off searches that count directly.",
+      "type": "boolean"
+    },
+    "hessian_final": {
+      "default": "recomputed",
+      "description": "Mode rate: recomputed takes a Hessian on every stride-th bead.",
+      "type": "string"
+    },
+    "springs": {
+      "default": "trotter",
+      "description": "Ring-polymer springs. eco is refused: the instanton uses Trotter springs.",
+      "enum": [
+        "trotter",
+        "eco"
+      ],
+      "type": "string"
+    },
+    "pi_planes": {
+      "default": 0,
+      "description": "Mode rate: planes for path-integral quantum TST after the instanton, from behind the reactant to the saddle. 0 leaves it off; otherwise at least 2.",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "pi_beads": {
+      "default": 16,
+      "description": "Beads of each plane's ring.",
+      "minimum": 1,
+      "type": "integer"
+    },
+    "pi_equilibration_steps": {
+      "default": 500,
+      "description": "Equilibration steps per plane.",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "pi_sampling_steps": {
+      "default": 2000,
+      "description": "Production steps per plane, split into ten blocks for the standard error.",
+      "minimum": 20,
+      "type": "integer"
+    },
+    "pi_time_step": {
+      "default": 0.5,
+      "description": "Ring time step, in femtoseconds.",
+      "exclusiveMinimum": 0.0,
+      "type": "number"
+    },
+    "pi_thermostat": {
+      "default": "pile",
+      "description": "pile, or piglet with the normal-mode GLE matrices in pi_gle_file.",
+      "enum": [
+        "pile",
+        "piglet"
+      ],
+      "type": "string"
+    },
+    "pi_gle_file": {
+      "default": "",
+      "description": "GLE matrices for piglet, in the [Dynamics] path_gle_file format.",
+      "type": "string"
+    },
+    "pi_pile_tau": {
+      "default": 100.0,
+      "description": "Centroid Langevin damping time, in femtoseconds.",
+      "exclusiveMinimum": 0.0,
+      "type": "number"
+    },
+    "pi_pile_scale": {
+      "default": 1.0,
+      "description": "Scales the critical PILE damping of the internal modes; below the crossover 0.5 samples the soft modes at the barrier faster.",
+      "exclusiveMinimum": 0.0,
+      "type": "number"
+    },
+    "pi_seed": {
+      "default": 1,
+      "description": "Seed for the plane sampling.",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "pi_direction": {
+      "default": "mode",
+      "description": "Plane normal: the saddle's unstable mode, or the mass-weighted reactant-to-saddle line. mode falls back to line when the mode is more than 60 degrees off the line.",
+      "enum": [
+        "mode",
+        "line"
+      ],
+      "type": "string"
+    },
+    "pi_reactant_extent": {
+      "default": 0.5,
+      "description": "The first plane sits this fraction of the reactant-to-saddle distance behind the reactant.",
+      "minimum": 0.0,
+      "type": "number"
+    },
+    "pi_recrossing_parents": {
+      "default": 0,
+      "description": "Parent configurations on the top plane for the ring-polymer MD transmission factor kappa. 0 leaves it off; otherwise at least 2.",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "pi_recrossing_children": {
+      "default": 20,
+      "description": "Momentum draws per parent, each run forward and reversed.",
+      "minimum": 1,
+      "type": "integer"
+    },
+    "pi_recrossing_time": {
+      "default": 100.0,
+      "description": "Length of each child trajectory, in femtoseconds.",
+      "exclusiveMinimum": 0.0,
+      "type": "number"
+    },
+    "pi_recrossing_spacing": {
+      "default": 50,
+      "description": "Thermostatted plane steps between parents.",
+      "minimum": 1,
+      "type": "integer"
+    }
+  }
+}

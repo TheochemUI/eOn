@@ -16,6 +16,26 @@
       "description": "The spring constant, in eV/Ang^2 between the images.",
       "type": "number"
     },
+    "solid_state": {
+      "default": false,
+      "description": "Relax the lattice vectors of each interior image with the atoms.\n\nThe cell of each interior image moves with the atoms. The cell stays\nlower triangular: the first lattice vector lies on x and the second lies\nin the xy plane, so the band cannot rotate as a rigid body. Atomic\ndisplacements and cell strain share one Jacobian\n(doi:10.1063/1.3684549). Periodic boundaries are required. A potential\nthat does not report the Cauchy stress is refused.\n``ci_mmf``, ``zoom_neb``, ``onsager_machlup``, ``neb_doubly_nudged``,\nand ``neb_elastic_band`` are refused, and ``initializer`` must be\n``linear`` or ``file``.",
+      "type": "boolean"
+    },
+    "solid_state_weight": {
+      "default": 1.0,
+      "description": "Multiplier on the cell block of the solid-state Jacobian (doi:10.1063/1.3684549). 1 weights a cell strain like an atomic move.",
+      "type": "number"
+    },
+    "temperature": {
+      "default": 0.0,
+      "description": "Temperature in kelvin for the harmonic quantum free energy along the band. Zero leaves the profile on the potential energy.",
+      "type": "number"
+    },
+    "solid_state_pressure": {
+      "default": 0.0,
+      "description": "External hydrostatic pressure in eV/Angstrom^3 on the solid-state band. Positive pressure favors a smaller cell. 0 keeps the potential-energy band.",
+      "type": "number"
+    },
     "climbing_image_method": {
       "default": true,
       "description": "Indicates if the climbing image method is used.\n\nAs discussed in :cite:t:`neb-henkelmanClimbingImageNudged2000`.",
@@ -85,6 +105,11 @@
       "default": 100,
       "description": "Minimum stiffness.",
       "type": "number"
+    },
+    "geometric_spring": {
+      "default": false,
+      "description": "Parallel spring from the difference of squared neighbour distances.",
+      "type": "boolean"
     },
     "energy_weighted": {
       "default": false,
