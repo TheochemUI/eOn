@@ -210,14 +210,25 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
       m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale
           ? m_objf->knownCurvature()
           : std::nullopt;
+  // A reported curvature is the curvature of this objective's gradient.
+  // |C_tau| is not that number for a min-mode search, so min-mode does
+  // not report it. When a reported scale already asks for more than
+  // max_move, the cap would choose the length and the probe below runs.
+  bool knownFits = false;
   if (known && std::isfinite(*known) && *known > 0.0) {
-    H0 = 1.0 / *known;
+    double hKnown = 1.0 / *known;
     if (m_optConfig.opts.lbfgs.max_inverse_curvature > 0.0) {
-      H0 = std::min(H0, m_optConfig.opts.lbfgs.max_inverse_curvature);
+      hKnown = std::min(hKnown, m_optConfig.opts.lbfgs.max_inverse_curvature);
     }
-    QUILL_LOG_DEBUG(m_log, "[LBFGS] H0={:.4e} (known curvature)", H0);
-  } else if (m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale &&
-             m_objf->supportsFiniteDifferenceCurvature()) {
+    const double knownMotion = eonc::geometry::maxAtomMotionV(hKnown * f);
+    if (knownMotion < a_maxMove) {
+      H0 = hKnown;
+      knownFits = true;
+      QUILL_LOG_DEBUG(m_log, "[LBFGS] H0={:.4e} (known curvature)", H0);
+    }
+  }
+  if (!knownFits && m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale &&
+      m_objf->supportsFiniteDifferenceCurvature()) {
     const Eigen::VectorXd fhat = eonc::exact::normalized(a_f);
     m_objf->setPositions(mulAdd(r, m_optConfig.finiteDifference, fhat));
     Eigen::VectorXd dg = m_objf->getGradient(true) + a_f;

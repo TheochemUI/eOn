@@ -247,15 +247,18 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     return;
   }
 
+  // L-BFGS pairs belong to one estimate: the centre has moved, so the
+  // stored (s, y) are not the curvature here.
   if (params.dimer_options().opt_method == OptType::LBFGS) {
     s.clear();
     y.clear();
     rho.clear();
     init_lbfgs = true;
   }
-  if (params.dimer_options().opt_method == OptType::CG) {
-    init_cg = true;
-  }
+  // CG state belongs to the dimer, not to one centre. r2549 keeps
+  // init_cg, F_R_Old and thetaOld across translations, including after
+  // an estimate that rotated more than once. Resetting here makes the
+  // next rotation steepest descent.
 
   VectorXd x1_rp, x1_r, tau_prime, tau_Old, g1_prime;
   double phi_tol =
