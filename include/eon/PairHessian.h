@@ -417,19 +417,26 @@ inline Eigen::VectorXd analyticPairForce(const Eigen::VectorXd &pos,
   return withoutNetForce(std::move(force));
 }
 
+struct PairMatch {
+  KnownPair kind{KnownPair::None};
+  /// Cutoff of the candidate whose force matched. Zero when nothing matched.
+  double cutoff{0.0};
+};
+
 /// Lennard-Jones cutoffs 15 and 40, and Morse cutoffs 7 and 9.5.
 /// A match needs a force above 1 and a relative residual below 1e-5,
 /// so a near-zero force is not claimed as every pair model at once.
-inline KnownPair matchKnownPair(const Eigen::VectorXd &pos,
+inline PairMatch matchKnownPair(const Eigen::VectorXd &pos,
                                 const Eigen::VectorXd &force,
                                 ObjectiveFunction &objf) {
+  PairMatch best;
   if (pos.size() < 6 || pos.size() % 3 != 0 || force.size() != pos.size()) {
-    return KnownPair::None;
+    return best;
   }
   const Eigen::VectorXd observed = withoutNetForce(force);
   const double scale = observed.norm();
   if (!(scale > 1.0) || !observed.allFinite()) {
-    return KnownPair::None;
+    return best;
   }
   struct Cand {
     KnownPair kind;
@@ -442,7 +449,6 @@ inline KnownPair matchKnownPair(const Eigen::VectorXd &pos,
       {KnownPair::Morse, true, 7.0},
       {KnownPair::Morse, true, 9.5},
   };
-  KnownPair best = KnownPair::None;
   double bestRel = 1.0e-5;
   for (const Cand &cand : cands) {
     const Eigen::VectorXd model =
@@ -453,7 +459,8 @@ inline KnownPair matchKnownPair(const Eigen::VectorXd &pos,
     const double rel = (model - observed).norm() / scale;
     if (rel < bestRel) {
       bestRel = rel;
-      best = cand.kind;
+      best.kind = cand.kind;
+      best.cutoff = cand.cutoff;
     }
   }
   return best;
@@ -464,12 +471,13 @@ inline KnownPair matchKnownPair(const Eigen::VectorXd &pos,
 inline Eigen::VectorXd pairNewtonForce(const Eigen::VectorXd &pos,
                                        const Eigen::VectorXd &force,
                                        KnownPair known,
-                                       ObjectiveFunction &objf) {
+                                       ObjectiveFunction &objf,
+                                       double cutoff) {
   if (known == KnownPair::None || pos.size() < 6 || pos.size() % 3 != 0) {
     return force;
   }
   const Eigen::MatrixXd P =
-      build(pos, "pair", knownPot(known), 3.0, 1.0, 0.0, objf);
+      build(pos, "pair", knownPot(known), 3.0, 1.0, cutoff, objf);
   Eigen::PartialPivLU<Eigen::MatrixXd> lu(P);
   const Eigen::VectorXd step = lu.solve(force);
   if (!step.allFinite()) {
@@ -482,13 +490,13 @@ inline Eigen::VectorXd pairNewtonForce(const Eigen::VectorXd &pos,
 /// `-threshold`.
 inline std::optional<Eigen::VectorXd>
 pairNegativeMode(const Eigen::VectorXd &pos, KnownPair known,
-                 ObjectiveFunction &objf, double threshold) {
+                 ObjectiveFunction &objf, double threshold, double cutoff) {
   if (known == KnownPair::None || !(threshold > 0.0) || pos.size() < 6 ||
       pos.size() % 3 != 0) {
     return std::nullopt;
   }
   const Eigen::MatrixXd P =
-      build(pos, "pair_full", knownPot(known), 3.0, 1.0, 0.0, objf);
+      build(pos, "pair_full", knownPot(known), 3.0, 1.0, cutoff, objf);
   Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(P);
   if (solver.info() != Eigen::Success || solver.eigenvalues().size() == 0) {
     return std::nullopt;

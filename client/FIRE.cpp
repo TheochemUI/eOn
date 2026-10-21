@@ -25,7 +25,10 @@ void FIRE::noteModel(const Eigen::VectorXd &force) {
     return;
   }
   m_modelChecked = true;
-  m_known = pairhess::matchKnownPair(m_objf->getPositions(), force, *m_objf);
+  const pairhess::PairMatch match =
+      pairhess::matchKnownPair(m_objf->getPositions(), force, *m_objf);
+  m_known = match.kind;
+  m_cutoff = match.cutoff;
   if (m_known != pairhess::KnownPair::None) {
     QUILL_LOG_DEBUG(m_log, "[FIRE] pair metric from the objective force");
   }
@@ -36,7 +39,7 @@ Eigen::VectorXd FIRE::metric(const Eigen::VectorXd &force) const {
     return force;
   }
   return pairhess::pairNewtonForce(m_objf->getPositions(), force, m_known,
-                                   *m_objf);
+                                   *m_objf, m_cutoff);
 }
 
 bool FIRE::leaveSaddle(double a_maxMove) {
@@ -46,7 +49,7 @@ bool FIRE::leaveSaddle(double a_maxMove) {
          m_objf->isConverged()) {
     const Eigen::VectorXd pos = m_objf->getPositions();
     const std::optional<Eigen::VectorXd> mode =
-        pairhess::pairNegativeMode(pos, m_known, *m_objf, threshold);
+        pairhess::pairNegativeMode(pos, m_known, *m_objf, threshold, m_cutoff);
     if (!mode) {
       break;
     }

@@ -66,6 +66,7 @@ private:
   int m_escapes{0};
   bool m_modelChecked{false};
   pairhess::KnownPair m_known{pairhess::KnownPair::None};
+  double m_cutoff{0.0};
 
   std::deque<Eigen::VectorXd> m_s;
   std::deque<Eigen::VectorXd> m_y;

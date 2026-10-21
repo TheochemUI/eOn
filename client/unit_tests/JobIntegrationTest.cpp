@@ -1013,21 +1013,15 @@ max_iterations = 200
   const double lj13 = -44.326801 - 78.0 * 4.0 * (rc6 * rc6 - rc6);
   REQUIRE(minEnergy == Catch::Approx(lj13).margin(1e-6));
 
-  // The optimizer decides on correctly rounded reductions (eonc::exact) and
-  // the mean force removed from each evaluation is an exact column sum.
-  // The LJ pair loop rounds the distance square and the 12-6 products with
-  // contraction off, and fuses only the explicit force update, on every
-  // ISA. The count is then the same for every compiler, Eigen release and
-  // vector width. Each minimize sees the Lennard-Jones force, so L-BFGS
-  // takes its initial step from that pair Hessian instead of a finite
-  // difference probe.
-  REQUIRE(forceCalls_ == 615);
+  // Each minimize sees the Lennard-Jones force, so L-BFGS takes its
+  // initial step from that pair Hessian at the matched cutoff instead
+  // of a finite difference probe.
+  REQUIRE(forceCalls_ == 498);
 
-  // 12 of the 20 displacements are accepted. The pair Hessian quench
-  // changes which displacements fall under the Metropolis test. The
-  // minimum energy above is the LJ13 minimum recorded in the SVN file.
+  // 10 of the 20 displacements are accepted, the ratio recorded in
+  // the SVN file. The minimum energy above is that file's LJ13 minimum.
   double ar = std::stod(results["acceptance_ratio"]);
-  REQUIRE(ar == Catch::Approx(0.6).margin(1e-12));
+  REQUIRE(ar == Catch::Approx(0.5).margin(1e-12));
 }
 
 TEST_CASE("Basin hopping scaled displacement stays finite at the center",

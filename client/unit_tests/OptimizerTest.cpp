@@ -307,17 +307,18 @@ TEST_CASE("known pair force match selects LJ and Morse",
   const VectorXd lj =
       eonc::pairhess::analyticPairForce(pos, obj, false, 40.0);
   REQUIRE(lj.norm() > 1.0);
-  REQUIRE(eonc::pairhess::matchKnownPair(pos, lj, obj) ==
-          eonc::pairhess::KnownPair::LennardJones);
+  const auto ljMatch = eonc::pairhess::matchKnownPair(pos, lj, obj);
+  REQUIRE(ljMatch.kind == eonc::pairhess::KnownPair::LennardJones);
+  REQUIRE(ljMatch.cutoff == Catch::Approx(15.0));
   const VectorXd morse =
       eonc::pairhess::analyticPairForce(pos, obj, true, 7.0);
   REQUIRE(morse.norm() > 1.0);
-  REQUIRE(eonc::pairhess::matchKnownPair(pos, morse, obj) ==
-          eonc::pairhess::KnownPair::Morse);
-  REQUIRE(eonc::pairhess::matchKnownPair(pos, VectorXd::Constant(9, 2.0),
-                                         obj) ==
-          eonc::pairhess::KnownPair::None);
-  REQUIRE(eonc::pairhess::matchKnownPair(pos, VectorXd::Zero(9), obj) ==
+  const auto morseMatch = eonc::pairhess::matchKnownPair(pos, morse, obj);
+  REQUIRE(morseMatch.kind == eonc::pairhess::KnownPair::Morse);
+  REQUIRE(morseMatch.cutoff == Catch::Approx(7.0));
+  REQUIRE(eonc::pairhess::matchKnownPair(pos, VectorXd::Constant(9, 2.0), obj)
+              .kind == eonc::pairhess::KnownPair::None);
+  REQUIRE(eonc::pairhess::matchKnownPair(pos, VectorXd::Zero(9), obj).kind ==
           eonc::pairhess::KnownPair::None);
 }
 

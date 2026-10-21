@@ -98,7 +98,10 @@ void LBFGS::noteModel(const Eigen::VectorXd &pos, const Eigen::VectorXd &force) 
   if (m_optConfig.opts.lbfgs.precon != "none") {
     return;
   }
-  m_known = pairhess::matchKnownPair(pos, force, *m_objf);
+  const pairhess::PairMatch match =
+      pairhess::matchKnownPair(pos, force, *m_objf);
+  m_known = match.kind;
+  m_cutoff = match.cutoff;
   if (autoModel()) {
     QUILL_LOG_DEBUG(m_log, "[LBFGS] pair initial Hessian from the objective force");
   }
@@ -118,8 +121,7 @@ Eigen::MatrixXd LBFGS::buildPrecon(const Eigen::VectorXd &pos) const {
   const auto &cfg = m_optConfig.opts.lbfgs;
   if (autoModel()) {
     return pairhess::build(pos, "pair", pairhess::knownPot(m_known),
-                           cfg.precon_A, cfg.precon_mu, cfg.precon_rcut,
-                           *m_objf);
+                           cfg.precon_A, cfg.precon_mu, m_cutoff, *m_objf);
   }
   return pairhess::build(pos, cfg.precon, m_optConfig.potential, cfg.precon_A,
                          cfg.precon_mu, cfg.precon_rcut, *m_objf);
@@ -131,7 +133,7 @@ bool LBFGS::leaveSaddle(double a_maxMove) {
   while (autoModel() && m_escapes < 4 && m_objf->isConverged()) {
     const Eigen::VectorXd pos = m_objf->getPositions();
     const std::optional<Eigen::VectorXd> mode = pairhess::pairNegativeMode(
-        pos, m_known, *m_objf, threshold);
+        pos, m_known, *m_objf, threshold, m_cutoff);
     if (!mode) {
       break;
     }

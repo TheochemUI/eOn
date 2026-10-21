@@ -50,6 +50,7 @@ private:
   int m_escapes{0};
   bool m_modelChecked{false};
   pairhess::KnownPair m_known{pairhess::KnownPair::None};
+  double m_cutoff{0.0};
   eonc::log::FileScoped m_log{"fire", "_fire.log"};
 };
 
