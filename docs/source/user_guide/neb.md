@@ -52,6 +52,16 @@ figures (full history, 1:1 reaction-valley panel, structure strip), see
 - The energy weighted varying springs method of {cite:t}`neb-asgeirssonNudgedElasticBand2021`.
 ```
 
+A conjugate-gradient band takes its first step length from one
+finite-difference probe. Later lengths use the previous displacement,
+so an iteration after that probe is one evaluation of the images.
+Minimizers and a dimer translation keep a probe on every step.
+If the band force more than doubles, the next conjugate-gradient step
+is shorter, down to a fifth of `max_move`. Twelve iterations without
+a lower force drop the search direction and shorten the step again.
+A later drop in the force lengthens the step back toward `max_move`.
+LBFGS is left on the configured length.
+
 ## Dimer seeds from every band peak
 
 After the band is written, eOn walks every spline maximum. Each interior
