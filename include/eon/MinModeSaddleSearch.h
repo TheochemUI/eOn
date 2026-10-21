@@ -49,7 +49,9 @@ public:
     STATUS_ZEROMODE_ABORT,                 // 18
     STATUS_OPTIMIZER_ERROR,                // 19
     STATUS_DIMER_LOST_MODE,                // 20
-    STATUS_DIMER_RESTORED_BEST             // 21
+    STATUS_DIMER_RESTORED_BEST,            // 21
+    // 22 is ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR
+    STATUS_KNOWN_SADDLE = 23
   };
 
   /// Human-readable message for a status code.
@@ -78,6 +80,8 @@ public:
         "Dimer lost mode",                                        // 20
         "Dimer restored best",                                    // 21
     };
+    if (status == STATUS_KNOWN_SADDLE)
+      return "Climb reached a known saddle";
     if (status >= 0 &&
         status < static_cast<int>(sizeof(msgs) / sizeof(msgs[0])))
       return msgs[status];
@@ -128,6 +132,12 @@ public:
     return climb_frames_;
   }
   void clearClimbFrames() { climb_frames_.clear(); }
+
+  /// Saddles the server already holds for this state (positions, energies).
+  /// A climb point with negative curvature that matches one under the
+  /// structure comparison ends the search with STATUS_KNOWN_SADDLE.
+  void setKnownSaddles(std::vector<AtomMatrix> positions,
+                       std::vector<double> energies);
   [[nodiscard]] std::vector<readcon::ConFrame> takeClimbFrames() {
     return std::move(climb_frames_);
   }
@@ -141,6 +151,9 @@ private:
   std::shared_ptr<EigenmodeStrategy>
       minModeMethod; // shared with the objective func
   double reactantEnergy;
+  std::vector<AtomMatrix> knownSaddlePositions_;
+  std::vector<double> knownSaddleEnergies_;
+  [[nodiscard]] bool atKnownSaddle() const;
   eonc::log::Scoped log;
 };
 

@@ -37,6 +37,50 @@
 
 namespace eonc {
 
+namespace {
+
+// known_saddles.dat: "<count> <free atoms>", then per saddle its energy and
+// one "x y z" line per free atom of pos.con, in order.
+void loadKnownSaddles(const std::string &path, const Matter &reference,
+                      MinModeSaddleSearch &search) {
+  std::ifstream in(path);
+  if (!in) {
+    return;
+  }
+  long count = 0, nFree = 0;
+  if (!(in >> count >> nFree) || count < 0 ||
+      nFree != reference.numberOfFreeAtoms()) {
+    throw std::runtime_error(path + ": header does not match pos.con");
+  }
+  std::vector<long> freeIndex;
+  for (long i = 0; i < reference.numberOfAtoms(); ++i) {
+    if (!reference.getFixed(i)) {
+      freeIndex.push_back(i);
+    }
+  }
+  std::vector<AtomMatrix> positions;
+  std::vector<double> energies;
+  positions.reserve(static_cast<size_t>(count));
+  energies.reserve(static_cast<size_t>(count));
+  for (long k = 0; k < count; ++k) {
+    double energy = 0.0;
+    AtomMatrix pos = reference.getPositions();
+    bool ok = static_cast<bool>(in >> energy);
+    for (long j = 0; ok && j < nFree; ++j) {
+      const long i = freeIndex[static_cast<size_t>(j)];
+      ok = static_cast<bool>(in >> pos(i, 0) >> pos(i, 1) >> pos(i, 2));
+    }
+    if (!ok) {
+      throw std::runtime_error(path + ": truncated saddle record");
+    }
+    energies.push_back(energy);
+    positions.push_back(std::move(pos));
+  }
+  search.setKnownSaddles(std::move(positions), std::move(energies));
+}
+
+} // namespace
+
 std::vector<std::string> ProcessSearchJob::run() {
   std::string reactantFilename = eonc::helpers::getRelevantFile("pos.con");
   std::string displacementFilename("displacement.con");
@@ -126,8 +170,10 @@ std::vector<std::string> ProcessSearchJob::run() {
     } else
 #endif
     {
-      saddleSearch = std::make_unique<MinModeSaddleSearch>(
+      auto minMode = std::make_unique<MinModeSaddleSearch>(
           saddle, mode, initial->getPotentialEnergy(), params, pot);
+      loadKnownSaddles("known_saddles.dat", *initial, *minMode);
+      saddleSearch = std::move(minMode);
     }
 #ifdef WITH_ARTN
   } else if (params.saddle_search_options().method == "artn") {
