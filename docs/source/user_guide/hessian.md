@@ -7,6 +7,11 @@ myst:
 
 # Hessian
 
+The Hessian job is part of eOn
+{cite:t}`hess-goswamiEfficientExplorationChemical2025`.
+The older description of that client is Chill et al.
+{cite:t}`hess-chillEONSoftwareLong2014`.
+
 The Hessian matrix (second derivative of the potential energy with respect to
 atomic coordinates) is used for:
 
@@ -56,27 +61,80 @@ external potentials are not holomorphic. The assembled matrix is symmetrized
 \((H+H^T)/2\) before diagonalization. Mass-weighting uses
 \(\tilde H_{ij} = H_{ij}/\sqrt{m_i m_j}\).
 
-### Cutoff coloring
+### Hessian-range coloring
 
-A potential that reports a finite interaction range (`Potential::finiteCutoff`,
-including classical rgpot kernels with `config().cutoff`) does not need one
-displacement per coordinate. Mobile atoms are greedy-colored so that two atoms
-share a color only when their closed cutoff neighborhoods are disjoint. One
-displacement of a whole color along x, y, or z fills every column of that
-color. Central differences use two force evaluations per Cartesian direction
-per color, and fourth-order differences use four, independent of the number
-of atoms. Catch2 `Colored FD Hessian matches serial central difference` uses
-four atoms on a line, spaced 1.2 Å, with a 1.5 Å cutoff. That coloring has
-three colors, so the central scheme takes `1 + 2 × 3 × 3 = 19` force calls.
-The per-column loop takes `1 + 2 × 12 = 25`. The colored matrix matches the
-serial central matrix to `1e-8`. Catch2 `Fourth-order stencil matches a
-complex-step oracle` evaluates `z^4 + 0.3 z^2` at `0.8`. The fourth-order
-value stays within `1e-10` of the complex-step derivative. The central value
-is more than `1e-3` away, and farther from the oracle than the fourth-order
-value. The same matrix is
-built one column at a time when the potential is not finite-range, when
-`[Main] remove_net_force` couples every atom, or when a column checkpoint is
-in use.
+Coloring is exact only when every Hessian block between two atoms farther
+apart than some distance is zero. A potential reports that distance as
+`Potential::hessianRange`. The value is in the same length unit as the
+positions. `0`, or any non-finite value, means the range is unknown and
+coloring stays off. One column is then built per coordinate.
+
+An interaction cutoff is not this distance. A pair potential is zero past
+its cutoff, so the range equals the cutoff. An atom-centred many-body
+potential (EAM, Gupta, Stillinger-Weber, Tersoff) is zero only past twice
+the cutoff, because the density or the bond order at an atom depends on
+every neighbour inside the cutoff. A flexible water model does not have a
+hard intramolecular extent, so a cutoff on the oxygen-oxygen interaction
+does not make the blocks zero past any fixed distance. A message-passing
+model is zero past `n_layers` times the edge cutoff, and only when that
+layer count is part of the kernel.
+
+Coloring is opt-in. `RgpotAdapter` reads `HessianRangeOf<Kernel>` and does
+not look at `config().cutoff`. A kernel with a cutoff field and no
+specialization stays at 0. The specialization returns the cutoff for a
+pair kernel, twice the cutoff for an atom-centred many-body kernel, the
+cutoff plus twice a hard intramolecular extent for a site model, or
+`n_layers` times the edge cutoff for message passing. Fe-He is the
+exception: its range is the larger of its pair cutoffs and twice its
+largest density cutoff. Anything that is not exactly derivable returns 0.
+A potential that is not an rgpot kernel opts in the same way, by
+overriding `hessianRange`. An override of the deprecated
+`finiteCutoff()` still supplies that distance. Everything else stays at 0.
+
+The table of kernels eOn can wrap, at the current rgpot pin and at rgpot
+`v3.5.0`, is in the developer page
+{doc}`/devdocs/hessian`.
+
+Mobile atoms are greedy-colored so that two atoms share a color only when
+their closed neighborhoods of that range are disjoint. One displacement of
+a whole color along x, y, or z fills every column of that color. Central
+differences use two force evaluations per Cartesian direction per color,
+and fourth-order differences use four, independent of the number of atoms.
+Catch2 `Colored FD Hessian matches serial central difference` uses four
+atoms on a line, spaced 1.2 Å, with a Lennard-Jones cutoff of 1.5 Å.
+Coloring still reduces the force calls: three colors, so the central
+scheme takes `1 + 2 × 3 × 3 = 19` force calls. The per-column loop takes
+`1 + 2 × 12 = 25`. The colored matrix matches the serial central matrix
+to `1e-8`. Catch2 `Embedding-chain coloring matches serial only at twice
+the cutoff` is a planar zig-zag of eight atoms, bond 0.75 Å, with the
+embedding cutoff at 1 Å. The central scheme takes 49 force calls total
+and 43 once colored at `2 r_c`. The fourth-order scheme takes 97
+and 85. Coloring at `r_c` takes 19 and 37. The colored matrix matches
+the per-column matrix to `1e-8`. The short-range matrix misses by
+0.1875 against max `|H|` 1.041667, and an off-axis entry reaches
+0.541. The same central numbers hold with `remove_net_force` on and
+one atom fixed, which is the path that still colors.
+Catch2 `Opted-in kernels match the serial matrix at the declared range`
+runs each opted-in kernel on its own zig-zag. The colored matrix matches
+the per-column matrix exactly in these runs. A block past the interaction
+cutoff is nonzero for every many-body kernel, and every block past the
+declared range is 0. ZBL is a pair kernel, so that past-cutoff window is
+empty. Its nearest-neighbour block at 1.5 Å is nonzero and every block
+past `cut_global` is 0. The per-kernel call counts and the short-range
+errors are in the developer page {doc}`/devdocs/hessian`.
+Catch2 `Coloring falls back when every mobile atom needs its own color`
+is four atoms inside a 20 Å Lennard-Jones cutoff, and the same cluster
+with a batching spring of range 30 Å. Both need four colors. Both take
+the column path, 25 force calls, which is one base gradient and two
+central samples on 12 coordinates. The spring records a batch call, so
+the colored loop did not run.
+Catch2 `Fourth-order stencil matches a complex-step
+oracle` evaluates `z^4 + 0.3 z^2` at `0.8`. The fourth-order value stays
+within `1e-10` of the complex-step derivative. The central value is more
+than `1e-3` away, and farther from the oracle than the fourth-order
+value. The same matrix is built one column at a time when the range is
+unknown, when `[Main] remove_net_force` couples every atom, or when a
+column checkpoint is in use.
 
 When `checkpoint_path` is empty and the potential evaluates batches, the
 displaced structures go out together, at most 32 columns per call.
@@ -170,4 +228,15 @@ mobile = pyec.resolve_mobile_atoms(matter, "12,15,18,21")
 lanczos.compute(matter, direction, atoms=mobile)
 # or: params.lanczos_phva_atoms = "12,15,18,21"
 #     lanczos.compute(matter, direction)
+```
+
+## References
+
+```{bibliography}
+---
+style: alpha
+filter: docname in docnames
+labelprefix: HS_
+keyprefix: hess-
+---
 ```
