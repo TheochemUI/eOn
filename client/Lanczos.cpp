@@ -22,6 +22,7 @@
 #include "eon/Lanczos.h"
 #include "eon/EonLogger.h"
 #include "eon/FiniteDifference.h"
+#include "eon/GeometryAnalysis.h"
 #include "eon/HelperFunctions.h"
 #include "eon/MobileAtoms.h"
 #include "eon/Potential.h"
@@ -110,11 +111,64 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
     lowestEw = 0.0;
     return;
   }
+  // Rigid-mode projection is only well-defined when at least one internal
+  // degree of freedom remains after removing 3 translations and 3 rotations.
+  const bool removeRigidModes = !matter->getPeriodic() &&
+                                mobile.size() == matter->numberOfAtoms() &&
+                                size > 6;
 
   const long maxIters = std::max(1L, params.lanczos_options().max_iterations);
   MatrixXd T(size, maxIters), Q(size, maxIters);
   T.setZero();
   VectorXd u(size), r = packMobileRows(direction, mobile);
+  auto projectRigid = [&](VectorXd &v) {
+    if (!removeRigidModes || v.size() != size) {
+      return;
+    }
+    AtomMatrix full = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
+    unpackMobileRows(v, mobile, full);
+    VectorXd fullVec = VectorXd::Map(full.data(), 3 * matter->numberOfAtoms());
+    eonc::geometry::projectOutRotTrans(fullVec, matter->getPositions());
+    const AtomMatrix projected =
+        AtomMatrix::Map(fullVec.data(), matter->numberOfAtoms(), 3);
+    v = packMobileRows(projected, mobile);
+  };
+  auto orthogonalizeBasis = [&](VectorXd &v, int basisCols) {
+    const int cols = std::clamp(basisCols, 0, static_cast<int>(Q.cols()));
+    for (int j = 0; j < cols; j++) {
+      v -= Q.col(j) * Q.col(j).dot(v);
+    }
+  };
+  auto prepareDirection = [&](VectorXd &v, int basisCols,
+                              int seedOffset) -> bool {
+    if (!removeRigidModes) {
+      return v.norm() > eonc::safemath::eps;
+    }
+    projectRigid(v);
+    orthogonalizeBasis(v, basisCols);
+    projectRigid(v);
+    if (v.norm() > eonc::safemath::eps) {
+      return true;
+    }
+    VectorXd seed = VectorXd::Zero(size);
+    for (int k = 0; k < size; k++) {
+      seed.setZero();
+      seed((seedOffset + k) % size) = 1.0;
+      projectRigid(seed);
+      orthogonalizeBasis(seed, basisCols);
+      projectRigid(seed);
+      if (seed.norm() > eonc::safemath::eps) {
+        v = seed;
+        return true;
+      }
+    }
+    return false;
+  };
+  if (!prepareDirection(r, 0, 0)) {
+    QUILL_LOG_ERROR(log, "[ILanczos] ERROR: no projected seed direction");
+    lowestEw = 0.0;
+    return;
+  }
 
   double alpha, beta = r.norm();
   if (beta < eonc::safemath::eps) {
@@ -153,12 +207,24 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
       probe.reset();
       return mobileForces(tmpMatter.get(), mobile);
     };
-    return fdHessianVector(hvpScheme, dr, force0, at);
+    VectorXd hv = fdHessianVector(hvpScheme, dr, force0, at);
+    projectRigid(hv);
+    return hv;
   };
 
   for (int i = 0; i < size; i++) {
     statsRotations = i;
-    Q.col(i) = r / beta;
+    VectorXd q = r / beta;
+    if (!prepareDirection(q, i, i)) {
+      QUILL_LOG_ERROR(log, "[ILanczos] ERROR: no projected Krylov direction");
+      break;
+    }
+    const double qnorm = q.norm();
+    if (qnorm < eonc::safemath::eps) {
+      QUILL_LOG_ERROR(log, "[ILanczos] ERROR: projected Krylov direction");
+      break;
+    }
+    Q.col(i) = q / qnorm;
 
     u = applyH(Q.col(i));
 
@@ -167,8 +233,19 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
     } else {
       r = u - beta * Q.col(i - 1);
     }
+    if (removeRigidModes) {
+      orthogonalizeBasis(r, i + 1);
+      projectRigid(r);
+    }
     alpha = Q.col(i).dot(r);
     r = r - alpha * Q.col(i);
+    if (removeRigidModes && r.norm() <= eonc::safemath::eps &&
+        i + 1 < std::min(size, static_cast<int>(maxIters))) {
+      if (!prepareDirection(r, i + 1, i + 1)) {
+        QUILL_LOG_ERROR(log, "[ILanczos] ERROR: no projected residual seed");
+        break;
+      }
+    }
 
     T(i, i) = alpha;
     if (i > 0) {
