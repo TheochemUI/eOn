@@ -1,0 +1,1 @@
+Min-mode saddle search backtracks a translation that crosses max_energy, keeps the longest fraction of that step still under the limit, and continues. When no shorter step is legal it restores the centre and re-initialises the mode. The stock max_energy default is unchanged.

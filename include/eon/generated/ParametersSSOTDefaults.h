@@ -18,6 +18,10 @@ struct GeneratedDefaults {
   static constexpr auto MAIN_REMOVE_NET_FORCE = true;
   static constexpr auto MAIN_WRITE_CON_FORCES = false;
   static constexpr auto MAIN_PARALLEL = true;
+  static constexpr auto MAIN_INPUT_FORMAT = std::string_view{""};
+  static constexpr auto MAIN_CELL = std::string_view{""};
+  static constexpr auto MAIN_PBC = true;
+  static constexpr auto MAIN_DEFAULT_VACUUM = 10.0;
   static constexpr auto POTENTIAL_POTENTIAL = std::string_view{"lj"};
   static constexpr auto POTENTIAL_MPI_POLL_PERIOD = 0.25;
   static constexpr auto POTENTIAL_LAMMPS_LOGGING = false;

@@ -164,7 +164,8 @@ The Frontiers article
 ([doi:10.3389/fchem.2026.1807063](https://doi.org/10.3389/fchem.2026.1807063))
 restores the climbing image only on positive curvature (Algorithm 1:
 curvature $> 0$). On alignment failure it keeps the most-negative-curvature
-point and raises the trigger with the linear penalty. That is
+point and raises the trigger with the linear penalty, even when the force
+on the image the dimer moved has fallen. That is
 `ci_mmf_restore_unhelpful = false`, the default.
 
 `ci_mmf_restore_unhelpful = true` also restores after an alignment reject

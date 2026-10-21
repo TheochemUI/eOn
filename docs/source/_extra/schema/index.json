@@ -18,7 +18,11 @@
         "write_log",
         "write_con_forces",
         "max_force_calls",
-        "remove_net_force"
+        "remove_net_force",
+        "input_format",
+        "cell",
+        "pbc",
+        "default_vacuum"
       ]
     },
     "Potential": {

@@ -123,6 +123,11 @@ void apply_ssot_defaults(Parameters &p) {
   ParametersLoadAccess::main_options(p).writeConForces =
       GD::MAIN_WRITE_CON_FORCES;
   ParametersLoadAccess::main_options(p).parallel = GD::MAIN_PARALLEL;
+  ParametersLoadAccess::main_options(p).inputFormat =
+      std::string(GD::MAIN_INPUT_FORMAT);
+  ParametersLoadAccess::main_options(p).cell = std::string(GD::MAIN_CELL);
+  ParametersLoadAccess::main_options(p).pbc = GD::MAIN_PBC;
+  ParametersLoadAccess::main_options(p).defaultVacuum = GD::MAIN_DEFAULT_VACUUM;
 
   ParametersLoadAccess::potential_options(p).potential =
       pot_from_ssot(GD::POTENTIAL_POTENTIAL);

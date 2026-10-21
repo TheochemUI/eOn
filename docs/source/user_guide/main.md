@@ -118,6 +118,9 @@ Debug
 
 ## Configuration
 
+`input_format`, `cell`, `pbc`, and `default_vacuum` select a foreign
+structure file and its fallback cell. See {doc}`structure_input`.
+
 ```{code-block} ini
 [Main]
 ```

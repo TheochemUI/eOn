@@ -44,6 +44,17 @@ struct main_options_t {
   /// (enables force+energy co-load on restart); classic readers such as
   /// ASE's eon parser reject frames that carry them.
   bool writeConForces{false};
+  /// Chemfiles format substituted for a `.con` request. Empty or `con`
+  /// keeps readcon. Output stays `.con`.
+  std::string inputFormat;
+  /// Fallback cell when a foreign file carries none: "a b c" or nine
+  /// row-major lattice numbers. Empty leaves it unset.
+  std::string cell;
+  /// Periodicity of that fallback cell.
+  bool pbc{true};
+  /// Vacuum (Angstrom) on every side of the box built when neither the
+  /// file nor `cell` supplies one.
+  double defaultVacuum{10.0};
 };
 
 // [Potential] //
@@ -207,6 +218,9 @@ struct saddle_search_options_t {
   std::string minmode_method{"dimer"};
   std::string displace_type{"load"};
   std::vector<long> displace_atom_list;
+  // Rise above the reactant, in eV. A min-mode translation that crosses
+  // it is shortened until the energy is back under the limit. The
+  // default 20 is not an abort on the first crossing.
   double max_energy{20.0};
   double displace_magnitude{0.1};
   double max_single_displace{10.0};
