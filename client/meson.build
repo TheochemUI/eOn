@@ -2466,8 +2466,10 @@ if get_option('with_tests')
     _stage_engine_imports = []
     _have_staged_engine_imports = false
     if is_windows
-        # Torch directories come first. The prefix also has uv.dll, and
-        # the first search hit is the file that gets copied.
+        # Torch directories come first. The prefix also has uv.dll.
+        # The copy kept is the first one that exports every imported
+        # symbol, so a later directory supplies the DLL when the earlier
+        # copy does not.
         _stage_search = []
         if get_option('with_metatomic') and get_option('pip_metatomic')
             # These are strings (the torch prefix comes from python). A
