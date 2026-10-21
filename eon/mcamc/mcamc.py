@@ -1,5 +1,14 @@
 #!/usr/bin/env python
 import ctypes
+import os
+
+# OpenBLAS 0.3.30 deadlocks in blas_thread_init on the first threaded
+# dsymm after this process has already loaded other native libraries.
+# The numpy fallback is that call when libmcamc.so is absent. One thread
+# skips the pool setup that locks itself.
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+os.environ.setdefault("GOTO_NUM_THREADS", "1")
+
 import numpy as np
 from os.path import join, abspath, dirname
 import logging

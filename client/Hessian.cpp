@@ -10,8 +10,11 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/Hessian.h"
+#include "eon/AtomicFile.h"
+#include "eon/CutoffNeighbors.h"
 #include "eon/EonLogger.h"
 #include "eon/HelperFunctions.h"
+#include "eon/PotentialOwner.h"
 #include "eon/SafeMath.h"
 #include "eon/Tunneling.h"
 #include "eon/VesinNeighbors.h"
@@ -19,6 +22,9 @@
 #include <algorithm>
 #include <cmath>
 #include <fstream>
+#include <iomanip>
+#include <limits>
+#include <locale>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -34,7 +40,8 @@ namespace {
 // Checkpoint: first line "eon_hess_ckpt <size> <next_col>", then size*size
 // doubles in row-major order matching MatrixXd storage.
 bool loadColumnCheckpoint(const std::string &path, int size, int &nextCol,
-                          MatrixXd &H) {
+                          MatrixXd &H, const std::string &context) {
+  eonc::log::Scoped log;
   std::ifstream in(path);
   if (!in) {
     return false;
@@ -57,23 +64,74 @@ bool loadColumnCheckpoint(const std::string &path, int size, int &nextCol,
       H(i, j) = v;
     }
   }
+  std::string marker;
+  if (!(in >> marker)) {
+    QUILL_LOG_WARNING(log, "[Hessian] legacy checkpoint has no geometry or "
+                           "displacement identity; resume is unverified");
+    return true;
+  }
+  std::string stored;
+  if (marker != "eon_hess_context_v1" || !(in >> std::quoted(stored)) ||
+      stored != context) {
+    QUILL_LOG_WARNING(log, "[Hessian] checkpoint context mismatch; "
+                           "recomputing all finite-difference columns");
+    return false;
+  }
   return true;
 }
 
-bool saveColumnCheckpoint(const std::string &path, int size, int nextCol,
-                          const MatrixXd &H) {
-  std::ofstream out(path);
-  if (!out) {
-    return false;
-  }
-  out << "eon_hess_ckpt " << size << " " << nextCol << "\n";
-  out.precision(17);
-  for (int i = 0; i < size; ++i) {
-    for (int j = 0; j < size; ++j) {
-      out << H(i, j) << (j + 1 == size ? '\n' : ' ');
+// The context binds completed columns to their geometry and FD recipe.
+// External potential files require independent provenance checks.
+std::string columnCheckpointContext(const Matter &matter, const VectorXi &atoms,
+                                    double dr, FdScheme scheme,
+                                    const Parameters &parameters) {
+  std::ostringstream out;
+  out.imbue(std::locale::classic());
+  out << std::setprecision(std::numeric_limits<double>::max_digits10);
+  out << dr << ' ' << static_cast<int>(scheme) << ' '
+      << parameters.main_options().removeNetForce << ' '
+      << static_cast<int>(parameters.potential_options().potential) << ' '
+      << matter.getPeriodic() << ' ' << matter.numberOfAtoms();
+  const auto positions = matter.getPositions();
+  const auto numbers = matter.getAtomicNrs();
+  for (int i = 0; i < matter.numberOfAtoms(); ++i) {
+    out << ' ' << numbers(i) << ' ' << matter.getMass(i);
+    for (int j = 0; j < 3; ++j) {
+      out << ' ' << positions(i, j) << ' ' << matter.getFixed(i, j);
     }
   }
-  return static_cast<bool>(out);
+  const auto cell = matter.getCell();
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      out << ' ' << cell(i, j);
+    }
+  }
+  out << ' ' << atoms.size();
+  for (int i = 0; i < atoms.size(); ++i) {
+    out << ' ' << atoms(i);
+  }
+  return out.str();
+}
+
+bool saveColumnCheckpoint(const std::string &path, int size, int nextCol,
+                          const MatrixXd &H, const std::string &context) {
+  return helpers::atomicWriteFile(path, [&](FILE *out) {
+    if (std::fprintf(out, "eon_hess_ckpt %d %d\n", size, nextCol) < 0) {
+      return false;
+    }
+    for (int i = 0; i < size; ++i) {
+      for (int j = 0; j < size; ++j) {
+        if (std::fprintf(out, "%.*g%c",
+                         std::numeric_limits<double>::max_digits10, H(i, j),
+                         j + 1 == size ? '\n' : ' ') < 0) {
+          return false;
+        }
+      }
+    }
+    std::ostringstream footer;
+    footer << "eon_hess_context_v1 " << std::quoted(context) << '\n';
+    return std::fputs(footer.str().c_str(), out) >= 0;
+  });
 }
 
 } // namespace
@@ -143,28 +201,32 @@ MobileColoring buildMobileColoring(const Matter &matter, const VectorXi &atoms,
   }
 
   const AtomMatrix &pos = matter.getPositions();
-  VesinNeighbors nl;
-  VesinNeighbors::Options opt;
-  opt.cutoff = cutoff;
-  opt.full = true;
-  opt.return_distances = false;
-  opt.return_vectors = false;
-  opt.periodic = {matter.getPeriodic(), matter.getPeriodic(),
-                  matter.getPeriodic()};
+  std::vector<std::vector<int>> nbs(static_cast<std::size_t>(nAtoms));
+  auto add = [&](int i, int j) {
+    if (i != j && i >= 0 && j >= 0 && i < nAtoms && j < nAtoms)
+      nbs[static_cast<std::size_t>(i)].push_back(j);
+  };
   try {
-    nl.compute(pos.data(), static_cast<std::size_t>(nAtoms), cell.data(), opt);
+    if (matter.getPeriodic()) {
+      for (const auto &pair :
+           periodicCutoffNeighbors(pos.data(), static_cast<std::size_t>(nAtoms),
+                                   cell.data(), cutoff))
+        add(pair.first, pair.second);
+    } else {
+      VesinNeighbors nl;
+      VesinNeighbors::Options opt;
+      opt.cutoff = cutoff;
+      opt.full = true;
+      opt.return_distances = false;
+      opt.return_vectors = false;
+      opt.periodic = {false, false, false};
+      nl.compute(pos.data(), static_cast<std::size_t>(nAtoms), cell.data(),
+                 opt);
+      for (size_t p = 0; p < nl.size(); ++p)
+        add(static_cast<int>(nl.i(p)), static_cast<int>(nl.j(p)));
+    }
   } catch (const std::exception &) {
     return {};
-  }
-
-  std::vector<std::vector<int>> nbs(static_cast<std::size_t>(nAtoms));
-  for (std::size_t p = 0; p < nl.size(); ++p) {
-    const int i = static_cast<int>(nl.i(p));
-    const int j = static_cast<int>(nl.j(p));
-    if (i == j || i < 0 || j < 0 || i >= nAtoms || j >= nAtoms) {
-      continue;
-    }
-    nbs[static_cast<std::size_t>(i)].push_back(j);
   }
   for (auto &row : nbs) {
     std::sort(row.begin(), row.end());
@@ -388,8 +450,11 @@ bool Hessian::calculateBatched(double dr, FdScheme scheme) {
     }
     std::vector<double> energies(static_cast<size_t>(n)),
         variances(static_cast<size_t>(n));
-    pot->forceBatch(n, nAtoms, posPtr.data(), nrsPtr.data(), frcPtr.data(),
-                    energies.data(), variances.data(), boxPtr.data());
+    const std::vector<long> owners(static_cast<size_t>(n),
+                                   potential_owner::derivative);
+    pot->forceBatchOwned(n, nAtoms, posPtr.data(), nrsPtr.data(), frcPtr.data(),
+                         energies.data(), variances.data(), boxPtr.data(),
+                         owners.data());
     for (long j = 0; j < n; ++j) {
       displaced[static_cast<size_t>(j)].setComputedPotential(
           energies[static_cast<size_t>(j)], variances[static_cast<size_t>(j)]);
@@ -552,8 +617,11 @@ bool Hessian::calculateSerial(double dr, FdScheme scheme) {
   AtomMatrix forcePlus(nAtoms, 3);
   AtomMatrix forceMinus(nAtoms, 3);
 
+  const std::string context =
+      columnCheckpointContext(*matter, atoms, dr, scheme, parameters);
   int startCol = 0;
-  if (wantResume && loadColumnCheckpoint(ckptPath, size, startCol, hessian)) {
+  if (wantResume &&
+      loadColumnCheckpoint(ckptPath, size, startCol, hessian, context)) {
     QUILL_LOG_DEBUG(log, "[Hessian] resume from column {} / {}\n", startCol,
                     size);
   } else {
@@ -631,7 +699,12 @@ bool Hessian::calculateSerial(double dr, FdScheme scheme) {
 
     if (!ckptPath.empty()) {
       // next column to compute after a clean interrupt
-      saveColumnCheckpoint(ckptPath, size, i + 1, hessian);
+      if (!saveColumnCheckpoint(ckptPath, size, i + 1, hessian, context)) {
+        QUILL_LOG_WARNING(log,
+                          "[Hessian] failed to replace checkpoint {} at "
+                          "column {}; retaining the last complete file",
+                          ckptPath, i + 1);
+      }
     }
   }
   return finalizeHessian(size);
@@ -654,10 +727,10 @@ bool Hessian::finalizeHessian(int size) {
     return false;
   }
 
-  if (!parameters.main_options().quiet) {
-    QUILL_LOG_DEBUG(log, "[Hessian] writing hessian\n");
-  }
   if (writeFile) {
+    if (!parameters.main_options().quiet) {
+      QUILL_LOG_DEBUG(log, "[Hessian] writing hessian\n");
+    }
     // A previous case in the same process can still hold hessian.dat on
     // Windows. Replace it, and try once more after removing the old file.
     std::ofstream hessfile("hessian.dat", std::ios::out | std::ios::trunc);
@@ -670,7 +743,8 @@ bool Hessian::finalizeHessian(int size) {
       QUILL_LOG_ERROR(log, "[Hessian] failed to open hessian.dat");
       return false;
     }
-    hessfile << hessian;
+    hessfile << std::setprecision(std::numeric_limits<double>::max_digits10)
+             << hessian;
     hessfile.close();
     if (!hessfile) {
       QUILL_LOG_ERROR(log, "[Hessian] failed to write hessian.dat");

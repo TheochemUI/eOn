@@ -84,8 +84,7 @@ double harmonicModeFreeEnergy(double hbarOmegaEv, double temperature) {
   if (!(temperature > 0.0)) {
     return 0.5 * hbarOmegaEv;
   }
-  const double x =
-      hbarOmegaEv / (2.0 * tunneling::kBoltzmann * temperature);
+  const double x = hbarOmegaEv / (2.0 * tunneling::kBoltzmann * temperature);
   return tunneling::kBoltzmann * temperature * lnTwoSinh(x);
 }
 
@@ -143,10 +142,10 @@ double perpendicularHarmonicFreeEnergy(const Eigen::MatrixXd &hessian,
   return sum;
 }
 
-std::vector<double> quantumFreeEnergies(
-    const std::vector<std::shared_ptr<Matter>> &path,
-    const std::vector<std::shared_ptr<AtomMatrix>> &tangent, double temperature,
-    const Parameters &params) {
+std::vector<double>
+quantumFreeEnergies(const std::vector<std::shared_ptr<Matter>> &path,
+                    const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
+                    double temperature, const Parameters &params) {
   std::vector<double> freeEnergy;
   freeEnergy.reserve(path.size());
   for (long image = 0; image < static_cast<long>(path.size()); ++image) {
@@ -164,11 +163,9 @@ std::vector<double> quantumFreeEnergies(
       throw std::runtime_error("the image Hessian is empty");
     }
     const AtomMatrix cart = imageTangent(path, tangent, image);
-    const Eigen::VectorXd direction =
-        massWeightedTangent(matter, mobile, cart);
-    freeEnergy.push_back(
-        potential +
-        perpendicularHarmonicFreeEnergy(weighted, direction, temperature));
+    const Eigen::VectorXd direction = massWeightedTangent(matter, mobile, cart);
+    freeEnergy.push_back(potential + perpendicularHarmonicFreeEnergy(
+                                         weighted, direction, temperature));
   }
   return freeEnergy;
 }

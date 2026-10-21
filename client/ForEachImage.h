@@ -93,6 +93,20 @@ public:
 
   [[nodiscard]] std::size_t threads() const noexcept { return threads_.size(); }
 
+  // The constructor starts usableCores()-1 helpers. A caller that must
+  // observe more than one worker asks for them here.
+  void ensureThreads(std::size_t n) {
+    std::lock_guard<std::mutex> busy(runMutex_);
+    while (threads_.size() < n) {
+      const long index = static_cast<long>(threads_.size());
+      try {
+        threads_.emplace_back([this, index] { loop(index); });
+      } catch (...) {
+        break;
+      }
+    }
+  }
+
 private:
   ImagePool() {
     const long helpers = usableCores() - 1;

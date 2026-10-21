@@ -57,6 +57,7 @@
 #include "eon/potentials/Rgpot/RgpotPot.h"
 #include "eon/potentials/Rgpot/XTBEngineLoader.h"
 
+#include <array>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -2302,6 +2303,126 @@ TEST_CASE("a short band seeds a rate and a ladder when the orbit fails",
   }
 }
 
+namespace {
+
+struct ProfileCacheQuartic final : Potential {
+  AtomMatrix reference;
+  std::array<int, 3> profileCalls{};
+  bool preservedFrozen = true;
+  ProfileCacheQuartic(const Parameters &params, AtomMatrix positions)
+      : Potential(PotType::LJ, params),
+        reference(std::move(positions)) {}
+  using Potential::force;
+  void force(long nAtoms, const double *positions, const int *, double *forces,
+             double *energy, double *variance, const double *) override {
+    for (long i = 0; i < 3 * nAtoms; ++i) {
+      forces[i] = 0.0;
+    }
+    const double x = positions[0] - reference(0, 0) - 1.0;
+    *energy = 0.25 * (x * x - 1.0) * (x * x - 1.0);
+    forces[0] = x * (1.0 - x * x);
+    for (int c = 1; c < 3; ++c) {
+      const double d = positions[c] - reference(0, c);
+      *energy += 0.5 * d * d;
+      forces[c] = -d;
+    }
+    for (long i = 1; i < nAtoms; ++i) {
+      for (int c = 0; c < 3; ++c) {
+        preservedFrozen = preservedFrozen && std::abs(positions[3 * i + c] -
+                                                      reference(i, c)) < 1e-8;
+      }
+    }
+    for (int k = 0; k < 3; ++k) {
+      if (std::abs(x - 0.25 * (k + 1)) < 1e-8) {
+        ++profileCalls[k];
+      }
+    }
+    if (variance != nullptr) {
+      *variance = 0.0;
+    }
+  }
+};
+
+} // namespace
+
+TEST_CASE("cached instanton profiles require the evaluated frozen surface",
+          "[job][instanton][profile-cache]") {
+  Workdir work;
+  Parameters params = ljParams();
+  auto lj = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, lj);
+  REQUIRE(reactant->numberOfAtoms() >= 4);
+  reactant->setMasses(VectorXd::Ones(reactant->numberOfAtoms()));
+  for (long i = 0; i < reactant->numberOfAtoms(); ++i) {
+    reactant->setFixed(i, i != 0);
+  }
+  auto positions = reactant->getPositions();
+  positions(0, 0) = 1.0;
+  reactant->setPositions(positions);
+  auto pot = std::make_shared<ProfileCacheQuartic>(params, positions);
+  reactant->setPotential(pot);
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
+  Matter saddle(*reactant);
+  saddle.setPosition(0, 0, 2.0);
+  REQUIRE(eonc::io::io_ok(saddle.matter2con("saddle.con", false)));
+  bool invalidate = false;
+  std::string mismatch;
+  SECTION("matching cached surface avoids profile evaluations") {}
+  SECTION("nine frozen coordinates differ in the last frame") {
+    invalidate = true;
+    mismatch = "frozen";
+  }
+  SECTION("a cell mismatch invalidates every cached profile value") {
+    invalidate = true;
+    mismatch = "cell";
+  }
+  SECTION("a species mismatch invalidates every cached profile value") {
+    invalidate = true;
+    mismatch = "species";
+  }
+  SECTION("a constraint mismatch invalidates every cached profile value") {
+    invalidate = true;
+    mismatch = "constraints";
+  }
+  for (int k = 0; k < 3; ++k) {
+    Matter image(*reactant);
+    image.setPosition(0, 0, 2.0 + 0.25 * (k + 1));
+    if (k == 2) {
+      if (mismatch == "frozen") {
+        auto changed = image.getPositions();
+        changed.block(1, 0, 3, 3).array() += 0.0186336274;
+        image.setPositions(changed);
+      } else if (mismatch == "cell") {
+        auto cell = image.getCell();
+        cell(0, 0) += 0.1;
+        image.setCell(cell);
+      } else if (mismatch == "species") {
+        auto numbers = image.getAtomicNrs();
+        numbers(1) = numbers(1) == 1 ? 2 : 1;
+        image.setAtomicNrs(numbers);
+      } else if (mismatch == "constraints") {
+        image.setFixed(1, 0, 0);
+      }
+    }
+    eonc::io::ConFrameMetadata metadata;
+    metadata.energy = 10.0 + k;
+    REQUIRE(eonc::io::io_ok(image.matter2con("cached.con", k != 0, &metadata)));
+  }
+  auto &options = ParametersLoadAccess::instanton_options(params);
+  options.mode = "rate";
+  options.initial_path = "cached.con";
+  options.temperature = 3000.0;
+  options.beads = 4;
+  options.max_iterations = 1;
+  eonc::InstantonJob job(pot, params);
+  REQUIRE_FALSE(job.run().empty());
+  REQUIRE(pot->preservedFrozen);
+  for (const auto count : pot->profileCalls) {
+    REQUIRE(count == (invalidate ? 1 : 0));
+  }
+}
+
 TEST_CASE("one hyperplane sample stays finite", "[job][oh_tst]") {
   Workdir work;
   static_cast<void>(work);
@@ -3145,10 +3266,19 @@ TEST_CASE("a dynamics search keeps the barrier after one step",
 #ifndef _WIN32
 TEST_CASE("the client rejects an unknown flag and a missing structure",
           "[client][args]") {
-  const auto client =
-      std::filesystem::read_symlink("/proc/self/exe").parent_path() /
-      "eonclient";
-  if (!std::filesystem::exists(client)) {
+  // Meson puts the built client in EONCLIENT. /proc/self/exe is Linux
+  // only; reading it on macOS throws and fails the case.
+  std::filesystem::path client;
+  if (const char *env = std::getenv("EONCLIENT")) {
+    client = env;
+  }
+#if defined(__linux__)
+  if (client.empty() && std::filesystem::is_symlink("/proc/self/exe")) {
+    client = std::filesystem::read_symlink("/proc/self/exe").parent_path() /
+             "eonclient";
+  }
+#endif
+  if (client.empty() || !std::filesystem::exists(client)) {
     return;
   }
   Workdir work;
@@ -3189,4 +3319,53 @@ TEST_CASE("the client rejects an unknown flag and a missing structure",
 }
 #endif
 
+} // namespace tests
+
+namespace tests {
+TEST_CASE("instanton references share constraints and the mass metric",
+          "[job][instanton][reference-surface]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  for (long i = 0; i < reactant->numberOfAtoms(); ++i) {
+    reactant->setFixed(i, i == 0 ? 0 : 1);
+  }
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
+  auto endpoint = std::make_shared<Matter>(*reactant);
+  SECTION("frozen geometry") {
+    auto positions = endpoint->getPositions();
+    positions(1, 0) += 0.02;
+    endpoint->setPositions(positions);
+  }
+  SECTION("cell") {
+    auto cell = endpoint->getCell();
+    cell(0, 0) += 0.1;
+    endpoint->setCell(cell);
+  }
+  SECTION("species") { endpoint->setAtomicNr(0, 2); }
+  SECTION("mass") {
+    for (long i = 0; i < endpoint->numberOfAtoms(); ++i) {
+      if (endpoint->getAtomicNr(i) == reactant->getAtomicNr(0)) {
+        endpoint->setMass(i, 2.0 * reactant->getMass(i));
+      }
+    }
+  }
+  SECTION("constraints") { endpoint->setFixed(1, 0); }
+  REQUIRE(eonc::io::io_ok(endpoint->matter2con("saddle.con", false)));
+  REQUIRE(eonc::io::io_ok(endpoint->matter2con("product.con", false)));
+  ParametersLoadAccess::instanton_options(params).beads = 4;
+  ParametersLoadAccess::instanton_options(params).max_iterations = 0;
+  ParametersLoadAccess::instanton_options(params).temperature = 100.0;
+  ParametersLoadAccess::instanton_options(params).temperatures = {100.0};
+  for (const std::string mode : {"rate", "splitting"}) {
+    INFO(mode);
+    ParametersLoadAccess::instanton_options(params).mode = mode;
+    eonc::InstantonJob job(pot, params);
+    REQUIRE_THROWS_WITH(job.run(), Catch::Matchers::ContainsSubstring(
+                                       "instanton: reference surface differs"));
+  }
+}
 } // namespace tests

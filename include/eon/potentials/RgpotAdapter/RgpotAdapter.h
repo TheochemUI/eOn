@@ -141,8 +141,7 @@ public:
       if (out[i].has_stress) {
         storeStress(out[i]);
       }
-      forceCallCounter++;
-      eonc::PotRegistry::get().on_force_call(ptype);
+      recordForceCall();
     }
   }
 

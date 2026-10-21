@@ -19,17 +19,21 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/BaseStructures.h"
 #include "eon/BasinHoppingJob.h"
-#include "eon/GlobalOptimizationJob.h"
 #include "eon/Bundling.h"
 #include "eon/ConFileIO.h"
+#include "eon/GlobalOptimizationJob.h"
+#include "eon/InstantonJob.h"
 #include "eon/Job.h"
 #include "eon/Matter.h"
 #include "eon/OHTSTJob.h"
 #include "eon/ParallelReplicaJob.h"
 #include "eon/Parameters.h"
+#include "eon/PhysicalBathModel.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
+#include "eon/PotentialOwner.h"
 #include "eon/RandomNumbers.h"
+#include "eon/Tunneling.h"
 #include "eon/fpe_handler.h"
 #ifdef WITH_ARTN
 #include "eon/ARTnSaddleSearch.h"
@@ -48,6 +52,7 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <system_error>
 #include <vector>
 
 namespace eonc {
@@ -150,9 +155,13 @@ protected:
   }
 
   ~JobIntegrationFixture() {
-    // Always restore CWD before cleanup
+    // Always restore CWD before cleanup. remove_all throws when Windows
+    // still has the job's readcon.db mapped, and an exception leaving this
+    // destructor calls terminate. The error-code overload leaves those
+    // files behind and lets the process exit.
     std::filesystem::current_path(originalDir);
-    std::filesystem::remove_all(workdir);
+    std::error_code ec;
+    std::filesystem::remove_all(workdir, ec);
   }
 
   void writeConfig(const std::string &content) {
@@ -620,12 +629,24 @@ max_energy = 10.0
   REQUIRE(forceCalls_ <= 39);
 
   // Eigenvalue must be negative (true saddle point).
-  // SVN printed -1.014995. Dimer::rotate now updates the plane from the
-  // pre-rotation direction; the FD curvature on this fixture
-  // is -1.010564. Energy still matches the SVN saddle.
+  // final_eigenvalue is the pre-final estimate: the min-mode curvature at
+  // the geometry before the converged step, since convergence is judged on
+  // the forces alone. SVN printed -1.014995. Dimer::rotate now updates the
+  // plane from the pre-rotation direction; the host dimer's pre-final
+  // estimate on this fixture is -1.010564. Energy still matches the SVN
+  // saddle.
   double eigenvalue = std::stod(results["final_eigenvalue"]);
   REQUIRE(eigenvalue < 0.0);
+#ifdef WITH_RGSADDLE
+  // The rgsaddle dimer rotates to a slightly different mode from frame 6
+  // on, so the climb reaches the same saddle (6.2e-5 A apart) through a
+  // different pre-final geometry, where the curvature is -1.013461 by
+  // either estimator. At the returned saddle both measure about -1.0103,
+  // and the central-difference Hessian gives -1.0102.
+  REQUIRE(eigenvalue == Catch::Approx(-1.013461).epsilon(1e-3));
+#else
   REQUIRE(eigenvalue == Catch::Approx(-1.010564).epsilon(1e-3));
+#endif
 
   // Reactant energy must match
   double reactantE = std::stod(results["potential_energy_reactant"]);
@@ -743,8 +764,14 @@ max_move = 0.2
   int nImages = std::stoi(results["number_of_images"]);
   REQUIRE(nImages == 3);
 
-  // Force calls must be <= SVN (209)
-  REQUIRE(forceCalls_ <= 209);
+  // SVN recorded 209 force calls with the squared spring
+  // k (|d+|^2 - |d-|^2) tau and a finite-difference first L-BFGS step;
+  // geometric_spring = true with that probe reproduces its band and its
+  // 209 calls. The default Hooke spring k (|d+| - |d-|) tau of Jonsson,
+  // Mills and Jacobsen (1998) and Henkelman and Jonsson (2000) has the same
+  // fixed point (client/validation/neb_spring_fixed_point.py); its measured
+  // run on this fixture takes 236.
+  REQUIRE(forceCalls_ <= 236);
 
   // energy_reference must match SVN reactant energy
   double eRef = std::stod(results["energy_reference"]);
@@ -760,12 +787,70 @@ max_move = 0.2
   double eProduct =
       std::stod(results["image" + std::to_string(nImages + 1) + "_energy"]);
   REQUIRE(eProduct == Catch::Approx(631.805887).epsilon(1e-6));
+  // Converged image energies of the Hooke-spring run (SVN's squared
+  // spring gives 0.000135, 0.056816 and 1.800656 eV). The climbing image
+  // is enabled by default but never engages here: the highest image is
+  // the product endpoint, so this is a plain NEB and its image energies
+  // are the band's answer.
+  const double expected[] = {0.000049, 0.259018, 2.851935};
   for (int i = 1; i <= nImages; i++) {
     double ei = std::stod(results["image" + std::to_string(i) + "_energy"]);
-    REQUIRE(std::isfinite(ei));
+    REQUIRE(ei == Catch::Approx(expected[i - 1]).margin(1.0e-5));
   }
 
   REQUIRE(results.count("number_of_extrema") > 0);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "CI-NEB climbing image matches the dimer saddle of LJ13",
+                 "[job][neb][climbing_image][integration]") {
+  // For a climbing-image band only the climbing image carries the answer,
+  // the barrier and the saddle geometry; interior spacing is free. Both
+  // spring laws are checked against saddle.con, the eonclient dimer saddle
+  // of this pair (-38.963676 eV, max |F| 4e-6 eV/A). The force-call
+  // ceilings are the measured counts of each run.
+  struct Case {
+    long images;
+    bool geometric;
+    long calls;
+  };
+  const Case cases[] = {
+      {3, false, 134}, {7, false, 317}, {3, true, 137}, {7, true, 310}};
+  for (const Case &c : cases) {
+    INFO("images " << c.images << " geometric " << c.geometric);
+    REQUIRE(copyTestData("neb_lj13"));
+    writeConfig(std::string("[Main]\njob = nudged_elastic_band\n"
+                            "random_seed = 42\n\n[Potential]\npotential = "
+                            "lj\n\n[Nudged Elastic Band]\nimages = ") +
+                std::to_string(c.images) +
+                "\nspring = 5.0\nmax_iterations = 3000\n"
+                "minimize_endpoints = false\n" +
+                (c.geometric ? "geometric_spring = true\n" : "") +
+                "\n[Optimizer]\nopt_method = lbfgs\nconverged_force = "
+                "0.01\nmax_iterations = 3000\nmax_move = 0.2\n");
+    auto results = runJob();
+    REQUIRE(std::stoi(results.at("termination_reason")) == 0);
+    REQUIRE(forceCalls_ <= c.calls);
+
+    Parameters p;
+    ParametersLoadAccess::potential_options(p).potential = PotType::LJ;
+    auto pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, p));
+    Matter saddle(pot, p), climbing(pot, p);
+    REQUIRE(
+        eonc::io::io_ok(saddle.con2matter((workdir / "saddle.con").string())));
+    REQUIRE(
+        eonc::io::io_ok(climbing.con2matter((workdir / "sp.con").string())));
+    REQUIRE(climbing.getPotentialEnergy() ==
+            Catch::Approx(saddle.getPotentialEnergy()).margin(1.0e-4));
+    AtomMatrix a = saddle.getPositions();
+    AtomMatrix b = climbing.getPositions();
+    a.rowwise() -= a.colwise().mean();
+    b.rowwise() -= b.colwise().mean();
+    const double rmsd =
+        std::sqrt((a - b).rowwise().squaredNorm().sum() / a.rows());
+    REQUIRE(rmsd < 2.0e-3);
+  }
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
@@ -920,12 +1005,24 @@ max_iterations = 200
   // minimum_energy = -44.326774; acceptance_ratio = 0.500
   double minEnergy = std::stod(results["minimum_energy"]);
   REQUIRE(minEnergy == Catch::Approx(-44.326774).epsilon(1e-4));
+  // The LJ13 global minimum (icosahedron) is -44.326801 epsilon in the
+  // Cambridge Cluster Database (Wales and Doye, J. Phys. Chem. A 101 (1997),
+  // doi:10.1021/jp970984n). The LJ potential shifts each pair by its value at
+  // the 15 A cutoff, 4 (15^-12 - 15^-6), and all 78 pairs of the cluster are
+  // inside it. The table gives six decimals.
+  const double rc6 = std::pow(15.0, -6.0);
+  const double lj13 = -44.326801 - 78.0 * 4.0 * (rc6 * rc6 - rc6);
+  REQUIRE(minEnergy == Catch::Approx(lj13).margin(1e-6));
 
-  // Force-call budget under default LBFGS (auto_scale=true SSOT). The legacy
-  // SVN dump recorded 1685 with an older path; default auto_scale adds an FD
-  // curvature probe on the first step of each minimize. Measured 1692 is the
-  // correct default-path total; keep a hard ceiling as a regression check.
-  REQUIRE(forceCalls_ <= 1692);
+  // The optimizer decides on correctly rounded reductions (eonc::exact) and
+  // the mean force removed from each evaluation is an exact column sum.
+  // The LJ pair loop rounds the distance square and the 12-6 products with
+  // contraction off, and fuses only the explicit force update, on every
+  // ISA. The count is then the same for every compiler, Eigen release and
+  // vector width. Default LBFGS (auto_scale) adds an FD curvature probe on
+  // the first step of each minimize; the SVN dump recorded 1685 with an
+  // older path.
+  REQUIRE(forceCalls_ == 1640);
 
   // 50% acceptance ratio
   double ar = std::stod(results["acceptance_ratio"]);
@@ -971,7 +1068,7 @@ TEST_CASE("basin hopping Metropolis rejects uphill hops at non-positive "
   REQUIRE(Job::metropolisProbability(de, kB, temperature) ==
           Catch::Approx(std::exp(-de / (kB * temperature))));
 
-#if !defined(_WIN32) && !(defined(__APPLE__) && defined(__aarch64__))
+#if !defined(_WIN32)
   eonc::enableFPE();
   REQUIRE(Job::metropolisProbability(1.0, kB, 0.0) == 0.0);
   REQUIRE(Job::metropolisProbability(-2.0, kB, 0.0) == 1.0);
@@ -3079,7 +3176,8 @@ force_tolerance = 1e-6
   REQUIRE(std::filesystem::exists(pathFile));
   const auto saved = readcon::read_all_frames(pathFile.string());
   REQUIRE(saved.size() >= 3);
-  const std::string text = (std::stringstream{} << std::ifstream(pathFile).rdbuf()).str();
+  const std::string text =
+      (std::stringstream{} << std::ifstream(pathFile).rdbuf()).str();
   REQUIRE(text.find("arc_length") != std::string::npos);
   for (const auto &frame : saved) {
     REQUIRE(frame.energy_opt().has_value());
@@ -3155,6 +3253,121 @@ pi_time_step = 1.0
   }
 }
 
+static void writeCachedForceCon(Matter &matter,
+                                const std::filesystem::path &path) {
+  struct RestoreForceWriting {
+    bool value = eonc::io::write_con_forces();
+    ~RestoreForceWriting() { eonc::io::set_write_con_forces(value); }
+  } restore;
+  eonc::io::set_write_con_forces(true);
+  REQUIRE(eonc::io::io_ok(matter.matter2con(path.string())));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "PointJob evaluates its potential despite saved file forces",
+                 "[job][point][integration][CachedInput]") {
+  REQUIRE(copyTestData("neb_lj13"));
+  Parameters stored;
+  ParametersLoadAccess::potential_options(stored).potential = PotType::LJ;
+  auto potential = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, stored));
+  Matter matter(potential, stored);
+  REQUIRE(
+      eonc::io::io_ok(matter.con2matter((workdir / "reactant.con").string())));
+  const double expectedEnergy = matter.getPotentialEnergy();
+  const double expectedForce = matter.maxForce();
+  matter.setEvaluation(AtomMatrix::Zero(13, 3), 12345.0);
+  writeCachedForceCon(matter, workdir / "pos.con");
+  writeConfig("[Main]\njob = point\n[Potential]\npotential = lj\n");
+  const auto results = runJob();
+  REQUIRE(results.at("termination_reason") == "0");
+  REQUIRE(std::stol(results.at("total_force_calls")) >= 1);
+  REQUIRE_THAT(std::stod(results.at("potential_energy")),
+               Catch::Matchers::WithinAbs(expectedEnergy, 1e-8));
+  REQUIRE_THAT(std::stod(results.at("Max_Force")),
+               Catch::Matchers::WithinAbs(expectedForce, 1e-8));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "InstantonJob rejects a reactant with unstable vibrations",
+                 "[job][instanton][integration][HarmonicValidation]") {
+  REQUIRE(copyTestData("neb_lj13"));
+  // A saddle supplied as the reactant is not a metastable well. Its
+  // unstable vibration remains after the cluster's rigid modes leave.
+  std::filesystem::copy_file(workdir / "saddle.con", workdir / "reactant.con",
+                             std::filesystem::copy_options::overwrite_existing);
+  if (GENERATE(false, true)) {
+    Parameters stored;
+    ParametersLoadAccess::potential_options(stored).potential = PotType::LJ;
+    auto potential = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, stored));
+    Matter matter(potential, stored);
+    REQUIRE(eonc::io::io_ok(
+        matter.con2matter((workdir / "reactant.con").string())));
+    matter.setEvaluation(AtomMatrix::Zero(13, 3), 12345.0);
+    writeCachedForceCon(matter, workdir / "reactant.con");
+  }
+  const double temperature = GENERATE(198.0, 400.0);
+  writeConfig(std::string(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+mode = rate
+temperature = )") +
+              std::to_string(temperature) + R"(
+beads = 16
+)");
+  const auto results = runJob();
+  REQUIRE(results.at("termination_reason") != "0");
+  REQUIRE(results.count("rate_parabolic") == 0);
+  REQUIRE_THAT(std::stod(results.at("barrier_classical")),
+               Catch::Matchers::WithinAbs(0.0, 1e-8));
+  REQUIRE(results.count("rate_parabolic_log") == 0);
+  REQUIRE(results.count("rate_instanton") == 0);
+  REQUIRE_FALSE(std::filesystem::exists(workdir / "rate_instanton.dat"));
+  REQUIRE_FALSE(std::filesystem::exists(workdir / "instanton.con"));
+  for (const char *reference : {"reactant", "saddle"}) {
+    const auto prefix = workdir / (std::string("instanton_") + reference);
+    std::ifstream forceFile(prefix.string() + "_forces.dat");
+    AtomMatrix forces(13, 3);
+    for (long i = 0; i < forces.rows(); ++i) {
+      for (long j = 0; j < forces.cols(); ++j) {
+        REQUIRE(static_cast<bool>(forceFile >> forces(i, j)));
+      }
+    }
+    REQUIRE(forces.norm() > 0.0);
+    const auto key = std::string("reference_") + reference;
+    REQUIRE_THAT(std::stod(results.at(key + "_force_norm")),
+                 Catch::Matchers::WithinAbs(forces.norm(), 1e-9));
+    REQUIRE_THAT(
+        std::stod(results.at(key + "_max_force")),
+        Catch::Matchers::WithinAbs(forces.rowwise().norm().maxCoeff(), 1e-9));
+    std::ifstream matrixFile(prefix.string() + "_hessian.dat");
+    MatrixXd matrix(39, 39);
+    for (long i = 0; i < matrix.rows(); ++i) {
+      for (long j = 0; j < matrix.cols(); ++j) {
+        REQUIRE(static_cast<bool>(matrixFile >> matrix(i, j)));
+      }
+    }
+    REQUIRE(matrix.allFinite());
+    REQUIRE((matrix - matrix.transpose()).norm() < 1e-12);
+    Eigen::SelfAdjointEigenSolver<MatrixXd> solver(matrix,
+                                                   Eigen::EigenvaluesOnly);
+    REQUIRE(solver.info() == Eigen::Success);
+    std::ifstream spectrumFile(prefix.string() + "_eigenvalues.dat");
+    VectorXd spectrum(39);
+    for (long i = 0; i < spectrum.size(); ++i) {
+      REQUIRE(static_cast<bool>(spectrumFile >> spectrum[i]));
+    }
+    REQUIRE((spectrum - solver.eigenvalues()).norm() < 1e-12);
+    REQUIRE(spectrum.minCoeff() < -1e-6);
+  }
+}
+
 TEST_CASE_METHOD(JobIntegrationFixture,
                  "GlobalOptimizationJob records a random hop and an MD hop",
                  "[job][global_optimization]") {
@@ -3201,8 +3414,7 @@ TEST_CASE_METHOD(JobIntegrationFixture,
   runOne("md", "npew", 1);
 }
 
-TEST_CASE_METHOD(JobIntegrationFixture,
-                 "Basin hopping keeps a unique minimum",
+TEST_CASE_METHOD(JobIntegrationFixture, "Basin hopping keeps a unique minimum",
                  "[job][basin_hopping]") {
   EON_REQUIRE_TEST_DATA("neb_morse");
   writeConfig(R"(
@@ -3263,6 +3475,364 @@ TEST_CASE("Basin hopping swaps two elements", "[job][basin_hopping]") {
   REQUIRE_FALSE(before.isApprox(matter.getPositions(), 0.0));
   REQUIRE(matter.getAtomicNr(0) == 1);
   REQUIRE(matter.getAtomicNr(2) == 8);
+}
+
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "InstantonJob resumes closed ring geometry with fresh energies",
+    "[job][instanton][integration][InitialRing]") {
+  REQUIRE(copyTestData("neb_lj13"));
+  auto config = [](long iterations, const std::string &ring) {
+    std::ostringstream text;
+    text << "[Main]\njob = instanton\n[Potential]\npotential = lj\n"
+         << "[Instanton]\nmode = rate\ntemperature = 198\nbeads = 16\n"
+         << "force_tolerance = 1e-6\nmax_iterations = " << iterations << '\n';
+    if (!ring.empty()) {
+      text << "initial_ring = " << ring << '\n';
+    }
+    return text.str();
+  };
+  writeConfig(config(3000, ""));
+  const auto first = runJob();
+  REQUIRE(first.at("termination_reason") == "0");
+  const auto frames =
+      readcon::read_all_frames((workdir / "instanton.con").string());
+  REQUIRE(frames.size() == 16);
+  Parameters seedParams;
+  ParametersLoadAccess::potential_options(seedParams).potential = PotType::LJ;
+  auto potential = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, seedParams));
+  std::vector<AtomMatrix> positions;
+  std::vector<double> energies;
+  for (size_t bead = 0; bead < frames.size(); ++bead) {
+    Matter image(potential, seedParams);
+    REQUIRE(eonc::io::io_ok(image.con2matter(frames[bead])));
+    positions.push_back(image.getPositions());
+    REQUIRE(frames[bead].energy_opt().has_value());
+    energies.push_back(*frames[bead].energy_opt());
+    eonc::io::ConFrameMetadata metadata;
+    metadata.energy = 1e6 + bead;
+    REQUIRE(eonc::io::io_ok(image.matter2con(
+        (workdir / "retained-ring.con").string(), bead > 0, &metadata)));
+  }
+  writeConfig(config(0, "retained-ring.con"));
+  const auto resumed = runJob();
+  REQUIRE(std::stod(resumed.at("sd_path_force_calls")) == 0.0);
+  REQUIRE(std::stod(resumed.at("instanton_iterations")) == 0.0);
+  REQUIRE(forceCalls_ > 0);
+  const auto restored =
+      readcon::read_all_frames((workdir / "instanton.con").string());
+  REQUIRE(restored.size() == positions.size());
+  for (size_t bead = 0; bead < restored.size(); ++bead) {
+    Matter image(potential, seedParams);
+    REQUIRE(eonc::io::io_ok(image.con2matter(restored[bead])));
+    REQUIRE((image.getPositions() - positions[bead]).cwiseAbs().maxCoeff() <
+            1e-12);
+    REQUIRE(restored[bead].energy_opt().has_value());
+    REQUIRE(std::abs(*restored[bead].energy_opt() - energies[bead]) < 1e-8);
+  }
+}
+
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "Physical bath parabolic rate retains all conditional modes",
+    "[job][instanton][physical-bath][integration][PhysicalBathHighT]") {
+  using namespace eonc::tunneling;
+  Parameters stored;
+  ParametersLoadAccess::potential_options(stored).potential = PotType::LJ;
+  auto potential = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, stored));
+  Matter matter(potential, stored);
+  matter.resize(2);
+  matter.setCell(100 * Matrix3d::Identity());
+  for (long atom = 0; atom < 2; ++atom) {
+    matter.setAtomicNr(atom, 1);
+    matter.setMass(atom, 1.0);
+    matter.setFixed(atom, 0);
+  }
+  AtomMatrix positions = AtomMatrix::Zero(2, 3);
+  positions(0, 0) = -1;
+  positions(1, 0) = 1;
+  matter.setPositions(positions);
+  REQUIRE(
+      eonc::io::io_ok(matter.matter2con((workdir / "reactant.con").string())));
+  positions *= 1.5;
+  matter.setPositions(positions);
+  REQUIRE(
+      eonc::io::io_ok(matter.matter2con((workdir / "saddle.con").string())));
+  const double length = std::sqrt(.5);
+  auto hermiteModel = [&](int order, const Eigen::MatrixXd &targets) {
+    const long count = 2 * (order + 1);
+    nlohmann::json sites = nlohmann::json::array(), orders = sites;
+    for (double point : {0.0, length})
+      for (int derivative = 0; derivative <= order; ++derivative) {
+        sites.push_back({point});
+        orders.push_back({derivative});
+      }
+    nlohmann::json spec = {{"kind", "derivative_rbf"},
+                           {"length_scales", {.6}},
+                           {"constant", std::vector<double>(targets.cols(), 0)},
+                           {"sites", sites},
+                           {"derivative_orders", orders}};
+    Eigen::MatrixXd interpolation(count, count);
+    for (long column = 0; column < count; ++column) {
+      spec["weights"] = nlohmann::json::array();
+      for (long row = 0; row < count; ++row)
+        spec["weights"].push_back({row == column ? 1.0 : 0.0});
+      spec["constant"] = {0.0};
+      const auto kernel = DerivativeRbfModel::fromJson(spec);
+      for (long row = 0; row < count; ++row) {
+        const auto value = kernel.evaluate(
+            Eigen::VectorXd::Constant(1, row < order + 1 ? 0.0 : length));
+        const int derivative = row % (order + 1);
+        interpolation(row, column) = derivative == 0 ? value.value[0]
+                                     : derivative == 1
+                                         ? value.jacobian(0, 0)
+                                         : value.hessians[0](0, 0);
+      }
+    }
+    const Eigen::MatrixXd weights = interpolation.fullPivLu().solve(targets);
+    REQUIRE((interpolation * weights - targets).norm() < 1e-10);
+    spec["weights"] = nlohmann::json::array();
+    for (long row = 0; row < count; ++row) {
+      std::vector<double> output(weights.cols());
+      for (long column = 0; column < weights.cols(); ++column)
+        output[column] = weights(row, column);
+      spec["weights"].push_back(output);
+    }
+    spec["constant"] = std::vector<double>(targets.cols(), 0);
+    return spec;
+  };
+  Eigen::MatrixXd energies(6, 1);
+  energies << 0, 0, 2, .2, 0, -1;
+  Eigen::MatrixXd source = Eigen::MatrixXd::Zero(4, 5);
+  source(1, 0) = .2;
+  source(3, 0) = -.2;
+  const double unit = 1 / std::sqrt(2.0);
+  nlohmann::json model = {
+      {"format", "eon.physical_quadratic_bath.v1"},
+      {"callback", "frozen"},
+      {"center", {0, 0, 0, 0, 0, 0}},
+      {"reaction_basis", {{-unit}, {0}, {0}, {unit}, {0}, {0}}},
+      {"bath_basis",
+       {{unit, 0, 0, 0, 0},
+        {0, 1, 0, 0, 0},
+        {0, 0, 1, 0, 0},
+        {unit, 0, 0, 0, 0},
+        {0, 0, 0, 1, 0},
+        {0, 0, 0, 0, 1}}},
+      {"coupling", {{.2, 0, 0, 0, 0}}},
+      {"curvatures", {1, 2, 3, 4, 5}},
+      {"qualification", "coupled quadratic reference regression"},
+      {"stationary_tolerance", 1e-7},
+      {"potential_model", hermiteModel(2, energies)},
+      {"source_model", hermiteModel(1, source)},
+      {"curvature_model",
+       {{"kind", "convex_endpoint_blend"},
+        {"coordinate", {1 / length}},
+        {"endpoint",
+         {{2, 0, 0, 0, 0},
+          {0, 2, 0, 0, 0},
+          {0, 0, 3, 0, 0},
+          {0, 0, 0, 4, 0},
+          {0, 0, 0, 0, 5}}}}}};
+  const auto filename = workdir / "physical-bath.json";
+  {
+    std::ofstream output(filename);
+    output << model;
+  }
+  const auto physical = PhysicalBathModel::read(filename.string(), 6);
+  const auto atR = physical.potentialModel->evaluate(Eigen::VectorXd::Zero(1));
+  const auto atS =
+      physical.potentialModel->evaluate(Eigen::VectorXd::Constant(1, length));
+  const MatrixXd hr =
+      physical.bath->fullHessian(Eigen::VectorXd::Zero(1), atR.hessians[0]);
+  const MatrixXd hs = physical.bath->fullHessian(
+      Eigen::VectorXd::Constant(1, length), atS.hessians[0]);
+  const double temperature = 400, beta = 1 / (kBoltzmann * temperature);
+  const double tc = crossoverTemperature(hs);
+  REQUIRE(temperature > tc);
+  const double expected = quantumHarmonicTstLogRate(hr, hs, beta, .2, 0) +
+                          std::log(parabolicFactor(temperature, tc)) -
+                          std::log(kTimeUnitSeconds);
+  const double bare =
+      quantumHarmonicTstLogRate(atR.hessians[0], atS.hessians[0], beta, .2, 0) +
+      std::log(parabolicFactor(temperature, tc)) - std::log(kTimeUnitSeconds);
+  REQUIRE(std::abs(expected - bare) > .01);
+  writeConfig("[Main]\njob=instanton\n[Potential]\npotential=lj\n[Instanton]\n"
+              "mode=rate\ntemperature=400\nbeads=8\nphysical_bath_filename="
+              "physical-bath.json\n");
+  const auto result = runJob();
+  REQUIRE(result.at("termination_reason") == "0");
+  REQUIRE(std::abs(std::stod(result.at("rate_parabolic_log")) - expected) <
+          1e-7);
+  REQUIRE(std::abs(std::stod(result.at("instanton_crossover_K")) - tc) < 1e-7);
+  REQUIRE(forceCalls_ == 0);
+}
+
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "Above crossover rates use only measured references without a seed",
+    "[job][instanton][integration][NativeForceCost]") {
+  class CountedPotential : public eonc::Potential {
+  public:
+    long calls = 0;
+    explicit CountedPotential(const Parameters &p)
+        : eonc::Potential(p) {}
+    void force(long atoms, const double *positions, const int *, double *forces,
+               double *energy, double *variance, const double *) override {
+      REQUIRE(atoms == 2);
+      ++calls;
+      std::fill(forces, forces + 3 * atoms, 0.0);
+      const double x = positions[0] - 2.0, y = positions[1], z = positions[2];
+      *energy = .25 * std::pow(x * x - 1.0, 2) + .5 * (y * y + z * z);
+      forces[0] = -x * (x * x - 1.0);
+      forces[1] = -y;
+      forces[2] = -z;
+      if (variance)
+        *variance = 0.0;
+    }
+  };
+  writeConfig("[Main]\njob=instanton\nremove_net_force=false\n"
+              "[Potential]\npotential=lj\n[Instanton]\nmode=rate\n"
+              "temperature=300\nbeads=8\n"
+              "reactant_hessian_filename=reactant-hessian.dat\n"
+              "saddle_hessian_filename=saddle-hessian.dat\n");
+  std::filesystem::current_path(workdir);
+  Parameters configuration;
+  configuration.load("config.ini");
+  auto potential = std::make_shared<CountedPotential>(configuration);
+  Matter matter(potential, configuration);
+  matter.resize(2);
+  matter.setCell(100.0 * Matrix3d::Identity());
+  for (long atom = 0; atom < 2; ++atom) {
+    matter.setAtomicNr(atom, 1);
+    matter.setMass(atom, 1.0);
+    matter.setFixed(atom, atom == 1);
+  }
+  for (const bool saddle : {false, true}) {
+    AtomMatrix positions = AtomMatrix::Zero(2, 3);
+    positions(0, 0) = saddle ? 2.0 : 1.0;
+    positions(1, 0) = 4.0;
+    matter.setPositions(positions);
+    const std::string name = saddle ? "saddle" : "reactant";
+    REQUIRE(eonc::io::io_ok(matter.matter2con(name + ".con")));
+    REQUIRE(eonc::io::io_ok(matter.matter2con(name + "-hessian.dat.con")));
+    MatrixXd matrix = MatrixXd::Identity(3, 3);
+    matrix(0, 0) = saddle ? -1.0 : 2.0;
+    std::ofstream output(name + "-hessian.dat");
+    output << matrix << '\n';
+  }
+  eonc::InstantonJob job(potential, configuration);
+  job.run();
+  const auto results = parseResultsDat("results.dat");
+  REQUIRE(results.at("termination_reason") == "0");
+  REQUIRE(potential->calls == 2);
+  REQUIRE(std::stod(results.at("sd_path_force_calls")) == 0.0);
+  REQUIRE_FALSE(std::filesystem::exists("instanton_sd_path.con"));
+  REQUIRE_FALSE(std::filesystem::exists("instanton.con"));
+  MatrixXd hr = MatrixXd::Identity(3, 3), hs = hr;
+  hr(0, 0) = 2.0;
+  hs(0, 0) = -1.0;
+  using namespace eonc::tunneling;
+  const double beta = 1.0 / (kBoltzmann * 300.0);
+  const double expected =
+      quantumHarmonicTstLogRate(hr, hs, beta, .25, 0) +
+      std::log(parabolicFactor(300.0, crossoverTemperature(hs))) -
+      std::log(kTimeUnitSeconds);
+  REQUIRE_THAT(std::stod(results.at("rate_parabolic_log")),
+               Catch::Matchers::WithinAbs(expected, 1e-8));
+}
+
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "Instanton rate references keep distinct reactant and saddle owners",
+    "[job][instanton][integration][OrbitalOwners]") {
+  class CountedPotential : public eonc::Potential {
+  public:
+    long calls = 0;
+    std::vector<long> receivedOwners;
+    bool supportsBatchEvaluation() const noexcept override { return true; }
+    void forceBatchOwned(long count, long atoms, const double *const *positions,
+                         const int *const *numbers, double *const *forces,
+                         double *energies, double *variances,
+                         const double *const *boxes,
+                         const long *owners) override {
+      REQUIRE(owners != nullptr);
+      for (long j = 0; j < count; ++j) {
+        receivedOwners.push_back(owners[j]);
+        force(atoms, positions[j], numbers[j], forces[j], energies + j,
+              variances ? variances + j : nullptr, boxes[j]);
+      }
+    }
+    explicit CountedPotential(const Parameters &p)
+        : eonc::Potential(p) {}
+    void force(long atoms, const double *positions, const int *, double *forces,
+               double *energy, double *variance, const double *) override {
+      REQUIRE(atoms == 2);
+      ++calls;
+      std::fill(forces, forces + 3 * atoms, 0.0);
+      const double x = positions[0] - 2.0, y = positions[1], z = positions[2];
+      *energy = .25 * std::pow(x * x - 1.0, 2) + .5 * (y * y + z * z);
+      forces[0] = -x * (x * x - 1.0);
+      forces[1] = -y;
+      forces[2] = -z;
+      if (variance)
+        *variance = 0.0;
+    }
+  };
+  writeConfig("[Main]\njob=instanton\nremove_net_force=false\n"
+              "[Potential]\npotential=lj\n[Instanton]\nmode=rate\n"
+              "temperature=300\nbeads=8\n"
+              "reactant_hessian_filename=reactant-hessian.dat\n"
+              "saddle_hessian_filename=saddle-hessian.dat\n");
+  std::filesystem::current_path(workdir);
+  Parameters configuration;
+  configuration.load("config.ini");
+  auto potential = std::make_shared<CountedPotential>(configuration);
+  Matter matter(potential, configuration);
+  matter.resize(2);
+  matter.setCell(100.0 * Matrix3d::Identity());
+  for (long atom = 0; atom < 2; ++atom) {
+    matter.setAtomicNr(atom, 1);
+    matter.setMass(atom, 1.0);
+    matter.setFixed(atom, atom == 1);
+  }
+  for (const bool saddle : {false, true}) {
+    AtomMatrix positions = AtomMatrix::Zero(2, 3);
+    positions(0, 0) = saddle ? 2.0 : 1.0;
+    positions(1, 0) = 4.0;
+    matter.setPositions(positions);
+    const std::string name = saddle ? "saddle" : "reactant";
+    REQUIRE(eonc::io::io_ok(matter.matter2con(name + ".con")));
+    REQUIRE(eonc::io::io_ok(matter.matter2con(name + "-hessian.dat.con")));
+    MatrixXd matrix = MatrixXd::Identity(3, 3);
+    matrix(0, 0) = saddle ? -1.0 : 2.0;
+    std::ofstream output(name + "-hessian.dat");
+    output << matrix << '\n';
+  }
+  eonc::InstantonJob job(potential, configuration);
+  job.run();
+  const auto results = parseResultsDat("results.dat");
+  REQUIRE(results.at("termination_reason") == "0");
+  REQUIRE(potential->calls == 2);
+  REQUIRE(potential->receivedOwners.size() == 2);
+  REQUIRE(potential->receivedOwners[0] == eonc::potential_owner::reactant);
+  REQUIRE(potential->receivedOwners[1] == eonc::potential_owner::saddle);
+  REQUIRE(std::stod(results.at("sd_path_force_calls")) == 0.0);
+  REQUIRE_FALSE(std::filesystem::exists("instanton_sd_path.con"));
+  REQUIRE_FALSE(std::filesystem::exists("instanton.con"));
+  MatrixXd hr = MatrixXd::Identity(3, 3), hs = hr;
+  hr(0, 0) = 2.0;
+  hs(0, 0) = -1.0;
+  using namespace eonc::tunneling;
+  const double beta = 1.0 / (kBoltzmann * 300.0);
+  const double expected =
+      quantumHarmonicTstLogRate(hr, hs, beta, .25, 0) +
+      std::log(parabolicFactor(300.0, crossoverTemperature(hs))) -
+      std::log(kTimeUnitSeconds);
+  REQUIRE_THAT(std::stod(results.at("rate_parabolic_log")),
+               Catch::Matchers::WithinAbs(expected, 1e-8));
 }
 
 } /* namespace tests */

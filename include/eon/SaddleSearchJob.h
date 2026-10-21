@@ -50,8 +50,10 @@ public:
    * \param rt process runtime
    */
   SaddleSearchJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
-      : Job(std::move(parameters), rt),
-        fCallsSaddle{0} {}
+      : Job(std::move(parameters), rt), fCallsSaddle{0} {}
+  SaddleSearchJob(std::shared_ptr<Potential> potPassed,
+                  const Parameters &parameters)
+      : Job(std::move(potPassed), parameters), fCallsSaddle{0} {}
   //! Saddle Search Job Deconstructor
   ~SaddleSearchJob(void) = default;
   //! Kicks off the Saddle Search
@@ -82,6 +84,9 @@ private:
 
   //! Force calls to find the saddle
   int fCallsSaddle;
+  //! Calls made through per-image clones of pot (Main.parallel), which
+  //! pot->forceCallCounter does not see
+  size_t fCallsImages{0};
 
   eonc::log::Scoped log;
 };

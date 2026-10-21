@@ -1,0 +1,48 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,4 +1,14 @@
+-cmake_minimum_required(VERSION 2.8.12)
++cmake_minimum_required(VERSION 3.5)
++# CMake 4 dropped compatibility with cmake_minimum_required() below 3.5.
++# Vendored zlib, lzma, bzip2, fmt, and molfiles still declare those older
++# minima; the policy floor lets their add_subdirectory() calls configure.
++if(NOT DEFINED CMAKE_POLICY_VERSION_MINIMUM)
++    set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
++endif()
++# The Meson cmake wrap links this static library into PIE binaries.
++if(NOT DEFINED CMAKE_POSITION_INDEPENDENT_CODE)
++    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
++endif()
+ set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/InitRules.cmake")
+ 
+ project(chemfiles C CXX)
+@@ -132,7 +142,9 @@
+ 
+ set(CHEMFILES_OBJECTS
+     $<TARGET_OBJECTS:chemfiles_objects>
+-    $<TARGET_OBJECTS:molfiles>
++    $<TARGET_OBJECTS:gromacsplugin>
++    $<TARGET_OBJECTS:moldenplugin>
++    $<TARGET_OBJECTS:psfplugin>
+     $<TARGET_OBJECTS:tng_io>
+     $<TARGET_OBJECTS:fmt>
+     $<TARGET_OBJECTS:pugixml>
+@@ -144,6 +156,18 @@
+ # Add the main chemfiles library
+ add_library(chemfiles ${CHEMFILES_OBJECTS})
+ 
++# Meson's cmake module marks a static library PIC only when one of its
++# compiled sources carries -fPIC. This target is otherwise a collection of
++# $<TARGET_OBJECTS:...> inputs, so the import is pic:false and cannot be
++# linked into a shared library such as extpot.
++set(_chfl_pic_anchor "${CMAKE_CURRENT_BINARY_DIR}/chemfiles_pic_anchor.cpp")
++if(NOT EXISTS "${_chfl_pic_anchor}")
++    file(WRITE "${_chfl_pic_anchor}" "namespace chemfiles { void pic_anchor() {} }\n")
++endif()
++target_sources(chemfiles PRIVATE "${_chfl_pic_anchor}")
++target_compile_options(chemfiles PRIVATE "-fPIC")
++set_property(TARGET chemfiles PROPERTY POSITION_INDEPENDENT_CODE ON)
++
+ set_target_properties(chemfiles PROPERTIES
+     VERSION "${CHEMFILES_VERSION_MAJOR}.${CHEMFILES_VERSION_MINOR}.${CHEMFILES_VERSION_PATCH}"
+     # This needs to be the part of the version which matter for backward

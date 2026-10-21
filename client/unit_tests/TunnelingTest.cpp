@@ -9,15 +9,17 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "eon/RingPolymerPotential.h"
 #include "eon/Tunneling.h"
 #include "EckartBarrier.hpp"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Parameters.h"
+#include "eon/PotentialOwner.h"
+#include "eon/RingPolymerPotential.h"
 
 #include <Eigen/Eigenvalues>
 #include <cmath>
+#include <limits>
 #include <memory>
 #include <numbers>
 #include <stdexcept>
@@ -26,6 +28,54 @@
 using namespace eonc;
 using namespace eonc::tunneling;
 using Catch::Matchers::WithinRel;
+
+TEST_CASE("Configured Newton limit selects a converged matrix-free rate ring",
+          "[Tunneling][Instanton][NewtonLimit]") {
+  const eonc::testing::Eckart pes;
+  const MatrixXd hs = pes.hessian_at_top();
+  const double beta = 1.0 / (kBoltzmann * 0.5 * crossoverTemperature(hs));
+  Parameters parsed;
+  REQUIRE(parsed.load_ini_text("[Instanton]\nnewton_limit = 0\n") == 0);
+  RateInstantonOptions options;
+  options.beads = 32;
+  options.forceTolerance = 1e-8;
+  options.newtonLimit = parsed.instanton_options().newton_limit;
+  long dimerCalls = 0;
+  const BatchPotential dimerPotential = [&](const std::vector<VectorXd> &q,
+                                            std::vector<double> &v,
+                                            std::vector<VectorXd> &g) {
+    dimerCalls += static_cast<long>(q.size());
+    pes.batch()(q, v, g);
+  };
+  RateInstanton dimer = optimizeRateInstanton(VectorXd::Zero(1), hs, beta, {},
+                                              dimerPotential, options);
+  REQUIRE(dimer.converged);
+  Parameters defaults;
+  options.newtonLimit = defaults.instanton_options().newton_limit;
+  long newtonCalls = 0;
+  const BatchPotential newtonPotential = [&](const std::vector<VectorXd> &q,
+                                             std::vector<double> &v,
+                                             std::vector<VectorXd> &g) {
+    newtonCalls += static_cast<long>(q.size());
+    pes.batch()(q, v, g);
+  };
+  RateInstanton newton = optimizeRateInstanton(VectorXd::Zero(1), hs, beta, {},
+                                               newtonPotential, options);
+  REQUIRE(newton.converged);
+  const RingBeadHessian hessian = [&](long, const VectorXd &q) {
+    return pes.hessian_at(q);
+  };
+  instantonRate(dimer, hessian, MatrixXd::Identity(1, 1), 0.0, hs, 0.0);
+  instantonRate(newton, hessian, MatrixXd::Identity(1, 1), 0.0, hs, 0.0);
+  CAPTURE(dimerCalls, newtonCalls, dimer.iterations, newton.iterations,
+          dimer.logRate, newton.logRate);
+  REQUIRE(dimerCalls > 0);
+  REQUIRE(newtonCalls > 0);
+  REQUIRE(dimerCalls != newtonCalls);
+  REQUIRE(dimer.negativeModes == 1);
+  REQUIRE(newton.negativeModes == 1);
+  REQUIRE(std::abs(dimer.logRate - newton.logRate) < 1e-6);
+}
 
 namespace {
 
@@ -1091,6 +1141,69 @@ TEST_CASE("Harmonic TST never takes a soft barrier mode for a rigid mode",
                WithinRel(quantum, 1e-12));
 }
 
+TEST_CASE("Harmonic rates reject unstable wells and higher-index saddles",
+          "[Tunneling][Instanton][HarmonicValidation]") {
+  MatrixXd hr = MatrixXd::Identity(3, 3);
+  MatrixXd hs = MatrixXd::Identity(3, 3);
+  hs(0, 0) = -4.0;
+  for (const bool quantum : {false, true}) {
+    auto rate = [&](const MatrixXd &r, const MatrixXd &s, long rigid = 0) {
+      return quantum ? quantumHarmonicTstLogRate(r, s, 5.0, 0.3, rigid)
+                     : harmonicTstLogRate(r, s, 5.0, 0.3, rigid);
+    };
+    CAPTURE(quantum);
+    for (const double curvature : {-1.0, 0.0}) {
+      MatrixXd unstableWell = hr;
+      unstableWell(1, 1) = curvature;
+      REQUIRE_THROWS_AS(rate(unstableWell, hs), std::invalid_argument);
+      MatrixXd unstableSaddle = hs;
+      unstableSaddle(1, 1) = curvature;
+      REQUIRE_THROWS_AS(rate(hr, unstableSaddle), std::invalid_argument);
+    }
+    REQUIRE_THROWS_AS(rate(hr, hr), std::invalid_argument);
+    REQUIRE_THROWS_AS(rate(hr, hs, -1), std::invalid_argument);
+    REQUIRE_THROWS_AS(rate(hr, hs, 3), std::invalid_argument);
+    // Only a caller-specified rigid mode is excluded from the spectrum.
+    MatrixXd rigidWell = hr;
+    MatrixXd rigidSaddle = hs;
+    rigidWell(1, 1) = -1e-8;
+    rigidSaddle(1, 1) = -1e-8;
+    REQUIRE(std::isfinite(rate(rigidWell, rigidSaddle, 1)));
+  }
+}
+
+TEST_CASE("Harmonic rates reject non-finite inputs and results",
+          "[Tunneling][Instanton][HarmonicValidation]") {
+  MatrixXd hr = MatrixXd::Identity(2, 2);
+  MatrixXd hs = MatrixXd::Identity(2, 2);
+  hs(0, 0) = -1.0;
+  const double infinity = std::numeric_limits<double>::infinity();
+  const double nan = std::numeric_limits<double>::quiet_NaN();
+  for (const bool quantum : {false, true}) {
+    auto rate = [&](const MatrixXd &r, const MatrixXd &s, double beta,
+                    double barrier) {
+      return quantum ? quantumHarmonicTstLogRate(r, s, beta, barrier, 0)
+                     : harmonicTstLogRate(r, s, beta, barrier, 0);
+    };
+    CAPTURE(quantum);
+    for (const double invalid : {infinity, nan}) {
+      REQUIRE_THROWS_AS(rate(hr, hs, invalid, 0.3), std::invalid_argument);
+      REQUIRE_THROWS_AS(rate(hr, hs, 5.0, invalid), std::invalid_argument);
+      MatrixXd invalidReactant = hr;
+      invalidReactant(0, 0) = invalid;
+      REQUIRE_THROWS_AS(rate(invalidReactant, hs, 5.0, 0.3),
+                        std::invalid_argument);
+      MatrixXd invalidSaddle = hs;
+      invalidSaddle(0, 1) = invalid;
+      REQUIRE_THROWS_AS(rate(hr, invalidSaddle, 5.0, 0.3),
+                        std::invalid_argument);
+    }
+    REQUIRE_THROWS_AS(rate(hr, hs, 0.0, 0.3), std::invalid_argument);
+    REQUIRE_THROWS_AS(rate(hr, hs, 2.0, std::numeric_limits<double>::max()),
+                      std::overflow_error);
+  }
+}
+
 // Two beads in the wells given a curvature far below the spring's make two
 // negative modes of the action Hessian. The determinant keeps its sign, so
 // only the inertia shows that the path is not a minimum of the action.
@@ -1583,6 +1696,71 @@ TEST_CASE("A ring that collapses onto one point stops early",
   REQUIRE(inst.iterations < 20);
 }
 
+TEST_CASE("Newton includes a requested bath when a half ring is selected",
+          "[Tunneling][Instanton][FrictionHalfRing]") {
+  const bool explicitBath = GENERATE(false, true);
+  const long beads = 8;
+  const double beta = 60.0 / kHbar;
+  std::vector<VectorXd> guess(static_cast<size_t>(beads), VectorXd::Zero(1));
+  for (long j = 0; j < beads; ++j) {
+    guess[static_cast<size_t>(j)](0) =
+        0.2 * std::cos(2.0 * std::numbers::pi * j / beads);
+  }
+  long largestBatch = 0;
+  const BatchPotential quartic = [&](const std::vector<VectorXd> &q,
+                                     std::vector<double> &v,
+                                     std::vector<VectorXd> &g) {
+    largestBatch = std::max(largestBatch, static_cast<long>(q.size()));
+    v.resize(q.size());
+    g.assign(q.size(), VectorXd::Zero(1));
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0);
+      v[j] = 0.25 * std::pow(x * x - 1.0, 2);
+      g[j](0) = x * x * x - x;
+    }
+  };
+  RateInstantonOptions options;
+  options.beads = beads;
+  options.halfRing = true;
+  options.newtonLimit = 1024;
+  options.maxIterations = 1;
+  options.forceTolerance = 1e6;
+  options.checkOddSector = false;
+  options.friction = true;
+  options.frictionEta = 0.25;
+  options.frictionExplicit = explicitBath;
+  if (explicitBath) {
+    options.frictionEtaBeads = {0.1, 0.2, 0.4, 0.05, 0.3, 0.1, 0.2, 0.15};
+  }
+  const RateInstanton selected =
+      optimizeRateInstanton(VectorXd::Zero(1), -MatrixXd::Identity(1, 1), beta,
+                            guess, quartic, options);
+  double bath = 0.0;
+  std::vector<VectorXd> bathGradient(static_cast<size_t>(beads),
+                                     VectorXd::Zero(1));
+  addFrictionBath(selected.beads, bath, bathGradient,
+                  explicitBath ? options.frictionEtaBeads
+                               : std::vector<double>{options.frictionEta});
+  REQUIRE(bath > 0.0);
+  const double c = 1.0 / std::pow(beta * kHbar / beads, 2);
+  double expected = bath;
+  for (long j = 0; j < beads; ++j) {
+    const auto &q = selected.beads[static_cast<size_t>(j)];
+    const auto &next = selected.beads[static_cast<size_t>((j + 1) % beads)];
+    expected += 0.25 * std::pow(q(0) * q(0) - 1.0, 2) +
+                0.5 * c * (next - q).squaredNorm();
+  }
+  CAPTURE(explicitBath, selected.ringPotential, expected, bath, largestBatch);
+  REQUIRE(selected.ringPotential == Catch::Approx(expected).margin(1e-10));
+  REQUIRE(largestBatch == beads);
+  options.halfRing = false;
+  const RateInstanton full =
+      optimizeRateInstanton(VectorXd::Zero(1), -MatrixXd::Identity(1, 1), beta,
+                            guess, quartic, options);
+  REQUIRE(selected.ringPotential ==
+          Catch::Approx(full.ringPotential).margin(1e-10));
+}
+
 TEST_CASE("friction bath adds a positive term and its gradient",
           "[instanton]") {
   std::vector<VectorXd> q(4, VectorXd::Zero(1));
@@ -1764,12 +1942,13 @@ TEST_CASE("A link weight divides one spring of a closed ring",
   beads[2](0) = 1.0;
   const double c = 2.0;
   const double uniform = closedRingPotential(beads, c, flat);
-  const double weighted =
-      closedRingPotential(beads, c, flat, std::vector<double>{2.0, 1.0, 1.0, 1.0});
+  const double weighted = closedRingPotential(
+      beads, c, flat, std::vector<double>{2.0, 1.0, 1.0, 1.0});
   REQUIRE_THAT(uniform, Catch::Matchers::WithinAbs(c, 1e-12));
   REQUIRE_THAT(weighted, Catch::Matchers::WithinAbs(0.75 * c, 1e-12));
   REQUIRE_THROWS_AS(
-      closedRingPotential(beads, c, flat, std::vector<double>{0.0, 1.0, 1.0, 1.0}),
+      closedRingPotential(beads, c, flat,
+                          std::vector<double>{0.0, 1.0, 1.0, 1.0}),
       std::invalid_argument);
 }
 
@@ -2028,9 +2207,9 @@ TEST_CASE("a rate ring takes the Lanczos determinant and a friction bath",
   REQUIRE_THROWS_AS(
       instantonRate(inst, bead, reactant, 0.0, MatrixXd(), 0.0, 1, 0),
       std::runtime_error);
-  REQUIRE_THROWS_AS(instantonRate(inst, bead, -reactant, 0.0, MatrixXd(), 0.0,
-                                  0, 4096),
-                    std::runtime_error);
+  REQUIRE_THROWS_AS(
+      instantonRate(inst, bead, -reactant, 0.0, MatrixXd(), 0.0, 0, 4096),
+      std::runtime_error);
 }
 
 TEST_CASE("a double well cools a short rate ring",
@@ -2073,8 +2252,846 @@ TEST_CASE("a double well cools a short rate ring",
   split.beads = 8;
   split.maxIterations = 6;
   split.forceTolerance = 1.0e-2;
-  const Instanton pair =
-      optimizeInstanton(left, right, 8.0, {}, well, split);
+  const Instanton pair = optimizeInstanton(left, right, 8.0, {}, well, split);
   REQUIRE(pair.iterations >= 1);
   REQUIRE(std::isfinite(pair.action));
+}
+
+TEST_CASE("A soft saddle axis retains its physical ring instability",
+          "[Tunneling][Instanton][PhysicalSoftMode]") {
+  const BatchPotential quartic = [](const std::vector<VectorXd> &q,
+                                    std::vector<double> &v,
+                                    std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0);
+      v[j] = 0.25 * std::pow(x * x - 1.0, 2);
+      g[j] = VectorXd::Constant(1, x * (x * x - 1.0));
+    }
+  };
+  RateInstantonOptions options;
+  options.beads = 16;
+  options.halfRing = false;
+  options.checkOddSector = false;
+  options.maxIterations = 200;
+  options.forceTolerance = 1e-8;
+  options.maxStep = 0.1;
+  const double beta = 10.0 / kHbar;
+  const auto reference =
+      optimizeRateInstanton(VectorXd::Zero(1), MatrixXd::Constant(1, 1, -1.0),
+                            beta, {}, quartic, options);
+  REQUIRE(reference.converged);
+  std::vector<VectorXd> guess;
+  double meanSquare = 0.0;
+  for (const auto &bead : reference.beads) {
+    VectorXd q = VectorXd::Zero(2);
+    q(0) = bead(0);
+    meanSquare += q(0) * q(0) / options.beads;
+    guess.push_back(q);
+  }
+  // The transverse centroid has negative Rayleigh curvature on this ring,
+  // although its curvature at the saddle is positive and small.
+  REQUIRE(1e-8 - 0.1 * meanSquare < -1e-4);
+  const BatchPotential transverse = [](const std::vector<VectorXd> &q,
+                                       std::vector<double> &v,
+                                       std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0), y = q[j](1);
+      const double curvature = 1e-8 - 0.1 * x * x;
+      v[j] = 0.25 * std::pow(x * x - 1.0, 2) + 0.5 * curvature * y * y +
+             0.25 * std::pow(y, 4);
+      g[j] = VectorXd::Zero(2);
+      g[j](0) = x * (x * x - 1.0) - 0.1 * x * y * y;
+      g[j](1) = curvature * y + y * y * y;
+    }
+  };
+  MatrixXd saddleHessian = MatrixXd::Zero(2, 2);
+  saddleHessian(0, 0) = -1.0;
+  saddleHessian(1, 1) = 1e-8;
+  options.initialHessians = "finite_difference";
+  options.maxIterations = 1;
+  options.forceTolerance = 1e-6;
+  REQUIRE(options.rigidSqrtMasses.empty());
+  const auto result = optimizeRateInstanton(VectorXd::Zero(2), saddleHessian,
+                                            beta, guess, transverse, options);
+  REQUIRE_FALSE(result.converged);
+}
+
+TEST_CASE("Physical bead Hessians use their own mass weighted displacement",
+          "[Tunneling][Instanton][PhysicalHessianStep]") {
+  const double step = GENERATE(2e-4, 7e-4);
+  double observed = 0.0;
+  const BatchPotential potential = [&](const std::vector<VectorXd> &q,
+                                       std::vector<double> &v,
+                                       std::vector<VectorXd> &g) {
+    if (q.size() == 4 && observed == 0.0) {
+      observed = (q[0] - q[1]).norm();
+    }
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0), y = q[j](1);
+      v[j] = 0.25 * std::pow(x * x - 1.0, 2) + 0.5 * y * y;
+      g[j] = VectorXd::Zero(2);
+      g[j](0) = x * (x * x - 1.0);
+      g[j](1) = y;
+    }
+  };
+  MatrixXd hs = MatrixXd::Identity(2, 2);
+  hs(0, 0) = -1.0;
+  RateInstantonOptions options;
+  REQUIRE(options.physicalHessianStep == Catch::Approx(1e-4));
+  options.beads = 8;
+  options.maxIterations = 1;
+  options.halfRing = false;
+  options.checkOddSector = false;
+  options.initialHessians = "finite_difference";
+  options.lanczosStep = 0.03;
+  options.physicalHessianStep = step;
+  optimizeRateInstanton(VectorXd::Zero(2), hs, 10.0 / kHbar, {}, potential,
+                        options);
+  REQUIRE(observed == Catch::Approx(2.0 * step).margin(1e-12));
+  options.physicalHessianStep = 0.0;
+  REQUIRE_THROWS_AS(optimizeRateInstanton(VectorXd::Zero(2), hs, 10.0 / kHbar,
+                                          {}, potential, options),
+                    std::invalid_argument);
+}
+
+TEST_CASE("bath curvature classifies an exact stationary quartic ring",
+          "[Tunneling][Instanton][FrictionCurvature]") {
+  const long dimension = GENERATE(1L, 2L);
+  const double c = 0.05;
+  const double eta = 0.5;
+  const double amplitude2 = 1.0 - 2.0 * c - std::sqrt(2.0) * eta;
+  const double amplitude = std::sqrt(amplitude2);
+  const BatchPotential potential = [=](const std::vector<VectorXd> &q,
+                                       std::vector<double> &v,
+                                       std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.assign(q.size(), VectorXd::Zero(dimension));
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0);
+      v[j] = 0.25 * std::pow(x * x - 1.0, 2);
+      g[j](0) = x * x * x - x;
+      if (dimension == 2) {
+        v[j] += q[j](1) * q[j](1);
+        g[j](1) = 2.0 * q[j](1);
+      }
+    }
+  };
+  std::vector<VectorXd> guess(4, VectorXd::Zero(dimension));
+  for (size_t j = 0; j < guess.size(); ++j) {
+    guess[j](0) = j < 2 ? amplitude : -amplitude;
+  }
+  // The four x curvatures are h, h+2c+sqrt(2)eta (twice), h+4c+2eta.
+  const double h = 3.0 * amplitude2 - 1.0;
+  REQUIRE(h < 0.0);
+  REQUIRE(h + 2.0 * c < 0.0);
+  REQUIRE(h + 4.0 * c < 0.0);
+  REQUIRE(h + 2.0 * c + std::sqrt(2.0) * eta > 0.0);
+  REQUIRE(h + 4.0 * c + 2.0 * eta > 0.0);
+  MatrixXd saddleHessian = MatrixXd::Identity(dimension, dimension) * 2.0;
+  saddleHessian(0, 0) = -1.0;
+  RateInstantonOptions options;
+  options.beads = 4;
+  options.halfRing = false;
+  options.newtonLimit = 1024;
+  options.maxIterations = 1;
+  options.forceTolerance = 1e-8;
+  options.physicalHessianStep = 1e-5;
+  options.initialHessians = "finite_difference";
+  options.checkOddSector = false;
+  options.friction = true;
+  options.frictionEta = eta;
+  const double beta = 4.0 / (std::sqrt(c) * kHbar);
+  const auto exact =
+      optimizeRateInstanton(VectorXd::Zero(dimension), saddleHessian, beta,
+                            guess, potential, options);
+  REQUIRE(exact.converged);
+  REQUIRE_FALSE(exact.collapsed);
+  for (size_t j = 0; j < guess.size(); ++j) {
+    REQUIRE((exact.beads[j] - guess[j]).norm() < 1e-10);
+  }
+  options.frictionExplicit = true;
+  options.frictionEtaBeads = std::vector<double>(4, eta);
+  const auto explicitBath =
+      optimizeRateInstanton(VectorXd::Zero(dimension), saddleHessian, beta,
+                            guess, potential, options);
+  REQUIRE(explicitBath.converged);
+  REQUIRE(explicitBath.ringPotential ==
+          Catch::Approx(exact.ringPotential).margin(1e-12));
+  options.frictionExplicit = false;
+
+  // A scaled ring has a closed-form Newton step along its amplitude.
+  const double initial = 1.1 * amplitude;
+  for (auto &q : guess) {
+    q(0) = q(0) > 0.0 ? initial : -initial;
+  }
+  const double expected = initial - initial * (initial * initial - amplitude2) /
+                                        (3.0 * initial * initial - amplitude2);
+  options.maxStep = 1.0;
+  const auto step =
+      optimizeRateInstanton(VectorXd::Zero(dimension), saddleHessian, beta,
+                            guess, potential, options);
+  for (size_t j = 0; j < guess.size(); ++j) {
+    REQUIRE(step.beads[j](0) ==
+            Catch::Approx(j < 2 ? expected : -expected).margin(1e-8));
+    if (dimension == 2) {
+      REQUIRE(std::abs(step.beads[j](1)) < 1e-12);
+    }
+  }
+  if (dimension == 2) {
+    options.maxIterations = 2;
+    const double expected2 =
+        expected - expected * (expected * expected - amplitude2) /
+                       (expected * expected + expected * initial +
+                        initial * initial - amplitude2);
+    const auto secant =
+        optimizeRateInstanton(VectorXd::Zero(dimension), saddleHessian, beta,
+                              guess, potential, options);
+    for (size_t j = 0; j < guess.size(); ++j) {
+      REQUIRE(secant.beads[j](0) ==
+              Catch::Approx(j < 2 ? expected2 : -expected2).margin(1e-8));
+    }
+  }
+
+  // This stationary branch has a physical negative time-shift direction.
+  guess.assign(4, VectorXd::Zero(dimension));
+  guess[0](0) = amplitude;
+  guess[2](0) = -amplitude;
+  options.maxIterations = 1;
+  const auto higherIndex =
+      optimizeRateInstanton(VectorXd::Zero(dimension), saddleHessian, beta,
+                            guess, potential, options);
+  REQUIRE_FALSE(higherIndex.converged);
+}
+
+TEST_CASE("full ring force backend preserves nonuniform links and bath",
+          "[Tunneling][Instanton][WeightedBath]") {
+  const BatchPotential harmonic = [](const std::vector<VectorXd> &q,
+                                     std::vector<double> &v,
+                                     std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g = q;
+    for (size_t j = 0; j < q.size(); ++j) {
+      v[j] = 0.5 * q[j].squaredNorm();
+    }
+  };
+  const double c = 0.7;
+  const std::vector<double> weights{0.5, 1.0, 2.0, 0.8};
+  const std::vector<double> eta{0.1, 0.2, 0.3, 0.4};
+  const VectorXd direction = VectorXd::Ones(1);
+  RingPolymerPotential ring(harmonic, 4, 1, c, 0.0, eta, false, direction);
+  ring.setDiscretization(weights);
+  std::vector<VectorXd> q(4, VectorXd::Zero(1));
+  q[0](0) = 0.1;
+  q[1](0) = 0.4;
+  q[2](0) = -0.3;
+  q[3](0) = -0.2;
+  std::vector<double> positions(static_cast<size_t>(3 * ring.structureAtoms()));
+  std::vector<double> forces(positions.size());
+  ring.packActive(q, positions.data());
+  double energy = 0.0;
+  double variance = 0.0;
+  ring.force(ring.structureAtoms(), positions.data(), nullptr, forces.data(),
+             &energy, &variance, nullptr);
+  std::vector<VectorXd> expectedGradient = q;
+  double expectedEnergy = 0.0;
+  for (size_t j = 0; j < q.size(); ++j) {
+    const size_t next = (j + 1) % q.size();
+    const size_t previous = (j + q.size() - 1) % q.size();
+    expectedEnergy += 0.5 * q[j].squaredNorm() +
+                      0.5 * c / weights[j] * (q[next] - q[j]).squaredNorm();
+    expectedGradient[j] += c / weights[j] * (q[j] - q[next]) +
+                           c / weights[previous] * (q[j] - q[previous]);
+  }
+  addFrictionBath(q, expectedEnergy, expectedGradient, eta);
+  REQUIRE(energy == Catch::Approx(expectedEnergy).margin(1e-12));
+  for (size_t j = 0; j < q.size(); ++j) {
+    REQUIRE(forces[3 * j] ==
+            Catch::Approx(-expectedGradient[j](0)).margin(1e-12));
+    REQUIRE(std::abs(forces[3 * j + 1]) < 1e-12);
+    REQUIRE(std::abs(forces[3 * j + 2]) < 1e-12);
+  }
+  REQUIRE_THROWS_AS(ring.setDiscretization({1.0}), std::invalid_argument);
+  REQUIRE_THROWS_AS(ring.setDiscretization({1.0, 1.0, -1.0, 1.0}),
+                    std::invalid_argument);
+  RingPolymerPotential folded(harmonic, 4, 1, c, 0.0, {}, true, direction);
+  REQUIRE_THROWS_AS(folded.setDiscretization(weights), std::invalid_argument);
+}
+
+TEST_CASE("finite bath fluctuations retain a resolved phase and exact reactant "
+          "product",
+          "[Tunneling][Instanton][BathPrefactor]") {
+  const bool explicitEta = GENERATE(false, true);
+  const double c = 0.05, eta = 0.5;
+  const double a2 = 1.0 - 2.0 * c - std::sqrt(2.0) * eta;
+  const double a = std::sqrt(a2), h = 3.0 * a2 - 1.0;
+  RateInstanton inst;
+  inst.betaN = 1.0 / (std::sqrt(c) * kHbar);
+  inst.beta = 4.0 * inst.betaN;
+  inst.converged = true;
+  REQUIRE(std::abs(a * (a2 - 1.0 + 2.0 * c + std::sqrt(2.0) * eta)) < 1e-12);
+  inst.beads = {VectorXd::Constant(1, a), VectorXd::Constant(1, a),
+                VectorXd::Constant(1, -a), VectorXd::Constant(1, -a)};
+  inst.bathEta =
+      explicitEta ? std::vector<double>(4, eta) : std::vector<double>{eta};
+  inst.bN = 8.0 * a2;
+  const double b1 = 2.0 * c + std::sqrt(2.0) * eta, b2 = 4.0 * c + 2.0 * eta;
+  inst.ringPotential =
+      std::pow(a2 - 1.0, 2) + 4.0 * c * a2 + 2.0 * std::sqrt(2.0) * eta * a2;
+  const RingBeadHessian hessian = [=](long, const VectorXd &) {
+    return MatrixXd::Constant(1, 1, h);
+  };
+  instantonRate(inst, hessian, MatrixXd::Constant(1, 1, 2.0), 0.0, MatrixXd(),
+                0.0, 0, 0);
+  const double determinant =
+      std::log(-h) + 2.0 * std::log(h + b1) + std::log(h + b2);
+  const double reactantDeterminant =
+      std::log(2.0) + 2.0 * std::log(2.0 + b1) + std::log(2.0 + b2);
+  REQUIRE(inst.negativeModes == 1);
+  REQUIRE(inst.bathSignedCurvatures.size() == 4);
+  REQUIRE(inst.bathSignedCurvatures[0] == Catch::Approx(h).margin(1e-12));
+  REQUIRE(inst.bathSignedCurvatures[1] == Catch::Approx(h + b1).margin(1e-12));
+  REQUIRE(inst.bathSignedCurvatures[2] == Catch::Approx(h + b1).margin(1e-12));
+  REQUIRE(inst.bathSignedCurvatures[3] == Catch::Approx(h + b2).margin(1e-12));
+  REQUIRE(inst.bathLogAbsDet == Catch::Approx(determinant).margin(1e-11));
+  REQUIRE(inst.bathReactantLogAbsDet ==
+          Catch::Approx(reactantDeterminant).margin(1e-11));
+  REQUIRE(inst.logZr == Catch::Approx(-4.0 * std::log(inst.betaN * kHbar) -
+                                      0.5 * reactantDeterminant)
+                            .margin(1e-11));
+  REQUIRE(inst.logAbsoluteGaussianWeight ==
+          Catch::Approx(-inst.betaN * inst.ringPotential -
+                        4.0 * std::log(inst.betaN * kHbar) - 0.5 * determinant)
+              .margin(1e-11));
+  REQUIRE_FALSE(inst.phaseZeroVerified);
+  REQUIRE_FALSE(inst.rateValid);
+  REQUIRE(inst.rateValidity == "resolved_finite_bead_phase");
+  REQUIRE_FALSE(std::isfinite(inst.rate));
+}
+
+TEST_CASE(
+    "a resolved null phase uses both bath fluctuation products in the rate",
+    "[Tunneling][Instanton][BathPrefactor]") {
+  const long n = 32;
+  const double eta = 0.01, period = 10.0;
+  const double c = std::pow(n / period, 2);
+  const BatchPotential well = [](const std::vector<VectorXd> &q,
+                                 std::vector<double> &v,
+                                 std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0);
+      v[j] = 0.25 * std::pow(x * x - 1.0, 2);
+      g[j] = VectorXd::Constant(1, x * x * x - x);
+    }
+  };
+  std::vector<VectorXd> guess;
+  for (long j = 0; j < n; ++j) {
+    guess.push_back(
+        VectorXd::Constant(1, 0.8 * std::cos(2.0 * std::numbers::pi * j / n)));
+  }
+  RateInstantonOptions options;
+  options.beads = n;
+  options.halfRing = false;
+  options.maxIterations = 200;
+  options.forceTolerance = 1e-12;
+  options.physicalHessianStep = 1e-5;
+  options.maxStep = 0.1;
+  options.checkOddSector = false;
+  options.friction = true;
+  options.frictionEta = eta;
+  auto inst =
+      optimizeRateInstanton(VectorXd::Zero(1), MatrixXd::Constant(1, 1, -1.0),
+                            period / kHbar, guess, well, options);
+  REQUIRE(inst.converged);
+  REQUIRE(inst.bathEta == std::vector<double>{eta});
+  const RingBeadHessian hessian = [](long, const VectorXd &q) {
+    return MatrixXd::Constant(1, 1, 3.0 * q(0) * q(0) - 1.0);
+  };
+  instantonRate(inst, hessian, MatrixXd::Constant(1, 1, 2.0), 0.0, MatrixXd(),
+                0.0, 0, 0);
+  REQUIRE(inst.phaseZeroVerified);
+  REQUIRE(inst.phaseEigenResidual <= inst.bathRoundoffScale);
+  REQUIRE(inst.bathSymmetryResidual <= inst.bathRoundoffScale);
+  REQUIRE(inst.rateValid);
+  REQUIRE(inst.negativeModes == 1);
+  // Independent Fourier construction uses the uniform analytic kernel.
+  MatrixXd bead = MatrixXd::Zero(n, n), full = MatrixXd::Zero(n, n);
+  double reactantLogDet = 0.0;
+  for (long k = 0; k < n; ++k) {
+    const double sine = std::sin(std::numbers::pi * k / n);
+    const double mu = 4.0 * c * sine * sine + 2.0 * eta * std::abs(sine);
+    reactantLogDet += std::log(2.0 + mu);
+    for (long j = 0; j < n; ++j) {
+      for (long l = 0; l < n; ++l) {
+        bead(j, l) +=
+            mu * std::cos(2.0 * std::numbers::pi * k * (j - l) / n) / n;
+      }
+    }
+  }
+  full = bead;
+  for (long j = 0; j < n; ++j) {
+    full(j, j) += 3.0 * inst.beads[static_cast<size_t>(j)](0) *
+                      inst.beads[static_cast<size_t>(j)](0) -
+                  1.0;
+  }
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> spectrum(full);
+  const auto values = spectrum.eigenvalues();
+  Eigen::Index phase;
+  values.cwiseAbs().minCoeff(&phase);
+  double logDet = 0.0;
+  for (long k = 0; k < n; ++k) {
+    if (k != phase)
+      logDet += std::log(std::abs(values(k)));
+  }
+  const double bnh = inst.betaN * kHbar;
+  const double logZr = -n * std::log(bnh) - 0.5 * reactantLogDet;
+  const double expected =
+      -std::log(bnh) +
+      0.5 * std::log(inst.bN /
+                     (2.0 * std::numbers::pi * inst.betaN * kHbar * kHbar)) -
+      (n - 1) * std::log(bnh) - 0.5 * logDet - inst.betaN * inst.ringPotential -
+      logZr;
+  REQUIRE(inst.logZr == Catch::Approx(logZr).margin(1e-9));
+  REQUIRE(inst.logRate == Catch::Approx(expected).margin(1e-8));
+}
+
+TEST_CASE(
+    "the zero bath prefactor retains a physical soft transverse instability",
+    "[Tunneling][Instanton][PhysicalSoftPrefactor]") {
+  const double epsilon = 1e-6, kappa = 4e-4;
+  const BatchPotential well = [](const std::vector<VectorXd> &q,
+                                 std::vector<double> &v,
+                                 std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0);
+      v[j] = 0.25 * std::pow(x * x - 1.0, 2);
+      g[j] = VectorXd::Constant(1, x * x * x - x);
+    }
+  };
+  RateInstantonOptions options;
+  options.beads = 32;
+  options.halfRing = false;
+  options.checkOddSector = false;
+  options.forceTolerance = 1e-12;
+  options.maxIterations = 200;
+  options.maxStep = 0.1;
+  const auto reference =
+      optimizeRateInstanton(VectorXd::Zero(1), MatrixXd::Constant(1, 1, -1.0),
+                            10.0 / kHbar, {}, well, options);
+  REQUIRE(reference.converged);
+  RateInstanton base = reference;
+  double transverseRayleigh = 0.0;
+  std::vector<MatrixXd> physical;
+  for (auto &q : base.beads) {
+    const double x = q(0);
+    q = VectorXd::Zero(2);
+    q(0) = x;
+    MatrixXd block = MatrixXd::Zero(2, 2);
+    block(0, 0) = 3.0 * x * x - 1.0;
+    block(1, 1) = epsilon - kappa * x * x * (1.0 - x * x);
+    transverseRayleigh += block(1, 1) / options.beads;
+    physical.push_back(block);
+  }
+  REQUIRE(transverseRayleigh < -1e-5);
+  const double c = 1.0 / std::pow(base.betaN * kHbar, 2);
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> exact(denseRing(physical, c));
+  REQUIRE((exact.eigenvalues().array() < -1e-8).count() == 2);
+  REQUIRE(exact.eigenvalues()(1) > 1e-3 * exact.eigenvalues()(0));
+  MatrixXd reactant = MatrixXd::Zero(2, 2);
+  reactant(0, 0) = 2.0;
+  reactant(1, 1) = epsilon;
+  for (const long dense : {4096L, 0L}) {
+    auto inst = base;
+    instantonRate(
+        inst,
+        [&](long j, const VectorXd &) {
+          return physical[static_cast<size_t>(j)];
+        },
+        reactant, 0.0, MatrixXd(), 0.0, 0, dense);
+    CAPTURE(dense, inst.negativeModes, inst.zeroEigenvalue, transverseRayleigh);
+    REQUIRE(inst.negativeModes == 2);
+    REQUIRE_FALSE(inst.rateValid);
+    REQUIRE(std::isnan(inst.logRateTimesZr));
+    REQUIRE(std::isnan(inst.logRate));
+    REQUIRE(std::isnan(inst.rate));
+    REQUIRE(std::isnan(inst.effectiveBarrier));
+  }
+}
+
+TEST_CASE(
+    "weighted finite fluctuations retain their exact spectrum and product",
+    "[Tunneling][Instanton][WeightedPrefactor]") {
+  const double c = 0.9, a = std::sqrt(0.1), h = -0.7;
+  RateInstanton inst;
+  inst.betaN = 1.0 / (std::sqrt(c) * kHbar);
+  inst.beta = 4.0 * inst.betaN;
+  inst.converged = true;
+  inst.discretization = {1.0, 2.0, 1.0, 2.0};
+  inst.beads = {VectorXd::Constant(1, a), VectorXd::Constant(1, a),
+                VectorXd::Constant(1, -a), VectorXd::Constant(1, -a)};
+  inst.bN = 8.0 * a * a;
+  inst.ringPotential = std::pow(a * a - 1.0, 2) + 2.0 * c * a * a;
+  REQUIRE(std::abs(a * (a * a - 1.0 + c)) < 1e-14);
+  instantonRate(
+      inst, [=](long, const VectorXd &) { return MatrixXd::Constant(1, 1, h); },
+      MatrixXd::Constant(1, 1, 2.0), 0.0, MatrixXd(), 0.0, 0, 4096);
+  const std::vector<double> expected{-0.7, 0.2, 1.1, 2.0};
+  REQUIRE(inst.bathSignedCurvatures.size() == expected.size());
+  for (size_t j = 0; j < expected.size(); ++j) {
+    REQUIRE(inst.bathSignedCurvatures[j] ==
+            Catch::Approx(expected[j]).margin(1e-12));
+  }
+  const double logDet = std::log(0.7 * 0.2 * 1.1 * 2.0);
+  const double reactantLogDet = std::log(2.0 * 2.9 * 3.8 * 4.7);
+  REQUIRE(inst.negativeModes == 1);
+  REQUIRE(inst.bathLogAbsDet == Catch::Approx(logDet).margin(1e-12));
+  REQUIRE(inst.bathReactantLogAbsDet ==
+          Catch::Approx(reactantLogDet).margin(1e-12));
+  REQUIRE(inst.logZr == Catch::Approx(-4.0 * std::log(inst.betaN * kHbar) -
+                                      0.5 * reactantLogDet)
+                            .margin(1e-12));
+  REQUIRE_FALSE(inst.rateValid);
+  REQUIRE_FALSE(inst.phaseZeroVerified);
+  REQUIRE(inst.rateValidity == "bead_dependent_operator_no_continuous_phase");
+  REQUIRE(std::isnan(inst.rate));
+}
+
+TEST_CASE("raw physical Hessian asymmetry is rejected before averaging",
+          "[Tunneling][Instanton][WeightedPrefactor]") {
+  const bool badReactant = GENERATE(false, true);
+  RateInstanton inst;
+  inst.betaN = 1.0 / (std::sqrt(0.9) * kHbar);
+  inst.beta = 4.0 * inst.betaN;
+  inst.converged = true;
+  inst.discretization = {1.0, 2.0, 1.0, 2.0};
+  for (double sign : {1.0, 1.0, -1.0, -1.0}) {
+    VectorXd q = VectorXd::Zero(2);
+    q(0) = sign * std::sqrt(0.1);
+    inst.beads.push_back(q);
+  }
+  MatrixXd reactant = MatrixXd::Zero(2, 2);
+  reactant(0, 0) = 2.0;
+  reactant(1, 1) = 3.0;
+  if (badReactant)
+    reactant(0, 1) = 0.01;
+  const RingBeadHessian hessian = [=](long, const VectorXd &) {
+    MatrixXd h = MatrixXd::Zero(2, 2);
+    h(0, 0) = -0.7;
+    h(1, 1) = 3.0;
+    if (!badReactant)
+      h(0, 1) = 0.01;
+    return h;
+  };
+  REQUIRE_THROWS_AS(instantonRate(inst, hessian, reactant, 0.0),
+                    std::runtime_error);
+}
+
+TEST_CASE("an unconverged ring retains numerical prefactor diagnostics without "
+          "a valid rate",
+          "[Tunneling][Instanton][WeightedPrefactor]") {
+  RateInstanton inst;
+  inst.betaN = 1.0 / kHbar;
+  inst.beta = 8.0 * inst.betaN;
+  for (long j = 0; j < 8; ++j) {
+    inst.beads.push_back(VectorXd::Constant(
+        1, 0.2 * std::cos(2.0 * std::numbers::pi * j / 8.0)));
+  }
+  inst.bN = 0.0;
+  for (long j = 0; j < 8; ++j) {
+    inst.bN += (inst.beads[static_cast<size_t>((j + 1) % 8)] -
+                inst.beads[static_cast<size_t>(j)])
+                   .squaredNorm();
+  }
+  instantonRate(
+      inst,
+      [](long, const VectorXd &) { return MatrixXd::Constant(1, 1, -0.4); },
+      MatrixXd::Identity(1, 1), 0.0, MatrixXd(), 0.0, 0, 4096);
+  REQUIRE_FALSE(inst.converged);
+  REQUIRE(inst.negativeModes == 1);
+  REQUIRE_FALSE(inst.rateValid);
+  REQUIRE(inst.rateValidity == "unconverged_ring");
+  REQUIRE(std::isfinite(inst.logRate));
+  REQUIRE(std::isfinite(inst.rate));
+}
+
+TEST_CASE("a stationary ring with a soft transverse negative direction is not "
+          "converged",
+          "[Tunneling][Instanton][PhysicalSoftSearch]") {
+  const double c = 0.38, epsilon = 1e-6, kappa = 5e-4;
+  const double a2 = 1.0 - 2.0 * c, a = std::sqrt(a2);
+  const double transverse = epsilon - kappa * a2 * (1.0 - a2);
+  REQUIRE(transverse < 0.0);
+  REQUIRE(std::abs(transverse) < 1e-3 * std::abs(3.0 * a2 - 1.0));
+  const BatchPotential potential = [=](const std::vector<VectorXd> &q,
+                                       std::vector<double> &v,
+                                       std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0), y = q[j](1), x2 = x * x;
+      const double curvature = epsilon - kappa * x2 * (1.0 - x2);
+      v[j] = 0.25 * std::pow(x2 - 1.0, 2) + 0.5 * curvature * y * y;
+      g[j] = VectorXd::Zero(2);
+      g[j](0) = x * (x2 - 1.0) + kappa * x * (2.0 * x2 - 1.0) * y * y;
+      g[j](1) = curvature * y;
+    }
+  };
+  std::vector<VectorXd> seed;
+  for (double sign : {1.0, 1.0, -1.0, -1.0}) {
+    VectorXd q = VectorXd::Zero(2);
+    q(0) = sign * a;
+    seed.push_back(q);
+  }
+  std::vector<double> energy;
+  std::vector<VectorXd> gradient;
+  potential(seed, energy, gradient);
+  double residual = 0.0;
+  for (long j = 0; j < 4; ++j) {
+    const VectorXd ringGradient = gradient[static_cast<size_t>(j)] +
+                                  c * (2.0 * seed[static_cast<size_t>(j)] -
+                                       seed[static_cast<size_t>((j + 1) % 4)] -
+                                       seed[static_cast<size_t>((j + 3) % 4)]);
+    residual = std::max(residual, ringGradient.norm());
+  }
+  REQUIRE(residual < 1e-14);
+  MatrixXd physical = MatrixXd::Zero(2, 2);
+  physical(0, 0) = 3.0 * a2 - 1.0;
+  physical(1, 1) = transverse;
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> exact(
+      denseRing(std::vector<MatrixXd>(4, physical), c));
+  REQUIRE(exact.info() == Eigen::Success);
+  REQUIRE((exact.eigenvalues().array() < -1e-8).count() == 2);
+  REQUIRE(exact.eigenvalues()(0) == Catch::Approx(-0.28).margin(1e-12));
+  REQUIRE(exact.eigenvalues()(1) == Catch::Approx(transverse).margin(1e-12));
+  MatrixXd saddle = MatrixXd::Zero(2, 2);
+  saddle(0, 0) = -1.0;
+  saddle(1, 1) = epsilon;
+  RateInstantonOptions options;
+  options.beads = 4;
+  options.halfRing = false;
+  options.checkOddSector = false;
+  options.initialHessians = "finite_difference";
+  options.physicalHessianStep = 1e-5;
+  options.maxIterations = 1;
+  options.forceTolerance = 1e-10;
+  options.lanczosFirst = 8;
+  options.lanczosRestart = 8;
+  const auto result = optimizeRateInstanton(VectorXd::Zero(2), saddle,
+                                            4.0 / (std::sqrt(c) * kHbar), seed,
+                                            potential, options);
+  CAPTURE(result.converged, result.iterations, residual, transverse);
+  REQUIRE_FALSE(result.converged);
+}
+
+// A validation run, not part of the suite:
+//   test_tunneling "[validation]"
+// The quartic double well V0 (q^2 / a^2 - 1)^2 with the barrier (0.2057 eV)
+// and well curvature (0.00965 eV / (amu A^2)) of the Al adatom path of
+// examples/neb-al, unit mass in mass-weighted coordinates: a = 13.06, a
+// barrier curvature of -0.00483 and T_c = 8.30 K. At 0.6 and 0.85 T_c it
+// reports, for each bead count, whether a converged ring with one
+// negative mode appears, its cycle eigenvalue and its rate.
+TEST_CASE("Bead counts at which the Al-like double well has an index-1 ring",
+          "[.][validation][Tunneling]") {
+  const double v0 = 0.2057;
+  const double a = std::sqrt(8.0 * v0 / 0.00965);
+  const BatchPotential well = [&](const std::vector<VectorXd> &q,
+                                  std::vector<double> &v,
+                                  std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0);
+      const double u = x * x / (a * a) - 1.0;
+      v[j] = v0 * u * u;
+      g[j] = VectorXd::Constant(1, 4.0 * v0 * u * x / (a * a));
+    }
+  };
+  auto hess = [&](long, const VectorXd &q) {
+    const double x = q(0);
+    return MatrixXd::Constant(
+        1, 1, 4.0 * v0 * (3.0 * x * x / (a * a) - 1.0) / (a * a));
+  };
+  const VectorXd saddle = VectorXd::Zero(1);
+  const MatrixXd hs = hess(0, saddle);
+  const MatrixXd hr = hess(0, VectorXd::Constant(1, -a));
+  const double tc = crossoverTemperature(hs);
+  for (const double frac : {0.85, 0.6}) {
+    const double beta = 1.0 / (kBoltzmann * frac * tc);
+    for (const long n : {8L, 16L, 32L, 64L, 128L, 256L}) {
+      RateInstantonOptions opt;
+      opt.beads = n;
+      opt.forceTolerance = 1e-8;
+      opt.maxIterations = 3000;
+      RateInstanton inst =
+          optimizeRateInstanton(saddle, hs, beta, {}, well, opt);
+      double lo = 0.0, hi = 0.0;
+      for (const auto &q : inst.beads) {
+        lo = std::min(lo, q(0));
+        hi = std::max(hi, q(0));
+      }
+      std::string rate = "no rate";
+      if (inst.converged) {
+        try {
+          instantonRate(inst, hess, hr, 0.0, hs, v0);
+          rate = std::to_string(inst.logRate);
+        } catch (const std::exception &ex) {
+          rate = ex.what();
+        }
+      }
+      WARN("T/Tc " << frac << " (T_c " << tc << " K), N " << n << ": converged "
+                   << inst.converged << ", iterations " << inst.iterations
+                   << ", turning points " << lo << " " << hi << " (minima at +-"
+                   << a << "), negative modes " << inst.negativeModes
+                   << ", cycle eigenvalue " << inst.zeroEigenvalue << ", ln k "
+                   << rate);
+    }
+  }
+}
+
+// A secant pair whose gradient difference points against the step reads as
+// negative curvature: on the identity block, dq = e1 and dg = -e1 make the
+// plain Bofill update negative along e1. A block whose exact version had no
+// negative curvature keeps none, with the secant's magnitude.
+TEST_CASE("The bead-block update keeps the inertia of the last exact block",
+          "[Tunneling][Instanton]") {
+  VectorXd dq = VectorXd::Zero(3);
+  dq(0) = 1e-3;
+  const VectorXd dg = -dq;
+  MatrixXd plain = MatrixXd::Identity(3, 3);
+  bofillKeepingInertia(plain, dq, dg, -1);
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> ep(plain);
+  REQUIRE(ep.eigenvalues()(0) < 0.0);
+  MatrixXd kept = MatrixXd::Identity(3, 3);
+  bofillKeepingInertia(kept, dq, dg, 0);
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> ek(kept);
+  CAPTURE(ek.eigenvalues().transpose());
+  REQUIRE(ek.eigenvalues()(0) > 0.0);
+  REQUIRE_THAT(ek.eigenvalues()(0),
+               WithinRel(std::abs(ep.eigenvalues()(0)), 1e-12));
+  // One allowed negative keeps the plain update.
+  MatrixXd one = MatrixXd::Identity(3, 3);
+  bofillKeepingInertia(one, dq, dg, 1);
+  REQUIRE((one - plain).norm() < 1e-14);
+}
+
+TEST_CASE(
+    "Copied saddle curvature does not rebuild nonstationary bead Hessians",
+    "[Tunneling][Instanton][NativeForceCost]") {
+  const bool stationary = GENERATE(false, true);
+  constexpr long dimension = 6, beads = 8, active = beads / 2 + 1;
+  long geometries = 0, fdBatches = 0;
+  const BatchPotential potential = [&](const std::vector<VectorXd> &q,
+                                       std::vector<double> &v,
+                                       std::vector<VectorXd> &g) {
+    geometries += static_cast<long>(q.size());
+    fdBatches += q.size() == 2 * dimension;
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0);
+      v[j] = .25 * std::pow(x * x - 1.0, 2) +
+             q[j].tail(dimension - 1).squaredNorm();
+      g[j] = 2.0 * q[j];
+      g[j](0) = x * (x * x - 1.0);
+    }
+  };
+  MatrixXd hs = 2.0 * MatrixXd::Identity(dimension, dimension);
+  hs(0, 0) = -1.0;
+  std::vector<VectorXd> seed(beads, VectorXd::Zero(dimension));
+  if (!stationary)
+    for (long j = 0; j < beads; ++j) {
+      seed[j](0) = .1 * std::cos(2.0 * std::acos(-1.0) * j / beads);
+      seed[j](1) = .2;
+    }
+  RateInstantonOptions options;
+  options.beads = beads;
+  options.halfRing = true;
+  options.checkOddSector = false;
+  options.initialHessians = "saddle";
+  options.maxIterations = 1;
+  options.forceTolerance = 1e-7;
+  const auto result = optimizeRateInstanton(
+      VectorXd::Zero(dimension), hs, 7.0 / kHbar, seed, potential, options);
+  REQUIRE_FALSE(result.converged);
+  REQUIRE(result.iterations == 1);
+  if (stationary) {
+    REQUIRE(fdBatches == active);
+    REQUIRE(geometries == active + active * 2 * dimension);
+  } else {
+    REQUIRE(fdBatches == 0);
+    REQUIRE(geometries >= 2 * active);
+    REQUIRE(geometries < active * 2 * dimension);
+    REQUIRE((result.beads.front() - seed.front()).norm() > 1e-8);
+  }
+}
+
+TEST_CASE("Rate beads retain owners while derivatives share bounded scratch",
+          "[Tunneling][Instanton][OrbitalOwners]") {
+  const bool stationary = GENERATE(false, true);
+  constexpr long dimension = 6, beads = 8, active = 5;
+  long beadBatches = 0, derivativeBatches = 0, fallbackCalls = 0;
+  const BatchPotential fallback = [&](const std::vector<VectorXd> &,
+                                      std::vector<double> &,
+                                      std::vector<VectorXd> &) {
+    ++fallbackCalls;
+    FAIL("an explicitly owned force evaluation lost its owner hints");
+  };
+  RateInstantonOptions options;
+  options.ownedPotential = [&](const std::vector<VectorXd> &q,
+                               std::vector<double> &v, std::vector<VectorXd> &g,
+                               const std::vector<long> &owners) {
+    REQUIRE(owners.size() == q.size());
+    REQUIRE_FALSE(owners.empty());
+    if (owners.front() == potential_owner::derivative) {
+      ++derivativeBatches;
+      REQUIRE(q.size() == 2 * dimension);
+      for (long owner : owners)
+        REQUIRE(owner == potential_owner::derivative);
+    } else {
+      ++beadBatches;
+      REQUIRE(q.size() == active);
+      for (long j = 0; j < active; ++j)
+        REQUIRE(owners[j] == j);
+    }
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0);
+      v[j] = .25 * std::pow(x * x - 1.0, 2) +
+             q[j].tail(dimension - 1).squaredNorm();
+      g[j] = 2.0 * q[j];
+      g[j](0) = x * (x * x - 1.0);
+    }
+  };
+  options.beads = beads;
+  options.halfRing = true;
+  options.checkOddSector = false;
+  options.initialHessians = "saddle";
+  options.maxIterations = 1;
+  options.forceTolerance = 1e-7;
+  MatrixXd hs = 2.0 * MatrixXd::Identity(dimension, dimension);
+  hs(0, 0) = -1.0;
+  std::vector<VectorXd> seed(beads, VectorXd::Zero(dimension));
+  if (!stationary)
+    for (long j = 0; j < beads; ++j) {
+      seed[j](0) = .1 * std::cos(2.0 * std::acos(-1.0) * j / beads);
+      seed[j](1) = .2;
+    }
+  const auto result = optimizeRateInstanton(
+      VectorXd::Zero(dimension), hs, 7.0 / kHbar, seed, fallback, options);
+  REQUIRE_FALSE(result.converged);
+  REQUIRE(result.iterations == 1);
+  REQUIRE(fallbackCalls == 0);
+  REQUIRE(beadBatches >= 1);
+  REQUIRE(derivativeBatches == (stationary ? active : 0));
 }

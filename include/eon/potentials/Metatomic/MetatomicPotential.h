@@ -40,6 +40,16 @@
 
 #pragma GCC diagnostic pop
 
+// A Windows DLL exports nothing unless asked. The units that define this
+// constructor set EON_MTA_POT_BUILD so the shared pot exports it. Callers
+// stay undecorated: the Windows metatomic CI links a static archive, and
+// dllimport would look for an __imp_ symbol that archive does not have.
+#if defined(_WIN32) && defined(EON_MTA_POT_BUILD)
+#define EON_MTA_POT_API __declspec(dllexport)
+#else
+#define EON_MTA_POT_API
+#endif
+
 /**
  * @class MetatomicPotential
  * @brief A potential class that uses a metatomic model for energy and force
@@ -102,7 +112,12 @@ public:
    * @param params A shared pointer to the simulation parameters object.
    * This object should contain the settings needed for the metatomic model.
    */
-  MetatomicPotential(const eonc::Parameters &params);
+  EON_MTA_POT_API MetatomicPotential(const eonc::Parameters &params);
+  // The dlopen'd plugin cannot call Parameters::Parameters(): that
+  // constructor lives in the client library, which is linked later.
+  // random_seed is main.randomSeed; 0 and negative leave the torch RNG alone.
+  MetatomicPotential(const eonc::Parameters::metatomic_options_t &opts,
+                     long random_seed = 0);
 
   /**
    * @brief Destructor.

@@ -82,7 +82,7 @@ int TADJob::dynamics() {
   TAD.setThermalVelocity();
 
   {
-    eonc::ForceCallTimer timer(dephaseFCalls);
+    eonc::ForceCallTimer timer(dephaseFCalls, *pot);
     dephase();
   }
 
@@ -135,7 +135,7 @@ int TADJob::dynamics() {
       nCheck = 0;
       nRecord = 0;
       {
-        eonc::ForceCallTimer timer(minimizeFCalls);
+        eonc::ForceCallTimer timer(minimizeFCalls, *pot);
         transitionFlag = checkState(current.get(), reactant.get());
       }
       if (transitionFlag) {
@@ -155,7 +155,7 @@ int TADJob::dynamics() {
           params.parallel_replica_options().refine_transition &&
           recordedThisInterval >= 2;
       if (can_refine) {
-        eonc::ForceCallTimer timer(refineFCalls);
+        eonc::ForceCallTimer timer(refineFCalls, *pot);
         refineStep = refine(mdBuffer, reactant.get());
       } else {
         refineStep = 0;

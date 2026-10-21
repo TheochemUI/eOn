@@ -64,10 +64,23 @@ public:
   [[nodiscard]] const Matrix3d &cellForce(long image) const {
     return projectedCellForce.at(static_cast<size_t>(image));
   }
+  // An explicit projection does not change the runtime CI flag.
   void updateForces(bool ci_active);
   void updateForces(void) { updateForces(ci_enabled_); }
-  void setCIEnabled(bool enabled) { ci_enabled_ = enabled; }
+  void setCIEnabled(bool enabled) {
+    if (ci_enabled_ != enabled) {
+      ci_enabled_ = enabled;
+      // CI changes the projection while physical force caches remain valid.
+      movedAfterForceCall = true;
+    }
+  }
   double convergenceForce(void);
+  /// Host bookkeeping for a band whose projected force came from the
+  /// rgsaddle session: the highest interior image, the climbing image
+  /// (`ciIndex`, or none when it is not an interior image) and the
+  /// tangents, from the images' current energies and positions. The
+  /// projected force stays as the session assembled it.
+  void adoptSessionProjection(long ciIndex);
   void findExtrema(void);
   void printImageData(bool writeToFile = false, size_t idx = 0);
 
@@ -77,6 +90,16 @@ public:
   pathFrames(std::optional<size_t> bandIndex = std::nullopt);
 
   std::vector<std::shared_ptr<EigenmodeStrategy>> eigenmode_solvers;
+
+  /// The identity band image i carries in a batch (forceBatchOwned):
+  /// interior image i is i - 1, the reactant numImages and the product
+  /// numImages + 1, so no image shares a key with an endpoint.
+  [[nodiscard]] long imageOwner(std::size_t i) const noexcept {
+    const auto idx = static_cast<long>(i);
+    if (idx == 0)
+      return numImages;
+    return idx == numImages + 1 ? numImages + 1 : idx - 1;
+  }
 
   int atoms{0};
   long numImages{0}, climbingImage{0}, numExtrema{0};
@@ -91,6 +114,7 @@ public:
   std::vector<double> extremumCurvature;
 
   std::size_t maxEnergyImage{0};
+  // Geometry or runtime CI state differs from the cached band projection.
   bool movedAfterForceCall{false};
   bool perImagePotentials_{
       false}; ///< Whether per-image potential instances exist
@@ -141,6 +165,9 @@ public:
   VectorXd getMasses() const override;
   // The band residual rotates with its tangent and is not a PES gradient.
   bool supportsFiniteDifferenceCurvature() const override { return false; }
+  // getEnergy() sums the image energies; the springs are not in it and the
+  // climbing image moves up it.
+  bool gradientMatchesEnergy() const override { return false; }
   NudgedElasticBand::NEBStatus status;
 
 private:

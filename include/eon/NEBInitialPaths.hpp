@@ -18,9 +18,9 @@ inline void requireSameAtomCount(const Matter &a, const Matter &b,
   if (a.numberOfAtoms() == b.numberOfAtoms()) {
     return;
   }
-  throw std::invalid_argument(std::format(
-      "NEB: {} do not have the same number of atoms ({} vs {})", what,
-      a.numberOfAtoms(), b.numberOfAtoms()));
+  throw std::invalid_argument(
+      std::format("NEB: {} do not have the same number of atoms ({} vs {})",
+                  what, a.numberOfAtoms(), b.numberOfAtoms()));
 }
 
 std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,

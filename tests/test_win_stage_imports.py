@@ -36,14 +36,15 @@ def _pe(import_name: bytes) -> bytes:
     # Section .rdata va 0x1000, raw at 0x200
     sec = bytearray(40)
     sec[:6] = b".rdata"
-    struct.pack_into("<IIII", sec, 8, 0x200, 0x1000, 0x200, 0x200)
+    struct.pack_into("<IIII", sec, 8, 0x400, 0x1000, 0x400, 0x200)
     pe += sec
     blob = bytearray(dos) + pe
     raw = 0x200
     blob += b"\0" * (raw - len(blob))
-    desc = bytearray(20)
-    struct.pack_into("<I", desc, 12, 0x1000 + 20)
-    blob += desc + import_name + b"\0" + bytearray(20)
+    # Two descriptors so the name cannot be read as the next one.
+    desc = bytearray(40)
+    struct.pack_into("<I", desc, 12, 0x1000 + 40)
+    blob += desc + import_name + b"\0"
     return bytes(blob)
 
 
@@ -53,4 +54,33 @@ def test_import_table_lists_the_dll_and_skips_kernel32(tmp_path: Path):
     pe.write_bytes(_pe(b"capnp.dll"))
     assert mod.imported_dlls(pe) == ["capnp.dll"]
     assert mod._system("KERNEL32.dll")
+    assert mod._system("bcryptprimitives.dll")
     assert not mod._system("capnp.dll")
+
+
+def test_torch_uv_is_taken_from_the_torch_directory(tmp_path: Path):
+    mod = _mod()
+    engine = tmp_path / "engine.dll"
+    engine.write_bytes(_pe(b"torch_cpu.dll"))
+    torch_dir = tmp_path / "torch"
+    prefix = tmp_path / "prefix"
+    torch_dir.mkdir()
+    prefix.mkdir()
+    (torch_dir / "torch_cpu.dll").write_bytes(_pe(b"uv.dll"))
+    (torch_dir / "uv.dll").write_bytes(b"torch-uv")
+    (prefix / "uv.dll").write_bytes(b"prefix-uv")
+    mod.stage(engine, [torch_dir, prefix], tmp_path / "stamp.txt")
+    assert (tmp_path / "torch_cpu.dll").is_file()
+    assert (tmp_path / "uv.dll").read_bytes() == b"torch-uv"
+
+
+def test_an_import_already_beside_the_engine_is_still_walked(tmp_path: Path):
+    mod = _mod()
+    engine = tmp_path / "engine.dll"
+    engine.write_bytes(_pe(b"torch_cpu.dll"))
+    (tmp_path / "torch_cpu.dll").write_bytes(_pe(b"uv.dll"))
+    torch_dir = tmp_path / "torch"
+    torch_dir.mkdir()
+    (torch_dir / "uv.dll").write_bytes(b"torch-uv")
+    mod.stage(engine, [torch_dir], tmp_path / "stamp.txt")
+    assert (tmp_path / "uv.dll").read_bytes() == b"torch-uv"

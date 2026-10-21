@@ -75,7 +75,6 @@ public:
   explicit MetatomicLoader(Key) : MetatomicLoader() {}
 
 private:
-
   bool m_loaded{false};
   dynlib::Handle m_handle{};
 };

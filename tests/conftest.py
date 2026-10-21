@@ -9,6 +9,14 @@ missing.
 """
 
 import os
+
+# Before numpy. OpenBLAS reads this when its library loads, and a later
+# change does not undo a threaded init. OpenBLAS 0.3.30 deadlocks in
+# blas_thread_init on the first dsymm after the suite has loaded the
+# client libraries. One thread skips that pool.
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+os.environ.setdefault("GOTO_NUM_THREADS", "1")
+
 import shutil
 from pathlib import Path
 

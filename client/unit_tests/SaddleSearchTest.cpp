@@ -290,7 +290,7 @@ TEST_CASE("basin hop Metropolis divides only after the uphill test",
   REQUIRE(Search::metropolisProbability(de, kB, temperature) ==
           Catch::Approx(std::exp(-de / (kB * temperature))));
 
-#if !defined(_WIN32) && !(defined(__APPLE__) && defined(__aarch64__))
+#if !defined(_WIN32)
   eonc::enableFPE();
   REQUIRE(Search::metropolisProbability(1.0, kB, 0.0) == 0.0);
   REQUIRE(Search::metropolisProbability(-2.0, kB, 0.0) == 1.0);
@@ -341,13 +341,13 @@ TEST_CASE_METHOD(
     REQUIRE(search.run() == 1);
   }
 
-#if !defined(_WIN32) && !(defined(__APPLE__) && defined(__aarch64__))
+#if !defined(_WIN32)
   eonc::enableFPE();
 #endif
   ParametersLoadAccess::main_options(params).temperature = 0.0;
   eonc::BasinHoppingSaddleSearch search(matter, displaced, pot, params);
   const int status = search.run();
-#if !defined(_WIN32) && !(defined(__APPLE__) && defined(__aarch64__))
+#if !defined(_WIN32)
   eonc::disableFPE();
   feclearexcept(FE_ALL_EXCEPT);
 #endif

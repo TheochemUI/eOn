@@ -286,6 +286,40 @@ static void write_fault_rip(void *scp) {
 #endif
 }
 
+#if defined(__APPLE__) && defined(__aarch64__)
+// EC 0x2C is a trapped AArch64 floating-point exception (ARM ARM). macOS
+// delivers that trap as SIGILL, so the SIGFPE-only handler never runs and
+// the process dies with "Illegal instruction: 4". ISS bits are valid when
+// TFV (bit 23) is set: IOF=0, DZF=1, OFF=2. Any other SIGILL is re-raised.
+static bool apple_arm64_fp_trap(void *scp, unsigned *mask_out) {
+  auto *ctx = static_cast<ucontext_t *>(scp);
+  if (ctx == nullptr || ctx->uc_mcontext == nullptr) {
+    return false;
+  }
+  const uint32_t esr = ctx->uc_mcontext->__es.__esr;
+  if ((esr >> 26) != 0x2Cu) {
+    return false;
+  }
+  unsigned mask = 0;
+  if ((esr & (1u << 23)) != 0) {
+    if ((esr & (1u << 0)) != 0) {
+      mask |= MXCSR_MASK_IM;
+    }
+    if ((esr & (1u << 1)) != 0) {
+      mask |= MXCSR_MASK_ZM;
+    }
+    if ((esr & (1u << 2)) != 0) {
+      mask |= MXCSR_MASK_OM;
+    }
+  }
+  if (mask == 0) {
+    mask = MXCSR_MASK_IM | MXCSR_MASK_ZM | MXCSR_MASK_OM;
+  }
+  *mask_out = mask;
+  return true;
+}
+#endif
+
 static void fpe_signal_handler(int sig, siginfo_t *sip, void *scp) {
   // Async-signal-safe only: write(2) and sig_atomic_t. No iostream, malloc,
   // backtrace, or fenv helpers (fedisableexcept / feclearexcept are not
@@ -317,9 +351,41 @@ static void fpe_signal_handler(int sig, siginfo_t *sip, void *scp) {
   volatile sig_atomic_t *reported = &reported_unk;
   const char *msg = msg_unk;
   size_t msg_len = sizeof(msg_unk) - 1;
+  bool classified = false;
+
+#if defined(__APPLE__) && defined(__aarch64__)
+  if (sig == SIGILL) {
+    unsigned trap_mask = 0;
+    if (!apple_arm64_fp_trap(scp, &trap_mask)) {
+      struct sigaction dfl;
+      dfl.sa_handler = SIG_DFL;
+      sigemptyset(&dfl.sa_mask);
+      dfl.sa_flags = 0;
+      sigaction(SIGILL, &dfl, nullptr);
+      raise(SIGILL);
+      return;
+    }
+    classified = true;
+    mxcsr_mask_bits = trap_mask;
+    if (trap_mask == MXCSR_MASK_ZM) {
+      reported = &reported_div;
+      msg = msg_div;
+      msg_len = sizeof(msg_div) - 1;
+    } else if (trap_mask == MXCSR_MASK_IM) {
+      reported = &reported_inv;
+      msg = msg_inv;
+      msg_len = sizeof(msg_inv) - 1;
+    } else if (trap_mask == MXCSR_MASK_OM) {
+      reported = &reported_ovf;
+      msg = msg_ovf;
+      msg_len = sizeof(msg_ovf) - 1;
+    }
+  }
+#endif
 
   // Integer #DE has no mask bit. Returning here re-executes the divide.
-  if (sip->si_code == FPE_INTDIV || sip->si_code == FPE_INTOVF) {
+  if (!classified &&
+      (sip->si_code == FPE_INTDIV || sip->si_code == FPE_INTOVF)) {
     if (reported_int == 0) {
       reported_int = 1;
       static constexpr char iprefix[] = "FPE (continuing, skipping divide): ";
@@ -343,27 +409,29 @@ static void fpe_signal_handler(int sig, siginfo_t *sip, void *scp) {
     return;
   }
 
-  switch (sip->si_code) {
-  case FPE_FLTDIV:
-    reported = &reported_div;
-    msg = msg_div;
-    msg_len = sizeof(msg_div) - 1;
-    mxcsr_mask_bits = MXCSR_MASK_ZM;
-    break;
-  case FPE_FLTINV:
-    reported = &reported_inv;
-    msg = msg_inv;
-    msg_len = sizeof(msg_inv) - 1;
-    mxcsr_mask_bits = MXCSR_MASK_IM;
-    break;
-  case FPE_FLTOVF:
-    reported = &reported_ovf;
-    msg = msg_ovf;
-    msg_len = sizeof(msg_ovf) - 1;
-    mxcsr_mask_bits = MXCSR_MASK_OM;
-    break;
-  default:
-    break;
+  if (!classified) {
+    switch (sip->si_code) {
+    case FPE_FLTDIV:
+      reported = &reported_div;
+      msg = msg_div;
+      msg_len = sizeof(msg_div) - 1;
+      mxcsr_mask_bits = MXCSR_MASK_ZM;
+      break;
+    case FPE_FLTINV:
+      reported = &reported_inv;
+      msg = msg_inv;
+      msg_len = sizeof(msg_inv) - 1;
+      mxcsr_mask_bits = MXCSR_MASK_IM;
+      break;
+    case FPE_FLTOVF:
+      reported = &reported_ovf;
+      msg = msg_ovf;
+      msg_len = sizeof(msg_ovf) - 1;
+      mxcsr_mask_bits = MXCSR_MASK_OM;
+      break;
+    default:
+      break;
+    }
   }
 
   if (*reported == 0) {
@@ -521,6 +589,11 @@ void enableFPE() {
   sigemptyset(&act.sa_mask);
   act.sa_flags = SA_SIGINFO;
   sigaction(SIGFPE, &act, nullptr);
+#if defined(__APPLE__) && defined(__aarch64__)
+  // Same continue path as SIGFPE. apple_arm64_fp_trap rejects a real
+  // illegal instruction (its ESR is not EC 0x2C) and re-raises SIGILL.
+  sigaction(SIGILL, &act, nullptr);
+#endif
 #endif
 }
 

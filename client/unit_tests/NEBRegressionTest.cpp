@@ -21,11 +21,75 @@
 #include "eon/NudgedElasticBand.h"
 #include "eon/PotRegistry.h"
 
+#include <algorithm>
 #include <cmath>
 
 namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
+
+class QuarticBandPotential final : public Potential {
+public:
+  QuarticBandPotential()
+      : Potential(PotType::UNKNOWN) {}
+
+  void force(long nAtoms, const double *positions, const int *, double *forces,
+             double *energy, double *variance, const double *) override {
+    std::fill_n(forces, 3 * nAtoms, 0.0);
+    const double q = 0.5 * (positions[0] - positions[3]);
+    const double displacement = q * q - 1.0;
+    *energy = 10.0 * displacement * displacement;
+    const double derivative = 40.0 * q * displacement;
+    forces[0] = -0.5 * derivative;
+    forces[3] = 0.5 * derivative;
+    if (variance)
+      *variance = 0.0;
+  }
+};
+
+TEST_CASE("CI activates on a relaxed band with tangential saddle force",
+          "[neb][regression][force_cache][ci_activation]") {
+  Parameters params;
+  ParametersLoadAccess::main_options(params).parallel = false;
+  auto &options = ParametersLoadAccess::neb_options(params);
+  options.image_count = 2;
+  options.initialization.method = NEBInit::LINEAR;
+  options.match_endpoints = false;
+  options.endpoints.minimize = false;
+  options.climbing_image.enabled = true;
+  options.climbing_image.trigger_factor = 0.8;
+  options.climbing_image.trigger_force = 0.5;
+  options.opt_method = OptType::LBFGS;
+  options.max_iterations = 100;
+  options.force_tolerance = 1e-5;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.1;
+  auto pot = std::make_shared<QuarticBandPotential>();
+  auto endpoint = [&](double q) {
+    auto matter = std::make_shared<Matter>(pot, params);
+    matter->resize(2);
+    matter->setPeriodic(false);
+    matter->setCell(Matrix3d::Identity() * 20.0);
+    for (int i = 0; i < 2; ++i) {
+      matter->setAtomicNr(i, 1);
+      matter->setMass(i, 1.0);
+    }
+    AtomMatrix positions = AtomMatrix::Zero(2, 3);
+    positions(0, 0) = q;
+    positions(1, 0) = -q;
+    matter->setPositions(positions);
+    return matter;
+  };
+  auto initial = endpoint(-1.0);
+  auto final = endpoint(1.0);
+  NudgedElasticBand neb(initial, final, params, pot);
+  REQUIRE(neb.compute() == NudgedElasticBand::NEBStatus::GOOD);
+  REQUIRE(neb.convergenceForce() < options.force_tolerance);
+  REQUIRE(neb.path[neb.climbingImage]->getPotentialEnergy() ==
+          Catch::Approx(10.0).margin(1e-8));
+  REQUIRE(
+      neb.path.front()->getPositions().isApprox(initial->getPositions(), 0.0));
+  REQUIRE(neb.path.back()->getPositions().isApprox(final->getPositions(), 0.0));
+}
 
 class NEBRegressionFixture {
 protected:
@@ -140,6 +204,75 @@ TEST_CASE_METHOD(
   neb->path.back()->setPositions(neb->path[2]->getPositions());
   neb->updateForces();
   CHECK(neb->climbingImage == 0);
+}
+
+TEST_CASE_METHOD(NEBRegressionFixture,
+                 "NEB CI toggles refresh projection without potential calls",
+                 "[neb][regression][climbing_image][force_cache]") {
+  ParametersLoadAccess::main_options(params).parallel = false;
+  auto neb =
+      std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
+  neb->updateForces();
+  REQUIRE(neb->climbingImage == 0);
+  std::vector<AtomMatrix> ordinary;
+  for (long i = 1; i <= neb->numImages; ++i) {
+    ordinary.push_back(*neb->projectedForce[i]);
+  }
+  const auto calls = eonc::PotRegistry::get().total_force_calls();
+
+  neb->setCIEnabled(true);
+  const double climbedConvergence = neb->convergenceForce();
+  REQUIRE(neb->climbingImage > 0);
+  const auto ci = neb->climbingImage;
+  const AtomMatrix force = neb->path[ci]->getForces();
+  const AtomMatrix &tau = *neb->tangent[ci];
+  AtomMatrix expected = force - 2.0 * matDot(force, tau) * tau;
+  const auto translation = expected.colwise().mean().eval();
+  expected.rowwise() -= translation;
+  CHECK(expected.isApprox(*neb->projectedForce[ci], 1e-12));
+  REQUIRE((ordinary[ci - 1] - *neb->projectedForce[ci]).norm() > 1e-6);
+  CHECK(eonc::PotRegistry::get().total_force_calls() == calls);
+  neb->updateForces();
+  CHECK(neb->convergenceForce() ==
+        Catch::Approx(climbedConvergence).margin(1e-12));
+
+  neb->setCIEnabled(false);
+  neb->convergenceForce();
+  CHECK(neb->climbingImage == 0);
+  for (long i = 1; i <= neb->numImages; ++i) {
+    CHECK(ordinary[i - 1].isApprox(*neb->projectedForce[i], 1e-12));
+  }
+  CHECK(eonc::PotRegistry::get().total_force_calls() == calls);
+}
+
+TEST_CASE_METHOD(NEBRegressionFixture,
+                 "NEB configured force requests replace one-off CI overrides",
+                 "[neb][regression][force_cache][projection_override]") {
+  ParametersLoadAccess::main_options(params).parallel = false;
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = true;
+  auto neb =
+      std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
+  auto objective = std::make_shared<NEBObjectiveFunction>(neb.get(), params);
+  neb->updateForces();
+  REQUIRE(neb->climbingImage > 0);
+  const auto ci = neb->climbingImage;
+  const AtomMatrix projected = *neb->projectedForce[ci];
+  const double convergence = neb->convergenceForce();
+  const VectorXd gradient = objective->getGradient();
+  const auto calls = eonc::PotRegistry::get().total_force_calls();
+  neb->updateForces(false);
+  REQUIRE(neb->climbingImage == 0);
+  REQUIRE((projected - *neb->projectedForce[ci]).norm() > 1e-6);
+  neb->setCIEnabled(true);
+  const bool gradientRequest = GENERATE(false, true);
+  if (gradientRequest) {
+    CHECK(objective->getGradient().isApprox(gradient, 1e-12));
+  } else {
+    CHECK(neb->convergenceForce() == Catch::Approx(convergence).margin(1e-12));
+  }
+  CHECK(neb->climbingImage == ci);
+  CHECK(projected.isApprox(*neb->projectedForce[ci], 1e-12));
+  CHECK(eonc::PotRegistry::get().total_force_calls() == calls);
 }
 
 TEST_CASE_METHOD(NEBRegressionFixture,

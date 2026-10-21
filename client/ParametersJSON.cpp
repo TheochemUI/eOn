@@ -17,6 +17,7 @@
 #include "magic_enum/magic_enum.hpp"
 
 #include <cctype>
+#include <cmath>
 #include <cstdint>
 #include <format>
 #include <nlohmann/json.hpp>
@@ -88,6 +89,9 @@ json to_json(const Parameters &p) {
       {"ext_pot_path", ParametersLoadAccess::potential_options(p).extPotPath},
       {"potentials_path",
        ParametersLoadAccess::potential_options(p).potentialsPath},
+      {"pair_switch_width",
+       ParametersLoadAccess::potential_options(p).pairSwitchWidth},
+      {"pair_cutoff", ParametersLoadAccess::potential_options(p).pairCutoff},
   };
 
   // [Structure Comparison]
@@ -313,6 +317,8 @@ json to_json(const Parameters &p) {
         {"reactant_filename", o.reactant_filename},
         {"product_filename", o.product_filename},
         {"initial_path", o.initial_path},
+        {"initial_ring", o.initial_ring},
+        {"physical_bath_filename", o.physical_bath_filename},
         {"beads", o.beads},
         {"beta_hbar_omega", o.beta_hbar_omega},
         {"max_iterations", o.max_iterations},
@@ -323,11 +329,18 @@ json to_json(const Parameters &p) {
         {"temperatures", o.temperatures},
         {"half_ring", o.half_ring},
         {"initial_hessians", o.initial_hessians},
+        {"newton_limit", o.newton_limit},
+        {"lanczos_step", o.lanczos_step},
+        {"reactant_hessian_filename", o.reactant_hessian_filename},
+        {"saddle_hessian_filename", o.saddle_hessian_filename},
+        {"physical_hessian_step", o.physical_hessian_step},
         {"energy_shift", o.energy_shift},
         {"discretization", o.discretization},
         {"friction", o.friction},
         {"friction_eta", o.friction_eta},
         {"friction_eta_beads", o.friction_eta_beads},
+        {"collapse_fraction", o.collapse_fraction},
+        {"rotation_zero_fraction", o.rotation_zero_fraction},
         {"bead_ladder", o.bead_ladder},
         {"hessian_final", o.hessian_final},
         {"springs", o.springs},
@@ -500,6 +513,10 @@ void from_json(const json &j, Parameters &p) {
              ParametersLoadAccess::potential_options(p).extPotPath);
     JSON_OPT(s, "potentials_path",
              ParametersLoadAccess::potential_options(p).potentialsPath);
+    JSON_OPT(s, "pair_switch_width",
+             ParametersLoadAccess::potential_options(p).pairSwitchWidth);
+    JSON_OPT(s, "pair_cutoff",
+             ParametersLoadAccess::potential_options(p).pairCutoff);
   }
 
   // [Structure Comparison]
@@ -774,6 +791,8 @@ void from_json(const json &j, Parameters &p) {
     JSON_OPT(s, "reactant_filename", o.reactant_filename);
     JSON_OPT(s, "product_filename", o.product_filename);
     JSON_OPT(s, "initial_path", o.initial_path);
+    JSON_OPT(s, "initial_ring", o.initial_ring);
+    JSON_OPT(s, "physical_bath_filename", o.physical_bath_filename);
     JSON_OPT(s, "beads", o.beads);
     JSON_OPT(s, "beta_hbar_omega", o.beta_hbar_omega);
     JSON_OPT(s, "max_iterations", o.max_iterations);
@@ -794,6 +813,25 @@ void from_json(const json &j, Parameters &p) {
           "[Instanton] initial_hessians must be saddle or "
           "finite_difference, not " +
           o.initial_hessians);
+    }
+    JSON_OPT(s, "newton_limit", o.newton_limit);
+    if (o.newton_limit < 0) {
+      throw std::invalid_argument(
+          "[Instanton] newton_limit must be nonnegative");
+    }
+    JSON_OPT(s, "reactant_hessian_filename", o.reactant_hessian_filename);
+    JSON_OPT(s, "saddle_hessian_filename", o.saddle_hessian_filename);
+    JSON_OPT(s, "lanczos_step", o.lanczos_step);
+    if (!(o.lanczos_step > 0.0) || !std::isfinite(o.lanczos_step)) {
+      throw std::invalid_argument("[Instanton] lanczos_step must be finite and "
+                                  "positive in sqrt(amu) Angstrom");
+    }
+    JSON_OPT(s, "physical_hessian_step", o.physical_hessian_step);
+    if (!(o.physical_hessian_step > 0.0) ||
+        !std::isfinite(o.physical_hessian_step)) {
+      throw std::invalid_argument(
+          "[Instanton] physical_hessian_step must be finite and positive "
+          "in sqrt(amu) Angstrom");
     }
     JSON_OPT(s, "energy_shift", o.energy_shift);
     if (s.contains("discretization")) {
@@ -817,6 +855,16 @@ void from_json(const json &j, Parameters &p) {
       for (const auto &item : s.at("friction_eta_beads")) {
         o.friction_eta_beads.push_back(item.get<double>());
       }
+    }
+    JSON_OPT(s, "collapse_fraction", o.collapse_fraction);
+    if (!(o.collapse_fraction >= 0.0 && o.collapse_fraction < 1.0)) {
+      throw std::invalid_argument(
+          "[Instanton] collapse_fraction must be in [0, 1)");
+    }
+    JSON_OPT(s, "rotation_zero_fraction", o.rotation_zero_fraction);
+    if (!(o.rotation_zero_fraction > 0.0)) {
+      throw std::invalid_argument(
+          "[Instanton] rotation_zero_fraction must be positive");
     }
     JSON_OPT(s, "bead_ladder", o.bead_ladder);
     JSON_OPT(s, "hessian_final", o.hessian_final);

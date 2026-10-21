@@ -164,23 +164,9 @@ void LAMMPSPot::cleanMemory() {
   }
 }
 
-#if !defined(EONMPI) && !defined(IS_WINDOWS)
-// ---------------------------------------------------------------------------
-// Process-per-image worker plumbing (POSIX only)
-// ---------------------------------------------------------------------------
 namespace {
-// Report a geometry the worker could not evaluate as an impassable wall.
-//
-// Every failure path here used to throw, and nothing between the potential
-// call and main catches it, so the client terminated. That loses the whole
-// job, including searches that had already converged: a copper V/SIA search
-// reached a saddle at 0.082 eV with a force of 0.027 eV/A and a curvature of
-// -0.47, then died on the next evaluation before the result was written.
-//
-// A large finite energy with zeroed forces reads to the optimiser as a wall,
-// so it backs out of the step and the search abandons this configuration and
-// carries on. Callers stop the worker first; ensureWorker respawns it on the
-// next evaluation.
+// Rejected geometries carry a high energy and a nonzero force so force-based
+// optimizers cannot accept a failed evaluation as a stationary structure.
 void rejectGeometry(double *U, double *F, long N) {
   *U = 1.0e6;
   // Zero forces would be read as convergence: an optimiser judges a point
@@ -199,6 +185,11 @@ void rejectGeometry(double *U, double *F, long N) {
   }
 }
 
+} // namespace
+
+#if !defined(EONMPI) && !defined(IS_WINDOWS)
+// Process-per-image worker plumbing (POSIX only).
+namespace {
 // Blocking read/write of exactly n bytes over a pipe.  Returns false on EOF or
 // error, so a dead peer is detected rather than silently producing garbage.
 bool readExact(int fd, void *buf, size_t n) {
@@ -429,13 +420,18 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
                       double *U, double *variance, const double *box) {
   variance = nullptr;
 
-#ifdef EONMPI
+#if defined(EONMPI) || defined(IS_WINDOWS)
   std::lock_guard<std::mutex> stateLock(workerMutex);
-  forceLocal(N, R, atomicNrs, F, U, box);
-#elif defined(IS_WINDOWS)
-  // No fork/pipe on Windows; call forceLocal directly.
-  std::lock_guard<std::mutex> stateLock(workerMutex);
-  forceLocal(N, R, atomicNrs, F, U, box);
+  try {
+    forceLocal(N, R, atomicNrs, F, U, box);
+  } catch (const std::exception &error) {
+    EONC_LOG_WARNING("[LAMMPSPot] evaluation failed; rejecting geometry: {}",
+                     error.what());
+    cleanMemory();
+    haveStress_ = false;
+    stress_.setZero();
+    rejectGeometry(U, F, N);
+  }
 #else
   // Drive the dedicated worker process so this image's LAMMPS runs in its own
   // process (own MPI_COMM_WORLD).  Per-image NEB threads thus evaluate forces
@@ -466,15 +462,14 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
     // pipe closed, so the first send after it fails. Respawning happens on
     // the next evaluation; reject this one rather than end the client.
     --workerRespawnsLeft;
-    EONC_LOG_WARNING("[LAMMPSPot] send to worker failed; {} respawns left "
-                     "(eon-7416)",
+    EONC_LOG_WARNING("[LAMMPSPot] send to worker failed; {} respawns left",
                      workerRespawnsLeft);
     stopWorker();
     rejectGeometry(U, F, N);
     return;
   }
 
-  // eon-7416: a worker stuck on a pathological geometry (LAMMPS spinning, or
+  // A worker stuck on a pathological geometry (LAMMPS spinning, or
   // a NaN it never returns) would make the blocking read below hang until the
   // akmc pass times out. Bound the wait: if the worker is silent past a
   // generous per-eval deadline, kill and reap it (a stuck worker never reaches
@@ -492,8 +487,7 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
       }
       --workerRespawnsLeft;
       EONC_LOG_WARNING(
-          "[LAMMPSPot] worker force eval timed out; {} respawns left "
-          "(eon-7416)",
+          "[LAMMPSPot] worker force eval timed out; {} respawns left",
           workerRespawnsLeft);
       stopWorker();
       rejectGeometry(U, F, N);
@@ -508,8 +502,7 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
       !readExact(resFd, stressRaw, sizeof(stressRaw))) {
     --workerRespawnsLeft;
     EONC_LOG_WARNING(
-        "[LAMMPSPot] worker died during force eval; {} respawns left "
-        "(eon-7416)",
+        "[LAMMPSPot] worker died during force eval; {} respawns left",
         workerRespawnsLeft);
     stopWorker();
     rejectGeometry(U, F, N);
@@ -529,8 +522,7 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
     drainLammpsScreen();
     --workerRespawnsLeft;
     EONC_LOG_WARNING(
-        "[LAMMPSPot] worker reported an evaluation error; {} respawns left "
-        "(eon-7416)",
+        "[LAMMPSPot] worker reported an evaluation error; {} respawns left",
         workerRespawnsLeft);
     stopWorker();
     rejectGeometry(U, F, N);
@@ -561,7 +553,7 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
   }
   if (nonfinite) {
     EONC_LOG_WARNING("[LAMMPSPot] non-finite force or energy; rejecting "
-                     "geometry (eon-7416)");
+                     "geometry");
     rejectGeometry(U, F, N);
   }
 #endif
@@ -769,34 +761,41 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   }
 
 #ifdef EONMPI
-  const std::vector<std::string> argStore =
-      eonc::lammpsOpenArgs(lammpsLogging_, true, lammpsScreenPath_);
-  std::vector<char *> argPtrs;
-  argPtrs.reserve(argStore.size());
-  for (const std::string &arg : argStore) {
-    argPtrs.push_back(const_cast<char *>(arg.c_str()));
+  const bool useMpi = lmp.open_mpi != nullptr;
+  if (!useMpi) {
+    int initialized = 0;
+    MPI_Initialized(&initialized);
+    int ranks = 1;
+    if (initialized) {
+      MPI_Comm_size(mpiComm, &ranks);
+    }
+    if (ranks > 1) {
+      throw std::runtime_error("LAMMPS calculator uses multiple MPI ranks but "
+                               "lammps_open is missing.\n"
+                               "Install an MPI-enabled LAMMPS build.");
+    }
   }
-  int lmpargc = static_cast<int>(argPtrs.size());
-  char **lmpargv = argPtrs.data();
-  if (!lmp.open_mpi) {
-    throw std::runtime_error(
-        "LAMMPS library found but lacks MPI support (lammps_open not found).\n"
-        "Install an MPI-enabled LAMMPS build.");
-  }
-  MPI_Comm inst_comm = MPI_COMM_NULL;
-  MPI_Comm_dup(mpiComm, &inst_comm); // private comm per per-image instance
-  LAMMPSObj = lmp.open_mpi(lmpargc, lmpargv, inst_comm, nullptr);
 #else
+  constexpr bool useMpi = false;
+#endif
   const std::vector<std::string> argStore =
-      eonc::lammpsOpenArgs(lammpsLogging_, false, lammpsScreenPath_);
+      eonc::lammpsOpenArgs(lammpsLogging_, useMpi, lammpsScreenPath_);
   std::vector<char *> argPtrs;
   argPtrs.reserve(argStore.size());
   for (const std::string &arg : argStore) {
     argPtrs.push_back(const_cast<char *>(arg.c_str()));
   }
   int lmpargc = static_cast<int>(argPtrs.size());
-  LAMMPSObj = lmp.open_no_mpi(lmpargc, argPtrs.data(), nullptr);
+#ifdef EONMPI
+  if (useMpi) {
+    MPI_Comm inst_comm = MPI_COMM_NULL;
+    MPI_Comm_dup(mpiComm, &inst_comm); // private comm per per-image instance
+    LAMMPSObj = lmp.open_mpi(lmpargc, argPtrs.data(), inst_comm, nullptr);
+  } else
 #endif
+  {
+    LAMMPSObj = lmp.open_no_mpi(lmpargc, argPtrs.data(), nullptr);
+  }
   // -screen opens with truncation. The next copy starts at the new file.
   lammpsScreenRestart_ = true;
 

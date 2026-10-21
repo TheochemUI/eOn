@@ -1,0 +1,39 @@
+ &ATOM
+  Z  =   1.00000000000000000
+  ZV =   1.00000000000000000
+  XC = 1312    .6666666667
+  TYPE = NORMCONSERVING GOEDECKER
+ &END
+ &INFO
+ ****************************************************************
+
+ Atomic symbol                       : H
+
+ Atomic number                       :   1
+ Effective core charge               :   1
+ Number of core states               :   0
+ Number of valence states            :  10
+ Electronic configuration (s,p,d,...):     1
+
+ Exchange-correlation functional     : BLYP
+
+       r(loc)         C(1)         C(2)
+     0.200000    -4.195961     0.730498
+
+ Please cite:
+
+ - S. Goedecker, M. Teter, and J. Hutter,
+   Phys. Rev. B 54, 1703 (1996)
+ - C. Hartwigsen, S. Goedecker, and J. Hutter,
+   Phys. Rev. B 58, 3641 (1998)
+ - M. Krack,
+   Theor. Chem. Acc. 114, 145 (2005)
+
+ ****************************************************************
+ &END
+ &POTENTIAL
+     GOEDECKER
+ 0                                    LMAX
+       .200000000                                 RC
+   2    -4.195961470      .730498208   #C  C1 C2
+ &END

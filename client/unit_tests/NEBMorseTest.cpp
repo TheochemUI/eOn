@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
+#include "../ForEachImage.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/ConFileIO.h"
@@ -22,11 +23,17 @@
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 #include "eon/api.h"
+#include <chrono>
 #include <cmath>
+#include <condition_variable>
 #include <filesystem>
 #include <fstream>
+#include <functional>
+#include <mutex>
+#include <set>
 #include <stdexcept>
 #include <thread>
+#include <tuple>
 #include <vector>
 
 namespace tests {
@@ -1106,6 +1113,145 @@ TEST_CASE_METHOD(NEBLJFixture,
   for (const auto &box : batch->seen) {
     REQUIRE(box.isApprox(cell, 1e-12));
   }
+}
+
+// --- Per-image potential instances ---
+
+TEST_CASE_METHOD(
+    NEBLJFixture,
+    "NEB gives each image its own instance without [Main] parallel",
+    "[neb][parallel][force_calls]") {
+  ParametersLoadAccess::main_options(params).parallel = false;
+  PotRegistry local;
+  auto threads = std::make_shared<eonc::helpers::test::PerImageLJ::Threads>();
+  auto perImage =
+      std::make_shared<eonc::helpers::test::PerImageLJ>(threads, local);
+  reactant->setPotential(perImage);
+  product->setPotential(perImage);
+  pot = perImage;
+
+  auto neb = makeNEB();
+  REQUIRE(neb->path[0]->getPotential() == pot);
+  REQUIRE(neb->path[neb->numImages + 1]->getPotential() == pot);
+  std::set<const Potential *> instances;
+  for (long i = 1; i <= neb->numImages; ++i) {
+    const Potential *image = neb->path[i]->getPotential().get();
+    REQUIRE(image != pot.get());
+    instances.insert(image);
+  }
+  REQUIRE(instances.size() == static_cast<size_t>(neb->numImages));
+
+  // Every instance charges the registry that counts the job's potential:
+  // two endpoints, then one call per interior image.
+  REQUIRE(local.total_force_calls() == 2);
+  neb->updateForces();
+  REQUIRE(local.total_force_calls() == 2 + static_cast<size_t>(neb->numImages));
+}
+
+TEST_CASE("makeImagePotential charges the registry of the potential it copies",
+          "[potential][force_calls]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto &proc = PotRegistry::get();
+  const size_t procBefore = proc.total_force_calls();
+  PotRegistry local;
+  AtomMatrix pos(2, 3);
+  pos << 0.0, 0.0, 0.0, 1.5, 0.0, 0.0;
+  VectorXi atmnrs(2);
+  atmnrs << 1, 1;
+  const Matrix3d box = Matrix3d::Identity() * 10.0;
+
+  SECTION("a clone") {
+    auto threads = std::make_shared<eonc::helpers::test::PerImageLJ::Threads>();
+    eonc::helpers::test::PerImageLJ base(threads, local);
+    auto image = eonc::helpers::makeImagePotential(base, params);
+    REQUIRE(&image->registry() == &local);
+    image->get_ef(pos, atmnrs, box);
+  }
+  SECTION("a backend without a clone, rebuilt from the parameters") {
+    std::shared_ptr<Potential> base;
+    {
+      PotentialConstructionScope scope(local);
+      base = eonc::helpers::sharePotential(
+          eonc::helpers::makePotential(PotType::LJ, params));
+    }
+    REQUIRE(base->clonePotential() == nullptr);
+    auto image = eonc::helpers::makeImagePotential(*base, params);
+    REQUIRE(image != base);
+    REQUIRE(&image->registry() == &local);
+    image->get_ef(pos, atmnrs, box);
+  }
+  REQUIRE(local.total_force_calls() == 1);
+  REQUIRE(proc.total_force_calls() == procBefore);
+}
+
+TEST_CASE_METHOD(NEBLJFixture,
+                 "NEB on the image pool reproduces the serial band bit for bit",
+                 "[neb][parallel][regression]") {
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 30;
+  ParametersLoadAccess::neb_options(params).max_iterations = 30;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 1e-12;
+  if (std::thread::hardware_concurrency() == 1) {
+    SKIP("image pool needs two hardware threads");
+  }
+  eonc::detail::ImagePool::instance().ensureThreads(2);
+  if (eonc::detail::ImagePool::instance().threads() < 2) {
+    SKIP("image pool could not start two worker threads");
+  }
+  // The Morse forces return before a helper is scheduled, so the caller
+  // can be the only thread in the set even though the pool has workers.
+  struct Arrival {
+    std::mutex mu;
+    std::condition_variable cv;
+    std::set<std::thread::id> ids;
+    void operator()() {
+      std::unique_lock<std::mutex> lock(mu);
+      ids.insert(std::this_thread::get_id());
+      cv.notify_all();
+      cv.wait_for(lock, std::chrono::seconds(5),
+                  [&] { return ids.size() >= 2; });
+    }
+  };
+  auto arrival = std::make_shared<Arrival>();
+  auto run =
+      [&](bool parallel,
+          std::shared_ptr<eonc::helpers::test::PerImageLJ::Threads> threads,
+          bool hold) {
+        ParametersLoadAccess::main_options(params).parallel = parallel;
+        PotRegistry local;
+        auto perImage = std::make_shared<eonc::helpers::test::PerImageLJ>(
+            threads, local,
+            hold ? std::function<void()>{[arrival] { (*arrival)(); }}
+                 : std::function<void()>{});
+        auto r = std::make_shared<Matter>(*reactant);
+        auto p = std::make_shared<Matter>(*product);
+        r->setPotential(perImage);
+        p->setPotential(perImage);
+        NudgedElasticBand neb(r, p, params, perImage);
+        static_cast<void>(neb.compute());
+        std::vector<AtomMatrix> positions;
+        std::vector<double> energies;
+        for (long i = 0; i <= neb.numImages + 1; ++i) {
+          positions.push_back(neb.path[i]->getPositions());
+          energies.push_back(neb.path[i]->getPotentialEnergy());
+        }
+        return std::make_tuple(positions, energies, local.total_force_calls(),
+                               neb.lastIteration());
+      };
+  auto serialThreads =
+      std::make_shared<eonc::helpers::test::PerImageLJ::Threads>();
+  auto poolThreads =
+      std::make_shared<eonc::helpers::test::PerImageLJ::Threads>();
+  const auto [sPos, sE, sCalls, sIter] = run(false, serialThreads, false);
+  const auto [pPos, pE, pCalls, pIter] = run(true, poolThreads, true);
+  REQUIRE(sIter == pIter);
+  REQUIRE(sCalls == pCalls);
+  for (size_t i = 0; i < sPos.size(); ++i) {
+    REQUIRE(sPos[i] == pPos[i]);
+    REQUIRE(sE[i] == pE[i]);
+  }
+  REQUIRE(serialThreads->ids.size() == 1);
+  REQUIRE(poolThreads->ids.size() > 1);
 }
 
 } /* namespace tests */

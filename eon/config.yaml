@@ -141,6 +141,19 @@ Potential:
             kind: string
             default: ext_pot
 
+        pair_switch_width:
+            kind: float
+            default: 0.0
+            # Angstrom. C^2 quintic switch over the last pair_switch_width
+            # below the cutoff of lj, ljcluster and morse_pt; 0 keeps the
+            # shifted truncation.
+
+        pair_cutoff:
+            kind: float
+            default: 0.0
+            # Angstrom. Cutoff of lj, ljcluster and morse_pt; 0 keeps
+            # each potential's own (15 for LJ, 9.5 for Morse).
+
 
 ################################################################################
 
@@ -1199,6 +1212,16 @@ Instanton:
             kind: string
             default: ""
 
+        # Rate mode: exactly beads closed-ring CON frames; cached evaluations
+        # are ignored and all physical coordinates match the reference.
+        initial_ring:
+            kind: string
+            default: ""
+
+        physical_bath_filename:
+            kind: string
+            default: ""
+
         beads:
             kind: int
             default: 256
@@ -1241,6 +1264,32 @@ Instanton:
             kind: bool
             default: true
 
+        # Physical bead-Hessian central displacement, sqrt(amu) Angstrom.
+        # Independent of directional Lanczos finite differences.
+        physical_hessian_step:
+            kind: float
+            default: 0.0001
+
+        # Maximum active ring coordinates for dense Newton; 0 selects
+        # the matrix-free dimer. The default is the 64-bit maximum.
+        # Windows long is 32 bits, so this is not LONG_MAX there.
+        newton_limit:
+            kind: int
+            default: 9223372036854775807
+
+        # Directional Lanczos displacement, sqrt(amu) Angstrom.
+        lanczos_step:
+            kind: float
+            default: 0.0001
+
+        reactant_hessian_filename:
+            kind: string
+            default: ""
+
+        saddle_hessian_filename:
+            kind: string
+            default: ""
+
         # Mode rate: where the bead Hessian blocks start. saddle copies the
         # saddle Hessian to every bead at no force calls; finite_difference
         # takes 2 f gradient calls per bead first.
@@ -1271,14 +1320,31 @@ Instanton:
                 - implicit
                 - explicit
 
+        # Fixed bath curvature eta_eff, eV/(amu Angstrom^2).
+        # Raw normal-mode frequency is dimensionless 2*abs(sin(pi*k/P)).
+        # Physical Ohmic damping maps as eta_eff=gamma_internal/(beta_P*kHbar).
+        # Coefficients are not rescaled across temperatures or bead counts.
         friction_eta:
             kind: float
             default: 0.0
 
-        # Explicit bath: comma-separated eta, one value per bead.
+        # Fixed bath curvatures in eV/(amu Angstrom^2), one per bead.
+        # Values stay fixed when differentiating the quadratic bead operator.
         friction_eta_beads:
             kind: string
             default: ""
+
+        # Mode rate: the search stops, with instanton_collapsed = 1, when B_N
+        # falls below this fraction of the starting ring's. 0 never stops.
+        collapse_fraction:
+            kind: float
+            default: 0.0001
+
+        # A reactant rotation is a zero mode when its curvature r^T H r /
+        # r^T r is at most this fraction of the softest vibration.
+        rotation_zero_fraction:
+            kind: float
+            default: 0.1
 
         # Start at a quarter of the beads and double up to the requested
         # count. Off searches the requested count directly.

@@ -52,14 +52,9 @@ std::vector<std::string> ProcessSearchJob::run() {
   }
   saddle = std::make_shared<Matter>(pot, params);
   // Give min2 its own potential for parallel endpoint minimization.
-  // A clone keeps this job's potential; makePotential rebuilds from the
-  // configuration and is the fallback for backends that cannot clone.
   std::shared_ptr<Potential> min2Pot = pot;
   if (pot->needsPerImageInstance() && params.main_options().parallel) {
-    auto cloned = pot->clonePotential();
-    min2Pot = cloned ? cloned
-                     : eonc::helpers::sharePotential(
-                           eonc::helpers::makePotential(params));
+    min2Pot = eonc::helpers::makeImagePotential(*pot, params);
   }
   min1 = std::make_shared<Matter>(pot, params);
   min2 = std::make_shared<Matter>(min2Pot, params);
@@ -190,14 +185,9 @@ ProcessSearchJob::runFromMatter(std::shared_ptr<Matter> seed) {
   }
   initial = seed;
   initial->setPotential(pot);
-  // A clone keeps this job's potential; makePotential rebuilds from the
-  // configuration and is the fallback for backends that cannot clone.
   std::shared_ptr<Potential> min2Pot = pot;
   if (pot->needsPerImageInstance() && params.main_options().parallel) {
-    auto cloned = pot->clonePotential();
-    min2Pot = cloned ? cloned
-                     : eonc::helpers::sharePotential(
-                           eonc::helpers::makePotential(params));
+    min2Pot = eonc::helpers::makeImagePotential(*pot, params);
   }
   displacement = std::make_shared<Matter>(pot, params);
   saddle = std::make_shared<Matter>(pot, params);
@@ -247,7 +237,7 @@ int ProcessSearchJob::doProcessSearch() {
   long status;
   size_t fctmp{0};
 
-  fctmp = pot->forceCallCounter;
+  fctmp = potRegistryForceCalls();
   status = saddleSearch->run();
   if (params.saddle_search_options().method == "min_mode" &&
       params.saddle_search_options().minmode_method ==
@@ -256,7 +246,7 @@ int ProcessSearchJob::doProcessSearch() {
   } else if (params.saddle_search_options().method == "artn") {
     fCallsSaddle += saddleSearch->getForceCalls();
   } else {
-    fCallsSaddle += pot->forceCallCounter - fctmp;
+    fCallsSaddle += potRegistryForceCalls() - fctmp;
   }
   EONC_LOG_DEBUG("Got {} calls in the saddle search, with previous {}",
                  fCallsSaddle, fctmp);

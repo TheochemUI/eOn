@@ -393,6 +393,8 @@ TEST_CASE("JSON round-trips every Instanton and Hessian key",
   o.half_ring = false;
   o.initial_hessians = "finite_difference";
   o.energy_shift = -1.25;
+  o.collapse_fraction = 2e-5;
+  o.rotation_zero_fraction = 0.05;
   o.bead_ladder = true;
   o.hessian_final = "interpolated";
   o.springs = "trotter";
@@ -423,6 +425,8 @@ TEST_CASE("JSON round-trips every Instanton and Hessian key",
   REQUIRE_FALSE(l.half_ring);
   REQUIRE(l.initial_hessians == "finite_difference");
   REQUIRE(l.energy_shift == Catch::Approx(-1.25));
+  REQUIRE(l.collapse_fraction == Catch::Approx(2e-5));
+  REQUIRE(l.rotation_zero_fraction == Catch::Approx(0.05));
   REQUIRE(l.bead_ladder);
   REQUIRE(l.hessian_final == "interpolated");
   REQUIRE(l.springs == "trotter");
@@ -507,6 +511,106 @@ TEST_CASE("JSON RgpotPot omits xtb_charge resets it from charge",
   nlohmann::json present = {{"RgpotPot", {{"charge", 5}, {"xtb_charge", 2.5}}}};
   eonc::config::from_json(present, kept);
   REQUIRE(kept.rgpot_options().xtb_charge == Catch::Approx(2.5));
+}
+
+TEST_CASE("Physical Hessian displacement survives INI and JSON configuration",
+          "[params][json][PhysicalHessianStep]") {
+  Parameters defaults;
+  REQUIRE(defaults.instanton_options().physical_hessian_step ==
+          Catch::Approx(1e-4));
+  Parameters ini;
+  REQUIRE(ini.load_ini_text("[Instanton]\nphysical_hessian_step = 0.0003\n") ==
+          0);
+  REQUIRE(ini.instanton_options().physical_hessian_step == Catch::Approx(3e-4));
+  Parameters roundtrip;
+  roundtrip.load_json(ini.to_json());
+  REQUIRE(roundtrip.instanton_options().physical_hessian_step ==
+          Catch::Approx(3e-4));
+  REQUIRE_THROWS_AS(
+      ini.load_ini_text("[Instanton]\nphysical_hessian_step = 0\n"),
+      std::invalid_argument);
+  const auto invalidStep = nlohmann::json::parse(
+      R"({"Instanton":{"physical_hessian_step":-0.001}})");
+  REQUIRE(roundtrip.load_json(invalidStep.dump()) != 0);
+  REQUIRE_THROWS_AS(eonc::config::from_json(invalidStep, roundtrip),
+                    std::invalid_argument);
+}
+
+TEST_CASE("Rate optimizer limit and reference Hessian paths round trip",
+          "[params][json][NewtonLimit]") {
+  Parameters defaults;
+  REQUIRE(defaults.instanton_options().newton_limit ==
+          std::numeric_limits<std::int64_t>::max());
+  REQUIRE(defaults.instanton_options().reactant_hessian_filename.empty());
+  REQUIRE(defaults.instanton_options().saddle_hessian_filename.empty());
+  Parameters ini;
+  REQUIRE(ini.load_ini_text("[Instanton]\nnewton_limit = 0\n"
+                            "reactant_hessian_filename = reactant-hessian.dat\n"
+                            "saddle_hessian_filename = saddle-hessian.dat\n") ==
+          0);
+  REQUIRE(ini.instanton_options().newton_limit == 0);
+  REQUIRE(ini.instanton_options().reactant_hessian_filename ==
+          "reactant-hessian.dat");
+  REQUIRE(ini.instanton_options().saddle_hessian_filename ==
+          "saddle-hessian.dat");
+  Parameters roundtrip;
+  REQUIRE(roundtrip.load_json(ini.to_json()) == 0);
+  REQUIRE(roundtrip.instanton_options().newton_limit == 0);
+  REQUIRE(roundtrip.instanton_options().reactant_hessian_filename ==
+          "reactant-hessian.dat");
+  REQUIRE(roundtrip.instanton_options().saddle_hessian_filename ==
+          "saddle-hessian.dat");
+  REQUIRE(ini.load_ini_text("[Instanton]\nnewton_limit = 2048\n") == 0);
+  REQUIRE(ini.instanton_options().newton_limit == 2048);
+  REQUIRE_THROWS_AS(ini.load_ini_text("[Instanton]\nnewton_limit = -1\n"),
+                    std::invalid_argument);
+  const auto invalid =
+      nlohmann::json::parse(R"({"Instanton":{"newton_limit":-1}})");
+  REQUIRE(roundtrip.load_json(invalid.dump()) != 0);
+  REQUIRE_THROWS_AS(eonc::config::from_json(invalid, roundtrip),
+                    std::invalid_argument);
+}
+
+TEST_CASE("Directional Lanczos displacement is positive finite and independent",
+          "[params][json][LanczosStep]") {
+  Parameters defaults;
+  REQUIRE(defaults.instanton_options().lanczos_step == Catch::Approx(1e-4));
+  Parameters configured;
+  REQUIRE(configured.load_ini_text("[Instanton]\nlanczos_step = 0.002\n") == 0);
+  REQUIRE(configured.instanton_options().lanczos_step == Catch::Approx(0.002));
+  REQUIRE(configured.instanton_options().physical_hessian_step ==
+          Catch::Approx(1e-4));
+  Parameters restored;
+  REQUIRE(restored.load_json(configured.to_json()) == 0);
+  REQUIRE(restored.instanton_options().lanczos_step == Catch::Approx(0.002));
+  REQUIRE_THROWS_AS(configured.load_ini_text("[Instanton]\nlanczos_step = 0\n"),
+                    std::invalid_argument);
+  REQUIRE_THROWS_AS(
+      configured.load_ini_text("[Instanton]\nlanczos_step = -0.001\n"),
+      std::invalid_argument);
+  for (const double step :
+       {0.0, -0.001, std::numeric_limits<double>::infinity(),
+        std::numeric_limits<double>::quiet_NaN()}) {
+    const nlohmann::json invalid = {{"Instanton", {{"lanczos_step", step}}}};
+    REQUIRE(restored.load_json(invalid.dump()) != 0);
+    REQUIRE_THROWS_AS(eonc::config::from_json(invalid, restored),
+                      std::invalid_argument);
+  }
+}
+
+TEST_CASE("Closed ring seed filename round trips through INI and JSON",
+          "[params][json][InitialRing]") {
+  Parameters defaults;
+  REQUIRE(defaults.instanton_options().initial_ring.empty());
+  Parameters configured;
+  REQUIRE(configured.load_ini_text(
+              "[Instanton]\ninitial_ring = retained-ring.con\n") == 0);
+  REQUIRE(configured.instanton_options().initial_ring == "retained-ring.con");
+  REQUIRE(configured.instanton_options().initial_path.empty());
+  Parameters restored;
+  REQUIRE(restored.load_json(configured.to_json()) == 0);
+  REQUIRE(restored.instanton_options().initial_ring == "retained-ring.con");
+  REQUIRE(restored.instanton_options().initial_path.empty());
 }
 
 } /* namespace tests */

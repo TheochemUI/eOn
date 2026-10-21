@@ -93,6 +93,8 @@ exclude_patterns = [
 html_theme = "shibuya"
 html_title = "eOn"
 html_static_path = ["_static"]
+# Shibuya drops sphinx_favicon's metatags, so set the theme favicon too.
+html_favicon = "_static/favicons/favicon.ico"
 # llms.txt and config.ini JSON Schema, copied to the HTML root.
 html_extra_path = ["_extra"]
 html_css_files = ["custom.css"]
@@ -135,9 +137,9 @@ html_theme_options = {
             ],
         },
     ],
-    # Paths are relative to html_static_path. A nested "logo" dict is not a theme option.
-    "light_logo": "logo/eon_v3_light.svg",
-    "dark_logo": "logo/eon_v3_dark.svg",
+    # Shibuya passes these to pathto(), so they are relative to the site root.
+    "light_logo": "_static/logo/eon_v3_light.svg",
+    "dark_logo": "_static/logo/eon_v3_dark.svg",
 }
 
 # Each configuration model is a field list, in class order, with its default.

@@ -27,11 +27,14 @@ std::vector<std::string> PointJob::run() {
   std::string resultsFilename("results.dat");
 
   auto pos = std::make_unique<Matter>(std::move(ownedPot), params);
-  if (!eonc::io::io_ok(pos->con2matter(posInFilename))) {
+  if (!eonc::io::io_ok(pos->inp2matter(posInFilename))) {
     QUILL_LOG_CRITICAL(log, "Failed to load {}", posInFilename);
     throw std::runtime_error("failed to load " + posInFilename);
   }
 
+  // A point job evaluates the selected potential even when the input
+  // contains a saved energy and force evaluation.
+  pos->setPositions(pos->getPositions());
   QUILL_LOG_DEBUG(log, "Energy:         {:.12f}", pos->getPotentialEnergy());
   std::stringstream freeForcesStream;
   freeForcesStream << pos->getForcesFree();
@@ -43,7 +46,7 @@ std::vector<std::string> PointJob::run() {
   // writes and eon.explorer reads.
   auto env = JobResultEnvelope::fromMinimization(
       RunStatus::GOOD, params.potential_options().potential,
-      PotRegistry::get().total_force_calls(), true, pos->getPotentialEnergy());
+      pots().total_force_calls(), true, pos->getPotentialEnergy());
   env.provenance = provenanceForJob(params);
   env.job_type = "point";
   env.extras.emplace_back("Energy", pos->getPotentialEnergy());

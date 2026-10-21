@@ -1,0 +1,17 @@
+--- a/include/chemfiles/parse.hpp
++++ b/include/chemfiles/parse.hpp
+@@ -19,6 +19,14 @@ namespace chemfiles {
+ /// Convert a input to `T`, throwing a `chemfiles::Error` if the input is not
+ /// a valid `T`.
+ template<typename T> T parse(string_view input);
++// MSVC instantiates the non-dependent parse<int64_t> / parse<uint64_t>
++// calls in parse_integer while it is still parsing this header. That
++// happens before the specializations below, so the primary template is
++// already instantiated and the later declarations are rejected (C2908).
++// GCC does not instantiate them that early. Declare the specializations
++// first; the definitions stay in parse.cpp.
++template<> int64_t parse(string_view input);
++template<> uint64_t parse(string_view input);
+ 
+ namespace detail {
+     /// Helper for the static_assert below

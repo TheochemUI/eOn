@@ -170,7 +170,7 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
           QUILL_LOG_DEBUG(log, "[ParallelReplica] Refining transition time");
           int snapshotIndex;
           {
-            eonc::ForceCallTimer timer(refineForceCalls);
+            eonc::ForceCallTimer timer(refineForceCalls, *pot);
             snapshotIndex = refineTransition(mdSnapshots);
           }
           if (snapshotIndex < 0)
@@ -206,7 +206,7 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
           QUILL_LOG_DEBUG(
               log, "[ParallelReplica] Refining anyways to prevent bias...");
           {
-            eonc::ForceCallTimer timer(refineForceCalls);
+            eonc::ForceCallTimer timer(refineForceCalls, *pot);
             refineTransition(mdSnapshots, true);
           }
         }
@@ -254,7 +254,7 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
                          reactant->getPotentialEnergy());
       out << std::format("{} force_calls_refine\n", refineForceCalls);
       out << std::format("{} total_force_calls\n",
-                         PotRegistry::get().total_force_calls());
+                         pot->forceCallCounter.load());
 
       if (transitionTime == 0) {
         out << "0 transition_found\n";

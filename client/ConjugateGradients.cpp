@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/ConjugateGradients.h"
+#include "eon/ExactReduction.h"
 #include "eon/SafeMath.h"
 
 #include <cmath>
@@ -17,18 +18,19 @@
 namespace eonc {
 
 Eigen::VectorXd ConjugateGradients::getStep() {
-  double a = std::abs(m_force.dot(m_forceOld));
-  double b = m_forceOld.squaredNorm();
+  double a = std::abs(eonc::exact::dot(m_force, m_forceOld));
+  double b = eonc::exact::squaredNorm(m_forceOld);
   double gamma = 0.0;
   if (a < 0.5 * b) {
     // Polak-Ribiere way to determine how much to mix in of old direction
-    gamma = eonc::safemath::safe_div(m_force.dot(m_force - m_forceOld), b, 0.0);
+    gamma = eonc::safemath::safe_div(
+        eonc::exact::dot(m_force, m_force - m_forceOld), b, 0.0);
   } else {
     gamma = 0;
   }
   m_direction = m_force + gamma * m_directionOld;
   m_directionNorm = m_direction;
-  eonc::safemath::safe_normalize_inplace(m_directionNorm);
+  m_directionNorm = eonc::exact::normalized(m_directionNorm);
   m_directionOld = m_direction;
   m_forceOld = m_force;
 
@@ -69,14 +71,14 @@ int ConjugateGradients::line_search(double a_maxMove) {
   m_force = forceBeforeStep;
   getStep();
   pos = m_objf->getPositions();
-  projectedForceBeforeStep = m_force.dot(m_directionNorm);
+  projectedForceBeforeStep = eonc::exact::dot(m_force, m_directionNorm);
 
   // move system an infinitesimal step to determine the optimal step size along
   // the search line
   posStep = pos + m_directionNorm * m_optConfig.finiteDifference;
   m_objf->setPositions(posStep);
   m_force = -m_objf->getGradient(true);
-  projectedForce = m_force.dot(m_directionNorm);
+  projectedForce = eonc::exact::dot(m_force, m_directionNorm);
   stepSize = m_optConfig.finiteDifference;
 
   int line_i = 0;
@@ -99,7 +101,7 @@ int ConjugateGradients::line_search(double a_maxMove) {
     pos += stepSize * m_directionNorm;
     m_objf->setPositions(pos);
     m_force = -m_objf->getGradient();
-    projectedForce = m_force.dot(m_directionNorm);
+    projectedForce = eonc::exact::dot(m_force, m_directionNorm);
 
     line_i += 1;
 
@@ -107,7 +109,7 @@ int ConjugateGradients::line_search(double a_maxMove) {
     // force and the norm of the true force
   } while (m_optConfig.opts.cg.line_converged <
                std::abs(projectedForce) /
-                   (std::sqrt(m_force.dot(m_force) +
+                   (std::sqrt(eonc::exact::dot(m_force, m_force) +
                               m_optConfig.opts.cg.line_converged)) &&
            line_i < m_optConfig.opts.cg.line_search_max_iter);
   if (m_objf->isConverged())
@@ -131,8 +133,8 @@ int ConjugateGradients::single_step(double a_maxMove) {
   forceAfterStep = -m_objf->getGradient(true);
 
   // Determine curvature
-  double projectedForce1 = m_force.dot(m_directionNorm);
-  double projectedForce2 = forceAfterStep.dot(m_directionNorm);
+  double projectedForce1 = eonc::exact::dot(m_force, m_directionNorm);
+  double projectedForce2 = eonc::exact::dot(forceAfterStep, m_directionNorm);
   double curvature = eonc::safemath::safe_div(
       projectedForce1 - projectedForce2, m_optConfig.finiteDifference, 0.0);
 
@@ -168,7 +170,7 @@ int ConjugateGradients::single_step(double a_maxMove) {
                           stepSize * m_directionNorm, a_maxMove);
       m_objf->setPositions(posStep);
       forceAfterStep = -m_objf->getGradient(true);
-      projectedForce2 = forceAfterStep.dot(m_directionNorm);
+      projectedForce2 = eonc::exact::dot(forceAfterStep, m_directionNorm);
 
       passedMinimum = projectedForce1 * projectedForce2;
       if (passedMinimum < 0.0 &&

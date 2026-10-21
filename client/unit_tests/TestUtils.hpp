@@ -13,10 +13,17 @@
 
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/EonLogger.h"
+#include "eon/Parameters.h"
+#include "eon/Potential.h"
 #include "eonc_test_aliases.hpp"
 #include "quill/Backend.h"
 #include "quill/Frontend.h"
 #include "quill/sinks/NullSink.h"
+#include <functional>
+#include <memory>
+#include <mutex>
+#include <set>
+#include <thread>
 
 namespace eonc::helpers::test {
 
@@ -78,6 +85,62 @@ struct QuillTestLogger {
     }
   }
   ~QuillTestLogger() = default;
+};
+
+/// LJ forces through a potential that asks for one instance per image, as
+/// rgpot's neighbour-table kernels do. Every instance records the threads
+/// that called it into one shared set.
+class PerImageLJ final : public eonc::Potential {
+public:
+  struct Threads {
+    std::mutex mu;
+    std::set<std::thread::id> ids;
+  };
+
+  explicit PerImageLJ(std::shared_ptr<Threads> threads,
+                      std::function<void()> on_force = {})
+      : Potential(PotType::LJ),
+        threads_{std::move(threads)},
+        on_force_{std::move(on_force)},
+        lj_{makeLJ()} {}
+  PerImageLJ(std::shared_ptr<Threads> threads, eonc::IPotRegistry &registry,
+             std::function<void()> on_force = {})
+      : Potential(PotType::LJ, registry),
+        threads_{std::move(threads)},
+        on_force_{std::move(on_force)},
+        lj_{makeLJ()} {}
+
+  [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+  [[nodiscard]] bool needsPerImageInstance() const noexcept override {
+    return true;
+  }
+  [[nodiscard]] std::shared_ptr<eonc::Potential>
+  clonePotential() const override {
+    return std::make_shared<PerImageLJ>(threads_, on_force_);
+  }
+
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    {
+      std::lock_guard<std::mutex> lock(threads_->mu);
+      threads_->ids.insert(std::this_thread::get_id());
+    }
+    if (on_force_) {
+      on_force_();
+    }
+    lj_->force(nAtoms, positions, atomicNrs, forces, energy, variance, box);
+  }
+
+private:
+  static std::unique_ptr<eonc::Potential> makeLJ() {
+    Parameters params;
+    return eonc::helpers::makePotential(PotType::LJ, params);
+  }
+
+  std::shared_ptr<Threads> threads_;
+  std::function<void()> on_force_;
+  std::unique_ptr<eonc::Potential> lj_;
 };
 
 } // namespace eonc::helpers::test

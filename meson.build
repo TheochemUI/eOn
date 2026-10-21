@@ -118,6 +118,20 @@ endif
 # Client binary / libs (+ optional pyeonclient)
 subdir('client')
 
+if get_option('with_tests')
+    test(
+        'test_build_version',
+        py,
+        args: [
+            '-m', 'unittest', 'discover',
+            '-s', meson.project_source_root() / 'tools' / 'tests',
+            '-p', 'test_client_version*.py',
+        ],
+        suite: 'build',
+        timeout: 120,
+    )
+endif
+
 # Public headers: $prefix/include/eon/... (numpy/fmt package layout).
 # Sources stay under client/; consumers use -I$prefix/include and
 # #include "eon/Potential.h".

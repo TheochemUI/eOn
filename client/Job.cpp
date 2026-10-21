@@ -24,6 +24,7 @@
 #include "eon/ParallelReplicaJob.h"
 #include "eon/Parameters.h"
 #include "eon/PointJob.h"
+#include "eon/PotRegistry.h"
 #include "eon/PrefactorJob.h"
 #include "eon/ProcessSearchJob.h"
 #include "eon/ReplicaExchangeJob.h"
@@ -39,6 +40,14 @@ namespace eonc {
 // Referenced from makeJob so MSVC does not drop this TU from a static
 // eonclib (anonymous-namespace registrars would never run).
 void forceJobRegistration() {}
+
+size_t Job::potRegistryForceCalls() const noexcept {
+  if (const auto *registry =
+          dynamic_cast<const PotRegistry *>(&pot->registry())) {
+    return registry->total_force_calls();
+  }
+  return pot->forceCallCounter;
+}
 } // namespace eonc
 
 #ifdef WITH_GP_SURROGATE

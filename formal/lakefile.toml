@@ -1,0 +1,9 @@
+name = "EonFormal"
+defaultTargets = ["EonFormal"]
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+
+[[lean_lib]]
+name = "EonFormal"

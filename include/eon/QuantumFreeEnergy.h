@@ -26,9 +26,9 @@ double perpendicularHarmonicFreeEnergy(const Eigen::MatrixXd &hessian,
 
 /// F(s) = V(s) + the perpendicular harmonic free energy, one entry per image.
 /// The tangent is the Cartesian NEB tangent, mass-weighted inside.
-std::vector<double> quantumFreeEnergies(
-    const std::vector<std::shared_ptr<Matter>> &path,
-    const std::vector<std::shared_ptr<AtomMatrix>> &tangent, double temperature,
-    const Parameters &params);
+std::vector<double>
+quantumFreeEnergies(const std::vector<std::shared_ptr<Matter>> &path,
+                    const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
+                    double temperature, const Parameters &params);
 
 } // namespace eonc

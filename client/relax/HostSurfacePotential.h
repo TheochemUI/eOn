@@ -147,8 +147,7 @@ public:
     }
     if (count_calls_) {
       for (long s = 0; s < nSystems; ++s) {
-        forceCallCounter++;
-        PotRegistry::get().on_force_call(ptype);
+        recordForceCall();
       }
     }
     for (long s = 0; s < nSystems; ++s) {

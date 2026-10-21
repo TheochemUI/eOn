@@ -8,6 +8,7 @@ permissions:
 jobs:
   build_eon:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
     name: test (${{ matrix.os }})
     strategy:
       fail-fast: false
@@ -109,7 +110,8 @@ jobs:
         shell: pixi run bash -e {0}
         run: |
           # with_tests defaults true; catch compile/link failures in unit tests.
-          meson test -C bbdir --suite eon --print-errorlogs
+          # The default error log is 100 lines and hid the failing assertion.
+          meson test -C bbdir --suite eon --print-errorlogs --max-lines 100000
 
       - name: Run rgpot potential tests [linux]
         if: runner.os == 'Linux'
@@ -203,18 +205,19 @@ jobs:
           unset LDFLAGS CFLAGS CXXFLAGS FCFLAGS || true
           export CC=cl CXX=cl
           export AR=lib
-          meson test -C bbdir --suite eon --print-errorlogs
+          # The default error log is 100 lines and hid the failing assertion.
+          meson test -C bbdir --suite eon --print-errorlogs --max-lines 100000
 
       - name: Run Python tests
         if: runner.os != 'Windows'
         shell: pixi run bash -e {0}
         run: |
           python tools/gitversion.py --write eon/version.py
-          python -m pip install -q 'pytest>=8' 'pytest-datadir>=1.5' 'sh>=2'
+          python -m pip install -q 'pytest>=8' 'pytest-datadir>=1.5' 'pytest-timeout>=2' 'sh>=2'
           # Wheel rebuild lives in pyeonclient-wheels.yml; this job already
           # compiled the client and does not ship capnp-rpc.pc.
           export PYEONCLIENT_SKIP_WHEEL_BUILD=1
-          python -m pytest tests/ -q --ignore=tests/release
+          python -m pytest tests/ -q --ignore=tests/release --timeout=120
 
       - name: Run server smoke tests
         shell: pixi run bash -e {0}
