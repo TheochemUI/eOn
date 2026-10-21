@@ -39,6 +39,19 @@ void rejectNonFiniteBatch(long nAtoms, const double *forces, double energy) {
   }
 }
 
+double atanRatioOrHalfPi(double num, double denom) {
+  if (!std::isfinite(num) || !std::isfinite(denom)) {
+    return 0.0;
+  }
+  if (std::abs(denom) < eonc::safemath::eps) {
+    if (std::abs(num) < eonc::safemath::eps) {
+      return 0.0;
+    }
+    return std::copysign(eonc::helpers::pi * 0.5, num);
+  }
+  return std::atan(num / denom);
+}
+
 } // namespace
 
 Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
@@ -140,8 +153,7 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
           (rotForce1 - rotForce2) / params.dimer_options().rotation_angle;
       double forceDimer = (rotForce1 + rotForce2) / 2.0;
 
-      rotationAngle = eonc::safemath::safe_atan_ratio(2.0 * forceDimer,
-                                                      rotForceChange, 0.0) /
+      rotationAngle = atanRatioOrHalfPi(2.0 * forceDimer, rotForceChange) /
                           2.0 -
                       params.dimer_options().rotation_angle / 2.0;
 
