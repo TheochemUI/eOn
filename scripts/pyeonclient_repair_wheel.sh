@@ -165,8 +165,22 @@ repair_one() {
           unset IFS
         fi
         if [[ -z "${resolved:-}" || ! -f "$resolved" ]]; then
-          # still missing — try find under search roots (SONAME or so.N.X.Y)
+          # still missing. Try find under search roots (SONAME or so.N.X.Y).
           resolved="$(find ${search//:/ } -maxdepth 6 \( -name "$needed" -o -name "${needed}.*" \) 2>/dev/null | head -1 || true)"
+        fi
+        # rgpot 3.5.1's file is librgpot.so.3.5.1 and its SONAME is
+        # librgpot.so.4. A copy named for the project version does not
+        # match the NEEDED entry. Take the file whose SONAME does.
+        if [[ -z "${resolved:-}" || ! -f "$resolved" ]] && [[ "$needed" == librgpot.so.* ]]; then
+          local cand soname
+          while IFS= read -r -d '' cand; do
+            soname="$(readelf -d "$cand" 2>/dev/null | sed -n 's/.*Library soname: \[\(.*\)\]/\1/p' || true)"
+            if [[ "$soname" == "$needed" ]]; then
+              resolved="$cand"
+              break
+            fi
+          done < <(find "$work" "${PYEONCLIENT_BUILD_ROOT:-$PWD}" /project \
+            \( -name 'librgpot.so' -o -name 'librgpot.so.*' \) -print0 2>/dev/null)
         fi
         if [[ -z "${resolved:-}" || ! -f "$resolved" ]]; then
           echo "WARNING: cannot resolve NEEDED $needed (from $(basename "$so"))" >&2
