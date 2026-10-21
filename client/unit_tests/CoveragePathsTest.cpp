@@ -42,6 +42,7 @@
 #include "eon/PrefactorJob.h"
 #include "eon/ProcessSearchJob.h"
 #include "eon/QuantumFreeEnergy.h"
+#include "eon/RandomNumbers.h"
 #include "eon/Runtime.h"
 #include "eon/SafeHyperJob.h"
 #include "eon/SurrogatePotential.h"
@@ -1770,7 +1771,16 @@ TEST_CASE("a recorded replica buffer refines the crossing",
   // to outlive every Matter that setPotential() pointed at that potential.
   eonc::Runtime runtime;
   Parameters params = ljParams();
-  ParametersLoadAccess::dynamics_options(params).time_step = 1.0;
+  // An earlier load_ini_text in this binary omits random_seed, so the
+  // process RNG is seeded from the clock. A step of one internal time
+  // unit is 10.18 fs; on this hydrogen cluster some of those draws put
+  // two atoms on a Lennard-Jones singularity and the potential throws.
+  // Pin the stream and integrate at 1 fs. The record interval matches
+  // the step, so every frame is buffered, and the state check stays at
+  // 100 steps, so that buffer is refined once, at the end.
+  eonc::rng::random(42);
+  const double femtosecond = 1.0 / params.constants().timeUnit;
+  ParametersLoadAccess::dynamics_options(params).time_step = femtosecond;
   ParametersLoadAccess::dynamics_options(params).steps = 4;
   ParametersLoadAccess::main_options(params).temperature = 800.0;
   ParametersLoadAccess::optimizer_options(params).max_iterations = 0;
@@ -1778,8 +1788,9 @@ TEST_CASE("a recorded replica buffer refines the crossing",
   ParametersLoadAccess::parallel_replica_options(params).refine_transition =
       true;
   ParametersLoadAccess::parallel_replica_options(params).state_check_interval =
-      100.0;
-  ParametersLoadAccess::parallel_replica_options(params).record_interval = 1.0;
+      100.0 * femtosecond;
+  ParametersLoadAccess::parallel_replica_options(params).record_interval =
+      femtosecond;
   ParametersLoadAccess::structure_comparison_options(params)
       .distance_difference = 1.0e-8;
   ParametersLoadAccess::structure_comparison_options(params)
@@ -1796,6 +1807,9 @@ TEST_CASE("a recorded replica buffer refines the crossing",
     eonc::ParallelReplicaJob job(std::move(owned), runtime);
     auto found = job.runFromMatter(hot);
     REQUIRE(found != nullptr);
+    // product.con is written only after a detected crossing, which is the
+    // path that refines the recorded buffer.
+    REQUIRE(std::filesystem::exists("product.con"));
   }
   {
     Parameters loose = params;
@@ -1804,10 +1818,14 @@ TEST_CASE("a recorded replica buffer refines the crossing",
     auto still = std::make_shared<Matter>(pot, loose);
     REQUIRE(eonc::io::io_ok(still->con2matter(std::string("reactant.con"))));
     still->setMasses(VectorXd::Ones(still->numberOfAtoms()));
+    std::filesystem::remove("product.con");
     auto owned = std::make_unique<Parameters>(loose);
     eonc::ParallelReplicaJob job(std::move(owned), runtime);
     auto found = job.runFromMatter(still);
     REQUIRE(found != nullptr);
+    // A basin-wide distance keeps every quenched frame in the reactant,
+    // so the job takes the fake refine and writes no product.
+    REQUIRE_FALSE(std::filesystem::exists("product.con"));
   }
 }
 
