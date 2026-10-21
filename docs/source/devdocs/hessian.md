@@ -90,7 +90,7 @@ Pair kernels. `LJPot`, `LJClusterPot` and `MorsePot` return `config().cutoff`. `
 
 Atom-centred Fortran kernels. The C++ face has no cutoff field. The defaults below are the values the neighbour table is built at, and the block range is twice that.
 
-- `EAMAlPot`: `rcut = 7.1` in `rgpot_eam_al.f90`. Pairs and densities are dropped by `truncation_radius`, which is inside `rcut`.
+- `EAMAlPot`: `rcut = real(7.1, real32)` in `rgpot_eam_al.f90`, the EON r2549 default-real literal. Pairs and densities are dropped by `truncation_radius`, which is inside `rcut`.
 - `SWPot`: `alpha * sigma` with `sigma = 2.0951` and `alpha = 1.8` in `rgpot_sw.f90`. The three-body term couples both ends of a triplet.
 - `TersoffPot`: taper end `s = 3.0` in `rgpot_tersoff.f90`. `cutoff_taper` is zero at and beyond `S`.
 - `EDIPPot`: `max(a, b)` with `a = b = 3.1213820` in `rgpot_edip.f90`.
