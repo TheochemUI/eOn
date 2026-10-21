@@ -444,6 +444,13 @@ CATALOG = {
           "ordinal": 11,
           "snake": "xtsci",
           "type": "OptimizerXtsciOptions"
+        },
+        {
+          "capnp": "optBackend",
+          "default": "eon",
+          "ordinal": 12,
+          "snake": "opt_backend",
+          "type": "Text"
         }
       ],
       "struct": "OptimizerOptions"

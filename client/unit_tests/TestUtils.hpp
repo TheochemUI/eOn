@@ -19,6 +19,7 @@
 #include "quill/Backend.h"
 #include "quill/Frontend.h"
 #include "quill/sinks/NullSink.h"
+#include <atomic>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -141,6 +142,30 @@ private:
   std::shared_ptr<Threads> threads_;
   std::function<void()> on_force_;
   std::unique_ptr<eonc::Potential> lj_;
+};
+
+/// Counts the kernel evaluations behind eOn's own forceCallCounter, so a
+/// test can check that a path through a library still counts every one.
+class CountingPotential final : public eonc::Potential {
+public:
+  explicit CountingPotential(std::shared_ptr<eonc::Potential> inner)
+      : Potential(PotType::LJ),
+        inner_{std::move(inner)} {}
+
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    ++kernelCalls;
+    inner_->force(nAtoms, positions, atomicNrs, forces, energy, variance, box);
+  }
+  [[nodiscard]] double finiteCutoff() const noexcept override {
+    return inner_->finiteCutoff();
+  }
+
+  std::atomic<size_t> kernelCalls{0};
+
+private:
+  std::shared_ptr<eonc::Potential> inner_;
 };
 
 } // namespace eonc::helpers::test

@@ -565,7 +565,25 @@ _XTSCI_METHODS = (
     "bb",
     "dogleg",
     "fire2",
+    "quickmin",
 )
+
+
+def test_opt_backend_catalog():
+    """[Optimizer] opt_backend agrees across the model, catalog and config.yaml."""
+    from eon_schema.config import OptimizerConfig
+    from pydantic import ValidationError
+
+    assert OptimizerConfig().opt_backend == "eon"
+    assert OptimizerConfig(opt_backend="rgmin").opt_backend == "rgmin"
+    with pytest.raises(ValidationError):
+        OptimizerConfig(opt_backend="scipy")
+    full = yaml.load(
+        (REPO / "eon" / "config.yaml").read_text(), Loader=yaml.BaseLoader
+    )
+    entry = full["Optimizer"]["options"]["opt_backend"]
+    assert entry["default"] == "eon"
+    assert set(entry["values"]) == {"eon", "rgmin"}
 
 
 def test_xtsci_engine_method_catalog():

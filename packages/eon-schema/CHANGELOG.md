@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- ``OptimizerConfig.opt_backend`` (``eon`` or ``rgmin``) picks who runs the
+  ``lbfgs``, ``fire``, ``cg``, ``sd`` and ``qm`` optimizers.
+- ``XtsciConfig.method`` accepts ``quickmin``.
+
 ## [0.2.4] — 2026-10-04
 
 ### Added

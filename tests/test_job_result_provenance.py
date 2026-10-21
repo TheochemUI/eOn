@@ -44,9 +44,9 @@ def test_jobs_fill_optimizer_provenance():
     assert instanton.count(filled) >= 2
 
     src = (ROOT / "client/JobResultProvenance.cpp").read_text(encoding="utf-8")
-    assert "xts_abi_stamp()" in src
+    assert "rgmin_abi_stamp()" in src
     assert "OptType::XTSCI" in src
-    assert "WITH_XTSCI" in src
+    assert "WITH_RGMIN" in src
     assert "WITH_RGPOT" in src
     assert "rgpot_pin" in src
     assert "'JobResultProvenance.cpp'" in (

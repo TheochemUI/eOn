@@ -14,18 +14,24 @@
 #include "eon/Optimizer.h"
 #include "eon/XtsciEindir.h"
 
-struct xts_solver_t;
+#include <string>
+
+struct rgmin_solver_t;
 
 namespace eonc {
 
-/// xtsci-optimize backend. Newton / RFO live in Rust; this class is the
-/// ObjectiveFunction + pair-Hessian waist.
+/// rgmin backend (opt_method = xtsci, or opt_backend = rgmin). Newton /
+/// RFO live in Rust; this class is the ObjectiveFunction + pair-Hessian
+/// waist.
 class XtsciOptimizer final : public Optimizer {
 public:
+  /// a_method is an [Xtsci] method token; empty reads [Xtsci] method.
   XtsciOptimizer(std::shared_ptr<ObjectiveFunction> a_objf,
-                 const Parameters &a_params)
+                 const Parameters &a_params, std::string a_method = {})
       : Optimizer(a_objf, OptType::XTSCI,
-                  OptimizerConfig::fromParams(a_params)) {}
+                  OptimizerConfig::fromParams(a_params)),
+        m_method(a_method.empty() ? m_optConfig.opts.xtsci.method
+                                  : std::move(a_method)) {}
   ~XtsciOptimizer() override;
 
   XtsciOptimizer(const XtsciOptimizer &) = delete;
@@ -34,9 +40,12 @@ public:
   int step(double a_maxMove) override;
   int run(size_t a_maxIterations, double a_maxMove) override;
 
+  const std::string &method() const { return m_method; }
+
 private:
-  // Opaque xtsci session. L-BFGS pairs / NLCG directions live here.
-  xts_solver_t *m_solver{nullptr};
+  std::string m_method;
+  // Opaque rgmin session. L-BFGS pairs / NLCG directions live here.
+  rgmin_solver_t *m_solver{nullptr};
   // Borrowed eindir objective. Null unless eindir-core is linked.
   xtsci_eindir::State *m_eindir{nullptr};
   // Last x passed to setPositions. Persists across step() so eval

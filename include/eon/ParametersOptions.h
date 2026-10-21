@@ -240,6 +240,10 @@ struct saddle_search_options_t {
 // [Optimizer] //
 struct optimizer_options_t {
   OptType method{OptType::CG};
+  /// "eon" or "rgmin". rgmin runs lbfgs, fire, cg, sd and qm as rgmin
+  /// sessions wherever the objective's gradient is the derivative of its
+  /// energy; band and min-mode translation steps stay on eOn's optimizers.
+  std::string backend{"eon"};
   std::string xtsci_method{"lbfgs"};
   struct xtsci_t {
     std::string method{"lbfgs"};

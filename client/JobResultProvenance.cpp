@@ -18,8 +18,9 @@
 #include <cctype>
 #include <string>
 
-#ifdef WITH_XTSCI
-#include <xts.h>
+#ifdef WITH_RGMIN
+#include "eon/Optimizer.h"
+#include <rgmin.h>
 #endif
 
 namespace eonc {
@@ -45,10 +46,12 @@ JobResultProvenance provenanceForJob(const Parameters &params) {
 #ifdef WITH_RGPOT
   provenance.rgpot_version = std::string(JobResultProvenance::rgpot_pin);
 #endif
-#ifdef WITH_XTSCI
-  if (params.optimizer_options().method == OptType::XTSCI) {
+#ifdef WITH_RGMIN
+  if (params.optimizer_options().method == OptType::XTSCI ||
+      helpers::create::rgminBackendMethod(params.optimizer_options().method,
+                                          params)) {
     provenance.xtsci = true;
-    const auto stamp = xts_abi_stamp();
+    const auto stamp = rgmin_abi_stamp();
     provenance.xts_abi_major = stamp.abi_major;
     provenance.xts_abi_minor = stamp.abi_minor;
     provenance.xts_abi_layout = stamp.layout_revision;

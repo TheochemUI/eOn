@@ -377,6 +377,15 @@ int load_ini(const INIReader &ini, Parameters &params) {
   if (inp_optMethod != OptType::None) {
     ParametersLoadAccess::optimizer_options(params).method = inp_optMethod;
   }
+  ParametersLoadAccess::optimizer_options(params).backend = toLowerCase(
+      ini.Get("Optimizer", "opt_backend",
+              ParametersLoadAccess::optimizer_options(params).backend));
+  if (ParametersLoadAccess::optimizer_options(params).backend != "eon" &&
+      ParametersLoadAccess::optimizer_options(params).backend != "rgmin") {
+    EONC_LOG_ERROR("unknown [Optimizer] opt_backend {} (eon, rgmin)",
+                   ParametersLoadAccess::optimizer_options(params).backend);
+    error = 1;
+  }
 
   ParametersLoadAccess::optimizer_options(params).convergence_metric =
       toLowerCase(ini.Get(

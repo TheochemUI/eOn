@@ -96,7 +96,7 @@ TEST_CASE("a job envelope takes optimizer provenance from Parameters",
   REQUIRE(xts.backend == "xtsci");
   const std::string xts_text = xts.text();
   REQUIRE(xts_text.find("xtsci optimizer_backend\n") != std::string::npos);
-#ifdef WITH_XTSCI
+#ifdef WITH_RGMIN
   REQUIRE(xts.xtsci);
   REQUIRE(xts_text.find("optimizer_xts_abi_major\n") != std::string::npos);
 #else

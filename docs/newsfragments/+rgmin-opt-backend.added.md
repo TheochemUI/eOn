@@ -1,0 +1,1 @@
+`[Optimizer] opt_backend = rgmin` runs the eOn minimizer named by `opt_method` (lbfgs, fire, cg, sd, qm) through rgmin, the Rust minimizer library, in a client that links it. Matter still evaluates every energy and force, so force-call counts keep their meaning. The NEB band and the min-mode translation step stay on eOn's optimizer. `[Xtsci] method` accepts `quickmin`.
