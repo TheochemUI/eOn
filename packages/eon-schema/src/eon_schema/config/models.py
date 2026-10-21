@@ -1742,7 +1742,23 @@ class OptimizerConfig(BaseModel):
       - ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer
       - ``fire``: Fast inertial relaxation engine
       - ``sd``: Steepest descent
-      - ``xtsci``: xtsci-optimize engine. Pick the solver with ``[Xtsci] method``. Needs ``-Dwith_xtsci=true``.
+      - ``xtsci``: rgmin engine (formerly xtsci-optimize). Pick the solver with ``[Xtsci] method``. Needs a build that links rgmin (``-Dwith_rgmin``).
+    """
+    opt_backend: Literal["eon", "rgmin"] = Field(
+        default="eon",
+        description="Who runs the lbfgs, fire, cg, sd and qm optimizers.",
+    )
+    """
+    Options:
+      - ``eon``: eOn's own optimizers (default)
+      - ``rgmin``: rgmin sessions: lbfgs is rgmin L-BFGS, fire is FIRE, cg is
+        Polak-Ribiere CG, sd is steepest descent, qm is quick-min. Needs a
+        build that links rgmin (``-Dwith_rgmin``). Applies to every
+        objective whose gradient is the derivative of its energy
+        (relaxations, the per-image IDPP path, BGSD); the nudged elastic
+        band, the collective IDPP band and min-mode translation steps stay
+        on eOn's optimizers. ``[LBFGS] lbfgs_memory`` and the ``[Xtsci]``
+        session keys still apply.
     """
     convergence_metric: Literal["norm", "rms", "max_atom", "max_component"] = Field(
         default="norm",
@@ -1917,13 +1933,14 @@ class XtsciConfig(BaseModel):
         "bb",
         "dogleg",
         "fire2",
+        "quickmin",
     ] = Field(
         default="lbfgs",
-        description="Solver inside the xtsci-optimize engine (opt_method = xtsci).",
+        description="Solver inside the rgmin engine (opt_method = xtsci).",
     )
     """
     ``opt_method = xtsci`` selects the engine. This field selects the
-    method the engine runs. Tokens match ``xts_method_t``.
+    method the engine runs. Tokens match ``rgmin_method_t``.
 
     Quasi-Newton:
       - ``lbfgs``: two-loop L-BFGS (Nocedal-Wright 7.4)
@@ -1931,7 +1948,7 @@ class XtsciConfig(BaseModel):
       - ``sr1``: inverse SR1
       - ``sr2``: SR2 Hessian update
 
-    Hessian (pair Hessian from eOn, ``xts_minimize_hess``):
+    Hessian (pair Hessian from eOn, ``rgmin_minimize_hess``):
       - ``newton``: Levenberg-shifted Newton
       - ``rfo``: Banerjee / Baker rational function optimization
 
@@ -1942,6 +1959,8 @@ class XtsciConfig(BaseModel):
       - ``fire``: Bitzek FIRE (one fused force per geometry)
       - ``fire2``: Guénolé FIRE 2.0
       - ``bb``: Barzilai-Borwein spectral step
+      - ``quickmin``: quick-min, the velocity projected on the force
+        (rgmin ABI minor 29)
 
     Trust-region Hessian (pair Hessian from eOn):
       - ``dogleg``: Powell dogleg on the host pair matrix
@@ -1954,7 +1973,7 @@ class XtsciConfig(BaseModel):
 
     qn_step: Literal["lbfgs", "newton", "rfo"] = Field(
         default="lbfgs",
-        description="How an L-BFGS session uses a host Hessian (xts_qn_step_t).",
+        description="How an L-BFGS session uses a host Hessian (rgmin_qn_step_t).",
     )
     r"""
     Only used when ``method = lbfgs``. ``lbfgs`` is two-loop with
@@ -1982,12 +2001,12 @@ class XtsciConfig(BaseModel):
     ``pair`` is the Mones PSD clip. ``pair_full`` keeps signed
     curvature. ``lindh_full`` / ``fischer`` / ``schlegel`` / ``swart``
     are Cartesian model Hessians (B^T k B). The matrix is assembled
-    in eOn and passed through ``xts_solver_step_hess``.
+    in eOn and passed through ``rgmin_solver_step_hess``.
     """
 
     accept: Literal["none", "energy", "nonmonotone"] = Field(
         default="none",
-        description="How the session takes a proposed step (xts_accept_t).",
+        description="How the session takes a proposed step (rgmin_accept_t).",
     )
     """
     ``none`` takes the maxmove-clipped step (one oracle). ``energy``
@@ -1996,12 +2015,12 @@ class XtsciConfig(BaseModel):
 
     highs: bool = Field(
         default=False,
-        description="HiGHS feasible-set step (xts_solver_set_highs).",
+        description="HiGHS feasible-set step (rgmin_solver_set_highs).",
     )
     """
     When true, xtsci asks HiGHS for the step: Newton QP on the host
     pair Hessian if one is passed, otherwise two-loop plus boxes.
-    Needs ``--features highs`` on the xtsci-optimize build.
+    Needs ``--features highs`` on the rgmin build.
     """
 
     manifold: Literal[
@@ -2014,7 +2033,7 @@ class XtsciConfig(BaseModel):
         "se3",
     ] = Field(
         default="euclidean",
-        description="Embedded manifold (xts_manifold_t).",
+        description="Embedded manifold (rgmin_manifold_t).",
     )
     """
     Euclidean is the default. Isolated molecules use

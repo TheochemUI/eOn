@@ -60,8 +60,14 @@ option('pip_metatomic', type : 'boolean', value : false, description: 'use pip v
 # Python nanobind bindings for client Matter / Parameters / Potential
 option('with_pyeonclient', type : 'boolean', value : false,
        description : 'Build pyeonclient (nanobind only; stable ABI abi3 on 3.12+, free-threaded when Py_GIL_DISABLED)')
-option('with_xtsci', type : 'boolean', value : false,
-       description : 'Enable the opt-in xtsci-optimize ObjectiveFunction backend')
+# rgmin minimizers: [Optimizer] opt_backend = rgmin, or opt_method = xtsci.
+# auto links an installed rgmin found by pkg-config (cargo cinstall
+# --features capi) and changes no result until a run selects it. There is
+# no subproject fallback, so a stray subprojects/rgmin.wrap is not built.
+option('with_rgmin', type : 'feature', value : 'auto',
+       description : 'Link rgmin for [Optimizer] opt_backend = rgmin and opt_method = xtsci. auto uses an installed rgmin (pkg-config)')
+option('with_xtsci', type : 'boolean', value : false, deprecated : true,
+       description : 'Old spelling of -Dwith_rgmin=enabled (rgmin was xtsci-optimize)')
 option('with_rgsaddle', type : 'boolean', value : false,
        description : 'NEB band and min-mode rotation through rgsaddle')
 # Install eon/ server package + eonclient CLI (disable for pyeonclient-only wheels)

@@ -337,7 +337,7 @@ features_list = [
     ['WITH_SERVE_MODE', 'Serve Mode'],
     ['WITH_RGPOT', 'RGPOT direct in-process (NWChemPot/CPMDPot dlopen)'],
     ['EMBED_PYTHON', 'Embedded Python'],
-    ['WITH_XTSCI', 'xtsci-optimize backend'],
+    ['WITH_RGMIN', 'rgmin minimizers'],
     ['WITH_RGSADDLE', 'rgsaddle band and min-mode'],
 ]
 
@@ -357,15 +357,26 @@ endif
 threads_dep = dependency('threads', required: true)
 _deps += threads_dep
 
+_rgmin_req = get_option('with_rgmin')
 if get_option('with_xtsci')
-    xtsci_dep = dependency(
-        'xtsci-optimize',
-        version: '>=0.1.0',
-        method: 'pkg-config',
-        required: true,
-    )
-    _deps += xtsci_dep
-    _args += ['-DWITH_XTSCI']
+    if _rgmin_req.disabled()
+        error('-Dwith_xtsci=true asks for rgmin, which -Dwith_rgmin=disabled turns off')
+    endif
+    _rgmin_req = true
+endif
+# 0.4.0: the rgmin_* names in rgmin.h. xtsci-optimize, the old name, is
+# not looked up; its xts.h is not installed by cargo cinstall.
+rgmin_dep = dependency(
+    'rgmin',
+    version: '>=0.4.0',
+    method: 'pkg-config',
+    required: _rgmin_req,
+    allow_fallback: false,
+)
+with_rgmin = rgmin_dep.found()
+if with_rgmin
+    _deps += rgmin_dep
+    _args += ['-DWITH_RGMIN']
     eindir_dep = dependency('eindir-core', method: 'pkg-config', required: false)
     if not eindir_dep.found()
         eindir_dep = dependency('eindir', method: 'pkg-config', required: false)
@@ -1331,7 +1342,7 @@ eonclib_sources = [
 ]
 
 eonclib_sources += ['XtsciEindir.cpp']
-if get_option('with_xtsci')
+if with_rgmin
     eonclib_sources += ['XtsciOptimizer.cpp']
 endif
 
@@ -2342,6 +2353,7 @@ if get_option('with_tests')
         # Runs without chemfiles too: the .con path and the clear refusal.
         ['test_chemfiles_io', 'ChemfilesIOTest.cpp', 'neb_morse', 300],
         ['test_minimization', 'MinimizationTest.cpp', 'neb_morse'],
+        ['test_rgmin_backend', 'RgminBackendTest.cpp', 'neb_morse'],
         ['test_optimizer', 'OptimizerTest.cpp', ''],
         ['test_fpe_handler', 'FPEHandlerTest.cpp', ''],
         ['test_dynamics', 'DynamicsTest.cpp', 'neb_morse'],

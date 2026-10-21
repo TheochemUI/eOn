@@ -18,10 +18,10 @@
 #include <string>
 #include <vector>
 
-#include <xts.h>
+#include <rgmin.h>
 
-#if XTS_ABI_VERSION_MINOR < 10
-#error "xtsci-optimize ABI minor 10 or newer is required for set_periodic"
+#if RGMIN_ABI_VERSION_MINOR < 10
+#error "rgmin ABI minor 10 or newer is required for set_periodic"
 #endif
 
 namespace {
@@ -43,7 +43,7 @@ map_input(const DLManagedTensorVersioned *tensor) {
   if (dl.ndim != 1 || dl.dtype.code != kDLFloat || dl.dtype.bits != 64 ||
       dl.dtype.lanes != 1 || dl.device.device_type != kDLCPU ||
       dl.shape == nullptr || dl.data == nullptr) {
-    throw std::runtime_error("xtsci objective requires a CPU f64 vector");
+    throw std::runtime_error("rgmin objective requires a CPU f64 vector");
   }
   return {static_cast<const double *>(dl.data) +
               dl.byte_offset / sizeof(double),
@@ -55,7 +55,7 @@ Eigen::Map<Eigen::VectorXd> map_output(DLManagedTensorVersioned *tensor) {
   if (dl.ndim != 1 || dl.dtype.code != kDLFloat || dl.dtype.bits != 64 ||
       dl.dtype.lanes != 1 || dl.device.device_type != kDLCPU ||
       dl.shape == nullptr || dl.data == nullptr) {
-    throw std::runtime_error("xtsci tensor requires a CPU f64 vector");
+    throw std::runtime_error("rgmin tensor requires a CPU f64 vector");
   }
   return {static_cast<double *>(dl.data) + dl.byte_offset / sizeof(double),
           static_cast<Eigen::Index>(dl.shape[0])};
@@ -87,13 +87,13 @@ void set_positions_if_changed(eonc::ObjectiveFunction *obj,
 }
 
 // One Matter::computePotential. Energy and forces share that call.
-xts_status_t evaluate_gradient(void *user, const DLManagedTensorVersioned *x,
-                               double *value_out,
-                               DLManagedTensorVersioned *gradient_out) {
+rgmin_status_t evaluate_gradient(void *user, const DLManagedTensorVersioned *x,
+                                 double *value_out,
+                                 DLManagedTensorVersioned *gradient_out) {
   try {
     auto *context = static_cast<XtsObjectiveContext *>(user);
     if (context->eindir != nullptr) {
-      return static_cast<xts_status_t>(eonc::xtsci_eindir::eval_grad(
+      return static_cast<rgmin_status_t>(eonc::xtsci_eindir::eval_grad(
           context->eindir, x, value_out, gradient_out));
     }
     const auto positions = map_input(x);
@@ -102,17 +102,17 @@ xts_status_t evaluate_gradient(void *user, const DLManagedTensorVersioned *x,
     const auto gradient_value = context->objective->getGradient();
     auto output = map_output(gradient_out);
     if (output.size() != gradient_value.size()) {
-      return XTS_INVALID_PARAMETER;
+      return RGMIN_INVALID_PARAMETER;
     }
     output = gradient_value;
-    return XTS_SUCCESS;
+    return RGMIN_SUCCESS;
   } catch (...) {
-    return XTS_INTERNAL_ERROR;
+    return RGMIN_INTERNAL_ERROR;
   }
 }
 
-xts_status_t hessian(void *user, const DLManagedTensorVersioned *x,
-                     DLManagedTensorVersioned *hess_out) {
+rgmin_status_t hessian(void *user, const DLManagedTensorVersioned *x,
+                       DLManagedTensorVersioned *hess_out) {
   try {
     auto *context = static_cast<XtsObjectiveContext *>(user);
     const auto positions = map_input(x);
@@ -122,89 +122,94 @@ xts_status_t hessian(void *user, const DLManagedTensorVersioned *x,
     auto output = map_output(hess_out);
     const Eigen::Index n = H.rows();
     if (output.size() != n * n) {
-      return XTS_INVALID_PARAMETER;
+      return RGMIN_INVALID_PARAMETER;
     }
     for (Eigen::Index i = 0; i < n; ++i) {
       for (Eigen::Index j = 0; j < n; ++j) {
         output[i * n + j] = H(i, j);
       }
     }
-    return XTS_SUCCESS;
+    return RGMIN_SUCCESS;
   } catch (...) {
-    return XTS_INTERNAL_ERROR;
+    return RGMIN_INTERNAL_ERROR;
   }
 }
 
-xts_method_t method_from_name(const std::string &name) {
+rgmin_method_t method_from_name(const std::string &name) {
   if (name == "lbfgs") {
-    return XTS_LBFGS;
+    return RGMIN_LBFGS;
   }
   if (name == "bfgs") {
-    return XTS_BFGS;
+    return RGMIN_BFGS;
   }
   if (name == "sr1") {
-    return XTS_SR1;
+    return RGMIN_SR1;
   }
   if (name == "sr2") {
-    return XTS_SR2;
+    return RGMIN_SR2;
   }
   if (name == "newton") {
-    return XTS_NEWTON;
+    return RGMIN_NEWTON;
   }
   if (name == "rfo") {
-    return XTS_RFO;
+    return RGMIN_RFO;
   }
   if (name == "steepest") {
-    return XTS_STEEPEST;
+    return RGMIN_STEEPEST;
   }
   if (name == "adam") {
-    return XTS_ADAM;
+    return RGMIN_ADAM;
   }
   if (name == "pso") {
-    return XTS_PSO;
+    return RGMIN_PSO;
   }
   if (name == "polak_ribiere" || name == "nlcg" || name == "pr") {
-    return XTS_POLAK_RIBIERE;
+    return RGMIN_POLAK_RIBIERE;
   }
   if (name == "fletcher_reeves") {
-    return XTS_FLETCHER_REEVES;
+    return RGMIN_FLETCHER_REEVES;
   }
   if (name == "hestenes_stiefel") {
-    return XTS_HESTENES_STIEFEL;
+    return RGMIN_HESTENES_STIEFEL;
   }
   if (name == "dai_yuan") {
-    return XTS_DAI_YUAN;
+    return RGMIN_DAI_YUAN;
   }
   if (name == "conjugate_descent") {
-    return XTS_CONJUGATE_DESCENT;
+    return RGMIN_CONJUGATE_DESCENT;
   }
   if (name == "hager_zhang") {
-    return XTS_HAGER_ZHANG;
+    return RGMIN_HAGER_ZHANG;
   }
   if (name == "liu_storey") {
-    return XTS_LIU_STOREY;
+    return RGMIN_LIU_STOREY;
   }
   if (name == "fr_pr") {
-    return XTS_FR_PR;
+    return RGMIN_FR_PR;
   }
   if (name == "fire") {
-    return XTS_FIRE;
+    return RGMIN_FIRE;
   }
   if (name == "bb" || name == "barzilai_borwein") {
-    return XTS_BB;
+    return RGMIN_BB;
   }
   if (name == "dogleg") {
-    return XTS_DOGLEG;
+    return RGMIN_DOGLEG;
   }
   if (name == "fire2") {
-    return XTS_FIRE2;
+    return RGMIN_FIRE2;
   }
+#if RGMIN_ABI_VERSION_MINOR >= 29
+  if (name == "quickmin") {
+    return RGMIN_QUICKMIN;
+  }
+#endif
   throw std::invalid_argument(
       "unknown Xtsci.method '" + name +
       "' (lbfgs, bfgs, sr1, sr2, newton, rfo, steepest, adam, pso, "
       "polak_ribiere, fletcher_reeves, hestenes_stiefel, dai_yuan, "
       "conjugate_descent, hager_zhang, liu_storey, fr_pr, fire, bb, "
-      "dogleg, fire2)");
+      "dogleg, fire2, quickmin)");
 }
 
 bool is_host_precon(const std::string &name) {
@@ -250,7 +255,7 @@ std::string resolved_accept(const eonc::Parameters::optimizer_options_t &opts) {
 namespace eonc {
 
 XtsciOptimizer::~XtsciOptimizer() {
-  xts_solver_free(m_solver);
+  rgmin_solver_free(m_solver);
   xtsci_eindir::release(m_eindir);
   m_eindir = nullptr;
 }
@@ -263,14 +268,18 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
   if (dim == 0) {
     return;
   }
-  const auto stamp = xts_abi_stamp();
-  if (xts_abi_compatible(&stamp) == 0) {
-    throw std::runtime_error("incompatible xtsci-optimize ABI");
+  const auto stamp = rgmin_abi_stamp();
+  if (rgmin_abi_compatible(&stamp) == 0) {
+    throw std::runtime_error("incompatible rgmin ABI");
   }
   const auto &lbfgs = m_optConfig.opts.lbfgs;
-  const xts_method_t method = method_from_name(m_optConfig.opts.xtsci.method);
+  const rgmin_method_t method = method_from_name(m_method);
   double istep = std::max(a_maxMove, 1.0e-12);
-  if (method == XTS_FIRE || method == XTS_FIRE2) {
+  bool dynamics = method == RGMIN_FIRE || method == RGMIN_FIRE2;
+#if RGMIN_ABI_VERSION_MINOR >= 29
+  dynamics = dynamics || method == RGMIN_QUICKMIN;
+#endif
+  if (dynamics) {
     istep = m_optConfig.opts.time_step;
     if (istep <= 0.0) {
       istep = m_optConfig.opts.time_step_input;
@@ -279,47 +288,48 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
       istep = 0.1;
     }
   }
-  xts_control_t control{
+  rgmin_control_t control{
       static_cast<size_t>(std::max<long>(1, m_optConfig.opts.max_iterations)),
       m_optConfig.opts.converged_force,
       istep,
       static_cast<size_t>(std::max<long>(0, lbfgs.memory)),
       0.0,
   };
-  m_solver = xts_solver_create(method, &control, dim);
+  m_solver = rgmin_solver_create(method, &control, dim);
   if (m_solver == nullptr) {
-    throw std::runtime_error(xts_last_error());
+    throw std::runtime_error(rgmin_last_error());
   }
   const auto step = resolved_qn_step(m_optConfig.opts);
   if (step == "newton") {
-    xts_solver_set_qn_step(m_solver, XTS_QN_NEWTON);
+    rgmin_solver_set_qn_step(m_solver, RGMIN_QN_NEWTON);
   } else if (step == "rfo") {
-    xts_solver_set_qn_step(m_solver, XTS_QN_RFO);
+    rgmin_solver_set_qn_step(m_solver, RGMIN_QN_RFO);
   } else {
-    xts_solver_set_qn_step(m_solver, XTS_QN_LBFGS);
+    rgmin_solver_set_qn_step(m_solver, RGMIN_QN_LBFGS);
   }
   const auto accept = m_objf->gradientMatchesEnergy()
                           ? resolved_accept(m_optConfig.opts)
                           : std::string("none");
   if (accept == "energy") {
-    xts_solver_set_accept(m_solver, XTS_ACCEPT_ENERGY);
+    rgmin_solver_set_accept(m_solver, RGMIN_ACCEPT_ENERGY);
   } else if (accept == "nonmonotone") {
-    xts_solver_set_accept(m_solver, XTS_ACCEPT_NONMONOTONE);
+    rgmin_solver_set_accept(m_solver, RGMIN_ACCEPT_NONMONOTONE);
   } else {
-    xts_solver_set_accept(m_solver, XTS_ACCEPT_NONE);
+    rgmin_solver_set_accept(m_solver, RGMIN_ACCEPT_NONE);
   }
-  xts_solver_set_project_rigid(m_solver, lbfgs.project_rigid ? 1 : 0);
-  xts_solver_set_extra_updates(
+  rgmin_solver_set_project_rigid(m_solver, lbfgs.project_rigid ? 1 : 0);
+  rgmin_solver_set_extra_updates(
       m_solver, static_cast<size_t>(std::max<long>(0, lbfgs.extra_updates)));
   if (lbfgs.curvature == "cautious") {
-    xts_solver_set_cautious(m_solver, lbfgs.cautious_eps, lbfgs.cautious_alpha);
+    rgmin_solver_set_cautious(m_solver, lbfgs.cautious_eps,
+                              lbfgs.cautious_alpha);
   } else {
-    xts_solver_set_cautious(m_solver, 0.0, lbfgs.cautious_alpha);
+    rgmin_solver_set_cautious(m_solver, 0.0, lbfgs.cautious_alpha);
   }
   if (m_optConfig.opts.xtsci.highs) {
-    if (xts_solver_set_highs(m_solver, 1) != 0) {
+    if (rgmin_solver_set_highs(m_solver, 1) != 0) {
       throw std::runtime_error(
-          "Xtsci.highs needs xtsci-optimize built with --features highs");
+          "Xtsci.highs needs rgmin built with --features highs");
     }
   }
   const auto &mani = m_optConfig.opts.xtsci.manifold;
@@ -340,28 +350,28 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
                              " needs 3N Cartesians with N >= 2");
   }
   if (mani == "sphere") {
-    xts_solver_set_manifold(m_solver, XTS_MANIFOLD_SPHERE);
+    rgmin_solver_set_manifold(m_solver, RGMIN_MANIFOLD_SPHERE);
   } else if (mani == "so3") {
-    xts_solver_set_manifold(m_solver, XTS_MANIFOLD_SO3);
+    rgmin_solver_set_manifold(m_solver, RGMIN_MANIFOLD_SO3);
   } else if (mani == "stiefel") {
-    xts_solver_set_manifold(m_solver, XTS_MANIFOLD_STIEFEL);
+    rgmin_solver_set_manifold(m_solver, RGMIN_MANIFOLD_STIEFEL);
   } else if (mani == "se3") {
-    xts_solver_set_manifold(m_solver, XTS_MANIFOLD_SE3);
+    rgmin_solver_set_manifold(m_solver, RGMIN_MANIFOLD_SE3);
   } else if (mani == "rigid_quotient" || mani == "sella") {
-    xts_solver_set_manifold(m_solver, XTS_MANIFOLD_RIGID_QUOTIENT);
+    rgmin_solver_set_manifold(m_solver, RGMIN_MANIFOLD_RIGID_QUOTIENT);
   } else if (mani == "mw_rigid" || mani == "eckart" || mani == "irc") {
-    xts_solver_set_manifold(m_solver, XTS_MANIFOLD_MW_RIGID);
+    rgmin_solver_set_manifold(m_solver, RGMIN_MANIFOLD_MW_RIGID);
     const auto masses = m_objf->getMasses();
     if (masses.size() > 0) {
-      xts_solver_set_masses(m_solver, masses.data(),
-                            static_cast<size_t>(masses.size()));
+      rgmin_solver_set_masses(m_solver, masses.data(),
+                              static_cast<size_t>(masses.size()));
     }
   } else {
-    xts_solver_set_manifold(m_solver, XTS_MANIFOLD_EUCLIDEAN);
+    rgmin_solver_set_manifold(m_solver, RGMIN_MANIFOLD_EUCLIDEAN);
   }
   if (mani == "rigid_quotient" || mani == "mw_rigid" || mani == "sella" ||
       mani == "eckart" || mani == "irc") {
-    xts_solver_set_periodic(m_solver, m_objf->getPeriodic() ? 1 : 0);
+    rgmin_solver_set_periodic(m_solver, m_objf->getPeriodic() ? 1 : 0);
   }
   if (m_eindir == nullptr) {
     m_eindir = xtsci_eindir::bind(m_objf.get(), &m_cached_x);
@@ -377,44 +387,44 @@ int XtsciOptimizer::step(double a_maxMove) {
     return m_objf->isConverged() ? 1 : 0;
   }
   // Native LBFGS clips by the largest per-atom move, not ||d||_2.
-  xts_solver_set_maxmove(m_solver, 0.0);
-  xts_solver_set_atom_maxmove(m_solver, std::max(a_maxMove, 0.0));
+  rgmin_solver_set_maxmove(m_solver, 0.0);
+  rgmin_solver_set_atom_maxmove(m_solver, std::max(a_maxMove, 0.0));
 
   if (m_x.size() == 0) {
     m_x = m_objf->getPositions();
   }
   if (m_x.size() != m_objf->degreesOfFreedom()) {
-    throw std::runtime_error("xtsci objective position dimension mismatch");
+    throw std::runtime_error("rgmin objective position dimension mismatch");
   }
   auto *tensor =
-      xts_tensor_borrow_cpu_f64(m_x.data(), static_cast<size_t>(m_x.size()));
+      rgmin_tensor_borrow_cpu_f64(m_x.data(), static_cast<size_t>(m_x.size()));
   if (tensor == nullptr) {
-    throw std::runtime_error("could not allocate xtsci objective tensor");
+    throw std::runtime_error("could not allocate rgmin objective tensor");
   }
   const auto &lbfgs = m_optConfig.opts.lbfgs;
   std::string precon = resolved_precon(m_optConfig.opts);
-  const xts_method_t method = method_from_name(m_optConfig.opts.xtsci.method);
-  if (method == XTS_DOGLEG && !is_host_precon(precon)) {
+  const rgmin_method_t method = method_from_name(m_method);
+  if (method == RGMIN_DOGLEG && !is_host_precon(precon)) {
     precon = "pair";
   }
   XtsObjectiveContext context{
       m_objf.get(),    m_optConfig.potential, precon,      lbfgs.precon_A,
       lbfgs.precon_mu, lbfgs.precon_rcut,     &m_cached_x, m_eindir,
   };
-  xts_report_t report{};
-  const bool want_hess = method == XTS_NEWTON || method == XTS_RFO ||
-                         method == XTS_DOGLEG || is_host_precon(precon);
-  xts_status_t status;
+  rgmin_report_t report{};
+  const bool want_hess = method == RGMIN_NEWTON || method == RGMIN_RFO ||
+                         method == RGMIN_DOGLEG || is_host_precon(precon);
+  rgmin_status_t status;
   if (want_hess) {
-    status = xts_solver_step_hess_fg(m_solver, evaluate_gradient, hessian,
-                                     &context, tensor, &report);
+    status = rgmin_solver_step_hess_fg(m_solver, evaluate_gradient, hessian,
+                                       &context, tensor, &report);
   } else {
-    status = xts_solver_step_fg(m_solver, evaluate_gradient, &context, tensor,
-                                &report);
+    status = rgmin_solver_step_fg(m_solver, evaluate_gradient, &context, tensor,
+                                  &report);
   }
-  xts_tensor_free(tensor);
-  if (status != XTS_SUCCESS) {
-    throw std::runtime_error(xts_last_error());
+  rgmin_tensor_free(tensor);
+  if (status != RGMIN_SUCCESS) {
+    throw std::runtime_error(rgmin_last_error());
   }
   return m_objf->isConverged() ? 1 : 0;
 }
@@ -426,12 +436,12 @@ int XtsciOptimizer::run(size_t a_maxIterations, double a_maxMove) {
   ensureSolver(a_maxMove);
   const auto &lbfgs = m_optConfig.opts.lbfgs;
   std::string precon = resolved_precon(m_optConfig.opts);
-  const xts_method_t method = method_from_name(m_optConfig.opts.xtsci.method);
-  if (method == XTS_DOGLEG && !is_host_precon(precon)) {
+  const rgmin_method_t method = method_from_name(m_method);
+  if (method == RGMIN_DOGLEG && !is_host_precon(precon)) {
     precon = "pair";
   }
-  const bool want_hess = method == XTS_NEWTON || method == XTS_RFO ||
-                         method == XTS_DOGLEG || is_host_precon(precon);
+  const bool want_hess = method == RGMIN_NEWTON || method == RGMIN_RFO ||
+                         method == RGMIN_DOGLEG || is_host_precon(precon);
   // A full minimize without a host Hessian goes through the eindir entry.
   // step() stays one session iteration so the host loop keeps its memory.
   if (m_eindir != nullptr && !want_hess) {
@@ -444,8 +454,8 @@ int XtsciOptimizer::run(size_t a_maxIterations, double a_maxMove) {
         m_optConfig.opts.converged_force, std::max(a_maxMove, 1.0e-12),
         static_cast<size_t>(std::max<long>(0, lbfgs.memory)),
         static_cast<int>(method), &value);
-    if (status != XTS_SUCCESS) {
-      throw std::runtime_error(xts_last_error());
+    if (status != RGMIN_SUCCESS) {
+      throw std::runtime_error(rgmin_last_error());
     }
     m_objf->setPositions(m_x);
     m_cached_x = m_x;

@@ -510,4 +510,28 @@ TEST_CASE("pair_cutoff reaches the pair potentials",
                                  "pair_cutoff = -1.0\n") == 0);
   REQUIRE_THROWS(eonc::helpers::makePotential(PotType::LJ, negative));
 }
+
+TEST_CASE("opt_backend reads, round-trips and rejects unknown backends",
+          "[params][ssot][optimizer]") {
+  Parameters defaults;
+  REQUIRE(defaults.optimizer_options().backend == "eon");
+  REQUIRE(eonc::config::ssot_has_field("Optimizer", "opt_backend"));
+
+  Parameters p;
+  REQUIRE(p.load_ini_text("[Optimizer]\nopt_method = fire\n"
+                          "opt_backend = RGMIN\n") == 0);
+  REQUIRE(p.optimizer_options().backend == "rgmin");
+  REQUIRE(p.optimizer_options().method == OptType::FIRE);
+
+  Parameters round;
+  eonc::config::from_json(eonc::config::to_json(p), round);
+  REQUIRE(round.optimizer_options().backend == "rgmin");
+
+  Parameters bad;
+  REQUIRE(bad.load_ini_text("[Optimizer]\nopt_backend = scipy\n") != 0);
+  auto j = eonc::config::to_json(defaults);
+  j["Optimizer"]["opt_backend"] = "scipy";
+  Parameters badJson;
+  REQUIRE_THROWS_AS(eonc::config::from_json(j, badJson), std::invalid_argument);
+}
 } // namespace tests

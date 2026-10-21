@@ -80,6 +80,7 @@ struct GeneratedDefaults {
   static constexpr auto OPTIMIZER_CONVERGED_FORCE = 0.01;
   static constexpr auto OPTIMIZER_TIME_STEP = 1.0;
   static constexpr auto OPTIMIZER_MAX_TIME_STEP = 2.5;
+  static constexpr auto OPTIMIZER_OPT_BACKEND = std::string_view{"eon"};
   static constexpr auto RGPOTPOT_BACKEND = std::string_view{"nwchemc"};
   static constexpr auto RGPOTPOT_BASIS = std::string_view{"sto-3g"};
   static constexpr auto RGPOTPOT_THEORY = std::string_view{"scf"};

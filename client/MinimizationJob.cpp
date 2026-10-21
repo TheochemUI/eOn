@@ -96,6 +96,10 @@ std::vector<std::string> MinimizationJob::run() {
   if (params.optimizer_options().method == OptType::XTSCI) {
     env.tags.emplace_back("xtsci_method",
                           params.optimizer_options().xtsci.method);
+  } else if (auto rgmin = helpers::create::rgminBackendMethod(
+                 params.optimizer_options().method, params)) {
+    env.tags.emplace_back("opt_backend", "rgmin");
+    env.tags.emplace_back("xtsci_method", *rgmin);
   }
   if (!xtsci_eindir::provenance().empty()) {
     env.tags.emplace_back("eindir_abi", xtsci_eindir::provenance());

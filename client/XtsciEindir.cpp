@@ -19,7 +19,7 @@
 
 #ifdef WITH_EINDIR
 #include <eindir-core.h>
-#include <xts.h>
+#include <rgmin.h>
 #endif
 
 namespace eonc::xtsci_eindir {
@@ -250,7 +250,7 @@ State *bind(ObjectiveFunction *objective, Eigen::VectorXd *cached) {
     throw std::runtime_error(err != nullptr ? err
                                             : "eindir descriptor mismatch");
   }
-  const auto xts = xts_abi_stamp();
+  const auto xts = rgmin_abi_stamp();
   provenance_slot() =
       std::format("xts-{}.{}.{}+eindir-{}.{}-layout-{}", xts.abi_major,
                   xts.abi_minor, xts.layout_revision, stamp.abi_major,
@@ -305,17 +305,17 @@ int minimize(State *state, double *x, std::size_t n, std::size_t maxiter,
   if (state == nullptr || x == nullptr) {
     return 1;
   }
-  auto *tensor = xts_tensor_borrow_cpu_f64(x, n);
+  auto *tensor = rgmin_tensor_borrow_cpu_f64(x, n);
   if (tensor == nullptr) {
     return 2;
   }
   const auto stamp = eindir_core_abi_stamp();
-  xts_control_t control{maxiter, gtol, istep, memory, 0.0};
-  xts_report_t report{};
+  rgmin_control_t control{maxiter, gtol, istep, memory, 0.0};
+  rgmin_report_t report{};
   const auto status =
-      xts_minimize_eindir(&state->obj, &stamp, tensor, &control,
-                          static_cast<xts_method_t>(method), &report);
-  xts_tensor_free(tensor);
+      rgmin_minimize_eindir(&state->obj, &stamp, tensor, &control,
+                            static_cast<rgmin_method_t>(method), &report);
+  rgmin_tensor_free(tensor);
   if (value_out != nullptr) {
     *value_out = report.value;
   }
