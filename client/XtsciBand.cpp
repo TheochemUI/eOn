@@ -459,8 +459,15 @@ void XtsciBand::step(double maxMove) {
   }
 #endif
   rgsaddle_report_t report{};
-  checkStatus(xts_band_step(m_band, surfaceCallback, this, &report),
-              "xts_band_step");
+  const int rc = xts_band_step(m_band, surfaceCallback, this, &report);
+#if RGSADDLE_ABI_MINOR >= 17
+  // A stalled step leaves the band as it was. The NEB loop then runs into
+  // max_iterations, as it does when a host optimizer stops making progress.
+  if (rc == RGSADDLE_STALLED) {
+    return;
+  }
+#endif
+  checkStatus(rc, "xts_band_step");
   const auto dof = static_cast<std::ptrdiff_t>(m_fixed[0].size());
   std::vector<double> positions(m_fixed.size() * static_cast<size_t>(dof), 0.0);
   checkStatus(rgsaddle_band_positions(m_band, positions.data()),
@@ -532,9 +539,12 @@ void XtsciBand::stepSolid() {
     m_fixed[static_cast<size_t>(i)] = m_neb->path[i]->getPositions();
   }
   rgsaddle_report_t report{};
-  checkStatus(
-      rgsaddle_band_step_solid(m_band, solidSurfaceCallback, this, &report),
-      "rgsaddle_band_step_solid");
+  const int rc =
+      rgsaddle_band_step_solid(m_band, solidSurfaceCallback, this, &report);
+  if (rc == RGSADDLE_STALLED) {
+    return;
+  }
+  checkStatus(rc, "rgsaddle_band_step_solid");
   const auto dof = static_cast<std::ptrdiff_t>(3 * nAtoms);
   std::vector<double> positions(static_cast<size_t>(nImages * dof));
   std::vector<double> cells(static_cast<size_t>(nImages * 9));
