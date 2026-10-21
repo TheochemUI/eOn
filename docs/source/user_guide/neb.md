@@ -349,6 +349,13 @@ converged_force = 0.01
 climbing_image_method = true
 ```
 
+In a client built with `-Dwith_rgsaddle=true`, `opt_method = lbfgs`,
+`fire` or `xtsci` with a non-geometric spring steps the band in an
+rgsaddle session; `cg`, `sd` and `qm` keep eOn's band optimizer. The
+table in <project:optimizer.md> lists which input runs where.
+`[Optimizer] opt_backend = rgmin` does not move the band step; it moves
+the endpoint relaxations.
+
 Or programmatically via [rgpycrumbs](https://rgpycrumbs.rgoswami.me):
 
 ```python
