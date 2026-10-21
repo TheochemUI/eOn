@@ -22,18 +22,22 @@
     },
     "kdb_name": {
       "default": "kdb.db",
+      "description": "Unused name kept so old ini files still parse. The catalog directory is Paths.kdb.",
       "type": "string"
     },
     "kdb_nf": {
       "default": 0.2,
+      "description": "Neighbor fudge, a fraction. The match tolerance is kdb_dc * (1 + kdb_nf) angstroms.",
       "type": "number"
     },
     "kdb_dc": {
       "default": 0.3,
+      "description": "Distance cutoff in angstroms. A stored reactant whose atoms sit farther than kdb_dc * (1 + kdb_nf) from the current state is not a match.",
       "type": "number"
     },
     "kdb_mac": {
       "default": 0.7,
+      "description": "Minimum absolute cosine between the stored mode and the reactant-to-saddle displacement. At or above this value the refine uses the stored mode. Below it, the refine uses the reactant-to-saddle vector.",
       "type": "number"
     }
   }

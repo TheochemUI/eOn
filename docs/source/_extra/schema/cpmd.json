@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/cpmd.json",
+  "title": "cpmd",
+  "description": "Scalar CPMD message used when ``[RgpotPot] params_path`` is empty.\n\n    ``cutOffRy`` is the cutoff key. The C++ reader also accepts ``cutoff_ry``\n    and ``cpmd_cut_off_ry``, and ``cpmd_functional`` for ``functional``.\n    The aliases are accepted on input and never written by ``model_dump``,\n    so a written file carries one cutoff key. A ``params_path`` file owns\n    these fields, and ``input_block`` is still appended to that file's\n    blocks.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "functional": {
+      "default": "BLYP",
+      "description": "XC functional. Overrides [RgpotPot] functional.",
+      "type": "string"
+    },
+    "cpmd_functional": {
+      "default": "BLYP",
+      "description": "Alias of functional, read when functional is absent.",
+      "type": "string"
+    },
+    "cutOffRy": {
+      "default": 70.0,
+      "description": "Plane-wave cutoff in Rydberg. Overrides [RgpotPot] cutoff_ry.",
+      "type": "number"
+    },
+    "cutoff_ry": {
+      "default": 70.0,
+      "description": "Alias of cutOffRy, read when cutOffRy is absent.",
+      "type": "number"
+    },
+    "cpmd_cut_off_ry": {
+      "default": 70.0,
+      "description": "Alias of cutOffRy, read when cutOffRy and cutoff_ry are absent.",
+      "type": "number"
+    },
+    "charge": {
+      "default": 0,
+      "description": "Total charge.",
+      "type": "integer"
+    },
+    "multiplicity": {
+      "default": 1,
+      "description": "Spin multiplicity (2S+1).",
+      "type": "integer"
+    },
+    "title": {
+      "default": "",
+      "description": "Comment header in the rendered deck.",
+      "type": "string"
+    },
+    "memory_mb": {
+      "default": 0,
+      "description": "Engine memory limit in MB. 0 uses the engine default.",
+      "type": "integer"
+    },
+    "input_block": {
+      "default": "",
+      "description": "CPMD &SECTION text appended to inputBlocks. Sections loaded from params_path stay.",
+      "type": "string"
+    }
+  }
+}
