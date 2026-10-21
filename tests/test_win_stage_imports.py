@@ -54,3 +54,28 @@ def test_import_table_lists_the_dll_and_skips_kernel32(tmp_path: Path):
     assert mod.imported_dlls(pe) == ["capnp.dll"]
     assert mod._system("KERNEL32.dll")
     assert not mod._system("capnp.dll")
+
+
+def test_pick_source_skips_a_dll_that_lacks_the_symbol(tmp_path: Path):
+    mod = _mod()
+    bad_dir = tmp_path / "pixi"
+    good_dir = tmp_path / "torch"
+    bad_dir.mkdir()
+    good_dir.mkdir()
+    bad = bad_dir / "c10.dll"
+    good = good_dir / "c10.dll"
+    bad.write_bytes(b"MZ-incomplete")
+    good.write_bytes(b"MZ-complete")
+
+    def fake_missing(path: Path, needed: list[str]) -> list[str]:
+        if path == bad:
+            return ["MissingSym"]
+        return []
+
+    mod._missing = fake_missing
+    assert mod.pick_source("c10.dll", ["MissingSym"], [bad_dir, good_dir]) == good
+    assert mod.pick_source("c10.dll", ["MissingSym"], [bad_dir]) == bad
+    # The importing DLL's directory is first. It wins when it exports the
+    # symbol, and a later search hit is kept when it does not.
+    assert mod.pick_source("c10.dll", ["MissingSym"], [bad_dir], good_dir) == good
+    assert mod.pick_source("c10.dll", ["MissingSym"], [good_dir], bad_dir) == good
