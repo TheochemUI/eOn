@@ -26,6 +26,23 @@
 
 #include "eon/EonLogger.h"
 
+namespace {
+
+double atanRatioOrHalfPi(double num, double denom) {
+  if (!std::isfinite(num) || !std::isfinite(denom)) {
+    return 0.0;
+  }
+  if (std::abs(denom) < eonc::safemath::eps) {
+    if (std::abs(num) < eonc::safemath::eps) {
+      return 0.0;
+    }
+    return std::copysign(eonc::helpers::pi * 0.5, num);
+  }
+  return std::atan(num / denom);
+}
+
+} // namespace
+
 namespace eonc {
 
 ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
@@ -390,8 +407,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     // Estimate optimum rotation angle
     double d_C_tau_d_phi =
         2.0 * eonc::safemath::safe_div((g1 - g0).dot(theta), delta, 0.0);
-    phi_prime = -0.5 * eonc::safemath::safe_atan_ratio(
-                           d_C_tau_d_phi, 2.0 * std::abs(C_tau), 0.0);
+    phi_prime = -0.5 * atanRatioOrHalfPi(d_C_tau_d_phi, 2.0 * std::abs(C_tau));
     statsAngle = phi_prime * (180.0 / eonc::helpers::pi);
 
     double alignment = std::abs(tau.dot(referenceMode));
@@ -420,7 +436,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
           C_tau - C_tau_prime + b1 * std::sin(2.0 * phi_prime),
           1.0 - std::cos(2.0 * phi_prime), 0.0);
       double a0 = 2.0 * (C_tau - a1);
-      phi_min = 0.5 * eonc::safemath::safe_atan_ratio(b1, a1, 0.0);
+      phi_min = 0.5 * atanRatioOrHalfPi(b1, a1);
 
       double C_tau_min = 0.5 * a0 + a1 * std::cos(2.0 * phi_min) +
                          b1 * std::sin(2.0 * phi_min);

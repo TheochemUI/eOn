@@ -65,6 +65,12 @@ applies only when `rotation_backend = lor`. Classical rotation uses
 `<= 0` fall back to 10). Exhausting the budget without meeting the residual
 stop sets `rotationDidConverge` false on `ImprovedDimer`.
 
+For classical dimer rotation, the angle estimate keeps the signed `atan`
+limit when the denominator is numerically tiny (`+/- pi/2` for a nonzero
+numerator) instead of collapsing to a zero-angle fallback. This preserves
+the finite-angle rotation direction in near-singular steps and avoids
+stalling the rotation estimate.
+
 Example:
 
 ```{code-block} ini
