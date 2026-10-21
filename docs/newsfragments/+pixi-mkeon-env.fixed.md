@@ -1,0 +1,1 @@
+Pixi 0.82.1 can read the metatomic environments again. `mkeon` depended on `setupeon` in an environment named `eon`, which went away when those tasks moved onto the metatomic feature, and install stopped before the build.
