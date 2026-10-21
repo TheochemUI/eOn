@@ -28,7 +28,6 @@ private:
   // For use when called as part of the NEB-MMF
   VectorXd fixedReferenceMode;
   bool hasFixedReference = false;
-  double referenceAbort_{0.0};
   // Forward image evaluated together with its centre by
   // evaluateWithProbe(); compute() takes it when the coordinates match.
   std::unique_ptr<Matter> forward_;
@@ -58,9 +57,6 @@ public:
   // For use when called as part of the NEB-MMF
   void setReferenceMode(const VectorXd &ref);
   void clearReferenceMode();
-  /// Abort a rotation that leaves the reference mode. Zero disables it.
-  /// A free saddle search rotates away from its initial direction.
-  void setReferenceAbort(double minimum) { referenceAbort_ = minimum; }
   bool rotationDidConverge{false};
   bool foundNegativeCurvature{false};
   // parameters used for conjugate gradients

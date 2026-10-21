@@ -1193,11 +1193,10 @@ int load_ini(const INIReader &ini, Parameters &params) {
       ini.GetInteger(neb_section, "zoom_max_iterations", zoom.max_iterations);
 
   auto &init = ParametersLoadAccess::neb_options(params).initialization;
-  const std::string initFallback{magic_enum::enum_name(init.method)};
-  init.method = magic_enum::enum_cast<NEBInit>(
-                    ini.Get(neb_section, "initializer", initFallback),
-                    magic_enum::case_insensitive)
-                    .value_or(init.method);
+  init.method =
+      magic_enum::enum_cast<NEBInit>(ini.Get(neb_section, "initializer", ""),
+                                     magic_enum::case_insensitive)
+          .value_or(NEBInit::LINEAR);
   init.input_path = ini.Get(neb_section, "initial_path_in", init.input_path);
   init.max_iterations =
       ini.GetInteger(neb_section, "init_max_iterations", init.max_iterations);

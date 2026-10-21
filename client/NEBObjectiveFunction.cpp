@@ -28,10 +28,6 @@ VectorXd NEBObjectiveFunction::getGradient(bool fdstep) {
   const long atomDof = 3L * neb->atoms;
   VectorXd gradV(seg * neb->numImages);
   for (long i = 1; i <= neb->numImages; i++) {
-    if (i == neb->pinnedImage()) {
-      gradV.segment(seg * (i - 1), seg).setZero();
-      continue;
-    }
     // Negate in-place during copy to avoid a second pass over 40KB
     gradV.segment(seg * (i - 1), atomDof) =
         -VectorXd::Map(neb->projectedForce[i]->data(), atomDof);
@@ -65,9 +61,6 @@ void NEBObjectiveFunction::setPositions(const VectorXd &x) {
   const long seg = nebSegment(*neb);
   const long atomDof = 3L * neb->atoms;
   for (long i = 1; i <= neb->numImages; i++) {
-    if (i == neb->pinnedImage()) {
-      continue;
-    }
     const long offset = seg * (i - 1);
     if (neb->solidState()) {
       Matrix3d cell = Matrix3d::Map(x.segment(offset + atomDof, 9).data());

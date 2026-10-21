@@ -745,9 +745,6 @@ potential = lj
 images = 3
 spring = 5.0
 max_iterations = 200
-initializer = linear
-ci_mmf = false
-ci_after_rel = 0
 
 [Optimizer]
 opt_method = lbfgs
@@ -827,8 +824,7 @@ TEST_CASE_METHOD(JobIntegrationFixture,
                             "lj\n\n[Nudged Elastic Band]\nimages = ") +
                 std::to_string(c.images) +
                 "\nspring = 5.0\nmax_iterations = 3000\n"
-                "minimize_endpoints = false\n"
-                "initializer = linear\nci_mmf = false\nci_after_rel = 0\n" +
+                "minimize_endpoints = false\n" +
                 (c.geometric ? "geometric_spring = true\n" : "") +
                 "\n[Optimizer]\nopt_method = lbfgs\nconverged_force = "
                 "0.01\nmax_iterations = 3000\nmax_move = 0.2\n");

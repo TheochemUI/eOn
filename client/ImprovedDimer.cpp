@@ -477,10 +477,9 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
           C_tau, F_R.norm() / delta, alignment);
     }
 
-    // The NEB tangent is a reference only after setReferenceAbort().
-    // A free dimer rotates away from its initial direction on purpose.
-    if (referenceAbort_ > 0.0 && hasFixedReference &&
-        alignment < referenceAbort_) {
+    // Check for mode loss (OCINEB dimer refinement)
+    if (alignment < params.neb_options().climbing_image.ocineb.angle_tol &&
+        params.neb_options().climbing_image.ocineb.use_mmf) {
       QUILL_LOG_WARNING(
           log, "Terminating dimer due to lost mode (align {:.3f}).", alignment);
       rotationDidConverge = false;

@@ -52,28 +52,15 @@ figures (full history, 1:1 reaction-valley panel, structure strip), see
 - The energy weighted varying springs method of {cite:t}`neb-asgeirssonNudgedElasticBand2021`.
 ```
 
-The stock band follows {cite:t}`neb-goswamiEnhancedClimbingImage2026`.
-The initial path is image dependent pair potential (IDPP)
-{cite:t}`neb-smidstrupImprovedInitialGuess2014`, unless `initializer` is set.
-Climbing starts once the band force falls below `0.8` times the force of
-the first iteration (`ci_after_rel`). A finite `ci_after` is an absolute
-gate. With neither gate set, climbing is on from the first step.
-After the climbing image has stayed on the same index for five iterations
-and the force is below `0.31` times the initial force, a dimer refines
-that image (OCI-NEB, Algorithm 1). The dimer translates with LBFGS and
-rotates with conjugate gradient. It stops when the mode overlaps the
-tangent by less than `ci_mmf_angle` (`0.85`), or when the curvature is
-positive, in which case the image is put back.
-Energy-weighted springs stay off: the same paper's Pt heptamer runs use
-a uniform spring. Turn them on with `energy_weighted = true`.
-Zoom-NEB stays off. Turn it on with `zoom_neb = true` once a run should
-pack the images around the climbing image.
-A solid-state band keeps a linear initial path and does not run the dimer,
-because neither IDPP nor the min-mode walk moves the cell.
-The conjugate gradient band step takes its first length from one
-finite-difference probe and later lengths from the previous displacement.
-The step shrinks when the force grew. After that first probe, one
-iteration is one evaluation of the images.
+A conjugate-gradient band takes its first step length from one
+finite-difference probe. Later lengths use the previous displacement,
+so an iteration after that probe is one evaluation of the images.
+Minimizers and a dimer translation keep a probe on every step.
+If the band force more than doubles, the next conjugate-gradient step
+is shorter, down to a fifth of `max_move`. Twelve iterations without
+a lower force drop the search direction and shorten the step again.
+A later drop in the force lengthens the step back toward `max_move`.
+LBFGS is left on the configured length.
 
 ## Dimer seeds from every band peak
 
@@ -181,8 +168,7 @@ Enable with `onsager_machlup = true` in the NEB section.
 OCINEB {cite:t}`neb-goswamiEnhancedClimbingImage2026` activates a Min-Mode
 Following (dimer) search on the climbing image after it stabilizes, using
 hessian eigenmode alignment to refine the saddle point to higher accuracy
-without additional NEB iterations. `ci_mmf` defaults to true. Set
-`ci_mmf = false` to keep a pure climbing-image band.
+without additional NEB iterations. Enable with `ci_mmf = true`.
 
 The Frontiers article
 ([doi:10.3389/fchem.2026.1807063](https://doi.org/10.3389/fchem.2026.1807063))
@@ -220,11 +206,9 @@ A fixed-cell band compares potential energy.
 A solid-state band compares enthalpy.
 A monotonic band keeps the spring on every interior image.
 While climbing is on, that image stays put while its energy is above both neighbours, and it moves to the highest interior image when the local-maximum test fails.
-With `climbing_image_method` on, a positive `ci_after_rel` turns climbing
-on once the band force is under that fraction of the initial force.
-A finite `ci_after` turns it on once the force is under that absolute value.
-`ci_after` at infinity is not a gate. If both gates are absent, climbing
-is on from the first step.
+With `climbing_image_method` on, either force test activates climbing.
+One test requires the band force to be under the initial force times `ci_after_rel`.
+The other requires it to be under `ci_after`.
 `ci_after` is a server option.
 `ci_after_rel` is not in `eon/config.yaml`, so the server rejects a file that sets it.
 

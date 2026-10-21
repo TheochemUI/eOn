@@ -13,7 +13,6 @@
 #include "eon/EonLogger.h"
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/NudgedElasticBand.h"
-#include "eon/Parameters.h"
 #include "eon/eonExceptions.hpp"
 #include <algorithm>
 #include <cmath>
@@ -52,9 +51,7 @@ bool OCINEBController::shouldTrigger(double convForce, bool ci_active,
     return false;
   if (climbingImage <= 0 || climbingImage > numImages)
     return false;
-  // Algorithm 1: L_stable >= kappa. The counter is the number of
-  // consecutive iterations on this climbing image.
-  if (ciStabilityCounter < static_cast<int>(cfg_.ci_stability_count))
+  if (ciStabilityCounter <= static_cast<int>(cfg_.ci_stability_count))
     return false;
   if (convForce <= cfg_.force_tolerance)
     return false;
@@ -84,7 +81,6 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
   // The dimer moves this image. updateForces() may then hop
   // climbingImage to a neighbor; band CI force is that neighbor.
   const long walked = neb.climbingImage;
-  neb.unpinImage();
   AtomMatrix savedPositions = neb.path[walked]->getPositions();
   // The saved geometry is evaluated already; a restore puts its forces
   // back instead of asking the potential again.
@@ -111,12 +107,6 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
   const bool mmfHelped = walkHelped(walkedForce, convForce, mmfResult);
 
   if (mmfHelped) {
-    // A dimer that already met the force tolerance is the saddle.
-    // Later band steps were moving it off that point and spending the
-    // rest of the run pulling it back.
-    if (mmfResult == 0 && walkedForce < cfg_.force_tolerance) {
-      neb.pinImage(walked);
-    }
     updateThresholdSuccess(convForce, walkedForce);
     QUILL_LOG_DEBUG(log,
                     "MMF helped (status={}, walked={}, now_ci={}). "
@@ -188,25 +178,9 @@ int OCINEBController::runDimer(eonc::NudgedElasticBand &neb,
   }
   initialMode /= tangentNorm;
 
-  // Frontiers OCI-NEB translates the dimer with LBFGS and rotates it
-  // with conjugate gradients. The band optimizer stays whatever the
-  // input selected. A saddle tolerance of 0 would never converge.
-  Parameters dimerParams = neb.params;
-  ParametersLoadAccess::optimizer_options(dimerParams).method = OptType::LBFGS;
-  auto &saddle = ParametersLoadAccess::saddle_search_options(dimerParams);
-  if (!(saddle.converged_force > 0.0)) {
-    saddle.converged_force = neb.params.neb_options().force_tolerance;
-  }
-  // The band tangent is a soft direction. Scaling the whole translation
-  // step by that curvature overshoots the perpendicular force.
-  saddle.scale_from_mode = false;
-
   auto tempMinModeSearch = std::make_shared<MinModeSaddleSearch>(
       neb.path[neb.climbingImage], initialMode,
-      neb.path[neb.climbingImage]->getPotentialEnergy(), dimerParams, neb.pot);
-  if (cfg_.angle_tol > 0.0) {
-    tempMinModeSearch->setAlignmentAbort(cfg_.angle_tol);
-  }
+      neb.path[neb.climbingImage]->getPotentialEnergy(), neb.params, neb.pot);
 
   int minModeStatus;
   try {
@@ -227,10 +201,6 @@ int OCINEBController::runDimer(eonc::NudgedElasticBand &neb,
                       "MMF skipped: Positive curvature detected (eig={:.4f}).",
                       eigenvalue);
     return -2;
-  }
-  if (tempMinModeSearch->alignmentAborted()) {
-    QUILL_LOG_DEBUG(log, "MMF aborted: mode left the NEB tangent");
-    return -1;
   }
 
   AtomMatrix finalModeMatrix = tempMinModeSearch->getEigenvector();

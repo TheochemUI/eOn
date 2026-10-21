@@ -59,8 +59,6 @@ TEST_CASE("CI activates on a relaxed band with tangential saddle force",
   options.climbing_image.enabled = true;
   options.climbing_image.trigger_factor = 0.8;
   options.climbing_image.trigger_force = 0.5;
-  // This case is the climbing switch, not the dimer refinement.
-  options.climbing_image.ocineb.use_mmf = false;
   options.opt_method = OptType::LBFGS;
   options.max_iterations = 100;
   options.force_tolerance = 1e-5;
@@ -286,9 +284,6 @@ TEST_CASE_METHOD(NEBRegressionFixture,
   neb_opts.climbing_image.enabled = true;
   neb_opts.climbing_image.trigger_force = 1e10;
   neb_opts.climbing_image.trigger_factor = 1.0;
-  // The barrier below is the climbing-image value. The dimer walk is a
-  // different stationary point.
-  neb_opts.climbing_image.ocineb.use_mmf = false;
   neb_opts.zoom.enabled = true;
   neb_opts.zoom.activation_threshold = 1.0;
   neb_opts.zoom.stability_count = 2;
@@ -332,13 +327,6 @@ TEST_CASE_METHOD(NEBRegressionFixture,
   ParametersLoadAccess::neb_options(params).spring.constant = 5.0;
   ParametersLoadAccess::neb_options(params).max_iterations = 200;
   ParametersLoadAccess::neb_options(params).climbing_image.enabled = true;
-  // This case is the band step with the endpoints held. The dimer and
-  // the IDPP guess are covered by their own tests.
-  ParametersLoadAccess::neb_options(params).climbing_image.ocineb.use_mmf =
-      false;
-  ParametersLoadAccess::neb_options(params).initialization.method =
-      NEBInit::LINEAR;
-  ParametersLoadAccess::neb_options(params).climbing_image.trigger_factor = 0.0;
   ParametersLoadAccess::optimizer_options(params).max_iterations = 200;
   const AtomMatrix initial = reactant->getPositions();
   const AtomMatrix final = product->getPositions();

@@ -143,11 +143,8 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
 
     // Create an Optimizer
     // Defaults to taking the same one as optimizer
-    // The band optimizer is a separate choice. IDPP uses its own
-    // method (LBFGS unless ipath_opt_method says otherwise) so a CG
-    // band does not pay CG's step on the auxiliary surface.
     auto idpp_optim = eonc::helpers::create::mkOptim(
-        idpp_objf, params.neb_options().initialization.opt_method, params);
+        idpp_objf, params.neb_options().opt_method, params);
 
     // Run the optimization
     int status =
@@ -197,7 +194,7 @@ std::vector<Matter> idppCollectivePath(const Matter &initImg,
   int checkInterval = 40;
 
   while (currentStep < maxSteps) {
-    optim->run(checkInterval, params.neb_options().initialization.max_move);
+    optim->run(checkInterval, params.optimizer_options().max_move);
     currentStep += checkInterval;
 
     if (idpp_objf->isConverged()) {

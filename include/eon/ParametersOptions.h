@@ -212,11 +212,6 @@ struct saddle_search_options_t {
   double displace_radius{4.0};
   double converged_force{0.0};
   double perp_force_ratio{0.0};
-  // The soft mode's curvature is the right scale when the force lies
-  // along that mode. A climbing image's force is mostly perpendicular,
-  // and 1/|lambda| then steps into the wall. OCI turns this off and
-  // lets the first LBFGS step measure the translation force.
-  bool scale_from_mode{true};
   bool nonnegative_displacement_abort{false};
   long nonlocal_count_abort{0};
   double nonlocal_distance_abort{0.0};
@@ -574,21 +569,15 @@ struct neb_options_t {
     double band_slack{10.0};
     bool use_old_tangent{false};
     double trigger_force{std::numeric_limits<double>::infinity()};
-    // Henkelman climbing image, switched on once the band force is below
-    // this fraction of the initial force. Goswami, Gunde, Jonsson,
-    // Front. Chem. 14:1807063 (2026), Table 2, lambda_CI = 0.8.
-    double trigger_factor{0.8};
+    double trigger_factor{0.0};
 
     struct hybrid_dimer_t {
-      // Frontiers OCI-NEB, Algorithm 1. The dimer refines the climbing
-      // image after it has been stable. doi:10.3389/fchem.2026.1807063
-      bool use_mmf{true};
+      bool use_mmf{false};
       double trigger_force{0.1};
       long max_steps{1000};
       long ci_stability_count{5};
-      // Operating point from the same paper. 1/sqrt(2) is only the bound.
-      double angle_tol{0.85};
-      double trigger_factor{0.31};
+      double angle_tol{0.7071}; // 1/sqrt(2): Householder stability bound
+      double trigger_factor{0.0};
       // Off: Frontiers / published OCINEB. On: restore CI when MMF
       // does not improve the band force (OptBench pair 26).
       bool restore_unhelpful{false};
@@ -613,10 +602,7 @@ struct neb_options_t {
   } zoom;
 
   struct path_initialization_t {
-    // Smidstrup et al., J. Chem. Phys. 140, 214106 (2014). A linear
-    // guess overlaps atoms on cluster rearrangements. A solid-state band
-    // falls back to linear: IDPP has no cell coordinate.
-    NEBInit method{NEBInit::IDPP};
+    NEBInit method{NEBInit::LINEAR};
     std::string input_path;
     int max_iterations{5000};
     int nsteps{250};

@@ -96,8 +96,6 @@ struct Band {
     ParametersLoadAccess::neb_options(params).max_iterations = 80;
     ParametersLoadAccess::neb_options(params).force_tolerance = 0.05;
     ParametersLoadAccess::neb_options(params).climbing_image.enabled = false;
-    ParametersLoadAccess::neb_options(params).initialization.method =
-        eonc::NEBInit::LINEAR;
     ParametersLoadAccess::neb_options(params).solid_state.enabled = solid;
     ParametersLoadAccess::neb_options(params).solid_state.pressure = pressure;
     reactant = std::make_shared<eonc::Matter>(pot, params);
@@ -423,22 +421,15 @@ TEST_CASE("solid_state refuses a nonperiodic band and OCINEB",
   solid.product->setPeriodic(false);
   REQUIRE_THROWS_AS(solid.neb(), std::invalid_argument);
 
-  // Stock OCI and IDPP are the molecular defaults. A cell band turns
-  // the dimer off and interpolates the cell, instead of refusing the job.
   Band walk(true);
   ParametersLoadAccess::neb_options(walk.params).climbing_image.ocineb.use_mmf =
       true;
-  REQUIRE_NOTHROW(walk.neb());
+  REQUIRE_THROWS_AS(walk.neb(), std::invalid_argument);
 
   Band idpp(true);
   ParametersLoadAccess::neb_options(idpp.params).initialization.method =
       eonc::NEBInit::IDPP;
-  REQUIRE_NOTHROW(idpp.neb());
-
-  Band sidpp(true);
-  ParametersLoadAccess::neb_options(sidpp.params).initialization.method =
-      eonc::NEBInit::SIDPP;
-  REQUIRE_THROWS_AS(sidpp.neb(), std::invalid_argument);
+  REQUIRE_THROWS_AS(idpp.neb(), std::invalid_argument);
 }
 
 TEST_CASE("solid_state ini keys set the lattice band", "[neb][solid_state]") {
