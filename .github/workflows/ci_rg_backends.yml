@@ -1,0 +1,71 @@
+name: Build eon with rgmin and rgsaddle
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+on: [push, pull_request]
+permissions:
+  contents: read
+env:
+  # rgsaddle 06c55c5 pins rgmin d76539d; build the C ABI of both from there.
+  RGMIN_REV: d76539dbe40695c0032e0d96a56e7932f2cc49ab
+  RGSADDLE_REV: 06c55c5c9e8308daac2c1d5860d828ecc9fa7be9
+  CARGO_C_VERSION: 0.10.23
+jobs:
+  rg_backends:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    name: test (rgmin + rgsaddle)
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4
+        with:
+          cache: true
+          cache-write: false
+      - name: Install cbindgen
+        shell: bash
+        run: command -v cbindgen || cargo install cbindgen
+
+      - name: Install the rgmin and rgsaddle C ABI
+        shell: pixi run bash -e {0}
+        run: |
+          set -euo pipefail
+          prefix="$RUNNER_TEMP/rgprefix"
+          cargo install cargo-c --version "$CARGO_C_VERSION" --locked \
+            --root "$RUNNER_TEMP/cargo-c"
+          export PATH="$RUNNER_TEMP/cargo-c/bin:$PATH"
+          for repo in rgmin rgsaddle; do
+            git clone --filter=blob:none "https://github.com/OmniPotentRPC/$repo" \
+              "$RUNNER_TEMP/$repo"
+          done
+          git -C "$RUNNER_TEMP/rgmin" checkout --detach "$RGMIN_REV"
+          git -C "$RUNNER_TEMP/rgsaddle" checkout --detach "$RGSADDLE_REV"
+          (cd "$RUNNER_TEMP/rgmin" && cargo cinstall --release --features capi \
+            --prefix="$prefix" --libdir="$prefix/lib")
+          # cinstall writes a cbindgen-regenerated rgmin.h that C++ cannot
+          # compile; the curated header and its dlpack.h live in include/.
+          cp "$RUNNER_TEMP/rgmin/include/rgmin.h" "$prefix/include/"
+          cp -r "$RUNNER_TEMP/rgmin/include/dlpack" "$prefix/include/"
+          (cd "$RUNNER_TEMP/rgsaddle" && cargo cinstall --release --features capi \
+            --prefix="$prefix" --libdir="$prefix/lib")
+          echo "RG_PREFIX=$prefix" >> "$GITHUB_ENV"
+
+      - name: Compile
+        shell: pixi run bash -e {0}
+        run: |
+          export PKG_CONFIG_PATH="$RG_PREFIX/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+          meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release \
+            -Dwith_rgmin=enabled -Dwith_rgsaddle=true
+          meson compile -C bbdir
+          export LD_LIBRARY_PATH="$RG_PREFIX/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          features=$(bbdir/client/eonclient --features)
+          echo "$features"
+          grep -q "rgmin minimizers" <<<"$features"
+          grep -q "rgsaddle band and min-mode" <<<"$features"
+
+      - name: Run Catch2 unit tests
+        shell: pixi run bash -e {0}
+        run: |
+          export LD_LIBRARY_PATH="$RG_PREFIX/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          meson test -C bbdir --suite eon --print-errorlogs --max-lines 100000
