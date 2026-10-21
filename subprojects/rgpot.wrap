@@ -3,6 +3,7 @@ directory = rgpot
 url = https://github.com/OmniPotentRPC/rgpot.git
 # EMT, calculator-group MPI, and the readcon interface are supplied by
 # the same rgpot revision for every eOn potential factory arm.
+# The revision is rgpot 3.5.1 or newer (librgpot.so.4).
 revision = e40fd175f5230098d56333bf2aff38cd839dc810
 depth = 1
 diff_files = rgpot-capnp-includes.patch, rgpot-lj-fp-contract.patch, rgpot-windows-link-whole.patch, rgpot-windows-flang-rt.patch

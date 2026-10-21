@@ -2280,6 +2280,16 @@ class NudgedElasticBandConfig(BaseModel):
             "along the band. Zero leaves the profile on the potential energy."
         ),
     )
+    tunnel_wall_points: int = Field(
+        default=0,
+        ge=0,
+        description=(
+            "Force calls past each end minimum of the converged band, along "
+            "its end segment continued outward, for the outer walls of the "
+            "one-dimensional tunnelling levels. 0 continues each well by its "
+            "fit."
+        ),
+    )
     solid_state_pressure: float = Field(
         default=0.0,
         description=(
@@ -2741,6 +2751,14 @@ class InstantonConfig(BaseModel):
         description=(
             "Finite-difference Hessians on every stride-th bead, linear in"
             " between; 1 takes one on every bead."
+        ),
+    )
+    symmetrize: bool = Field(
+        default=True,
+        description=(
+            "Mode splitting: minima of different energy tunnel on the surface"
+            " with the difference switched off along the path. False writes"
+            " no splitting once beta |dV| reaches 0.1."
         ),
     )
     saddle_filename: str = Field(
