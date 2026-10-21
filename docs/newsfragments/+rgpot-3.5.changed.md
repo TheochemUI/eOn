@@ -1,0 +1,1 @@
+eOn requires rgpot 3.5.1 or newer. rgpot 3.5.0 changed the C++ layout of PotCaps, LJConfig, LJClusterConfig and MorseConfig but kept soversion 3, and 3.5.1 installs librgpot.so.4. An older install now fails at configure time instead of in EAMAlTest.

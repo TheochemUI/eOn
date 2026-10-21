@@ -48,7 +48,7 @@ classes for Matter-in / Matter-out work.
 pip install pyeonclient
 pip install 'pyeonclient[ase]'
 pip install 'pyeonclient[metatomic]'
-pip install 'rgpot>=3.2.0'   # multi-ABI engines for Metatomic via RGPOT
+pip install 'rgpot>=3.5.1'   # multi-ABI engines for Metatomic via RGPOT
 ```
 
 The `metatomic` extra does not define `WITH_METATOMIC` and does not pass `-Dwith_metatomic`.
