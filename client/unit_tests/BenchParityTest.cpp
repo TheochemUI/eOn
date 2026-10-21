@@ -43,6 +43,15 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 namespace fs = std::filesystem;
 
+TEST_CASE("bench parity logger discards lines", "[bench_parity][logger]") {
+  // The console fallback fills the pipe Meson reads on Windows.
+  quill::Logger *log = eonc::log::get();
+  REQUIRE(log != nullptr);
+  const auto &sinks = log->get_sinks();
+  REQUIRE(sinks.size() == 1);
+  REQUIRE(dynamic_cast<quill::NullSink *>(sinks.front().get()) != nullptr);
+}
+
 class ParityRun {
 public:
   explicit ParityRun(const std::string &system)

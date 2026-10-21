@@ -57,6 +57,14 @@ Tests use [Catch2](https://github.com/catchorg/Catch2) (amalgamated, vendored
 in `thirdparty/catch2/`). Each test file is compiled with the amalgamated
 source and linked against `eonclib`.
 
+A test file that logs through the `combi` logger declares
+`static eonc::helpers::test::QuillTestLogger`. That logger is a null sink.
+It must be registered with `quill::Frontend` directly: `eonc::log::get()`
+installs a console logger when `combi` does not exist yet, and the helper
+would then keep it. Dimer and Lanczos info lines would fill the stdout
+pipe Meson captures. On Windows that pipe is a few kilobytes and the
+write blocks, so `test_bench_parity` runs past its 30 second limit.
+
 Registration uses meson's array iteration:
 
 ```{code-block} text

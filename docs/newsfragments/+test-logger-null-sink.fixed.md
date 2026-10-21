@@ -1,0 +1,1 @@
+Catch2 tests keep the combi logger on a null sink. Calling `eonc::log::get()` first installed a console logger, dimer and Lanczos lines filled the pipe Meson reads, and on Windows `test_bench_parity` blocked past its 30 second limit.
