@@ -54,7 +54,8 @@ void bind_saddle(nb::module_ &m) {
       .value("OPTIMIZER_ERROR", MinModeSaddleSearch::STATUS_OPTIMIZER_ERROR)
       .value("DIMER_LOST_MODE", MinModeSaddleSearch::STATUS_DIMER_LOST_MODE)
       .value("DIMER_RESTORED_BEST",
-             MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST);
+             MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST)
+      .value("KNOWN_SADDLE", MinModeSaddleSearch::STATUS_KNOWN_SADDLE);
 
   // Overloaded so both the typed status properties and the raw int codes
   // returned by run() resolve.

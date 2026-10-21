@@ -314,6 +314,7 @@
       "keys": [
         "confidence",
         "server_side_process_search",
+        "known_saddles",
         "thermally_accessible_window",
         "thermally_accessible_buffer",
         "max_kmc_steps",

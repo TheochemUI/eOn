@@ -493,6 +493,12 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
         break;
       }
 
+      if (atKnownSaddle()) {
+        QUILL_LOG_DEBUG(log, "[MinModeSaddleSearch] reached a known saddle");
+        status = STATUS_KNOWN_SADDLE;
+        break;
+      }
+
       // Check ImprovedDimer mode convergence
       if (auto *dimer = eonc::asImprovedDimer(*minModeMethod)) {
         if (!dimer->rotationDidConverge) {
@@ -529,6 +535,37 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
   }
 
   return status;
+}
+
+void MinModeSaddleSearch::setKnownSaddles(std::vector<AtomMatrix> positions,
+                                          std::vector<double> energies) {
+  if (positions.size() != energies.size()) {
+    throw std::invalid_argument(
+        "MinModeSaddleSearch::setKnownSaddles: size mismatch");
+  }
+  knownSaddlePositions_ = std::move(positions);
+  knownSaddleEnergies_ = std::move(energies);
+}
+
+bool MinModeSaddleSearch::atKnownSaddle() const {
+  if (knownSaddleEnergies_.empty() ||
+      !(eonc::eigenmodeGetEigenvalue(*minModeMethod) < 0.0)) {
+    return false;
+  }
+  const double energy = matter->getPotentialEnergy();
+  const double eps =
+      params.structure_comparison_options().energy_difference;
+  for (size_t k = 0; k < knownSaddleEnergies_.size(); ++k) {
+    if (std::abs(energy - knownSaddleEnergies_[k]) > eps) {
+      continue;
+    }
+    Matter known(*matter);
+    known.setPositions(knownSaddlePositions_[k]);
+    if (known.compare(*matter)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 double MinModeSaddleSearch::getEigenvalue() {

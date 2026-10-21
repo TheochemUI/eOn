@@ -1599,6 +1599,10 @@ AKMC:
             kind: boolean
             default: false
 
+        known_saddles:
+            kind: boolean
+            default: true
+
         max_kmc_steps:
             kind: int
             default: 0

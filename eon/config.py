@@ -181,6 +181,7 @@ class ConfigClass:
         # AKMC options
         self.akmc_confidence                 = parser.getfloat('AKMC', 'confidence')
         self.akmc_server_side_process_search = parser.getboolean('AKMC', 'server_side_process_search')
+        self.akmc_known_saddles = parser.getboolean('AKMC', 'known_saddles')
         if self.akmc_server_side_process_search:
             if parser.getfloat('Prefactor', 'default_value') == 0:
                 print("Error: you must provide a default prefactor when using server-side process search mode.")

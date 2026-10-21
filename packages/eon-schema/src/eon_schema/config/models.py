@@ -170,6 +170,10 @@ class AKMCConfig(BaseModel):
         default=False,
         description='If true, the server does not send out "process_search" jobs. Instead, it manages individual dimer, minimization, and Hessian calculations. This option is usually used when a single "process_search" job will take a long time (hours or longer).',
     )
+    known_saddles: bool = Field(
+        default=True,
+        description="Send the saddles already found from a state, connected or not, to its min-mode process searches. A climb that reaches one of them under the structure comparison stops there; the server records it as a repeat of that process or as the same failed saddle.",
+    )
     thermally_accessible_window: float = Field(
         default=20.0,
         description="Processes with barriers within this number of kT above the lowest barrier will be used in the rate table and for confidence calculations.",
