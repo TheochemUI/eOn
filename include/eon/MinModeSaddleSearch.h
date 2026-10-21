@@ -116,6 +116,11 @@ public:
 
   int run() override;
   int run(long max_iterations_override);
+  /// Stop the climb when the absolute overlap of the current mode with
+  /// the initial tangent drops below `minimum`. Frontiers OCI-NEB aborts
+  /// a drifting dimer instead of spending the step budget.
+  void setAlignmentAbort(double minimum);
+  [[nodiscard]] bool alignmentAborted() const { return alignAborted_; }
   /// Like run(), but also retain climb ConFrames in memory (same stamps as
   /// write_movies climb CON). Does not require write_movies on disk.
   int runRetainFrames(long max_iterations_override = -1);
@@ -135,6 +140,8 @@ public:
 private:
   std::vector<readcon::ConFrame> climb_frames_;
   bool retain_climb_frames_{false};
+  double alignAbort_{-1.0};
+  bool alignAborted_{false};
   AtomMatrix mode;
   AtomMatrix initialTangent_;
   std::shared_ptr<Matter> matter;

@@ -62,9 +62,18 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
             auto &init_opt = parametersPassed.neb_options().initialization;
             const size_t base_count =
                 parametersPassed.neb_options().image_count;
+            // IDPP is the molecular default. A cell band has no
+            // pair-distance term, so the path is the linear cell
+            // interpolation. prepareSolidState records that fallback.
+            NEBInit initMethod = init_opt.method;
             if (parametersPassed.neb_options().solid_state.enabled &&
-                init_opt.method != NEBInit::LINEAR &&
-                init_opt.method != NEBInit::FILE) {
+                (initMethod == NEBInit::IDPP ||
+                 initMethod == NEBInit::IDPP_COLLECTIVE)) {
+              initMethod = NEBInit::LINEAR;
+            }
+            if (parametersPassed.neb_options().solid_state.enabled &&
+                initMethod != NEBInit::LINEAR &&
+                initMethod != NEBInit::FILE) {
               throw std::invalid_argument(
                   "solid_state accepts initializer linear or file");
             }
@@ -93,7 +102,7 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
                     : base_count;
 
             std::vector<Matter> path;
-            switch (init_opt.method) {
+            switch (initMethod) {
             case NEBInit::FILE: {
               std::vector<fs::path> file_paths =
                   eonc::helpers::neb_paths::readFilePaths(init_opt.input_path);
@@ -287,6 +296,33 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
   }
 }
 
+namespace {
+
+// ci_after (+inf by default) is not a gate. A finite value is. A
+// positive ci_after_rel waits until the band force drops below that
+// fraction of the initial force. With neither gate set, climbing is on
+// from the first step, which is the historical client behavior. When
+// both gates are set, both have to pass: an explicit ceiling must not
+// be skipped because the fraction is still loose. A zero baseline has
+// no fraction left to wait on.
+bool ciForceTriggered(double activation, double baseline, double factor,
+                      double absTrigger) {
+  const bool relSet = factor > 0.0 && std::isfinite(baseline);
+  const bool absSet = std::isfinite(absTrigger);
+  if (!relSet && !absSet) {
+    return true;
+  }
+  // A baseline already under the absolute ceiling has nothing left for
+  // the fraction to wait on. A zero baseline is that case as well.
+  const bool relOk = !relSet || !(baseline > 0.0) ||
+                     (absSet && baseline < absTrigger) ||
+                     activation < baseline * factor;
+  const bool absOk = !absSet || activation < absTrigger;
+  return relOk && absOk;
+}
+
+} // namespace
+
 NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
   iteration_ = 0;
   long &iteration = iteration_;
@@ -298,6 +334,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
   E_ref = std::max(path[0]->getPotentialEnergy(),
                    path[numImages + 1]->getPotentialEnergy());
 
+  // The baseline is the plain band force. Climbing turns on below.
+  setCIEnabled(false);
   updateForces();
 
   auto objf = std::make_shared<NEBObjectiveFunction>(this, params);
@@ -332,7 +370,10 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
   long zoomPrevCI{-1};
   long zoomAt{-1};
   // Activation uses the stepping projection; acceptance uses configured CI.
+  // The gate latches: the climbing force is large while the image climbs,
+  // and that must not turn the climb off.
   double activation_force{0.0};
+  bool ciLatched{false};
 
   while (this->status != NEBStatus::GOOD) {
     if (!path.empty()) {
@@ -446,13 +487,22 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
           "---------------------------------------------------------------\n");
     }
 
-    // CI active when force drops below relative threshold
+    // CI active when force drops below the relative and absolute gates.
+    const auto &ciOpt = params.neb_options().climbing_image;
     bool ci_active =
-        params.neb_options().climbing_image.enabled &&
-        (activation_force <
-             baseline_force *
-                 params.neb_options().climbing_image.trigger_factor ||
-         activation_force < params.neb_options().climbing_image.trigger_force);
+        ciOpt.enabled &&
+        (ciLatched || ciForceTriggered(activation_force, baseline_force,
+                                       ciOpt.trigger_factor,
+                                       ciOpt.trigger_force));
+    if (ci_active) {
+      ciLatched = true;
+    }
+    if (iteration == 0) {
+      // Immediate climbing (no relative factor, no finite ci_after)
+      // projects the first band. A relative gate stays off until the
+      // force has fallen.
+      setCIEnabled(ci_active);
+    }
 
     bool zoomedThisStep = false;
     if (iteration && !zoomDone && params.neb_options().zoom.enabled &&
@@ -490,9 +540,11 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
       }
     }
 
+    bool mmfThisStep = false;
     if (iteration) {
       // MMF triggering via controller. Skipped on the zoom step so the
       // dimer sees the redistributed band, not the pre-zoom geometry.
+      // Algorithm 1 takes the dimer instead of a band step.
       if (!zoomedThisStep &&
           ocineb.shouldTrigger(convForce, ci_active, climbingImage, numImages,
                                ocineb.stabilityCount())) {
@@ -530,6 +582,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
                 objf, params.neb_options().opt_method, params);
           }
         }
+        mmfThisStep = true;
       }
 
       long iterLimit = params.neb_options().max_iterations;
@@ -548,6 +601,10 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
         continue;
       }
 
+      // The dimer replaced this iteration's band step (Algorithm 1).
+      if (mmfThisStep) {
+        activation_force = convergenceForce();
+      } else {
       // Set CI state so updateForces() inside the optimizer step
       // applies the correct force projection.
       setCIEnabled(ci_active);
@@ -575,7 +632,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
       }
 
       activation_force = convergenceForce();
-      setCIEnabled(params.neb_options().climbing_image.enabled);
+      setCIEnabled(ci_active);
+      }
     }
 
     iteration++;
@@ -1008,7 +1066,8 @@ void refuseSolidStateCombination(const Parameters &params) {
         "solid_state is set and neb_elastic_band is true");
   }
   const auto method = neb.initialization.method;
-  if (method != NEBInit::LINEAR && method != NEBInit::FILE) {
+  if (method != NEBInit::LINEAR && method != NEBInit::FILE &&
+      method != NEBInit::IDPP) {
     throw std::invalid_argument(
         "solid_state accepts initializer linear or file");
   }
@@ -1042,6 +1101,19 @@ double springScale(const eonc::neb::SpringStrategy &spring, long image,
 void NudgedElasticBand::prepareSolidState() {
   if (!params.neb_options().solid_state.enabled) {
     return;
+  }
+  auto &nebOpts = ParametersLoadAccess::neb_options(params);
+  if (nebOpts.climbing_image.ocineb.use_mmf) {
+    // The min-mode walk does not move the cell. Stock OCI stays on for
+    // molecular and cluster bands and turns off here.
+    QUILL_LOG_INFO(log, "solid_state turns ci_mmf off");
+    nebOpts.climbing_image.ocineb.use_mmf = false;
+  }
+  if (nebOpts.initialization.method == NEBInit::IDPP ||
+      nebOpts.initialization.method == NEBInit::IDPP_COLLECTIVE) {
+    QUILL_LOG_INFO(
+        log, "solid_state uses a linear initial path; IDPP has no cell");
+    nebOpts.initialization.method = NEBInit::LINEAR;
   }
   refuseSolidStateCombination(params);
   for (const auto &image : path) {

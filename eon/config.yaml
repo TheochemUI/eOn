@@ -325,7 +325,7 @@ Nudged Elastic Band:
 
         initializer:
             kind: string
-            default: linear
+            default: idpp
             values:
                 - linear
                 - idpp
@@ -363,7 +363,7 @@ Nudged Elastic Band:
 
         ci_mmf:
             kind: boolean
-            default: false
+            default: true
 
         ci_mmf_after:
             kind: float
@@ -379,7 +379,7 @@ Nudged Elastic Band:
 
         ci_mmf_angle:
             kind: float
-            default: 0.7071
+            default: 0.85
 
         ci_mmf_restore_unhelpful:
             kind: boolean

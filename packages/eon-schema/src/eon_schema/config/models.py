@@ -2352,7 +2352,14 @@ class NudgedElasticBandConfig(BaseModel):
         description="Parallel spring from the difference of squared neighbour distances.",
     )
     energy_weighted: bool = Field(
-        default=False, description="Indicates if the energy-weighted method is used."
+        default=False,
+        description=(
+            "Energy-weighted springs of Asgeirsson et al., "
+            "J. Chem. Theory Comput. 17, 4929 (2021). Stiffness runs from "
+            "ew_ksp_min to ew_ksp_max and tightens images near the barrier. "
+            "Off by default: the Pt heptamer benchmark in Goswami, Gunde, "
+            "and Jonsson, Front. Chem. 14:1807063 (2026) keeps a uniform spring."
+        ),
     )
     """
     Method as demonstrated in :cite:t:`neb-asgeirssonNudgedElasticBand2021`.
@@ -2376,7 +2383,7 @@ class NudgedElasticBandConfig(BaseModel):
     This file must contain a list of .con files, one per image on the path.
     """
     initializer: Literal["linear", "idpp", "idpp_collective", "sidpp", "file"] = Field(
-        default="linear",
+        default="idpp",
         description="Initialization strategy.",
     )
     """
@@ -2412,8 +2419,12 @@ class NudgedElasticBandConfig(BaseModel):
         description="Convergence before the CI is turned on.",
     )
     ci_mmf: bool = Field(
-        default=False,
-        description="Use an MMF method for the CI.",
+        default=True,
+        description=(
+            "Refine the climbing image with the dimer (OCI-NEB). "
+            "Goswami, Gunde, and Jonsson, Front. Chem. 14:1807063 (2026), "
+            "doi:10.3389/fchem.2026.1807063, Algorithm 1."
+        ),
     )
     ci_mmf_after: float = Field(
         default=0.5,
@@ -2428,8 +2439,11 @@ class NudgedElasticBandConfig(BaseModel):
         description="Number of stable iterations before settling on a CI image index.",
     )
     ci_mmf_angle: float = Field(
-        default=0.8,
-        description="Alignment threshold w.r.t NEB mode.",
+        default=0.85,
+        description=(
+            "Alignment threshold of the dimer mode against the NEB tangent. "
+            "0.85 is the Frontiers operating point. 1/sqrt(2) is the bound."
+        ),
     )
     ci_mmf_restore_unhelpful: bool = Field(
         default=False,

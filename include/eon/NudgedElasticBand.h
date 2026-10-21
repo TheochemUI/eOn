@@ -74,6 +74,11 @@ public:
       movedAfterForceCall = true;
     }
   }
+  /// After a dimer has put this image on the saddle, band steps leave
+  /// it there. A later dimer clears the pin before it walks again.
+  void pinImage(long index) { pinnedImage_ = index; }
+  void unpinImage() { pinnedImage_ = -1; }
+  [[nodiscard]] long pinnedImage() const { return pinnedImage_; }
   double convergenceForce(void);
   /// Host bookkeeping for a band whose projected force came from the
   /// rgsaddle session: the highest interior image, the climbing image
@@ -125,7 +130,9 @@ public:
                 // reactant or product energy minimum
 
 private:
-  bool ci_enabled_{false}; // runtime CI state, set by compute()
+  bool ci_enabled_{false};
+  // Image left fixed after a converged dimer. -1 pins nothing.
+  long pinnedImage_{-1};
   double baseline_force{-1.0};
   Parameters params;
   std::shared_ptr<Potential> pot;
@@ -168,6 +175,7 @@ public:
   // getEnergy() sums the image energies; the springs are not in it and the
   // climbing image moves up it.
   bool gradientMatchesEnergy() const override { return false; }
+  bool reuseDisplacementCurvature() const override { return true; }
   NudgedElasticBand::NEBStatus status;
 
 private:

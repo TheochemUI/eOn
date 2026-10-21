@@ -53,7 +53,8 @@ public:
   // saddle direction's own scale, so the optimizer's first step needs no
   // finite-difference probe.
   std::optional<double> knownCurvature() const override {
-    if (iteration == 0 || !minModeMethod) {
+    if (!params.saddle_search_options().scale_from_mode || iteration == 0 ||
+        !minModeMethod) {
       return std::nullopt;
     }
     const double c = eonc::eigenmodeGetEigenvalue(*minModeMethod);
@@ -240,6 +241,15 @@ MinModeSaddleSearch::MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
     VectorXd refVec = VectorXd::Map(mode.data(), 3 * matter->numberOfAtoms());
     refVec = refVec.array() * matter->getFreeV().array();
     dimer->setReferenceMode(refVec);
+  }
+}
+
+void MinModeSaddleSearch::setAlignmentAbort(double minimum) {
+  alignAbort_ = minimum;
+  // The rotation loop has to stop as well. The constructor stores the
+  // initial mode on every search; that alone must not abort a free dimer.
+  if (auto *dimer = eonc::asImprovedDimer(*minModeMethod)) {
+    dimer->setReferenceAbort(minimum);
   }
 }
 
@@ -491,6 +501,29 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       if (de > params.saddle_search_options().max_energy) {
         status = STATUS_BAD_HIGH_ENERGY;
         break;
+      }
+
+      if (alignAbort_ > 0.0) {
+        const AtomMatrix ev = eonc::eigenmodeGetEigenvector(*minModeMethod);
+        const VectorXd mode =
+            VectorXd::Map(ev.data(), ev.size());
+        const VectorXd tangent = VectorXd::Map(initialTangent_.data(),
+                                               initialTangent_.size());
+        const double modeNorm = mode.norm();
+        const double tangentNorm = tangent.norm();
+        if (mode.size() == tangent.size() && modeNorm > 0.0 &&
+            tangentNorm > 0.0) {
+          const double overlap =
+              std::abs(mode.dot(tangent) / (modeNorm * tangentNorm));
+          if (overlap < alignAbort_) {
+            alignAborted_ = true;
+            QUILL_LOG_DEBUG(
+                log,
+                "MMF alignment {:.3f} fell below {:.3f}; stopping the climb",
+                overlap, alignAbort_);
+            break;
+          }
+        }
       }
 
       // Check ImprovedDimer mode convergence

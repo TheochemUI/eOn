@@ -38,6 +38,9 @@ public:
   // an energy test accept or shape a step (lbfgs_accept, the Zhang-Xu
   // secant); an objective that climbs its energy rejects every good step.
   virtual bool gradientMatchesEnergy() const { return true; }
+  // The band reuses the previous displacement as a secant. A minimizer
+  // and a dimer translation keep a finite-difference probe each step.
+  virtual bool reuseDisplacementCurvature() const { return false; }
   // A curvature the objective already knows (eV / A^2, magnitude), so
   // L-BFGS can seed H0 from it instead of spending a force call on the
   // finite-difference probe. Empty when nothing is known.

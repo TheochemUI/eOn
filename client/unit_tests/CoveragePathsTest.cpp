@@ -1413,9 +1413,13 @@ TEST_CASE("solid-state bands refuse climbs that do not move the cell",
   ParametersLoadAccess::neb_options(params).zoom.enabled = true;
   expectThrow("zoom");
   ParametersLoadAccess::neb_options(params).zoom.enabled = false;
+  // Stock OCI is the molecular default. A cell band turns the dimer off
+  // and continues, because the walk would not move the cell.
   ParametersLoadAccess::neb_options(params).climbing_image.ocineb.use_mmf =
       true;
-  expectThrow("mmf");
+  INFO("mmf");
+  REQUIRE_NOTHROW(
+      std::make_unique<NudgedElasticBand>(reactant, product, params, pot));
   ParametersLoadAccess::neb_options(params).climbing_image.ocineb.use_mmf =
       false;
   ParametersLoadAccess::neb_options(params).spring.om.enabled = true;

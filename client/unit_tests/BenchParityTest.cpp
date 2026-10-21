@@ -107,6 +107,7 @@ static std::string nebConfig(const std::string &accept) {
          accept +
          "\n[Nudged Elastic Band]\nimages = 5\nspring = 5.0\n"
          "climbing_image_method = true\nopt_method = lbfgs\n"
+         "initializer = linear\nci_mmf = false\nci_after_rel = 0\n"
          "converged_force = 0.01\nmax_iterations = 1000\n";
 }
 
@@ -170,7 +171,9 @@ TEST_CASE("Single-image CI-NEB force calls match eOn 3.5.0",
       std::string(c.potential) +
       "\n[Optimizer]\nopt_method = lbfgs\nconverged_force = 0.001\n"
       "max_iterations = 1000\nlbfgs_accept = " +
-      accept + "\n[Nudged Elastic Band]\nimages = 1\nclimbing_image = true\n");
+      accept +
+      "\n[Nudged Elastic Band]\nimages = 1\nclimbing_image = true\n"
+      "initializer = linear\nci_mmf = false\nci_after_rel = 0\n");
   REQUIRE(results.at("termination_reason") == "0");
   REQUIRE(results.at("number_of_images") == "1.000000000000e+00");
   requireNear350(std::stol(results.at("total_force_calls")), c.calls);
