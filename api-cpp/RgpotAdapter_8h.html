@@ -244,6 +244,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('RgpotAdapter_8
 <code>#include &quot;<a class="el" href="Parameters_8h_source.html">eon/Parameters.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Potential_8h_source.html">eon/Potential.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="PluginLoader_8h_source.html">eon/potentials/PluginLoader.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="HessianRange_8h_source.html">eon/potentials/RgpotAdapter/HessianRange.h</a>&quot;</code><br />
 <code>#include &quot;rgpot/ForceStructs.hpp&quot;</code><br />
 <code>#include &quot;rgpot/pot_caps.hpp&quot;</code><br />
 </div>
@@ -292,10 +293,10 @@ template&lt;class RPot, class Cfg&gt; </div>
 
 <p>Factory arm helper: construct the kernel from its config and wrap it. </p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00229">229</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  229</span>                                                                           {</div>
-<div class="line"><span class="lineno">  230</span>  <span class="keywordflow">return</span> std::make_unique&lt;RgpotAdapter&lt;RPot&gt;&gt;(ptype, params, cfg);</div>
-<div class="line"><span class="lineno">  231</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00226">226</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  226</span>                                                                           {</div>
+<div class="line"><span class="lineno">  227</span>  <span class="keywordflow">return</span> std::make_unique&lt;RgpotAdapter&lt;RPot&gt;&gt;(ptype, params, cfg);</div>
+<div class="line"><span class="lineno">  228</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -322,10 +323,10 @@ template&lt;class RPot&gt; </div>
 
 <p>Factory arm helper for kernels whose parameters are fixed tabulated data with no eOn-side configuration surface. </p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00222">222</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  222</span>                                                                  {</div>
-<div class="line"><span class="lineno">  223</span>  <span class="keywordflow">return</span> std::make_unique&lt;RgpotAdapter&lt;RPot&gt;&gt;(ptype, params);</div>
-<div class="line"><span class="lineno">  224</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00219">219</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  219</span>                                                                  {</div>
+<div class="line"><span class="lineno">  220</span>  <span class="keywordflow">return</span> std::make_unique&lt;RgpotAdapter&lt;RPot&gt;&gt;(ptype, params);</div>
+<div class="line"><span class="lineno">  221</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

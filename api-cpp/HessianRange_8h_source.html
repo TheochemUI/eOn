@@ -1,0 +1,593 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/include/eon/potentials/RgpotAdapter/HessianRange.h Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn 3.2.0</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('HessianRange_8h_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">HessianRange.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="HessianRange_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">** This file is part of eOn.</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">**</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">** SPDX-License-Identifier: BSD-3-Clause</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">**</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">** Copyright (c) 2010--present, eOn Development Team</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">** All rights reserved.</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">**</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">** Repo:</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">** https://github.com/TheochemUI/eOn</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">*/</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &quot;rgpot/LennardJones/LJClusterPot.hpp&quot;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &quot;rgpot/LennardJones/LJPot.hpp&quot;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &quot;rgpot/Morse/MorsePot.hpp&quot;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &quot;rgpot/ZBL/ZBLPot.hpp&quot;</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &quot;rgpot/fortran/FortranPots.hpp&quot;</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#if defined(__has_include) &amp;&amp; __has_include(&quot;rgpot/UmaPot/UmaPot.hpp&quot;)</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#include &quot;rgpot/UmaPot/UmaPot.hpp&quot;</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#if defined(__has_include) &amp;&amp; __has_include(&quot;rgpot/Water/WaterPots.hpp&quot;)</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#include &quot;rgpot/Water/WaterPots.hpp&quot;</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#if defined(__has_include) &amp;&amp; __has_include(&quot;rgpot/EAM/EAMPot.hpp&quot;)</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#include &quot;rgpot/EAM/EAMPot.hpp&quot;</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="preprocessor">#if defined(__has_include) &amp;&amp; __has_include(&quot;rgpot/EMT/EMTPot.hpp&quot;)</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#include &quot;rgpot/EMT/EMTPot.hpp&quot;</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span></div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="};">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">   47</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51a88183b946cc5f0e8c96b2e66e1c74a7e">   49</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a88183b946cc5f0e8c96b2e66e1c74a7e">Unknown</a>,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51ad0bd662806a73209a1c6fbe55591fbff">   51</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51ad0bd662806a73209a1c6fbe55591fbff">Pair</a>,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51aa8fef013f0385b21ae5a60e717ac6eb7">   54</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51aa8fef013f0385b21ae5a60e717ac6eb7">AtomCentred</a>,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51ace15c0c61f9079ef36fa8b5a1857baf3">   58</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51ace15c0c61f9079ef36fa8b5a1857baf3">MolecularSite</a>,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51ae3215de9017444f2fe1c6998925bebc9">   61</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51ae3215de9017444f2fe1c6998925bebc9">MessagePassing</a>,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>};</div>
+</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span></div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="};">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf.html">   69</a></span><span class="keyword">template</span> &lt;<span class="keyword">class</span> RPot&gt; <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1HessianRangeOf.html">HessianRangeOf</a> {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf.html#a9862edaf64c45ba3559464bfa0bb0c5a">   70</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf.html#a9862edaf64c45ba3559464bfa0bb0c5a">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51a88183b946cc5f0e8c96b2e66e1c74a7e">HessianLocality::Unknown</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf.html#ad163dec0754af53b7dae47c7f4f51eec">   74</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf.html#ad163dec0754af53b7dae47c7f4f51eec">interactionCutoff</a> = 0.0;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf.html#a76a222192161307b904e177615905ca3">   75</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_function" href="structeonc_1_1HessianRangeOf.html#a76a222192161307b904e177615905ca3">range</a>(<span class="keyword">const</span> RPot &amp;) <span class="keyword">noexcept</span> { <span class="keywordflow">return</span> 0.0; }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>};</div>
+</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span></div>
+<div class="foldopen" id="foldopen00079" data-start="{" data-end="}">
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a3f361b3d17f01422f06ccf6dcd264c5e">   79</a></span>[[nodiscard]] <span class="keyword">inline</span> <span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeonc.html#a3f361b3d17f01422f06ccf6dcd264c5e">acceptedHessianRange</a>(<span class="keywordtype">double</span> range) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>  <span class="keywordflow">if</span> (!(range &gt; 0.0) || !std::isfinite(range)) {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  }</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>  <span class="keywordflow">return</span> range;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}</div>
+</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="foldopen" id="foldopen00086" data-start="{" data-end="};">
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJPot_01_4.html">   86</a></span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1HessianRangeOf.html">HessianRangeOf</a>&lt;rgpot::LJPot&gt; {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJPot_01_4.html#a3c9b152a69cae1d5c70f16102beb5542">   87</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJPot_01_4.html#a3c9b152a69cae1d5c70f16102beb5542">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51ad0bd662806a73209a1c6fbe55591fbff">HessianLocality::Pair</a>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJPot_01_4.html#a92e3ac6cd93efb37817961b29380f340">   90</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJPot_01_4.html#a92e3ac6cd93efb37817961b29380f340">interactionCutoff</a> = 0.0;</div>
+<div class="foldopen" id="foldopen00091" data-start="{" data-end="}">
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJPot_01_4.html#aadbc0a3949fd891f455472b285ba8ad2">   91</a></span>  <span class="keyword">static</span> <span class="keywordtype">double</span> <a class="code hl_function" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJPot_01_4.html#aadbc0a3949fd891f455472b285ba8ad2">range</a>(<span class="keyword">const</span> rgpot::LJPot &amp;<a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">return</span> <a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>.config().cutoff;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>  }</div>
+</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>};</div>
+</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="foldopen" id="foldopen00096" data-start="{" data-end="};">
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJClusterPot_01_4.html">   96</a></span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1HessianRangeOf.html">HessianRangeOf</a>&lt;rgpot::LJClusterPot&gt; {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJClusterPot_01_4.html#aff08c5b02830f33847eed1409541defd">   97</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJClusterPot_01_4.html#aff08c5b02830f33847eed1409541defd">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51ad0bd662806a73209a1c6fbe55591fbff">HessianLocality::Pair</a>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJClusterPot_01_4.html#a15ad4f11a64f31ae1c64c3d85d09a415">  100</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJClusterPot_01_4.html#a15ad4f11a64f31ae1c64c3d85d09a415">interactionCutoff</a> = 0.0;</div>
+<div class="foldopen" id="foldopen00101" data-start="{" data-end="}">
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJClusterPot_01_4.html#a0c09ad64aa004f1a7abeadd03b105414">  101</a></span>  <span class="keyword">static</span> <span class="keywordtype">double</span> <a class="code hl_function" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJClusterPot_01_4.html#a0c09ad64aa004f1a7abeadd03b105414">range</a>(<span class="keyword">const</span> rgpot::LJClusterPot &amp;<a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">return</span> <a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>.config().cutoff;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>  }</div>
+</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>};</div>
+</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="foldopen" id="foldopen00106" data-start="{" data-end="};">
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1MorsePot_01_4.html">  106</a></span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1HessianRangeOf.html">HessianRangeOf</a>&lt;rgpot::MorsePot&gt; {</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1MorsePot_01_4.html#a0203e6ed24bb08c47dbdcdb98ead96f8">  107</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1MorsePot_01_4.html#a0203e6ed24bb08c47dbdcdb98ead96f8">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51ad0bd662806a73209a1c6fbe55591fbff">HessianLocality::Pair</a>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1MorsePot_01_4.html#a94c57f8d559fef6a3d309e5a2c31ecc6">  110</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1MorsePot_01_4.html#a94c57f8d559fef6a3d309e5a2c31ecc6">interactionCutoff</a> = 0.0;</div>
+<div class="foldopen" id="foldopen00111" data-start="{" data-end="}">
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1MorsePot_01_4.html#a595afce56c631a67405903604dd959f0">  111</a></span>  <span class="keyword">static</span> <span class="keywordtype">double</span> <a class="code hl_function" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1MorsePot_01_4.html#a595afce56c631a67405903604dd959f0">range</a>(<span class="keyword">const</span> rgpot::MorsePot &amp;<a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordflow">return</span> <a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>.config().cutoff;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>  }</div>
+</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>};</div>
+</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span></div>
+<div class="foldopen" id="foldopen00118" data-start="{" data-end="};">
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1ZBLPot_01_4.html">  118</a></span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1HessianRangeOf.html">HessianRangeOf</a>&lt;rgpot::ZBLPot&gt; {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1ZBLPot_01_4.html#ab65c95a5ad01d16d8d6cb33d8d7fa4bc">  119</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1ZBLPot_01_4.html#ab65c95a5ad01d16d8d6cb33d8d7fa4bc">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51ad0bd662806a73209a1c6fbe55591fbff">HessianLocality::Pair</a>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1ZBLPot_01_4.html#aedaff2ba59ba297b063879b0258e0b07">  121</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1ZBLPot_01_4.html#aedaff2ba59ba297b063879b0258e0b07">interactionCutoff</a> = 0.0;</div>
+<div class="foldopen" id="foldopen00122" data-start="{" data-end="}">
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1ZBLPot_01_4.html#ab1a78743b4807d6ebb5afd1ba6e04678">  122</a></span>  <span class="keyword">static</span> <span class="keywordtype">double</span> <a class="code hl_function" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1ZBLPot_01_4.html#ab1a78743b4807d6ebb5afd1ba6e04678">range</a>(<span class="keyword">const</span> rgpot::ZBLPot &amp;<a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordflow">return</span> <a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>.config().cut_global;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>  }</div>
+</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>};</div>
+</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span></div>
+<div class="foldopen" id="foldopen00130" data-start="{" data-end="};">
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EAMAlPot_01_4.html">  130</a></span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1HessianRangeOf.html">HessianRangeOf</a>&lt;rgpot::fortranpots::EAMAlPot&gt; {</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EAMAlPot_01_4.html#a18bd448c7f0bfe59d5c1cfaf886153a6">  131</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EAMAlPot_01_4.html#a18bd448c7f0bfe59d5c1cfaf886153a6">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51aa8fef013f0385b21ae5a60e717ac6eb7">HessianLocality::AtomCentred</a>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EAMAlPot_01_4.html#a8eb996e734861873ecc7476f8096e87c">  132</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EAMAlPot_01_4.html#a8eb996e734861873ecc7476f8096e87c">interactionCutoff</a> = 7.1;</div>
+<div class="foldopen" id="foldopen00133" data-start="{" data-end="}">
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EAMAlPot_01_4.html#ab8b91c78bdb1d7a2768dd34e89115949">  133</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_function" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EAMAlPot_01_4.html#ab8b91c78bdb1d7a2768dd34e89115949">range</a>(<span class="keyword">const</span> rgpot::fortranpots::EAMAlPot &amp;) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordflow">return</span> 2.0 * <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EAMAlPot_01_4.html#a8eb996e734861873ecc7476f8096e87c">interactionCutoff</a>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>  }</div>
+</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>};</div>
+</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span></div>
+<div class="foldopen" id="foldopen00141" data-start="{" data-end="};">
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html">  141</a></span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1HessianRangeOf.html">HessianRangeOf</a>&lt;rgpot::fortranpots::SWPot&gt; {</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#ada788fc9f1534ec51131a8a4f75549bd">  142</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#ada788fc9f1534ec51131a8a4f75549bd">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51aa8fef013f0385b21ae5a60e717ac6eb7">HessianLocality::AtomCentred</a>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#ae0e3cf3761f4ffa5ddf0cbde8d9a2e2e">  143</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#ae0e3cf3761f4ffa5ddf0cbde8d9a2e2e">kSigma</a> = 2.0951;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#aff9db59df8a0110caba89913431cbd90">  144</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#aff9db59df8a0110caba89913431cbd90">kAlpha</a> = 1.8;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#a78905e0a7939156feff19036190c1252">  145</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#a78905e0a7939156feff19036190c1252">interactionCutoff</a> = <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#aff9db59df8a0110caba89913431cbd90">kAlpha</a> * <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#ae0e3cf3761f4ffa5ddf0cbde8d9a2e2e">kSigma</a>;</div>
+<div class="foldopen" id="foldopen00146" data-start="{" data-end="}">
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#a4e02d33717ce159d7d30cdfb0b76b2a7">  146</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_function" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#a4e02d33717ce159d7d30cdfb0b76b2a7">range</a>(<span class="keyword">const</span> rgpot::fortranpots::SWPot &amp;) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordflow">return</span> 2.0 * <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#a78905e0a7939156feff19036190c1252">interactionCutoff</a>;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>  }</div>
+</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>};</div>
+</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span></div>
+<div class="foldopen" id="foldopen00153" data-start="{" data-end="};">
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1TersoffPot_01_4.html">  153</a></span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1HessianRangeOf.html">HessianRangeOf</a>&lt;rgpot::fortranpots::TersoffPot&gt; {</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1TersoffPot_01_4.html#a87272b5b174948b072bc1f22573ecab9">  154</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1TersoffPot_01_4.html#a87272b5b174948b072bc1f22573ecab9">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51aa8fef013f0385b21ae5a60e717ac6eb7">HessianLocality::AtomCentred</a>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1TersoffPot_01_4.html#a86c2f608ff91265c70b0293e5ace6711">  155</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1TersoffPot_01_4.html#a86c2f608ff91265c70b0293e5ace6711">interactionCutoff</a> = 3.0;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span></div>
+<div class="foldopen" id="foldopen00157" data-start="{" data-end="}">
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1TersoffPot_01_4.html#aa3ed1cdab25387f7a74049fadfb1e6e8">  157</a></span>  <a class="code hl_function" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1TersoffPot_01_4.html#aa3ed1cdab25387f7a74049fadfb1e6e8">range</a>(<span class="keyword">const</span> rgpot::fortranpots::TersoffPot &amp;) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keywordflow">return</span> 2.0 * <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1TersoffPot_01_4.html#a86c2f608ff91265c70b0293e5ace6711">interactionCutoff</a>;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>  }</div>
+</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>};</div>
+</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span></div>
+<div class="foldopen" id="foldopen00165" data-start="{" data-end="};">
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EDIPPot_01_4.html">  165</a></span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1HessianRangeOf.html">HessianRangeOf</a>&lt;rgpot::fortranpots::EDIPPot&gt; {</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EDIPPot_01_4.html#a65b7fe352bef6771ddb72fa03a41aa2e">  166</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EDIPPot_01_4.html#a65b7fe352bef6771ddb72fa03a41aa2e">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51aa8fef013f0385b21ae5a60e717ac6eb7">HessianLocality::AtomCentred</a>;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EDIPPot_01_4.html#a2a2b3f9cb00b108fc529591cb502ede4">  167</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EDIPPot_01_4.html#a2a2b3f9cb00b108fc529591cb502ede4">interactionCutoff</a> = 3.1213820;</div>
+<div class="foldopen" id="foldopen00168" data-start="{" data-end="}">
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EDIPPot_01_4.html#a4f4d084ecd1ed53943f9231342bad75e">  168</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_function" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EDIPPot_01_4.html#a4f4d084ecd1ed53943f9231342bad75e">range</a>(<span class="keyword">const</span> rgpot::fortranpots::EDIPPot &amp;) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordflow">return</span> 2.0 * <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EDIPPot_01_4.html#a2a2b3f9cb00b108fc529591cb502ede4">interactionCutoff</a>;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>  }</div>
+</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>};</div>
+</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span></div>
+<div class="foldopen" id="foldopen00175" data-start="{" data-end="};">
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1LenoskyPot_01_4.html">  175</a></span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1HessianRangeOf.html">HessianRangeOf</a>&lt;rgpot::fortranpots::LenoskyPot&gt; {</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1LenoskyPot_01_4.html#ade4db021f8ab69b0e2e4a41967f6c42a">  176</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1LenoskyPot_01_4.html#ade4db021f8ab69b0e2e4a41967f6c42a">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51aa8fef013f0385b21ae5a60e717ac6eb7">HessianLocality::AtomCentred</a>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1LenoskyPot_01_4.html#a2394d84952bcb2ff9f0a40de34762e9a">  177</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1LenoskyPot_01_4.html#a2394d84952bcb2ff9f0a40de34762e9a">interactionCutoff</a> = 4.5;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span></div>
+<div class="foldopen" id="foldopen00179" data-start="{" data-end="}">
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1LenoskyPot_01_4.html#a0eea0a5d0ff529fb36ffc928bc816caf">  179</a></span>  <a class="code hl_function" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1LenoskyPot_01_4.html#a0eea0a5d0ff529fb36ffc928bc816caf">range</a>(<span class="keyword">const</span> rgpot::fortranpots::LenoskyPot &amp;) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keywordflow">return</span> 2.0 * <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1LenoskyPot_01_4.html#a2394d84952bcb2ff9f0a40de34762e9a">interactionCutoff</a>;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>  }</div>
+</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>};</div>
+</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span></div>
+<div class="foldopen" id="foldopen00189" data-start="{" data-end="};">
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html">  189</a></span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1HessianRangeOf.html">HessianRangeOf</a>&lt;rgpot::fortranpots::FeHePot&gt; {</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#a1d0463478b9cb6e587de918c53e189ad">  190</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#a1d0463478b9cb6e587de918c53e189ad">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51aa8fef013f0385b21ae5a60e717ac6eb7">HessianLocality::AtomCentred</a>;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#a0a5d001fd5e809e424c7f267cbfb1b2c">  191</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#a0a5d001fd5e809e424c7f267cbfb1b2c">kMaxPair</a> = 5.4;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#a50800a4580ac858bb92f4e4b8121ba84">  192</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#a50800a4580ac858bb92f4e4b8121ba84">kMaxDensity</a> = 4.2;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#adca35383fb46052bb0d8c91fb3268b81">  194</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#adca35383fb46052bb0d8c91fb3268b81">interactionCutoff</a> = <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#a0a5d001fd5e809e424c7f267cbfb1b2c">kMaxPair</a>;</div>
+<div class="foldopen" id="foldopen00195" data-start="{" data-end="}">
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#a9aa44bc56d04f398353e5e9346fc2161">  195</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_function" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#a9aa44bc56d04f398353e5e9346fc2161">range</a>(<span class="keyword">const</span> rgpot::fortranpots::FeHePot &amp;) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#a0a5d001fd5e809e424c7f267cbfb1b2c">kMaxPair</a> &gt; 2.0 * <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#a50800a4580ac858bb92f4e4b8121ba84">kMaxDensity</a> ? <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#a0a5d001fd5e809e424c7f267cbfb1b2c">kMaxPair</a> : 2.0 * <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#a50800a4580ac858bb92f4e4b8121ba84">kMaxDensity</a>;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>  }</div>
+</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>};</div>
+</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span></div>
+<div class="foldopen" id="foldopen00202" data-start="{" data-end="};">
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1CuH2Pot_01_4.html">  202</a></span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1HessianRangeOf.html">HessianRangeOf</a>&lt;rgpot::fortranpots::CuH2Pot&gt; {</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1CuH2Pot_01_4.html#a3705e875c079b1c95cc307ad10c06894">  203</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1CuH2Pot_01_4.html#a3705e875c079b1c95cc307ad10c06894">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51aa8fef013f0385b21ae5a60e717ac6eb7">HessianLocality::AtomCentred</a>;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1CuH2Pot_01_4.html#a5b4bbc4d673b264304b6098be32b93eb">  204</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1CuH2Pot_01_4.html#a5b4bbc4d673b264304b6098be32b93eb">interactionCutoff</a> = 6.1;</div>
+<div class="foldopen" id="foldopen00205" data-start="{" data-end="}">
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1CuH2Pot_01_4.html#a9a9e857c7ed987238d845576ac740f2b">  205</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_function" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1CuH2Pot_01_4.html#a9a9e857c7ed987238d845576ac740f2b">range</a>(<span class="keyword">const</span> rgpot::fortranpots::CuH2Pot &amp;) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keywordflow">return</span> 2.0 * <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1CuH2Pot_01_4.html#a5b4bbc4d673b264304b6098be32b93eb">interactionCutoff</a>;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>  }</div>
+</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>};</div>
+</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span></div>
+<div class="foldopen" id="foldopen00212" data-start="{" data-end="};">
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1WaterHPot_01_4.html">  212</a></span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1HessianRangeOf.html">HessianRangeOf</a>&lt;rgpot::fortranpots::WaterHPot&gt; {</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1WaterHPot_01_4.html#a3061b53c7757dd75be9536c25801cf12">  213</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1WaterHPot_01_4.html#a3061b53c7757dd75be9536c25801cf12">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51a88183b946cc5f0e8c96b2e66e1c74a7e">HessianLocality::Unknown</a>;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1WaterHPot_01_4.html#a04c3ea07f8d85c81a57c5e0c065f5a32">  214</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1WaterHPot_01_4.html#a04c3ea07f8d85c81a57c5e0c065f5a32">interactionCutoff</a> = 0.0;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span></div>
+<div class="foldopen" id="foldopen00216" data-start="{" data-end="}">
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno"><a class="line" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1WaterHPot_01_4.html#a253fb43c45c1014688a3599d1fa4e5c9">  216</a></span>  <a class="code hl_function" href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1WaterHPot_01_4.html#a253fb43c45c1014688a3599d1fa4e5c9">range</a>(<span class="keyword">const</span> rgpot::fortranpots::WaterHPot &amp;) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>  }</div>
+</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>};</div>
+</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span> </div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span><span class="preprocessor">#if defined(__has_include) &amp;&amp; __has_include(&quot;rgpot/UmaPot/UmaPot.hpp&quot;)</span></div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span>HessianRangeOf&lt;rgpot::UmaPot&gt; {</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf.html#a9862edaf64c45ba3559464bfa0bb0c5a">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51ae3215de9017444f2fe1c6998925bebc9">HessianLocality::MessagePassing</a>;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf.html#ad163dec0754af53b7dae47c7f4f51eec">interactionCutoff</a> = 0.0;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_function" href="structeonc_1_1HessianRangeOf.html#a76a222192161307b904e177615905ca3">range</a>(<span class="keyword">const</span> rgpot::UmaPot &amp;) <span class="keyword">noexcept</span> { <span class="keywordflow">return</span> 0.0; }</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>};</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span> </div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span><span class="preprocessor">#if defined(__has_include) &amp;&amp; __has_include(&quot;rgpot/Water/WaterPots.hpp&quot;)</span></div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1HessianRangeOf.html">HessianRangeOf</a>&lt;rgpot::TIP4PPot&gt; {</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf.html#a9862edaf64c45ba3559464bfa0bb0c5a">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51ace15c0c61f9079ef36fa8b5a1857baf3">HessianLocality::MolecularSite</a>;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf.html#ad163dec0754af53b7dae47c7f4f51eec">interactionCutoff</a> = 0.0;</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_function" href="structeonc_1_1HessianRangeOf.html#a76a222192161307b904e177615905ca3">range</a>(<span class="keyword">const</span> rgpot::TIP4PPot &amp;) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>  }</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>};</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1HessianRangeOf.html">HessianRangeOf</a>&lt;rgpot::SPCEPot&gt; {</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf.html#a9862edaf64c45ba3559464bfa0bb0c5a">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51ace15c0c61f9079ef36fa8b5a1857baf3">HessianLocality::MolecularSite</a>;</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf.html#ad163dec0754af53b7dae47c7f4f51eec">interactionCutoff</a> = 0.0;</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_function" href="structeonc_1_1HessianRangeOf.html#a76a222192161307b904e177615905ca3">range</a>(<span class="keyword">const</span> rgpot::SPCEPot &amp;) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>  }</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>};</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1HessianRangeOf.html">HessianRangeOf</a>&lt;rgpot::TIP4PPtPot&gt; {</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf.html#a9862edaf64c45ba3559464bfa0bb0c5a">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51ace15c0c61f9079ef36fa8b5a1857baf3">HessianLocality::MolecularSite</a>;</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf.html#ad163dec0754af53b7dae47c7f4f51eec">interactionCutoff</a> = 0.0;</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_function" href="structeonc_1_1HessianRangeOf.html#a76a222192161307b904e177615905ca3">range</a>(<span class="keyword">const</span> rgpot::TIP4PPtPot &amp;) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>  }</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>};</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span> </div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span><span class="preprocessor">#if defined(__has_include) &amp;&amp; __has_include(&quot;rgpot/EAM/EAMPot.hpp&quot;)</span></div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1HessianRangeOf.html">HessianRangeOf</a>&lt;rgpot::EAMPot&gt; {</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf.html#a9862edaf64c45ba3559464bfa0bb0c5a">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51aa8fef013f0385b21ae5a60e717ac6eb7">HessianLocality::AtomCentred</a>;</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf.html#ad163dec0754af53b7dae47c7f4f51eec">interactionCutoff</a> = 5.555;</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_function" href="structeonc_1_1HessianRangeOf.html#a76a222192161307b904e177615905ca3">range</a>(<span class="keyword">const</span> rgpot::EAMPot &amp;) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    <span class="keywordflow">return</span> 2.0 * <a class="code hl_variable" href="structeonc_1_1HessianRangeOf.html#ad163dec0754af53b7dae47c7f4f51eec">interactionCutoff</a>;</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>  }</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>};</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span> </div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span><span class="preprocessor">#if defined(__has_include) &amp;&amp; __has_include(&quot;rgpot/EMT/EMTPot.hpp&quot;)</span></div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1HessianRangeOf.html">HessianRangeOf</a>&lt;rgpot::EMTPot&gt; {</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">HessianLocality</a> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf.html#a9862edaf64c45ba3559464bfa0bb0c5a">locality</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51aa8fef013f0385b21ae5a60e717ac6eb7">HessianLocality::AtomCentred</a>;</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1HessianRangeOf.html#ad163dec0754af53b7dae47c7f4f51eec">interactionCutoff</a> = 0.0;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_function" href="structeonc_1_1HessianRangeOf.html#a76a222192161307b904e177615905ca3">range</a>(<span class="keyword">const</span> rgpot::EMTPot &amp;) <span class="keyword">noexcept</span> { <span class="keywordflow">return</span> 0.0; }</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>};</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span> </div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>} <span class="comment">// namespace eonc</span></div>
+<div class="ttc" id="anamespaceeonc_1_1pot_html"><div class="ttname"><a href="namespaceeonc_1_1pot.html">eonc::pot</a></div><div class="ttdef"><b>Definition</b> <a href="ExternalCommand_8h_source.html#l00022">ExternalCommand.h:22</a></div></div>
+<div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00023">ARTnSaddleSearch.cpp:23</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a3f361b3d17f01422f06ccf6dcd264c5e"><div class="ttname"><a href="namespaceeonc.html#a3f361b3d17f01422f06ccf6dcd264c5e">eonc::acceptedHessianRange</a></div><div class="ttdeci">double acceptedHessianRange(double range) noexcept</div><div class="ttdoc">Drop a non-positive or non-finite range so coloring stays off.</div><div class="ttdef"><b>Definition</b> <a href="#l00079">HessianRange.h:79</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a82566c8e8569fa6abbcdb01e8710eb51"><div class="ttname"><a href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51">eonc::HessianLocality</a></div><div class="ttdeci">HessianLocality</div><div class="ttdoc">How a kernel&#39;s energy couples atoms, which fixes the Hessian range.</div><div class="ttdef"><b>Definition</b> <a href="#l00047">HessianRange.h:47</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a82566c8e8569fa6abbcdb01e8710eb51a88183b946cc5f0e8c96b2e66e1c74a7e"><div class="ttname"><a href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51a88183b946cc5f0e8c96b2e66e1c74a7e">eonc::HessianLocality::Unknown</a></div><div class="ttdeci">@ Unknown</div><div class="ttdoc">No proven finite range. Coloring stays off.</div><div class="ttdef"><b>Definition</b> <a href="#l00049">HessianRange.h:49</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a82566c8e8569fa6abbcdb01e8710eb51aa8fef013f0385b21ae5a60e717ac6eb7"><div class="ttname"><a href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51aa8fef013f0385b21ae5a60e717ac6eb7">eonc::HessianLocality::AtomCentred</a></div><div class="ttdeci">@ AtomCentred</div><div class="ttdoc">Atom-centred many-body (EAM, Gupta, bond order, three-body).</div><div class="ttdef"><b>Definition</b> <a href="#l00054">HessianRange.h:54</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a82566c8e8569fa6abbcdb01e8710eb51ace15c0c61f9079ef36fa8b5a1857baf3"><div class="ttname"><a href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51ace15c0c61f9079ef36fa8b5a1857baf3">eonc::HessianLocality::MolecularSite</a></div><div class="ttdeci">@ MolecularSite</div><div class="ttdoc">Molecular site model.</div><div class="ttdef"><b>Definition</b> <a href="#l00058">HessianRange.h:58</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a82566c8e8569fa6abbcdb01e8710eb51ad0bd662806a73209a1c6fbe55591fbff"><div class="ttname"><a href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51ad0bd662806a73209a1c6fbe55591fbff">eonc::HessianLocality::Pair</a></div><div class="ttdeci">@ Pair</div><div class="ttdoc">Pair potential. Blocks vanish beyond the interaction cutoff.</div><div class="ttdef"><b>Definition</b> <a href="#l00051">HessianRange.h:51</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a82566c8e8569fa6abbcdb01e8710eb51ae3215de9017444f2fe1c6998925bebc9"><div class="ttname"><a href="namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51ae3215de9017444f2fe1c6998925bebc9">eonc::HessianLocality::MessagePassing</a></div><div class="ttdeci">@ MessagePassing</div><div class="ttdoc">Message passing.</div><div class="ttdef"><b>Definition</b> <a href="#l00061">HessianRange.h:61</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a88183b946cc5f0e8c96b2e66e1c74a7e"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a88183b946cc5f0e8c96b2e66e1c74a7e">eonc::JobType::Unknown</a></div><div class="ttdeci">@ Unknown</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00079">BaseStructures.h:79</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1LJClusterPot_01_4_html_a0c09ad64aa004f1a7abeadd03b105414"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJClusterPot_01_4.html#a0c09ad64aa004f1a7abeadd03b105414">eonc::HessianRangeOf&lt; rgpot::LJClusterPot &gt;::range</a></div><div class="ttdeci">static double range(const rgpot::LJClusterPot &amp;pot) noexcept</div><div class="ttdef"><b>Definition</b> <a href="#l00101">HessianRange.h:101</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1LJClusterPot_01_4_html_a15ad4f11a64f31ae1c64c3d85d09a415"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJClusterPot_01_4.html#a15ad4f11a64f31ae1c64c3d85d09a415">eonc::HessianRangeOf&lt; rgpot::LJClusterPot &gt;::interactionCutoff</a></div><div class="ttdeci">static constexpr double interactionCutoff</div><div class="ttdoc">config().cutoff is chosen per potential, so there is no compile-time cutoff.</div><div class="ttdef"><b>Definition</b> <a href="#l00100">HessianRange.h:100</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1LJClusterPot_01_4_html_aff08c5b02830f33847eed1409541defd"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJClusterPot_01_4.html#aff08c5b02830f33847eed1409541defd">eonc::HessianRangeOf&lt; rgpot::LJClusterPot &gt;::locality</a></div><div class="ttdeci">static constexpr HessianLocality locality</div><div class="ttdef"><b>Definition</b> <a href="#l00097">HessianRange.h:97</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1LJPot_01_4_html_a3c9b152a69cae1d5c70f16102beb5542"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJPot_01_4.html#a3c9b152a69cae1d5c70f16102beb5542">eonc::HessianRangeOf&lt; rgpot::LJPot &gt;::locality</a></div><div class="ttdeci">static constexpr HessianLocality locality</div><div class="ttdef"><b>Definition</b> <a href="#l00087">HessianRange.h:87</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1LJPot_01_4_html_a92e3ac6cd93efb37817961b29380f340"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJPot_01_4.html#a92e3ac6cd93efb37817961b29380f340">eonc::HessianRangeOf&lt; rgpot::LJPot &gt;::interactionCutoff</a></div><div class="ttdeci">static constexpr double interactionCutoff</div><div class="ttdoc">config().cutoff is chosen per potential, so there is no compile-time cutoff.</div><div class="ttdef"><b>Definition</b> <a href="#l00090">HessianRange.h:90</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1LJPot_01_4_html_aadbc0a3949fd891f455472b285ba8ad2"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1LJPot_01_4.html#aadbc0a3949fd891f455472b285ba8ad2">eonc::HessianRangeOf&lt; rgpot::LJPot &gt;::range</a></div><div class="ttdeci">static double range(const rgpot::LJPot &amp;pot) noexcept</div><div class="ttdef"><b>Definition</b> <a href="#l00091">HessianRange.h:91</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1MorsePot_01_4_html_a0203e6ed24bb08c47dbdcdb98ead96f8"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1MorsePot_01_4.html#a0203e6ed24bb08c47dbdcdb98ead96f8">eonc::HessianRangeOf&lt; rgpot::MorsePot &gt;::locality</a></div><div class="ttdeci">static constexpr HessianLocality locality</div><div class="ttdef"><b>Definition</b> <a href="#l00107">HessianRange.h:107</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1MorsePot_01_4_html_a595afce56c631a67405903604dd959f0"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1MorsePot_01_4.html#a595afce56c631a67405903604dd959f0">eonc::HessianRangeOf&lt; rgpot::MorsePot &gt;::range</a></div><div class="ttdeci">static double range(const rgpot::MorsePot &amp;pot) noexcept</div><div class="ttdef"><b>Definition</b> <a href="#l00111">HessianRange.h:111</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1MorsePot_01_4_html_a94c57f8d559fef6a3d309e5a2c31ecc6"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1MorsePot_01_4.html#a94c57f8d559fef6a3d309e5a2c31ecc6">eonc::HessianRangeOf&lt; rgpot::MorsePot &gt;::interactionCutoff</a></div><div class="ttdeci">static constexpr double interactionCutoff</div><div class="ttdoc">config().cutoff is chosen per potential, so there is no compile-time cutoff.</div><div class="ttdef"><b>Definition</b> <a href="#l00110">HessianRange.h:110</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1ZBLPot_01_4_html_ab1a78743b4807d6ebb5afd1ba6e04678"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1ZBLPot_01_4.html#ab1a78743b4807d6ebb5afd1ba6e04678">eonc::HessianRangeOf&lt; rgpot::ZBLPot &gt;::range</a></div><div class="ttdeci">static double range(const rgpot::ZBLPot &amp;pot) noexcept</div><div class="ttdef"><b>Definition</b> <a href="#l00122">HessianRange.h:122</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1ZBLPot_01_4_html_ab65c95a5ad01d16d8d6cb33d8d7fa4bc"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1ZBLPot_01_4.html#ab65c95a5ad01d16d8d6cb33d8d7fa4bc">eonc::HessianRangeOf&lt; rgpot::ZBLPot &gt;::locality</a></div><div class="ttdeci">static constexpr HessianLocality locality</div><div class="ttdef"><b>Definition</b> <a href="#l00119">HessianRange.h:119</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1ZBLPot_01_4_html_aedaff2ba59ba297b063879b0258e0b07"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1ZBLPot_01_4.html#aedaff2ba59ba297b063879b0258e0b07">eonc::HessianRangeOf&lt; rgpot::ZBLPot &gt;::interactionCutoff</a></div><div class="ttdeci">static constexpr double interactionCutoff</div><div class="ttdoc">cut_global is a config field. range() returns that runtime value.</div><div class="ttdef"><b>Definition</b> <a href="#l00121">HessianRange.h:121</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1CuH2Pot_01_4_html_a3705e875c079b1c95cc307ad10c06894"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1CuH2Pot_01_4.html#a3705e875c079b1c95cc307ad10c06894">eonc::HessianRangeOf&lt; rgpot::fortranpots::CuH2Pot &gt;::locality</a></div><div class="ttdeci">static constexpr HessianLocality locality</div><div class="ttdef"><b>Definition</b> <a href="#l00203">HessianRange.h:203</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1CuH2Pot_01_4_html_a5b4bbc4d673b264304b6098be32b93eb"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1CuH2Pot_01_4.html#a5b4bbc4d673b264304b6098be32b93eb">eonc::HessianRangeOf&lt; rgpot::fortranpots::CuH2Pot &gt;::interactionCutoff</a></div><div class="ttdeci">static constexpr double interactionCutoff</div><div class="ttdef"><b>Definition</b> <a href="#l00204">HessianRange.h:204</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1CuH2Pot_01_4_html_a9a9e857c7ed987238d845576ac740f2b"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1CuH2Pot_01_4.html#a9a9e857c7ed987238d845576ac740f2b">eonc::HessianRangeOf&lt; rgpot::fortranpots::CuH2Pot &gt;::range</a></div><div class="ttdeci">static constexpr double range(const rgpot::fortranpots::CuH2Pot &amp;) noexcept</div><div class="ttdef"><b>Definition</b> <a href="#l00205">HessianRange.h:205</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EAMAlPot_01_4_html_a18bd448c7f0bfe59d5c1cfaf886153a6"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EAMAlPot_01_4.html#a18bd448c7f0bfe59d5c1cfaf886153a6">eonc::HessianRangeOf&lt; rgpot::fortranpots::EAMAlPot &gt;::locality</a></div><div class="ttdeci">static constexpr HessianLocality locality</div><div class="ttdef"><b>Definition</b> <a href="#l00131">HessianRange.h:131</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EAMAlPot_01_4_html_a8eb996e734861873ecc7476f8096e87c"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EAMAlPot_01_4.html#a8eb996e734861873ecc7476f8096e87c">eonc::HessianRangeOf&lt; rgpot::fortranpots::EAMAlPot &gt;::interactionCutoff</a></div><div class="ttdeci">static constexpr double interactionCutoff</div><div class="ttdef"><b>Definition</b> <a href="#l00132">HessianRange.h:132</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EAMAlPot_01_4_html_ab8b91c78bdb1d7a2768dd34e89115949"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EAMAlPot_01_4.html#ab8b91c78bdb1d7a2768dd34e89115949">eonc::HessianRangeOf&lt; rgpot::fortranpots::EAMAlPot &gt;::range</a></div><div class="ttdeci">static constexpr double range(const rgpot::fortranpots::EAMAlPot &amp;) noexcept</div><div class="ttdef"><b>Definition</b> <a href="#l00133">HessianRange.h:133</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EDIPPot_01_4_html_a2a2b3f9cb00b108fc529591cb502ede4"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EDIPPot_01_4.html#a2a2b3f9cb00b108fc529591cb502ede4">eonc::HessianRangeOf&lt; rgpot::fortranpots::EDIPPot &gt;::interactionCutoff</a></div><div class="ttdeci">static constexpr double interactionCutoff</div><div class="ttdef"><b>Definition</b> <a href="#l00167">HessianRange.h:167</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EDIPPot_01_4_html_a4f4d084ecd1ed53943f9231342bad75e"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EDIPPot_01_4.html#a4f4d084ecd1ed53943f9231342bad75e">eonc::HessianRangeOf&lt; rgpot::fortranpots::EDIPPot &gt;::range</a></div><div class="ttdeci">static constexpr double range(const rgpot::fortranpots::EDIPPot &amp;) noexcept</div><div class="ttdef"><b>Definition</b> <a href="#l00168">HessianRange.h:168</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EDIPPot_01_4_html_a65b7fe352bef6771ddb72fa03a41aa2e"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1EDIPPot_01_4.html#a65b7fe352bef6771ddb72fa03a41aa2e">eonc::HessianRangeOf&lt; rgpot::fortranpots::EDIPPot &gt;::locality</a></div><div class="ttdeci">static constexpr HessianLocality locality</div><div class="ttdef"><b>Definition</b> <a href="#l00166">HessianRange.h:166</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4_html_a0a5d001fd5e809e424c7f267cbfb1b2c"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#a0a5d001fd5e809e424c7f267cbfb1b2c">eonc::HessianRangeOf&lt; rgpot::fortranpots::FeHePot &gt;::kMaxPair</a></div><div class="ttdeci">static constexpr double kMaxPair</div><div class="ttdef"><b>Definition</b> <a href="#l00191">HessianRange.h:191</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4_html_a1d0463478b9cb6e587de918c53e189ad"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#a1d0463478b9cb6e587de918c53e189ad">eonc::HessianRangeOf&lt; rgpot::fortranpots::FeHePot &gt;::locality</a></div><div class="ttdeci">static constexpr HessianLocality locality</div><div class="ttdef"><b>Definition</b> <a href="#l00190">HessianRange.h:190</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4_html_a50800a4580ac858bb92f4e4b8121ba84"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#a50800a4580ac858bb92f4e4b8121ba84">eonc::HessianRangeOf&lt; rgpot::fortranpots::FeHePot &gt;::kMaxDensity</a></div><div class="ttdeci">static constexpr double kMaxDensity</div><div class="ttdef"><b>Definition</b> <a href="#l00192">HessianRange.h:192</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4_html_a9aa44bc56d04f398353e5e9346fc2161"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#a9aa44bc56d04f398353e5e9346fc2161">eonc::HessianRangeOf&lt; rgpot::fortranpots::FeHePot &gt;::range</a></div><div class="ttdeci">static constexpr double range(const rgpot::fortranpots::FeHePot &amp;) noexcept</div><div class="ttdef"><b>Definition</b> <a href="#l00195">HessianRange.h:195</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4_html_adca35383fb46052bb0d8c91fb3268b81"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1FeHePot_01_4.html#adca35383fb46052bb0d8c91fb3268b81">eonc::HessianRangeOf&lt; rgpot::fortranpots::FeHePot &gt;::interactionCutoff</a></div><div class="ttdeci">static constexpr double interactionCutoff</div><div class="ttdoc">Neighbour-table cutoff, fehe_cutoff(). The block range is wider.</div><div class="ttdef"><b>Definition</b> <a href="#l00194">HessianRange.h:194</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1LenoskyPot_01_4_html_a0eea0a5d0ff529fb36ffc928bc816caf"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1LenoskyPot_01_4.html#a0eea0a5d0ff529fb36ffc928bc816caf">eonc::HessianRangeOf&lt; rgpot::fortranpots::LenoskyPot &gt;::range</a></div><div class="ttdeci">static constexpr double range(const rgpot::fortranpots::LenoskyPot &amp;) noexcept</div><div class="ttdef"><b>Definition</b> <a href="#l00179">HessianRange.h:179</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1LenoskyPot_01_4_html_a2394d84952bcb2ff9f0a40de34762e9a"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1LenoskyPot_01_4.html#a2394d84952bcb2ff9f0a40de34762e9a">eonc::HessianRangeOf&lt; rgpot::fortranpots::LenoskyPot &gt;::interactionCutoff</a></div><div class="ttdeci">static constexpr double interactionCutoff</div><div class="ttdef"><b>Definition</b> <a href="#l00177">HessianRange.h:177</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1LenoskyPot_01_4_html_ade4db021f8ab69b0e2e4a41967f6c42a"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1LenoskyPot_01_4.html#ade4db021f8ab69b0e2e4a41967f6c42a">eonc::HessianRangeOf&lt; rgpot::fortranpots::LenoskyPot &gt;::locality</a></div><div class="ttdeci">static constexpr HessianLocality locality</div><div class="ttdef"><b>Definition</b> <a href="#l00176">HessianRange.h:176</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4_html_a4e02d33717ce159d7d30cdfb0b76b2a7"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#a4e02d33717ce159d7d30cdfb0b76b2a7">eonc::HessianRangeOf&lt; rgpot::fortranpots::SWPot &gt;::range</a></div><div class="ttdeci">static constexpr double range(const rgpot::fortranpots::SWPot &amp;) noexcept</div><div class="ttdef"><b>Definition</b> <a href="#l00146">HessianRange.h:146</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4_html_a78905e0a7939156feff19036190c1252"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#a78905e0a7939156feff19036190c1252">eonc::HessianRangeOf&lt; rgpot::fortranpots::SWPot &gt;::interactionCutoff</a></div><div class="ttdeci">static constexpr double interactionCutoff</div><div class="ttdef"><b>Definition</b> <a href="#l00145">HessianRange.h:145</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4_html_ada788fc9f1534ec51131a8a4f75549bd"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#ada788fc9f1534ec51131a8a4f75549bd">eonc::HessianRangeOf&lt; rgpot::fortranpots::SWPot &gt;::locality</a></div><div class="ttdeci">static constexpr HessianLocality locality</div><div class="ttdef"><b>Definition</b> <a href="#l00142">HessianRange.h:142</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4_html_ae0e3cf3761f4ffa5ddf0cbde8d9a2e2e"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#ae0e3cf3761f4ffa5ddf0cbde8d9a2e2e">eonc::HessianRangeOf&lt; rgpot::fortranpots::SWPot &gt;::kSigma</a></div><div class="ttdeci">static constexpr double kSigma</div><div class="ttdef"><b>Definition</b> <a href="#l00143">HessianRange.h:143</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4_html_aff9db59df8a0110caba89913431cbd90"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#aff9db59df8a0110caba89913431cbd90">eonc::HessianRangeOf&lt; rgpot::fortranpots::SWPot &gt;::kAlpha</a></div><div class="ttdeci">static constexpr double kAlpha</div><div class="ttdef"><b>Definition</b> <a href="#l00144">HessianRange.h:144</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1TersoffPot_01_4_html_a86c2f608ff91265c70b0293e5ace6711"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1TersoffPot_01_4.html#a86c2f608ff91265c70b0293e5ace6711">eonc::HessianRangeOf&lt; rgpot::fortranpots::TersoffPot &gt;::interactionCutoff</a></div><div class="ttdeci">static constexpr double interactionCutoff</div><div class="ttdef"><b>Definition</b> <a href="#l00155">HessianRange.h:155</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1TersoffPot_01_4_html_a87272b5b174948b072bc1f22573ecab9"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1TersoffPot_01_4.html#a87272b5b174948b072bc1f22573ecab9">eonc::HessianRangeOf&lt; rgpot::fortranpots::TersoffPot &gt;::locality</a></div><div class="ttdeci">static constexpr HessianLocality locality</div><div class="ttdef"><b>Definition</b> <a href="#l00154">HessianRange.h:154</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1TersoffPot_01_4_html_aa3ed1cdab25387f7a74049fadfb1e6e8"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1TersoffPot_01_4.html#aa3ed1cdab25387f7a74049fadfb1e6e8">eonc::HessianRangeOf&lt; rgpot::fortranpots::TersoffPot &gt;::range</a></div><div class="ttdeci">static constexpr double range(const rgpot::fortranpots::TersoffPot &amp;) noexcept</div><div class="ttdef"><b>Definition</b> <a href="#l00157">HessianRange.h:157</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1WaterHPot_01_4_html_a04c3ea07f8d85c81a57c5e0c065f5a32"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1WaterHPot_01_4.html#a04c3ea07f8d85c81a57c5e0c065f5a32">eonc::HessianRangeOf&lt; rgpot::fortranpots::WaterHPot &gt;::interactionCutoff</a></div><div class="ttdeci">static constexpr double interactionCutoff</div><div class="ttdef"><b>Definition</b> <a href="#l00214">HessianRange.h:214</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1WaterHPot_01_4_html_a253fb43c45c1014688a3599d1fa4e5c9"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1WaterHPot_01_4.html#a253fb43c45c1014688a3599d1fa4e5c9">eonc::HessianRangeOf&lt; rgpot::fortranpots::WaterHPot &gt;::range</a></div><div class="ttdeci">static constexpr double range(const rgpot::fortranpots::WaterHPot &amp;) noexcept</div><div class="ttdef"><b>Definition</b> <a href="#l00216">HessianRange.h:216</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1WaterHPot_01_4_html_a3061b53c7757dd75be9536c25801cf12"><div class="ttname"><a href="structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1WaterHPot_01_4.html#a3061b53c7757dd75be9536c25801cf12">eonc::HessianRangeOf&lt; rgpot::fortranpots::WaterHPot &gt;::locality</a></div><div class="ttdeci">static constexpr HessianLocality locality</div><div class="ttdef"><b>Definition</b> <a href="#l00213">HessianRange.h:213</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_html"><div class="ttname"><a href="structeonc_1_1HessianRangeOf.html">eonc::HessianRangeOf</a></div><div class="ttdoc">Reported Hessian range for one rgpot kernel type.</div><div class="ttdef"><b>Definition</b> <a href="#l00069">HessianRange.h:69</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_html_a76a222192161307b904e177615905ca3"><div class="ttname"><a href="structeonc_1_1HessianRangeOf.html#a76a222192161307b904e177615905ca3">eonc::HessianRangeOf::range</a></div><div class="ttdeci">static constexpr double range(const RPot &amp;) noexcept</div><div class="ttdef"><b>Definition</b> <a href="#l00075">HessianRange.h:75</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_html_a9862edaf64c45ba3559464bfa0bb0c5a"><div class="ttname"><a href="structeonc_1_1HessianRangeOf.html#a9862edaf64c45ba3559464bfa0bb0c5a">eonc::HessianRangeOf::locality</a></div><div class="ttdeci">static constexpr HessianLocality locality</div><div class="ttdef"><b>Definition</b> <a href="#l00070">HessianRange.h:70</a></div></div>
+<div class="ttc" id="astructeonc_1_1HessianRangeOf_html_ad163dec0754af53b7dae47c7f4f51eec"><div class="ttname"><a href="structeonc_1_1HessianRangeOf.html#ad163dec0754af53b7dae47c7f4f51eec">eonc::HessianRangeOf::interactionCutoff</a></div><div class="ttdeci">static constexpr double interactionCutoff</div><div class="ttdoc">Interaction cutoff the range is built from.</div><div class="ttdef"><b>Definition</b> <a href="#l00074">HessianRange.h:74</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="dir_2527c5cc2e6dc8ce970a4d420439d1d9.html">eon</a></li><li class="navelem"><a href="dir_858247b18a1611539d1f444885056636.html">potentials</a></li><li class="navelem"><a href="dir_2f3bd6840eb2864fc880bb304e95d985.html">RgpotAdapter</a></li><li class="navelem"><a href="HessianRange_8h.html">HessianRange.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

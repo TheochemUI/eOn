@@ -228,6 +228,8 @@ var NAVTREEINDEX0 =
 "HessianJob_8cpp_source.html":[6,0,0,36],
 "HessianJob_8h.html":[6,0,1,0,53],
 "HessianJob_8h_source.html":[6,0,1,0,53],
+"HessianRange_8h.html":[6,0,1,0,3,12,0],
+"HessianRange_8h_source.html":[6,0,1,0,3,12,0],
 "Hessian_8cpp.html":[6,0,0,35],
 "Hessian_8cpp_source.html":[6,0,0,35],
 "Hessian_8h.html":[6,0,1,0,52],
@@ -247,7 +249,5 @@ var NAVTREEINDEX0 =
 "ImprovedDimer_8cpp.html":[6,0,0,38],
 "ImprovedDimer_8cpp_source.html":[6,0,0,38],
 "ImprovedDimer_8h.html":[6,0,1,0,55],
-"ImprovedDimer_8h_source.html":[6,0,1,0,55],
-"InstantonJob_8cpp.html":[6,0,0,39],
-"InstantonJob_8cpp_source.html":[6,0,0,39]
+"ImprovedDimer_8h_source.html":[6,0,1,0,55]
 };

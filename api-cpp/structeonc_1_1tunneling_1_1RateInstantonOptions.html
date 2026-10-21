@@ -279,7 +279,7 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a48b207a1e2af34299287a739898aed27" id="r_a48b207a1e2af34299287a739898aed27"><td class="memItemLeft">std::int64_t&#160;</td><td class="memItemRight"><a class="el" href="#a48b207a1e2af34299287a739898aed27">newtonLimit</a> = std::numeric_limits&lt;std::int64_t&gt;::max()</td></tr>
 <tr class="memdesc:a48b207a1e2af34299287a739898aed27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Active coordinates at or below this take the Newton step.  <br /></td></tr>
 <tr class="memitem:ab8546355d8481136c278a789a636b17b" id="r_ab8546355d8481136c278a789a636b17b"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#ab8546355d8481136c278a789a636b17b">initialHessians</a> = &quot;saddle&quot;</td></tr>
-<tr class="memdesc:ab8546355d8481136c278a789a636b17b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Where the bead <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> blocks start: "saddle" copies the saddle's <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> to every bead and lets the Bofill update carry it, at no force calls; "finite_difference" takes 2 f gradient calls per bead first.  <br /></td></tr>
+<tr class="memdesc:ab8546355d8481136c278a789a636b17b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Where the bead <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> blocks start: "saddle" copies the saddle's <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> to every bead and lets the Bofill update carry it; "finite_difference" takes 2 f gradient calls per bead first.  <br /></td></tr>
 <tr class="memitem:a38a3f4086181b59a1fbe15665634feda" id="r_a38a3f4086181b59a1fbe15665634feda"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a38a3f4086181b59a1fbe15665634feda">rigidSqrtMasses</a></td></tr>
 <tr class="memdesc:a38a3f4086181b59a1fbe15665634feda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rigid motions of the ring: a translation, or one rotation about the ring's centre of mass, applied to every bead alike leaves U_N unchanged.  <br /></td></tr>
 <tr class="memitem:ab09ce621d8eacb64d6acb522df838fa1" id="r_ab09ce621d8eacb64d6acb522df838fa1"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#ab09ce621d8eacb64d6acb522df838fa1">rigidReference</a></td></tr>
@@ -292,7 +292,7 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00272">272</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00384">384</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 </div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
 <a id="a4dd54d2fb91c1e29eef6789d544f3ebd" name="a4dd54d2fb91c1e29eef6789d544f3ebd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4dd54d2fb91c1e29eef6789d544f3ebd">&#9670;&#160;</a></span>beads</h2>
@@ -308,7 +308,7 @@ Public Attributes</h2></td></tr>
 
 <p>N, beads on the ring. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00283">283</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00395">395</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -327,7 +327,7 @@ Public Attributes</h2></td></tr>
 <p>A half ring that has converged, or that is stationary at the wrong index, is probed for an unstable mode odd under j -&gt; N - j (two copies of the instanton on one ring), at about lanczosFirst * N gradient calls; the search then finishes on the whole ring. </p>
 <p>A cooling schedule probes only its last temperature. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00305">305</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00417">417</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -346,7 +346,7 @@ Public Attributes</h2></td></tr>
 <p>The search stops, with <a class="el" href="structeonc_1_1tunneling_1_1RateInstanton.html#a51806a79adc3b019d58598ba121b3d41" title="The search stopped because B_N fell below collapseFraction of the starting ring&#39;s: the beads fell tog...">RateInstanton::collapsed</a> set, when B_N falls below this fraction of the starting ring's. </p>
 <p>0 never stops. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00308">308</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00420">420</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -365,7 +365,7 @@ Public Attributes</h2></td></tr>
 <p>Empty keeps every spring equal. </p>
 <p>Otherwise one positive weight per bead: the spring from bead j to bead j + 1 is divided by that weight. A half ring keeps the uniform spring and refuses a weight list. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00313">313</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00425">425</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -383,7 +383,7 @@ Public Attributes</h2></td></tr>
 
 <p>subtracted from every bead potential, eV </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00309">309</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00421">421</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -401,7 +401,7 @@ Public Attributes</h2></td></tr>
 
 <p>largest per-bead |dU_N/dq|, eV / (amu^0.5 Angstrom) </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00285">285</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00397">397</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -420,7 +420,7 @@ Public Attributes</h2></td></tr>
 <p>Litman friction bath on the rate ring. </p>
 <p>Off leaves U_N unchanged. Implicit uses frictionEta on every bead. Explicit uses frictionEtaBeads, one value per bead. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00337">337</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00453">453</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -436,7 +436,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00339">339</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00455">455</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -452,7 +452,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00340">340</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00456">456</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -468,7 +468,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00338">338</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00454">454</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -487,7 +487,7 @@ Public Attributes</h2></td></tr>
 <p>Even N, when the guess already matches under j -&gt; N - j: evaluate the potential from one turning point to the other and copy it. </p>
 <p>An odd N, or a guess without that symmetry, evaluates every bead. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00299">299</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00411">411</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -503,9 +503,10 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Where the bead <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> blocks start: "saddle" copies the saddle's <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> to every bead and lets the Bofill update carry it, at no force calls; "finite_difference" takes 2 f gradient calls per bead first. </p>
+<p>Where the bead <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> blocks start: "saddle" copies the saddle's <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> to every bead and lets the Bofill update carry it; "finite_difference" takes 2 f gradient calls per bead first. </p>
+<p>Below the crossover the copied blocks already hold a negative k = 1 ring mode, which counts as drift, so "saddle" rebuilds them from finite differences on the first entry and costs the same. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00322">322</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00437">437</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -523,7 +524,7 @@ Public Attributes</h2></td></tr>
 
 <p><a class="el" href="classeonc_1_1Lanczos.html">Lanczos</a> steps for the first minimum mode. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00287">287</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00399">399</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -541,7 +542,7 @@ Public Attributes</h2></td></tr>
 
 <p><a class="el" href="classeonc_1_1Lanczos.html">Lanczos</a> steps from the previous mode. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00288">288</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00400">400</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -559,7 +560,7 @@ Public Attributes</h2></td></tr>
 
 <p>finite-difference step, amu^0.5 Angstrom </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00292">292</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00404">404</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -577,7 +578,7 @@ Public Attributes</h2></td></tr>
 
 <p>translation steps </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00284">284</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00396">396</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -595,7 +596,7 @@ Public Attributes</h2></td></tr>
 
 <p>largest bead move per step, amu^0.5 Angstrom </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00293">293</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00405">405</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -613,7 +614,7 @@ Public Attributes</h2></td></tr>
 
 <p>L-BFGS correction pairs. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00295">295</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00407">407</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -632,7 +633,7 @@ Public Attributes</h2></td></tr>
 <p>Active coordinates at or below this take the Newton step. </p>
 <p>Zero keeps minimum-mode following. The step solves through the block chain, so the default admits every size a batch potential can evaluate. int64, not long, so the Windows default matches the 64-bit maximum. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00318">318</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00430">430</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -651,7 +652,7 @@ Public Attributes</h2></td></tr>
 <p>Stable bead identities and bounded derivative scratch slots. </p>
 <p>Empty preserves the <a class="el" href="namespaceeonc_1_1tunneling.html#aacc3b89ec36323376a67187b2be323a2" title="V (eV) and dV/dq (eV / (amu^0.5 Angstrom)) at every point of q, all in one call so a potential can sp...">BatchPotential</a> callback contract. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00275">275</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00387">387</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -670,7 +671,7 @@ Public Attributes</h2></td></tr>
 <p>Fixed physical quadratic bath, eliminated on the same primitive ring. </p>
 <p>The potential callback supplies retained coordinates and the declared frozen-bath or relaxed potential of this model. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00279">279</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00391">391</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -689,7 +690,7 @@ Public Attributes</h2></td></tr>
 <p>Exact physical potential <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> at a retained bead, excluding springs and the eliminated bath. </p>
 <p>Empty selects finite differences and Bofill. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00282">282</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00394">394</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -708,7 +709,7 @@ Public Attributes</h2></td></tr>
 <p>Central physical bead-Hessian displacement in sqrt(amu) Angstrom. </p>
 <p>Independent of the <a class="el" href="classeonc_1_1Lanczos.html">Lanczos</a> directional finite-difference step. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00291">291</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00403">403</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -724,7 +725,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00332">332</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00448">448</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -740,8 +741,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00333">333</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  333</span>{{<span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>}};</div>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00449">449</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  449</span>{{<span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>}};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -758,9 +759,9 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Rigid motions of the ring: a translation, or one rotation about the ring's centre of mass, applied to every bead alike leaves U_N unchanged. </p>
-<p>The search rebuilds those directions from the current beads at every step (the rigid quotient) and keeps them out of the step and out of the classification, as it does the imaginary-time cycle. Empty masses switch it off (atoms fixed). rigidSqrtMasses holds sqrt(m) per atom, rigidReference the Cartesian positions q is measured from (3 per atom), rigidRotations which rotations are free (a free cluster). </p>
+<p>The search rebuilds those directions from the current beads at every step (the rigid quotient) and keeps them out of the step and out of the classification; the imaginary-time cycle stays out of the classification only. Empty masses switch it off (atoms fixed). rigidSqrtMasses holds sqrt(m) per atom, rigidReference the Cartesian positions q is measured from (3 per atom), rigidRotations which rotations are free (a free cluster). </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00331">331</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00447">447</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>

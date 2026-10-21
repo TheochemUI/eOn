@@ -20,5 +20,6 @@ var structeonc_1_1neb__options__t =
     [ "quantum_temperature", "structeonc_1_1neb__options__t.html#ab6ae07e7f6eb7baf0b3d41c8a1fbd8f2", null ],
     [ "solid_state", "structeonc_1_1neb__options__t.html#a943bfb1885f304d7faec4288ef79a322", null ],
     [ "spring", "structeonc_1_1neb__options__t.html#a7ddcef2df030ddca7e0ee7b7aedfe2da", null ],
+    [ "tunnel_wall_points", "structeonc_1_1neb__options__t.html#ad6d61e71d9eac4e8e48acbd0d2846a4c", null ],
     [ "zoom", "structeonc_1_1neb__options__t.html#a25d97fc22a3afb5d8301ed36665b183b", null ]
 ];

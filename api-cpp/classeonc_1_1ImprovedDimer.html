@@ -606,268 +606,271 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  247</span>    <span class="keywordflow">return</span>;</div>
 <div class="line"><span class="lineno">  248</span>  }</div>
 <div class="line"><span class="lineno">  249</span> </div>
-<div class="line"><span class="lineno">  250</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options().opt_method == <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c">OptType::LBFGS</a>) {</div>
-<div class="line"><span class="lineno">  251</span>    <a class="code hl_variable" href="#a3e30e1e53148e924c5e18712183c5f8e">s</a>.clear();</div>
-<div class="line"><span class="lineno">  252</span>    <a class="code hl_variable" href="#aac082b37ad6279c9dcc3efc6cbc5548e">y</a>.clear();</div>
-<div class="line"><span class="lineno">  253</span>    <a class="code hl_variable" href="#abfd177ef16ed8bdc8f117b3769c84c3f">rho</a>.clear();</div>
-<div class="line"><span class="lineno">  254</span>    <a class="code hl_variable" href="#a6cb23ed7df4a85baabe302ce19a80137">init_lbfgs</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  255</span>  }</div>
-<div class="line"><span class="lineno">  256</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options().opt_method == <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">OptType::CG</a>) {</div>
-<div class="line"><span class="lineno">  257</span>    <a class="code hl_variable" href="#accd272e770d6a65705e0177cc9f54640">init_cg</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  258</span>  }</div>
-<div class="line"><span class="lineno">  259</span> </div>
-<div class="line"><span class="lineno">  260</span>  VectorXd x1_rp, x1_r, tau_prime, tau_Old, g1_prime;</div>
-<div class="line"><span class="lineno">  261</span>  <span class="keywordtype">double</span> phi_tol =</div>
-<div class="line"><span class="lineno">  262</span>      <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a> * (<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options().converged_angle / 180.0);</div>
-<div class="line"><span class="lineno">  263</span>  <span class="keywordtype">double</span> phi_prime = 0.0;</div>
-<div class="line"><span class="lineno">  264</span>  <span class="keywordtype">double</span> phi_min = 0.0;</div>
-<div class="line"><span class="lineno">  265</span> </div>
-<div class="line"><span class="lineno">  266</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> = 0;</div>
-<div class="line"><span class="lineno">  267</span> </div>
-<div class="line"><span class="lineno">  268</span>  <span class="comment">// Use x1&#39;s potential for the trial rotation image (consistent with per-image)</span></div>
-<div class="line"><span class="lineno">  269</span>  <span class="keyword">auto</span> x1p = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>-&gt;getPotential(), <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>);</div>
+<div class="line"><span class="lineno">  250</span>  <span class="comment">// L-BFGS pairs belong to one estimate: the centre has moved, so the</span></div>
+<div class="line"><span class="lineno">  251</span>  <span class="comment">// stored (s, y) are not the curvature here.</span></div>
+<div class="line"><span class="lineno">  252</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options().opt_method == <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c">OptType::LBFGS</a>) {</div>
+<div class="line"><span class="lineno">  253</span>    <a class="code hl_variable" href="#a3e30e1e53148e924c5e18712183c5f8e">s</a>.clear();</div>
+<div class="line"><span class="lineno">  254</span>    <a class="code hl_variable" href="#aac082b37ad6279c9dcc3efc6cbc5548e">y</a>.clear();</div>
+<div class="line"><span class="lineno">  255</span>    <a class="code hl_variable" href="#abfd177ef16ed8bdc8f117b3769c84c3f">rho</a>.clear();</div>
+<div class="line"><span class="lineno">  256</span>    <a class="code hl_variable" href="#a6cb23ed7df4a85baabe302ce19a80137">init_lbfgs</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  257</span>  }</div>
+<div class="line"><span class="lineno">  258</span>  <span class="comment">// CG state belongs to the dimer, not to one centre. r2549 keeps</span></div>
+<div class="line"><span class="lineno">  259</span>  <span class="comment">// init_cg, F_R_Old and thetaOld across translations, including after</span></div>
+<div class="line"><span class="lineno">  260</span>  <span class="comment">// an estimate that rotated more than once. Resetting here makes the</span></div>
+<div class="line"><span class="lineno">  261</span>  <span class="comment">// next rotation steepest descent.</span></div>
+<div class="line"><span class="lineno">  262</span> </div>
+<div class="line"><span class="lineno">  263</span>  VectorXd x1_rp, x1_r, tau_prime, tau_Old, g1_prime;</div>
+<div class="line"><span class="lineno">  264</span>  <span class="keywordtype">double</span> phi_tol =</div>
+<div class="line"><span class="lineno">  265</span>      <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a> * (<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options().converged_angle / 180.0);</div>
+<div class="line"><span class="lineno">  266</span>  <span class="keywordtype">double</span> phi_prime = 0.0;</div>
+<div class="line"><span class="lineno">  267</span>  <span class="keywordtype">double</span> phi_min = 0.0;</div>
+<div class="line"><span class="lineno">  268</span> </div>
+<div class="line"><span class="lineno">  269</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> = 0;</div>
 <div class="line"><span class="lineno">  270</span> </div>
-<div class="line"><span class="lineno">  271</span>  <span class="comment">// Melander, Laasonen, Jonsson, JCTC 11(3), 1055-1062, 2015</span></div>
-<div class="line"><span class="lineno">  272</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options().remove_rotation) {</div>
-<div class="line"><span class="lineno">  273</span>    <a class="code hl_function" href="namespaceeonc_1_1geometry.html#adc0ea1824b41f1de3eeba2b2df428160">eonc::geometry::rotationRemove</a>(</div>
-<div class="line"><span class="lineno">  274</span>        AtomMatrix::Map(x0_r.data(), <a class="code hl_variable" href="#aa39f4b23b2f5d826425cb5c5ca325375">x0</a>-&gt;numberOfAtoms(), 3), <a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>);</div>
-<div class="line"><span class="lineno">  275</span>    x1_r = <a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>-&gt;getPositionsV();</div>
-<div class="line"><span class="lineno">  276</span>    <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> = <a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>-&gt;pbcV(x1_r - x0_r);</div>
-<div class="line"><span class="lineno">  277</span>    eonc::safemath::safe_normalize_inplace(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>);</div>
-<div class="line"><span class="lineno">  278</span>    x1_r = x0_r + <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> * delta;</div>
-<div class="line"><span class="lineno">  279</span>    <a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>-&gt;setPositionsV(x1_r);</div>
-<div class="line"><span class="lineno">  280</span>  }</div>
-<div class="line"><span class="lineno">  281</span> </div>
-<div class="line"><span class="lineno">  282</span>  evaluatePair();</div>
-<div class="line"><span class="lineno">  283</span> </div>
-<div class="line"><span class="lineno">  284</span>  bestG0 = g0;</div>
-<div class="line"><span class="lineno">  285</span>  bestG1 = g1;</div>
+<div class="line"><span class="lineno">  271</span>  <span class="comment">// Use x1&#39;s potential for the trial rotation image (consistent with per-image)</span></div>
+<div class="line"><span class="lineno">  272</span>  <span class="keyword">auto</span> x1p = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>-&gt;getPotential(), <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>);</div>
+<div class="line"><span class="lineno">  273</span> </div>
+<div class="line"><span class="lineno">  274</span>  <span class="comment">// Melander, Laasonen, Jonsson, JCTC 11(3), 1055-1062, 2015</span></div>
+<div class="line"><span class="lineno">  275</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options().remove_rotation) {</div>
+<div class="line"><span class="lineno">  276</span>    <a class="code hl_function" href="namespaceeonc_1_1geometry.html#adc0ea1824b41f1de3eeba2b2df428160">eonc::geometry::rotationRemove</a>(</div>
+<div class="line"><span class="lineno">  277</span>        AtomMatrix::Map(x0_r.data(), <a class="code hl_variable" href="#aa39f4b23b2f5d826425cb5c5ca325375">x0</a>-&gt;numberOfAtoms(), 3), <a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>);</div>
+<div class="line"><span class="lineno">  278</span>    x1_r = <a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>-&gt;getPositionsV();</div>
+<div class="line"><span class="lineno">  279</span>    <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> = <a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>-&gt;pbcV(x1_r - x0_r);</div>
+<div class="line"><span class="lineno">  280</span>    eonc::safemath::safe_normalize_inplace(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>);</div>
+<div class="line"><span class="lineno">  281</span>    x1_r = x0_r + <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> * delta;</div>
+<div class="line"><span class="lineno">  282</span>    <a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>-&gt;setPositionsV(x1_r);</div>
+<div class="line"><span class="lineno">  283</span>  }</div>
+<div class="line"><span class="lineno">  284</span> </div>
+<div class="line"><span class="lineno">  285</span>  evaluatePair();</div>
 <div class="line"><span class="lineno">  286</span> </div>
-<div class="line"><span class="lineno">  287</span>  <a class="code hl_variable" href="#a62503c88552beba43c3a456e8b5565ac">positions</a>.clear();</div>
-<div class="line"><span class="lineno">  288</span>  <a class="code hl_variable" href="#a89b8ad5f49419d61029016bdb57aa887">gradients</a>.clear();</div>
-<div class="line"><span class="lineno">  289</span>  <a class="code hl_variable" href="#a62503c88552beba43c3a456e8b5565ac">positions</a>.push_back(<a class="code hl_variable" href="#aa39f4b23b2f5d826425cb5c5ca325375">x0</a>-&gt;getPositionsV());</div>
-<div class="line"><span class="lineno">  290</span>  <a class="code hl_variable" href="#a62503c88552beba43c3a456e8b5565ac">positions</a>.push_back(<a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>-&gt;getPositionsV());</div>
-<div class="line"><span class="lineno">  291</span>  <a class="code hl_variable" href="#a89b8ad5f49419d61029016bdb57aa887">gradients</a>.push_back(g0);</div>
-<div class="line"><span class="lineno">  292</span>  <a class="code hl_variable" href="#a89b8ad5f49419d61029016bdb57aa887">gradients</a>.push_back(g1);</div>
-<div class="line"><span class="lineno">  293</span> </div>
-<div class="line"><span class="lineno">  294</span>  <span class="keywordflow">do</span> { <span class="comment">// Rotation loop: converge phi or hit max rotations</span></div>
-<div class="line"><span class="lineno">  295</span> </div>
-<div class="line"><span class="lineno">  296</span>    <span class="comment">// Rotational force, F_R</span></div>
-<div class="line"><span class="lineno">  297</span>    <a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a> = -2.0 * (g1 - g0) + 2.0 * ((g1 - g0).<a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">dot</a>(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>)) * <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>;</div>
-<div class="line"><span class="lineno">  298</span>    <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a60b737b93fe99a9004ee424f0d897d87">statsTorque</a> = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(<a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>.norm(), delta * 2.0, 0.0);</div>
-<div class="line"><span class="lineno">  299</span> </div>
-<div class="line"><span class="lineno">  300</span>    <span class="comment">// Determine step direction theta via selected optimizer</span></div>
-<div class="line"><span class="lineno">  301</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options().opt_method == <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0">OptType::SD</a>) {</div>
-<div class="line"><span class="lineno">  302</span>      <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a> = eonc::safemath::safe_normalized(<a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>);</div>
-<div class="line"><span class="lineno">  303</span> </div>
-<div class="line"><span class="lineno">  304</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options().opt_method == <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">OptType::CG</a>) {</div>
-<div class="line"><span class="lineno">  305</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="#accd272e770d6a65705e0177cc9f54640">init_cg</a>) {</div>
-<div class="line"><span class="lineno">  306</span>        <a class="code hl_variable" href="#accd272e770d6a65705e0177cc9f54640">init_cg</a> = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  307</span>        <a class="code hl_variable" href="#a925d645640d233ef4939e58db2992f39">gamma</a> = 0.0;</div>
-<div class="line"><span class="lineno">  308</span>      } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  309</span>        <a class="code hl_variable" href="#a56ba7b69ab173693812b2019128f72c8">a</a> = std::abs(<a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>.dot(<a class="code hl_variable" href="#a888b195f4fea2405d59a89cb29c48ff1">F_R_Old</a>));</div>
-<div class="line"><span class="lineno">  310</span>        <a class="code hl_variable" href="#acc0eb57235aba0d79fccdc10cac0e0f7">b</a> = <a class="code hl_variable" href="#a888b195f4fea2405d59a89cb29c48ff1">F_R_Old</a>.squaredNorm();</div>
-<div class="line"><span class="lineno">  311</span>        <a class="code hl_variable" href="#a925d645640d233ef4939e58db2992f39">gamma</a> = (<a class="code hl_variable" href="#a56ba7b69ab173693812b2019128f72c8">a</a> &lt; 0.5 * <a class="code hl_variable" href="#acc0eb57235aba0d79fccdc10cac0e0f7">b</a>)</div>
-<div class="line"><span class="lineno">  312</span>                    ? <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(<a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>.dot(<a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a> - <a class="code hl_variable" href="#a888b195f4fea2405d59a89cb29c48ff1">F_R_Old</a>), <a class="code hl_variable" href="#acc0eb57235aba0d79fccdc10cac0e0f7">b</a>, 0.0)</div>
-<div class="line"><span class="lineno">  313</span>                    : 0.0;</div>
-<div class="line"><span class="lineno">  314</span>      }</div>
-<div class="line"><span class="lineno">  315</span> </div>
-<div class="line"><span class="lineno">  316</span>      <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a> = (<a class="code hl_variable" href="#a925d645640d233ef4939e58db2992f39">gamma</a> == 0.0) ? <a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a> : <a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a> + <a class="code hl_variable" href="#abf8768cea879ef25894585c0668d5be2">thetaOld</a> * <a class="code hl_variable" href="#a925d645640d233ef4939e58db2992f39">gamma</a>;</div>
-<div class="line"><span class="lineno">  317</span>      <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a> -= <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a>.dot(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>) * <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>;</div>
-<div class="line"><span class="lineno">  318</span>      <a class="code hl_variable" href="#abf8768cea879ef25894585c0668d5be2">thetaOld</a> = <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a>;</div>
-<div class="line"><span class="lineno">  319</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a>.norm() &lt; <a class="code hl_variable" href="namespaceeonc_1_1safemath.html#a57c5f23e983b67c789337e2108c86c8c">eonc::safemath::eps</a>) {</div>
-<div class="line"><span class="lineno">  320</span>        <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a> = <a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a> - <a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>.dot(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>) * <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>;</div>
-<div class="line"><span class="lineno">  321</span>      }</div>
-<div class="line"><span class="lineno">  322</span>      eonc::safemath::safe_normalize_inplace(<a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a>);</div>
-<div class="line"><span class="lineno">  323</span>      <a class="code hl_variable" href="#a888b195f4fea2405d59a89cb29c48ff1">F_R_Old</a> = <a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>;</div>
-<div class="line"><span class="lineno">  324</span> </div>
-<div class="line"><span class="lineno">  325</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options().opt_method == <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c">OptType::LBFGS</a>) {</div>
-<div class="line"><span class="lineno">  326</span>      <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a6cb23ed7df4a85baabe302ce19a80137">init_lbfgs</a>) {</div>
-<div class="line"><span class="lineno">  327</span>        VectorXd s0 = <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> - tau_Old;</div>
-<div class="line"><span class="lineno">  328</span>        <a class="code hl_variable" href="#a3e30e1e53148e924c5e18712183c5f8e">s</a>.push_back(s0);</div>
-<div class="line"><span class="lineno">  329</span>        VectorXd y0 =</div>
-<div class="line"><span class="lineno">  330</span>            <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(1.0, delta, 0.0) * (<a class="code hl_variable" href="#a888b195f4fea2405d59a89cb29c48ff1">F_R_Old</a> - <a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>);</div>
-<div class="line"><span class="lineno">  331</span>        <a class="code hl_variable" href="#aac082b37ad6279c9dcc3efc6cbc5548e">y</a>.push_back(y0);</div>
-<div class="line"><span class="lineno">  332</span>        <a class="code hl_variable" href="#abfd177ef16ed8bdc8f117b3769c84c3f">rho</a>.push_back(<a class="code hl_function" href="namespaceeonc_1_1safemath.html#ac4a440a0ec6d054b05ecd14567d41f97">eonc::safemath::safe_recip</a>(s0.dot(y0), 0.0));</div>
-<div class="line"><span class="lineno">  333</span>      } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  334</span>        <a class="code hl_variable" href="#a6cb23ed7df4a85baabe302ce19a80137">init_lbfgs</a> = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  335</span>      }</div>
-<div class="line"><span class="lineno">  336</span> </div>
-<div class="line"><span class="lineno">  337</span>      <span class="keywordtype">double</span> H0 = 1.0 / 60.0;</div>
-<div class="line"><span class="lineno">  338</span>      <span class="keywordtype">size_t</span> loopmax = <a class="code hl_variable" href="#a3e30e1e53148e924c5e18712183c5f8e">s</a>.size();</div>
-<div class="line"><span class="lineno">  339</span>      std::vector&lt;double&gt; alpha(loopmax);</div>
-<div class="line"><span class="lineno">  340</span> </div>
-<div class="line"><span class="lineno">  341</span>      VectorXd q = -<a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>;</div>
-<div class="line"><span class="lineno">  342</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(loopmax) - 1; i &gt;= 0; i--) {</div>
-<div class="line"><span class="lineno">  343</span>        alpha[i] = <a class="code hl_variable" href="#abfd177ef16ed8bdc8f117b3769c84c3f">rho</a>[i] * <a class="code hl_variable" href="#a3e30e1e53148e924c5e18712183c5f8e">s</a>[i].dot(q);</div>
-<div class="line"><span class="lineno">  344</span>        q -= alpha[i] * <a class="code hl_variable" href="#aac082b37ad6279c9dcc3efc6cbc5548e">y</a>[i];</div>
-<div class="line"><span class="lineno">  345</span>      }</div>
-<div class="line"><span class="lineno">  346</span>      VectorXd z = H0 * q;</div>
-<div class="line"><span class="lineno">  347</span>      <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; loopmax; i++) {</div>
-<div class="line"><span class="lineno">  348</span>        <span class="keywordtype">double</span> bv = <a class="code hl_variable" href="#abfd177ef16ed8bdc8f117b3769c84c3f">rho</a>[i] * <a class="code hl_variable" href="#aac082b37ad6279c9dcc3efc6cbc5548e">y</a>[i].dot(z);</div>
-<div class="line"><span class="lineno">  349</span>        z += <a class="code hl_variable" href="#a3e30e1e53148e924c5e18712183c5f8e">s</a>[i] * (alpha[i] - bv);</div>
-<div class="line"><span class="lineno">  350</span>      }</div>
-<div class="line"><span class="lineno">  351</span> </div>
-<div class="line"><span class="lineno">  352</span>      <span class="keywordtype">double</span> vd = std::clamp(-eonc::safemath::safe_normalized(z).<a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">dot</a>(</div>
-<div class="line"><span class="lineno">  353</span>                                 eonc::safemath::safe_normalized(<a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>)),</div>
-<div class="line"><span class="lineno">  354</span>                             -1.0, 1.0);</div>
-<div class="line"><span class="lineno">  355</span>      <span class="keywordtype">double</span> angle =</div>
-<div class="line"><span class="lineno">  356</span>          <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a54d5df2519372b82461f76667d6f0223">eonc::safemath::safe_acos</a>(vd) * (180.0 / <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a>);</div>
-<div class="line"><span class="lineno">  357</span> </div>
-<div class="line"><span class="lineno">  358</span>      <span class="keywordflow">if</span> (angle &gt; 87.0) {</div>
-<div class="line"><span class="lineno">  359</span>        <a class="code hl_variable" href="#a3e30e1e53148e924c5e18712183c5f8e">s</a>.clear();</div>
-<div class="line"><span class="lineno">  360</span>        <a class="code hl_variable" href="#aac082b37ad6279c9dcc3efc6cbc5548e">y</a>.clear();</div>
-<div class="line"><span class="lineno">  361</span>        <a class="code hl_variable" href="#abfd177ef16ed8bdc8f117b3769c84c3f">rho</a>.clear();</div>
-<div class="line"><span class="lineno">  362</span>        z = -<a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>;</div>
-<div class="line"><span class="lineno">  363</span>      }</div>
-<div class="line"><span class="lineno">  364</span> </div>
-<div class="line"><span class="lineno">  365</span>      <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a> = -eonc::safemath::safe_normalized(z);</div>
-<div class="line"><span class="lineno">  366</span>      <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a> -= <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a>.dot(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>) * <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>;</div>
-<div class="line"><span class="lineno">  367</span>      eonc::safemath::safe_normalize_inplace(<a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a>);</div>
-<div class="line"><span class="lineno">  368</span> </div>
-<div class="line"><span class="lineno">  369</span>      <a class="code hl_variable" href="#abf8768cea879ef25894585c0668d5be2">thetaOld</a> = <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a>;</div>
-<div class="line"><span class="lineno">  370</span>      <a class="code hl_variable" href="#a888b195f4fea2405d59a89cb29c48ff1">F_R_Old</a> = <a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>;</div>
-<div class="line"><span class="lineno">  371</span>      tau_Old = <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>;</div>
-<div class="line"><span class="lineno">  372</span>    }</div>
-<div class="line"><span class="lineno">  373</span> </div>
-<div class="line"><span class="lineno">  374</span>    <span class="comment">// Curvature along tau</span></div>
-<div class="line"><span class="lineno">  375</span>    <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a> = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>((g1 - g0).<a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">dot</a>(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>), delta, 0.0);</div>
+<div class="line"><span class="lineno">  287</span>  bestG0 = g0;</div>
+<div class="line"><span class="lineno">  288</span>  bestG1 = g1;</div>
+<div class="line"><span class="lineno">  289</span> </div>
+<div class="line"><span class="lineno">  290</span>  <a class="code hl_variable" href="#a62503c88552beba43c3a456e8b5565ac">positions</a>.clear();</div>
+<div class="line"><span class="lineno">  291</span>  <a class="code hl_variable" href="#a89b8ad5f49419d61029016bdb57aa887">gradients</a>.clear();</div>
+<div class="line"><span class="lineno">  292</span>  <a class="code hl_variable" href="#a62503c88552beba43c3a456e8b5565ac">positions</a>.push_back(<a class="code hl_variable" href="#aa39f4b23b2f5d826425cb5c5ca325375">x0</a>-&gt;getPositionsV());</div>
+<div class="line"><span class="lineno">  293</span>  <a class="code hl_variable" href="#a62503c88552beba43c3a456e8b5565ac">positions</a>.push_back(<a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>-&gt;getPositionsV());</div>
+<div class="line"><span class="lineno">  294</span>  <a class="code hl_variable" href="#a89b8ad5f49419d61029016bdb57aa887">gradients</a>.push_back(g0);</div>
+<div class="line"><span class="lineno">  295</span>  <a class="code hl_variable" href="#a89b8ad5f49419d61029016bdb57aa887">gradients</a>.push_back(g1);</div>
+<div class="line"><span class="lineno">  296</span> </div>
+<div class="line"><span class="lineno">  297</span>  <span class="keywordflow">do</span> { <span class="comment">// Rotation loop: converge phi or hit max rotations</span></div>
+<div class="line"><span class="lineno">  298</span> </div>
+<div class="line"><span class="lineno">  299</span>    <span class="comment">// Rotational force, F_R</span></div>
+<div class="line"><span class="lineno">  300</span>    <a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a> = -2.0 * (g1 - g0) + 2.0 * ((g1 - g0).<a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">dot</a>(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>)) * <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>;</div>
+<div class="line"><span class="lineno">  301</span>    <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a60b737b93fe99a9004ee424f0d897d87">statsTorque</a> = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(<a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>.norm(), delta * 2.0, 0.0);</div>
+<div class="line"><span class="lineno">  302</span> </div>
+<div class="line"><span class="lineno">  303</span>    <span class="comment">// Determine step direction theta via selected optimizer</span></div>
+<div class="line"><span class="lineno">  304</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options().opt_method == <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0">OptType::SD</a>) {</div>
+<div class="line"><span class="lineno">  305</span>      <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a> = eonc::safemath::safe_normalized(<a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>);</div>
+<div class="line"><span class="lineno">  306</span> </div>
+<div class="line"><span class="lineno">  307</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options().opt_method == <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">OptType::CG</a>) {</div>
+<div class="line"><span class="lineno">  308</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="#accd272e770d6a65705e0177cc9f54640">init_cg</a>) {</div>
+<div class="line"><span class="lineno">  309</span>        <a class="code hl_variable" href="#accd272e770d6a65705e0177cc9f54640">init_cg</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  310</span>        <a class="code hl_variable" href="#a925d645640d233ef4939e58db2992f39">gamma</a> = 0.0;</div>
+<div class="line"><span class="lineno">  311</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  312</span>        <a class="code hl_variable" href="#a56ba7b69ab173693812b2019128f72c8">a</a> = std::abs(<a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>.dot(<a class="code hl_variable" href="#a888b195f4fea2405d59a89cb29c48ff1">F_R_Old</a>));</div>
+<div class="line"><span class="lineno">  313</span>        <a class="code hl_variable" href="#acc0eb57235aba0d79fccdc10cac0e0f7">b</a> = <a class="code hl_variable" href="#a888b195f4fea2405d59a89cb29c48ff1">F_R_Old</a>.squaredNorm();</div>
+<div class="line"><span class="lineno">  314</span>        <a class="code hl_variable" href="#a925d645640d233ef4939e58db2992f39">gamma</a> = (<a class="code hl_variable" href="#a56ba7b69ab173693812b2019128f72c8">a</a> &lt; 0.5 * <a class="code hl_variable" href="#acc0eb57235aba0d79fccdc10cac0e0f7">b</a>)</div>
+<div class="line"><span class="lineno">  315</span>                    ? <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(<a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>.dot(<a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a> - <a class="code hl_variable" href="#a888b195f4fea2405d59a89cb29c48ff1">F_R_Old</a>), <a class="code hl_variable" href="#acc0eb57235aba0d79fccdc10cac0e0f7">b</a>, 0.0)</div>
+<div class="line"><span class="lineno">  316</span>                    : 0.0;</div>
+<div class="line"><span class="lineno">  317</span>      }</div>
+<div class="line"><span class="lineno">  318</span> </div>
+<div class="line"><span class="lineno">  319</span>      <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a> = (<a class="code hl_variable" href="#a925d645640d233ef4939e58db2992f39">gamma</a> == 0.0) ? <a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a> : <a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a> + <a class="code hl_variable" href="#abf8768cea879ef25894585c0668d5be2">thetaOld</a> * <a class="code hl_variable" href="#a925d645640d233ef4939e58db2992f39">gamma</a>;</div>
+<div class="line"><span class="lineno">  320</span>      <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a> -= <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a>.dot(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>) * <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>;</div>
+<div class="line"><span class="lineno">  321</span>      <a class="code hl_variable" href="#abf8768cea879ef25894585c0668d5be2">thetaOld</a> = <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a>;</div>
+<div class="line"><span class="lineno">  322</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a>.norm() &lt; <a class="code hl_variable" href="namespaceeonc_1_1safemath.html#a57c5f23e983b67c789337e2108c86c8c">eonc::safemath::eps</a>) {</div>
+<div class="line"><span class="lineno">  323</span>        <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a> = <a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a> - <a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>.dot(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>) * <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>;</div>
+<div class="line"><span class="lineno">  324</span>      }</div>
+<div class="line"><span class="lineno">  325</span>      eonc::safemath::safe_normalize_inplace(<a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a>);</div>
+<div class="line"><span class="lineno">  326</span>      <a class="code hl_variable" href="#a888b195f4fea2405d59a89cb29c48ff1">F_R_Old</a> = <a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>;</div>
+<div class="line"><span class="lineno">  327</span> </div>
+<div class="line"><span class="lineno">  328</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options().opt_method == <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c">OptType::LBFGS</a>) {</div>
+<div class="line"><span class="lineno">  329</span>      <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a6cb23ed7df4a85baabe302ce19a80137">init_lbfgs</a>) {</div>
+<div class="line"><span class="lineno">  330</span>        VectorXd s0 = <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> - tau_Old;</div>
+<div class="line"><span class="lineno">  331</span>        <a class="code hl_variable" href="#a3e30e1e53148e924c5e18712183c5f8e">s</a>.push_back(s0);</div>
+<div class="line"><span class="lineno">  332</span>        VectorXd y0 =</div>
+<div class="line"><span class="lineno">  333</span>            <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(1.0, delta, 0.0) * (<a class="code hl_variable" href="#a888b195f4fea2405d59a89cb29c48ff1">F_R_Old</a> - <a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>);</div>
+<div class="line"><span class="lineno">  334</span>        <a class="code hl_variable" href="#aac082b37ad6279c9dcc3efc6cbc5548e">y</a>.push_back(y0);</div>
+<div class="line"><span class="lineno">  335</span>        <a class="code hl_variable" href="#abfd177ef16ed8bdc8f117b3769c84c3f">rho</a>.push_back(<a class="code hl_function" href="namespaceeonc_1_1safemath.html#ac4a440a0ec6d054b05ecd14567d41f97">eonc::safemath::safe_recip</a>(s0.dot(y0), 0.0));</div>
+<div class="line"><span class="lineno">  336</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  337</span>        <a class="code hl_variable" href="#a6cb23ed7df4a85baabe302ce19a80137">init_lbfgs</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  338</span>      }</div>
+<div class="line"><span class="lineno">  339</span> </div>
+<div class="line"><span class="lineno">  340</span>      <span class="keywordtype">double</span> H0 = 1.0 / 60.0;</div>
+<div class="line"><span class="lineno">  341</span>      <span class="keywordtype">size_t</span> loopmax = <a class="code hl_variable" href="#a3e30e1e53148e924c5e18712183c5f8e">s</a>.size();</div>
+<div class="line"><span class="lineno">  342</span>      std::vector&lt;double&gt; alpha(loopmax);</div>
+<div class="line"><span class="lineno">  343</span> </div>
+<div class="line"><span class="lineno">  344</span>      VectorXd q = -<a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>;</div>
+<div class="line"><span class="lineno">  345</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(loopmax) - 1; i &gt;= 0; i--) {</div>
+<div class="line"><span class="lineno">  346</span>        alpha[i] = <a class="code hl_variable" href="#abfd177ef16ed8bdc8f117b3769c84c3f">rho</a>[i] * <a class="code hl_variable" href="#a3e30e1e53148e924c5e18712183c5f8e">s</a>[i].dot(q);</div>
+<div class="line"><span class="lineno">  347</span>        q -= alpha[i] * <a class="code hl_variable" href="#aac082b37ad6279c9dcc3efc6cbc5548e">y</a>[i];</div>
+<div class="line"><span class="lineno">  348</span>      }</div>
+<div class="line"><span class="lineno">  349</span>      VectorXd z = H0 * q;</div>
+<div class="line"><span class="lineno">  350</span>      <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; loopmax; i++) {</div>
+<div class="line"><span class="lineno">  351</span>        <span class="keywordtype">double</span> bv = <a class="code hl_variable" href="#abfd177ef16ed8bdc8f117b3769c84c3f">rho</a>[i] * <a class="code hl_variable" href="#aac082b37ad6279c9dcc3efc6cbc5548e">y</a>[i].dot(z);</div>
+<div class="line"><span class="lineno">  352</span>        z += <a class="code hl_variable" href="#a3e30e1e53148e924c5e18712183c5f8e">s</a>[i] * (alpha[i] - bv);</div>
+<div class="line"><span class="lineno">  353</span>      }</div>
+<div class="line"><span class="lineno">  354</span> </div>
+<div class="line"><span class="lineno">  355</span>      <span class="keywordtype">double</span> vd = std::clamp(-eonc::safemath::safe_normalized(z).<a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">dot</a>(</div>
+<div class="line"><span class="lineno">  356</span>                                 eonc::safemath::safe_normalized(<a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>)),</div>
+<div class="line"><span class="lineno">  357</span>                             -1.0, 1.0);</div>
+<div class="line"><span class="lineno">  358</span>      <span class="keywordtype">double</span> angle =</div>
+<div class="line"><span class="lineno">  359</span>          <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a54d5df2519372b82461f76667d6f0223">eonc::safemath::safe_acos</a>(vd) * (180.0 / <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a>);</div>
+<div class="line"><span class="lineno">  360</span> </div>
+<div class="line"><span class="lineno">  361</span>      <span class="keywordflow">if</span> (angle &gt; 87.0) {</div>
+<div class="line"><span class="lineno">  362</span>        <a class="code hl_variable" href="#a3e30e1e53148e924c5e18712183c5f8e">s</a>.clear();</div>
+<div class="line"><span class="lineno">  363</span>        <a class="code hl_variable" href="#aac082b37ad6279c9dcc3efc6cbc5548e">y</a>.clear();</div>
+<div class="line"><span class="lineno">  364</span>        <a class="code hl_variable" href="#abfd177ef16ed8bdc8f117b3769c84c3f">rho</a>.clear();</div>
+<div class="line"><span class="lineno">  365</span>        z = -<a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>;</div>
+<div class="line"><span class="lineno">  366</span>      }</div>
+<div class="line"><span class="lineno">  367</span> </div>
+<div class="line"><span class="lineno">  368</span>      <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a> = -eonc::safemath::safe_normalized(z);</div>
+<div class="line"><span class="lineno">  369</span>      <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a> -= <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a>.dot(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>) * <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>;</div>
+<div class="line"><span class="lineno">  370</span>      eonc::safemath::safe_normalize_inplace(<a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a>);</div>
+<div class="line"><span class="lineno">  371</span> </div>
+<div class="line"><span class="lineno">  372</span>      <a class="code hl_variable" href="#abf8768cea879ef25894585c0668d5be2">thetaOld</a> = <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a>;</div>
+<div class="line"><span class="lineno">  373</span>      <a class="code hl_variable" href="#a888b195f4fea2405d59a89cb29c48ff1">F_R_Old</a> = <a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>;</div>
+<div class="line"><span class="lineno">  374</span>      tau_Old = <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>;</div>
+<div class="line"><span class="lineno">  375</span>    }</div>
 <div class="line"><span class="lineno">  376</span> </div>
-<div class="line"><span class="lineno">  377</span>    <span class="comment">// Track best negative curvature for mode restoration</span></div>
-<div class="line"><span class="lineno">  378</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a> &lt; bestNegativeCurvature) {</div>
-<div class="line"><span class="lineno">  379</span>      bestNegativeCurvature = <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a>;</div>
-<div class="line"><span class="lineno">  380</span>      bestTau = <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>;</div>
-<div class="line"><span class="lineno">  381</span>      bestX0Positions = <a class="code hl_variable" href="#aa39f4b23b2f5d826425cb5c5ca325375">x0</a>-&gt;getPositionsV();</div>
-<div class="line"><span class="lineno">  382</span>      bestG0 = g0;</div>
-<div class="line"><span class="lineno">  383</span>      bestG1 = g1;</div>
-<div class="line"><span class="lineno">  384</span>      <a class="code hl_variable" href="#a0eca4b3f4e032945f78ec63573153183">foundNegativeCurvature</a> = (<a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a> &lt; 0.0);</div>
-<div class="line"><span class="lineno">  385</span>    }</div>
-<div class="line"><span class="lineno">  386</span> </div>
-<div class="line"><span class="lineno">  387</span>    <span class="comment">// Estimate optimum rotation angle</span></div>
-<div class="line"><span class="lineno">  388</span>    <span class="keywordtype">double</span> d_C_tau_d_phi =</div>
-<div class="line"><span class="lineno">  389</span>        2.0 * <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>((g1 - g0).<a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">dot</a>(<a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a>), delta, 0.0);</div>
-<div class="line"><span class="lineno">  390</span>    phi_prime = -0.5 * <a class="code hl_function" href="namespaceeonc_1_1safemath.html#ae572c9b3d0188d4e2aa49f3a61b2fcdd">eonc::safemath::safe_atan_ratio</a>(</div>
-<div class="line"><span class="lineno">  391</span>                           d_C_tau_d_phi, 2.0 * std::abs(<a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a>), 0.0);</div>
-<div class="line"><span class="lineno">  392</span>    <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a0b00be5551a5221a2951a5271e353e1c">statsAngle</a> = phi_prime * (180.0 / <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a>);</div>
-<div class="line"><span class="lineno">  393</span> </div>
-<div class="line"><span class="lineno">  394</span>    <span class="keywordtype">double</span> alignment = std::abs(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>.dot(referenceMode));</div>
-<div class="line"><span class="lineno">  395</span> </div>
-<div class="line"><span class="lineno">  396</span>    <span class="keywordflow">if</span> (std::abs(phi_prime) &gt; phi_tol) {</div>
-<div class="line"><span class="lineno">  397</span>      <span class="keywordtype">double</span> b1 = 0.5 * d_C_tau_d_phi;</div>
+<div class="line"><span class="lineno">  377</span>    <span class="comment">// Curvature along tau</span></div>
+<div class="line"><span class="lineno">  378</span>    <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a> = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>((g1 - g0).<a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">dot</a>(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>), delta, 0.0);</div>
+<div class="line"><span class="lineno">  379</span> </div>
+<div class="line"><span class="lineno">  380</span>    <span class="comment">// Track best negative curvature for mode restoration</span></div>
+<div class="line"><span class="lineno">  381</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a> &lt; bestNegativeCurvature) {</div>
+<div class="line"><span class="lineno">  382</span>      bestNegativeCurvature = <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a>;</div>
+<div class="line"><span class="lineno">  383</span>      bestTau = <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>;</div>
+<div class="line"><span class="lineno">  384</span>      bestX0Positions = <a class="code hl_variable" href="#aa39f4b23b2f5d826425cb5c5ca325375">x0</a>-&gt;getPositionsV();</div>
+<div class="line"><span class="lineno">  385</span>      bestG0 = g0;</div>
+<div class="line"><span class="lineno">  386</span>      bestG1 = g1;</div>
+<div class="line"><span class="lineno">  387</span>      <a class="code hl_variable" href="#a0eca4b3f4e032945f78ec63573153183">foundNegativeCurvature</a> = (<a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a> &lt; 0.0);</div>
+<div class="line"><span class="lineno">  388</span>    }</div>
+<div class="line"><span class="lineno">  389</span> </div>
+<div class="line"><span class="lineno">  390</span>    <span class="comment">// Estimate optimum rotation angle</span></div>
+<div class="line"><span class="lineno">  391</span>    <span class="keywordtype">double</span> d_C_tau_d_phi =</div>
+<div class="line"><span class="lineno">  392</span>        2.0 * <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>((g1 - g0).<a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">dot</a>(<a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a>), delta, 0.0);</div>
+<div class="line"><span class="lineno">  393</span>    phi_prime = -0.5 * <a class="code hl_function" href="namespaceeonc_1_1safemath.html#ae572c9b3d0188d4e2aa49f3a61b2fcdd">eonc::safemath::safe_atan_ratio</a>(</div>
+<div class="line"><span class="lineno">  394</span>                           d_C_tau_d_phi, 2.0 * std::abs(<a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a>), 0.0);</div>
+<div class="line"><span class="lineno">  395</span>    <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a0b00be5551a5221a2951a5271e353e1c">statsAngle</a> = phi_prime * (180.0 / <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a>);</div>
+<div class="line"><span class="lineno">  396</span> </div>
+<div class="line"><span class="lineno">  397</span>    <span class="keywordtype">double</span> alignment = std::abs(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>.dot(referenceMode));</div>
 <div class="line"><span class="lineno">  398</span> </div>
-<div class="line"><span class="lineno">  399</span>      <span class="comment">// Trial rotation to phi_prime</span></div>
-<div class="line"><span class="lineno">  400</span>      x0_r = <a class="code hl_variable" href="#aa39f4b23b2f5d826425cb5c5ca325375">x0</a>-&gt;getPositionsV();</div>
-<div class="line"><span class="lineno">  401</span>      tau_prime = <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> * std::cos(phi_prime) + <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a> * std::sin(phi_prime);</div>
-<div class="line"><span class="lineno">  402</span>      tau_prime = eonc::safemath::safe_normalized(tau_prime);</div>
-<div class="line"><span class="lineno">  403</span>      x1_rp = x0_r + tau_prime * delta;</div>
-<div class="line"><span class="lineno">  404</span> </div>
-<div class="line"><span class="lineno">  405</span>      *x1p = *<a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>;</div>
-<div class="line"><span class="lineno">  406</span>      x1p-&gt;setPositionsV(x1_rp);</div>
-<div class="line"><span class="lineno">  407</span>      g1_prime = -x1p-&gt;getForcesV();</div>
-<div class="line"><span class="lineno">  408</span> </div>
-<div class="line"><span class="lineno">  409</span>      <a class="code hl_variable" href="#a62503c88552beba43c3a456e8b5565ac">positions</a>.push_back(x1_rp);</div>
-<div class="line"><span class="lineno">  410</span>      <a class="code hl_variable" href="#a89b8ad5f49419d61029016bdb57aa887">gradients</a>.push_back(g1_prime);</div>
+<div class="line"><span class="lineno">  399</span>    <span class="keywordflow">if</span> (std::abs(phi_prime) &gt; phi_tol) {</div>
+<div class="line"><span class="lineno">  400</span>      <span class="keywordtype">double</span> b1 = 0.5 * d_C_tau_d_phi;</div>
+<div class="line"><span class="lineno">  401</span> </div>
+<div class="line"><span class="lineno">  402</span>      <span class="comment">// Trial rotation to phi_prime</span></div>
+<div class="line"><span class="lineno">  403</span>      x0_r = <a class="code hl_variable" href="#aa39f4b23b2f5d826425cb5c5ca325375">x0</a>-&gt;getPositionsV();</div>
+<div class="line"><span class="lineno">  404</span>      tau_prime = <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> * std::cos(phi_prime) + <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a> * std::sin(phi_prime);</div>
+<div class="line"><span class="lineno">  405</span>      tau_prime = eonc::safemath::safe_normalized(tau_prime);</div>
+<div class="line"><span class="lineno">  406</span>      x1_rp = x0_r + tau_prime * delta;</div>
+<div class="line"><span class="lineno">  407</span> </div>
+<div class="line"><span class="lineno">  408</span>      *x1p = *<a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>;</div>
+<div class="line"><span class="lineno">  409</span>      x1p-&gt;setPositionsV(x1_rp);</div>
+<div class="line"><span class="lineno">  410</span>      g1_prime = -x1p-&gt;getForcesV();</div>
 <div class="line"><span class="lineno">  411</span> </div>
-<div class="line"><span class="lineno">  412</span>      <span class="keywordtype">double</span> C_tau_prime =</div>
-<div class="line"><span class="lineno">  413</span>          <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>((g1_prime - g0).<a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">dot</a>(tau_prime), delta, 0.0);</div>
+<div class="line"><span class="lineno">  412</span>      <a class="code hl_variable" href="#a62503c88552beba43c3a456e8b5565ac">positions</a>.push_back(x1_rp);</div>
+<div class="line"><span class="lineno">  413</span>      <a class="code hl_variable" href="#a89b8ad5f49419d61029016bdb57aa887">gradients</a>.push_back(g1_prime);</div>
 <div class="line"><span class="lineno">  414</span> </div>
-<div class="line"><span class="lineno">  415</span>      <span class="comment">// Optimal rotation angle via Fourier interpolation</span></div>
-<div class="line"><span class="lineno">  416</span>      <span class="keywordtype">double</span> a1 = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(</div>
-<div class="line"><span class="lineno">  417</span>          <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a> - C_tau_prime + b1 * std::sin(2.0 * phi_prime),</div>
-<div class="line"><span class="lineno">  418</span>          1.0 - std::cos(2.0 * phi_prime), 0.0);</div>
-<div class="line"><span class="lineno">  419</span>      <span class="keywordtype">double</span> a0 = 2.0 * (<a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a> - a1);</div>
-<div class="line"><span class="lineno">  420</span>      phi_min = 0.5 * <a class="code hl_function" href="namespaceeonc_1_1safemath.html#ae572c9b3d0188d4e2aa49f3a61b2fcdd">eonc::safemath::safe_atan_ratio</a>(b1, a1, 0.0);</div>
-<div class="line"><span class="lineno">  421</span> </div>
-<div class="line"><span class="lineno">  422</span>      <span class="keywordtype">double</span> C_tau_min = 0.5 * a0 + a1 * std::cos(2.0 * phi_min) +</div>
-<div class="line"><span class="lineno">  423</span>                         b1 * std::sin(2.0 * phi_min);</div>
+<div class="line"><span class="lineno">  415</span>      <span class="keywordtype">double</span> C_tau_prime =</div>
+<div class="line"><span class="lineno">  416</span>          <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>((g1_prime - g0).<a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">dot</a>(tau_prime), delta, 0.0);</div>
+<div class="line"><span class="lineno">  417</span> </div>
+<div class="line"><span class="lineno">  418</span>      <span class="comment">// Optimal rotation angle via Fourier interpolation</span></div>
+<div class="line"><span class="lineno">  419</span>      <span class="keywordtype">double</span> a1 = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(</div>
+<div class="line"><span class="lineno">  420</span>          <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a> - C_tau_prime + b1 * std::sin(2.0 * phi_prime),</div>
+<div class="line"><span class="lineno">  421</span>          1.0 - std::cos(2.0 * phi_prime), 0.0);</div>
+<div class="line"><span class="lineno">  422</span>      <span class="keywordtype">double</span> a0 = 2.0 * (<a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a> - a1);</div>
+<div class="line"><span class="lineno">  423</span>      phi_min = 0.5 * <a class="code hl_function" href="namespaceeonc_1_1safemath.html#ae572c9b3d0188d4e2aa49f3a61b2fcdd">eonc::safemath::safe_atan_ratio</a>(b1, a1, 0.0);</div>
 <div class="line"><span class="lineno">  424</span> </div>
-<div class="line"><span class="lineno">  425</span>      <span class="comment">// If curvature is being maximized, push over pi/2</span></div>
-<div class="line"><span class="lineno">  426</span>      <span class="keywordflow">if</span> (C_tau_min &gt; <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a>) {</div>
-<div class="line"><span class="lineno">  427</span>        phi_min += <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a> * 0.5;</div>
-<div class="line"><span class="lineno">  428</span>        C_tau_min = 0.5 * a0 + a1 * std::cos(2.0 * phi_min) +</div>
-<div class="line"><span class="lineno">  429</span>                    b1 * std::sin(2.0 * phi_min);</div>
-<div class="line"><span class="lineno">  430</span>      }</div>
-<div class="line"><span class="lineno">  431</span> </div>
-<div class="line"><span class="lineno">  432</span>      <span class="comment">// Keep phi_min in [-pi/2, pi/2] for accurate LBFGS</span></div>
-<div class="line"><span class="lineno">  433</span>      <span class="keywordflow">if</span> (phi_min &gt; <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a> * 0.5) {</div>
-<div class="line"><span class="lineno">  434</span>        phi_min -= <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a>;</div>
-<div class="line"><span class="lineno">  435</span>      }</div>
-<div class="line"><span class="lineno">  436</span>      <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a0b00be5551a5221a2951a5271e353e1c">statsAngle</a> = phi_min * (180.0 / <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a>);</div>
-<div class="line"><span class="lineno">  437</span> </div>
-<div class="line"><span class="lineno">  438</span>      <span class="comment">// Apply optimal rotation</span></div>
-<div class="line"><span class="lineno">  439</span>      <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> = <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> * std::cos(phi_min) + <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a> * std::sin(phi_min);</div>
-<div class="line"><span class="lineno">  440</span>      <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> = eonc::safemath::safe_normalized(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>);</div>
-<div class="line"><span class="lineno">  441</span>      x1_r = x0_r + <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> * delta;</div>
-<div class="line"><span class="lineno">  442</span> </div>
-<div class="line"><span class="lineno">  443</span>      <span class="comment">// Melander, Laasonen, Jonsson, JCTC 11(3), 1055-1062, 2015</span></div>
-<div class="line"><span class="lineno">  444</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options().remove_rotation) {</div>
-<div class="line"><span class="lineno">  445</span>        <a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>-&gt;setPositionsV(x1_r);</div>
-<div class="line"><span class="lineno">  446</span>        <a class="code hl_function" href="namespaceeonc_1_1geometry.html#adc0ea1824b41f1de3eeba2b2df428160">eonc::geometry::rotationRemove</a>(</div>
-<div class="line"><span class="lineno">  447</span>            AtomMatrix::Map(x0_r.data(), <a class="code hl_variable" href="#aa39f4b23b2f5d826425cb5c5ca325375">x0</a>-&gt;numberOfAtoms(), 3), <a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>);</div>
-<div class="line"><span class="lineno">  448</span>        x1_r = <a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>-&gt;getPositionsV();</div>
-<div class="line"><span class="lineno">  449</span>        <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> = x1_r - x0_r;</div>
-<div class="line"><span class="lineno">  450</span>        eonc::safemath::safe_normalize_inplace(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>);</div>
-<div class="line"><span class="lineno">  451</span>        x1_r = x0_r + <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> * delta;</div>
-<div class="line"><span class="lineno">  452</span>      }</div>
-<div class="line"><span class="lineno">  453</span> </div>
-<div class="line"><span class="lineno">  454</span>      <a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>-&gt;setPositionsV(x1_r);</div>
-<div class="line"><span class="lineno">  455</span>      <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a> = C_tau_min;</div>
+<div class="line"><span class="lineno">  425</span>      <span class="keywordtype">double</span> C_tau_min = 0.5 * a0 + a1 * std::cos(2.0 * phi_min) +</div>
+<div class="line"><span class="lineno">  426</span>                         b1 * std::sin(2.0 * phi_min);</div>
+<div class="line"><span class="lineno">  427</span> </div>
+<div class="line"><span class="lineno">  428</span>      <span class="comment">// If curvature is being maximized, push over pi/2</span></div>
+<div class="line"><span class="lineno">  429</span>      <span class="keywordflow">if</span> (C_tau_min &gt; <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a>) {</div>
+<div class="line"><span class="lineno">  430</span>        phi_min += <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a> * 0.5;</div>
+<div class="line"><span class="lineno">  431</span>        C_tau_min = 0.5 * a0 + a1 * std::cos(2.0 * phi_min) +</div>
+<div class="line"><span class="lineno">  432</span>                    b1 * std::sin(2.0 * phi_min);</div>
+<div class="line"><span class="lineno">  433</span>      }</div>
+<div class="line"><span class="lineno">  434</span> </div>
+<div class="line"><span class="lineno">  435</span>      <span class="comment">// Keep phi_min in [-pi/2, pi/2] for accurate LBFGS</span></div>
+<div class="line"><span class="lineno">  436</span>      <span class="keywordflow">if</span> (phi_min &gt; <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a> * 0.5) {</div>
+<div class="line"><span class="lineno">  437</span>        phi_min -= <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a>;</div>
+<div class="line"><span class="lineno">  438</span>      }</div>
+<div class="line"><span class="lineno">  439</span>      <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a0b00be5551a5221a2951a5271e353e1c">statsAngle</a> = phi_min * (180.0 / <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a>);</div>
+<div class="line"><span class="lineno">  440</span> </div>
+<div class="line"><span class="lineno">  441</span>      <span class="comment">// Apply optimal rotation</span></div>
+<div class="line"><span class="lineno">  442</span>      <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> = <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> * std::cos(phi_min) + <a class="code hl_variable" href="#a8cb6d6911832a0d72f1d2cd267751624">theta</a> * std::sin(phi_min);</div>
+<div class="line"><span class="lineno">  443</span>      <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> = eonc::safemath::safe_normalized(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>);</div>
+<div class="line"><span class="lineno">  444</span>      x1_r = x0_r + <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> * delta;</div>
+<div class="line"><span class="lineno">  445</span> </div>
+<div class="line"><span class="lineno">  446</span>      <span class="comment">// Melander, Laasonen, Jonsson, JCTC 11(3), 1055-1062, 2015</span></div>
+<div class="line"><span class="lineno">  447</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options().remove_rotation) {</div>
+<div class="line"><span class="lineno">  448</span>        <a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>-&gt;setPositionsV(x1_r);</div>
+<div class="line"><span class="lineno">  449</span>        <a class="code hl_function" href="namespaceeonc_1_1geometry.html#adc0ea1824b41f1de3eeba2b2df428160">eonc::geometry::rotationRemove</a>(</div>
+<div class="line"><span class="lineno">  450</span>            AtomMatrix::Map(x0_r.data(), <a class="code hl_variable" href="#aa39f4b23b2f5d826425cb5c5ca325375">x0</a>-&gt;numberOfAtoms(), 3), <a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>);</div>
+<div class="line"><span class="lineno">  451</span>        x1_r = <a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>-&gt;getPositionsV();</div>
+<div class="line"><span class="lineno">  452</span>        <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> = x1_r - x0_r;</div>
+<div class="line"><span class="lineno">  453</span>        eonc::safemath::safe_normalize_inplace(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>);</div>
+<div class="line"><span class="lineno">  454</span>        x1_r = x0_r + <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> * delta;</div>
+<div class="line"><span class="lineno">  455</span>      }</div>
 <div class="line"><span class="lineno">  456</span> </div>
-<div class="line"><span class="lineno">  457</span>      <span class="comment">// Interpolate g1 at phi_min from g1 and g1_prime (saves one force call)</span></div>
-<div class="line"><span class="lineno">  458</span>      <span class="keywordtype">double</span> sin_pp = std::sin(phi_prime);</div>
-<div class="line"><span class="lineno">  459</span>      g1 = g1 * <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(std::sin(phi_prime - phi_min), sin_pp,</div>
-<div class="line"><span class="lineno">  460</span>                                         0.0) +</div>
-<div class="line"><span class="lineno">  461</span>           g1_prime * <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(std::sin(phi_min), sin_pp, 0.0) +</div>
-<div class="line"><span class="lineno">  462</span>           g0 * (1.0 - std::cos(phi_min) -</div>
-<div class="line"><span class="lineno">  463</span>                 std::sin(phi_min) * std::tan(phi_prime * 0.5));</div>
-<div class="line"><span class="lineno">  464</span> </div>
-<div class="line"><span class="lineno">  465</span>      <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a60b737b93fe99a9004ee424f0d897d87">statsTorque</a> = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(<a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>.norm(), 2.0 * delta, 0.0);</div>
-<div class="line"><span class="lineno">  466</span>      <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> += 1;</div>
-<div class="line"><span class="lineno">  467</span>      QUILL_LOG_INFO(</div>
-<div class="line"><span class="lineno">  468</span>          <a class="code hl_variable" href="#abbd2fad6f3a6649d050b457fa7425df2">log</a>,</div>
-<div class="line"><span class="lineno">  469</span>          <span class="stringliteral">&quot;[IDimerRot]  -----   ---------   ----------   ------------------   &quot;</span></div>
-<div class="line"><span class="lineno">  470</span>          <span class="stringliteral">&quot;{:9.4f}   {:7.3f}   {:6.3f}   {:4}   {:5.3f}&quot;</span>,</div>
-<div class="line"><span class="lineno">  471</span>          <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a>, <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a60b737b93fe99a9004ee424f0d897d87">statsTorque</a>, <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a0b00be5551a5221a2951a5271e353e1c">statsAngle</a>, <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a>, alignment);</div>
-<div class="line"><span class="lineno">  472</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  473</span>      QUILL_LOG_INFO(</div>
-<div class="line"><span class="lineno">  474</span>          <a class="code hl_variable" href="#abbd2fad6f3a6649d050b457fa7425df2">log</a>,</div>
-<div class="line"><span class="lineno">  475</span>          <span class="stringliteral">&quot;[IDimerRot]  -----   ---------   ----------   ------------------   &quot;</span></div>
-<div class="line"><span class="lineno">  476</span>          <span class="stringliteral">&quot;{:9.4f}   {:7.3f}   ------   ----   {:5.3f}&quot;</span>,</div>
-<div class="line"><span class="lineno">  477</span>          <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a>, <a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>.norm() / delta, alignment);</div>
-<div class="line"><span class="lineno">  478</span>    }</div>
-<div class="line"><span class="lineno">  479</span> </div>
-<div class="line"><span class="lineno">  480</span>    <span class="comment">// Check for mode loss (OCINEB dimer refinement)</span></div>
-<div class="line"><span class="lineno">  481</span>    <span class="keywordflow">if</span> (alignment &lt; <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.neb_options().climbing_image.ocineb.angle_tol &amp;&amp;</div>
-<div class="line"><span class="lineno">  482</span>        <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.neb_options().climbing_image.ocineb.use_mmf) {</div>
-<div class="line"><span class="lineno">  483</span>      QUILL_LOG_WARNING(</div>
-<div class="line"><span class="lineno">  484</span>          <a class="code hl_variable" href="#abbd2fad6f3a6649d050b457fa7425df2">log</a>, <span class="stringliteral">&quot;Terminating dimer due to lost mode (align {:.3f}).&quot;</span>, alignment);</div>
-<div class="line"><span class="lineno">  485</span>      <a class="code hl_variable" href="#a78c0c79be9325b53a89a041a2ed448b9">rotationDidConverge</a> = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  486</span> </div>
-<div class="line"><span class="lineno">  487</span>      <span class="keywordflow">if</span> (bestNegativeCurvature &lt; 0.0) {</div>
-<div class="line"><span class="lineno">  488</span>        <span class="comment">// Restore the best negative curvature state</span></div>
-<div class="line"><span class="lineno">  489</span>        <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a> = bestNegativeCurvature;</div>
-<div class="line"><span class="lineno">  490</span>        <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> = bestTau;</div>
-<div class="line"><span class="lineno">  491</span>        <span class="comment">// The rotation never moves the centre; reassigning it only when it</span></div>
-<div class="line"><span class="lineno">  492</span>        <span class="comment">// differs keeps the evaluation the caller already paid for.</span></div>
-<div class="line"><span class="lineno">  493</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa39f4b23b2f5d826425cb5c5ca325375">x0</a>-&gt;getPositionsV() != bestX0Positions) {</div>
-<div class="line"><span class="lineno">  494</span>          <a class="code hl_variable" href="#aa39f4b23b2f5d826425cb5c5ca325375">x0</a>-&gt;setPositionsV(bestX0Positions);</div>
-<div class="line"><span class="lineno">  495</span>          *matter = *<a class="code hl_variable" href="#aa39f4b23b2f5d826425cb5c5ca325375">x0</a>;</div>
-<div class="line"><span class="lineno">  496</span>        }</div>
-<div class="line"><span class="lineno">  497</span>        <a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>-&gt;setPositionsV(bestX0Positions + delta * bestTau);</div>
-<div class="line"><span class="lineno">  498</span>        QUILL_LOG_DEBUG(</div>
-<div class="line"><span class="lineno">  499</span>            <a class="code hl_variable" href="#abbd2fad6f3a6649d050b457fa7425df2">log</a>, <span class="stringliteral">&quot;Restored best negative curvature state: C_tau={:.4f}&quot;</span>, <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a>);</div>
-<div class="line"><span class="lineno">  500</span>        <span class="keywordflow">throw</span> eonc::DimerModeRestoredException();</div>
-<div class="line"><span class="lineno">  501</span>      } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  502</span>        QUILL_LOG_WARNING(</div>
-<div class="line"><span class="lineno">  503</span>            <a class="code hl_variable" href="#abbd2fad6f3a6649d050b457fa7425df2">log</a>, <span class="stringliteral">&quot;Never found negative curvature. Final C_tau: {:.4f}&quot;</span>, <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a>);</div>
-<div class="line"><span class="lineno">  504</span>        <span class="keywordflow">throw</span> eonc::DimerModeLostException();</div>
-<div class="line"><span class="lineno">  505</span>      }</div>
-<div class="line"><span class="lineno">  506</span>    }</div>
-<div class="line"><span class="lineno">  507</span> </div>
-<div class="line"><span class="lineno">  508</span>  } <span class="keywordflow">while</span> (std::abs(phi_prime) &gt; std::abs(phi_tol) &amp;&amp;</div>
-<div class="line"><span class="lineno">  509</span>           std::abs(phi_min) &gt; std::abs(phi_tol) &amp;&amp;</div>
-<div class="line"><span class="lineno">  510</span>           <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> &lt; <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options().rotations_max);</div>
-<div class="line"><span class="lineno">  511</span>}</div>
+<div class="line"><span class="lineno">  457</span>      <a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>-&gt;setPositionsV(x1_r);</div>
+<div class="line"><span class="lineno">  458</span>      <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a> = C_tau_min;</div>
+<div class="line"><span class="lineno">  459</span> </div>
+<div class="line"><span class="lineno">  460</span>      <span class="comment">// Interpolate g1 at phi_min from g1 and g1_prime (saves one force call)</span></div>
+<div class="line"><span class="lineno">  461</span>      <span class="keywordtype">double</span> sin_pp = std::sin(phi_prime);</div>
+<div class="line"><span class="lineno">  462</span>      g1 = g1 * <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(std::sin(phi_prime - phi_min), sin_pp,</div>
+<div class="line"><span class="lineno">  463</span>                                         0.0) +</div>
+<div class="line"><span class="lineno">  464</span>           g1_prime * <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(std::sin(phi_min), sin_pp, 0.0) +</div>
+<div class="line"><span class="lineno">  465</span>           g0 * (1.0 - std::cos(phi_min) -</div>
+<div class="line"><span class="lineno">  466</span>                 std::sin(phi_min) * std::tan(phi_prime * 0.5));</div>
+<div class="line"><span class="lineno">  467</span> </div>
+<div class="line"><span class="lineno">  468</span>      <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a60b737b93fe99a9004ee424f0d897d87">statsTorque</a> = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(<a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>.norm(), 2.0 * delta, 0.0);</div>
+<div class="line"><span class="lineno">  469</span>      <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> += 1;</div>
+<div class="line"><span class="lineno">  470</span>      QUILL_LOG_INFO(</div>
+<div class="line"><span class="lineno">  471</span>          <a class="code hl_variable" href="#abbd2fad6f3a6649d050b457fa7425df2">log</a>,</div>
+<div class="line"><span class="lineno">  472</span>          <span class="stringliteral">&quot;[IDimerRot]  -----   ---------   ----------   ------------------   &quot;</span></div>
+<div class="line"><span class="lineno">  473</span>          <span class="stringliteral">&quot;{:9.4f}   {:7.3f}   {:6.3f}   {:4}   {:5.3f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  474</span>          <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a>, <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a60b737b93fe99a9004ee424f0d897d87">statsTorque</a>, <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a0b00be5551a5221a2951a5271e353e1c">statsAngle</a>, <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a>, alignment);</div>
+<div class="line"><span class="lineno">  475</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  476</span>      QUILL_LOG_INFO(</div>
+<div class="line"><span class="lineno">  477</span>          <a class="code hl_variable" href="#abbd2fad6f3a6649d050b457fa7425df2">log</a>,</div>
+<div class="line"><span class="lineno">  478</span>          <span class="stringliteral">&quot;[IDimerRot]  -----   ---------   ----------   ------------------   &quot;</span></div>
+<div class="line"><span class="lineno">  479</span>          <span class="stringliteral">&quot;{:9.4f}   {:7.3f}   ------   ----   {:5.3f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  480</span>          <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a>, <a class="code hl_variable" href="#a1416b81b1891137ff578fd1e1bc5c7a2">F_R</a>.norm() / delta, alignment);</div>
+<div class="line"><span class="lineno">  481</span>    }</div>
+<div class="line"><span class="lineno">  482</span> </div>
+<div class="line"><span class="lineno">  483</span>    <span class="comment">// Check for mode loss (OCINEB dimer refinement)</span></div>
+<div class="line"><span class="lineno">  484</span>    <span class="keywordflow">if</span> (alignment &lt; <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.neb_options().climbing_image.ocineb.angle_tol &amp;&amp;</div>
+<div class="line"><span class="lineno">  485</span>        <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.neb_options().climbing_image.ocineb.use_mmf) {</div>
+<div class="line"><span class="lineno">  486</span>      QUILL_LOG_WARNING(</div>
+<div class="line"><span class="lineno">  487</span>          <a class="code hl_variable" href="#abbd2fad6f3a6649d050b457fa7425df2">log</a>, <span class="stringliteral">&quot;Terminating dimer due to lost mode (align {:.3f}).&quot;</span>, alignment);</div>
+<div class="line"><span class="lineno">  488</span>      <a class="code hl_variable" href="#a78c0c79be9325b53a89a041a2ed448b9">rotationDidConverge</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  489</span> </div>
+<div class="line"><span class="lineno">  490</span>      <span class="keywordflow">if</span> (bestNegativeCurvature &lt; 0.0) {</div>
+<div class="line"><span class="lineno">  491</span>        <span class="comment">// Restore the best negative curvature state</span></div>
+<div class="line"><span class="lineno">  492</span>        <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a> = bestNegativeCurvature;</div>
+<div class="line"><span class="lineno">  493</span>        <a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a> = bestTau;</div>
+<div class="line"><span class="lineno">  494</span>        <span class="comment">// The rotation never moves the centre; reassigning it only when it</span></div>
+<div class="line"><span class="lineno">  495</span>        <span class="comment">// differs keeps the evaluation the caller already paid for.</span></div>
+<div class="line"><span class="lineno">  496</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa39f4b23b2f5d826425cb5c5ca325375">x0</a>-&gt;getPositionsV() != bestX0Positions) {</div>
+<div class="line"><span class="lineno">  497</span>          <a class="code hl_variable" href="#aa39f4b23b2f5d826425cb5c5ca325375">x0</a>-&gt;setPositionsV(bestX0Positions);</div>
+<div class="line"><span class="lineno">  498</span>          *matter = *<a class="code hl_variable" href="#aa39f4b23b2f5d826425cb5c5ca325375">x0</a>;</div>
+<div class="line"><span class="lineno">  499</span>        }</div>
+<div class="line"><span class="lineno">  500</span>        <a class="code hl_variable" href="#a2e4cc97b1906cffbe9f9ab3e9d514715">x1</a>-&gt;setPositionsV(bestX0Positions + delta * bestTau);</div>
+<div class="line"><span class="lineno">  501</span>        QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">  502</span>            <a class="code hl_variable" href="#abbd2fad6f3a6649d050b457fa7425df2">log</a>, <span class="stringliteral">&quot;Restored best negative curvature state: C_tau={:.4f}&quot;</span>, <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a>);</div>
+<div class="line"><span class="lineno">  503</span>        <span class="keywordflow">throw</span> eonc::DimerModeRestoredException();</div>
+<div class="line"><span class="lineno">  504</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  505</span>        QUILL_LOG_WARNING(</div>
+<div class="line"><span class="lineno">  506</span>            <a class="code hl_variable" href="#abbd2fad6f3a6649d050b457fa7425df2">log</a>, <span class="stringliteral">&quot;Never found negative curvature. Final C_tau: {:.4f}&quot;</span>, <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a>);</div>
+<div class="line"><span class="lineno">  507</span>        <span class="keywordflow">throw</span> eonc::DimerModeLostException();</div>
+<div class="line"><span class="lineno">  508</span>      }</div>
+<div class="line"><span class="lineno">  509</span>    }</div>
+<div class="line"><span class="lineno">  510</span> </div>
+<div class="line"><span class="lineno">  511</span>  } <span class="keywordflow">while</span> (std::abs(phi_prime) &gt; std::abs(phi_tol) &amp;&amp;</div>
+<div class="line"><span class="lineno">  512</span>           std::abs(phi_min) &gt; std::abs(phi_tol) &amp;&amp;</div>
+<div class="line"><span class="lineno">  513</span>           <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> &lt; <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options().rotations_max);</div>
+<div class="line"><span class="lineno">  514</span>}</div>
 <div class="ttc" id="aclasseonc_1_1ImprovedDimer_html_a0eca4b3f4e032945f78ec63573153183"><div class="ttname"><a href="#a0eca4b3f4e032945f78ec63573153183">eonc::ImprovedDimer::foundNegativeCurvature</a></div><div class="ttdeci">bool foundNegativeCurvature</div><div class="ttdef"><b>Definition</b> <a href="ImprovedDimer_8h_source.html#l00061">ImprovedDimer.h:61</a></div></div>
 <div class="ttc" id="aclasseonc_1_1ImprovedDimer_html_a1416b81b1891137ff578fd1e1bc5c7a2"><div class="ttname"><a href="#a1416b81b1891137ff578fd1e1bc5c7a2">eonc::ImprovedDimer::F_R</a></div><div class="ttdeci">VectorXd F_R</div><div class="ttdef"><b>Definition</b> <a href="ImprovedDimer_8h_source.html#l00052">ImprovedDimer.h:52</a></div></div>
 <div class="ttc" id="aclasseonc_1_1ImprovedDimer_html_a2d7a08f0639d9475f60d1116fafbd222"><div class="ttname"><a href="#a2d7a08f0639d9475f60d1116fafbd222">eonc::ImprovedDimer::forward_</a></div><div class="ttdeci">std::unique_ptr&lt; Matter &gt; forward_</div><div class="ttdef"><b>Definition</b> <a href="ImprovedDimer_8h_source.html#l00033">ImprovedDimer.h:33</a></div></div>
@@ -1033,8 +1036,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1LowestEigenmode.html#a6fffec92e8e345dc32dd8a46e689b4ab">eonc::LowestEigenmode</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ImprovedDimer_8cpp_source.html#l00513">513</a> of file <a class="el" href="ImprovedDimer_8cpp_source.html">ImprovedDimer.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  513</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="ImprovedDimer_8cpp_source.html#l00516">516</a> of file <a class="el" href="ImprovedDimer_8cpp_source.html">ImprovedDimer.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  516</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a52614f21bec2f656fcec29cd29c649c1">C_tau</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1063,10 +1066,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1LowestEigenmode.html#af3f08bac4c99061f6fe82c75edd6417d">eonc::LowestEigenmode</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ImprovedDimer_8cpp_source.html#l00515">515</a> of file <a class="el" href="ImprovedDimer_8cpp_source.html">ImprovedDimer.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  515</span>                                         {</div>
-<div class="line"><span class="lineno">  516</span>  <span class="keywordflow">return</span> AtomMatrix::Map(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>.data(), <a class="code hl_variable" href="#aa39f4b23b2f5d826425cb5c5ca325375">x0</a>-&gt;numberOfAtoms(), 3);</div>
-<div class="line"><span class="lineno">  517</span>}</div>
+<p class="definition">Definition at line <a class="el" href="ImprovedDimer_8cpp_source.html#l00518">518</a> of file <a class="el" href="ImprovedDimer_8cpp_source.html">ImprovedDimer.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  518</span>                                         {</div>
+<div class="line"><span class="lineno">  519</span>  <span class="keywordflow">return</span> AtomMatrix::Map(<a class="code hl_variable" href="#a76565d9a52c1a61276e1000d73a4e298">tau</a>.data(), <a class="code hl_variable" href="#aa39f4b23b2f5d826425cb5c5ca325375">x0</a>-&gt;numberOfAtoms(), 3);</div>
+<div class="line"><span class="lineno">  520</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

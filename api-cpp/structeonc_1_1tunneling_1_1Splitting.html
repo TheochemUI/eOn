@@ -242,8 +242,10 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('structeonc_1_1
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a4aa5aa67c62dfa033702fab58583d647" id="r_a4aa5aa67c62dfa033702fab58583d647"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a4aa5aa67c62dfa033702fab58583d647">asymmetry</a> () const</td></tr>
+<tr class="memdesc:a4aa5aa67c62dfa033702fab58583d647"><td class="mdescLeft">&#160;</td><td class="mdescRight">The diagonal term of the two-level Hamiltonian, the difference of the two local ground states: delta + (hwProduct - hwReactant) / 2 (Anderson, Halperin and Varma 1972; Khomenko et al.  <br /></td></tr>
 <tr class="memitem:a80a130fb4bc3109a9096d5f68d841c4a" id="r_a80a130fb4bc3109a9096d5f68d841c4a"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a80a130fb4bc3109a9096d5f68d841c4a">tlsEnergy</a> () const</td></tr>
-<tr class="memdesc:a80a130fb4bc3109a9096d5f68d841c4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">sqrt(delta^2 + delta0^2), eV  <br /></td></tr>
+<tr class="memdesc:a80a130fb4bc3109a9096d5f68d841c4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">sqrt(<a class="el" href="#a4aa5aa67c62dfa033702fab58583d647" title="The diagonal term of the two-level Hamiltonian, the difference of the two local ground states: delta ...">asymmetry()</a>^2 + delta0^2), eV  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -266,8 +268,36 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00079">79</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00082">82</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a4aa5aa67c62dfa033702fab58583d647" name="a4aa5aa67c62dfa033702fab58583d647"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4aa5aa67c62dfa033702fab58583d647">&#9670;&#160;</a></span>asymmetry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::tunneling::Splitting::asymmetry </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The diagonal term of the two-level Hamiltonian, the difference of the two local ground states: delta + (hwProduct - hwReactant) / 2 (Anderson, Halperin and Varma 1972; Khomenko et al. </p>
+<p>2020, SI eq. S9). </p>
+
+<p class="definition">Definition at line <a class="el" href="Tunneling_8cpp_source.html#l00194">194</a> of file <a class="el" href="Tunneling_8cpp_source.html">Tunneling.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  194</span>                                  {</div>
+<div class="line"><span class="lineno">  195</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#aa0f2d22f3c123f7426756417fbc7c1f5">delta</a> + 0.5 * (<a class="code hl_variable" href="#a86fa07debfc789dbaacc0653acfd8cae">hwProduct</a> - <a class="code hl_variable" href="#a2d14237519ef9a43dc62118ee7c40774">hwReactant</a>);</div>
+<div class="line"><span class="lineno">  196</span>}</div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1Splitting_html_a2d14237519ef9a43dc62118ee7c40774"><div class="ttname"><a href="#a2d14237519ef9a43dc62118ee7c40774">eonc::tunneling::Splitting::hwReactant</a></div><div class="ttdeci">double hwReactant</div><div class="ttdoc">hbar omega of the reactant well, eV</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00085">Tunneling.h:85</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1Splitting_html_a86fa07debfc789dbaacc0653acfd8cae"><div class="ttname"><a href="#a86fa07debfc789dbaacc0653acfd8cae">eonc::tunneling::Splitting::hwProduct</a></div><div class="ttdeci">double hwProduct</div><div class="ttdoc">hbar omega of the product well, eV</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00086">Tunneling.h:86</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1Splitting_html_aa0f2d22f3c123f7426756417fbc7c1f5"><div class="ttname"><a href="#aa0f2d22f3c123f7426756417fbc7c1f5">eonc::tunneling::Splitting::delta</a></div><div class="ttdeci">double delta</div><div class="ttdoc">product minus reactant, eV</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00083">Tunneling.h:83</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="a80a130fb4bc3109a9096d5f68d841c4a" name="a80a130fb4bc3109a9096d5f68d841c4a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a80a130fb4bc3109a9096d5f68d841c4a">&#9670;&#160;</a></span>tlsEnergy()</h2>
 
@@ -283,12 +313,12 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>sqrt(delta^2 + delta0^2), eV </p>
+<p>sqrt(<a class="el" href="#a4aa5aa67c62dfa033702fab58583d647" title="The diagonal term of the two-level Hamiltonian, the difference of the two local ground states: delta ...">asymmetry()</a>^2 + delta0^2), eV </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8cpp_source.html#l00190">190</a> of file <a class="el" href="Tunneling_8cpp_source.html">Tunneling.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  190</span>{ <span class="keywordflow">return</span> std::hypot(<a class="code hl_variable" href="#aa0f2d22f3c123f7426756417fbc7c1f5">delta</a>, <a class="code hl_variable" href="#a3977ae772827c9642cb8e746a2773e68">delta0</a>); }</div>
-<div class="ttc" id="astructeonc_1_1tunneling_1_1Splitting_html_a3977ae772827c9642cb8e746a2773e68"><div class="ttname"><a href="#a3977ae772827c9642cb8e746a2773e68">eonc::tunneling::Splitting::delta0</a></div><div class="ttdeci">double delta0</div><div class="ttdoc">tunnelling splitting, eV</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00086">Tunneling.h:86</a></div></div>
-<div class="ttc" id="astructeonc_1_1tunneling_1_1Splitting_html_aa0f2d22f3c123f7426756417fbc7c1f5"><div class="ttname"><a href="#aa0f2d22f3c123f7426756417fbc7c1f5">eonc::tunneling::Splitting::delta</a></div><div class="ttdeci">double delta</div><div class="ttdoc">product minus reactant, eV</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00080">Tunneling.h:80</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8cpp_source.html#l00198">198</a> of file <a class="el" href="Tunneling_8cpp_source.html">Tunneling.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  198</span>{ <span class="keywordflow">return</span> std::hypot(<a class="code hl_function" href="#a4aa5aa67c62dfa033702fab58583d647">asymmetry</a>(), <a class="code hl_variable" href="#a3977ae772827c9642cb8e746a2773e68">delta0</a>); }</div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1Splitting_html_a3977ae772827c9642cb8e746a2773e68"><div class="ttname"><a href="#a3977ae772827c9642cb8e746a2773e68">eonc::tunneling::Splitting::delta0</a></div><div class="ttdeci">double delta0</div><div class="ttdoc">tunnelling splitting, eV</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00089">Tunneling.h:89</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1Splitting_html_a4aa5aa67c62dfa033702fab58583d647"><div class="ttname"><a href="#a4aa5aa67c62dfa033702fab58583d647">eonc::tunneling::Splitting::asymmetry</a></div><div class="ttdeci">double asymmetry() const</div><div class="ttdoc">The diagonal term of the two-level Hamiltonian, the difference of the two local ground states: delta ...</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8cpp_source.html#l00194">Tunneling.cpp:194</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -307,7 +337,7 @@ Public Attributes</h2></td></tr>
 
 <p>the WKB exponent, dimensionless </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00085">85</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00088">88</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -325,7 +355,7 @@ Public Attributes</h2></td></tr>
 
 <p>path maximum above the reactant, eV </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00081">81</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00084">84</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -343,7 +373,7 @@ Public Attributes</h2></td></tr>
 
 <p>Both barriers stand above hbar omega; below that WKB is not the right tool and the number is reported but flagged. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00089">89</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00092">92</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -361,7 +391,7 @@ Public Attributes</h2></td></tr>
 
 <p>product minus reactant, eV </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00080">80</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00083">83</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -379,7 +409,7 @@ Public Attributes</h2></td></tr>
 
 <p>tunnelling splitting, eV </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00086">86</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00089">89</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -397,7 +427,7 @@ Public Attributes</h2></td></tr>
 
 <p>hbar omega of the product well, eV </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00083">83</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00086">86</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -415,7 +445,7 @@ Public Attributes</h2></td></tr>
 
 <p>hbar omega of the reactant well, eV </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00082">82</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00085">85</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -433,7 +463,7 @@ Public Attributes</h2></td></tr>
 
 <p>the level tunnelling happens at, eV </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00084">84</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00087">87</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>

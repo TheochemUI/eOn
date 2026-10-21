@@ -1,5 +1,7 @@
 var NAVTREEINDEX1 =
 {
+"InstantonJob_8cpp.html":[6,0,0,39],
+"InstantonJob_8cpp_source.html":[6,0,0,39],
 "InstantonJob_8h.html":[6,0,1,0,56],
 "InstantonJob_8h_source.html":[6,0,1,0,56],
 "JobRegistry_8cpp.html":[6,0,0,42],
@@ -247,7 +249,5 @@ var NAVTREEINDEX1 =
 "Potential_8cpp.html":[6,0,0,81],
 "Potential_8cpp_source.html":[6,0,0,81],
 "Potential_8h.html":[6,0,1,0,101],
-"Potential_8h_source.html":[6,0,1,0,101],
-"PrefactorJob_8cpp.html":[6,0,0,85],
-"PrefactorJob_8cpp_source.html":[6,0,0,85]
+"Potential_8h_source.html":[6,0,1,0,101]
 };

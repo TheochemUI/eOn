@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('structeonc_1_1
 Public Attributes</h2></td></tr>
 <tr class="memitem:a9f44f0990cb6d0ce7713ce5a3b47cf0c" id="r_a9f44f0990cb6d0ce7713ce5a3b47cf0c"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a9f44f0990cb6d0ce7713ce5a3b47cf0c">s</a> {0.0}</td></tr>
 <tr class="memitem:ae256a7dbdab000389899f6b2c8984537" id="r_ae256a7dbdab000389899f6b2c8984537"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ae256a7dbdab000389899f6b2c8984537">meanForce</a> {0.0}</td></tr>
-<tr class="memdesc:ae256a7dbdab000389899f6b2c8984537"><td class="mdescLeft">&#160;</td><td class="mdescRight">dF/ds = -&lt;n .  <br /></td></tr>
+<tr class="memdesc:ae256a7dbdab000389899f6b2c8984537"><td class="mdescLeft">&#160;</td><td class="mdescRight">dF/ds = -&lt;a . f_centroid&gt; / |a|^2, a = M^(1/2) n the plane's Cartesian normal, eV / (amu^0.5 Angstrom), and its block standard error.  <br /></td></tr>
 <tr class="memitem:a2a5f8189e61416168e03ea171e76c730" id="r_a2a5f8189e61416168e03ea171e76c730"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a2a5f8189e61416168e03ea171e76c730">meanForceError</a> {0.0}</td></tr>
 <tr class="memitem:a3e17f72475d4276013c75c2999591d6d" id="r_a3e17f72475d4276013c75c2999591d6d"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a3e17f72475d4276013c75c2999591d6d">freeEnergy</a> {0.0}</td></tr>
 <tr class="memdesc:a3e17f72475d4276013c75c2999591d6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">F(s) - F(s_0) by the trapezoid rule over the planes, eV, and its standard error from the mean-force errors.  <br /></td></tr>
@@ -271,8 +271,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00083">83</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   83</span>{0};</div>
+<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00086">86</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   86</span>{0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -290,7 +290,7 @@ Public Attributes</h2></td></tr>
 
 <p>Production average of the centroid, Cartesian. </p>
 
-<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00079">79</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00082">82</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
 
 </div>
 </div>
@@ -308,8 +308,8 @@ Public Attributes</h2></td></tr>
 
 <p>F(s) - F(s_0) by the trapezoid rule over the planes, eV, and its standard error from the mean-force errors. </p>
 
-<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00076">76</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   76</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00079">79</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   79</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -325,8 +325,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00077">77</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   77</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00080">80</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   80</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -342,11 +342,11 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>dF/ds = -&lt;n . </p>
-<p>M^(-1/2) f_centroid&gt;, eV / (amu^0.5 Angstrom), and its block standard error. </p>
+<p>dF/ds = -&lt;a . f_centroid&gt; / |a|^2, a = M^(1/2) n the plane's Cartesian normal, eV / (amu^0.5 Angstrom), and its block standard error. </p>
+<p>Any u with a . u = 1, M^(-1/2) n among them, has the same mean, since the force within the plane averages to zero; the normal component is the estimator. </p>
 
-<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00072">72</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   72</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00075">75</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   75</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -362,8 +362,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00073">73</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   73</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00076">76</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   76</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -398,7 +398,7 @@ Public Attributes</h2></td></tr>
 
 <p>Root-mean-square bead displacement from the centroid per Cartesian coordinate, Angstrom, averaged over the production run. </p>
 
-<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00082">82</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00085">85</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
 
 </div>
 </div>

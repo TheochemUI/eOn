@@ -256,7 +256,7 @@ Public Member Functions</h2></td></tr>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:a82ad771a92ed4c94453de52ee56a3c4f" id="r_a82ad771a92ed4c94453de52ee56a3c4f"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a82ad771a92ed4c94453de52ee56a3c4f">calculate</a> ()</td></tr>
 <tr class="memitem:aa78ba9a938197f423a21d01305e4782a" id="r_aa78ba9a938197f423a21d01305e4782a"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aa78ba9a938197f423a21d01305e4782a">finalizeHessian</a> (int size)</td></tr>
-<tr class="memitem:af03527e78ee4dd44ccde6aa3e88ccc41" id="r_af03527e78ee4dd44ccde6aa3e88ccc41"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#af03527e78ee4dd44ccde6aa3e88ccc41">calculateColored</a> (double cutoff, double dr, <a class="el" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dd">FdScheme</a> scheme)</td></tr>
+<tr class="memitem:ab298ad38cabf6c574ba9cc28d6bbd0f5" id="r_ab298ad38cabf6c574ba9cc28d6bbd0f5"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ab298ad38cabf6c574ba9cc28d6bbd0f5">calculateColored</a> (double range, double dr, <a class="el" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dd">FdScheme</a> scheme)</td></tr>
 <tr class="memitem:a5baae4eedafa38950b082e93da0a3b5a" id="r_a5baae4eedafa38950b082e93da0a3b5a"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a5baae4eedafa38950b082e93da0a3b5a">calculateSerial</a> (double dr, <a class="el" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dd">FdScheme</a> scheme)</td></tr>
 <tr class="memitem:a8ad1501c7d8b2b27f28d3e819f7875dd" id="r_a8ad1501c7d8b2b27f28d3e819f7875dd"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a8ad1501c7d8b2b27f28d3e819f7875dd">calculateBatched</a> (double dr, <a class="el" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dd">FdScheme</a> scheme)</td></tr>
 </table><table class="memberdecls">
@@ -356,77 +356,78 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Hessian_8cpp_source.html#l00333">333</a> of file <a class="el" href="Hessian_8cpp_source.html">Hessian.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  333</span>                        {</div>
-<div class="line"><span class="lineno">  334</span>  <span class="keywordtype">int</span> nAtoms = <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;numberOfAtoms();</div>
-<div class="line"><span class="lineno">  335</span> </div>
-<div class="line"><span class="lineno">  336</span>  <span class="keywordtype">int</span> size = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>.rows()) * 3;</div>
-<div class="line"><span class="lineno">  337</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] Hessian size: {}\n&quot;</span>, size);</div>
-<div class="line"><span class="lineno">  338</span>  <span class="keywordflow">if</span> (size == 0) {</div>
-<div class="line"><span class="lineno">  339</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  340</span>  }</div>
-<div class="line"><span class="lineno">  341</span> </div>
-<div class="line"><span class="lineno">  342</span>  <span class="comment">// Mobile-atom polarity: indices in `atoms` are FD-displaced DOF owners.</span></div>
-<div class="line"><span class="lineno">  343</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> a = 0; a &lt; <a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>.rows(); ++a) {</div>
-<div class="line"><span class="lineno">  344</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> idx = <a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(a);</div>
-<div class="line"><span class="lineno">  345</span>    <span class="keywordflow">if</span> (idx &lt; 0 || idx &gt;= nAtoms) {</div>
-<div class="line"><span class="lineno">  346</span>      QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
-<div class="line"><span class="lineno">  347</span>                      <span class="stringliteral">&quot;[Hessian] atom index {} out of range [0, {}) at list &quot;</span></div>
-<div class="line"><span class="lineno">  348</span>                      <span class="stringliteral">&quot;entry {}; aborting FD Hessian&quot;</span>,</div>
-<div class="line"><span class="lineno">  349</span>                      idx, nAtoms, a);</div>
-<div class="line"><span class="lineno">  350</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  351</span>    }</div>
-<div class="line"><span class="lineno">  352</span>  }</div>
-<div class="line"><span class="lineno">  353</span> </div>
-<div class="line"><span class="lineno">  354</span>  <span class="keywordtype">double</span> dr = <a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.main_options().finiteDifference;</div>
-<div class="line"><span class="lineno">  355</span>  <span class="keywordflow">if</span> (!(dr &gt; 0.0) || !std::isfinite(dr)) {</div>
-<div class="line"><span class="lineno">  356</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] invalid finiteDifference dr={}\n&quot;</span>, dr);</div>
-<div class="line"><span class="lineno">  357</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  358</span>  }</div>
-<div class="line"><span class="lineno">  359</span> </div>
-<div class="line"><span class="lineno">  360</span>  <span class="keyword">const</span> <a class="code hl_enumeration" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dd">FdScheme</a> scheme = <a class="code hl_function" href="namespaceeonc.html#a54c78dc90bd7020c23096bbb8744789f">parseFdScheme</a>(<a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.hessian_options().fd_scheme);</div>
-<div class="line"><span class="lineno">  361</span>  <span class="keyword">const</span> std::string &amp;ckptPath = <a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.hessian_options().checkpoint_path;</div>
-<div class="line"><span class="lineno">  362</span> </div>
-<div class="line"><span class="lineno">  363</span>  <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>.resize(size, size);</div>
-<div class="line"><span class="lineno">  364</span>  <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>.setZero();</div>
-<div class="line"><span class="lineno">  365</span> </div>
-<div class="line"><span class="lineno">  366</span>  <span class="comment">// Net-force removal adds the same shift to every atom, so columns are</span></div>
-<div class="line"><span class="lineno">  367</span>  <span class="comment">// no longer confined to the cutoff neighborhood. A column checkpoint is</span></div>
-<div class="line"><span class="lineno">  368</span>  <span class="comment">// also stored one coordinate at a time.</span></div>
-<div class="line"><span class="lineno">  369</span>  <span class="keywordtype">bool</span> anyFixed = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  370</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; nAtoms; ++i) {</div>
-<div class="line"><span class="lineno">  371</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getFixed(i)) {</div>
-<div class="line"><span class="lineno">  372</span>      anyFixed = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  373</span>      <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  374</span>    }</div>
-<div class="line"><span class="lineno">  375</span>  }</div>
-<div class="line"><span class="lineno">  376</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> netCoupled =</div>
-<div class="line"><span class="lineno">  377</span>      <a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.main_options().removeNetForce &amp;&amp; nAtoms &gt; 1 &amp;&amp; !anyFixed;</div>
-<div class="line"><span class="lineno">  378</span>  <span class="keywordtype">double</span> cutoff = 0.0;</div>
-<div class="line"><span class="lineno">  379</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getPotential()) {</div>
-<div class="line"><span class="lineno">  380</span>    cutoff = <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getPotential()-&gt;finiteCutoff();</div>
-<div class="line"><span class="lineno">  381</span>  }</div>
-<div class="line"><span class="lineno">  382</span>  <span class="keywordflow">if</span> (!netCoupled &amp;&amp; ckptPath.empty() &amp;&amp; cutoff &gt; 0.0 &amp;&amp;</div>
-<div class="line"><span class="lineno">  383</span>      std::isfinite(cutoff)) {</div>
-<div class="line"><span class="lineno">  384</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="#af03527e78ee4dd44ccde6aa3e88ccc41">calculateColored</a>(cutoff, dr, scheme)) {</div>
-<div class="line"><span class="lineno">  385</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  386</span>    }</div>
-<div class="line"><span class="lineno">  387</span>    <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>.setZero();</div>
-<div class="line"><span class="lineno">  388</span>  }</div>
-<div class="line"><span class="lineno">  389</span>  <span class="comment">// A potential that evaluates batches (calculator groups, GPU models)</span></div>
-<div class="line"><span class="lineno">  390</span>  <span class="comment">// takes the displaced structures together; the column checkpoint stays</span></div>
-<div class="line"><span class="lineno">  391</span>  <span class="comment">// on the one-column-at-a-time path.</span></div>
-<div class="line"><span class="lineno">  392</span>  <span class="keywordflow">if</span> (ckptPath.empty() &amp;&amp; <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getPotential() &amp;&amp;</div>
-<div class="line"><span class="lineno">  393</span>      <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getPotential()-&gt;supportsBatchEvaluation() &amp;&amp; size &gt; 1) {</div>
-<div class="line"><span class="lineno">  394</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#a8ad1501c7d8b2b27f28d3e819f7875dd">calculateBatched</a>(dr, scheme);</div>
-<div class="line"><span class="lineno">  395</span>  }</div>
-<div class="line"><span class="lineno">  396</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#a5baae4eedafa38950b082e93da0a3b5a">calculateSerial</a>(dr, scheme);</div>
-<div class="line"><span class="lineno">  397</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Hessian_8cpp_source.html#l00341">341</a> of file <a class="el" href="Hessian_8cpp_source.html">Hessian.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  341</span>                        {</div>
+<div class="line"><span class="lineno">  342</span>  <span class="keywordtype">int</span> nAtoms = <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;numberOfAtoms();</div>
+<div class="line"><span class="lineno">  343</span> </div>
+<div class="line"><span class="lineno">  344</span>  <span class="keywordtype">int</span> size = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>.rows()) * 3;</div>
+<div class="line"><span class="lineno">  345</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] Hessian size: {}\n&quot;</span>, size);</div>
+<div class="line"><span class="lineno">  346</span>  <span class="keywordflow">if</span> (size == 0) {</div>
+<div class="line"><span class="lineno">  347</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  348</span>  }</div>
+<div class="line"><span class="lineno">  349</span> </div>
+<div class="line"><span class="lineno">  350</span>  <span class="comment">// Mobile-atom polarity: indices in `atoms` are FD-displaced DOF owners.</span></div>
+<div class="line"><span class="lineno">  351</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> a = 0; a &lt; <a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>.rows(); ++a) {</div>
+<div class="line"><span class="lineno">  352</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> idx = <a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(a);</div>
+<div class="line"><span class="lineno">  353</span>    <span class="keywordflow">if</span> (idx &lt; 0 || idx &gt;= nAtoms) {</div>
+<div class="line"><span class="lineno">  354</span>      QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
+<div class="line"><span class="lineno">  355</span>                      <span class="stringliteral">&quot;[Hessian] atom index {} out of range [0, {}) at list &quot;</span></div>
+<div class="line"><span class="lineno">  356</span>                      <span class="stringliteral">&quot;entry {}; aborting FD Hessian&quot;</span>,</div>
+<div class="line"><span class="lineno">  357</span>                      idx, nAtoms, a);</div>
+<div class="line"><span class="lineno">  358</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  359</span>    }</div>
+<div class="line"><span class="lineno">  360</span>  }</div>
+<div class="line"><span class="lineno">  361</span> </div>
+<div class="line"><span class="lineno">  362</span>  <span class="keywordtype">double</span> dr = <a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.main_options().finiteDifference;</div>
+<div class="line"><span class="lineno">  363</span>  <span class="keywordflow">if</span> (!(dr &gt; 0.0) || !std::isfinite(dr)) {</div>
+<div class="line"><span class="lineno">  364</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] invalid finiteDifference dr={}\n&quot;</span>, dr);</div>
+<div class="line"><span class="lineno">  365</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  366</span>  }</div>
+<div class="line"><span class="lineno">  367</span> </div>
+<div class="line"><span class="lineno">  368</span>  <span class="keyword">const</span> <a class="code hl_enumeration" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dd">FdScheme</a> scheme = <a class="code hl_function" href="namespaceeonc.html#a54c78dc90bd7020c23096bbb8744789f">parseFdScheme</a>(<a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.hessian_options().fd_scheme);</div>
+<div class="line"><span class="lineno">  369</span>  <span class="keyword">const</span> std::string &amp;ckptPath = <a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.hessian_options().checkpoint_path;</div>
+<div class="line"><span class="lineno">  370</span> </div>
+<div class="line"><span class="lineno">  371</span>  <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>.resize(size, size);</div>
+<div class="line"><span class="lineno">  372</span>  <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>.setZero();</div>
+<div class="line"><span class="lineno">  373</span> </div>
+<div class="line"><span class="lineno">  374</span>  <span class="comment">// Net-force removal adds the same shift to every atom, so columns are</span></div>
+<div class="line"><span class="lineno">  375</span>  <span class="comment">// no longer confined to the cutoff neighborhood. A column checkpoint is</span></div>
+<div class="line"><span class="lineno">  376</span>  <span class="comment">// also stored one coordinate at a time.</span></div>
+<div class="line"><span class="lineno">  377</span>  <span class="keywordtype">bool</span> anyFixed = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  378</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; nAtoms; ++i) {</div>
+<div class="line"><span class="lineno">  379</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getFixed(i)) {</div>
+<div class="line"><span class="lineno">  380</span>      anyFixed = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  381</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  382</span>    }</div>
+<div class="line"><span class="lineno">  383</span>  }</div>
+<div class="line"><span class="lineno">  384</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> netCoupled =</div>
+<div class="line"><span class="lineno">  385</span>      <a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.main_options().removeNetForce &amp;&amp; nAtoms &gt; 1 &amp;&amp; !anyFixed;</div>
+<div class="line"><span class="lineno">  386</span>  <span class="comment">// hessianRange is the distance past which every block is exactly</span></div>
+<div class="line"><span class="lineno">  387</span>  <span class="comment">// zero. An interaction cutoff is not that distance.</span></div>
+<div class="line"><span class="lineno">  388</span>  <span class="keywordtype">double</span> range = 0.0;</div>
+<div class="line"><span class="lineno">  389</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getPotential()) {</div>
+<div class="line"><span class="lineno">  390</span>    range = <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getPotential()-&gt;hessianRange();</div>
+<div class="line"><span class="lineno">  391</span>  }</div>
+<div class="line"><span class="lineno">  392</span>  <span class="keywordflow">if</span> (!netCoupled &amp;&amp; ckptPath.empty() &amp;&amp; range &gt; 0.0 &amp;&amp; std::isfinite(range)) {</div>
+<div class="line"><span class="lineno">  393</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="#ab298ad38cabf6c574ba9cc28d6bbd0f5">calculateColored</a>(range, dr, scheme)) {</div>
+<div class="line"><span class="lineno">  394</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  395</span>    }</div>
+<div class="line"><span class="lineno">  396</span>    <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>.setZero();</div>
+<div class="line"><span class="lineno">  397</span>  }</div>
+<div class="line"><span class="lineno">  398</span>  <span class="comment">// A potential that evaluates batches (calculator groups, GPU models)</span></div>
+<div class="line"><span class="lineno">  399</span>  <span class="comment">// takes the displaced structures together; the column checkpoint stays</span></div>
+<div class="line"><span class="lineno">  400</span>  <span class="comment">// on the one-column-at-a-time path.</span></div>
+<div class="line"><span class="lineno">  401</span>  <span class="keywordflow">if</span> (ckptPath.empty() &amp;&amp; <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getPotential() &amp;&amp;</div>
+<div class="line"><span class="lineno">  402</span>      <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getPotential()-&gt;supportsBatchEvaluation() &amp;&amp; size &gt; 1) {</div>
+<div class="line"><span class="lineno">  403</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#a8ad1501c7d8b2b27f28d3e819f7875dd">calculateBatched</a>(dr, scheme);</div>
+<div class="line"><span class="lineno">  404</span>  }</div>
+<div class="line"><span class="lineno">  405</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#a5baae4eedafa38950b082e93da0a3b5a">calculateSerial</a>(dr, scheme);</div>
+<div class="line"><span class="lineno">  406</span>}</div>
 <div class="ttc" id="aclasseonc_1_1Hessian_html_a1392881d52a5f2beb5b62612245e5205"><div class="ttname"><a href="#a1392881d52a5f2beb5b62612245e5205">eonc::Hessian::log</a></div><div class="ttdeci">eonc::log::Scoped log</div><div class="ttdef"><b>Definition</b> <a href="Hessian_8h_source.html#l00078">Hessian.h:78</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Hessian_html_a5baae4eedafa38950b082e93da0a3b5a"><div class="ttname"><a href="#a5baae4eedafa38950b082e93da0a3b5a">eonc::Hessian::calculateSerial</a></div><div class="ttdeci">bool calculateSerial(double dr, FdScheme scheme)</div><div class="ttdef"><b>Definition</b> <a href="Hessian_8cpp_source.html#l00607">Hessian.cpp:607</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Hessian_html_a5baae4eedafa38950b082e93da0a3b5a"><div class="ttname"><a href="#a5baae4eedafa38950b082e93da0a3b5a">eonc::Hessian::calculateSerial</a></div><div class="ttdeci">bool calculateSerial(double dr, FdScheme scheme)</div><div class="ttdef"><b>Definition</b> <a href="Hessian_8cpp_source.html#l00622">Hessian.cpp:622</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Hessian_html_a80fba198705ca007fdedc25eedf15d1b"><div class="ttname"><a href="#a80fba198705ca007fdedc25eedf15d1b">eonc::Hessian::atoms</a></div><div class="ttdeci">VectorXi atoms</div><div class="ttdef"><b>Definition</b> <a href="Hessian_8h_source.html#l00072">Hessian.h:72</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Hessian_html_a8ad1501c7d8b2b27f28d3e819f7875dd"><div class="ttname"><a href="#a8ad1501c7d8b2b27f28d3e819f7875dd">eonc::Hessian::calculateBatched</a></div><div class="ttdeci">bool calculateBatched(double dr, FdScheme scheme)</div><div class="ttdef"><b>Definition</b> <a href="Hessian_8cpp_source.html#l00399">Hessian.cpp:399</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Hessian_html_af03527e78ee4dd44ccde6aa3e88ccc41"><div class="ttname"><a href="#af03527e78ee4dd44ccde6aa3e88ccc41">eonc::Hessian::calculateColored</a></div><div class="ttdeci">bool calculateColored(double cutoff, double dr, FdScheme scheme)</div><div class="ttdef"><b>Definition</b> <a href="Hessian_8cpp_source.html#l00492">Hessian.cpp:492</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Hessian_html_a8ad1501c7d8b2b27f28d3e819f7875dd"><div class="ttname"><a href="#a8ad1501c7d8b2b27f28d3e819f7875dd">eonc::Hessian::calculateBatched</a></div><div class="ttdeci">bool calculateBatched(double dr, FdScheme scheme)</div><div class="ttdef"><b>Definition</b> <a href="Hessian_8cpp_source.html#l00408">Hessian.cpp:408</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Hessian_html_ab298ad38cabf6c574ba9cc28d6bbd0f5"><div class="ttname"><a href="#ab298ad38cabf6c574ba9cc28d6bbd0f5">eonc::Hessian::calculateColored</a></div><div class="ttdeci">bool calculateColored(double range, double dr, FdScheme scheme)</div><div class="ttdef"><b>Definition</b> <a href="Hessian_8cpp_source.html#l00501">Hessian.cpp:501</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a1473c0575632e4e2549120f33b8525dd"><div class="ttname"><a href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dd">eonc::FdScheme</a></div><div class="ttdeci">FdScheme</div><div class="ttdoc">Real finite-difference scheme for the assembled Hessian and for Lanczos/Davidson Hessian-vector produ...</div><div class="ttdef"><b>Definition</b> <a href="FiniteDifference_8h_source.html#l00025">FiniteDifference.h:25</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a54c78dc90bd7020c23096bbb8744789f"><div class="ttname"><a href="namespaceeonc.html#a54c78dc90bd7020c23096bbb8744789f">eonc::parseFdScheme</a></div><div class="ttdeci">FdScheme parseFdScheme(std::string_view scheme)</div><div class="ttdef"><b>Definition</b> <a href="FiniteDifference_8h_source.html#l00027">FiniteDifference.h:27</a></div></div>
 </div><!-- fragment -->
@@ -459,105 +460,105 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Hessian_8cpp_source.html#l00399">399</a> of file <a class="el" href="Hessian_8cpp_source.html">Hessian.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  399</span>                                                         {</div>
-<div class="line"><span class="lineno">  400</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> size = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>.rows()) * 3;</div>
-<div class="line"><span class="lineno">  401</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getPositions();</div>
-<div class="line"><span class="lineno">  402</span>  <span class="keyword">auto</span> pot = <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getPotential();</div>
-<div class="line"><span class="lineno">  403</span> </div>
-<div class="line"><span class="lineno">  404</span>  Matter base(*<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>);</div>
-<div class="line"><span class="lineno">  405</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> force0 = base.getForces();</div>
-<div class="line"><span class="lineno">  406</span>  <span class="keywordflow">if</span> (!force0.allFinite()) {</div>
-<div class="line"><span class="lineno">  407</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] non-finite forces at undisplaced geometry; &quot;</span></div>
-<div class="line"><span class="lineno">  408</span>                         <span class="stringliteral">&quot;aborting FD Hessian&quot;</span>);</div>
-<div class="line"><span class="lineno">  409</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  410</span>  }</div>
-<div class="line"><span class="lineno">  411</span> </div>
-<div class="line"><span class="lineno">  412</span>  <span class="comment">// Stencil points per column, in the order fdForceDerivative takes them.</span></div>
-<div class="line"><span class="lineno">  413</span>  std::vector&lt;double&gt; steps{1.0};</div>
-<div class="line"><span class="lineno">  414</span>  <span class="keywordflow">if</span> (scheme != <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda81797e9c6fc44586202026bb6aaefe8c">FdScheme::OneSided</a>) {</div>
-<div class="line"><span class="lineno">  415</span>    steps.push_back(-1.0);</div>
-<div class="line"><span class="lineno">  416</span>  }</div>
-<div class="line"><span class="lineno">  417</span>  <span class="keywordflow">if</span> (scheme == <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda6e599f7a2a9186d391be4537f105be98">FdScheme::Fourth</a>) {</div>
-<div class="line"><span class="lineno">  418</span>    steps.push_back(2.0);</div>
-<div class="line"><span class="lineno">  419</span>    steps.push_back(-2.0);</div>
-<div class="line"><span class="lineno">  420</span>  }</div>
-<div class="line"><span class="lineno">  421</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> perColumn = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(steps.size());</div>
-<div class="line"><span class="lineno">  422</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> nAtoms = <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;numberOfAtoms();</div>
-<div class="line"><span class="lineno">  423</span>  <span class="keyword">const</span> VectorXi nrs = <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getAtomicNrs();</div>
-<div class="line"><span class="lineno">  424</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> box =</div>
-<div class="line"><span class="lineno">  425</span>      <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getPeriodic() ? <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getCell() : Matrix3d::Zero().eval();</div>
-<div class="line"><span class="lineno">  426</span> </div>
-<div class="line"><span class="lineno">  427</span>  <span class="comment">// Columns in chunks, so memory stays bounded for large mobile sets.</span></div>
-<div class="line"><span class="lineno">  428</span>  <span class="keyword">constexpr</span> <span class="keywordtype">int</span> kChunkColumns = 32;</div>
-<div class="line"><span class="lineno">  429</span>  std::vector&lt;Matter&gt; displaced;</div>
-<div class="line"><span class="lineno">  430</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c0 = 0; c0 &lt; size; c0 += kChunkColumns) {</div>
-<div class="line"><span class="lineno">  431</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> c1 = std::min(size, c0 + kChunkColumns);</div>
-<div class="line"><span class="lineno">  432</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(c1 - c0) * perColumn;</div>
-<div class="line"><span class="lineno">  433</span>    displaced.assign(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(n), base);</div>
-<div class="line"><span class="lineno">  434</span>    std::vector&lt;const double *&gt; posPtr, boxPtr;</div>
-<div class="line"><span class="lineno">  435</span>    std::vector&lt;const int *&gt; nrsPtr;</div>
-<div class="line"><span class="lineno">  436</span>    std::vector&lt;double *&gt; frcPtr;</div>
-<div class="line"><span class="lineno">  437</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = c0; i &lt; c1; ++i) {</div>
-<div class="line"><span class="lineno">  438</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; perColumn; ++k) {</div>
-<div class="line"><span class="lineno">  439</span>        Matter &amp;m = displaced[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>((i - c0) * perColumn + k)];</div>
-<div class="line"><span class="lineno">  440</span>        <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> p = pos;</div>
-<div class="line"><span class="lineno">  441</span>        p(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(i / 3), i % 3) += steps[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)] * dr;</div>
-<div class="line"><span class="lineno">  442</span>        m.<a class="code hl_function" href="classMatter.html#a271f1a697333162ba3705bff86dfef06">setPositions</a>(p);</div>
-<div class="line"><span class="lineno">  443</span>      }</div>
-<div class="line"><span class="lineno">  444</span>    }</div>
-<div class="line"><span class="lineno">  445</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;m : displaced) {</div>
-<div class="line"><span class="lineno">  446</span>      posPtr.push_back(m.<a class="code hl_function" href="classMatter.html#a2472b3c954d101c0810da69ed442b244">getPositions</a>().data());</div>
-<div class="line"><span class="lineno">  447</span>      nrsPtr.push_back(nrs.data());</div>
-<div class="line"><span class="lineno">  448</span>      frcPtr.push_back(m.<a class="code hl_function" href="classMatter.html#a9d7154880723d96ff9565411cb09b6df">forcesData</a>());</div>
-<div class="line"><span class="lineno">  449</span>      boxPtr.push_back(box.data());</div>
-<div class="line"><span class="lineno">  450</span>    }</div>
-<div class="line"><span class="lineno">  451</span>    std::vector&lt;double&gt; energies(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(n)),</div>
-<div class="line"><span class="lineno">  452</span>        variances(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(n));</div>
-<div class="line"><span class="lineno">  453</span>    <span class="keyword">const</span> std::vector&lt;long&gt; owners(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(n),</div>
-<div class="line"><span class="lineno">  454</span>                                   <a class="code hl_variable" href="namespaceeonc_1_1potential__owner.html#afc6a7c02bcd9348bd5eb4aca7e95dcd0">potential_owner::derivative</a>);</div>
-<div class="line"><span class="lineno">  455</span>    pot-&gt;forceBatchOwned(n, nAtoms, posPtr.data(), nrsPtr.data(), frcPtr.data(),</div>
-<div class="line"><span class="lineno">  456</span>                         energies.data(), variances.data(), boxPtr.data(),</div>
-<div class="line"><span class="lineno">  457</span>                         owners.data());</div>
-<div class="line"><span class="lineno">  458</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; n; ++j) {</div>
-<div class="line"><span class="lineno">  459</span>      displaced[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)].setComputedPotential(</div>
-<div class="line"><span class="lineno">  460</span>          energies[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)], variances[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)]);</div>
-<div class="line"><span class="lineno">  461</span>    }</div>
-<div class="line"><span class="lineno">  462</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = c0; i &lt; c1; ++i) {</div>
-<div class="line"><span class="lineno">  463</span>      <span class="keyword">auto</span> forces = [&amp;](<span class="keywordtype">int</span> k) -&gt; <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp; {</div>
-<div class="line"><span class="lineno">  464</span>        <span class="keywordflow">return</span> displaced[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>((i - c0) * perColumn + k)]</div>
-<div class="line"><span class="lineno">  465</span>            .getForces();</div>
-<div class="line"><span class="lineno">  466</span>      };</div>
-<div class="line"><span class="lineno">  467</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;fPlus = forces(0);</div>
-<div class="line"><span class="lineno">  468</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;fMinus = perColumn &gt; 1 ? forces(1) : force0;</div>
-<div class="line"><span class="lineno">  469</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;fPlus2 = perColumn &gt; 2 ? forces(2) : force0;</div>
-<div class="line"><span class="lineno">  470</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;fMinus2 = perColumn &gt; 3 ? forces(3) : force0;</div>
-<div class="line"><span class="lineno">  471</span>      <span class="keywordflow">if</span> (!fPlus.allFinite() || !fMinus.allFinite() || !fPlus2.allFinite() ||</div>
-<div class="line"><span class="lineno">  472</span>          !fMinus2.allFinite()) {</div>
-<div class="line"><span class="lineno">  473</span>        QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
-<div class="line"><span class="lineno">  474</span>                        <span class="stringliteral">&quot;[Hessian] non-finite forces for FD column {}; &quot;</span></div>
-<div class="line"><span class="lineno">  475</span>                        <span class="stringliteral">&quot;aborting FD Hessian&quot;</span>,</div>
-<div class="line"><span class="lineno">  476</span>                        i);</div>
-<div class="line"><span class="lineno">  477</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  478</span>      }</div>
-<div class="line"><span class="lineno">  479</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> slope =</div>
-<div class="line"><span class="lineno">  480</span>          <a class="code hl_function" href="namespaceeonc.html#a158b4320d869da987eae2018295a92fd">fdForceDerivative</a>(scheme, dr, force0, fPlus, fMinus, fPlus2, fMinus2);</div>
-<div class="line"><span class="lineno">  481</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; size; j++) {</div>
-<div class="line"><span class="lineno">  482</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> effMass = std::sqrt(<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getMass(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(j / 3)) *</div>
-<div class="line"><span class="lineno">  483</span>                                         <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getMass(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(i / 3)));</div>
-<div class="line"><span class="lineno">  484</span>        <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>(i, j) =</div>
-<div class="line"><span class="lineno">  485</span>            <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(-slope(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(j / 3), j % 3), effMass, 0.0);</div>
-<div class="line"><span class="lineno">  486</span>      }</div>
-<div class="line"><span class="lineno">  487</span>    }</div>
-<div class="line"><span class="lineno">  488</span>  }</div>
-<div class="line"><span class="lineno">  489</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#aa78ba9a938197f423a21d01305e4782a">finalizeHessian</a>(size);</div>
-<div class="line"><span class="lineno">  490</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Hessian_8cpp_source.html#l00408">408</a> of file <a class="el" href="Hessian_8cpp_source.html">Hessian.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  408</span>                                                         {</div>
+<div class="line"><span class="lineno">  409</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> size = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>.rows()) * 3;</div>
+<div class="line"><span class="lineno">  410</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  411</span>  <span class="keyword">auto</span> pot = <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getPotential();</div>
+<div class="line"><span class="lineno">  412</span> </div>
+<div class="line"><span class="lineno">  413</span>  Matter base(*<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>);</div>
+<div class="line"><span class="lineno">  414</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> force0 = base.getForces();</div>
+<div class="line"><span class="lineno">  415</span>  <span class="keywordflow">if</span> (!force0.allFinite()) {</div>
+<div class="line"><span class="lineno">  416</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] non-finite forces at undisplaced geometry; &quot;</span></div>
+<div class="line"><span class="lineno">  417</span>                         <span class="stringliteral">&quot;aborting FD Hessian&quot;</span>);</div>
+<div class="line"><span class="lineno">  418</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  419</span>  }</div>
+<div class="line"><span class="lineno">  420</span> </div>
+<div class="line"><span class="lineno">  421</span>  <span class="comment">// Stencil points per column, in the order fdForceDerivative takes them.</span></div>
+<div class="line"><span class="lineno">  422</span>  std::vector&lt;double&gt; steps{1.0};</div>
+<div class="line"><span class="lineno">  423</span>  <span class="keywordflow">if</span> (scheme != <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda81797e9c6fc44586202026bb6aaefe8c">FdScheme::OneSided</a>) {</div>
+<div class="line"><span class="lineno">  424</span>    steps.push_back(-1.0);</div>
+<div class="line"><span class="lineno">  425</span>  }</div>
+<div class="line"><span class="lineno">  426</span>  <span class="keywordflow">if</span> (scheme == <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda6e599f7a2a9186d391be4537f105be98">FdScheme::Fourth</a>) {</div>
+<div class="line"><span class="lineno">  427</span>    steps.push_back(2.0);</div>
+<div class="line"><span class="lineno">  428</span>    steps.push_back(-2.0);</div>
+<div class="line"><span class="lineno">  429</span>  }</div>
+<div class="line"><span class="lineno">  430</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> perColumn = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(steps.size());</div>
+<div class="line"><span class="lineno">  431</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> nAtoms = <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;numberOfAtoms();</div>
+<div class="line"><span class="lineno">  432</span>  <span class="keyword">const</span> VectorXi nrs = <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getAtomicNrs();</div>
+<div class="line"><span class="lineno">  433</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> box =</div>
+<div class="line"><span class="lineno">  434</span>      <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getPeriodic() ? <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getCell() : Matrix3d::Zero().eval();</div>
+<div class="line"><span class="lineno">  435</span> </div>
+<div class="line"><span class="lineno">  436</span>  <span class="comment">// Columns in chunks, so memory stays bounded for large mobile sets.</span></div>
+<div class="line"><span class="lineno">  437</span>  <span class="keyword">constexpr</span> <span class="keywordtype">int</span> kChunkColumns = 32;</div>
+<div class="line"><span class="lineno">  438</span>  std::vector&lt;Matter&gt; displaced;</div>
+<div class="line"><span class="lineno">  439</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c0 = 0; c0 &lt; size; c0 += kChunkColumns) {</div>
+<div class="line"><span class="lineno">  440</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> c1 = std::min(size, c0 + kChunkColumns);</div>
+<div class="line"><span class="lineno">  441</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(c1 - c0) * perColumn;</div>
+<div class="line"><span class="lineno">  442</span>    displaced.assign(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(n), base);</div>
+<div class="line"><span class="lineno">  443</span>    std::vector&lt;const double *&gt; posPtr, boxPtr;</div>
+<div class="line"><span class="lineno">  444</span>    std::vector&lt;const int *&gt; nrsPtr;</div>
+<div class="line"><span class="lineno">  445</span>    std::vector&lt;double *&gt; frcPtr;</div>
+<div class="line"><span class="lineno">  446</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = c0; i &lt; c1; ++i) {</div>
+<div class="line"><span class="lineno">  447</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; perColumn; ++k) {</div>
+<div class="line"><span class="lineno">  448</span>        Matter &amp;m = displaced[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>((i - c0) * perColumn + k)];</div>
+<div class="line"><span class="lineno">  449</span>        <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> p = pos;</div>
+<div class="line"><span class="lineno">  450</span>        p(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(i / 3), i % 3) += steps[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)] * dr;</div>
+<div class="line"><span class="lineno">  451</span>        m.<a class="code hl_function" href="classMatter.html#a271f1a697333162ba3705bff86dfef06">setPositions</a>(p);</div>
+<div class="line"><span class="lineno">  452</span>      }</div>
+<div class="line"><span class="lineno">  453</span>    }</div>
+<div class="line"><span class="lineno">  454</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;m : displaced) {</div>
+<div class="line"><span class="lineno">  455</span>      posPtr.push_back(m.<a class="code hl_function" href="classMatter.html#a2472b3c954d101c0810da69ed442b244">getPositions</a>().data());</div>
+<div class="line"><span class="lineno">  456</span>      nrsPtr.push_back(nrs.data());</div>
+<div class="line"><span class="lineno">  457</span>      frcPtr.push_back(m.<a class="code hl_function" href="classMatter.html#a9d7154880723d96ff9565411cb09b6df">forcesData</a>());</div>
+<div class="line"><span class="lineno">  458</span>      boxPtr.push_back(box.data());</div>
+<div class="line"><span class="lineno">  459</span>    }</div>
+<div class="line"><span class="lineno">  460</span>    std::vector&lt;double&gt; energies(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(n)),</div>
+<div class="line"><span class="lineno">  461</span>        variances(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(n));</div>
+<div class="line"><span class="lineno">  462</span>    <span class="keyword">const</span> std::vector&lt;long&gt; owners(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(n),</div>
+<div class="line"><span class="lineno">  463</span>                                   <a class="code hl_variable" href="namespaceeonc_1_1potential__owner.html#afc6a7c02bcd9348bd5eb4aca7e95dcd0">potential_owner::derivative</a>);</div>
+<div class="line"><span class="lineno">  464</span>    pot-&gt;forceBatchOwned(n, nAtoms, posPtr.data(), nrsPtr.data(), frcPtr.data(),</div>
+<div class="line"><span class="lineno">  465</span>                         energies.data(), variances.data(), boxPtr.data(),</div>
+<div class="line"><span class="lineno">  466</span>                         owners.data());</div>
+<div class="line"><span class="lineno">  467</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; n; ++j) {</div>
+<div class="line"><span class="lineno">  468</span>      displaced[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)].setComputedPotential(</div>
+<div class="line"><span class="lineno">  469</span>          energies[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)], variances[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)]);</div>
+<div class="line"><span class="lineno">  470</span>    }</div>
+<div class="line"><span class="lineno">  471</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = c0; i &lt; c1; ++i) {</div>
+<div class="line"><span class="lineno">  472</span>      <span class="keyword">auto</span> forces = [&amp;](<span class="keywordtype">int</span> k) -&gt; <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp; {</div>
+<div class="line"><span class="lineno">  473</span>        <span class="keywordflow">return</span> displaced[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>((i - c0) * perColumn + k)]</div>
+<div class="line"><span class="lineno">  474</span>            .getForces();</div>
+<div class="line"><span class="lineno">  475</span>      };</div>
+<div class="line"><span class="lineno">  476</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;fPlus = forces(0);</div>
+<div class="line"><span class="lineno">  477</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;fMinus = perColumn &gt; 1 ? forces(1) : force0;</div>
+<div class="line"><span class="lineno">  478</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;fPlus2 = perColumn &gt; 2 ? forces(2) : force0;</div>
+<div class="line"><span class="lineno">  479</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;fMinus2 = perColumn &gt; 3 ? forces(3) : force0;</div>
+<div class="line"><span class="lineno">  480</span>      <span class="keywordflow">if</span> (!fPlus.allFinite() || !fMinus.allFinite() || !fPlus2.allFinite() ||</div>
+<div class="line"><span class="lineno">  481</span>          !fMinus2.allFinite()) {</div>
+<div class="line"><span class="lineno">  482</span>        QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
+<div class="line"><span class="lineno">  483</span>                        <span class="stringliteral">&quot;[Hessian] non-finite forces for FD column {}; &quot;</span></div>
+<div class="line"><span class="lineno">  484</span>                        <span class="stringliteral">&quot;aborting FD Hessian&quot;</span>,</div>
+<div class="line"><span class="lineno">  485</span>                        i);</div>
+<div class="line"><span class="lineno">  486</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  487</span>      }</div>
+<div class="line"><span class="lineno">  488</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> slope =</div>
+<div class="line"><span class="lineno">  489</span>          <a class="code hl_function" href="namespaceeonc.html#a158b4320d869da987eae2018295a92fd">fdForceDerivative</a>(scheme, dr, force0, fPlus, fMinus, fPlus2, fMinus2);</div>
+<div class="line"><span class="lineno">  490</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; size; j++) {</div>
+<div class="line"><span class="lineno">  491</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> effMass = std::sqrt(<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getMass(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(j / 3)) *</div>
+<div class="line"><span class="lineno">  492</span>                                         <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getMass(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(i / 3)));</div>
+<div class="line"><span class="lineno">  493</span>        <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>(i, j) =</div>
+<div class="line"><span class="lineno">  494</span>            <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(-slope(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(j / 3), j % 3), effMass, 0.0);</div>
+<div class="line"><span class="lineno">  495</span>      }</div>
+<div class="line"><span class="lineno">  496</span>    }</div>
+<div class="line"><span class="lineno">  497</span>  }</div>
+<div class="line"><span class="lineno">  498</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#aa78ba9a938197f423a21d01305e4782a">finalizeHessian</a>(size);</div>
+<div class="line"><span class="lineno">  499</span>}</div>
 <div class="ttc" id="aEigen_8h_html_a5a21583e98df78e5b867b370291714d0"><div class="ttname"><a href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 3, 3, eOnStorageOrder &gt; Matrix3d</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00035">Eigen.h:35</a></div></div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
 <div class="ttc" id="aclassMatter_html_a2472b3c954d101c0810da69ed442b244"><div class="ttname"><a href="classMatter.html#a2472b3c954d101c0810da69ed442b244">Matter::getPositions</a></div><div class="ttdeci">const AtomMatrix &amp; getPositions() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00375">Matter.cpp:375</a></div></div>
 <div class="ttc" id="aclassMatter_html_a271f1a697333162ba3705bff86dfef06"><div class="ttname"><a href="classMatter.html#a271f1a697333162ba3705bff86dfef06">Matter::setPositions</a></div><div class="ttdeci">void setPositions(const AtomMatrix &amp;pos)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00417">Matter.cpp:417</a></div></div>
 <div class="ttc" id="aclassMatter_html_a9d7154880723d96ff9565411cb09b6df"><div class="ttname"><a href="classMatter.html#a9d7154880723d96ff9565411cb09b6df">Matter::forcesData</a></div><div class="ttdeci">double * forcesData()</div><div class="ttdoc">Mutable access to force storage for batched potential evaluation.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00954">Matter.cpp:954</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Hessian_html_aa78ba9a938197f423a21d01305e4782a"><div class="ttname"><a href="#aa78ba9a938197f423a21d01305e4782a">eonc::Hessian::finalizeHessian</a></div><div class="ttdeci">bool finalizeHessian(int size)</div><div class="ttdef"><b>Definition</b> <a href="Hessian_8cpp_source.html#l00713">Hessian.cpp:713</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Hessian_html_aa78ba9a938197f423a21d01305e4782a"><div class="ttname"><a href="#aa78ba9a938197f423a21d01305e4782a">eonc::Hessian::finalizeHessian</a></div><div class="ttdeci">bool finalizeHessian(int size)</div><div class="ttdef"><b>Definition</b> <a href="Hessian_8cpp_source.html#l00728">Hessian.cpp:728</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1potential__owner_html_afc6a7c02bcd9348bd5eb4aca7e95dcd0"><div class="ttname"><a href="namespaceeonc_1_1potential__owner.html#afc6a7c02bcd9348bd5eb4aca7e95dcd0">eonc::potential_owner::derivative</a></div><div class="ttdeci">constexpr long derivative</div><div class="ttdef"><b>Definition</b> <a href="PotentialOwner_8h_source.html#l00010">PotentialOwner.h:10</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1safemath_html_a0d2ff3ef0f0032b6e2f75662df3816cf"><div class="ttname"><a href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a></div><div class="ttdeci">constexpr double safe_div(double num, double denom, double fallback=0.0)</div><div class="ttdef"><b>Definition</b> <a href="SafeMath_8h_source.html#l00021">SafeMath.h:21</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a1473c0575632e4e2549120f33b8525dda6e599f7a2a9186d391be4537f105be98"><div class="ttname"><a href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda6e599f7a2a9186d391be4537f105be98">eonc::FdScheme::Fourth</a></div><div class="ttdeci">@ Fourth</div><div class="ttdef"><b>Definition</b> <a href="FiniteDifference_8h_source.html#l00025">FiniteDifference.h:25</a></div></div>
@@ -566,8 +567,8 @@ Private Attributes</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="af03527e78ee4dd44ccde6aa3e88ccc41" name="af03527e78ee4dd44ccde6aa3e88ccc41"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af03527e78ee4dd44ccde6aa3e88ccc41">&#9670;&#160;</a></span>calculateColored()</h2>
+<a id="ab298ad38cabf6c574ba9cc28d6bbd0f5" name="ab298ad38cabf6c574ba9cc28d6bbd0f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab298ad38cabf6c574ba9cc28d6bbd0f5">&#9670;&#160;</a></span>calculateColored()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -578,7 +579,7 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname">bool eonc::Hessian::calculateColored </td>
           <td>(</td>
-          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>cutoff</em></span>, </td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>range</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -598,121 +599,127 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Hessian_8cpp_source.html#l00492">492</a> of file <a class="el" href="Hessian_8cpp_source.html">Hessian.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  492</span>                                                                        {</div>
-<div class="line"><span class="lineno">  493</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> nAtoms = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;numberOfAtoms());</div>
-<div class="line"><span class="lineno">  494</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> nMobile = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>.rows());</div>
-<div class="line"><span class="lineno">  495</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> size = nMobile * 3;</div>
-<div class="line"><span class="lineno">  496</span>  <span class="keyword">const</span> MobileColoring coloring = buildMobileColoring(*<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>, <a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>, cutoff);</div>
-<div class="line"><span class="lineno">  497</span>  <span class="keywordflow">if</span> (<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(coloring.color.size()) != nMobile ||</div>
-<div class="line"><span class="lineno">  498</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(coloring.closed.size()) != nMobile) {</div>
-<div class="line"><span class="lineno">  499</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  500</span>  }</div>
-<div class="line"><span class="lineno">  501</span> </div>
-<div class="line"><span class="lineno">  502</span>  <span class="keywordtype">int</span> nColors = 0;</div>
-<div class="line"><span class="lineno">  503</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c : coloring.color) {</div>
-<div class="line"><span class="lineno">  504</span>    <span class="keywordflow">if</span> (c &lt; 0) {</div>
-<div class="line"><span class="lineno">  505</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  506</span>    }</div>
-<div class="line"><span class="lineno">  507</span>    nColors = std::max(nColors, c + 1);</div>
-<div class="line"><span class="lineno">  508</span>  }</div>
-<div class="line"><span class="lineno">  509</span>  <span class="keywordflow">if</span> (nColors &lt;= 0) {</div>
-<div class="line"><span class="lineno">  510</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  511</span>  }</div>
-<div class="line"><span class="lineno">  512</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
-<div class="line"><span class="lineno">  513</span>                  <span class="stringliteral">&quot;[Hessian] cutoff coloring: {} colors for {} mobile atoms\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  514</span>                  nColors, nMobile);</div>
-<div class="line"><span class="lineno">  515</span> </div>
-<div class="line"><span class="lineno">  516</span>  std::vector&lt;std::vector&lt;int&gt;&gt; members(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(nColors));</div>
-<div class="line"><span class="lineno">  517</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> ia = 0; ia &lt; nMobile; ++ia) {</div>
-<div class="line"><span class="lineno">  518</span>    members[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(</div>
-<div class="line"><span class="lineno">  519</span>                coloring.color[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(ia)])]</div>
-<div class="line"><span class="lineno">  520</span>        .push_back(ia);</div>
-<div class="line"><span class="lineno">  521</span>  }</div>
-<div class="line"><span class="lineno">  522</span>  std::vector&lt;std::vector&lt;int&gt;&gt; owner(</div>
-<div class="line"><span class="lineno">  523</span>      <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(nColors),</div>
-<div class="line"><span class="lineno">  524</span>      std::vector&lt;int&gt;(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(nMobile), -1));</div>
-<div class="line"><span class="lineno">  525</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c = 0; c &lt; nColors; ++c) {</div>
-<div class="line"><span class="lineno">  526</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> ia : members[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(c)]) {</div>
-<div class="line"><span class="lineno">  527</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k : coloring.closed[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(ia)]) {</div>
-<div class="line"><span class="lineno">  528</span>        <span class="keywordtype">int</span> &amp;slot =</div>
-<div class="line"><span class="lineno">  529</span>            owner[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(c)][<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(k)];</div>
-<div class="line"><span class="lineno">  530</span>        <span class="keywordflow">if</span> (slot &gt;= 0 &amp;&amp; slot != ia) {</div>
-<div class="line"><span class="lineno">  531</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  532</span>        }</div>
-<div class="line"><span class="lineno">  533</span>        slot = ia;</div>
-<div class="line"><span class="lineno">  534</span>      }</div>
-<div class="line"><span class="lineno">  535</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="Hessian_8cpp_source.html#l00501">501</a> of file <a class="el" href="Hessian_8cpp_source.html">Hessian.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  501</span>                                                                       {</div>
+<div class="line"><span class="lineno">  502</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> nAtoms = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;numberOfAtoms());</div>
+<div class="line"><span class="lineno">  503</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> nMobile = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>.rows());</div>
+<div class="line"><span class="lineno">  504</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> size = nMobile * 3;</div>
+<div class="line"><span class="lineno">  505</span>  <span class="keyword">const</span> MobileColoring coloring = buildMobileColoring(*<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>, <a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>, range);</div>
+<div class="line"><span class="lineno">  506</span>  <span class="keywordflow">if</span> (<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(coloring.color.size()) != nMobile ||</div>
+<div class="line"><span class="lineno">  507</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(coloring.closed.size()) != nMobile) {</div>
+<div class="line"><span class="lineno">  508</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  509</span>  }</div>
+<div class="line"><span class="lineno">  510</span> </div>
+<div class="line"><span class="lineno">  511</span>  <span class="keywordtype">int</span> nColors = 0;</div>
+<div class="line"><span class="lineno">  512</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c : coloring.color) {</div>
+<div class="line"><span class="lineno">  513</span>    <span class="keywordflow">if</span> (c &lt; 0) {</div>
+<div class="line"><span class="lineno">  514</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  515</span>    }</div>
+<div class="line"><span class="lineno">  516</span>    nColors = std::max(nColors, c + 1);</div>
+<div class="line"><span class="lineno">  517</span>  }</div>
+<div class="line"><span class="lineno">  518</span>  <span class="keywordflow">if</span> (nColors &lt;= 0) {</div>
+<div class="line"><span class="lineno">  519</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  520</span>  }</div>
+<div class="line"><span class="lineno">  521</span>  <span class="comment">// One color per mobile atom does not reduce the force count, and this</span></div>
+<div class="line"><span class="lineno">  522</span>  <span class="comment">// loop does not batch. Leave the matrix to the column path.</span></div>
+<div class="line"><span class="lineno">  523</span>  <span class="keywordflow">if</span> (nColors &gt;= nMobile) {</div>
+<div class="line"><span class="lineno">  524</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  525</span>  }</div>
+<div class="line"><span class="lineno">  526</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
+<div class="line"><span class="lineno">  527</span>                  <span class="stringliteral">&quot;[Hessian] hessian-range coloring: {} colors for {} mobile &quot;</span></div>
+<div class="line"><span class="lineno">  528</span>                  <span class="stringliteral">&quot;atoms\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  529</span>                  nColors, nMobile);</div>
+<div class="line"><span class="lineno">  530</span> </div>
+<div class="line"><span class="lineno">  531</span>  std::vector&lt;std::vector&lt;int&gt;&gt; members(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(nColors));</div>
+<div class="line"><span class="lineno">  532</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> ia = 0; ia &lt; nMobile; ++ia) {</div>
+<div class="line"><span class="lineno">  533</span>    members[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(</div>
+<div class="line"><span class="lineno">  534</span>                coloring.color[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(ia)])]</div>
+<div class="line"><span class="lineno">  535</span>        .push_back(ia);</div>
 <div class="line"><span class="lineno">  536</span>  }</div>
-<div class="line"><span class="lineno">  537</span> </div>
-<div class="line"><span class="lineno">  538</span>  Matter matterTemp(*<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>);</div>
-<div class="line"><span class="lineno">  539</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getPositions();</div>
-<div class="line"><span class="lineno">  540</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> posDisplace(nAtoms, 3);</div>
-<div class="line"><span class="lineno">  541</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> force0 = matterTemp.getForces();</div>
-<div class="line"><span class="lineno">  542</span>  <span class="keywordflow">if</span> (!force0.allFinite()) {</div>
-<div class="line"><span class="lineno">  543</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] non-finite forces at undisplaced geometry; &quot;</span></div>
-<div class="line"><span class="lineno">  544</span>                         <span class="stringliteral">&quot;aborting FD Hessian&quot;</span>);</div>
-<div class="line"><span class="lineno">  545</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  546</span>  }</div>
-<div class="line"><span class="lineno">  547</span> </div>
-<div class="line"><span class="lineno">  548</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> dir = 0; dir &lt; 3; ++dir) {</div>
-<div class="line"><span class="lineno">  549</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c = 0; c &lt; nColors; ++c) {</div>
-<div class="line"><span class="lineno">  550</span>      <span class="keyword">const</span> <span class="keyword">auto</span> &amp;group = members[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(c)];</div>
-<div class="line"><span class="lineno">  551</span>      <span class="keywordflow">if</span> (group.empty()) {</div>
-<div class="line"><span class="lineno">  552</span>        <span class="keywordflow">continue</span>;</div>
-<div class="line"><span class="lineno">  553</span>      }</div>
-<div class="line"><span class="lineno">  554</span>      <span class="keyword">auto</span> shifted = [&amp;](<span class="keywordtype">double</span> scale, <span class="keyword">const</span> <span class="keywordtype">char</span> *side) -&gt; <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> {</div>
-<div class="line"><span class="lineno">  555</span>        posDisplace.setZero();</div>
-<div class="line"><span class="lineno">  556</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> ia : group) {</div>
-<div class="line"><span class="lineno">  557</span>          posDisplace(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(ia), dir) = scale * dr;</div>
-<div class="line"><span class="lineno">  558</span>        }</div>
-<div class="line"><span class="lineno">  559</span>        matterTemp.setPositions(pos + posDisplace);</div>
-<div class="line"><span class="lineno">  560</span>        <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> force = matterTemp.getForces();</div>
-<div class="line"><span class="lineno">  561</span>        <span class="keywordflow">if</span> (!force.allFinite()) {</div>
-<div class="line"><span class="lineno">  562</span>          QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
-<div class="line"><span class="lineno">  563</span>                          <span class="stringliteral">&quot;[Hessian] non-finite forces for color {} dir {} &quot;</span></div>
-<div class="line"><span class="lineno">  564</span>                          <span class="stringliteral">&quot;({}); aborting FD Hessian&quot;</span>,</div>
-<div class="line"><span class="lineno">  565</span>                          c, dir, side);</div>
-<div class="line"><span class="lineno">  566</span>          <span class="keywordflow">return</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>();</div>
-<div class="line"><span class="lineno">  567</span>        }</div>
-<div class="line"><span class="lineno">  568</span>        <span class="keywordflow">return</span> force;</div>
-<div class="line"><span class="lineno">  569</span>      };</div>
-<div class="line"><span class="lineno">  570</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forcePlus = shifted(1.0, <span class="stringliteral">&quot;+&quot;</span>);</div>
-<div class="line"><span class="lineno">  571</span>      <span class="keywordflow">if</span> (forcePlus.size() == 0) {</div>
-<div class="line"><span class="lineno">  572</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  573</span>      }</div>
-<div class="line"><span class="lineno">  574</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forceMinus = force0;</div>
-<div class="line"><span class="lineno">  575</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forcePlus2 = force0;</div>
-<div class="line"><span class="lineno">  576</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forceMinus2 = force0;</div>
-<div class="line"><span class="lineno">  577</span>      <span class="keywordflow">if</span> (scheme != <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda81797e9c6fc44586202026bb6aaefe8c">FdScheme::OneSided</a>) {</div>
-<div class="line"><span class="lineno">  578</span>        forceMinus = shifted(-1.0, <span class="stringliteral">&quot;-&quot;</span>);</div>
-<div class="line"><span class="lineno">  579</span>        <span class="keywordflow">if</span> (forceMinus.size() == 0) {</div>
-<div class="line"><span class="lineno">  580</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  581</span>        }</div>
-<div class="line"><span class="lineno">  582</span>      }</div>
-<div class="line"><span class="lineno">  583</span>      <span class="keywordflow">if</span> (scheme == <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda6e599f7a2a9186d391be4537f105be98">FdScheme::Fourth</a>) {</div>
-<div class="line"><span class="lineno">  584</span>        forcePlus2 = shifted(2.0, <span class="stringliteral">&quot;+2&quot;</span>);</div>
-<div class="line"><span class="lineno">  585</span>        <span class="keywordflow">if</span> (forcePlus2.size() == 0) {</div>
-<div class="line"><span class="lineno">  586</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  587</span>        }</div>
-<div class="line"><span class="lineno">  588</span>        forceMinus2 = shifted(-2.0, <span class="stringliteral">&quot;-2&quot;</span>);</div>
-<div class="line"><span class="lineno">  589</span>        <span class="keywordflow">if</span> (forceMinus2.size() == 0) {</div>
-<div class="line"><span class="lineno">  590</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  591</span>        }</div>
-<div class="line"><span class="lineno">  592</span>      }</div>
-<div class="line"><span class="lineno">  593</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> slope = <a class="code hl_function" href="namespaceeonc.html#a158b4320d869da987eae2018295a92fd">fdForceDerivative</a>(</div>
-<div class="line"><span class="lineno">  594</span>          scheme, dr, force0, forcePlus, forceMinus, forcePlus2, forceMinus2);</div>
-<div class="line"><span class="lineno">  595</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> zero = AtomMatrix::Zero(nAtoms, 3);</div>
-<div class="line"><span class="lineno">  596</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> ia : group) {</div>
-<div class="line"><span class="lineno">  597</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> col = ia * 3 + dir;</div>
-<div class="line"><span class="lineno">  598</span>        writeMassWeighted(<a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>, *<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>, <a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>, col,</div>
-<div class="line"><span class="lineno">  599</span>                          <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(ia)), slope, zero, 1.0,</div>
-<div class="line"><span class="lineno">  600</span>                          owner[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(c)], ia);</div>
-<div class="line"><span class="lineno">  601</span>      }</div>
-<div class="line"><span class="lineno">  602</span>    }</div>
-<div class="line"><span class="lineno">  603</span>  }</div>
-<div class="line"><span class="lineno">  604</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#aa78ba9a938197f423a21d01305e4782a">finalizeHessian</a>(size);</div>
-<div class="line"><span class="lineno">  605</span>}</div>
+<div class="line"><span class="lineno">  537</span>  std::vector&lt;std::vector&lt;int&gt;&gt; owner(</div>
+<div class="line"><span class="lineno">  538</span>      <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(nColors),</div>
+<div class="line"><span class="lineno">  539</span>      std::vector&lt;int&gt;(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(nMobile), -1));</div>
+<div class="line"><span class="lineno">  540</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c = 0; c &lt; nColors; ++c) {</div>
+<div class="line"><span class="lineno">  541</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> ia : members[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(c)]) {</div>
+<div class="line"><span class="lineno">  542</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k : coloring.closed[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(ia)]) {</div>
+<div class="line"><span class="lineno">  543</span>        <span class="keywordtype">int</span> &amp;slot =</div>
+<div class="line"><span class="lineno">  544</span>            owner[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(c)][<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(k)];</div>
+<div class="line"><span class="lineno">  545</span>        <span class="keywordflow">if</span> (slot &gt;= 0 &amp;&amp; slot != ia) {</div>
+<div class="line"><span class="lineno">  546</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  547</span>        }</div>
+<div class="line"><span class="lineno">  548</span>        slot = ia;</div>
+<div class="line"><span class="lineno">  549</span>      }</div>
+<div class="line"><span class="lineno">  550</span>    }</div>
+<div class="line"><span class="lineno">  551</span>  }</div>
+<div class="line"><span class="lineno">  552</span> </div>
+<div class="line"><span class="lineno">  553</span>  Matter matterTemp(*<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>);</div>
+<div class="line"><span class="lineno">  554</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  555</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> posDisplace(nAtoms, 3);</div>
+<div class="line"><span class="lineno">  556</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> force0 = matterTemp.getForces();</div>
+<div class="line"><span class="lineno">  557</span>  <span class="keywordflow">if</span> (!force0.allFinite()) {</div>
+<div class="line"><span class="lineno">  558</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] non-finite forces at undisplaced geometry; &quot;</span></div>
+<div class="line"><span class="lineno">  559</span>                         <span class="stringliteral">&quot;aborting FD Hessian&quot;</span>);</div>
+<div class="line"><span class="lineno">  560</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  561</span>  }</div>
+<div class="line"><span class="lineno">  562</span> </div>
+<div class="line"><span class="lineno">  563</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> dir = 0; dir &lt; 3; ++dir) {</div>
+<div class="line"><span class="lineno">  564</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c = 0; c &lt; nColors; ++c) {</div>
+<div class="line"><span class="lineno">  565</span>      <span class="keyword">const</span> <span class="keyword">auto</span> &amp;group = members[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(c)];</div>
+<div class="line"><span class="lineno">  566</span>      <span class="keywordflow">if</span> (group.empty()) {</div>
+<div class="line"><span class="lineno">  567</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  568</span>      }</div>
+<div class="line"><span class="lineno">  569</span>      <span class="keyword">auto</span> shifted = [&amp;](<span class="keywordtype">double</span> scale, <span class="keyword">const</span> <span class="keywordtype">char</span> *side) -&gt; <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> {</div>
+<div class="line"><span class="lineno">  570</span>        posDisplace.setZero();</div>
+<div class="line"><span class="lineno">  571</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> ia : group) {</div>
+<div class="line"><span class="lineno">  572</span>          posDisplace(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(ia), dir) = scale * dr;</div>
+<div class="line"><span class="lineno">  573</span>        }</div>
+<div class="line"><span class="lineno">  574</span>        matterTemp.setPositions(pos + posDisplace);</div>
+<div class="line"><span class="lineno">  575</span>        <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> force = matterTemp.getForces();</div>
+<div class="line"><span class="lineno">  576</span>        <span class="keywordflow">if</span> (!force.allFinite()) {</div>
+<div class="line"><span class="lineno">  577</span>          QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
+<div class="line"><span class="lineno">  578</span>                          <span class="stringliteral">&quot;[Hessian] non-finite forces for color {} dir {} &quot;</span></div>
+<div class="line"><span class="lineno">  579</span>                          <span class="stringliteral">&quot;({}); aborting FD Hessian&quot;</span>,</div>
+<div class="line"><span class="lineno">  580</span>                          c, dir, side);</div>
+<div class="line"><span class="lineno">  581</span>          <span class="keywordflow">return</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>();</div>
+<div class="line"><span class="lineno">  582</span>        }</div>
+<div class="line"><span class="lineno">  583</span>        <span class="keywordflow">return</span> force;</div>
+<div class="line"><span class="lineno">  584</span>      };</div>
+<div class="line"><span class="lineno">  585</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forcePlus = shifted(1.0, <span class="stringliteral">&quot;+&quot;</span>);</div>
+<div class="line"><span class="lineno">  586</span>      <span class="keywordflow">if</span> (forcePlus.size() == 0) {</div>
+<div class="line"><span class="lineno">  587</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  588</span>      }</div>
+<div class="line"><span class="lineno">  589</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forceMinus = force0;</div>
+<div class="line"><span class="lineno">  590</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forcePlus2 = force0;</div>
+<div class="line"><span class="lineno">  591</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forceMinus2 = force0;</div>
+<div class="line"><span class="lineno">  592</span>      <span class="keywordflow">if</span> (scheme != <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda81797e9c6fc44586202026bb6aaefe8c">FdScheme::OneSided</a>) {</div>
+<div class="line"><span class="lineno">  593</span>        forceMinus = shifted(-1.0, <span class="stringliteral">&quot;-&quot;</span>);</div>
+<div class="line"><span class="lineno">  594</span>        <span class="keywordflow">if</span> (forceMinus.size() == 0) {</div>
+<div class="line"><span class="lineno">  595</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  596</span>        }</div>
+<div class="line"><span class="lineno">  597</span>      }</div>
+<div class="line"><span class="lineno">  598</span>      <span class="keywordflow">if</span> (scheme == <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda6e599f7a2a9186d391be4537f105be98">FdScheme::Fourth</a>) {</div>
+<div class="line"><span class="lineno">  599</span>        forcePlus2 = shifted(2.0, <span class="stringliteral">&quot;+2&quot;</span>);</div>
+<div class="line"><span class="lineno">  600</span>        <span class="keywordflow">if</span> (forcePlus2.size() == 0) {</div>
+<div class="line"><span class="lineno">  601</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  602</span>        }</div>
+<div class="line"><span class="lineno">  603</span>        forceMinus2 = shifted(-2.0, <span class="stringliteral">&quot;-2&quot;</span>);</div>
+<div class="line"><span class="lineno">  604</span>        <span class="keywordflow">if</span> (forceMinus2.size() == 0) {</div>
+<div class="line"><span class="lineno">  605</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  606</span>        }</div>
+<div class="line"><span class="lineno">  607</span>      }</div>
+<div class="line"><span class="lineno">  608</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> slope = <a class="code hl_function" href="namespaceeonc.html#a158b4320d869da987eae2018295a92fd">fdForceDerivative</a>(</div>
+<div class="line"><span class="lineno">  609</span>          scheme, dr, force0, forcePlus, forceMinus, forcePlus2, forceMinus2);</div>
+<div class="line"><span class="lineno">  610</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> zero = AtomMatrix::Zero(nAtoms, 3);</div>
+<div class="line"><span class="lineno">  611</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> ia : group) {</div>
+<div class="line"><span class="lineno">  612</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> col = ia * 3 + dir;</div>
+<div class="line"><span class="lineno">  613</span>        writeMassWeighted(<a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>, *<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>, <a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>, col,</div>
+<div class="line"><span class="lineno">  614</span>                          <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(ia)), slope, zero, 1.0,</div>
+<div class="line"><span class="lineno">  615</span>                          owner[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(c)], ia);</div>
+<div class="line"><span class="lineno">  616</span>      }</div>
+<div class="line"><span class="lineno">  617</span>    }</div>
+<div class="line"><span class="lineno">  618</span>  }</div>
+<div class="line"><span class="lineno">  619</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#aa78ba9a938197f423a21d01305e4782a">finalizeHessian</a>(size);</div>
+<div class="line"><span class="lineno">  620</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -743,112 +750,112 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Hessian_8cpp_source.html#l00607">607</a> of file <a class="el" href="Hessian_8cpp_source.html">Hessian.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  607</span>                                                        {</div>
-<div class="line"><span class="lineno">  608</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> nAtoms = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;numberOfAtoms());</div>
-<div class="line"><span class="lineno">  609</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> size = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>.rows()) * 3;</div>
-<div class="line"><span class="lineno">  610</span>  <span class="keyword">const</span> std::string &amp;ckptPath = <a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.hessian_options().checkpoint_path;</div>
-<div class="line"><span class="lineno">  611</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> wantResume =</div>
-<div class="line"><span class="lineno">  612</span>      <a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.hessian_options().resume &amp;&amp; !ckptPath.empty();</div>
-<div class="line"><span class="lineno">  613</span> </div>
-<div class="line"><span class="lineno">  614</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getPositions();</div>
-<div class="line"><span class="lineno">  615</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> posDisplace(nAtoms, 3);</div>
-<div class="line"><span class="lineno">  616</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> posTemp(nAtoms, 3);</div>
-<div class="line"><span class="lineno">  617</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forcePlus(nAtoms, 3);</div>
-<div class="line"><span class="lineno">  618</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forceMinus(nAtoms, 3);</div>
-<div class="line"><span class="lineno">  619</span> </div>
-<div class="line"><span class="lineno">  620</span>  <span class="keyword">const</span> std::string context =</div>
-<div class="line"><span class="lineno">  621</span>      columnCheckpointContext(*<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>, <a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>, dr, scheme, <a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>);</div>
-<div class="line"><span class="lineno">  622</span>  <span class="keywordtype">int</span> startCol = 0;</div>
-<div class="line"><span class="lineno">  623</span>  <span class="keywordflow">if</span> (wantResume &amp;&amp;</div>
-<div class="line"><span class="lineno">  624</span>      loadColumnCheckpoint(ckptPath, size, startCol, <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>, context)) {</div>
-<div class="line"><span class="lineno">  625</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] resume from column {} / {}\n&quot;</span>, startCol,</div>
-<div class="line"><span class="lineno">  626</span>                    size);</div>
-<div class="line"><span class="lineno">  627</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  628</span>    startCol = 0;</div>
-<div class="line"><span class="lineno">  629</span>    <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>.setZero();</div>
-<div class="line"><span class="lineno">  630</span>  }</div>
-<div class="line"><span class="lineno">  631</span> </div>
-<div class="line"><span class="lineno">  632</span>  Matter matterTemp(*<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>);</div>
-<div class="line"><span class="lineno">  633</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> force0 = matterTemp.getForces();</div>
-<div class="line"><span class="lineno">  634</span>  <span class="keywordflow">if</span> (!force0.allFinite()) {</div>
-<div class="line"><span class="lineno">  635</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] non-finite forces at undisplaced geometry; &quot;</span></div>
-<div class="line"><span class="lineno">  636</span>                         <span class="stringliteral">&quot;aborting FD Hessian&quot;</span>);</div>
-<div class="line"><span class="lineno">  637</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  638</span>  }</div>
-<div class="line"><span class="lineno">  639</span> </div>
-<div class="line"><span class="lineno">  640</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = startCol; i &lt; size; i++) {</div>
-<div class="line"><span class="lineno">  641</span>    posDisplace.setZero();</div>
-<div class="line"><span class="lineno">  642</span>    posDisplace(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(i / 3), i % 3) = dr;</div>
-<div class="line"><span class="lineno">  643</span> </div>
-<div class="line"><span class="lineno">  644</span>    posTemp = pos + posDisplace;</div>
-<div class="line"><span class="lineno">  645</span>    matterTemp.setPositions(posTemp);</div>
-<div class="line"><span class="lineno">  646</span>    forcePlus = matterTemp.getForces();</div>
-<div class="line"><span class="lineno">  647</span>    <span class="keywordflow">if</span> (!forcePlus.allFinite()) {</div>
-<div class="line"><span class="lineno">  648</span>      QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
-<div class="line"><span class="lineno">  649</span>                      <span class="stringliteral">&quot;[Hessian] non-finite forces for FD column {} (+); &quot;</span></div>
-<div class="line"><span class="lineno">  650</span>                      <span class="stringliteral">&quot;aborting FD Hessian&quot;</span>,</div>
-<div class="line"><span class="lineno">  651</span>                      i);</div>
-<div class="line"><span class="lineno">  652</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  653</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="Hessian_8cpp_source.html#l00622">622</a> of file <a class="el" href="Hessian_8cpp_source.html">Hessian.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  622</span>                                                        {</div>
+<div class="line"><span class="lineno">  623</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> nAtoms = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;numberOfAtoms());</div>
+<div class="line"><span class="lineno">  624</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> size = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>.rows()) * 3;</div>
+<div class="line"><span class="lineno">  625</span>  <span class="keyword">const</span> std::string &amp;ckptPath = <a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.hessian_options().checkpoint_path;</div>
+<div class="line"><span class="lineno">  626</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> wantResume =</div>
+<div class="line"><span class="lineno">  627</span>      <a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.hessian_options().resume &amp;&amp; !ckptPath.empty();</div>
+<div class="line"><span class="lineno">  628</span> </div>
+<div class="line"><span class="lineno">  629</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  630</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> posDisplace(nAtoms, 3);</div>
+<div class="line"><span class="lineno">  631</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> posTemp(nAtoms, 3);</div>
+<div class="line"><span class="lineno">  632</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forcePlus(nAtoms, 3);</div>
+<div class="line"><span class="lineno">  633</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forceMinus(nAtoms, 3);</div>
+<div class="line"><span class="lineno">  634</span> </div>
+<div class="line"><span class="lineno">  635</span>  <span class="keyword">const</span> std::string context =</div>
+<div class="line"><span class="lineno">  636</span>      columnCheckpointContext(*<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>, <a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>, dr, scheme, <a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>);</div>
+<div class="line"><span class="lineno">  637</span>  <span class="keywordtype">int</span> startCol = 0;</div>
+<div class="line"><span class="lineno">  638</span>  <span class="keywordflow">if</span> (wantResume &amp;&amp;</div>
+<div class="line"><span class="lineno">  639</span>      loadColumnCheckpoint(ckptPath, size, startCol, <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>, context)) {</div>
+<div class="line"><span class="lineno">  640</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] resume from column {} / {}\n&quot;</span>, startCol,</div>
+<div class="line"><span class="lineno">  641</span>                    size);</div>
+<div class="line"><span class="lineno">  642</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  643</span>    startCol = 0;</div>
+<div class="line"><span class="lineno">  644</span>    <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>.setZero();</div>
+<div class="line"><span class="lineno">  645</span>  }</div>
+<div class="line"><span class="lineno">  646</span> </div>
+<div class="line"><span class="lineno">  647</span>  Matter matterTemp(*<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>);</div>
+<div class="line"><span class="lineno">  648</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> force0 = matterTemp.getForces();</div>
+<div class="line"><span class="lineno">  649</span>  <span class="keywordflow">if</span> (!force0.allFinite()) {</div>
+<div class="line"><span class="lineno">  650</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] non-finite forces at undisplaced geometry; &quot;</span></div>
+<div class="line"><span class="lineno">  651</span>                         <span class="stringliteral">&quot;aborting FD Hessian&quot;</span>);</div>
+<div class="line"><span class="lineno">  652</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  653</span>  }</div>
 <div class="line"><span class="lineno">  654</span> </div>
-<div class="line"><span class="lineno">  655</span>    <span class="keywordflow">if</span> (scheme != <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda81797e9c6fc44586202026bb6aaefe8c">FdScheme::OneSided</a>) {</div>
-<div class="line"><span class="lineno">  656</span>      posTemp = pos - posDisplace;</div>
-<div class="line"><span class="lineno">  657</span>      matterTemp.setPositions(posTemp);</div>
-<div class="line"><span class="lineno">  658</span>      forceMinus = matterTemp.getForces();</div>
-<div class="line"><span class="lineno">  659</span>      <span class="keywordflow">if</span> (!forceMinus.allFinite()) {</div>
-<div class="line"><span class="lineno">  660</span>        QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
-<div class="line"><span class="lineno">  661</span>                        <span class="stringliteral">&quot;[Hessian] non-finite forces for FD column {} (-); &quot;</span></div>
-<div class="line"><span class="lineno">  662</span>                        <span class="stringliteral">&quot;aborting FD Hessian&quot;</span>,</div>
-<div class="line"><span class="lineno">  663</span>                        i);</div>
-<div class="line"><span class="lineno">  664</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  665</span>      }</div>
-<div class="line"><span class="lineno">  666</span>    }</div>
-<div class="line"><span class="lineno">  667</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forcePlus2 = force0;</div>
-<div class="line"><span class="lineno">  668</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forceMinus2 = force0;</div>
-<div class="line"><span class="lineno">  669</span>    <span class="keywordflow">if</span> (scheme == <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda6e599f7a2a9186d391be4537f105be98">FdScheme::Fourth</a>) {</div>
-<div class="line"><span class="lineno">  670</span>      posDisplace(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(i / 3), i % 3) = 2.0 * dr;</div>
-<div class="line"><span class="lineno">  671</span>      matterTemp.setPositions(pos + posDisplace);</div>
-<div class="line"><span class="lineno">  672</span>      forcePlus2 = matterTemp.getForces();</div>
-<div class="line"><span class="lineno">  673</span>      <span class="keywordflow">if</span> (!forcePlus2.allFinite()) {</div>
-<div class="line"><span class="lineno">  674</span>        QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
-<div class="line"><span class="lineno">  675</span>                        <span class="stringliteral">&quot;[Hessian] non-finite forces for FD column {} (+2); &quot;</span></div>
-<div class="line"><span class="lineno">  676</span>                        <span class="stringliteral">&quot;aborting FD Hessian&quot;</span>,</div>
-<div class="line"><span class="lineno">  677</span>                        i);</div>
-<div class="line"><span class="lineno">  678</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  679</span>      }</div>
-<div class="line"><span class="lineno">  680</span>      matterTemp.setPositions(pos - posDisplace);</div>
-<div class="line"><span class="lineno">  681</span>      forceMinus2 = matterTemp.getForces();</div>
-<div class="line"><span class="lineno">  682</span>      <span class="keywordflow">if</span> (!forceMinus2.allFinite()) {</div>
-<div class="line"><span class="lineno">  683</span>        QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
-<div class="line"><span class="lineno">  684</span>                        <span class="stringliteral">&quot;[Hessian] non-finite forces for FD column {} (-2); &quot;</span></div>
-<div class="line"><span class="lineno">  685</span>                        <span class="stringliteral">&quot;aborting FD Hessian&quot;</span>,</div>
-<div class="line"><span class="lineno">  686</span>                        i);</div>
-<div class="line"><span class="lineno">  687</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  688</span>      }</div>
-<div class="line"><span class="lineno">  689</span>    }</div>
-<div class="line"><span class="lineno">  690</span>    <span class="comment">// H ≈ -dF, mass-weighted. dF is the selected real stencil.</span></div>
-<div class="line"><span class="lineno">  691</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> slope = <a class="code hl_function" href="namespaceeonc.html#a158b4320d869da987eae2018295a92fd">fdForceDerivative</a>(</div>
-<div class="line"><span class="lineno">  692</span>        scheme, dr, force0, forcePlus, forceMinus, forcePlus2, forceMinus2);</div>
-<div class="line"><span class="lineno">  693</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; size; j++) {</div>
-<div class="line"><span class="lineno">  694</span>      <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>(i, j) = -slope(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(j / 3), j % 3);</div>
-<div class="line"><span class="lineno">  695</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> effMass = std::sqrt(<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getMass(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(j / 3)) *</div>
-<div class="line"><span class="lineno">  696</span>                                       <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getMass(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(i / 3)));</div>
-<div class="line"><span class="lineno">  697</span>      <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>(i, j) = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(<a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>(i, j), effMass, 0.0);</div>
-<div class="line"><span class="lineno">  698</span>    }</div>
-<div class="line"><span class="lineno">  699</span> </div>
-<div class="line"><span class="lineno">  700</span>    <span class="keywordflow">if</span> (!ckptPath.empty()) {</div>
-<div class="line"><span class="lineno">  701</span>      <span class="comment">// next column to compute after a clean interrupt</span></div>
-<div class="line"><span class="lineno">  702</span>      <span class="keywordflow">if</span> (!saveColumnCheckpoint(ckptPath, size, i + 1, <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>, context)) {</div>
-<div class="line"><span class="lineno">  703</span>        QUILL_LOG_WARNING(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
-<div class="line"><span class="lineno">  704</span>                          <span class="stringliteral">&quot;[Hessian] failed to replace checkpoint {} at &quot;</span></div>
-<div class="line"><span class="lineno">  705</span>                          <span class="stringliteral">&quot;column {}; retaining the last complete file&quot;</span>,</div>
-<div class="line"><span class="lineno">  706</span>                          ckptPath, i + 1);</div>
-<div class="line"><span class="lineno">  707</span>      }</div>
-<div class="line"><span class="lineno">  708</span>    }</div>
-<div class="line"><span class="lineno">  709</span>  }</div>
-<div class="line"><span class="lineno">  710</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#aa78ba9a938197f423a21d01305e4782a">finalizeHessian</a>(size);</div>
-<div class="line"><span class="lineno">  711</span>}</div>
+<div class="line"><span class="lineno">  655</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = startCol; i &lt; size; i++) {</div>
+<div class="line"><span class="lineno">  656</span>    posDisplace.setZero();</div>
+<div class="line"><span class="lineno">  657</span>    posDisplace(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(i / 3), i % 3) = dr;</div>
+<div class="line"><span class="lineno">  658</span> </div>
+<div class="line"><span class="lineno">  659</span>    posTemp = pos + posDisplace;</div>
+<div class="line"><span class="lineno">  660</span>    matterTemp.setPositions(posTemp);</div>
+<div class="line"><span class="lineno">  661</span>    forcePlus = matterTemp.getForces();</div>
+<div class="line"><span class="lineno">  662</span>    <span class="keywordflow">if</span> (!forcePlus.allFinite()) {</div>
+<div class="line"><span class="lineno">  663</span>      QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
+<div class="line"><span class="lineno">  664</span>                      <span class="stringliteral">&quot;[Hessian] non-finite forces for FD column {} (+); &quot;</span></div>
+<div class="line"><span class="lineno">  665</span>                      <span class="stringliteral">&quot;aborting FD Hessian&quot;</span>,</div>
+<div class="line"><span class="lineno">  666</span>                      i);</div>
+<div class="line"><span class="lineno">  667</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  668</span>    }</div>
+<div class="line"><span class="lineno">  669</span> </div>
+<div class="line"><span class="lineno">  670</span>    <span class="keywordflow">if</span> (scheme != <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda81797e9c6fc44586202026bb6aaefe8c">FdScheme::OneSided</a>) {</div>
+<div class="line"><span class="lineno">  671</span>      posTemp = pos - posDisplace;</div>
+<div class="line"><span class="lineno">  672</span>      matterTemp.setPositions(posTemp);</div>
+<div class="line"><span class="lineno">  673</span>      forceMinus = matterTemp.getForces();</div>
+<div class="line"><span class="lineno">  674</span>      <span class="keywordflow">if</span> (!forceMinus.allFinite()) {</div>
+<div class="line"><span class="lineno">  675</span>        QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
+<div class="line"><span class="lineno">  676</span>                        <span class="stringliteral">&quot;[Hessian] non-finite forces for FD column {} (-); &quot;</span></div>
+<div class="line"><span class="lineno">  677</span>                        <span class="stringliteral">&quot;aborting FD Hessian&quot;</span>,</div>
+<div class="line"><span class="lineno">  678</span>                        i);</div>
+<div class="line"><span class="lineno">  679</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  680</span>      }</div>
+<div class="line"><span class="lineno">  681</span>    }</div>
+<div class="line"><span class="lineno">  682</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forcePlus2 = force0;</div>
+<div class="line"><span class="lineno">  683</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forceMinus2 = force0;</div>
+<div class="line"><span class="lineno">  684</span>    <span class="keywordflow">if</span> (scheme == <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda6e599f7a2a9186d391be4537f105be98">FdScheme::Fourth</a>) {</div>
+<div class="line"><span class="lineno">  685</span>      posDisplace(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(i / 3), i % 3) = 2.0 * dr;</div>
+<div class="line"><span class="lineno">  686</span>      matterTemp.setPositions(pos + posDisplace);</div>
+<div class="line"><span class="lineno">  687</span>      forcePlus2 = matterTemp.getForces();</div>
+<div class="line"><span class="lineno">  688</span>      <span class="keywordflow">if</span> (!forcePlus2.allFinite()) {</div>
+<div class="line"><span class="lineno">  689</span>        QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
+<div class="line"><span class="lineno">  690</span>                        <span class="stringliteral">&quot;[Hessian] non-finite forces for FD column {} (+2); &quot;</span></div>
+<div class="line"><span class="lineno">  691</span>                        <span class="stringliteral">&quot;aborting FD Hessian&quot;</span>,</div>
+<div class="line"><span class="lineno">  692</span>                        i);</div>
+<div class="line"><span class="lineno">  693</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  694</span>      }</div>
+<div class="line"><span class="lineno">  695</span>      matterTemp.setPositions(pos - posDisplace);</div>
+<div class="line"><span class="lineno">  696</span>      forceMinus2 = matterTemp.getForces();</div>
+<div class="line"><span class="lineno">  697</span>      <span class="keywordflow">if</span> (!forceMinus2.allFinite()) {</div>
+<div class="line"><span class="lineno">  698</span>        QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
+<div class="line"><span class="lineno">  699</span>                        <span class="stringliteral">&quot;[Hessian] non-finite forces for FD column {} (-2); &quot;</span></div>
+<div class="line"><span class="lineno">  700</span>                        <span class="stringliteral">&quot;aborting FD Hessian&quot;</span>,</div>
+<div class="line"><span class="lineno">  701</span>                        i);</div>
+<div class="line"><span class="lineno">  702</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  703</span>      }</div>
+<div class="line"><span class="lineno">  704</span>    }</div>
+<div class="line"><span class="lineno">  705</span>    <span class="comment">// H ≈ -dF, mass-weighted. dF is the selected real stencil.</span></div>
+<div class="line"><span class="lineno">  706</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> slope = <a class="code hl_function" href="namespaceeonc.html#a158b4320d869da987eae2018295a92fd">fdForceDerivative</a>(</div>
+<div class="line"><span class="lineno">  707</span>        scheme, dr, force0, forcePlus, forceMinus, forcePlus2, forceMinus2);</div>
+<div class="line"><span class="lineno">  708</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; size; j++) {</div>
+<div class="line"><span class="lineno">  709</span>      <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>(i, j) = -slope(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(j / 3), j % 3);</div>
+<div class="line"><span class="lineno">  710</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> effMass = std::sqrt(<a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getMass(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(j / 3)) *</div>
+<div class="line"><span class="lineno">  711</span>                                       <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;getMass(<a class="code hl_variable" href="#a80fba198705ca007fdedc25eedf15d1b">atoms</a>(i / 3)));</div>
+<div class="line"><span class="lineno">  712</span>      <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>(i, j) = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(<a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>(i, j), effMass, 0.0);</div>
+<div class="line"><span class="lineno">  713</span>    }</div>
+<div class="line"><span class="lineno">  714</span> </div>
+<div class="line"><span class="lineno">  715</span>    <span class="keywordflow">if</span> (!ckptPath.empty()) {</div>
+<div class="line"><span class="lineno">  716</span>      <span class="comment">// next column to compute after a clean interrupt</span></div>
+<div class="line"><span class="lineno">  717</span>      <span class="keywordflow">if</span> (!saveColumnCheckpoint(ckptPath, size, i + 1, <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>, context)) {</div>
+<div class="line"><span class="lineno">  718</span>        QUILL_LOG_WARNING(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
+<div class="line"><span class="lineno">  719</span>                          <span class="stringliteral">&quot;[Hessian] failed to replace checkpoint {} at &quot;</span></div>
+<div class="line"><span class="lineno">  720</span>                          <span class="stringliteral">&quot;column {}; retaining the last complete file&quot;</span>,</div>
+<div class="line"><span class="lineno">  721</span>                          ckptPath, i + 1);</div>
+<div class="line"><span class="lineno">  722</span>      }</div>
+<div class="line"><span class="lineno">  723</span>    }</div>
+<div class="line"><span class="lineno">  724</span>  }</div>
+<div class="line"><span class="lineno">  725</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#aa78ba9a938197f423a21d01305e4782a">finalizeHessian</a>(size);</div>
+<div class="line"><span class="lineno">  726</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -875,88 +882,88 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Hessian_8cpp_source.html#l00713">713</a> of file <a class="el" href="Hessian_8cpp_source.html">Hessian.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  713</span>                                      {</div>
-<div class="line"><span class="lineno">  714</span>  <span class="keyword">const</span> std::string &amp;ckptPath = <a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.hessian_options().checkpoint_path;</div>
-<div class="line"><span class="lineno">  715</span> </div>
-<div class="line"><span class="lineno">  716</span>  <span class="comment">// Symmetrize (FD noise breaks H=H^T; required for vib analysis)</span></div>
-<div class="line"><span class="lineno">  717</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; size; i++) {</div>
-<div class="line"><span class="lineno">  718</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; i; j++) {</div>
-<div class="line"><span class="lineno">  719</span>      <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>(i, j) = (<a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>(i, j) + <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>(j, i)) / 2;</div>
-<div class="line"><span class="lineno">  720</span>      <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>(j, i) = <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>(i, j);</div>
-<div class="line"><span class="lineno">  721</span>    }</div>
-<div class="line"><span class="lineno">  722</span>  }</div>
-<div class="line"><span class="lineno">  723</span> </div>
-<div class="line"><span class="lineno">  724</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>.allFinite()) {</div>
-<div class="line"><span class="lineno">  725</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] non-finite entries after FD assembly; &quot;</span></div>
-<div class="line"><span class="lineno">  726</span>                         <span class="stringliteral">&quot;aborting eigen solve&quot;</span>);</div>
-<div class="line"><span class="lineno">  727</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  728</span>  }</div>
-<div class="line"><span class="lineno">  729</span> </div>
-<div class="line"><span class="lineno">  730</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a0974d3489a7ec83ca4ff292192b776cd">writeFile</a>) {</div>
-<div class="line"><span class="lineno">  731</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.main_options().quiet) {</div>
-<div class="line"><span class="lineno">  732</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] writing hessian\n&quot;</span>);</div>
-<div class="line"><span class="lineno">  733</span>    }</div>
-<div class="line"><span class="lineno">  734</span>    <span class="comment">// A previous case in the same process can still hold hessian.dat on</span></div>
-<div class="line"><span class="lineno">  735</span>    <span class="comment">// Windows. Replace it, and try once more after removing the old file.</span></div>
-<div class="line"><span class="lineno">  736</span>    std::ofstream hessfile(<span class="stringliteral">&quot;hessian.dat&quot;</span>, std::ios::out | std::ios::trunc);</div>
-<div class="line"><span class="lineno">  737</span>    <span class="keywordflow">if</span> (!hessfile) {</div>
-<div class="line"><span class="lineno">  738</span>      std::remove(<span class="stringliteral">&quot;hessian.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">  739</span>      hessfile.clear();</div>
-<div class="line"><span class="lineno">  740</span>      hessfile.open(<span class="stringliteral">&quot;hessian.dat&quot;</span>, std::ios::out | std::ios::trunc);</div>
-<div class="line"><span class="lineno">  741</span>    }</div>
-<div class="line"><span class="lineno">  742</span>    <span class="keywordflow">if</span> (!hessfile) {</div>
-<div class="line"><span class="lineno">  743</span>      QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] failed to open hessian.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">  744</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  745</span>    }</div>
-<div class="line"><span class="lineno">  746</span>    hessfile &lt;&lt; std::setprecision(std::numeric_limits&lt;double&gt;::max_digits10)</div>
-<div class="line"><span class="lineno">  747</span>             &lt;&lt; <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>;</div>
-<div class="line"><span class="lineno">  748</span>    hessfile.close();</div>
-<div class="line"><span class="lineno">  749</span>    <span class="keywordflow">if</span> (!hessfile) {</div>
-<div class="line"><span class="lineno">  750</span>      QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] failed to write hessian.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">  751</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  752</span>    }</div>
-<div class="line"><span class="lineno">  753</span>  }</div>
-<div class="line"><span class="lineno">  754</span> </div>
-<div class="line"><span class="lineno">  755</span>  <span class="comment">// Completed run: remove checkpoint so a later job does not resume stale cols</span></div>
-<div class="line"><span class="lineno">  756</span>  <span class="keywordflow">if</span> (!ckptPath.empty()) {</div>
-<div class="line"><span class="lineno">  757</span>    std::remove(ckptPath.c_str());</div>
-<div class="line"><span class="lineno">  758</span>  }</div>
-<div class="line"><span class="lineno">  759</span> </div>
-<div class="line"><span class="lineno">  760</span>  <span class="keywordtype">double</span> t0, t1;</div>
-<div class="line"><span class="lineno">  761</span>  <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ae68aebaf58acc7cbd7db4f1f6ee17cc9">eonc::helpers::getTime</a>(&amp;t0, <span class="keyword">nullptr</span>, <span class="keyword">nullptr</span>);</div>
-<div class="line"><span class="lineno">  762</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] calculating eigen values of the hessian\n&quot;</span>);</div>
-<div class="line"><span class="lineno">  763</span>  <span class="comment">// ColMajor copy for SelfAdjointEigenSolver (eOn MatrixXd is RowMajor)</span></div>
-<div class="line"><span class="lineno">  764</span>  <span class="keyword">using </span>ColMajorXd =</div>
-<div class="line"><span class="lineno">  765</span>      Eigen::Matrix&lt;double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor&gt;;</div>
-<div class="line"><span class="lineno">  766</span>  ColMajorXd hessianCol = <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>;</div>
-<div class="line"><span class="lineno">  767</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> withModes = <a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.hessian_options().write_modes;</div>
-<div class="line"><span class="lineno">  768</span>  Eigen::SelfAdjointEigenSolver&lt;ColMajorXd&gt; es(</div>
-<div class="line"><span class="lineno">  769</span>      hessianCol,</div>
-<div class="line"><span class="lineno">  770</span>      withModes ? Eigen::ComputeEigenvectors : Eigen::EigenvaluesOnly);</div>
-<div class="line"><span class="lineno">  771</span>  <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ae68aebaf58acc7cbd7db4f1f6ee17cc9">eonc::helpers::getTime</a>(&amp;t1, <span class="keyword">nullptr</span>, <span class="keyword">nullptr</span>);</div>
-<div class="line"><span class="lineno">  772</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] eigenvalue problem took {:.4e} seconds\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  773</span>                  t1 - t0);</div>
-<div class="line"><span class="lineno">  774</span>  <span class="keywordflow">if</span> (es.info() != Eigen::Success) {</div>
-<div class="line"><span class="lineno">  775</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
-<div class="line"><span class="lineno">  776</span>                    <span class="stringliteral">&quot;[Hessian] SelfAdjointEigenSolver failed (info={}); &quot;</span></div>
-<div class="line"><span class="lineno">  777</span>                    <span class="stringliteral">&quot;aborting&quot;</span>,</div>
-<div class="line"><span class="lineno">  778</span>                    <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(es.info()));</div>
-<div class="line"><span class="lineno">  779</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  780</span>  }</div>
-<div class="line"><span class="lineno">  781</span>  <a class="code hl_variable" href="#a5464a089424d4d037d2dfdb74b387b01">freqs</a> = es.eigenvalues();</div>
-<div class="line"><span class="lineno">  782</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a5464a089424d4d037d2dfdb74b387b01">freqs</a>.allFinite()) {</div>
-<div class="line"><span class="lineno">  783</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] non-finite eigenvalues; aborting&quot;</span>);</div>
-<div class="line"><span class="lineno">  784</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  785</span>  }</div>
-<div class="line"><span class="lineno">  786</span>  <span class="keywordflow">if</span> (withModes) {</div>
-<div class="line"><span class="lineno">  787</span>    <a class="code hl_variable" href="#a2d71a9810ade24b961722f4734a7dcfb">modes</a> = es.eigenvectors();</div>
-<div class="line"><span class="lineno">  788</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  789</span>    <a class="code hl_variable" href="#a2d71a9810ade24b961722f4734a7dcfb">modes</a>.resize(0, 0);</div>
-<div class="line"><span class="lineno">  790</span>  }</div>
-<div class="line"><span class="lineno">  791</span> </div>
-<div class="line"><span class="lineno">  792</span>  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  793</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Hessian_8cpp_source.html#l00728">728</a> of file <a class="el" href="Hessian_8cpp_source.html">Hessian.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  728</span>                                      {</div>
+<div class="line"><span class="lineno">  729</span>  <span class="keyword">const</span> std::string &amp;ckptPath = <a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.hessian_options().checkpoint_path;</div>
+<div class="line"><span class="lineno">  730</span> </div>
+<div class="line"><span class="lineno">  731</span>  <span class="comment">// Symmetrize (FD noise breaks H=H^T; required for vib analysis)</span></div>
+<div class="line"><span class="lineno">  732</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; size; i++) {</div>
+<div class="line"><span class="lineno">  733</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; i; j++) {</div>
+<div class="line"><span class="lineno">  734</span>      <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>(i, j) = (<a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>(i, j) + <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>(j, i)) / 2;</div>
+<div class="line"><span class="lineno">  735</span>      <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>(j, i) = <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>(i, j);</div>
+<div class="line"><span class="lineno">  736</span>    }</div>
+<div class="line"><span class="lineno">  737</span>  }</div>
+<div class="line"><span class="lineno">  738</span> </div>
+<div class="line"><span class="lineno">  739</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>.allFinite()) {</div>
+<div class="line"><span class="lineno">  740</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] non-finite entries after FD assembly; &quot;</span></div>
+<div class="line"><span class="lineno">  741</span>                         <span class="stringliteral">&quot;aborting eigen solve&quot;</span>);</div>
+<div class="line"><span class="lineno">  742</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  743</span>  }</div>
+<div class="line"><span class="lineno">  744</span> </div>
+<div class="line"><span class="lineno">  745</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a0974d3489a7ec83ca4ff292192b776cd">writeFile</a>) {</div>
+<div class="line"><span class="lineno">  746</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.main_options().quiet) {</div>
+<div class="line"><span class="lineno">  747</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] writing hessian\n&quot;</span>);</div>
+<div class="line"><span class="lineno">  748</span>    }</div>
+<div class="line"><span class="lineno">  749</span>    <span class="comment">// A previous case in the same process can still hold hessian.dat on</span></div>
+<div class="line"><span class="lineno">  750</span>    <span class="comment">// Windows. Replace it, and try once more after removing the old file.</span></div>
+<div class="line"><span class="lineno">  751</span>    std::ofstream hessfile(<span class="stringliteral">&quot;hessian.dat&quot;</span>, std::ios::out | std::ios::trunc);</div>
+<div class="line"><span class="lineno">  752</span>    <span class="keywordflow">if</span> (!hessfile) {</div>
+<div class="line"><span class="lineno">  753</span>      std::remove(<span class="stringliteral">&quot;hessian.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  754</span>      hessfile.clear();</div>
+<div class="line"><span class="lineno">  755</span>      hessfile.open(<span class="stringliteral">&quot;hessian.dat&quot;</span>, std::ios::out | std::ios::trunc);</div>
+<div class="line"><span class="lineno">  756</span>    }</div>
+<div class="line"><span class="lineno">  757</span>    <span class="keywordflow">if</span> (!hessfile) {</div>
+<div class="line"><span class="lineno">  758</span>      QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] failed to open hessian.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  759</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  760</span>    }</div>
+<div class="line"><span class="lineno">  761</span>    hessfile &lt;&lt; std::setprecision(std::numeric_limits&lt;double&gt;::max_digits10)</div>
+<div class="line"><span class="lineno">  762</span>             &lt;&lt; <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>;</div>
+<div class="line"><span class="lineno">  763</span>    hessfile.close();</div>
+<div class="line"><span class="lineno">  764</span>    <span class="keywordflow">if</span> (!hessfile) {</div>
+<div class="line"><span class="lineno">  765</span>      QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] failed to write hessian.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  766</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  767</span>    }</div>
+<div class="line"><span class="lineno">  768</span>  }</div>
+<div class="line"><span class="lineno">  769</span> </div>
+<div class="line"><span class="lineno">  770</span>  <span class="comment">// Completed run: remove checkpoint so a later job does not resume stale cols</span></div>
+<div class="line"><span class="lineno">  771</span>  <span class="keywordflow">if</span> (!ckptPath.empty()) {</div>
+<div class="line"><span class="lineno">  772</span>    std::remove(ckptPath.c_str());</div>
+<div class="line"><span class="lineno">  773</span>  }</div>
+<div class="line"><span class="lineno">  774</span> </div>
+<div class="line"><span class="lineno">  775</span>  <span class="keywordtype">double</span> t0, t1;</div>
+<div class="line"><span class="lineno">  776</span>  <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ae68aebaf58acc7cbd7db4f1f6ee17cc9">eonc::helpers::getTime</a>(&amp;t0, <span class="keyword">nullptr</span>, <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">  777</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] calculating eigen values of the hessian\n&quot;</span>);</div>
+<div class="line"><span class="lineno">  778</span>  <span class="comment">// ColMajor copy for SelfAdjointEigenSolver (eOn MatrixXd is RowMajor)</span></div>
+<div class="line"><span class="lineno">  779</span>  <span class="keyword">using </span>ColMajorXd =</div>
+<div class="line"><span class="lineno">  780</span>      Eigen::Matrix&lt;double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor&gt;;</div>
+<div class="line"><span class="lineno">  781</span>  ColMajorXd hessianCol = <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>;</div>
+<div class="line"><span class="lineno">  782</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> withModes = <a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.hessian_options().write_modes;</div>
+<div class="line"><span class="lineno">  783</span>  Eigen::SelfAdjointEigenSolver&lt;ColMajorXd&gt; es(</div>
+<div class="line"><span class="lineno">  784</span>      hessianCol,</div>
+<div class="line"><span class="lineno">  785</span>      withModes ? Eigen::ComputeEigenvectors : Eigen::EigenvaluesOnly);</div>
+<div class="line"><span class="lineno">  786</span>  <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ae68aebaf58acc7cbd7db4f1f6ee17cc9">eonc::helpers::getTime</a>(&amp;t1, <span class="keyword">nullptr</span>, <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">  787</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] eigenvalue problem took {:.4e} seconds\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  788</span>                  t1 - t0);</div>
+<div class="line"><span class="lineno">  789</span>  <span class="keywordflow">if</span> (es.info() != Eigen::Success) {</div>
+<div class="line"><span class="lineno">  790</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
+<div class="line"><span class="lineno">  791</span>                    <span class="stringliteral">&quot;[Hessian] SelfAdjointEigenSolver failed (info={}); &quot;</span></div>
+<div class="line"><span class="lineno">  792</span>                    <span class="stringliteral">&quot;aborting&quot;</span>,</div>
+<div class="line"><span class="lineno">  793</span>                    <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(es.info()));</div>
+<div class="line"><span class="lineno">  794</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  795</span>  }</div>
+<div class="line"><span class="lineno">  796</span>  <a class="code hl_variable" href="#a5464a089424d4d037d2dfdb74b387b01">freqs</a> = es.eigenvalues();</div>
+<div class="line"><span class="lineno">  797</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a5464a089424d4d037d2dfdb74b387b01">freqs</a>.allFinite()) {</div>
+<div class="line"><span class="lineno">  798</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] non-finite eigenvalues; aborting&quot;</span>);</div>
+<div class="line"><span class="lineno">  799</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  800</span>  }</div>
+<div class="line"><span class="lineno">  801</span>  <span class="keywordflow">if</span> (withModes) {</div>
+<div class="line"><span class="lineno">  802</span>    <a class="code hl_variable" href="#a2d71a9810ade24b961722f4734a7dcfb">modes</a> = es.eigenvectors();</div>
+<div class="line"><span class="lineno">  803</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  804</span>    <a class="code hl_variable" href="#a2d71a9810ade24b961722f4734a7dcfb">modes</a>.resize(0, 0);</div>
+<div class="line"><span class="lineno">  805</span>  }</div>
+<div class="line"><span class="lineno">  806</span> </div>
+<div class="line"><span class="lineno">  807</span>  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  808</span>}</div>
 <div class="ttc" id="aclasseonc_1_1Hessian_html_a0974d3489a7ec83ca4ff292192b776cd"><div class="ttname"><a href="#a0974d3489a7ec83ca4ff292192b776cd">eonc::Hessian::writeFile</a></div><div class="ttdeci">bool writeFile</div><div class="ttdef"><b>Definition</b> <a href="Hessian_8h_source.html#l00070">Hessian.h:70</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Hessian_html_a2d71a9810ade24b961722f4734a7dcfb"><div class="ttname"><a href="#a2d71a9810ade24b961722f4734a7dcfb">eonc::Hessian::modes</a></div><div class="ttdeci">MatrixXd modes</div><div class="ttdef"><b>Definition</b> <a href="Hessian_8h_source.html#l00069">Hessian.h:69</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_html_ae68aebaf58acc7cbd7db4f1f6ee17cc9"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#ae68aebaf58acc7cbd7db4f1f6ee17cc9">eonc::helpers::getTime</a></div><div class="ttdeci">void getTime(double *real, double *user, double *sys)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00048">HelperFunctions.cpp:48</a></div></div>
@@ -997,7 +1004,7 @@ Private Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  171</span>  }</div>
 <div class="line"><span class="lineno">  172</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a5464a089424d4d037d2dfdb74b387b01">freqs</a>;</div>
 <div class="line"><span class="lineno">  173</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Hessian_html_a82ad771a92ed4c94453de52ee56a3c4f"><div class="ttname"><a href="#a82ad771a92ed4c94453de52ee56a3c4f">eonc::Hessian::calculate</a></div><div class="ttdeci">bool calculate()</div><div class="ttdef"><b>Definition</b> <a href="Hessian_8cpp_source.html#l00333">Hessian.cpp:333</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Hessian_html_a82ad771a92ed4c94453de52ee56a3c4f"><div class="ttname"><a href="#a82ad771a92ed4c94453de52ee56a3c4f">eonc::Hessian::calculate</a></div><div class="ttdeci">bool calculate()</div><div class="ttdef"><b>Definition</b> <a href="Hessian_8cpp_source.html#l00341">Hessian.cpp:341</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1083,34 +1090,34 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Hessian_8cpp_source.html#l00795">795</a> of file <a class="el" href="Hessian_8cpp_source.html">Hessian.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  795</span>                                                       {</div>
-<div class="line"><span class="lineno">  796</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] removing zero frequency modes&quot;</span>);</div>
-<div class="line"><span class="lineno">  797</span>  <span class="keywordtype">int</span> size = <a class="code hl_variable" href="#a5464a089424d4d037d2dfdb74b387b01">freqs</a>.size();</div>
-<div class="line"><span class="lineno">  798</span>  <span class="keywordflow">if</span> (size != 3 * <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;numberOfAtoms()) {</div>
-<div class="line"><span class="lineno">  799</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a5464a089424d4d037d2dfdb74b387b01">freqs</a>;</div>
-<div class="line"><span class="lineno">  800</span>  }</div>
-<div class="line"><span class="lineno">  801</span>  VectorXd newfreqs;</div>
-<div class="line"><span class="lineno">  802</span>  newfreqs.resize(size);</div>
-<div class="line"><span class="lineno">  803</span>  <span class="keywordtype">int</span> nremoved = 0;</div>
-<div class="line"><span class="lineno">  804</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; size; i++) {</div>
-<div class="line"><span class="lineno">  805</span>    <span class="keywordflow">if</span> (std::abs(<a class="code hl_variable" href="#a5464a089424d4d037d2dfdb74b387b01">freqs</a>(i)) &gt; <a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.hessian_options().zero_freq_value) {</div>
-<div class="line"><span class="lineno">  806</span>      newfreqs(i - nremoved) = <a class="code hl_variable" href="#a5464a089424d4d037d2dfdb74b387b01">freqs</a>(i);</div>
-<div class="line"><span class="lineno">  807</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  808</span>      nremoved++;</div>
-<div class="line"><span class="lineno">  809</span>    }</div>
-<div class="line"><span class="lineno">  810</span>  }</div>
-<div class="line"><span class="lineno">  811</span> </div>
-<div class="line"><span class="lineno">  812</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc.html#abaf2c95b22d3b8631960baa0318202fc">trivialModeCountIsPhysical</a>(nremoved, <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;numberOfFixedAtoms())) {</div>
-<div class="line"><span class="lineno">  813</span>    QUILL_LOG_WARNING(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
-<div class="line"><span class="lineno">  814</span>                      <span class="stringliteral">&quot;[Hessian] found {} trivial eigenmodes; a free cluster &quot;</span></div>
-<div class="line"><span class="lineno">  815</span>                      <span class="stringliteral">&quot;has 6 (5 if linear), a periodic cell 3, and a &quot;</span></div>
-<div class="line"><span class="lineno">  816</span>                      <span class="stringliteral">&quot;structure with fixed atoms none&quot;</span>,</div>
-<div class="line"><span class="lineno">  817</span>                      nremoved);</div>
-<div class="line"><span class="lineno">  818</span>  }</div>
-<div class="line"><span class="lineno">  819</span>  <span class="keywordflow">return</span> newfreqs.head(size - nremoved);</div>
-<div class="line"><span class="lineno">  820</span>}</div>
-<div class="ttc" id="anamespaceeonc_html_abaf2c95b22d3b8631960baa0318202fc"><div class="ttname"><a href="namespaceeonc.html#abaf2c95b22d3b8631960baa0318202fc">eonc::trivialModeCountIsPhysical</a></div><div class="ttdeci">bool trivialModeCountIsPhysical(long removed, long fixedAtoms)</div><div class="ttdoc">Whether removed zero-frequency modes are what the structure&#39;s symmetries give: 6 for a free cluster (...</div><div class="ttdef"><b>Definition</b> <a href="Hessian_8cpp_source.html#l00872">Hessian.cpp:872</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Hessian_8cpp_source.html#l00810">810</a> of file <a class="el" href="Hessian_8cpp_source.html">Hessian.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  810</span>                                                       {</div>
+<div class="line"><span class="lineno">  811</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] removing zero frequency modes&quot;</span>);</div>
+<div class="line"><span class="lineno">  812</span>  <span class="keywordtype">int</span> size = <a class="code hl_variable" href="#a5464a089424d4d037d2dfdb74b387b01">freqs</a>.size();</div>
+<div class="line"><span class="lineno">  813</span>  <span class="keywordflow">if</span> (size != 3 * <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;numberOfAtoms()) {</div>
+<div class="line"><span class="lineno">  814</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a5464a089424d4d037d2dfdb74b387b01">freqs</a>;</div>
+<div class="line"><span class="lineno">  815</span>  }</div>
+<div class="line"><span class="lineno">  816</span>  VectorXd newfreqs;</div>
+<div class="line"><span class="lineno">  817</span>  newfreqs.resize(size);</div>
+<div class="line"><span class="lineno">  818</span>  <span class="keywordtype">int</span> nremoved = 0;</div>
+<div class="line"><span class="lineno">  819</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; size; i++) {</div>
+<div class="line"><span class="lineno">  820</span>    <span class="keywordflow">if</span> (std::abs(<a class="code hl_variable" href="#a5464a089424d4d037d2dfdb74b387b01">freqs</a>(i)) &gt; <a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.hessian_options().zero_freq_value) {</div>
+<div class="line"><span class="lineno">  821</span>      newfreqs(i - nremoved) = <a class="code hl_variable" href="#a5464a089424d4d037d2dfdb74b387b01">freqs</a>(i);</div>
+<div class="line"><span class="lineno">  822</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  823</span>      nremoved++;</div>
+<div class="line"><span class="lineno">  824</span>    }</div>
+<div class="line"><span class="lineno">  825</span>  }</div>
+<div class="line"><span class="lineno">  826</span> </div>
+<div class="line"><span class="lineno">  827</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc.html#abaf2c95b22d3b8631960baa0318202fc">trivialModeCountIsPhysical</a>(nremoved, <a class="code hl_variable" href="#a251da239684794bd7e093a74eb4f2a4f">matter</a>-&gt;numberOfFixedAtoms())) {</div>
+<div class="line"><span class="lineno">  828</span>    QUILL_LOG_WARNING(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>,</div>
+<div class="line"><span class="lineno">  829</span>                      <span class="stringliteral">&quot;[Hessian] found {} trivial eigenmodes; a free cluster &quot;</span></div>
+<div class="line"><span class="lineno">  830</span>                      <span class="stringliteral">&quot;has 6 (5 if linear), a periodic cell 3, and a &quot;</span></div>
+<div class="line"><span class="lineno">  831</span>                      <span class="stringliteral">&quot;structure with fixed atoms none&quot;</span>,</div>
+<div class="line"><span class="lineno">  832</span>                      nremoved);</div>
+<div class="line"><span class="lineno">  833</span>  }</div>
+<div class="line"><span class="lineno">  834</span>  <span class="keywordflow">return</span> newfreqs.head(size - nremoved);</div>
+<div class="line"><span class="lineno">  835</span>}</div>
+<div class="ttc" id="anamespaceeonc_html_abaf2c95b22d3b8631960baa0318202fc"><div class="ttname"><a href="namespaceeonc.html#abaf2c95b22d3b8631960baa0318202fc">eonc::trivialModeCountIsPhysical</a></div><div class="ttdeci">bool trivialModeCountIsPhysical(long removed, long fixedAtoms)</div><div class="ttdoc">Whether removed zero-frequency modes are what the structure&#39;s symmetries give: 6 for a free cluster (...</div><div class="ttdef"><b>Definition</b> <a href="Hessian_8cpp_source.html#l00887">Hessian.cpp:887</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

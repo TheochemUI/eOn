@@ -257,7 +257,7 @@ Functions</h2></td></tr>
 <tr class="memitem:abc92f8cab64b9349ebf237b182c70dc9" id="r_abc92f8cab64b9349ebf237b182c70dc9"><td class="memItemLeft"><a class="el" href="structeonc_1_1piqtst_1_1Rate.html">Rate</a>&#160;</td><td class="memItemRight"><a class="el" href="#abc92f8cab64b9349ebf237b182c70dc9">rate</a> (const std::vector&lt; <a class="el" href="structeonc_1_1piqtst_1_1Plane.html">Plane</a> &gt; &amp;planes, double beta)</td></tr>
 <tr class="memdesc:abc92f8cab64b9349ebf237b182c70dc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">k = (1/2) sqrt(2 / (pi beta)) exp(-beta F(s*)) / int_{s_0}^{s*} exp(-beta F(s)) ds, the mass-weighted coordinate carrying unit mass, beta in 1 / eV.  <br /></td></tr>
 <tr class="memitem:a19b9f13eb26035b7e6247009602d7120" id="r_a19b9f13eb26035b7e6247009602d7120"><td class="memItemLeft"><a class="el" href="structeonc_1_1piqtst_1_1Recrossing.html">Recrossing</a>&#160;</td><td class="memItemRight"><a class="el" href="#a19b9f13eb26035b7e6247009602d7120">recrossing</a> (<a class="el" href="classeonc_1_1Potential.html">Potential</a> &amp;pot, const <a class="el" href="structeonc_1_1piqtst_1_1Coordinate.html">Coordinate</a> &amp;coordinate, const <a class="el" href="structeonc_1_1piqtst_1_1RecrossingOptions.html">RecrossingOptions</a> &amp;options)</td></tr>
-<tr class="memdesc:a19b9f13eb26035b7e6247009602d7120"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bennett-Chandler transmission at s*: parents sampled with the centroid held on the plane, children with Maxwell-Boltzmann ring momenta at beta / P and the plane released, propagated by RPMD.  <br /></td></tr>
+<tr class="memdesc:a19b9f13eb26035b7e6247009602d7120"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bennett-Chandler transmission at s*: parents sampled with the centroid held on the plane under PILE, whatever ring.thermostat says, children with Maxwell-Boltzmann ring momenta at beta / P and the plane released, propagated by RPMD.  <br /></td></tr>
 <tr class="memitem:af62d0dd293ea266ba7f2e194e28157f8" id="r_af62d0dd293ea266ba7f2e194e28157f8"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#af62d0dd293ea266ba7f2e194e28157f8">validateOptions</a> (const <a class="el" href="structeonc_1_1instanton__options__t.html">instanton_options_t</a> &amp;o)</td></tr>
 <tr class="memdesc:af62d0dd293ea266ba7f2e194e28157f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Throws std::invalid_argument on an inconsistent [Instanton] pi_* key.  <br /></td></tr>
 <tr class="memitem:a4a84270ccde05275c2b58b37df8f249f" id="r_a4a84270ccde05275c2b58b37df8f249f"><td class="memItemLeft">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a4a84270ccde05275c2b58b37df8f249f">runAfterInstanton</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params, <a class="el" href="classeonc_1_1Potential.html">Potential</a> &amp;pot, const <a class="el" href="classMatter.html">Matter</a> &amp;reactant, const <a class="el" href="classMatter.html">Matter</a> &amp;saddle, const <a class="el" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> &amp;hSaddle, const std::vector&lt; VectorXd &gt; &amp;pathQ, const std::vector&lt; double &gt; &amp;temperatures, std::vector&lt; std::pair&lt; std::string, double &gt; &gt; &amp;extras)</td></tr>
@@ -338,44 +338,47 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">  221</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> w = trapezoidWeights(planes);</div>
 <div class="line"><span class="lineno">  222</span>  <span class="keyword">const</span> VectorXd errors = forceErrors(planes);</div>
 <div class="line"><span class="lineno">  223</span>  Rate r;</div>
-<div class="line"><span class="lineno">  224</span>  <span class="keywordtype">double</span> fMin = std::numeric_limits&lt;double&gt;::infinity();</div>
-<div class="line"><span class="lineno">  225</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; n; ++j) {</div>
-<div class="line"><span class="lineno">  226</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> f = planes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)].freeEnergy;</div>
-<div class="line"><span class="lineno">  227</span>    <span class="keywordflow">if</span> (f &lt; fMin) {</div>
-<div class="line"><span class="lineno">  228</span>      fMin = f;</div>
-<div class="line"><span class="lineno">  229</span>      r.reactant = j;</div>
-<div class="line"><span class="lineno">  230</span>    }</div>
-<div class="line"><span class="lineno">  231</span>  }</div>
-<div class="line"><span class="lineno">  232</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> top = n - 1;</div>
-<div class="line"><span class="lineno">  233</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> fTop = planes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(top)].freeEnergy;</div>
-<div class="line"><span class="lineno">  234</span>  r.barrier = fTop - fMin;</div>
-<div class="line"><span class="lineno">  235</span>  r.barrierError =</div>
-<div class="line"><span class="lineno">  236</span>      propagated((w.row(top) - w.row(r.reactant)).transpose(), errors);</div>
-<div class="line"><span class="lineno">  237</span>  r.firstPlaneHeight = beta * (planes.front().freeEnergy - fMin);</div>
-<div class="line"><span class="lineno">  238</span> </div>
-<div class="line"><span class="lineno">  239</span>  <span class="comment">// Z = int exp(-beta F) ds by the trapezoid rule, referenced to fMin.</span></div>
-<div class="line"><span class="lineno">  240</span>  VectorXd weight(n);</div>
-<div class="line"><span class="lineno">  241</span>  <span class="keywordtype">double</span> z = 0.0;</div>
-<div class="line"><span class="lineno">  242</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; n; ++j) {</div>
-<div class="line"><span class="lineno">  243</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> left = j &gt; 0 ? planes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)].s -</div>
-<div class="line"><span class="lineno">  244</span>                                    planes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j - 1)].s</div>
-<div class="line"><span class="lineno">  245</span>                              : 0.0;</div>
-<div class="line"><span class="lineno">  246</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> right = j + 1 &lt; n ? planes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j + 1)].s -</div>
-<div class="line"><span class="lineno">  247</span>                                         planes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)].s</div>
-<div class="line"><span class="lineno">  248</span>                                   : 0.0;</div>
-<div class="line"><span class="lineno">  249</span>    weight(j) =</div>
-<div class="line"><span class="lineno">  250</span>        0.5 * (left + right) *</div>
-<div class="line"><span class="lineno">  251</span>        std::exp(-beta * (planes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)].freeEnergy - fMin));</div>
-<div class="line"><span class="lineno">  252</span>    z += weight(j);</div>
-<div class="line"><span class="lineno">  253</span>  }</div>
-<div class="line"><span class="lineno">  254</span>  weight /= z;</div>
-<div class="line"><span class="lineno">  255</span>  r.logRate = std::log(0.5 * std::sqrt(2.0 / (std::numbers::pi * beta))) -</div>
-<div class="line"><span class="lineno">  256</span>              beta * (fTop - fMin) - std::log(z);</div>
-<div class="line"><span class="lineno">  257</span>  <span class="keyword">const</span> VectorXd gradient =</div>
-<div class="line"><span class="lineno">  258</span>      -beta * w.row(top).transpose() + beta * (w.transpose() * weight);</div>
-<div class="line"><span class="lineno">  259</span>  r.logRateError = propagated(gradient, errors);</div>
-<div class="line"><span class="lineno">  260</span>  <span class="keywordflow">return</span> r;</div>
-<div class="line"><span class="lineno">  261</span>}</div>
+<div class="line"><span class="lineno">  224</span>  <span class="comment">// The reactant is the lowest F before the dividing plane; s* itself is</span></div>
+<div class="line"><span class="lineno">  225</span>  <span class="comment">// the top, and a minimum there is a plane that is no barrier, which the</span></div>
+<div class="line"><span class="lineno">  226</span>  <span class="comment">// barrier&#39;s sign then shows.</span></div>
+<div class="line"><span class="lineno">  227</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> top = n - 1;</div>
+<div class="line"><span class="lineno">  228</span>  <span class="keywordtype">double</span> fMin = std::numeric_limits&lt;double&gt;::infinity();</div>
+<div class="line"><span class="lineno">  229</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; top; ++j) {</div>
+<div class="line"><span class="lineno">  230</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> f = planes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)].freeEnergy;</div>
+<div class="line"><span class="lineno">  231</span>    <span class="keywordflow">if</span> (f &lt; fMin) {</div>
+<div class="line"><span class="lineno">  232</span>      fMin = f;</div>
+<div class="line"><span class="lineno">  233</span>      r.reactant = j;</div>
+<div class="line"><span class="lineno">  234</span>    }</div>
+<div class="line"><span class="lineno">  235</span>  }</div>
+<div class="line"><span class="lineno">  236</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> fTop = planes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(top)].freeEnergy;</div>
+<div class="line"><span class="lineno">  237</span>  r.barrier = fTop - fMin;</div>
+<div class="line"><span class="lineno">  238</span>  r.barrierError =</div>
+<div class="line"><span class="lineno">  239</span>      propagated((w.row(top) - w.row(r.reactant)).transpose(), errors);</div>
+<div class="line"><span class="lineno">  240</span>  r.firstPlaneHeight = beta * (planes.front().freeEnergy - fMin);</div>
+<div class="line"><span class="lineno">  241</span> </div>
+<div class="line"><span class="lineno">  242</span>  <span class="comment">// Z = int exp(-beta F) ds by the trapezoid rule, referenced to fMin.</span></div>
+<div class="line"><span class="lineno">  243</span>  VectorXd weight(n);</div>
+<div class="line"><span class="lineno">  244</span>  <span class="keywordtype">double</span> z = 0.0;</div>
+<div class="line"><span class="lineno">  245</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; n; ++j) {</div>
+<div class="line"><span class="lineno">  246</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> left = j &gt; 0 ? planes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)].s -</div>
+<div class="line"><span class="lineno">  247</span>                                    planes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j - 1)].s</div>
+<div class="line"><span class="lineno">  248</span>                              : 0.0;</div>
+<div class="line"><span class="lineno">  249</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> right = j + 1 &lt; n ? planes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j + 1)].s -</div>
+<div class="line"><span class="lineno">  250</span>                                         planes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)].s</div>
+<div class="line"><span class="lineno">  251</span>                                   : 0.0;</div>
+<div class="line"><span class="lineno">  252</span>    weight(j) =</div>
+<div class="line"><span class="lineno">  253</span>        0.5 * (left + right) *</div>
+<div class="line"><span class="lineno">  254</span>        std::exp(-beta * (planes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)].freeEnergy - fMin));</div>
+<div class="line"><span class="lineno">  255</span>    z += weight(j);</div>
+<div class="line"><span class="lineno">  256</span>  }</div>
+<div class="line"><span class="lineno">  257</span>  weight /= z;</div>
+<div class="line"><span class="lineno">  258</span>  r.logRate = std::log(0.5 * std::sqrt(2.0 / (std::numbers::pi * beta))) -</div>
+<div class="line"><span class="lineno">  259</span>              beta * (fTop - fMin) - std::log(z);</div>
+<div class="line"><span class="lineno">  260</span>  <span class="keyword">const</span> VectorXd gradient =</div>
+<div class="line"><span class="lineno">  261</span>      -beta * w.row(top).transpose() + beta * (w.transpose() * weight);</div>
+<div class="line"><span class="lineno">  262</span>  r.logRateError = propagated(gradient, errors);</div>
+<div class="line"><span class="lineno">  263</span>  <span class="keywordflow">return</span> r;</div>
+<div class="line"><span class="lineno">  264</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -403,136 +406,142 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Bennett-Chandler transmission at s*: parents sampled with the centroid held on the plane, children with Maxwell-Boltzmann ring momenta at beta / P and the plane released, propagated by RPMD. </p>
-<p>The centroid velocity along s is sdot = n . M^(1/2) v_centroid. </p>
+<p>Bennett-Chandler transmission at s*: parents sampled with the centroid held on the plane under PILE, whatever ring.thermostat says, children with Maxwell-Boltzmann ring momenta at beta / P and the plane released, propagated by RPMD. </p>
+<p>The centroid velocity along s is sdot = n . M^(1/2) v_centroid. Each child run costs steps + 1 force batches: the first force at the parent's beads, then one per step. </p>
 
-<p class="definition">Definition at line <a class="el" href="PIQTST_8cpp_source.html#l00263">263</a> of file <a class="el" href="PIQTST_8cpp_source.html">PIQTST.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  264</span>                                                  {</div>
-<div class="line"><span class="lineno">  265</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> dof = 3 * c.atoms;</div>
-<div class="line"><span class="lineno">  266</span>  <span class="keyword">const</span> Axes ax = axes(c);</div>
-<div class="line"><span class="lineno">  267</span>  <span class="keywordflow">if</span> (o.parents &lt; 2 || o.children &lt; 1 || o.spacing &lt; 1 || o.steps &lt; 4 ||</div>
-<div class="line"><span class="lineno">  268</span>      o.equilibration &lt; 0) {</div>
-<div class="line"><span class="lineno">  269</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><span class="lineno">  270</span>        <span class="stringliteral">&quot;piqtst: recrossing needs two parents, one child, a positive &quot;</span></div>
-<div class="line"><span class="lineno">  271</span>        <span class="stringliteral">&quot;spacing and four steps&quot;</span>);</div>
-<div class="line"><span class="lineno">  272</span>  }</div>
-<div class="line"><span class="lineno">  273</span>  <span class="keyword">const</span> VectorXd origin = c.reference + o.s * ax.b;</div>
-<div class="line"><span class="lineno">  274</span>  VectorXd start = origin;</div>
-<div class="line"><span class="lineno">  275</span>  <span class="keywordflow">if</span> (o.seed) {</div>
-<div class="line"><span class="lineno">  276</span>    start = o.seed(o.s);</div>
-<div class="line"><span class="lineno">  277</span>    <span class="keywordflow">if</span> (start.size() != dof) {</div>
-<div class="line"><span class="lineno">  278</span>      <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;piqtst: a seed has the wrong length&quot;</span>);</div>
-<div class="line"><span class="lineno">  279</span>    }</div>
-<div class="line"><span class="lineno">  280</span>  }</div>
-<div class="line"><span class="lineno">  281</span>  pathintegral::RingPolymer parent(c.atoms, c.masses, c.numbers, c.free,</div>
-<div class="line"><span class="lineno">  282</span>                                   o.ring);</div>
-<div class="line"><span class="lineno">  283</span>  parent.setAllBeads(start.data());</div>
-<div class="line"><span class="lineno">  284</span>  parent.setHyperplane(ax.a, origin);</div>
-<div class="line"><span class="lineno">  285</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> step = 0; step &lt; o.equilibration; ++step) {</div>
-<div class="line"><span class="lineno">  286</span>    parent.step(pot, c.box, <span class="keyword">false</span>);</div>
-<div class="line"><span class="lineno">  287</span>  }</div>
-<div class="line"><span class="lineno">  288</span> </div>
-<div class="line"><span class="lineno">  289</span>  <span class="comment">// The children draw every normal mode from the free-ring Boltzmann</span></div>
-<div class="line"><span class="lineno">  290</span>  <span class="comment">// distribution at beta / P, which PILE&#39;s initial momenta are, and carry</span></div>
-<div class="line"><span class="lineno">  291</span>  <span class="comment">// their own stream so parent and child noise stay independent.</span></div>
-<div class="line"><span class="lineno">  292</span>  pathintegral::Options childOptions = o.ring;</div>
-<div class="line"><span class="lineno">  293</span>  childOptions.thermostat = <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8adac4e478206552d57f74e6a5f9fc80bc">pathintegral::Thermostat::Pile</a>;</div>
-<div class="line"><span class="lineno">  294</span>  childOptions.gleFile.clear();</div>
-<div class="line"><span class="lineno">  295</span>  childOptions.seed = o.ring.seed + 0x9E3779B97F4A7C15ULL;</div>
-<div class="line"><span class="lineno">  296</span>  pathintegral::RingPolymer child(c.atoms, c.masses, c.numbers, c.free,</div>
-<div class="line"><span class="lineno">  297</span>                                  childOptions);</div>
-<div class="line"><span class="lineno">  298</span> </div>
-<div class="line"><span class="lineno">  299</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> n = o.steps + 1;</div>
-<div class="line"><span class="lineno">  300</span>  <span class="comment">// Per parent: sum over children of sdot(0) h(s(t) - s*) at each time,</span></div>
-<div class="line"><span class="lineno">  301</span>  <span class="comment">// and of sdot(0) h(sdot(0)).</span></div>
-<div class="line"><span class="lineno">  302</span>  std::vector&lt;VectorXd&gt; numerator(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(o.parents),</div>
-<div class="line"><span class="lineno">  303</span>                                  VectorXd::Zero(n));</div>
-<div class="line"><span class="lineno">  304</span>  std::vector&lt;double&gt; denominator(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(o.parents), 0.0);</div>
-<div class="line"><span class="lineno">  305</span>  <a class="code hl_struct" href="structeonc_1_1piqtst_1_1Recrossing.html">Recrossing</a> out;</div>
-<div class="line"><span class="lineno">  306</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> p = 0; p &lt; o.parents; ++p) {</div>
-<div class="line"><span class="lineno">  307</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> step = 0; step &lt; o.spacing; ++step) {</div>
-<div class="line"><span class="lineno">  308</span>      parent.step(pot, c.box, <span class="keyword">false</span>);</div>
-<div class="line"><span class="lineno">  309</span>    }</div>
-<div class="line"><span class="lineno">  310</span>    <span class="keyword">const</span> std::vector&lt;VectorXd&gt; beads = parent.beads();</div>
-<div class="line"><span class="lineno">  311</span>    VectorXd &amp;num = numerator[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)];</div>
-<div class="line"><span class="lineno">  312</span>    <span class="keywordtype">double</span> &amp;den = denominator[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)];</div>
-<div class="line"><span class="lineno">  313</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; o.children; ++k) {</div>
-<div class="line"><span class="lineno">  314</span>      child.setBeads(beads);</div>
-<div class="line"><span class="lineno">  315</span>      child.thermalMomenta();</div>
-<div class="line"><span class="lineno">  316</span>      std::vector&lt;VectorXd&gt; reversed = child.momenta();</div>
-<div class="line"><span class="lineno">  317</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> forward = ax.a.dot(child.centroidVelocity());</div>
-<div class="line"><span class="lineno">  318</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> sign = 0; sign &lt; 2; ++sign) {</div>
-<div class="line"><span class="lineno">  319</span>        <span class="keywordflow">if</span> (sign == 1) {</div>
-<div class="line"><span class="lineno">  320</span>          <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;v : reversed) {</div>
-<div class="line"><span class="lineno">  321</span>            v = -v;</div>
-<div class="line"><span class="lineno">  322</span>          }</div>
-<div class="line"><span class="lineno">  323</span>          child.setBeads(beads);</div>
-<div class="line"><span class="lineno">  324</span>          child.setMomenta(reversed);</div>
-<div class="line"><span class="lineno">  325</span>        }</div>
-<div class="line"><span class="lineno">  326</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> sdot = sign == 0 ? forward : -forward;</div>
-<div class="line"><span class="lineno">  327</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> flux = sdot &gt; 0.0 ? sdot : 0.0;</div>
-<div class="line"><span class="lineno">  328</span>        den += flux;</div>
-<div class="line"><span class="lineno">  329</span>        num(0) += flux;</div>
-<div class="line"><span class="lineno">  330</span>        <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 1; i &lt; n; ++i) {</div>
-<div class="line"><span class="lineno">  331</span>          child.nveStep(pot, c.box);</div>
-<div class="line"><span class="lineno">  332</span>          <span class="keyword">const</span> <span class="keywordtype">double</span> s = ax.a.dot(child.centroid() - c.reference);</div>
-<div class="line"><span class="lineno">  333</span>          <span class="keywordflow">if</span> (s &gt; o.s) {</div>
-<div class="line"><span class="lineno">  334</span>            num(i) += sdot;</div>
-<div class="line"><span class="lineno">  335</span>          }</div>
-<div class="line"><span class="lineno">  336</span>        }</div>
-<div class="line"><span class="lineno">  337</span>        ++out.trajectories;</div>
-<div class="line"><span class="lineno">  338</span>      }</div>
-<div class="line"><span class="lineno">  339</span>    }</div>
-<div class="line"><span class="lineno">  340</span>  }</div>
-<div class="line"><span class="lineno">  341</span> </div>
-<div class="line"><span class="lineno">  342</span>  VectorXd total = VectorXd::Zero(n);</div>
-<div class="line"><span class="lineno">  343</span>  <span class="keywordtype">double</span> totalDen = 0.0;</div>
-<div class="line"><span class="lineno">  344</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> p = 0; p &lt; o.parents; ++p) {</div>
-<div class="line"><span class="lineno">  345</span>    total += numerator[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)];</div>
-<div class="line"><span class="lineno">  346</span>    totalDen += denominator[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)];</div>
-<div class="line"><span class="lineno">  347</span>  }</div>
-<div class="line"><span class="lineno">  348</span>  <span class="keywordflow">if</span> (!(totalDen &gt; 0.0)) {</div>
-<div class="line"><span class="lineno">  349</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;piqtst: no child left the plane forward&quot;</span>);</div>
-<div class="line"><span class="lineno">  350</span>  }</div>
-<div class="line"><span class="lineno">  351</span>  out.time.resize(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(n));</div>
-<div class="line"><span class="lineno">  352</span>  out.kappa.resize(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(n));</div>
-<div class="line"><span class="lineno">  353</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; n; ++i) {</div>
-<div class="line"><span class="lineno">  354</span>    out.time[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i) * o.ring.dt;</div>
-<div class="line"><span class="lineno">  355</span>    out.kappa[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] = total(i) / totalDen;</div>
+<p class="definition">Definition at line <a class="el" href="PIQTST_8cpp_source.html#l00266">266</a> of file <a class="el" href="PIQTST_8cpp_source.html">PIQTST.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  267</span>                                                  {</div>
+<div class="line"><span class="lineno">  268</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> dof = 3 * c.atoms;</div>
+<div class="line"><span class="lineno">  269</span>  <span class="keyword">const</span> Axes ax = axes(c);</div>
+<div class="line"><span class="lineno">  270</span>  <span class="keywordflow">if</span> (o.parents &lt; 2 || o.children &lt; 1 || o.spacing &lt; 1 || o.steps &lt; 4 ||</div>
+<div class="line"><span class="lineno">  271</span>      o.equilibration &lt; 0) {</div>
+<div class="line"><span class="lineno">  272</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  273</span>        <span class="stringliteral">&quot;piqtst: recrossing needs two parents, one child, a positive &quot;</span></div>
+<div class="line"><span class="lineno">  274</span>        <span class="stringliteral">&quot;spacing and four steps&quot;</span>);</div>
+<div class="line"><span class="lineno">  275</span>  }</div>
+<div class="line"><span class="lineno">  276</span>  <span class="keyword">const</span> VectorXd origin = c.reference + o.s * ax.b;</div>
+<div class="line"><span class="lineno">  277</span>  VectorXd start = origin;</div>
+<div class="line"><span class="lineno">  278</span>  <span class="keywordflow">if</span> (o.seed) {</div>
+<div class="line"><span class="lineno">  279</span>    start = o.seed(o.s);</div>
+<div class="line"><span class="lineno">  280</span>    <span class="keywordflow">if</span> (start.size() != dof) {</div>
+<div class="line"><span class="lineno">  281</span>      <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;piqtst: a seed has the wrong length&quot;</span>);</div>
+<div class="line"><span class="lineno">  282</span>    }</div>
+<div class="line"><span class="lineno">  283</span>  }</div>
+<div class="line"><span class="lineno">  284</span>  <span class="comment">// Bennett-Chandler needs parents from the ring polymer&#39;s own constrained</span></div>
+<div class="line"><span class="lineno">  285</span>  <span class="comment">// Boltzmann distribution. PIGLET&#39;s coloured noise samples another one,</span></div>
+<div class="line"><span class="lineno">  286</span>  <span class="comment">// tuned for bead averages, so the parents always take PILE.</span></div>
+<div class="line"><span class="lineno">  287</span>  pathintegral::Options parentOptions = o.ring;</div>
+<div class="line"><span class="lineno">  288</span>  parentOptions.thermostat = <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8adac4e478206552d57f74e6a5f9fc80bc">pathintegral::Thermostat::Pile</a>;</div>
+<div class="line"><span class="lineno">  289</span>  parentOptions.gleFile.clear();</div>
+<div class="line"><span class="lineno">  290</span>  pathintegral::RingPolymer parent(c.atoms, c.masses, c.numbers, c.free,</div>
+<div class="line"><span class="lineno">  291</span>                                   parentOptions);</div>
+<div class="line"><span class="lineno">  292</span>  parent.setAllBeads(start.data());</div>
+<div class="line"><span class="lineno">  293</span>  parent.setHyperplane(ax.a, origin);</div>
+<div class="line"><span class="lineno">  294</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> step = 0; step &lt; o.equilibration; ++step) {</div>
+<div class="line"><span class="lineno">  295</span>    parent.step(pot, c.box, <span class="keyword">false</span>);</div>
+<div class="line"><span class="lineno">  296</span>  }</div>
+<div class="line"><span class="lineno">  297</span> </div>
+<div class="line"><span class="lineno">  298</span>  <span class="comment">// The children draw every normal mode from the free-ring Boltzmann</span></div>
+<div class="line"><span class="lineno">  299</span>  <span class="comment">// distribution at beta / P, which PILE&#39;s initial momenta are, and carry</span></div>
+<div class="line"><span class="lineno">  300</span>  <span class="comment">// their own stream so parent and child noise stay independent.</span></div>
+<div class="line"><span class="lineno">  301</span>  pathintegral::Options childOptions = o.ring;</div>
+<div class="line"><span class="lineno">  302</span>  childOptions.thermostat = <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8adac4e478206552d57f74e6a5f9fc80bc">pathintegral::Thermostat::Pile</a>;</div>
+<div class="line"><span class="lineno">  303</span>  childOptions.gleFile.clear();</div>
+<div class="line"><span class="lineno">  304</span>  childOptions.seed = o.ring.seed + 0x9E3779B97F4A7C15ULL;</div>
+<div class="line"><span class="lineno">  305</span>  pathintegral::RingPolymer child(c.atoms, c.masses, c.numbers, c.free,</div>
+<div class="line"><span class="lineno">  306</span>                                  childOptions);</div>
+<div class="line"><span class="lineno">  307</span> </div>
+<div class="line"><span class="lineno">  308</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> n = o.steps + 1;</div>
+<div class="line"><span class="lineno">  309</span>  <span class="comment">// Per parent: sum over children of sdot(0) h(s(t) - s*) at each time,</span></div>
+<div class="line"><span class="lineno">  310</span>  <span class="comment">// and of sdot(0) h(sdot(0)).</span></div>
+<div class="line"><span class="lineno">  311</span>  std::vector&lt;VectorXd&gt; numerator(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(o.parents),</div>
+<div class="line"><span class="lineno">  312</span>                                  VectorXd::Zero(n));</div>
+<div class="line"><span class="lineno">  313</span>  std::vector&lt;double&gt; denominator(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(o.parents), 0.0);</div>
+<div class="line"><span class="lineno">  314</span>  <a class="code hl_struct" href="structeonc_1_1piqtst_1_1Recrossing.html">Recrossing</a> out;</div>
+<div class="line"><span class="lineno">  315</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> p = 0; p &lt; o.parents; ++p) {</div>
+<div class="line"><span class="lineno">  316</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> step = 0; step &lt; o.spacing; ++step) {</div>
+<div class="line"><span class="lineno">  317</span>      parent.step(pot, c.box, <span class="keyword">false</span>);</div>
+<div class="line"><span class="lineno">  318</span>    }</div>
+<div class="line"><span class="lineno">  319</span>    <span class="keyword">const</span> std::vector&lt;VectorXd&gt; beads = parent.beads();</div>
+<div class="line"><span class="lineno">  320</span>    VectorXd &amp;num = numerator[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)];</div>
+<div class="line"><span class="lineno">  321</span>    <span class="keywordtype">double</span> &amp;den = denominator[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)];</div>
+<div class="line"><span class="lineno">  322</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; o.children; ++k) {</div>
+<div class="line"><span class="lineno">  323</span>      child.setBeads(beads);</div>
+<div class="line"><span class="lineno">  324</span>      child.thermalMomenta();</div>
+<div class="line"><span class="lineno">  325</span>      std::vector&lt;VectorXd&gt; reversed = child.momenta();</div>
+<div class="line"><span class="lineno">  326</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> forward = ax.a.dot(child.centroidVelocity());</div>
+<div class="line"><span class="lineno">  327</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> sign = 0; sign &lt; 2; ++sign) {</div>
+<div class="line"><span class="lineno">  328</span>        <span class="keywordflow">if</span> (sign == 1) {</div>
+<div class="line"><span class="lineno">  329</span>          <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;v : reversed) {</div>
+<div class="line"><span class="lineno">  330</span>            v = -v;</div>
+<div class="line"><span class="lineno">  331</span>          }</div>
+<div class="line"><span class="lineno">  332</span>          child.setBeads(beads);</div>
+<div class="line"><span class="lineno">  333</span>          child.setMomenta(reversed);</div>
+<div class="line"><span class="lineno">  334</span>        }</div>
+<div class="line"><span class="lineno">  335</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> sdot = sign == 0 ? forward : -forward;</div>
+<div class="line"><span class="lineno">  336</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> flux = sdot &gt; 0.0 ? sdot : 0.0;</div>
+<div class="line"><span class="lineno">  337</span>        den += flux;</div>
+<div class="line"><span class="lineno">  338</span>        num(0) += flux;</div>
+<div class="line"><span class="lineno">  339</span>        <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 1; i &lt; n; ++i) {</div>
+<div class="line"><span class="lineno">  340</span>          child.nveStep(pot, c.box);</div>
+<div class="line"><span class="lineno">  341</span>          <span class="keyword">const</span> <span class="keywordtype">double</span> s = ax.a.dot(child.centroid() - c.reference);</div>
+<div class="line"><span class="lineno">  342</span>          <span class="keywordflow">if</span> (s &gt; o.s) {</div>
+<div class="line"><span class="lineno">  343</span>            num(i) += sdot;</div>
+<div class="line"><span class="lineno">  344</span>          }</div>
+<div class="line"><span class="lineno">  345</span>        }</div>
+<div class="line"><span class="lineno">  346</span>        ++out.trajectories;</div>
+<div class="line"><span class="lineno">  347</span>      }</div>
+<div class="line"><span class="lineno">  348</span>    }</div>
+<div class="line"><span class="lineno">  349</span>  }</div>
+<div class="line"><span class="lineno">  350</span> </div>
+<div class="line"><span class="lineno">  351</span>  VectorXd total = VectorXd::Zero(n);</div>
+<div class="line"><span class="lineno">  352</span>  <span class="keywordtype">double</span> totalDen = 0.0;</div>
+<div class="line"><span class="lineno">  353</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> p = 0; p &lt; o.parents; ++p) {</div>
+<div class="line"><span class="lineno">  354</span>    total += numerator[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)];</div>
+<div class="line"><span class="lineno">  355</span>    totalDen += denominator[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)];</div>
 <div class="line"><span class="lineno">  356</span>  }</div>
-<div class="line"><span class="lineno">  357</span> </div>
-<div class="line"><span class="lineno">  358</span>  <span class="comment">// Plateau numerators per parent, averaged over the last quarter, and the</span></div>
-<div class="line"><span class="lineno">  359</span>  <span class="comment">// leave-one-parent-out ratios.</span></div>
-<div class="line"><span class="lineno">  360</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> first = n - 1 - o.steps / 4;</div>
-<div class="line"><span class="lineno">  361</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> span = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(n - first);</div>
-<div class="line"><span class="lineno">  362</span>  std::vector&lt;double&gt; plateauNum(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(o.parents), 0.0);</div>
-<div class="line"><span class="lineno">  363</span>  <span class="keywordtype">double</span> sumNum = 0.0;</div>
-<div class="line"><span class="lineno">  364</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> p = 0; p &lt; o.parents; ++p) {</div>
-<div class="line"><span class="lineno">  365</span>    plateauNum[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)] =</div>
-<div class="line"><span class="lineno">  366</span>        numerator[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)].tail(n - first).sum() / span;</div>
-<div class="line"><span class="lineno">  367</span>    sumNum += plateauNum[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)];</div>
-<div class="line"><span class="lineno">  368</span>  }</div>
-<div class="line"><span class="lineno">  369</span>  out.plateau = sumNum / totalDen;</div>
-<div class="line"><span class="lineno">  370</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> np = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(o.parents);</div>
-<div class="line"><span class="lineno">  371</span>  std::vector&lt;double&gt; leaveOut(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(o.parents), 0.0);</div>
-<div class="line"><span class="lineno">  372</span>  <span class="keywordtype">double</span> meanLeave = 0.0;</div>
+<div class="line"><span class="lineno">  357</span>  <span class="keywordflow">if</span> (!(totalDen &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  358</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;piqtst: no child left the plane forward&quot;</span>);</div>
+<div class="line"><span class="lineno">  359</span>  }</div>
+<div class="line"><span class="lineno">  360</span>  out.time.resize(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(n));</div>
+<div class="line"><span class="lineno">  361</span>  out.kappa.resize(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(n));</div>
+<div class="line"><span class="lineno">  362</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; n; ++i) {</div>
+<div class="line"><span class="lineno">  363</span>    out.time[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i) * o.ring.dt;</div>
+<div class="line"><span class="lineno">  364</span>    out.kappa[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] = total(i) / totalDen;</div>
+<div class="line"><span class="lineno">  365</span>  }</div>
+<div class="line"><span class="lineno">  366</span> </div>
+<div class="line"><span class="lineno">  367</span>  <span class="comment">// Plateau numerators per parent, averaged over the last quarter, and the</span></div>
+<div class="line"><span class="lineno">  368</span>  <span class="comment">// leave-one-parent-out ratios.</span></div>
+<div class="line"><span class="lineno">  369</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> first = n - 1 - o.steps / 4;</div>
+<div class="line"><span class="lineno">  370</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> span = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(n - first);</div>
+<div class="line"><span class="lineno">  371</span>  std::vector&lt;double&gt; plateauNum(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(o.parents), 0.0);</div>
+<div class="line"><span class="lineno">  372</span>  <span class="keywordtype">double</span> sumNum = 0.0;</div>
 <div class="line"><span class="lineno">  373</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> p = 0; p &lt; o.parents; ++p) {</div>
-<div class="line"><span class="lineno">  374</span>    leaveOut[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)] =</div>
-<div class="line"><span class="lineno">  375</span>        (sumNum - plateauNum[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)]) /</div>
-<div class="line"><span class="lineno">  376</span>        (totalDen - denominator[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)]);</div>
-<div class="line"><span class="lineno">  377</span>    meanLeave += leaveOut[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)];</div>
-<div class="line"><span class="lineno">  378</span>  }</div>
-<div class="line"><span class="lineno">  379</span>  meanLeave /= np;</div>
-<div class="line"><span class="lineno">  380</span>  <span class="keywordtype">double</span> var = 0.0;</div>
-<div class="line"><span class="lineno">  381</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keywordtype">double</span> v : leaveOut) {</div>
-<div class="line"><span class="lineno">  382</span>    var += (v - meanLeave) * (v - meanLeave);</div>
-<div class="line"><span class="lineno">  383</span>  }</div>
-<div class="line"><span class="lineno">  384</span>  out.plateauError = std::sqrt((np - 1.0) / np * var);</div>
-<div class="line"><span class="lineno">  385</span>  out.batches = parent.batches() + child.batches();</div>
-<div class="line"><span class="lineno">  386</span>  <span class="keywordflow">return</span> out;</div>
-<div class="line"><span class="lineno">  387</span>}</div>
+<div class="line"><span class="lineno">  374</span>    plateauNum[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)] =</div>
+<div class="line"><span class="lineno">  375</span>        numerator[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)].tail(n - first).sum() / span;</div>
+<div class="line"><span class="lineno">  376</span>    sumNum += plateauNum[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)];</div>
+<div class="line"><span class="lineno">  377</span>  }</div>
+<div class="line"><span class="lineno">  378</span>  out.plateau = sumNum / totalDen;</div>
+<div class="line"><span class="lineno">  379</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> np = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(o.parents);</div>
+<div class="line"><span class="lineno">  380</span>  std::vector&lt;double&gt; leaveOut(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(o.parents), 0.0);</div>
+<div class="line"><span class="lineno">  381</span>  <span class="keywordtype">double</span> meanLeave = 0.0;</div>
+<div class="line"><span class="lineno">  382</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> p = 0; p &lt; o.parents; ++p) {</div>
+<div class="line"><span class="lineno">  383</span>    leaveOut[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)] =</div>
+<div class="line"><span class="lineno">  384</span>        (sumNum - plateauNum[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)]) /</div>
+<div class="line"><span class="lineno">  385</span>        (totalDen - denominator[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)]);</div>
+<div class="line"><span class="lineno">  386</span>    meanLeave += leaveOut[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(p)];</div>
+<div class="line"><span class="lineno">  387</span>  }</div>
+<div class="line"><span class="lineno">  388</span>  meanLeave /= np;</div>
+<div class="line"><span class="lineno">  389</span>  <span class="keywordtype">double</span> var = 0.0;</div>
+<div class="line"><span class="lineno">  390</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keywordtype">double</span> v : leaveOut) {</div>
+<div class="line"><span class="lineno">  391</span>    var += (v - meanLeave) * (v - meanLeave);</div>
+<div class="line"><span class="lineno">  392</span>  }</div>
+<div class="line"><span class="lineno">  393</span>  out.plateauError = std::sqrt((np - 1.0) / np * var);</div>
+<div class="line"><span class="lineno">  394</span>  out.batches = parent.batches() + child.batches();</div>
+<div class="line"><span class="lineno">  395</span>  <span class="keywordflow">return</span> out;</div>
+<div class="line"><span class="lineno">  396</span>}</div>
 <div class="ttc" id="anamespaceeonc_1_1pathintegral_html_ae25079e6f1ebbf96835a7214c8d42ce8adac4e478206552d57f74e6a5f9fc80bc"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8adac4e478206552d57f74e6a5f9fc80bc">eonc::pathintegral::Thermostat::Pile</a></div><div class="ttdeci">@ Pile</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00046">PathIntegral.h:46</a></div></div>
-<div class="ttc" id="astructeonc_1_1piqtst_1_1Recrossing_html"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Recrossing.html">eonc::piqtst::Recrossing</a></div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00138">PIQTST.h:138</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Recrossing_html"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Recrossing.html">eonc::piqtst::Recrossing</a></div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00144">PIQTST.h:144</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -703,188 +712,199 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">  282</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;piqtst: cannot write &quot;</span> + tableFile);</div>
 <div class="line"><span class="lineno">  283</span>  }</div>
 <div class="line"><span class="lineno">  284</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> kappaOn = o.pi_recrossing_parents &gt; 0;</div>
-<div class="line"><span class="lineno">  285</span>  table &lt;&lt; <span class="stringliteral">&quot;# T_K s_amu05A dF_ds_eV_per_amu05A dF_ds_error F_eV F_error_eV &quot;</span></div>
-<div class="line"><span class="lineno">  286</span>           <span class="stringliteral">&quot;spread_max_A&quot;</span>;</div>
-<div class="line"><span class="lineno">  287</span>  <span class="keywordflow">if</span> (kappaOn) {</div>
-<div class="line"><span class="lineno">  288</span>    table &lt;&lt; <span class="stringliteral">&quot; kappa kappa_error ln_k_rpmd_s ln_k_rpmd_s_error&quot;</span>;</div>
+<div class="line"><span class="lineno">  285</span>  <span class="keywordflow">if</span> (kappaOn &amp;&amp; o.pi_thermostat == <span class="stringliteral">&quot;piglet&quot;</span>) {</div>
+<div class="line"><span class="lineno">  286</span>    <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[Instanton] piqtst: the transmission factor&#39;s parents &quot;</span></div>
+<div class="line"><span class="lineno">  287</span>                     <span class="stringliteral">&quot;take pile; RPMD needs the ring polymer&#39;s own &quot;</span></div>
+<div class="line"><span class="lineno">  288</span>                     <span class="stringliteral">&quot;distribution, which piglet does not sample&quot;</span>);</div>
 <div class="line"><span class="lineno">  289</span>  }</div>
-<div class="line"><span class="lineno">  290</span>  table &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
-<div class="line"><span class="lineno">  291</span>  table &lt;&lt; std::setprecision(10);</div>
-<div class="line"><span class="lineno">  292</span>  std::vector&lt;std::string&gt; files{tableFile};</div>
-<div class="line"><span class="lineno">  293</span> </div>
-<div class="line"><span class="lineno">  294</span>  std::vector&lt;double&gt; sorted = temperatures;</div>
-<div class="line"><span class="lineno">  295</span>  std::sort(sorted.begin(), sorted.end(), std::greater&lt;&gt;());</div>
-<div class="line"><span class="lineno">  296</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> logSecond = std::log(<a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#a520ac3171661d0e32fa444d7cdd546c4">tunneling::kTimeUnitSeconds</a>);</div>
-<div class="line"><span class="lineno">  297</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> ti = 0; ti &lt; sorted.size(); ++ti) {</div>
-<div class="line"><span class="lineno">  298</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> t = sorted[ti];</div>
-<div class="line"><span class="lineno">  299</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> last = ti + 1 == sorted.size();</div>
-<div class="line"><span class="lineno">  300</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> beta = 1.0 / (<a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#af7d7cff7a86f5d8ade50e485b3b184e9">tunneling::kBoltzmann</a> * t);</div>
-<div class="line"><span class="lineno">  301</span>    <a class="code hl_struct" href="structeonc_1_1piqtst_1_1ScanOptions.html">ScanOptions</a> so;</div>
-<div class="line"><span class="lineno">  302</span>    so.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1ScanOptions.html#a699fbefa2cc5e472d67af4ad22d39ab6">planes</a> = sPlanes;</div>
-<div class="line"><span class="lineno">  303</span>    so.equilibration = o.pi_equilibration_steps;</div>
-<div class="line"><span class="lineno">  304</span>    so.production = o.pi_sampling_steps;</div>
-<div class="line"><span class="lineno">  305</span>    so.blocks = 10;</div>
-<div class="line"><span class="lineno">  306</span>    so.ring.beads = o.pi_beads;</div>
-<div class="line"><span class="lineno">  307</span>    so.ring.temperature = t;</div>
-<div class="line"><span class="lineno">  308</span>    so.ring.kB = <a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#af7d7cff7a86f5d8ade50e485b3b184e9">tunneling::kBoltzmann</a>;</div>
-<div class="line"><span class="lineno">  309</span>    so.ring.hbar = <a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#a9226451a02d96e8651470ee1fb21eaa9">tunneling::kHbar</a>;</div>
-<div class="line"><span class="lineno">  310</span>    so.ring.dt = o.pi_time_step / timeUnit;</div>
-<div class="line"><span class="lineno">  311</span>    so.ring.thermostat = o.pi_thermostat == <span class="stringliteral">&quot;piglet&quot;</span></div>
-<div class="line"><span class="lineno">  312</span>                             ? <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd">pathintegral::Thermostat::Piglet</a></div>
-<div class="line"><span class="lineno">  313</span>                             : <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8adac4e478206552d57f74e6a5f9fc80bc">pathintegral::Thermostat::Pile</a>;</div>
-<div class="line"><span class="lineno">  314</span>    so.ring.pileTau = o.pi_pile_tau / timeUnit;</div>
-<div class="line"><span class="lineno">  315</span>    so.ring.pileScale = o.pi_pile_scale;</div>
-<div class="line"><span class="lineno">  316</span>    so.ring.gleFile = o.pi_gle_file;</div>
-<div class="line"><span class="lineno">  317</span>    so.ring.seed = <span class="keyword">static_cast&lt;</span>std::uint64_t<span class="keyword">&gt;</span>(o.pi_seed);</div>
-<div class="line"><span class="lineno">  318</span>    so.seed = seed;</div>
-<div class="line"><span class="lineno">  319</span>    <span class="keyword">const</span> std::vector&lt;Plane&gt; planes = <a class="code hl_function" href="#a3d8fae3ef87a04fa7d9d0779aa5967e3">scan</a>(pot, c, so);</div>
-<div class="line"><span class="lineno">  320</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeonc_1_1piqtst_1_1Rate.html">Rate</a> r = <a class="code hl_function" href="#abc92f8cab64b9349ebf237b182c70dc9">rate</a>(planes, beta);</div>
-<div class="line"><span class="lineno">  321</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> lnPerSecond = r.logRate - logSecond;</div>
-<div class="line"><span class="lineno">  322</span> </div>
-<div class="line"><span class="lineno">  323</span>    <a class="code hl_struct" href="structeonc_1_1piqtst_1_1Recrossing.html">Recrossing</a> kappa;</div>
-<div class="line"><span class="lineno">  324</span>    <span class="keywordtype">double</span> lnRpmd = std::numeric_limits&lt;double&gt;::quiet_NaN();</div>
-<div class="line"><span class="lineno">  325</span>    <span class="keywordtype">double</span> lnRpmdError = std::numeric_limits&lt;double&gt;::quiet_NaN();</div>
-<div class="line"><span class="lineno">  326</span>    <span class="keywordflow">if</span> (kappaOn) {</div>
-<div class="line"><span class="lineno">  327</span>      <a class="code hl_struct" href="structeonc_1_1piqtst_1_1RecrossingOptions.html">RecrossingOptions</a> ro;</div>
-<div class="line"><span class="lineno">  328</span>      ro.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1RecrossingOptions.html#ad6aac6c76ec3a65ba1fd1e31c0f2404d">s</a> = planes.back().s;</div>
-<div class="line"><span class="lineno">  329</span>      ro.equilibration = o.pi_equilibration_steps;</div>
-<div class="line"><span class="lineno">  330</span>      ro.parents = o.pi_recrossing_parents;</div>
-<div class="line"><span class="lineno">  331</span>      ro.spacing = o.pi_recrossing_spacing;</div>
-<div class="line"><span class="lineno">  332</span>      ro.children = o.pi_recrossing_children;</div>
-<div class="line"><span class="lineno">  333</span>      ro.steps = std::lround(o.pi_recrossing_time / o.pi_time_step);</div>
-<div class="line"><span class="lineno">  334</span>      ro.ring = so.ring;</div>
-<div class="line"><span class="lineno">  335</span>      ro.seed = seed;</div>
-<div class="line"><span class="lineno">  336</span>      kappa = <a class="code hl_function" href="#a19b9f13eb26035b7e6247009602d7120">recrossing</a>(pot, c, ro);</div>
-<div class="line"><span class="lineno">  337</span>      <span class="keywordflow">if</span> (kappa.plateau &gt; 0.0) {</div>
-<div class="line"><span class="lineno">  338</span>        lnRpmd = lnPerSecond + std::log(kappa.plateau);</div>
-<div class="line"><span class="lineno">  339</span>        lnRpmdError =</div>
-<div class="line"><span class="lineno">  340</span>            std::hypot(r.logRateError, kappa.plateauError / kappa.plateau);</div>
-<div class="line"><span class="lineno">  341</span>      } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  342</span>        <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[Instanton] piqtst {:.4g} K: the transmission &quot;</span></div>
-<div class="line"><span class="lineno">  343</span>                         <span class="stringliteral">&quot;factor {:.4g} +- {:.2g} is not positive; ln k_RPMD &quot;</span></div>
-<div class="line"><span class="lineno">  344</span>                         <span class="stringliteral">&quot;is undefined (raise pi_recrossing_parents)&quot;</span>,</div>
-<div class="line"><span class="lineno">  345</span>                         t, kappa.plateau, kappa.plateauError);</div>
-<div class="line"><span class="lineno">  346</span>      }</div>
-<div class="line"><span class="lineno">  347</span>      <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[Instanton] piqtst {:.4g} K: transmission factor &quot;</span></div>
-<div class="line"><span class="lineno">  348</span>                    <span class="stringliteral">&quot;kappa = {:.4f} +- {:.4f} from {} trajectories, &quot;</span></div>
-<div class="line"><span class="lineno">  349</span>                    <span class="stringliteral">&quot;ln(k_RPMD s) = {:.4f} +- {:.4f}&quot;</span>,</div>
-<div class="line"><span class="lineno">  350</span>                    t, kappa.plateau, kappa.plateauError, kappa.trajectories,</div>
-<div class="line"><span class="lineno">  351</span>                    lnRpmd, lnRpmdError);</div>
-<div class="line"><span class="lineno">  352</span>      std::vector&lt;std::string&gt; curveFiles;</div>
-<div class="line"><span class="lineno">  353</span>      <span class="keywordflow">if</span> (last) {</div>
-<div class="line"><span class="lineno">  354</span>        curveFiles.push_back(<span class="stringliteral">&quot;kappa_piqtst.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">  355</span>      }</div>
-<div class="line"><span class="lineno">  356</span>      <span class="keywordflow">if</span> (sorted.size() &gt; 1) {</div>
-<div class="line"><span class="lineno">  357</span>        curveFiles.push_back(<span class="stringliteral">&quot;kappa_piqtst_&quot;</span> + kelvinTag(t) + <span class="stringliteral">&quot;.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">  358</span>      }</div>
-<div class="line"><span class="lineno">  359</span>      <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;file : curveFiles) {</div>
-<div class="line"><span class="lineno">  360</span>        std::ofstream curve(file);</div>
-<div class="line"><span class="lineno">  361</span>        <span class="keywordflow">if</span> (!curve) {</div>
-<div class="line"><span class="lineno">  362</span>          <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;piqtst: cannot write &quot;</span> + file);</div>
-<div class="line"><span class="lineno">  363</span>        }</div>
-<div class="line"><span class="lineno">  364</span>        curve &lt;&lt; <span class="stringliteral">&quot;# t_fs kappa\n&quot;</span> &lt;&lt; std::setprecision(10);</div>
-<div class="line"><span class="lineno">  365</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; kappa.time.size(); ++i) {</div>
-<div class="line"><span class="lineno">  366</span>          curve &lt;&lt; kappa.time[i] * timeUnit &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; kappa.kappa[i] &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
-<div class="line"><span class="lineno">  367</span>        }</div>
-<div class="line"><span class="lineno">  368</span>        files.push_back(file);</div>
-<div class="line"><span class="lineno">  369</span>      }</div>
-<div class="line"><span class="lineno">  370</span>    }</div>
-<div class="line"><span class="lineno">  371</span> </div>
-<div class="line"><span class="lineno">  372</span>    std::vector&lt;std::string&gt; conFiles;</div>
-<div class="line"><span class="lineno">  373</span>    <span class="keywordflow">if</span> (last) {</div>
-<div class="line"><span class="lineno">  374</span>      conFiles.push_back(<span class="stringliteral">&quot;piqtst_planes.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  290</span>  table &lt;&lt; <span class="stringliteral">&quot;# T_K s_amu05A dF_ds_eV_per_amu05A dF_ds_error F_eV F_error_eV &quot;</span></div>
+<div class="line"><span class="lineno">  291</span>           <span class="stringliteral">&quot;spread_max_A&quot;</span>;</div>
+<div class="line"><span class="lineno">  292</span>  <span class="keywordflow">if</span> (kappaOn) {</div>
+<div class="line"><span class="lineno">  293</span>    table &lt;&lt; <span class="stringliteral">&quot; kappa kappa_error ln_k_rpmd_s ln_k_rpmd_s_error&quot;</span>;</div>
+<div class="line"><span class="lineno">  294</span>  }</div>
+<div class="line"><span class="lineno">  295</span>  table &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"><span class="lineno">  296</span>  table &lt;&lt; std::setprecision(10);</div>
+<div class="line"><span class="lineno">  297</span>  std::vector&lt;std::string&gt; files{tableFile};</div>
+<div class="line"><span class="lineno">  298</span> </div>
+<div class="line"><span class="lineno">  299</span>  std::vector&lt;double&gt; sorted = temperatures;</div>
+<div class="line"><span class="lineno">  300</span>  std::sort(sorted.begin(), sorted.end(), std::greater&lt;&gt;());</div>
+<div class="line"><span class="lineno">  301</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> logSecond = std::log(<a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#a520ac3171661d0e32fa444d7cdd546c4">tunneling::kTimeUnitSeconds</a>);</div>
+<div class="line"><span class="lineno">  302</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> ti = 0; ti &lt; sorted.size(); ++ti) {</div>
+<div class="line"><span class="lineno">  303</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> t = sorted[ti];</div>
+<div class="line"><span class="lineno">  304</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> last = ti + 1 == sorted.size();</div>
+<div class="line"><span class="lineno">  305</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> beta = 1.0 / (<a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#af7d7cff7a86f5d8ade50e485b3b184e9">tunneling::kBoltzmann</a> * t);</div>
+<div class="line"><span class="lineno">  306</span>    <a class="code hl_struct" href="structeonc_1_1piqtst_1_1ScanOptions.html">ScanOptions</a> so;</div>
+<div class="line"><span class="lineno">  307</span>    so.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1ScanOptions.html#a699fbefa2cc5e472d67af4ad22d39ab6">planes</a> = sPlanes;</div>
+<div class="line"><span class="lineno">  308</span>    so.equilibration = o.pi_equilibration_steps;</div>
+<div class="line"><span class="lineno">  309</span>    so.production = o.pi_sampling_steps;</div>
+<div class="line"><span class="lineno">  310</span>    so.blocks = 10;</div>
+<div class="line"><span class="lineno">  311</span>    so.ring.beads = o.pi_beads;</div>
+<div class="line"><span class="lineno">  312</span>    so.ring.temperature = t;</div>
+<div class="line"><span class="lineno">  313</span>    so.ring.kB = <a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#af7d7cff7a86f5d8ade50e485b3b184e9">tunneling::kBoltzmann</a>;</div>
+<div class="line"><span class="lineno">  314</span>    so.ring.hbar = <a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#a9226451a02d96e8651470ee1fb21eaa9">tunneling::kHbar</a>;</div>
+<div class="line"><span class="lineno">  315</span>    so.ring.dt = o.pi_time_step / timeUnit;</div>
+<div class="line"><span class="lineno">  316</span>    so.ring.thermostat = o.pi_thermostat == <span class="stringliteral">&quot;piglet&quot;</span></div>
+<div class="line"><span class="lineno">  317</span>                             ? <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd">pathintegral::Thermostat::Piglet</a></div>
+<div class="line"><span class="lineno">  318</span>                             : <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8adac4e478206552d57f74e6a5f9fc80bc">pathintegral::Thermostat::Pile</a>;</div>
+<div class="line"><span class="lineno">  319</span>    so.ring.pileTau = o.pi_pile_tau / timeUnit;</div>
+<div class="line"><span class="lineno">  320</span>    so.ring.pileScale = o.pi_pile_scale;</div>
+<div class="line"><span class="lineno">  321</span>    so.ring.gleFile = o.pi_gle_file;</div>
+<div class="line"><span class="lineno">  322</span>    so.ring.seed = <span class="keyword">static_cast&lt;</span>std::uint64_t<span class="keyword">&gt;</span>(o.pi_seed);</div>
+<div class="line"><span class="lineno">  323</span>    so.seed = seed;</div>
+<div class="line"><span class="lineno">  324</span>    <span class="keyword">const</span> std::vector&lt;Plane&gt; planes = <a class="code hl_function" href="#a3d8fae3ef87a04fa7d9d0779aa5967e3">scan</a>(pot, c, so);</div>
+<div class="line"><span class="lineno">  325</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeonc_1_1piqtst_1_1Rate.html">Rate</a> r = <a class="code hl_function" href="#abc92f8cab64b9349ebf237b182c70dc9">rate</a>(planes, beta);</div>
+<div class="line"><span class="lineno">  326</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> lnPerSecond = r.logRate - logSecond;</div>
+<div class="line"><span class="lineno">  327</span> </div>
+<div class="line"><span class="lineno">  328</span>    <a class="code hl_struct" href="structeonc_1_1piqtst_1_1Recrossing.html">Recrossing</a> kappa;</div>
+<div class="line"><span class="lineno">  329</span>    <span class="keywordtype">double</span> lnRpmd = std::numeric_limits&lt;double&gt;::quiet_NaN();</div>
+<div class="line"><span class="lineno">  330</span>    <span class="keywordtype">double</span> lnRpmdError = std::numeric_limits&lt;double&gt;::quiet_NaN();</div>
+<div class="line"><span class="lineno">  331</span>    <span class="keywordflow">if</span> (kappaOn) {</div>
+<div class="line"><span class="lineno">  332</span>      <a class="code hl_struct" href="structeonc_1_1piqtst_1_1RecrossingOptions.html">RecrossingOptions</a> ro;</div>
+<div class="line"><span class="lineno">  333</span>      ro.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1RecrossingOptions.html#ad6aac6c76ec3a65ba1fd1e31c0f2404d">s</a> = planes.back().s;</div>
+<div class="line"><span class="lineno">  334</span>      ro.equilibration = o.pi_equilibration_steps;</div>
+<div class="line"><span class="lineno">  335</span>      ro.parents = o.pi_recrossing_parents;</div>
+<div class="line"><span class="lineno">  336</span>      ro.spacing = o.pi_recrossing_spacing;</div>
+<div class="line"><span class="lineno">  337</span>      ro.children = o.pi_recrossing_children;</div>
+<div class="line"><span class="lineno">  338</span>      ro.steps = std::lround(o.pi_recrossing_time / o.pi_time_step);</div>
+<div class="line"><span class="lineno">  339</span>      ro.ring = so.ring;</div>
+<div class="line"><span class="lineno">  340</span>      ro.seed = seed;</div>
+<div class="line"><span class="lineno">  341</span>      kappa = <a class="code hl_function" href="#a19b9f13eb26035b7e6247009602d7120">recrossing</a>(pot, c, ro);</div>
+<div class="line"><span class="lineno">  342</span>      <span class="keywordflow">if</span> (kappa.plateau &gt; 0.0) {</div>
+<div class="line"><span class="lineno">  343</span>        lnRpmd = lnPerSecond + std::log(kappa.plateau);</div>
+<div class="line"><span class="lineno">  344</span>        lnRpmdError =</div>
+<div class="line"><span class="lineno">  345</span>            std::hypot(r.logRateError, kappa.plateauError / kappa.plateau);</div>
+<div class="line"><span class="lineno">  346</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  347</span>        <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[Instanton] piqtst {:.4g} K: the transmission &quot;</span></div>
+<div class="line"><span class="lineno">  348</span>                         <span class="stringliteral">&quot;factor {:.4g} +- {:.2g} is not positive; ln k_RPMD &quot;</span></div>
+<div class="line"><span class="lineno">  349</span>                         <span class="stringliteral">&quot;is undefined (raise pi_recrossing_parents)&quot;</span>,</div>
+<div class="line"><span class="lineno">  350</span>                         t, kappa.plateau, kappa.plateauError);</div>
+<div class="line"><span class="lineno">  351</span>      }</div>
+<div class="line"><span class="lineno">  352</span>      <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[Instanton] piqtst {:.4g} K: transmission factor &quot;</span></div>
+<div class="line"><span class="lineno">  353</span>                    <span class="stringliteral">&quot;kappa = {:.4f} +- {:.4f} from {} trajectories, &quot;</span></div>
+<div class="line"><span class="lineno">  354</span>                    <span class="stringliteral">&quot;ln(k_RPMD s) = {:.4f} +- {:.4f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  355</span>                    t, kappa.plateau, kappa.plateauError, kappa.trajectories,</div>
+<div class="line"><span class="lineno">  356</span>                    lnRpmd, lnRpmdError);</div>
+<div class="line"><span class="lineno">  357</span>      std::vector&lt;std::string&gt; curveFiles;</div>
+<div class="line"><span class="lineno">  358</span>      <span class="keywordflow">if</span> (last) {</div>
+<div class="line"><span class="lineno">  359</span>        curveFiles.push_back(<span class="stringliteral">&quot;kappa_piqtst.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  360</span>      }</div>
+<div class="line"><span class="lineno">  361</span>      <span class="keywordflow">if</span> (sorted.size() &gt; 1) {</div>
+<div class="line"><span class="lineno">  362</span>        curveFiles.push_back(<span class="stringliteral">&quot;kappa_piqtst_&quot;</span> + kelvinTag(t) + <span class="stringliteral">&quot;.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  363</span>      }</div>
+<div class="line"><span class="lineno">  364</span>      <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;file : curveFiles) {</div>
+<div class="line"><span class="lineno">  365</span>        std::ofstream curve(file);</div>
+<div class="line"><span class="lineno">  366</span>        <span class="keywordflow">if</span> (!curve) {</div>
+<div class="line"><span class="lineno">  367</span>          <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;piqtst: cannot write &quot;</span> + file);</div>
+<div class="line"><span class="lineno">  368</span>        }</div>
+<div class="line"><span class="lineno">  369</span>        curve &lt;&lt; <span class="stringliteral">&quot;# t_fs kappa\n&quot;</span> &lt;&lt; std::setprecision(10);</div>
+<div class="line"><span class="lineno">  370</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; kappa.time.size(); ++i) {</div>
+<div class="line"><span class="lineno">  371</span>          curve &lt;&lt; kappa.time[i] * timeUnit &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; kappa.kappa[i] &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"><span class="lineno">  372</span>        }</div>
+<div class="line"><span class="lineno">  373</span>        files.push_back(file);</div>
+<div class="line"><span class="lineno">  374</span>      }</div>
 <div class="line"><span class="lineno">  375</span>    }</div>
-<div class="line"><span class="lineno">  376</span>    <span class="keywordflow">if</span> (sorted.size() &gt; 1) {</div>
-<div class="line"><span class="lineno">  377</span>      conFiles.push_back(<span class="stringliteral">&quot;piqtst_planes_&quot;</span> + kelvinTag(t) + <span class="stringliteral">&quot;.con&quot;</span>);</div>
-<div class="line"><span class="lineno">  378</span>    }</div>
-<div class="line"><span class="lineno">  379</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; planes.size(); ++j) {</div>
-<div class="line"><span class="lineno">  380</span>      <span class="keyword">const</span> <a class="code hl_struct" href="structeonc_1_1piqtst_1_1Plane.html">Plane</a> &amp;p = planes[j];</div>
-<div class="line"><span class="lineno">  381</span>      <span class="keywordtype">double</span> largest = 0.0;</div>
-<div class="line"><span class="lineno">  382</span>      <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keywordtype">double</span> sp : p.spread) {</div>
-<div class="line"><span class="lineno">  383</span>        largest = std::max(largest, sp);</div>
-<div class="line"><span class="lineno">  384</span>      }</div>
-<div class="line"><span class="lineno">  385</span>      table &lt;&lt; t &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p.s &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p.meanForce &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p.meanForceError</div>
-<div class="line"><span class="lineno">  386</span>            &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p.freeEnergy &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p.freeEnergyError &lt;&lt; <span class="charliteral">&#39; &#39;</span></div>
-<div class="line"><span class="lineno">  387</span>            &lt;&lt; largest;</div>
-<div class="line"><span class="lineno">  388</span>      <span class="keywordflow">if</span> (kappaOn) {</div>
-<div class="line"><span class="lineno">  389</span>        table &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; kappa.plateau &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; kappa.plateauError &lt;&lt; <span class="charliteral">&#39; &#39;</span></div>
-<div class="line"><span class="lineno">  390</span>              &lt;&lt; lnRpmd &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; lnRpmdError;</div>
-<div class="line"><span class="lineno">  391</span>      }</div>
-<div class="line"><span class="lineno">  392</span>      table &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
-<div class="line"><span class="lineno">  393</span>      Matter frame(reactant);</div>
-<div class="line"><span class="lineno">  394</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = frame.getPositions();</div>
-<div class="line"><span class="lineno">  395</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; c.atoms; ++i) {</div>
-<div class="line"><span class="lineno">  396</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> a = 0; a &lt; 3; ++a) {</div>
-<div class="line"><span class="lineno">  397</span>          pos(i, a) = p.centroid(3 * i + a);</div>
-<div class="line"><span class="lineno">  398</span>        }</div>
-<div class="line"><span class="lineno">  399</span>      }</div>
-<div class="line"><span class="lineno">  400</span>      frame.setPositions(pos);</div>
-<div class="line"><span class="lineno">  401</span>      io::ConFrameMetadata meta;</div>
-<div class="line"><span class="lineno">  402</span>      meta.frame_index = <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(j);</div>
-<div class="line"><span class="lineno">  403</span>      meta.write_con_forces = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  404</span>      meta.spreads = p.spread;</div>
-<div class="line"><span class="lineno">  405</span>      meta.scalars = {{<span class="stringliteral">&quot;piqtst_temperature_K&quot;</span>, t},</div>
-<div class="line"><span class="lineno">  406</span>                      {<span class="stringliteral">&quot;piqtst_s&quot;</span>, p.s},</div>
-<div class="line"><span class="lineno">  407</span>                      {<span class="stringliteral">&quot;piqtst_dF_ds&quot;</span>, p.meanForce},</div>
-<div class="line"><span class="lineno">  408</span>                      {<span class="stringliteral">&quot;piqtst_dF_ds_error&quot;</span>, p.meanForceError},</div>
-<div class="line"><span class="lineno">  409</span>                      {<span class="stringliteral">&quot;piqtst_F&quot;</span>, p.freeEnergy},</div>
-<div class="line"><span class="lineno">  410</span>                      {<span class="stringliteral">&quot;piqtst_F_error&quot;</span>, p.freeEnergyError},</div>
-<div class="line"><span class="lineno">  411</span>                      {<span class="stringliteral">&quot;beads&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(o.pi_beads)},</div>
-<div class="line"><span class="lineno">  412</span>                      {<span class="stringliteral">&quot;spread_max&quot;</span>, largest}};</div>
-<div class="line"><span class="lineno">  413</span>      <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;file : conFiles) {</div>
-<div class="line"><span class="lineno">  414</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">io::io_ok</a>(frame.matter2con(file, j &gt; 0, &amp;meta))) {</div>
-<div class="line"><span class="lineno">  415</span>          <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;piqtst: cannot write &quot;</span> + file);</div>
-<div class="line"><span class="lineno">  416</span>        }</div>
-<div class="line"><span class="lineno">  417</span>      }</div>
-<div class="line"><span class="lineno">  418</span>    }</div>
-<div class="line"><span class="lineno">  419</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;file : conFiles) {</div>
-<div class="line"><span class="lineno">  420</span>      files.push_back(file);</div>
-<div class="line"><span class="lineno">  421</span>    }</div>
-<div class="line"><span class="lineno">  422</span> </div>
-<div class="line"><span class="lineno">  423</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeonc_1_1piqtst_1_1Plane.html">Plane</a> &amp;top = planes.back();</div>
-<div class="line"><span class="lineno">  424</span>    <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[Instanton] piqtst {:.4g} K: free-energy barrier {:.5f} &quot;</span></div>
-<div class="line"><span class="lineno">  425</span>                  <span class="stringliteral">&quot;+- {:.5f} eV (classical {:.5f} eV, instanton effective &quot;</span></div>
-<div class="line"><span class="lineno">  426</span>                  <span class="stringliteral">&quot;{:.5f} eV), ln(k s) = {:.4f} +- {:.4f}&quot;</span>,</div>
-<div class="line"><span class="lineno">  427</span>                  t, r.barrier, r.barrierError, vSaddle - vReactant, effective,</div>
-<div class="line"><span class="lineno">  428</span>                  lnPerSecond, r.logRateError);</div>
-<div class="line"><span class="lineno">  429</span>    <span class="keywordflow">if</span> (r.firstPlaneHeight &lt; 5.0) {</div>
-<div class="line"><span class="lineno">  430</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[Instanton] piqtst {:.4g} K: the first plane is &quot;</span></div>
-<div class="line"><span class="lineno">  431</span>                       <span class="stringliteral">&quot;{:.3g} kT above the reactant minimum of F; the &quot;</span></div>
-<div class="line"><span class="lineno">  432</span>                       <span class="stringliteral">&quot;reactant integral is cut there (raise &quot;</span></div>
-<div class="line"><span class="lineno">  433</span>                       <span class="stringliteral">&quot;pi_reactant_extent)&quot;</span>,</div>
-<div class="line"><span class="lineno">  434</span>                       t, r.firstPlaneHeight);</div>
-<div class="line"><span class="lineno">  435</span>    }</div>
-<div class="line"><span class="lineno">  436</span>    <span class="keywordflow">if</span> (std::abs(top.meanForce) &gt; 3.0 * top.meanForceError) {</div>
-<div class="line"><span class="lineno">  437</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[Instanton] piqtst {:.4g} K: dF/ds at the saddle &quot;</span></div>
-<div class="line"><span class="lineno">  438</span>                       <span class="stringliteral">&quot;plane is {:.4g} +- {:.2g} eV / (amu^0.5 A); the &quot;</span></div>
-<div class="line"><span class="lineno">  439</span>                       <span class="stringliteral">&quot;maximum of F is not at s*&quot;</span>,</div>
-<div class="line"><span class="lineno">  440</span>                       t, top.meanForce, top.meanForceError);</div>
-<div class="line"><span class="lineno">  441</span>    }</div>
-<div class="line"><span class="lineno">  442</span>    <span class="keywordflow">if</span> (!last) {</div>
-<div class="line"><span class="lineno">  443</span>      <span class="keywordflow">continue</span>;</div>
-<div class="line"><span class="lineno">  444</span>    }</div>
-<div class="line"><span class="lineno">  445</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_temperature_K&quot;</span>, t);</div>
-<div class="line"><span class="lineno">  446</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_planes&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nPlanes));</div>
-<div class="line"><span class="lineno">  447</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_beads&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(o.pi_beads));</div>
-<div class="line"><span class="lineno">  448</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_s_star&quot;</span>, sStar);</div>
-<div class="line"><span class="lineno">  449</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_dF_ds_star&quot;</span>, top.meanForce);</div>
-<div class="line"><span class="lineno">  450</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_dF_ds_star_error&quot;</span>, top.meanForceError);</div>
-<div class="line"><span class="lineno">  451</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_first_plane_kT&quot;</span>, r.firstPlaneHeight);</div>
-<div class="line"><span class="lineno">  452</span>    extras.emplace_back(<span class="stringliteral">&quot;barrier_piqtst&quot;</span>, r.barrier);</div>
-<div class="line"><span class="lineno">  453</span>    extras.emplace_back(<span class="stringliteral">&quot;barrier_piqtst_error&quot;</span>, r.barrierError);</div>
-<div class="line"><span class="lineno">  454</span>    extras.emplace_back(<span class="stringliteral">&quot;rate_piqtst&quot;</span>, std::exp(lnPerSecond));</div>
-<div class="line"><span class="lineno">  455</span>    extras.emplace_back(<span class="stringliteral">&quot;rate_piqtst_log&quot;</span>, lnPerSecond);</div>
-<div class="line"><span class="lineno">  456</span>    extras.emplace_back(<span class="stringliteral">&quot;rate_piqtst_log_error&quot;</span>, r.logRateError);</div>
-<div class="line"><span class="lineno">  457</span>    <span class="keywordflow">if</span> (kappaOn) {</div>
-<div class="line"><span class="lineno">  458</span>      extras.emplace_back(<span class="stringliteral">&quot;piqtst_kappa&quot;</span>, kappa.plateau);</div>
-<div class="line"><span class="lineno">  459</span>      extras.emplace_back(<span class="stringliteral">&quot;piqtst_kappa_error&quot;</span>, kappa.plateauError);</div>
-<div class="line"><span class="lineno">  460</span>      extras.emplace_back(<span class="stringliteral">&quot;rate_rpmd&quot;</span>, std::exp(lnRpmd));</div>
-<div class="line"><span class="lineno">  461</span>      extras.emplace_back(<span class="stringliteral">&quot;rate_rpmd_log&quot;</span>, lnRpmd);</div>
-<div class="line"><span class="lineno">  462</span>      extras.emplace_back(<span class="stringliteral">&quot;rate_rpmd_log_error&quot;</span>, lnRpmdError);</div>
-<div class="line"><span class="lineno">  463</span>    }</div>
-<div class="line"><span class="lineno">  464</span>  }</div>
-<div class="line"><span class="lineno">  465</span>  <span class="keywordflow">return</span> files;</div>
-<div class="line"><span class="lineno">  466</span>}</div>
+<div class="line"><span class="lineno">  376</span> </div>
+<div class="line"><span class="lineno">  377</span>    std::vector&lt;std::string&gt; conFiles;</div>
+<div class="line"><span class="lineno">  378</span>    <span class="keywordflow">if</span> (last) {</div>
+<div class="line"><span class="lineno">  379</span>      conFiles.push_back(<span class="stringliteral">&quot;piqtst_planes.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  380</span>    }</div>
+<div class="line"><span class="lineno">  381</span>    <span class="keywordflow">if</span> (sorted.size() &gt; 1) {</div>
+<div class="line"><span class="lineno">  382</span>      conFiles.push_back(<span class="stringliteral">&quot;piqtst_planes_&quot;</span> + kelvinTag(t) + <span class="stringliteral">&quot;.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  383</span>    }</div>
+<div class="line"><span class="lineno">  384</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; planes.size(); ++j) {</div>
+<div class="line"><span class="lineno">  385</span>      <span class="keyword">const</span> <a class="code hl_struct" href="structeonc_1_1piqtst_1_1Plane.html">Plane</a> &amp;p = planes[j];</div>
+<div class="line"><span class="lineno">  386</span>      <span class="keywordtype">double</span> largest = 0.0;</div>
+<div class="line"><span class="lineno">  387</span>      <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keywordtype">double</span> sp : p.spread) {</div>
+<div class="line"><span class="lineno">  388</span>        largest = std::max(largest, sp);</div>
+<div class="line"><span class="lineno">  389</span>      }</div>
+<div class="line"><span class="lineno">  390</span>      table &lt;&lt; t &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p.s &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p.meanForce &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p.meanForceError</div>
+<div class="line"><span class="lineno">  391</span>            &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p.freeEnergy &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p.freeEnergyError &lt;&lt; <span class="charliteral">&#39; &#39;</span></div>
+<div class="line"><span class="lineno">  392</span>            &lt;&lt; largest;</div>
+<div class="line"><span class="lineno">  393</span>      <span class="keywordflow">if</span> (kappaOn) {</div>
+<div class="line"><span class="lineno">  394</span>        table &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; kappa.plateau &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; kappa.plateauError &lt;&lt; <span class="charliteral">&#39; &#39;</span></div>
+<div class="line"><span class="lineno">  395</span>              &lt;&lt; lnRpmd &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; lnRpmdError;</div>
+<div class="line"><span class="lineno">  396</span>      }</div>
+<div class="line"><span class="lineno">  397</span>      table &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"><span class="lineno">  398</span>      Matter frame(reactant);</div>
+<div class="line"><span class="lineno">  399</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = frame.getPositions();</div>
+<div class="line"><span class="lineno">  400</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; c.atoms; ++i) {</div>
+<div class="line"><span class="lineno">  401</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> a = 0; a &lt; 3; ++a) {</div>
+<div class="line"><span class="lineno">  402</span>          pos(i, a) = p.centroid(3 * i + a);</div>
+<div class="line"><span class="lineno">  403</span>        }</div>
+<div class="line"><span class="lineno">  404</span>      }</div>
+<div class="line"><span class="lineno">  405</span>      frame.setPositions(pos);</div>
+<div class="line"><span class="lineno">  406</span>      io::ConFrameMetadata meta;</div>
+<div class="line"><span class="lineno">  407</span>      meta.frame_index = <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(j);</div>
+<div class="line"><span class="lineno">  408</span>      meta.write_con_forces = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  409</span>      meta.spreads = p.spread;</div>
+<div class="line"><span class="lineno">  410</span>      meta.scalars = {{<span class="stringliteral">&quot;piqtst_temperature_K&quot;</span>, t},</div>
+<div class="line"><span class="lineno">  411</span>                      {<span class="stringliteral">&quot;piqtst_s&quot;</span>, p.s},</div>
+<div class="line"><span class="lineno">  412</span>                      {<span class="stringliteral">&quot;piqtst_dF_ds&quot;</span>, p.meanForce},</div>
+<div class="line"><span class="lineno">  413</span>                      {<span class="stringliteral">&quot;piqtst_dF_ds_error&quot;</span>, p.meanForceError},</div>
+<div class="line"><span class="lineno">  414</span>                      {<span class="stringliteral">&quot;piqtst_F&quot;</span>, p.freeEnergy},</div>
+<div class="line"><span class="lineno">  415</span>                      {<span class="stringliteral">&quot;piqtst_F_error&quot;</span>, p.freeEnergyError},</div>
+<div class="line"><span class="lineno">  416</span>                      {<span class="stringliteral">&quot;beads&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(o.pi_beads)},</div>
+<div class="line"><span class="lineno">  417</span>                      {<span class="stringliteral">&quot;spread_max&quot;</span>, largest}};</div>
+<div class="line"><span class="lineno">  418</span>      <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;file : conFiles) {</div>
+<div class="line"><span class="lineno">  419</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">io::io_ok</a>(frame.matter2con(file, j &gt; 0, &amp;meta))) {</div>
+<div class="line"><span class="lineno">  420</span>          <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;piqtst: cannot write &quot;</span> + file);</div>
+<div class="line"><span class="lineno">  421</span>        }</div>
+<div class="line"><span class="lineno">  422</span>      }</div>
+<div class="line"><span class="lineno">  423</span>    }</div>
+<div class="line"><span class="lineno">  424</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;file : conFiles) {</div>
+<div class="line"><span class="lineno">  425</span>      files.push_back(file);</div>
+<div class="line"><span class="lineno">  426</span>    }</div>
+<div class="line"><span class="lineno">  427</span> </div>
+<div class="line"><span class="lineno">  428</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeonc_1_1piqtst_1_1Plane.html">Plane</a> &amp;top = planes.back();</div>
+<div class="line"><span class="lineno">  429</span>    <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[Instanton] piqtst {:.4g} K: free-energy barrier {:.5f} &quot;</span></div>
+<div class="line"><span class="lineno">  430</span>                  <span class="stringliteral">&quot;+- {:.5f} eV (classical {:.5f} eV, instanton effective &quot;</span></div>
+<div class="line"><span class="lineno">  431</span>                  <span class="stringliteral">&quot;{:.5f} eV), ln(k s) = {:.4f} +- {:.4f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  432</span>                  t, r.barrier, r.barrierError, vSaddle - vReactant, effective,</div>
+<div class="line"><span class="lineno">  433</span>                  lnPerSecond, r.logRateError);</div>
+<div class="line"><span class="lineno">  434</span>    <span class="keywordflow">if</span> (!(r.barrier &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  435</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[Instanton] piqtst {:.4g} K: F(s*) is {:.4g} eV &quot;</span></div>
+<div class="line"><span class="lineno">  436</span>                       <span class="stringliteral">&quot;against the lowest plane before it; s* is no barrier &quot;</span></div>
+<div class="line"><span class="lineno">  437</span>                       <span class="stringliteral">&quot;on the centroid free energy&quot;</span>,</div>
+<div class="line"><span class="lineno">  438</span>                       t, r.barrier);</div>
+<div class="line"><span class="lineno">  439</span>    }</div>
+<div class="line"><span class="lineno">  440</span>    <span class="keywordflow">if</span> (r.firstPlaneHeight &lt; 5.0) {</div>
+<div class="line"><span class="lineno">  441</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[Instanton] piqtst {:.4g} K: the first plane is &quot;</span></div>
+<div class="line"><span class="lineno">  442</span>                       <span class="stringliteral">&quot;{:.3g} kT above the reactant minimum of F; the &quot;</span></div>
+<div class="line"><span class="lineno">  443</span>                       <span class="stringliteral">&quot;reactant integral is cut there (raise &quot;</span></div>
+<div class="line"><span class="lineno">  444</span>                       <span class="stringliteral">&quot;pi_reactant_extent)&quot;</span>,</div>
+<div class="line"><span class="lineno">  445</span>                       t, r.firstPlaneHeight);</div>
+<div class="line"><span class="lineno">  446</span>    }</div>
+<div class="line"><span class="lineno">  447</span>    <span class="keywordflow">if</span> (std::abs(top.meanForce) &gt; 3.0 * top.meanForceError) {</div>
+<div class="line"><span class="lineno">  448</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[Instanton] piqtst {:.4g} K: dF/ds at the saddle &quot;</span></div>
+<div class="line"><span class="lineno">  449</span>                       <span class="stringliteral">&quot;plane is {:.4g} +- {:.2g} eV / (amu^0.5 A); the &quot;</span></div>
+<div class="line"><span class="lineno">  450</span>                       <span class="stringliteral">&quot;maximum of F is not at s*&quot;</span>,</div>
+<div class="line"><span class="lineno">  451</span>                       t, top.meanForce, top.meanForceError);</div>
+<div class="line"><span class="lineno">  452</span>    }</div>
+<div class="line"><span class="lineno">  453</span>    <span class="keywordflow">if</span> (!last) {</div>
+<div class="line"><span class="lineno">  454</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  455</span>    }</div>
+<div class="line"><span class="lineno">  456</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_temperature_K&quot;</span>, t);</div>
+<div class="line"><span class="lineno">  457</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_planes&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nPlanes));</div>
+<div class="line"><span class="lineno">  458</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_beads&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(o.pi_beads));</div>
+<div class="line"><span class="lineno">  459</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_s_star&quot;</span>, sStar);</div>
+<div class="line"><span class="lineno">  460</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_dF_ds_star&quot;</span>, top.meanForce);</div>
+<div class="line"><span class="lineno">  461</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_dF_ds_star_error&quot;</span>, top.meanForceError);</div>
+<div class="line"><span class="lineno">  462</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_first_plane_kT&quot;</span>, r.firstPlaneHeight);</div>
+<div class="line"><span class="lineno">  463</span>    extras.emplace_back(<span class="stringliteral">&quot;barrier_piqtst&quot;</span>, r.barrier);</div>
+<div class="line"><span class="lineno">  464</span>    extras.emplace_back(<span class="stringliteral">&quot;barrier_piqtst_error&quot;</span>, r.barrierError);</div>
+<div class="line"><span class="lineno">  465</span>    extras.emplace_back(<span class="stringliteral">&quot;rate_piqtst&quot;</span>, std::exp(lnPerSecond));</div>
+<div class="line"><span class="lineno">  466</span>    extras.emplace_back(<span class="stringliteral">&quot;rate_piqtst_log&quot;</span>, lnPerSecond);</div>
+<div class="line"><span class="lineno">  467</span>    extras.emplace_back(<span class="stringliteral">&quot;rate_piqtst_log_error&quot;</span>, r.logRateError);</div>
+<div class="line"><span class="lineno">  468</span>    <span class="keywordflow">if</span> (kappaOn) {</div>
+<div class="line"><span class="lineno">  469</span>      extras.emplace_back(<span class="stringliteral">&quot;piqtst_kappa&quot;</span>, kappa.plateau);</div>
+<div class="line"><span class="lineno">  470</span>      extras.emplace_back(<span class="stringliteral">&quot;piqtst_kappa_error&quot;</span>, kappa.plateauError);</div>
+<div class="line"><span class="lineno">  471</span>      extras.emplace_back(<span class="stringliteral">&quot;rate_rpmd&quot;</span>, std::exp(lnRpmd));</div>
+<div class="line"><span class="lineno">  472</span>      extras.emplace_back(<span class="stringliteral">&quot;rate_rpmd_log&quot;</span>, lnRpmd);</div>
+<div class="line"><span class="lineno">  473</span>      extras.emplace_back(<span class="stringliteral">&quot;rate_rpmd_log_error&quot;</span>, lnRpmdError);</div>
+<div class="line"><span class="lineno">  474</span>    }</div>
+<div class="line"><span class="lineno">  475</span>  }</div>
+<div class="line"><span class="lineno">  476</span>  <span class="keywordflow">return</span> files;</div>
+<div class="line"><span class="lineno">  477</span>}</div>
 <div class="ttc" id="aEigen_8h_html_a5a21583e98df78e5b867b370291714d0"><div class="ttname"><a href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 3, 3, eOnStorageOrder &gt; Matrix3d</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00035">Eigen.h:35</a></div></div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
 <div class="ttc" id="aEonLogger_8h_html_a85fddaf0620c36ee3fcf865df53a9327"><div class="ttname"><a href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a></div><div class="ttdeci">#define EONC_LOG_WARNING(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00322">EonLogger.h:322</a></div></div>
@@ -893,21 +913,21 @@ Functions</h2></td></tr>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_a4a8bc419a5c9d7dd7383ec8dd90bac10"><div class="ttname"><a href="classeonc_1_1Parameters.html#a4a8bc419a5c9d7dd7383ec8dd90bac10">eonc::Parameters::constants</a></div><div class="ttdeci">const constants_t &amp; constants() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00071">ParametersAccess.cpp:71</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_af66b2723d892a4095754f9b0354b4f78"><div class="ttname"><a href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a></div><div class="ttdeci">constexpr bool io_ok(IoStatus s) noexcept</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00038">ConFileIO.h:38</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1pathintegral_html_ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd">eonc::pathintegral::Thermostat::Piglet</a></div><div class="ttdeci">@ Piglet</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00046">PathIntegral.h:46</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1piqtst_html_a19b9f13eb26035b7e6247009602d7120"><div class="ttname"><a href="#a19b9f13eb26035b7e6247009602d7120">eonc::piqtst::recrossing</a></div><div class="ttdeci">Recrossing recrossing(Potential &amp;pot, const Coordinate &amp;c, const RecrossingOptions &amp;o)</div><div class="ttdoc">Bennett-Chandler transmission at s*: parents sampled with the centroid held on the plane,...</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8cpp_source.html#l00263">PIQTST.cpp:263</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1piqtst_html_a19b9f13eb26035b7e6247009602d7120"><div class="ttname"><a href="#a19b9f13eb26035b7e6247009602d7120">eonc::piqtst::recrossing</a></div><div class="ttdeci">Recrossing recrossing(Potential &amp;pot, const Coordinate &amp;c, const RecrossingOptions &amp;o)</div><div class="ttdoc">Bennett-Chandler transmission at s*: parents sampled with the centroid held on the plane under PILE,...</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8cpp_source.html#l00266">PIQTST.cpp:266</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1piqtst_html_a3d8fae3ef87a04fa7d9d0779aa5967e3"><div class="ttname"><a href="#a3d8fae3ef87a04fa7d9d0779aa5967e3">eonc::piqtst::scan</a></div><div class="ttdeci">std::vector&lt; Plane &gt; scan(Potential &amp;pot, const Coordinate &amp;c, const ScanOptions &amp;o)</div><div class="ttdoc">Samples one ring per plane and integrates the mean force.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8cpp_source.html#l00104">PIQTST.cpp:104</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1piqtst_html_abc92f8cab64b9349ebf237b182c70dc9"><div class="ttname"><a href="#abc92f8cab64b9349ebf237b182c70dc9">eonc::piqtst::rate</a></div><div class="ttdeci">Rate rate(const std::vector&lt; Plane &gt; &amp;planes, double beta)</div><div class="ttdoc">k = (1/2) sqrt(2 / (pi beta)) exp(-beta F(s*)) / int_{s_0}^{s*} exp(-beta F(s)) ds,...</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8cpp_source.html#l00213">PIQTST.cpp:213</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1piqtst_html_af62d0dd293ea266ba7f2e194e28157f8"><div class="ttname"><a href="#af62d0dd293ea266ba7f2e194e28157f8">eonc::piqtst::validateOptions</a></div><div class="ttdeci">void validateOptions(const instanton_options_t &amp;o)</div><div class="ttdoc">Throws std::invalid_argument on an inconsistent [Instanton] pi_* key.</div><div class="ttdef"><b>Definition</b> <a href="PIQTSTJob_8cpp_source.html#l00031">PIQTSTJob.cpp:31</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1potential__owner_html_a6e2727e7a4a63edac40c9973a54e1b75"><div class="ttname"><a href="namespaceeonc_1_1potential__owner.html#a6e2727e7a4a63edac40c9973a54e1b75">eonc::potential_owner::reactant</a></div><div class="ttdeci">constexpr long reactant</div><div class="ttdef"><b>Definition</b> <a href="PotentialOwner_8h_source.html#l00011">PotentialOwner.h:11</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1tunneling_html_a520ac3171661d0e32fa444d7cdd546c4"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#a520ac3171661d0e32fa444d7cdd546c4">eonc::tunneling::kTimeUnitSeconds</a></div><div class="ttdeci">constexpr double kTimeUnitSeconds</div><div class="ttdoc">One unit of time, sqrt(amu Angstrom^2 / eV), in seconds.</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00242">Tunneling.h:242</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1tunneling_html_a520ac3171661d0e32fa444d7cdd546c4"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#a520ac3171661d0e32fa444d7cdd546c4">eonc::tunneling::kTimeUnitSeconds</a></div><div class="ttdeci">constexpr double kTimeUnitSeconds</div><div class="ttdoc">One unit of time, sqrt(amu Angstrom^2 / eV), in seconds.</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00350">Tunneling.h:350</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1tunneling_html_a9226451a02d96e8651470ee1fb21eaa9"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#a9226451a02d96e8651470ee1fb21eaa9">eonc::tunneling::kHbar</a></div><div class="ttdeci">constexpr double kHbar</div><div class="ttdoc">hbar in eV^0.5 amu^0.5 Angstrom, correctly rounded from the exact SI values (h = 6....</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00039">Tunneling.h:39</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1tunneling_html_af7d7cff7a86f5d8ade50e485b3b184e9"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#af7d7cff7a86f5d8ade50e485b3b184e9">eonc::tunneling::kBoltzmann</a></div><div class="ttdeci">constexpr double kBoltzmann</div><div class="ttdoc">Boltzmann constant in eV / K, correctly rounded from the exact 1.380649e-23 J / K.</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00043">Tunneling.h:43</a></div></div>
 <div class="ttc" id="astructeonc_1_1constants__t_html_a4372e7836ad7935763ac02b37c36bb56"><div class="ttname"><a href="structeonc_1_1constants__t.html#a4372e7836ad7935763ac02b37c36bb56">eonc::constants_t::timeUnit</a></div><div class="ttdeci">double timeUnit</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00026">ParametersOptions.h:26</a></div></div>
 <div class="ttc" id="astructeonc_1_1piqtst_1_1Coordinate_html"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Coordinate.html">eonc::piqtst::Coordinate</a></div><div class="ttdoc">The coordinate s = n .</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00042">PIQTST.h:42</a></div></div>
 <div class="ttc" id="astructeonc_1_1piqtst_1_1Coordinate_html_a86ddb7d7bd8d73b4225c8bcbf1b84fa1"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Coordinate.html#a86ddb7d7bd8d73b4225c8bcbf1b84fa1">eonc::piqtst::Coordinate::atoms</a></div><div class="ttdeci">long atoms</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00043">PIQTST.h:43</a></div></div>
 <div class="ttc" id="astructeonc_1_1piqtst_1_1Plane_html"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Plane.html">eonc::piqtst::Plane</a></div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00068">PIQTST.h:68</a></div></div>
-<div class="ttc" id="astructeonc_1_1piqtst_1_1Rate_html"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Rate.html">eonc::piqtst::Rate</a></div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00096">PIQTST.h:96</a></div></div>
-<div class="ttc" id="astructeonc_1_1piqtst_1_1RecrossingOptions_html"><div class="ttname"><a href="structeonc_1_1piqtst_1_1RecrossingOptions.html">eonc::piqtst::RecrossingOptions</a></div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00117">PIQTST.h:117</a></div></div>
-<div class="ttc" id="astructeonc_1_1piqtst_1_1RecrossingOptions_html_ad6aac6c76ec3a65ba1fd1e31c0f2404d"><div class="ttname"><a href="structeonc_1_1piqtst_1_1RecrossingOptions.html#ad6aac6c76ec3a65ba1fd1e31c0f2404d">eonc::piqtst::RecrossingOptions::s</a></div><div class="ttdeci">double s</div><div class="ttdoc">The dividing plane s*, amu^0.5 Angstrom.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00119">PIQTST.h:119</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Rate_html"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Rate.html">eonc::piqtst::Rate</a></div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00101">PIQTST.h:101</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1RecrossingOptions_html"><div class="ttname"><a href="structeonc_1_1piqtst_1_1RecrossingOptions.html">eonc::piqtst::RecrossingOptions</a></div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00123">PIQTST.h:123</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1RecrossingOptions_html_ad6aac6c76ec3a65ba1fd1e31c0f2404d"><div class="ttname"><a href="structeonc_1_1piqtst_1_1RecrossingOptions.html#ad6aac6c76ec3a65ba1fd1e31c0f2404d">eonc::piqtst::RecrossingOptions::s</a></div><div class="ttdeci">double s</div><div class="ttdoc">The dividing plane s*, amu^0.5 Angstrom.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00125">PIQTST.h:125</a></div></div>
 <div class="ttc" id="astructeonc_1_1piqtst_1_1ScanOptions_html"><div class="ttname"><a href="structeonc_1_1piqtst_1_1ScanOptions.html">eonc::piqtst::ScanOptions</a></div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00052">PIQTST.h:52</a></div></div>
 <div class="ttc" id="astructeonc_1_1piqtst_1_1ScanOptions_html_a699fbefa2cc5e472d67af4ad22d39ab6"><div class="ttname"><a href="structeonc_1_1piqtst_1_1ScanOptions.html#a699fbefa2cc5e472d67af4ad22d39ab6">eonc::piqtst::ScanOptions::planes</a></div><div class="ttdeci">std::vector&lt; double &gt; planes</div><div class="ttdoc">Plane positions in amu^0.5 Angstrom, ascending.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00055">PIQTST.h:55</a></div></div>
 </div><!-- fragment -->
@@ -938,7 +958,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Samples one ring per plane and integrates the mean force. </p>
-<p>One ring is carried from plane to plane: its centroid moves to the next seed and the internal modes keep their state. </p>
+<p>One ring is carried from plane to plane: its centroid moves to the next seed and the internal modes keep their state. A step is one force batch over the beads; moving to a plane costs one more, so a plane takes equilibration + production + 1. </p>
 
 <p class="definition">Definition at line <a class="el" href="PIQTST_8cpp_source.html#l00104">104</a> of file <a class="el" href="PIQTST_8cpp_source.html">PIQTST.cpp</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">  105</span>                                              {</div>
@@ -1135,23 +1155,23 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">   91</span>        <span class="stringliteral">&quot;[Instanton] pi_recrossing_time must be at least four pi_time_step&quot;</span>);</div>
 <div class="line"><span class="lineno">   92</span>  }</div>
 <div class="line"><span class="lineno">   93</span>}</div>
-<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a0418c85fd4c65d577777b0cf845543e2"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a0418c85fd4c65d577777b0cf845543e2">eonc::instanton_options_t::pi_thermostat</a></div><div class="ttdeci">std::string pi_thermostat</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00896">ParametersOptions.h:896</a></div></div>
-<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a0780a3a5150e1503223d9ed813ef592f"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a0780a3a5150e1503223d9ed813ef592f">eonc::instanton_options_t::pi_direction</a></div><div class="ttdeci">std::string pi_direction</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00903">ParametersOptions.h:903</a></div></div>
-<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a0bf7e376ee91702aa7d56aa101c4b90b"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a0bf7e376ee91702aa7d56aa101c4b90b">eonc::instanton_options_t::pi_equilibration_steps</a></div><div class="ttdeci">long pi_equilibration_steps</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00891">ParametersOptions.h:891</a></div></div>
-<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a0bfe825b48ab3687d00207c3a252b411"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a0bfe825b48ab3687d00207c3a252b411">eonc::instanton_options_t::pi_seed</a></div><div class="ttdeci">long pi_seed</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00900">ParametersOptions.h:900</a></div></div>
-<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a202591a87ba321cdc4b3f4b1cdef2c16"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a202591a87ba321cdc4b3f4b1cdef2c16">eonc::instanton_options_t::pi_recrossing_children</a></div><div class="ttdeci">long pi_recrossing_children</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00912">ParametersOptions.h:912</a></div></div>
-<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a47a03ebd2863e5baefe4aeac61efb4e2"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a47a03ebd2863e5baefe4aeac61efb4e2">eonc::instanton_options_t::pi_reactant_extent</a></div><div class="ttdeci">double pi_reactant_extent</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00906">ParametersOptions.h:906</a></div></div>
-<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a61a8da13917f23ebd5177b2598907851"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a61a8da13917f23ebd5177b2598907851">eonc::instanton_options_t::mode</a></div><div class="ttdeci">std::string mode</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00824">ParametersOptions.h:824</a></div></div>
-<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a6d7d235d5f376e6d681909a8bc6ca4a4"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a6d7d235d5f376e6d681909a8bc6ca4a4">eonc::instanton_options_t::pi_planes</a></div><div class="ttdeci">long pi_planes</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00889">ParametersOptions.h:889</a></div></div>
-<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a77f34d0586383ddba203b83085f35ce3"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a77f34d0586383ddba203b83085f35ce3">eonc::instanton_options_t::pi_recrossing_spacing</a></div><div class="ttdeci">long pi_recrossing_spacing</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00914">ParametersOptions.h:914</a></div></div>
-<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a9d7f850fb5a68c059013565e7d6d6af8"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a9d7f850fb5a68c059013565e7d6d6af8">eonc::instanton_options_t::pi_recrossing_time</a></div><div class="ttdeci">double pi_recrossing_time</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00913">ParametersOptions.h:913</a></div></div>
-<div class="ttc" id="astructeonc_1_1instanton__options__t_html_ab082a6ace0c4a0a5224130fe0f1a4b17"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#ab082a6ace0c4a0a5224130fe0f1a4b17">eonc::instanton_options_t::pi_pile_scale</a></div><div class="ttdeci">double pi_pile_scale</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00899">ParametersOptions.h:899</a></div></div>
-<div class="ttc" id="astructeonc_1_1instanton__options__t_html_ac3a44d4dea3d10267afbe44787d59aa5"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#ac3a44d4dea3d10267afbe44787d59aa5">eonc::instanton_options_t::pi_beads</a></div><div class="ttdeci">long pi_beads</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00890">ParametersOptions.h:890</a></div></div>
-<div class="ttc" id="astructeonc_1_1instanton__options__t_html_ac8a3dceb616c1f3ad9abf1103d826f2d"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#ac8a3dceb616c1f3ad9abf1103d826f2d">eonc::instanton_options_t::pi_sampling_steps</a></div><div class="ttdeci">long pi_sampling_steps</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00892">ParametersOptions.h:892</a></div></div>
-<div class="ttc" id="astructeonc_1_1instanton__options__t_html_acc9d657eaa2571d30bb3d5e22fde0d74"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#acc9d657eaa2571d30bb3d5e22fde0d74">eonc::instanton_options_t::pi_recrossing_parents</a></div><div class="ttdeci">long pi_recrossing_parents</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00911">ParametersOptions.h:911</a></div></div>
-<div class="ttc" id="astructeonc_1_1instanton__options__t_html_acfcb3930c6c60f6b9ef24dbd1ee7b33d"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#acfcb3930c6c60f6b9ef24dbd1ee7b33d">eonc::instanton_options_t::pi_pile_tau</a></div><div class="ttdeci">double pi_pile_tau</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00898">ParametersOptions.h:898</a></div></div>
-<div class="ttc" id="astructeonc_1_1instanton__options__t_html_aeb75919dd555e29b4550a9cf3caee6e2"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#aeb75919dd555e29b4550a9cf3caee6e2">eonc::instanton_options_t::pi_gle_file</a></div><div class="ttdeci">std::string pi_gle_file</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00897">ParametersOptions.h:897</a></div></div>
-<div class="ttc" id="astructeonc_1_1instanton__options__t_html_aed3d650baba80662531c9d596e73c635"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#aed3d650baba80662531c9d596e73c635">eonc::instanton_options_t::pi_time_step</a></div><div class="ttdeci">double pi_time_step</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00893">ParametersOptions.h:893</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a0418c85fd4c65d577777b0cf845543e2"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a0418c85fd4c65d577777b0cf845543e2">eonc::instanton_options_t::pi_thermostat</a></div><div class="ttdeci">std::string pi_thermostat</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00905">ParametersOptions.h:905</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a0780a3a5150e1503223d9ed813ef592f"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a0780a3a5150e1503223d9ed813ef592f">eonc::instanton_options_t::pi_direction</a></div><div class="ttdeci">std::string pi_direction</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00912">ParametersOptions.h:912</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a0bf7e376ee91702aa7d56aa101c4b90b"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a0bf7e376ee91702aa7d56aa101c4b90b">eonc::instanton_options_t::pi_equilibration_steps</a></div><div class="ttdeci">long pi_equilibration_steps</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00900">ParametersOptions.h:900</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a0bfe825b48ab3687d00207c3a252b411"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a0bfe825b48ab3687d00207c3a252b411">eonc::instanton_options_t::pi_seed</a></div><div class="ttdeci">long pi_seed</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00909">ParametersOptions.h:909</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a202591a87ba321cdc4b3f4b1cdef2c16"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a202591a87ba321cdc4b3f4b1cdef2c16">eonc::instanton_options_t::pi_recrossing_children</a></div><div class="ttdeci">long pi_recrossing_children</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00921">ParametersOptions.h:921</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a47a03ebd2863e5baefe4aeac61efb4e2"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a47a03ebd2863e5baefe4aeac61efb4e2">eonc::instanton_options_t::pi_reactant_extent</a></div><div class="ttdeci">double pi_reactant_extent</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00915">ParametersOptions.h:915</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a61a8da13917f23ebd5177b2598907851"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a61a8da13917f23ebd5177b2598907851">eonc::instanton_options_t::mode</a></div><div class="ttdeci">std::string mode</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00829">ParametersOptions.h:829</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a6d7d235d5f376e6d681909a8bc6ca4a4"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a6d7d235d5f376e6d681909a8bc6ca4a4">eonc::instanton_options_t::pi_planes</a></div><div class="ttdeci">long pi_planes</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00898">ParametersOptions.h:898</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a77f34d0586383ddba203b83085f35ce3"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a77f34d0586383ddba203b83085f35ce3">eonc::instanton_options_t::pi_recrossing_spacing</a></div><div class="ttdeci">long pi_recrossing_spacing</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00923">ParametersOptions.h:923</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a9d7f850fb5a68c059013565e7d6d6af8"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a9d7f850fb5a68c059013565e7d6d6af8">eonc::instanton_options_t::pi_recrossing_time</a></div><div class="ttdeci">double pi_recrossing_time</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00922">ParametersOptions.h:922</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_ab082a6ace0c4a0a5224130fe0f1a4b17"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#ab082a6ace0c4a0a5224130fe0f1a4b17">eonc::instanton_options_t::pi_pile_scale</a></div><div class="ttdeci">double pi_pile_scale</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00908">ParametersOptions.h:908</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_ac3a44d4dea3d10267afbe44787d59aa5"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#ac3a44d4dea3d10267afbe44787d59aa5">eonc::instanton_options_t::pi_beads</a></div><div class="ttdeci">long pi_beads</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00899">ParametersOptions.h:899</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_ac8a3dceb616c1f3ad9abf1103d826f2d"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#ac8a3dceb616c1f3ad9abf1103d826f2d">eonc::instanton_options_t::pi_sampling_steps</a></div><div class="ttdeci">long pi_sampling_steps</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00901">ParametersOptions.h:901</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_acc9d657eaa2571d30bb3d5e22fde0d74"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#acc9d657eaa2571d30bb3d5e22fde0d74">eonc::instanton_options_t::pi_recrossing_parents</a></div><div class="ttdeci">long pi_recrossing_parents</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00920">ParametersOptions.h:920</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_acfcb3930c6c60f6b9ef24dbd1ee7b33d"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#acfcb3930c6c60f6b9ef24dbd1ee7b33d">eonc::instanton_options_t::pi_pile_tau</a></div><div class="ttdeci">double pi_pile_tau</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00907">ParametersOptions.h:907</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_aeb75919dd555e29b4550a9cf3caee6e2"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#aeb75919dd555e29b4550a9cf3caee6e2">eonc::instanton_options_t::pi_gle_file</a></div><div class="ttdeci">std::string pi_gle_file</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00906">ParametersOptions.h:906</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_aed3d650baba80662531c9d596e73c635"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#aed3d650baba80662531c9d596e73c635">eonc::instanton_options_t::pi_time_step</a></div><div class="ttdeci">double pi_time_step</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00902">ParametersOptions.h:902</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

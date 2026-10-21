@@ -243,9 +243,9 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('structeonc_1_1
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a207c6131bb1e4c563c8dc9501feab521" id="r_a207c6131bb1e4c563c8dc9501feab521"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a207c6131bb1e4c563c8dc9501feab521">reactant</a> {0}</td></tr>
-<tr class="memdesc:a207c6131bb1e4c563c8dc9501feab521"><td class="mdescLeft">&#160;</td><td class="mdescRight">Index of the plane with the lowest F, the reactant.  <br /></td></tr>
+<tr class="memdesc:a207c6131bb1e4c563c8dc9501feab521"><td class="mdescLeft">&#160;</td><td class="mdescRight">Index of the plane with the lowest F before s*, the reactant.  <br /></td></tr>
 <tr class="memitem:ad2ad7f1345a7d0303a494e6442daa4cd" id="r_ad2ad7f1345a7d0303a494e6442daa4cd"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ad2ad7f1345a7d0303a494e6442daa4cd">barrier</a> {0.0}</td></tr>
-<tr class="memdesc:ad2ad7f1345a7d0303a494e6442daa4cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">F(s*) - F(reactant), eV, and its error.  <br /></td></tr>
+<tr class="memdesc:ad2ad7f1345a7d0303a494e6442daa4cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">F(s*) - F(reactant), eV, and its error; not positive when s* is no barrier on the centroid free energy.  <br /></td></tr>
 <tr class="memitem:a268ee5ff83906b51e19402f61bd80343" id="r_a268ee5ff83906b51e19402f61bd80343"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a268ee5ff83906b51e19402f61bd80343">barrierError</a> {0.0}</td></tr>
 <tr class="memitem:aab1b66cd24e7b5d0a2cf66098d14b34b" id="r_aab1b66cd24e7b5d0a2cf66098d14b34b"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#aab1b66cd24e7b5d0a2cf66098d14b34b">logRate</a> {0.0}</td></tr>
 <tr class="memdesc:aab1b66cd24e7b5d0a2cf66098d14b34b"><td class="mdescLeft">&#160;</td><td class="mdescRight">ln k with k in inverse eOn time units (sqrt(amu Angstrom^2 / eV)), and its standard error.  <br /></td></tr>
@@ -255,7 +255,7 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00096">96</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00101">101</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
 </div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
 <a id="ad2ad7f1345a7d0303a494e6442daa4cd" name="ad2ad7f1345a7d0303a494e6442daa4cd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad2ad7f1345a7d0303a494e6442daa4cd">&#9670;&#160;</a></span>barrier</h2>
@@ -269,10 +269,10 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>F(s*) - F(reactant), eV, and its error. </p>
+<p>F(s*) - F(reactant), eV, and its error; not positive when s* is no barrier on the centroid free energy. </p>
 
-<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00100">100</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  100</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00106">106</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  106</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -288,8 +288,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00101">101</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  101</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00107">107</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  107</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -307,8 +307,8 @@ Public Attributes</h2></td></tr>
 
 <p>beta (F(s_0) - F(reactant)): the reactant integral is cut at s_0, so a small value means the first plane is too close to the well. </p>
 
-<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00108">108</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  108</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00114">114</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  114</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -326,8 +326,8 @@ Public Attributes</h2></td></tr>
 
 <p>ln k with k in inverse eOn time units (sqrt(amu Angstrom^2 / eV)), and its standard error. </p>
 
-<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00104">104</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  104</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00110">110</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  110</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -343,8 +343,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00105">105</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  105</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00111">111</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  111</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -360,10 +360,10 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Index of the plane with the lowest F, the reactant. </p>
+<p>Index of the plane with the lowest F before s*, the reactant. </p>
 
-<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00098">98</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   98</span>{0};</div>
+<p class="definition">Definition at line <a class="el" href="PIQTST_8h_source.html#l00103">103</a> of file <a class="el" href="PIQTST_8h_source.html">PIQTST.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  103</span>{0};</div>
 </div><!-- fragment -->
 </div>
 </div>

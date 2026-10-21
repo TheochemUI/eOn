@@ -137,8 +137,9 @@ var searchData=
   ['logdeterminant_134',['logDeterminant',['../classeonc_1_1tunneling_1_1CyclicBlockBath.html#a32a50f0738dff3504744047c773cc34f',1,'eonc::tunneling::CyclicBlockBath']]],
   ['logfreqs_135',['logFreqs',['../namespaceeonc_1_1Prefactor.html#a1119f028d017c1522a8167d2180cf19e',1,'eonc::Prefactor']]],
   ['logmeasurecorrection_136',['logMeasureCorrection',['../classeonc_1_1tunneling_1_1HarmonicReferenceAction.html#ac7642b043bf60e50da9027cb35300bbb',1,'eonc::tunneling::HarmonicReferenceAction']]],
-  ['loop_137',['loop',['../classeonc_1_1detail_1_1ImagePool.html#a646ee01fb306f0f26a0c4ae41eda7587',1,'eonc::detail::ImagePool']]],
-  ['lorrotation_138',['LORRotation',['../classeonc_1_1LORRotation.html#a90cb2ca1fb245331fbfa3934b8b7debd',1,'eonc::LORRotation']]],
-  ['lowercopy_139',['lowerCopy',['../namespaceeonc_1_1config.html#a2ef1b7671c207da1d86c4843492e1e0f',1,'eonc::config']]],
-  ['lowesteigenmode_140',['LowestEigenmode',['../classeonc_1_1LowestEigenmode.html#af5c7e532e7e02cb38d6f27c348c52473',1,'eonc::LowestEigenmode']]]
+  ['logrotationalratio_137',['logRotationalRatio',['../namespaceeonc_1_1tunneling.html#a73124219e5f180a11e9475f027a62187',1,'eonc::tunneling']]],
+  ['loop_138',['loop',['../classeonc_1_1detail_1_1ImagePool.html#a646ee01fb306f0f26a0c4ae41eda7587',1,'eonc::detail::ImagePool']]],
+  ['lorrotation_139',['LORRotation',['../classeonc_1_1LORRotation.html#a90cb2ca1fb245331fbfa3934b8b7debd',1,'eonc::LORRotation']]],
+  ['lowercopy_140',['lowerCopy',['../namespaceeonc_1_1config.html#a2ef1b7671c207da1d86c4843492e1e0f',1,'eonc::config']]],
+  ['lowesteigenmode_141',['LowestEigenmode',['../classeonc_1_1LowestEigenmode.html#af5c7e532e7e02cb38d6f27c348c52473',1,'eonc::LowestEigenmode']]]
 ];

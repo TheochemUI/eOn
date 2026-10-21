@@ -6,6 +6,7 @@ var searchData=
   ['lanczos_5foptions_5ft_3',['lanczos_options_t',['../structeonc_1_1lanczos__options__t.html',1,'eonc']]],
   ['lbfgs_4',['LBFGS',['../classeonc_1_1LBFGS.html',1,'eonc']]],
   ['lbfgs_5ft_5',['lbfgs_t',['../structeonc_1_1optimizer__options__t_1_1lbfgs__t.html',1,'eonc::optimizer_options_t']]],
-  ['lorrotation_6',['LORRotation',['../classeonc_1_1LORRotation.html',1,'eonc']]],
-  ['lowesteigenmode_7',['LowestEigenmode',['../classeonc_1_1LowestEigenmode.html',1,'eonc']]]
+  ['levels_6',['Levels',['../structeonc_1_1tunneling_1_1Levels.html',1,'eonc::tunneling']]],
+  ['lorrotation_7',['LORRotation',['../classeonc_1_1LORRotation.html',1,'eonc']]],
+  ['lowesteigenmode_8',['LowestEigenmode',['../classeonc_1_1LowestEigenmode.html',1,'eonc']]]
 ];

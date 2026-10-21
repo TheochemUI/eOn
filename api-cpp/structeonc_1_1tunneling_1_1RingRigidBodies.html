@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('structeonc_1_1
 </div><!--header-->
 <div class="contents">
 
-<p>The atoms behind a ring's mass-weighted coordinates, for its rigid motions: sqrt(m) per atom, the Cartesian positions q is measured from (3 per atom), and which rotations are free.  
+<p>The atoms behind a ring's mass-weighted coordinates, for its rigid motions: sqrt(m) per atom, the Cartesian positions q is measured from (3 per atom; the reactant minimum, q = 0, for the rotational ratio), and which rotations are free.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>&gt;</code></p>
@@ -248,12 +248,13 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:ae533e10922edcf9da53cb9e758df33e3" id="r_ae533e10922edcf9da53cb9e758df33e3"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ae533e10922edcf9da53cb9e758df33e3">sqrtMasses</a></td></tr>
 <tr class="memitem:a39ed47388bf2dddcd6c5459eeafe50db" id="r_a39ed47388bf2dddcd6c5459eeafe50db"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a39ed47388bf2dddcd6c5459eeafe50db">reference</a></td></tr>
 <tr class="memitem:a97a88ea18e7f9bd8b3f88bb41aa583d4" id="r_a97a88ea18e7f9bd8b3f88bb41aa583d4"><td class="memItemLeft">std::array&lt; bool, 3 &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a97a88ea18e7f9bd8b3f88bb41aa583d4">rotations</a> {{false, false, false}}</td></tr>
+<tr class="memitem:a2b21bcb6089012546a81f39c3380ce29" id="r_a2b21bcb6089012546a81f39c3380ce29"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a2b21bcb6089012546a81f39c3380ce29">saddle</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The atoms behind a ring's mass-weighted coordinates, for its rigid motions: sqrt(m) per atom, the Cartesian positions q is measured from (3 per atom), and which rotations are free. </p>
-<p>Empty masses: the rigid directions come from the reactant <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> instead. </p>
+<div class="textblock"><p>The atoms behind a ring's mass-weighted coordinates, for its rigid motions: sqrt(m) per atom, the Cartesian positions q is measured from (3 per atom; the reactant minimum, q = 0, for the rotational ratio), and which rotations are free. </p>
+<p>Empty masses: the rigid directions come from the reactant <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> instead. <span class="tt"><a class="el" href="#a2b21bcb6089012546a81f39c3380ce29">saddle</a></span>, in q, gives the classical comparison the same rotational ratio; empty leaves it out. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00502">502</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00624">624</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 </div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
 <a id="a39ed47388bf2dddcd6c5459eeafe50db" name="a39ed47388bf2dddcd6c5459eeafe50db"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a39ed47388bf2dddcd6c5459eeafe50db">&#9670;&#160;</a></span>reference</h2>
@@ -267,7 +268,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00504">504</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00626">626</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -283,9 +284,25 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00505">505</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  505</span>{{<span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>}};</div>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00627">627</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  627</span>{{<span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>}};</div>
 </div><!-- fragment -->
+</div>
+</div>
+<a id="a2b21bcb6089012546a81f39c3380ce29" name="a2b21bcb6089012546a81f39c3380ce29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b21bcb6089012546a81f39c3380ce29">&#9670;&#160;</a></span>saddle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">VectorXd eonc::tunneling::RingRigidBodies::saddle</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00628">628</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+
 </div>
 </div>
 <a id="ae533e10922edcf9da53cb9e758df33e3" name="ae533e10922edcf9da53cb9e758df33e3"></a>
@@ -300,7 +317,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00503">503</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00625">625</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>

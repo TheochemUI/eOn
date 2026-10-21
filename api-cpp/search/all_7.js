@@ -46,7 +46,7 @@ var searchData=
   ['finishconstruct_43',['finishConstruct',['../classRgpotAdapter.html#a6d9f61f0b829dcab48e29f47e81ca52c',1,'RgpotAdapter']]],
   ['finishrunscript_44',['finishRunScript',['../classAMS.html#abf77ef72c961487fb9b180a315d66dba',1,'AMS']]],
   ['finite_5fdifference_45',['Finite_Difference',['../namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a8e2d35d1e552fb300a8b7b20104946b5',1,'eonc']]],
-  ['finitecutoff_46',['finiteCutoff',['../classeonc_1_1Potential.html#a8f4fea1662aaa9e26f7a2ac0862d53f8',1,'eonc::Potential::finiteCutoff()'],['../classRgpotAdapter.html#ad1777f60faa4e44fefedb5380730627b',1,'RgpotAdapter::finiteCutoff()']]],
+  ['finitecutoff_46',['finiteCutoff',['../classeonc_1_1Potential.html#a8f4fea1662aaa9e26f7a2ac0862d53f8',1,'eonc::Potential']]],
   ['finitedifference_47',['finiteDifference',['../structeonc_1_1OptimizerConfig.html#adaab551a1a5994af6bab9847367658c4',1,'eonc::OptimizerConfig::finiteDifference'],['../structeonc_1_1main__options__t.html#a07c825e9e74d45cf5e50518e2195c720',1,'eonc::main_options_t::finiteDifference']]],
   ['finitedifference_2eh_48',['FiniteDifference.h',['../FiniteDifference_8h.html',1,'']]],
   ['finitedifferencecauchystress_49',['finiteDifferenceCauchyStress',['../namespaceeonc_1_1neb.html#ae5b588a41a2cca2ae99609d6fe8e6e11',1,'eonc::neb']]],

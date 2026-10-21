@@ -288,6 +288,8 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:a51806a79adc3b019d58598ba121b3d41"><td class="mdescLeft">&#160;</td><td class="mdescRight">The search stopped because B_N fell below collapseFraction of the starting ring's: the beads fell together onto one point (a minimum or the saddle), which is no instanton.  <br /></td></tr>
 <tr class="memitem:ad0d52adfa324ebdf51f118ca7fe5ed96" id="r_ad0d52adfa324ebdf51f118ca7fe5ed96"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ad0d52adfa324ebdf51f118ca7fe5ed96">logRateTimesZr</a> = 0.0</td></tr>
 <tr class="memdesc:ad0d52adfa324ebdf51f118ca7fe5ed96"><td class="mdescLeft">&#160;</td><td class="mdescRight">ln(k Z_r), k in 1 / time  <br /></td></tr>
+<tr class="memitem:aa8a27918b8485f56b1f45ac713f79106" id="r_aa8a27918b8485f56b1f45ac713f79106"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#aa8a27918b8485f56b1f45ac713f79106">logRotationRatio</a> = 0.0</td></tr>
+<tr class="memdesc:aa8a27918b8485f56b1f45ac713f79106"><td class="mdescLeft">&#160;</td><td class="mdescRight">ln of the ring's rotational partition function over the reactant's, included in logRateTimesZr; zero when no rotation is free.  <br /></td></tr>
 <tr class="memitem:a9552be29f929487f8a617f59786a5f29" id="r_a9552be29f929487f8a617f59786a5f29"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a9552be29f929487f8a617f59786a5f29">logZr</a> = 0.0</td></tr>
 <tr class="memdesc:a9552be29f929487f8a617f59786a5f29"><td class="mdescLeft">&#160;</td><td class="mdescRight">ln Z_r  <br /></td></tr>
 <tr class="memitem:aad7f23dff2e3b4944a36083dad132908" id="r_aad7f23dff2e3b4944a36083dad132908"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#aad7f23dff2e3b4944a36083dad132908">logRate</a> = 0.0</td></tr>
@@ -302,7 +304,7 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00376">376</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00493">493</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 </div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
 <a id="aa7c7851e4f713e4c6196cc746bd8fa27" name="aa7c7851e4f713e4c6196cc746bd8fa27"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa7c7851e4f713e4c6196cc746bd8fa27">&#9670;&#160;</a></span>bathEta</h2>
@@ -318,7 +320,7 @@ Public Attributes</h2></td></tr>
 
 <p>Resolved fixed bath coefficients: empty, one value or one per bead. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00389">389</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00506">506</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -334,7 +336,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00392">392</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00509">509</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -350,7 +352,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00393">393</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00510">510</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -366,7 +368,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00395">395</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00512">512</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -384,7 +386,7 @@ Public Attributes</h2></td></tr>
 
 <p>Exact finite bath fluctuation diagnostics after declared rigid projection. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00391">391</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00508">508</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -400,7 +402,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00394">394</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00511">511</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -418,7 +420,7 @@ Public Attributes</h2></td></tr>
 
 <p>N beads, q_N = q_0 implied. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00378">378</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00495">495</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -436,7 +438,7 @@ Public Attributes</h2></td></tr>
 
 <p>1 / (kB T), 1 / eV </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00380">380</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00497">497</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -454,7 +456,7 @@ Public Attributes</h2></td></tr>
 
 <p>beta / N </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00381">381</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00498">498</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -472,7 +474,7 @@ Public Attributes</h2></td></tr>
 
 <p>sum_j |q_{j+1} - q_j|^2, amu Angstrom^2 </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00385">385</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00502">502</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -488,7 +490,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00424">424</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00544">544</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -506,7 +508,7 @@ Public Attributes</h2></td></tr>
 
 <p>Classical harmonic transition-state theory at the same T, 1 / s, when the saddle <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> was given; its logarithm (k in 1 / time) does not underflow. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00423">423</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00543">543</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -524,7 +526,7 @@ Public Attributes</h2></td></tr>
 
 <p>The search stopped because B_N fell below collapseFraction of the starting ring's: the beads fell together onto one point (a minimum or the saddle), which is no instanton. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00413">413</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00530">530</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -540,7 +542,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00409">409</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00526">526</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -558,7 +560,7 @@ Public Attributes</h2></td></tr>
 
 <p>T_c, K. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00383">383</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00500">500</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -576,7 +578,7 @@ Public Attributes</h2></td></tr>
 
 <p>Empty keeps every spring equal. Otherwise one positive weight per bead. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00387">387</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00504">504</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -594,7 +596,7 @@ Public Attributes</h2></td></tr>
 
 <p>-kB T ln(2 pi hbar beta k): the barrier an Eyring rate would need, eV. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00419">419</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00539">539</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -612,7 +614,7 @@ Public Attributes</h2></td></tr>
 
 <p>V at every bead, eV. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00379">379</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00496">496</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -628,7 +630,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00408">408</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00525">525</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -646,7 +648,7 @@ Public Attributes</h2></td></tr>
 
 <p>Absolute labelled-saddle Gaussian weight, without contour/rate factors. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00398">398</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00515">515</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -664,7 +666,7 @@ Public Attributes</h2></td></tr>
 
 <p>ln k, k in 1 / time </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00416">416</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00536">536</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -682,7 +684,25 @@ Public Attributes</h2></td></tr>
 
 <p>ln(k Z_r), k in 1 / time </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00414">414</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00531">531</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+
+</div>
+</div>
+<a id="aa8a27918b8485f56b1f45ac713f79106" name="aa8a27918b8485f56b1f45ac713f79106"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8a27918b8485f56b1f45ac713f79106">&#9670;&#160;</a></span>logRotationRatio</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::tunneling::RateInstanton::logRotationRatio = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>ln of the ring's rotational partition function over the reactant's, included in logRateTimesZr; zero when no rotation is free. </p>
+
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00534">534</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -700,7 +720,7 @@ Public Attributes</h2></td></tr>
 
 <p>ln Z_r </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00415">415</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00535">535</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -718,7 +738,7 @@ Public Attributes</h2></td></tr>
 
 <p>of the ring <a class="el" href="classeonc_1_1Hessian.html">Hessian</a>, 1 / time^2 </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00405">405</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00522">522</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -736,7 +756,7 @@ Public Attributes</h2></td></tr>
 
 <p>eigenvalues below the zero mode </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00407">407</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00524">524</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -752,7 +772,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00396">396</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00513">513</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -768,7 +788,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00399">399</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00516">516</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -784,7 +804,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00377">377</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00494">494</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -802,7 +822,7 @@ Public Attributes</h2></td></tr>
 
 <p>k in 1 / s </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00417">417</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00537">537</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -821,7 +841,7 @@ Public Attributes</h2></td></tr>
 <p>A physical rate requires a converged index-one stationary ring. </p>
 <p>Numerical zero-bath prefactor diagnostics can be finite when false. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00402">402</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00519">519</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -837,7 +857,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00403">403</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00520">520</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -855,7 +875,7 @@ Public Attributes</h2></td></tr>
 
 <p>U_N, eV. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00384">384</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00501">501</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -873,7 +893,7 @@ Public Attributes</h2></td></tr>
 
 <p>K. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00382">382</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00499">499</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>
@@ -891,7 +911,7 @@ Public Attributes</h2></td></tr>
 
 <p>the eigenvalue left out </p>
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00406">406</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8h_source.html#l00523">523</a> of file <a class="el" href="Tunneling_8h_source.html">Tunneling.h</a>.</p>
 
 </div>
 </div>

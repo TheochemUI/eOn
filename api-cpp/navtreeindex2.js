@@ -1,5 +1,7 @@
 var NAVTREEINDEX2 =
 {
+"PrefactorJob_8cpp.html":[6,0,0,85],
+"PrefactorJob_8cpp_source.html":[6,0,0,85],
 "PrefactorJob_8h.html":[6,0,1,0,105],
 "PrefactorJob_8h_source.html":[6,0,1,0,105],
 "Prefactor_8cpp.html":[6,0,0,84],
@@ -70,10 +72,10 @@ var NAVTREEINDEX2 =
 "ReplicaExchangeJob_8cpp_source.html":[6,0,0,93],
 "ReplicaExchangeJob_8h.html":[6,0,1,0,115],
 "ReplicaExchangeJob_8h_source.html":[6,0,1,0,115],
-"RgpotAdapter_8h.html":[6,0,1,0,3,12,0],
-"RgpotAdapter_8h.html#aa5bc625b13853a9d79c76056236f65c1":[6,0,1,0,3,12,0,2],
-"RgpotAdapter_8h.html#aeb09aba6183759bfb5fcdffdf8d4e3f5":[6,0,1,0,3,12,0,1],
-"RgpotAdapter_8h_source.html":[6,0,1,0,3,12,0],
+"RgpotAdapter_8h.html":[6,0,1,0,3,12,1],
+"RgpotAdapter_8h.html#aa5bc625b13853a9d79c76056236f65c1":[6,0,1,0,3,12,1,2],
+"RgpotAdapter_8h.html#aeb09aba6183759bfb5fcdffdf8d4e3f5":[6,0,1,0,3,12,1,1],
+"RgpotAdapter_8h_source.html":[6,0,1,0,3,12,1],
 "RgpotGroupMpi_8cpp.html":[6,0,0,0,11,3],
 "RgpotGroupMpi_8cpp.html#afd686089173960119731da797cd3f5b3":[6,0,0,0,11,3,0],
 "RgpotGroupMpi_8cpp_source.html":[6,0,0,0,11,3],
@@ -247,7 +249,5 @@ var NAVTREEINDEX2 =
 "classAMS__IO.html#af7967f0ebb6ef89592fe424a1b2a530b":[5,0,2,5],
 "classASE.html":[5,0,3],
 "classASE.html#a010bef6241727643231ce39ee1a9274c":[5,0,3,5],
-"classASE.html#a03a86653a0a73bca51cc760d525d8fc6":[5,0,3,8],
-"classASE.html#a2506cfbbabe7aa05b4ccc47a42676e0b":[5,0,3,1],
-"classASE.html#a2bec677c372d3617db5de09cc1a368d7":[5,0,3,11]
+"classASE.html#a03a86653a0a73bca51cc760d525d8fc6":[5,0,3,8]
 };

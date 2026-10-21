@@ -15,7 +15,7 @@ var searchData=
   ['findsymmetry_12',['findSymmetry',['../classeonc_1_1IRACompare.html#a6a60fb6abf491638ea5406a750dfec2a',1,'eonc::IRACompare::findSymmetry(const Matter &amp;m, double threshold, bool prescreenIh=true)'],['../classeonc_1_1IRACompare.html#a6a75b65ba17ac0d5261f0bb5530cd294',1,'eonc::IRACompare::findSymmetry(const Matter &amp;m, double threshold, bool prescreenIh, IIRAResource &amp;res)']]],
   ['finishconstruct_13',['finishConstruct',['../classRgpotAdapter.html#a6d9f61f0b829dcab48e29f47e81ca52c',1,'RgpotAdapter']]],
   ['finishrunscript_14',['finishRunScript',['../classAMS.html#abf77ef72c961487fb9b180a315d66dba',1,'AMS']]],
-  ['finitecutoff_15',['finiteCutoff',['../classeonc_1_1Potential.html#a8f4fea1662aaa9e26f7a2ac0862d53f8',1,'eonc::Potential::finiteCutoff()'],['../classRgpotAdapter.html#ad1777f60faa4e44fefedb5380730627b',1,'RgpotAdapter::finiteCutoff()']]],
+  ['finitecutoff_15',['finiteCutoff',['../classeonc_1_1Potential.html#a8f4fea1662aaa9e26f7a2ac0862d53f8',1,'eonc::Potential']]],
   ['finitedifferencecauchystress_16',['finiteDifferenceCauchyStress',['../namespaceeonc_1_1neb.html#ae5b588a41a2cca2ae99609d6fe8e6e11',1,'eonc::neb']]],
   ['finitedifferencecauchystresses_17',['finiteDifferenceCauchyStresses',['../namespaceeonc_1_1neb.html#a5c7063d07b10a060f0f5bc13565dd7e4',1,'eonc::neb']]],
   ['finitedifferencejob_18',['FiniteDifferenceJob',['../classeonc_1_1FiniteDifferenceJob.html#ac3e33285cfdce1e61025b8c1febfe867',1,'eonc::FiniteDifferenceJob']]],

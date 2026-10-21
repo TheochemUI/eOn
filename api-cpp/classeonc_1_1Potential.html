@@ -325,6 +325,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a44b9979c8df31acc86cfbe87dec05d26" id="r_a44b9979c8df31acc86cfbe87dec05d26"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a44b9979c8df31acc86cfbe87dec05d26">forceBatchOwned</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes, const long *owners)</td></tr>
 <tr class="memdesc:a44b9979c8df31acc86cfbe87dec05d26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate forces for N systems in a single call.  <br /></td></tr>
 <tr class="memitem:aa66e1416134ff55639a6d20a34e3c1c1" id="r_aa66e1416134ff55639a6d20a34e3c1c1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aa66e1416134ff55639a6d20a34e3c1c1">forceBatch</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes)</td></tr>
+<tr class="memitem:a80011be65081bbcafb4a1d332062f3ef" id="r_a80011be65081bbcafb4a1d332062f3ef"><td class="memItemLeft">virtual double&#160;</td><td class="memItemRight"><a class="el" href="#a80011be65081bbcafb4a1d332062f3ef">hessianRange</a> () const noexcept</td></tr>
+<tr class="memdesc:a80011be65081bbcafb4a1d332062f3ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance beyond which every <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> block between two atoms is exactly zero, in position length units.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -373,12 +375,12 @@ Private Attributes</h2></td></tr>
 <tr><td class="fieldname"><a id="a6a35357f6786a54c47eceedf6eab2056aacfc9fac11fea7710fbe22b6ba4b3a9e" name="a6a35357f6786a54c47eceedf6eab2056aacfc9fac11fea7710fbe22b6ba4b3a9e"></a>Subprocess&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00151">151</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  151</span>                       : <span class="keywordtype">unsigned</span> {</div>
-<div class="line"><span class="lineno">  152</span>    InProcess = 1u &lt;&lt; 0,</div>
-<div class="line"><span class="lineno">  153</span>    NeedsWorkingDirectory = 1u &lt;&lt; 1,</div>
-<div class="line"><span class="lineno">  154</span>    Subprocess = 1u &lt;&lt; 2,</div>
-<div class="line"><span class="lineno">  155</span>  };</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00154">154</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  154</span>                       : <span class="keywordtype">unsigned</span> {</div>
+<div class="line"><span class="lineno">  155</span>    InProcess = 1u &lt;&lt; 0,</div>
+<div class="line"><span class="lineno">  156</span>    NeedsWorkingDirectory = 1u &lt;&lt; 1,</div>
+<div class="line"><span class="lineno">  157</span>    Subprocess = 1u &lt;&lt; 2,</div>
+<div class="line"><span class="lineno">  158</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -580,8 +582,8 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classeonc_1_1HostSurfacePotential.html#acdbf5ea57f53540c4661601c4ea72559">eonc::HostSurfacePotential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00194">194</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  194</span>{}</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00197">197</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  197</span>{}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -613,10 +615,10 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classLAMMPSPot.html#a2ecacbd6685d17b1f45f6e4542b85d68">LAMMPSPot</a>, <a class="el" href="classRgpotAdapter.html#aa3c136cf6b45701ae48bb91c879a4620">RgpotAdapter&lt; RPot &gt;</a>, and <a class="el" href="classSocketNWChemPot.html#a8f5d875bdc7874566820f95b4d2ec761">SocketNWChemPot</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00209">209</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  209</span>                                                      {</div>
-<div class="line"><span class="lineno">  210</span>    <span class="keywordflow">throw</span> std::logic_error(<span class="stringliteral">&quot;Potential::cauchyStress is not implemented&quot;</span>);</div>
-<div class="line"><span class="lineno">  211</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00212">212</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  212</span>                                                      {</div>
+<div class="line"><span class="lineno">  213</span>    <span class="keywordflow">throw</span> std::logic_error(<span class="stringliteral">&quot;Potential::cauchyStress is not implemented&quot;</span>);</div>
+<div class="line"><span class="lineno">  214</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -648,10 +650,10 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classMetatomicPotential.html#ac35d7288268507729edb8d784f4fcc7b">MetatomicPotential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00181">181</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  181</span>                                                                        {</div>
-<div class="line"><span class="lineno">  182</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">  183</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00184">184</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  184</span>                                                                        {</div>
+<div class="line"><span class="lineno">  185</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  186</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -682,8 +684,8 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classLAMMPSPot.html#a23533d0a91f0f5d3b89105f4fcd5e0f7">LAMMPSPot</a>, <a class="el" href="classRgpotAdapter.html#a32b01ed4f75896e5c6705bbef20ad191">RgpotAdapter&lt; RPot &gt;</a>, and <a class="el" href="classSocketNWChemPot.html#a1706b2a804564c68e8ebec53075636f1">SocketNWChemPot</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00205">205</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  205</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00208">208</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  208</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -711,12 +713,10 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Finite interaction range in position length units. </p>
-<p>0 means the potential is not finite-cutoff; the FD <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> then stays one column per coordinate. </p>
+<p>Deprecated. Override <a class="el" href="#a80011be65081bbcafb4a1d332062f3ef" title="Distance beyond which every Hessian block between two atoms is exactly zero, in position length units...">hessianRange()</a> instead. The default <a class="el" href="#a80011be65081bbcafb4a1d332062f3ef" title="Distance beyond which every Hessian block between two atoms is exactly zero, in position length units...">hessianRange()</a> returns this value, so an existing override still colors the finite-difference <a class="el" href="classeonc_1_1Hessian.html">Hessian</a>. 0 means the range is unknown. </p>
 
-<p>Reimplemented in <a class="el" href="classRgpotAdapter.html#ad1777f60faa4e44fefedb5380730627b">RgpotAdapter&lt; RPot &gt;</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00131">131</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  131</span>{ <span class="keywordflow">return</span> 0.0; }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00134">134</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  134</span>{ <span class="keywordflow">return</span> 0.0; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -897,17 +897,17 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classASE.html#a8f19bffa4b531c4e8b1033362da43311">ASE</a>, <a class="el" href="classeonc_1_1HostSurfacePotential.html#ab14149ce2bf83771b6e689dfa6a1a2b1">eonc::HostSurfacePotential</a>, <a class="el" href="classeonc_1_1tunneling_1_1RingPolymerPotential.html#a125ad5adec5707339a4cc5c725d31a0b">eonc::tunneling::RingPolymerPotential</a>, <a class="el" href="classMetatomicPotential.html#a4425775e22771c363739a4920b88aa9b">MetatomicPotential</a>, <a class="el" href="classRgpotAdapter.html#ae5c9470c08c2505cc3d9f557e014b9eb">RgpotAdapter&lt; RPot &gt;</a>, and <a class="el" href="classRgpotPot.html#a6fee72a91f6354157274b33d3341d385">RgpotPot</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00231">231</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  235</span>                                                      {</div>
-<div class="line"><span class="lineno">  236</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; nSystems; i++) {</div>
-<div class="line"><span class="lineno">  237</span>      <span class="keywordtype">double</span> var = 0;</div>
-<div class="line"><span class="lineno">  238</span>      <a class="code hl_function" href="#a51a8f3110935f320fe1bfca4efa3bbb3">force</a>(nAtoms, positions[i], atomicNrs[i], forces[i], &amp;energies[i], &amp;var,</div>
-<div class="line"><span class="lineno">  239</span>            boxes[i]);</div>
-<div class="line"><span class="lineno">  240</span>      <span class="keywordflow">if</span> (variances)</div>
-<div class="line"><span class="lineno">  241</span>        variances[i] = var;</div>
-<div class="line"><span class="lineno">  242</span>      <a class="code hl_function" href="#ad78bc42ff8490f74c5208c32f471fd18">recordForceCall</a>();</div>
-<div class="line"><span class="lineno">  243</span>    }</div>
-<div class="line"><span class="lineno">  244</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00234">234</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  238</span>                                                      {</div>
+<div class="line"><span class="lineno">  239</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; nSystems; i++) {</div>
+<div class="line"><span class="lineno">  240</span>      <span class="keywordtype">double</span> var = 0;</div>
+<div class="line"><span class="lineno">  241</span>      <a class="code hl_function" href="#a51a8f3110935f320fe1bfca4efa3bbb3">force</a>(nAtoms, positions[i], atomicNrs[i], forces[i], &amp;energies[i], &amp;var,</div>
+<div class="line"><span class="lineno">  242</span>            boxes[i]);</div>
+<div class="line"><span class="lineno">  243</span>      <span class="keywordflow">if</span> (variances)</div>
+<div class="line"><span class="lineno">  244</span>        variances[i] = var;</div>
+<div class="line"><span class="lineno">  245</span>      <a class="code hl_function" href="#ad78bc42ff8490f74c5208c32f471fd18">recordForceCall</a>();</div>
+<div class="line"><span class="lineno">  246</span>    }</div>
+<div class="line"><span class="lineno">  247</span>  }</div>
 <div class="ttc" id="aclasseonc_1_1Potential_html_ad78bc42ff8490f74c5208c32f471fd18"><div class="ttname"><a href="#ad78bc42ff8490f74c5208c32f471fd18">eonc::Potential::recordForceCall</a></div><div class="ttdeci">void recordForceCall() noexcept</div><div class="ttdoc">Charge one evaluated geometry to this potential and its owning registry.</div><div class="ttdef"><b>Definition</b> <a href="PotentialParams_8cpp_source.html#l00041">PotentialParams.cpp:41</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -979,13 +979,13 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classRgpotPot.html#a674bf337af44b7f429fb39cc8aa38995">RgpotPot</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00220">220</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  225</span>                                                   {</div>
-<div class="line"><span class="lineno">  226</span>    (void)owners;</div>
-<div class="line"><span class="lineno">  227</span>    <a class="code hl_function" href="#aa66e1416134ff55639a6d20a34e3c1c1">forceBatch</a>(nSystems, nAtoms, positions, atomicNrs, forces, energies,</div>
-<div class="line"><span class="lineno">  228</span>               variances, boxes);</div>
-<div class="line"><span class="lineno">  229</span>  }</div>
-<div class="ttc" id="aclasseonc_1_1Potential_html_aa66e1416134ff55639a6d20a34e3c1c1"><div class="ttname"><a href="#aa66e1416134ff55639a6d20a34e3c1c1">eonc::Potential::forceBatch</a></div><div class="ttdeci">virtual void forceBatch(long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes)</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00231">Potential.h:231</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00223">223</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  228</span>                                                   {</div>
+<div class="line"><span class="lineno">  229</span>    (void)owners;</div>
+<div class="line"><span class="lineno">  230</span>    <a class="code hl_function" href="#aa66e1416134ff55639a6d20a34e3c1c1">forceBatch</a>(nSystems, nAtoms, positions, atomicNrs, forces, energies,</div>
+<div class="line"><span class="lineno">  231</span>               variances, boxes);</div>
+<div class="line"><span class="lineno">  232</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_aa66e1416134ff55639a6d20a34e3c1c1"><div class="ttname"><a href="#aa66e1416134ff55639a6d20a34e3c1c1">eonc::Potential::forceBatch</a></div><div class="ttdeci">virtual void forceBatch(long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes)</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00234">Potential.h:234</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1017,10 +1017,10 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classeonc_1_1HostSurfacePotential.html#a257d8a808415c0de4cd7a504dd05fff4">eonc::HostSurfacePotential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00199">199</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  199</span>                                                                 {</div>
-<div class="line"><span class="lineno">  200</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  201</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00202">202</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  202</span>                                                                 {</div>
+<div class="line"><span class="lineno">  203</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  204</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1098,6 +1098,57 @@ Private Attributes</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
+<a id="a80011be65081bbcafb4a1d332062f3ef" name="a80011be65081bbcafb4a1d332062f3ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80011be65081bbcafb4a1d332062f3ef">&#9670;&#160;</a></span>hessianRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual double eonc::Potential::hessianRange </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Distance beyond which every <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> block between two atoms is exactly zero, in position length units. </p>
+<p>The default returns <a class="el" href="#a8f4fea1662aaa9e26f7a2ac0862d53f8" title="Finite interaction range in position length units.">finiteCutoff()</a>, so an override of that deprecated method still colors. 0, or any non-finite value, means the range is unknown. The finite-difference <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> then stays one column per coordinate. A potential opts in by overriding this. An interaction cutoff is not this distance: a many-body kernel is nonzero out to twice its cutoff, and a kernel that merely has a cutoff field stays at 0. </p>
+
+<p>Reimplemented in <a class="el" href="classRgpotAdapter.html#a2ce490db285f82d29c901a9087bfec80">RgpotAdapter&lt; RPot &gt;</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00259">259</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  259</span>                                                             {</div>
+<div class="line"><span class="lineno">  260</span><span class="preprocessor">#if defined(__GNUC__) || defined(__clang__)</span></div>
+<div class="line"><span class="lineno">  261</span><span class="preprocessor">#pragma GCC diagnostic push</span></div>
+<div class="line"><span class="lineno">  262</span><span class="preprocessor">#pragma GCC diagnostic ignored &quot;-Wdeprecated-declarations&quot;</span></div>
+<div class="line"><span class="lineno">  263</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  264</span><span class="preprocessor">#if defined(_MSC_VER)</span></div>
+<div class="line"><span class="lineno">  265</span><span class="preprocessor">#pragma warning(push)</span></div>
+<div class="line"><span class="lineno">  266</span><span class="preprocessor">#pragma warning(disable : 4996)</span></div>
+<div class="line"><span class="lineno">  267</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  268</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> range = <a class="code hl_function" href="#a8f4fea1662aaa9e26f7a2ac0862d53f8">finiteCutoff</a>();</div>
+<div class="line"><span class="lineno">  269</span><span class="preprocessor">#if defined(_MSC_VER)</span></div>
+<div class="line"><span class="lineno">  270</span><span class="preprocessor">#pragma warning(pop)</span></div>
+<div class="line"><span class="lineno">  271</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  272</span><span class="preprocessor">#if defined(__GNUC__) || defined(__clang__)</span></div>
+<div class="line"><span class="lineno">  273</span><span class="preprocessor">#pragma GCC diagnostic pop</span></div>
+<div class="line"><span class="lineno">  274</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  275</span>    <span class="keywordflow">return</span> range;</div>
+<div class="line"><span class="lineno">  276</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_a8f4fea1662aaa9e26f7a2ac0862d53f8"><div class="ttname"><a href="#a8f4fea1662aaa9e26f7a2ac0862d53f8">eonc::Potential::finiteCutoff</a></div><div class="ttdeci">virtual double finiteCutoff() const noexcept</div><div class="ttdoc">Finite interaction range in position length units.</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00134">Potential.h:134</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="a8065b9661fcb0b025d397928243c987c" name="a8065b9661fcb0b025d397928243c987c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8065b9661fcb0b025d397928243c987c">&#9670;&#160;</a></span>isSharedInstanceThreadSafe()</h2>
 
@@ -1126,13 +1177,13 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classRgpotAdapter.html#a47e5303efdd1eb6ce47bdbfe59310c18">RgpotAdapter&lt; RPot &gt;</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00164">164</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  164</span>                                                                         {</div>
-<div class="line"><span class="lineno">  165</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a91745245fd7e7f3c6066fc1c7ad6550f">force_serial_</a>)</div>
-<div class="line"><span class="lineno">  166</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  167</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#af6c385eb52d3764246416ea389c84131">isThreadSafe</a>();</div>
-<div class="line"><span class="lineno">  168</span>  }</div>
-<div class="ttc" id="aclasseonc_1_1Potential_html_af6c385eb52d3764246416ea389c84131"><div class="ttname"><a href="#af6c385eb52d3764246416ea389c84131">eonc::Potential::isThreadSafe</a></div><div class="ttdeci">virtual bool isThreadSafe() const noexcept</div><div class="ttdoc">Whether this potential&#39;s force() can be called from multiple threads on the SAME instance.</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00148">Potential.h:148</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00167">167</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  167</span>                                                                         {</div>
+<div class="line"><span class="lineno">  168</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a91745245fd7e7f3c6066fc1c7ad6550f">force_serial_</a>)</div>
+<div class="line"><span class="lineno">  169</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  170</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#af6c385eb52d3764246416ea389c84131">isThreadSafe</a>();</div>
+<div class="line"><span class="lineno">  171</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_af6c385eb52d3764246416ea389c84131"><div class="ttname"><a href="#af6c385eb52d3764246416ea389c84131">eonc::Potential::isThreadSafe</a></div><div class="ttdeci">virtual bool isThreadSafe() const noexcept</div><div class="ttdoc">Whether this potential&#39;s force() can be called from multiple threads on the SAME instance.</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00151">Potential.h:151</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1164,8 +1215,8 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classeonc_1_1SurrogatePotential.html#ad42039b117afe2b3b90a124b2c937fd5">eonc::SurrogatePotential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00135">135</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  135</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00138">138</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  138</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1197,8 +1248,8 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classASE.html#a87de4a795d2e4cc8167b58f9ee57b816">ASE</a>, <a class="el" href="classASENwchemPot.html#aad96569ab2c932ebca647815d4e88bf9">ASENwchemPot</a>, <a class="el" href="classASEOrcaPot.html#a1a6ac572725f41a14321d9952833fa88">ASEOrcaPot</a>, <a class="el" href="classCatLearnPot.html#aa777851437ce45f6c2c751c4eefe9334">CatLearnPot</a>, <a class="el" href="classeonc_1_1MetatomicDynPot.html#a94bafcce10882ea0dd40cc6d46ce252b">eonc::MetatomicDynPot</a>, <a class="el" href="classeonc_1_1tunneling_1_1RingPolymerPotential.html#a33329b5f3bbf2043b3d9ef29799a4d6c">eonc::tunneling::RingPolymerPotential</a>, <a class="el" href="classExtPot.html#a70ea3e4ecd4d90fa063d4d15acc6a316">ExtPot</a>, <a class="el" href="classGPRPotential.html#ab96ae48f95c3f916fd3acfef5c6633cb">GPRPotential</a>, <a class="el" href="classMetatomicPotential.html#a67cf280dee7c9ea210be7038b80f0673">MetatomicPotential</a>, <a class="el" href="classMPIPot.html#a35484a61a7c16eeb433029f85636aaf5">MPIPot</a>, <a class="el" href="classRgpotAdapter.html#a055a5f208ff16306b35632596a161674">RgpotAdapter&lt; RPot &gt;</a>, <a class="el" href="classRgpotPot.html#aa3807f25df4a13d2563d53aac59e63cd">RgpotPot</a>, <a class="el" href="classSocketNWChemPot.html#a1c3d7d3852d7bffa52051833c1f018e7">SocketNWChemPot</a>, and <a class="el" href="classVASP.html#ac553a0cc4a00cdbb7bd23dfd20d58f6d">VASP</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00148">148</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  148</span>{ <span class="keywordflow">return</span> <span class="keyword">true</span>; }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00151">151</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  151</span>{ <span class="keywordflow">return</span> <span class="keyword">true</span>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1227,11 +1278,11 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classExtPot.html#a07e9a81ce759322f12b66f895f33b544">ExtPot</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00156">156</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  156</span>                                                              {</div>
-<div class="line"><span class="lineno">  157</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>(<a class="code hl_enumvalue" href="#a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058">PotLayout::InProcess</a>);</div>
-<div class="line"><span class="lineno">  158</span>  }</div>
-<div class="ttc" id="aclasseonc_1_1Potential_html_a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058"><div class="ttname"><a href="#a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058">eonc::Potential::PotLayout::InProcess</a></div><div class="ttdeci">@ InProcess</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00152">Potential.h:152</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00159">159</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  159</span>                                                              {</div>
+<div class="line"><span class="lineno">  160</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>(<a class="code hl_enumvalue" href="#a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058">PotLayout::InProcess</a>);</div>
+<div class="line"><span class="lineno">  161</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058"><div class="ttname"><a href="#a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058">eonc::Potential::PotLayout::InProcess</a></div><div class="ttdeci">@ InProcess</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00155">Potential.h:155</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1263,10 +1314,10 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classASE.html#a010bef6241727643231ce39ee1a9274c">ASE</a>, <a class="el" href="classASENwchemPot.html#ae9a594ec6df17962bf7effce28d14f06">ASENwchemPot</a>, <a class="el" href="classASEOrcaPot.html#add74cdefab0c022714872bb214900ea6">ASEOrcaPot</a>, <a class="el" href="classeonc_1_1MetatomicDynPot.html#a3886e4cab360ae86dcf7ba922c32b8ed">eonc::MetatomicDynPot</a>, <a class="el" href="classExtPot.html#ac4356ad3ff646bc6129de6a2adcc5718">ExtPot</a>, <a class="el" href="classLAMMPSPot.html#aae77d35cbf6bcf84a38b055de76ccaca">LAMMPSPot</a>, <a class="el" href="classMetatomicPotential.html#a1345a4da1b9a96efb94f8ab12a1dc597">MetatomicPotential</a>, <a class="el" href="classRgpotAdapter.html#a9c53cdefdb91580b0ed424b3cb90946f">RgpotAdapter&lt; RPot &gt;</a>, <a class="el" href="classSocketNWChemPot.html#ae3ebead7bad2a55f753afd9868cbe899">SocketNWChemPot</a>, and <a class="el" href="classVASP.html#a91eeb1a7ca7adc0508f40eed312b840e">VASP</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00175">175</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  175</span>                                                                    {</div>
-<div class="line"><span class="lineno">  176</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  177</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00178">178</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  178</span>                                                                    {</div>
+<div class="line"><span class="lineno">  179</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  180</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1361,10 +1412,10 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classASENwchemPot.html#a386d56a47a59e9c3269fa9bd6edee7a7">ASENwchemPot</a>, <a class="el" href="classASEOrcaPot.html#acf04a451ead66da0d62358edfd137bea">ASEOrcaPot</a>, <a class="el" href="classeonc_1_1tunneling_1_1RingPolymerPotential.html#a1a7a62794fbf3bb7a22decf4de9679d6">eonc::tunneling::RingPolymerPotential</a>, <a class="el" href="classRgpotAdapter.html#a18f57c04222975e8937d95623fb264d8">RgpotAdapter&lt; RPot &gt;</a>, <a class="el" href="classRgpotPot.html#a30439012a21f7aeae6a23c1cf66b1fc8">RgpotPot</a>, and <a class="el" href="classSocketNWChemPot.html#ae6ac82b26dee40dc875804cff80ef1df">SocketNWChemPot</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00139">139</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  139</span>                                                                             {</div>
-<div class="line"><span class="lineno">  140</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  141</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00142">142</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  142</span>                                                                             {</div>
+<div class="line"><span class="lineno">  143</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  144</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1436,10 +1487,10 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classASE.html#a6cc801cfb55242aede7b55034117ccd5">ASE</a>, <a class="el" href="classeonc_1_1HostSurfacePotential.html#a76dafc6a365c5fe7f280ba4a59a349c2">eonc::HostSurfacePotential</a>, <a class="el" href="classeonc_1_1tunneling_1_1RingPolymerPotential.html#a4de017f1c140e101b00774a857c5c290">eonc::tunneling::RingPolymerPotential</a>, <a class="el" href="classMetatomicPotential.html#a1d1230f9247bc0e0c5be9062be0d6bde">MetatomicPotential</a>, <a class="el" href="classRgpotAdapter.html#a1325b13dceca141f31feda2e1171fcdc">RgpotAdapter&lt; RPot &gt;</a>, and <a class="el" href="classRgpotPot.html#acde3cf6eb2174f747609504d1d717d80">RgpotPot</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00188">188</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  188</span>                                                                      {</div>
-<div class="line"><span class="lineno">  189</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  190</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00191">191</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  191</span>                                                                      {</div>
+<div class="line"><span class="lineno">  192</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  193</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>

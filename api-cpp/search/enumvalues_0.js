@@ -6,5 +6,6 @@ var searchData=
   ['ase_5fnwchem_3',['ASE_NWCHEM',['../namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ab9dac08e823e181040bad4edee7dfd0c',1,'eonc']]],
   ['ase_5forca_4',['ASE_ORCA',['../namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a6ab5a34c9e555d0492a03426d63d4b69',1,'eonc']]],
   ['ase_5fpot_5',['ASE_POT',['../namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a0fe688b082b0929fe3f6cf195d7d371d',1,'eonc']]],
-  ['auto_6',['Auto',['../structeonc_1_1neb__options__t_1_1zoom__options__t.html#a11710c18d78ff8802774f0df474e5604a06b9281e396db002010bde1de57262eb',1,'eonc::neb_options_t::zoom_options_t']]]
+  ['atomcentred_6',['AtomCentred',['../namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51aa8fef013f0385b21ae5a60e717ac6eb7',1,'eonc']]],
+  ['auto_7',['Auto',['../structeonc_1_1neb__options__t_1_1zoom__options__t.html#a11710c18d78ff8802774f0df474e5604a06b9281e396db002010bde1de57262eb',1,'eonc::neb_options_t::zoom_options_t']]]
 ];

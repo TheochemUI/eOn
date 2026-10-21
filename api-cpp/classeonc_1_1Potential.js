@@ -22,6 +22,7 @@ var classeonc_1_1Potential =
     [ "forwardsStoredCell", "classeonc_1_1Potential.html#a5e2fb0c0cbe7cf3c1074bb35d8d7cb8f", null ],
     [ "get_ef", "classeonc_1_1Potential.html#aa2f4f152a44aa2827a6ca08bdd40da81", null ],
     [ "getType", "classeonc_1_1Potential.html#a4f0274548044ab1f714e4801352c4547", null ],
+    [ "hessianRange", "classeonc_1_1Potential.html#a80011be65081bbcafb4a1d332062f3ef", null ],
     [ "isSharedInstanceThreadSafe", "classeonc_1_1Potential.html#a8065b9661fcb0b025d397928243c987c", null ],
     [ "isSurrogate", "classeonc_1_1Potential.html#a85b0a3456f6528d8c464ab4b5774878e", null ],
     [ "isThreadSafe", "classeonc_1_1Potential.html#af6c385eb52d3764246416ea389c84131", null ],

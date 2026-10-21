@@ -4,7 +4,7 @@ var classeonc_1_1Hessian =
     [ "~Hessian", "classeonc_1_1Hessian.html#ac2794844fe4123bca3f53e6287a3129f", null ],
     [ "calculate", "classeonc_1_1Hessian.html#a82ad771a92ed4c94453de52ee56a3c4f", null ],
     [ "calculateBatched", "classeonc_1_1Hessian.html#a8ad1501c7d8b2b27f28d3e819f7875dd", null ],
-    [ "calculateColored", "classeonc_1_1Hessian.html#af03527e78ee4dd44ccde6aa3e88ccc41", null ],
+    [ "calculateColored", "classeonc_1_1Hessian.html#ab298ad38cabf6c574ba9cc28d6bbd0f5", null ],
     [ "calculateSerial", "classeonc_1_1Hessian.html#a5baae4eedafa38950b082e93da0a3b5a", null ],
     [ "finalizeHessian", "classeonc_1_1Hessian.html#aa78ba9a938197f423a21d01305e4782a", null ],
     [ "getFreqs", "classeonc_1_1Hessian.html#af2512da4d572c77b096b0ce6a6c453d9", null ],

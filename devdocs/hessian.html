@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="teal" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Hessian range - eOn</title><link rel="shortcut icon" href="../_static/favicon.ico"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Working with the documentation" href="docbuild.html" /><link rel="prev" title="Porting potentials" href="porting_potentials.html" />
+      <link rel="canonical" href="https://eondocs.org/devdocs/hessian.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_contributors.css?v=fe9086e2" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=c1ed689c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://eondocs.org/devdocs/hessian.html"/>
+  <meta property="og:title" content="Hessian range"/>
+    <meta name="twitter:card" content="summary"/>
+  <!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener('click',function(e){var a=e.target.closest('a');if(a&&a.hostname&&a.hostname!==location.hostname)antics.event('Outbound Link',{url:a.href})});</script></head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      <img class="light-logo" src="../_static/logo/eon_v3_light.svg" alt="eOn" height="28" loading="lazy" />
+      <img class="dark-logo" src="../_static/logo/eon_v3_dark.svg" alt="eOn" height="28" loading="lazy" />
+      <strong>eOn</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="/api-cpp/index.html">C++ API</a></li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
+            <span>Ecosystem</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="https://rgpycrumbs.rgoswami.me">
+                <span>rgpycrumbs</span>
+                <small>Python helpers for eOn workflows</small>
+              </a></li><li><a href="https://chemparseplot.rgoswami.me">
+                <span>chemparseplot</span>
+                <small>Parsing and plotting for computational chemistry</small>
+              </a></li></ul>
+      </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/TheochemUI/eOn" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html">Installation</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../install/eessi.html">Build develop on EESSI</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../install/lammps.html">LAMMPS</a></li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html#obtaining-sources">Obtaining sources</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html#european-environment-for-scientific-software-installations-eessi">European environment for scientific software installations (EESSI)</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html#licenses">Licenses</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/systems/index.html">Real systems for documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/morse_pt_neb.html">Morse Pt NEB (built-in potential)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/lj_minimization.html">LJ cluster minimization (built-in potential)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/pt_saddle.html">Morse Pt saddle search (built-in potential)</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/akmc.html">AKMC Tutorial</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/displacement_scripts.html">Targeted displacement for saddle searches</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/visualization.html">Visualizing optimization trajectories</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../user_guide/index.html">User guide</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/pyeonclient.html">pyeonclient</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/neighbor_lists.html">Neighbor lists</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/ext_pot.html">External Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/ase_pot.html">ASE interface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/metatomic_pot.html">Metatomic interface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/quip.html">QUIP with LAMMPS</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/mpi_potential.html">MPI potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/algorithm_selection.html">Choosing an algorithm</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/main.html">General simulation parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/structure_input.html">Structure input formats</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/potential.html">Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/structure_comparison.html">Structure comparison</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/optimizer.html">Optimizer</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/minimization.html">Minimization</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/neb.html">Nudged elastic band</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/dimer.html">Dimer method</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/lanczos.html">Lanczos</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/finite_difference.html">Finite-difference curvature</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/instanton.html">Tunnelling splittings</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/prefactor.html">Prefactor</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/akmc.html">Adaptive kinetic Monte Carlo</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/saddle_search.html">Saddle search</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/basin_hopping.html">Basin hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/global_optimization.html">Minima hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/monte_carlo.html">Monte Carlo</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/replica_exchange.html">Replica exchange</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/process_search.html">Process search</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/recycling.html">Recycling</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/coarse_graining.html">Coarse graining</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/dynamics.html">Dynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/parallel_replica.html">Parallel replica</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/tad.html">Temperature accelerated dynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/oh_tst.html">Optimal hyperplane transition state theory</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/communicator.html">Communicator</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/debug.html">Debug</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/paths.html">Paths</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/stdpar.html">nvc++ stdpar (NEB image forces)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/kdb.html">Kinetic database</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/rgpot_integration.html">rgpot integration (three roles)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/rgpot_metatomic.html">Metatomic backends (fat, RGPOT, ASE)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/serve_mode.html">Serve mode</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Development documentation</a><ul class="current">
+<li class="toctree-l2 _expand"><a class="reference internal" href="testing.html">Tests</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="benchmarks.html">Benchmarks</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="parallel-potentials.html">Parallel force evaluation</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="library-api.html">Library API</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="in-process.html">In-process jobs (no file IPC)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="abi-surface.html">Public C++ surface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="relax-engine.html">Relax engine library</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="rgpot-migration.html">rgpot kernel inventory</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="porting_potentials.html">Porting potentials</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Hessian range</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="svn.html">Subversion</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="svn-migration.html">Migrating from SVN</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="tracking-changes.html">Tracking changes</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="release.html">Release workflow</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="design/client/index.html">Client design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="design/client/types.html">Type system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="design/client/exact-reduction.html">Exact reductions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="design/client/parameters.html">Parameters system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="design/client/neb-modularization.html">NEB modularization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="design/client/confile.html">CON file I/O via readcon-core</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="pyeonclient.html">pyeonclient (nanobind client bindings)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="eon-schema.html">eon-schema (shared parameter package)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="pyeonclient-pypi.html">pyeonclient on PyPI</a></li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../apidocs/index.html">API Reference</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.wire.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.wire</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.contracts.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.contracts.load_outcome.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.contracts.load_outcome</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.structure.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.structure</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_catalog.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_catalog</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.params_ssot.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.params_ssot</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.job_result.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.job_result</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.approach.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.approach</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_id.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.5.0/index.html">[v3.5.0] - 2026-10-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.5.0/release-notes.html">eOn 3.5.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.3.1/index.html">[v3.3.1] - 2026-09-27</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.3.1/release-notes.html">eOn 3.3.1</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.3.0/index.html">[v3.3.0] - 2026-09-15</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.3.0/release-notes.html">eOn 3.3.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.2.1/index.html">[v3.2.1] - 2026-09-13</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.2.1/release-notes.html">eOn 3.2.1</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.2.0/index.html">[v3.2.0] - 2026-08-16</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.2.0/release-notes.html">eOn 3.2.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.17.0/release-notes.html">eOn 2.17.0</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.16.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.15.0/index.html">[v2.15.0] - 2026-06-24</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.15.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.14.0/index.html">[v2.14.0] - 2026-04-24</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.14.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.13.0/index.html">[v2.13.0] - 2026-04-18</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.13.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.12.0/index.html">[v2.12.0] - 2026-03-08</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.12.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.11.2/index.html">[v2.11.2] - 2026-03-02</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.11.2/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.11.1/index.html">[v2.11.1] - 2026-03-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.11.1/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.11.0/index.html">[v2.11.0] - 2026-02-24</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.11.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.10.2/index.html">[v2.10.2] - 2026-02-22</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.10.2/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.10.1/index.html">[v2.10.1] - 2026-02-18</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.10.1/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.10.0/index.html">[v2.10.0] - 2026-02-15</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.10.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.9.0/index.html">[v2.9.0] - 2026-01-27</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.9.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.9.0/publications.html">Related publications</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.2/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/publications.html">Related publications</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+</ul>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#when-coloring-applies">When coloring applies</a></li>
+<li><a class="reference internal" href="#how-a-potential-opts-in">How a potential opts in</a></li>
+<li><a class="reference internal" href="#kernels">Kernels</a><ul>
+<li><a class="reference internal" href="#where-the-numbers-come-from">Where the numbers come from</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#checked-zig-zags">Checked zig-zags</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
+  data-type="github" data-user="TheochemUI" data-repo="eOn">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </span>
+  <span class="flex-grow px-2 break-all">
+    
+    
+      <span>TheochemUI/eOn</span>
+    
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <iconify-icon icon="lucide:star"></iconify-icon>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div class="edit-this-page">
+  <a href="https://github.com/TheochemUI/eOn/blob/main/docs/source/devdocs/hessian.md">Edit this page</a>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">eOn</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">Development documentation</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Hessian range</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <div class="copy-page-wrapper relative pb-4 lg:absolute lg:top-8 lg:right-6 xl:right-12">
+  <div id="copy-page-trigger">
+    <button
+      type="button"
+      class="js-copy px-3 py-1 inline-flex items-center gap-1"
+      data-url="https://eondocs.org/_sources/devdocs/hessian.md.txt"
+    >
+      <i class="i-lucide" data-icon="copy"></i>
+      <span>Copy page</span>
+    </button>
+    <button class="js-menu px-2 py-1" type="button" aria-label="More actions"
+      aria-haspopup="menu" aria-expanded="false" aria-controls="copy-page-content">
+      <i class="i-lucide chevron-down"></i>
+    </button>
+  </div>
+  <div id="copy-page-content" role="menu" aria-orientation="vertical" aria-hidden="true">
+    <div role="presentation">
+      <div class="flex flex-col" role="group">
+        <button class="js-copy" type="button" role="menuitem"
+          data-url="https://eondocs.org/_sources/devdocs/hessian.md.txt">
+          <span class="iconify-icon">
+            <i class="i-lucide" data-icon="copy"></i>
+          </span>
+          <span>Copy page</span>
+        </button>
+        <a role="menuitem" href="https://eondocs.org/_sources/devdocs/hessian.md.txt" target="_blank" rel="nofollow"><iconify-icon icon="bi:markdown"></iconify-icon>
+            <span>View as Markdown</span></a><a role="menuitem" href="https://chatgpt.com/?hints=search&q=Read%20https%3A//eondocs.org/_sources/devdocs/hessian.md.txt%20so%20I%20can%20ask%20questions%20about%20it." target="_blank" rel="nofollow">
+          <iconify-icon icon="bi:openai"></iconify-icon>
+          <span>Open in ChatGPT</span>
+        </a><a role="menuitem" href="https://claude.ai/new?q=Read%20https%3A//eondocs.org/_sources/devdocs/hessian.md.txt%20so%20I%20can%20ask%20questions%20about%20it." target="_blank" rel="nofollow">
+          <iconify-icon icon="bi:claude"></iconify-icon>
+          <span>Open in Claude</span>
+        </a></div>
+    </div>
+  </div>
+</div><article class="yue dark-code" role="main">
+          <section id="hessian-range">
+<h1>Hessian range<a class="headerlink" href="#hessian-range" title="Link to this heading">¶</a></h1>
+<p>The Hessian job is part of eOn
+<span id="id1">Goswami [<a class="reference internal" href="#id25" title="Rohit Goswami. Efficient exploration of chemical kinetics. October 2025. arXiv:2510.21368, doi:10.48550/arXiv.2510.21368.">DHS_Gos25</a>]</span>.
+The older description of that client is Chill et al.
+<span id="id2">Chill <em>et al.</em> [<a class="reference internal" href="#id16" title="Samuel T Chill, Matthew Welborn, Rye Terrell, Liang Zhang, Jean-Claude Berthet, Andreas Pedersen, Hannes Jónsson, and Graeme Henkelman. EON: software for long time simulations of atomic scale systems. Modelling and Simulation in Materials Science and Engineering, 22(5):055002, July 2014. doi:10.1088/0965-0393/22/5/055002.">DHS_CWT+14</a>]</span>.</p>
+<section id="when-coloring-applies">
+<h2>When coloring applies<a class="headerlink" href="#when-coloring-applies" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Hessian::calculate</span></code> colors the mobile atoms when all of the following hold.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Potential::hessianRange()</span></code> is finite and strictly positive.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[Main]</span> <span class="pre">remove_net_force</span></code> is off, or some atom is fixed, or the system has one atom. Net-force removal shifts every atom, so a column is no longer confined to the neighborhood.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[Hessian]</span> <span class="pre">checkpoint_path</span></code> is empty. A checkpoint is stored one coordinate at a time.</p></li>
+</ul>
+<p>The reported value is the distance beyond which every Hessian block between two atoms is exactly zero. Mobile atoms are greedy-colored on the square of that neighborhood. One displacement of a color along x, y, or z fills the columns of that color. Entries outside the neighborhood are written as zero, which is exact only for that distance.</p>
+<p>Each row of that square is deduplicated while it is filled, with the same epoch-marked visited array the greedy coloring uses. The temporary storage is the edges, at most one slot per mobile pair. Pushing every toucher pair and sorting afterwards holds <code class="docutils literal notranslate"><span class="pre">O(sum</span> <span class="pre">t_k^2)</span></code> integers first, which is the whole cell when a many-body range reaches across it.</p>
+<p>When the coloring has as many colors as mobile atoms, <code class="docutils literal notranslate"><span class="pre">calculateColored</span></code> returns false and <code class="docutils literal notranslate"><span class="pre">calculate</span></code> takes the batched path, or the serial path when the potential does not batch. A color per atom does not reduce the force count, and the colored loop would skip batching. Catch2 <code class="docutils literal notranslate"><span class="pre">Coloring</span> <span class="pre">falls</span> <span class="pre">back</span> <span class="pre">when</span> <span class="pre">every</span> <span class="pre">mobile</span> <span class="pre">atom</span> <span class="pre">needs</span> <span class="pre">its</span> <span class="pre">own</span> <span class="pre">color</span></code> is that case: a four-atom cluster whose diameter is below the range takes 25 force calls, the serial central count. The eight-atom embedding chain takes 49 force calls total on the central scheme.</p>
+<p><code class="docutils literal notranslate"><span class="pre">0</span></code> and any non-finite value mean the range is unknown. The matrix is then one column per coordinate. A potential that evaluates batches takes the batched path instead, still one sample per coordinate.</p>
+</section>
+<section id="how-a-potential-opts-in">
+<h2>How a potential opts in<a class="headerlink" href="#how-a-potential-opts-in" title="Link to this heading">¶</a></h2>
+<p>Override <code class="docutils literal notranslate"><span class="pre">Potential::hessianRange()</span></code> and return that distance. The default is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+<p>An rgpot kernel wrapped by <code class="docutils literal notranslate"><span class="pre">RgpotAdapter</span></code> does not override the adapter. It specializes <code class="docutils literal notranslate"><span class="pre">eonc::HessianRangeOf&lt;Kernel&gt;</span></code> in <code class="docutils literal notranslate"><span class="pre">include/eon/potentials/RgpotAdapter/HessianRange.h</span></code>. The primary template is <code class="docutils literal notranslate"><span class="pre">HessianLocality::Unknown</span></code> and returns <code class="docutils literal notranslate"><span class="pre">0</span></code>. The adapter calls that trait and passes the result through <code class="docutils literal notranslate"><span class="pre">acceptedHessianRange</span></code>, which turns a non-positive or non-finite value into <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+<p>Override <code class="docutils literal notranslate"><span class="pre">Potential::hessianRange()</span></code> directly for a potential that is not an rgpot kernel. <code class="docutils literal notranslate"><span class="pre">finiteCutoff()</span></code> is deprecated and stays as the fallback that default <code class="docutils literal notranslate"><span class="pre">hessianRange()</span></code> calls, so an existing override still colors.</p>
+<p>The specialization declares a locality class and returns the matching distance.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Class</p></th>
+<th class="head"><p>Range</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Pair</p></td>
+<td><p>the interaction cutoff</p></td>
+</tr>
+<tr class="row-odd"><td><p>Atom-centred many-body</p></td>
+<td><p>twice the interaction cutoff</p></td>
+</tr>
+<tr class="row-even"><td><p>Molecular site model</p></td>
+<td><p>the intermolecular cutoff plus twice the largest intramolecular extent, or <code class="docutils literal notranslate"><span class="pre">0</span></code> when that extent is not a hard bound</p></td>
+</tr>
+<tr class="row-odd"><td><p>Message passing</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">n_layers</span></code> times the edge cutoff when the layer count is in the kernel, otherwise <code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Do not infer the range from <code class="docutils literal notranslate"><span class="pre">config().cutoff</span></code>. That field is the neighbour-list cutoff. For a many-body kernel it is too short, and for water and for UMA it is not a Hessian range at all.</p>
+<p>A kernel added in rgpot follows <a class="reference internal" href="porting_potentials.html"><span class="std std-doc">Porting potentials</span></a> and then adds this specialization in the same change that wires the factory arm. Leaving the primary template in place keeps coloring off.</p>
+</section>
+<section id="kernels">
+<h2>Kernels<a class="headerlink" href="#kernels" title="Link to this heading">¶</a></h2>
+<p>The classes below were checked at the current rgpot pin and at rgpot release <code class="docutils literal notranslate"><span class="pre">v3.5.0</span></code>. “Wrapped” means <code class="docutils literal notranslate"><span class="pre">makePotential</span></code> builds an <code class="docutils literal notranslate"><span class="pre">RgpotAdapter</span></code> for that kernel. A kernel that exists in rgpot but is not wrapped still has a specialization when its header is present, so a later factory arm cannot turn coloring on by having a cutoff field.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Kernel</p></th>
+<th class="head"><p>Pin</p></th>
+<th class="head"><p>3.5.0</p></th>
+<th class="head"><p>Class</p></th>
+<th class="head"><p>Reported range</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">LJPot</span></code></p></td>
+<td><p>wrapped</p></td>
+<td><p>wrapped</p></td>
+<td><p>pair</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">config().cutoff</span></code>, default 15 Å</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">LJClusterPot</span></code></p></td>
+<td><p>wrapped</p></td>
+<td><p>wrapped</p></td>
+<td><p>pair</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">config().cutoff</span></code>, default 15 Å</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MorsePot</span></code></p></td>
+<td><p>wrapped</p></td>
+<td><p>wrapped</p></td>
+<td><p>pair</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">config().cutoff</span></code>, default 9.5 Å</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ZBLPot</span></code></p></td>
+<td><p>wrapped</p></td>
+<td><p>wrapped</p></td>
+<td><p>pair</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">config().cut_global</span></code>, default 2.5 Å</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">EAMAlPot</span></code></p></td>
+<td><p>wrapped</p></td>
+<td><p>wrapped</p></td>
+<td><p>atom-centred</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">7.1</span></code> Å</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SWPot</span></code></p></td>
+<td><p>wrapped</p></td>
+<td><p>wrapped</p></td>
+<td><p>atom-centred</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">1.8</span> <span class="pre">*</span> <span class="pre">2.0951</span></code> Å</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TersoffPot</span></code></p></td>
+<td><p>wrapped</p></td>
+<td><p>wrapped</p></td>
+<td><p>atom-centred</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">3.0</span></code> Å</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EDIPPot</span></code></p></td>
+<td><p>wrapped</p></td>
+<td><p>wrapped</p></td>
+<td><p>atom-centred</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">3.1213820</span></code> Å</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">LenoskyPot</span></code></p></td>
+<td><p>wrapped</p></td>
+<td><p>wrapped</p></td>
+<td><p>atom-centred</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">4.5</span></code> Å</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FeHePot</span></code></p></td>
+<td><p>wrapped</p></td>
+<td><p>wrapped</p></td>
+<td><p>atom-centred</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">8.4</span></code> Å</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CuH2Pot</span></code></p></td>
+<td><p>wrapped</p></td>
+<td><p>wrapped</p></td>
+<td><p>atom-centred</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">6.1</span></code> Å</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WaterHPot</span></code> (TIP4P-H)</p></td>
+<td><p>factory arm when water is built</p></td>
+<td><p>same</p></td>
+<td><p>unknown</p></td>
+<td><p>disabled</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">XTBPot</span></code></p></td>
+<td><p>wrapped when built</p></td>
+<td><p>same</p></td>
+<td><p>unknown</p></td>
+<td><p>disabled</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">D3Pot</span></code></p></td>
+<td><p>wrapped when built</p></td>
+<td><p>same</p></td>
+<td><p>unknown</p></td>
+<td><p>disabled</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">D4Pot</span></code></p></td>
+<td><p>wrapped when built</p></td>
+<td><p>same</p></td>
+<td><p>unknown</p></td>
+<td><p>disabled</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MOPACPot</span></code></p></td>
+<td><p>wrapped</p></td>
+<td><p>wrapped</p></td>
+<td><p>unknown</p></td>
+<td><p>disabled</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ExprPot</span></code></p></td>
+<td><p>wrapped when built</p></td>
+<td><p>same</p></td>
+<td><p>unknown</p></td>
+<td><p>disabled</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">UmaPot</span></code></p></td>
+<td><p>header, not a factory arm</p></td>
+<td><p>same, and <code class="docutils literal notranslate"><span class="pre">config().cutoff</span></code></p></td>
+<td><p>message passing</p></td>
+<td><p>disabled</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TIP4PPot</span></code></p></td>
+<td><p>not in this pin</p></td>
+<td><p>header</p></td>
+<td><p>molecular site</p></td>
+<td><p>disabled</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SPCEPot</span></code></p></td>
+<td><p>not in this pin</p></td>
+<td><p>header</p></td>
+<td><p>molecular site</p></td>
+<td><p>disabled</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TIP4PPtPot</span></code></p></td>
+<td><p>not in this pin</p></td>
+<td><p>header</p></td>
+<td><p>molecular site</p></td>
+<td><p>disabled</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EAMPot</span></code> (cell list)</p></td>
+<td><p>not in this pin</p></td>
+<td><p>header</p></td>
+<td><p>atom-centred</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">5.555</span></code> Å</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">EMTPot</span></code></p></td>
+<td><p>not in this pin</p></td>
+<td><p>header</p></td>
+<td><p>atom-centred</p></td>
+<td><p>disabled</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">NWChemPot</span></code>, <code class="docutils literal notranslate"><span class="pre">CPMDPot</span></code>, <code class="docutils literal notranslate"><span class="pre">TBLitePot</span></code>, <code class="docutils literal notranslate"><span class="pre">SkalaPot</span></code>, <code class="docutils literal notranslate"><span class="pre">MetatomicPot</span></code></p></td>
+<td><p>dlopen engines</p></td>
+<td><p>same</p></td>
+<td><p>unknown</p></td>
+<td><p>disabled</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">NWChemPot</span></code>, <code class="docutils literal notranslate"><span class="pre">CPMDPot</span></code>, <code class="docutils literal notranslate"><span class="pre">TBLitePot</span></code>, <code class="docutils literal notranslate"><span class="pre">SkalaPot</span></code> and <code class="docutils literal notranslate"><span class="pre">MetatomicPot</span></code> are reached through <code class="docutils literal notranslate"><span class="pre">RgpotPot</span></code> or an engine plugin, not through <code class="docutils literal notranslate"><span class="pre">RgpotAdapter</span></code>. They do not override <code class="docutils literal notranslate"><span class="pre">hessianRange</span></code>, so they stay at <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+<p>Potentials that are not rgpot kernels also stay at <code class="docutils literal notranslate"><span class="pre">0</span></code> unless they override <code class="docutils literal notranslate"><span class="pre">hessianRange</span></code>. That includes the in-tree EMT potential and the in-tree TIP4P, SPC/E and TIP4P-Pt potentials on this pin. Those water potentials are the same flexible models as the 3.5.0 kernels below, and the same reason keeps coloring off.</p>
+<section id="where-the-numbers-come-from">
+<h3>Where the numbers come from<a class="headerlink" href="#where-the-numbers-come-from" title="Link to this heading">¶</a></h3>
+<p>Pair kernels. <code class="docutils literal notranslate"><span class="pre">LJPot</span></code>, <code class="docutils literal notranslate"><span class="pre">LJClusterPot</span></code> and <code class="docutils literal notranslate"><span class="pre">MorsePot</span></code> return <code class="docutils literal notranslate"><span class="pre">config().cutoff</span></code>. <code class="docutils literal notranslate"><span class="pre">ZBLPot</span></code> returns <code class="docutils literal notranslate"><span class="pre">cut_global</span></code>. The ZBL switch makes the energy and the force zero at that radius (<code class="docutils literal notranslate"><span class="pre">ZBLPot.cc</span></code>, the switching polynomial at <code class="docutils literal notranslate"><span class="pre">cut_global</span></code>).</p>
+<p>Atom-centred Fortran kernels. The C++ face has no cutoff field. The defaults below are the values the neighbour table is built at, and the block range is twice that.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">EAMAlPot</span></code>: <code class="docutils literal notranslate"><span class="pre">rcut</span> <span class="pre">=</span> <span class="pre">7.1</span></code> in <code class="docutils literal notranslate"><span class="pre">rgpot_eam_al.f90</span></code>. Pairs and densities are dropped by <code class="docutils literal notranslate"><span class="pre">truncation_radius</span></code>, which is inside <code class="docutils literal notranslate"><span class="pre">rcut</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SWPot</span></code>: <code class="docutils literal notranslate"><span class="pre">alpha</span> <span class="pre">*</span> <span class="pre">sigma</span></code> with <code class="docutils literal notranslate"><span class="pre">sigma</span> <span class="pre">=</span> <span class="pre">2.0951</span></code> and <code class="docutils literal notranslate"><span class="pre">alpha</span> <span class="pre">=</span> <span class="pre">1.8</span></code> in <code class="docutils literal notranslate"><span class="pre">rgpot_sw.f90</span></code>. The three-body term couples both ends of a triplet.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TersoffPot</span></code>: taper end <code class="docutils literal notranslate"><span class="pre">s</span> <span class="pre">=</span> <span class="pre">3.0</span></code> in <code class="docutils literal notranslate"><span class="pre">rgpot_tersoff.f90</span></code>. <code class="docutils literal notranslate"><span class="pre">cutoff_taper</span></code> is zero at and beyond <code class="docutils literal notranslate"><span class="pre">S</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EDIPPot</span></code>: <code class="docutils literal notranslate"><span class="pre">max(a,</span> <span class="pre">b)</span></code> with <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">b</span> <span class="pre">=</span> <span class="pre">3.1213820</span></code> in <code class="docutils literal notranslate"><span class="pre">rgpot_edip.f90</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LenoskyPot</span></code>: <code class="docutils literal notranslate"><span class="pre">default_cutoff</span> <span class="pre">=</span> <span class="pre">4.5</span></code> in <code class="docutils literal notranslate"><span class="pre">rgpot_lenosky.f90</span></code>, shared by the pair and density splines.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FeHePot</span></code>: in <code class="docutils literal notranslate"><span class="pre">rgpot_fehe.f90</span></code> the pair cutoffs are Fe-Fe 5.3, Fe-He 3.9028 and He-He 5.4. d-band density vanishes at 4.2 and only Fe embeds it. s-band density vanishes at 4.10 and both species embed it. The range is the larger of the pair cutoffs and twice the largest density cutoff, <code class="docutils literal notranslate"><span class="pre">max(5.4,</span> <span class="pre">2</span> <span class="pre">*</span> <span class="pre">4.2)</span> <span class="pre">=</span> <span class="pre">8.4</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CuH2Pot</span></code>: <code class="docutils literal notranslate"><span class="pre">rcut</span> <span class="pre">=</span> <span class="pre">6.1</span></code> in <code class="docutils literal notranslate"><span class="pre">rgpot_cuh2.f90</span></code>. <code class="docutils literal notranslate"><span class="pre">phi</span></code> and <code class="docutils literal notranslate"><span class="pre">rho</span></code> are shifted to vanish there.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">WaterHPot</span></code>. <code class="docutils literal notranslate"><span class="pre">rgpot_water_h.f90</span></code> says there is no cutoff. Every site interacts with the lone H at its nearest periodic image, however far away. The range stays <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+<p>UMA, on the pin and on <code class="docutils literal notranslate"><span class="pre">v3.5.0</span></code>. <code class="docutils literal notranslate"><span class="pre">UmaConfig::cutoff</span></code> (default 6 Å, <code class="docutils literal notranslate"><span class="pre">UmaConfig.hpp</span></code>) is the vesin edge cutoff. <code class="docutils literal notranslate"><span class="pre">UmaPot::forceImpl</span></code> builds that edge list and runs the compiled graph (<code class="docutils literal notranslate"><span class="pre">UmaPot.cc</span></code>, the <code class="docutils literal notranslate"><span class="pre">vesin_fairchem_edges</span></code> call). The package metadata can replace the cutoff. The number of message-passing layers is not a field of the kernel or of <code class="docutils literal notranslate"><span class="pre">UmaConfig</span></code>. <code class="docutils literal notranslate"><span class="pre">n_layers</span> <span class="pre">*</span> <span class="pre">cutoff</span></code> is not derivable, so the specialization is <code class="docutils literal notranslate"><span class="pre">MessagePassing</span></code> and the range is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+<p>Water on <code class="docutils literal notranslate"><span class="pre">v3.5.0</span></code>. <code class="docutils literal notranslate"><span class="pre">WaterConfig::cutoff</span></code> (default 8.5 Å, <code class="docutils literal notranslate"><span class="pre">WaterPots.hpp</span></code>) is the intermolecular cutoff passed into TIP4P, SPC/E and TIP4P-Pt. The CCL intramolecular term (<code class="docutils literal notranslate"><span class="pre">ccl.hpp</span></code>, <code class="docutils literal notranslate"><span class="pre">intramolecular</span></code>) is a polynomial in the bond stretch and the angle. It has no distance at which it is identically zero. SPC/E also exposes <code class="docutils literal notranslate"><span class="pre">coulombFull</span></code> (<code class="docutils literal notranslate"><span class="pre">spce_ccl.hpp</span></code>), a Coulomb path with no cutoff. A molecule is flexible, so there is no hard intramolecular extent to add to the cutoff. The range stays <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+<p>Cell-list EAM on <code class="docutils literal notranslate"><span class="pre">v3.5.0</span></code>. <code class="docutils literal notranslate"><span class="pre">EAMCellConfig</span></code> is empty. <code class="docutils literal notranslate"><span class="pre">EAM/Parameters.h</span></code> lists <code class="docutils literal notranslate"><span class="pre">r_cut</span></code> of 5.555 Å (Al), 5.412 Å (Pd) and 5.5155 Å (Au). The specialization reports twice the largest of those cutoffs, <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">5.555</span></code> Å.</p>
+<p>EMT on <code class="docutils literal notranslate"><span class="pre">v3.5.0</span></code>. <code class="docutils literal notranslate"><span class="pre">EMTConfig</span></code> is a parameter-set flag and has no cutoff. <code class="docutils literal notranslate"><span class="pre">EMTDefaultParameterProvider::calc_cutoff</span></code> builds a cutoff from the elements in the system, and the weight is a Fermi function. There is no single distance that is exact for every system, so the class is recorded and the range stays <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">XTBPot</span></code>, <code class="docutils literal notranslate"><span class="pre">D3Pot</span></code>, <code class="docutils literal notranslate"><span class="pre">D4Pot</span></code>, <code class="docutils literal notranslate"><span class="pre">MOPACPot</span></code> and <code class="docutils literal notranslate"><span class="pre">ExprPot</span></code> use the primary template. D3 and D4 do not expose a cutoff on their config, and an expression is only as local as its terms.</p>
+</section>
+</section>
+<section id="checked-zig-zags">
+<h2>Checked zig-zags<a class="headerlink" href="#checked-zig-zags" title="Link to this heading">¶</a></h2>
+<p>Catch2 <code class="docutils literal notranslate"><span class="pre">Opted-in</span> <span class="pre">kernels</span> <span class="pre">match</span> <span class="pre">the</span> <span class="pre">serial</span> <span class="pre">matrix</span> <span class="pre">at</span> <span class="pre">the</span> <span class="pre">declared</span> <span class="pre">range</span></code> runs each opted-in kernel on its own zig-zag. The colored matrix matches the per-column matrix. A block past the interaction cutoff is nonzero for every many-body kernel, and every block past the declared range is 0. The short-range column is the negative test: SW_SI and EAM_AL are wrapped so the reported range is <code class="docutils literal notranslate"><span class="pre">r_c</span></code> instead of <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">r_c</span></code>, and that matrix misses the per-column matrix by more than <code class="docutils literal notranslate"><span class="pre">1e-2</span></code> of max <code class="docutils literal notranslate"><span class="pre">|H|</span></code>.</p>
+<p>| Kernel | Atoms | Colors | Serial calls | Colored calls | max <code class="docutils literal notranslate"><span class="pre">|H|</span></code> | Largest nonzero block (Å) | Colored error | Short-range error |
+| — | — | — | — | — | — | — | — | — |
+| EAM_AL | 14 | 11 | 85 | 67 | 0.730150 | 9.907 | 0 | 0.013011 |
+| SW_SI | 10 | 7 | 61 | 43 | 16.16306 | 4.070 | 0 | 0.458243 |
+| TERSOFF_SI | 8 | 5 | 49 | 31 | 14.54654 | 4.070 | 0 | not run |
+| EDIP | 10 | 7 | 61 | 43 | 12.68665 | 4.070 | 0 | not run |
+| LENOSKY_SI | 10 | 7 | 61 | 43 | 13.38487 | 4.613 | 0 | not run |
+| FEHE | 12 | 9 | 73 | 55 | 3.670133 | 8.188 | 0 | not run |
+| CUH2 | 14 | 11 | 85 | 67 | 2.062919 | 8.833 | 0 | not run |
+| ZBL | 8 | 3 | 49 | 19 | 137.3325 | 1.500 | 0 | not run |</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
+<div class="docutils container" id="id3">
+<div role="list" class="citation-list">
+<div class="citation" id="id16" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">DHS_CWT+14</a><span class="fn-bracket">]</span></span>
+<p>Samuel T Chill, Matthew Welborn, Rye Terrell, Liang Zhang, Jean-Claude Berthet, Andreas Pedersen, Hannes Jónsson, and Graeme Henkelman. EON: software for long time simulations of atomic scale systems. <em>Modelling and Simulation in Materials Science and Engineering</em>, 22(5):055002, July 2014. <a class="reference external" href="https://doi.org/10.1088/0965-0393/22/5/055002">doi:10.1088/0965-0393/22/5/055002</a>.</p>
+</div>
+<div class="citation" id="id25" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">DHS_Gos25</a><span class="fn-bracket">]</span></span>
+<p>Rohit Goswami. Efficient exploration of chemical kinetics. October 2025. <a class="reference external" href="https://arxiv.org/abs/2510.21368">arXiv:2510.21368</a>, <a class="reference external" href="https://doi.org/10.48550/arXiv.2510.21368">doi:10.48550/arXiv.2510.21368</a>.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="porting_potentials.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Porting potentials</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="docbuild.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Working with the documentation</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--sy-c-text-weak);
+        font-size: 0.9em;
+      "
+    >
+      <div
+        style="
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 1rem;
+          align-items: center;
+        "
+      >
+        
+        <span style="display: inline-flex; align-items: center; gap: 0.3em">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="1em"
+            height="1em"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z" />
+          </svg>
+          <span
+            >Analytics by
+            <a
+              href="https://antics.turtletech.us/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style="color: inherit; text-decoration: underline"
+              >antics</a
+            ></span
+          >
+        </span>
+
+        
+        <span style="display: inline-flex; align-items: center; gap: 0.3em">
+          <span>provided by</span>
+          <span style="display: inline-flex; align-items: center; gap: 0.3em">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+            <a
+              href="https://turtletech.us/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style="color: inherit; text-decoration: underline"
+              >TurtleTech ehf</a
+            >
+          </span>
+        </span>
+
+        
+        <span style="display: inline-flex; align-items: center; gap: 0.3em">
+          <span>hosted by</span>
+          <a
+            href="https://www.netlify.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="color: inherit; text-decoration: underline"
+            >Netlify</a
+          >
+        </span>
+      </div>
+    </div>
+
+    
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2026, the eOn developers</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div> <div class="sy-foot-socials">
+<a href="https://github.com/TheochemUI/eOn" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=5349f462"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/shibuya.js?v=cac61aee"></script></body>
+</html>

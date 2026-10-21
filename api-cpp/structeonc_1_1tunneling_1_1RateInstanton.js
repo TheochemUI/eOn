@@ -22,6 +22,7 @@ var structeonc_1_1tunneling_1_1RateInstanton =
     [ "logAbsoluteGaussianWeight", "structeonc_1_1tunneling_1_1RateInstanton.html#a03d28479fcfd6cd85013f2aeec1e0b06", null ],
     [ "logRate", "structeonc_1_1tunneling_1_1RateInstanton.html#aad7f23dff2e3b4944a36083dad132908", null ],
     [ "logRateTimesZr", "structeonc_1_1tunneling_1_1RateInstanton.html#ad0d52adfa324ebdf51f118ca7fe5ed96", null ],
+    [ "logRotationRatio", "structeonc_1_1tunneling_1_1RateInstanton.html#aa8a27918b8485f56b1f45ac713f79106", null ],
     [ "logZr", "structeonc_1_1tunneling_1_1RateInstanton.html#a9552be29f929487f8a617f59786a5f29", null ],
     [ "negativeEigenvalue", "structeonc_1_1tunneling_1_1RateInstanton.html#ae5327dd3611ca775473d508fc544496e", null ],
     [ "negativeModes", "structeonc_1_1tunneling_1_1RateInstanton.html#a11fd3c734616376cf4c289e691300f7c", null ],

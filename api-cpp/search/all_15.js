@@ -108,11 +108,12 @@ var searchData=
   ['trotter_105',['Trotter',['../namespaceeonc_1_1pathintegral.html#abe31f237ac5f5aff8dce43642078966eab830e5e056ff2368bbf3b74d3b0fbc02',1,'eonc::pathintegral']]],
   ['trottereigenvalues_106',['trotterEigenvalues',['../namespaceeonc_1_1pathintegral.html#a7cd723e7974a04d9e90f5943274f54ed',1,'eonc::pathintegral']]],
   ['try_5fload_107',['try_load',['../classeonc_1_1MetatomicLoader.html#a07daeae74a1fc57004e8e411cf0cb281',1,'eonc::MetatomicLoader']]],
-  ['tunneling_2ecpp_108',['Tunneling.cpp',['../Tunneling_8cpp.html',1,'']]],
-  ['tunneling_2eh_109',['Tunneling.h',['../Tunneling_8h.html',1,'']]],
-  ['two_5fpoint_110',['two_point',['../structeonc_1_1optimizer__options__t_1_1sd__t.html#aa9e39b411f3893ff060df3afc9890e58',1,'eonc::optimizer_options_t::sd_t']]],
-  ['type_111',['type',['../structeonc_1_1PotRegistry_1_1InstanceRecord.html#ae6ad39a155ef553ecf4fbd7b386e87ee',1,'eonc::PotRegistry::InstanceRecord']]],
-  ['type_5falive_112',['type_alive',['../classeonc_1_1PotRegistry.html#a9ede73a599d49dfeec6041efe0918a79',1,'eonc::PotRegistry']]],
-  ['type_5fforce_5fcalls_113',['type_force_calls',['../classeonc_1_1PotRegistry.html#a65a77d05d2ad8e2c59ff8829551e7431',1,'eonc::PotRegistry']]],
-  ['typestats_114',['TypeStats',['../structeonc_1_1PotRegistry_1_1TypeStats.html',1,'eonc::PotRegistry']]]
+  ['tunnel_5fwall_5fpoints_108',['tunnel_wall_points',['../structeonc_1_1neb__options__t.html#ad6d61e71d9eac4e8e48acbd0d2846a4c',1,'eonc::neb_options_t']]],
+  ['tunneling_2ecpp_109',['Tunneling.cpp',['../Tunneling_8cpp.html',1,'']]],
+  ['tunneling_2eh_110',['Tunneling.h',['../Tunneling_8h.html',1,'']]],
+  ['two_5fpoint_111',['two_point',['../structeonc_1_1optimizer__options__t_1_1sd__t.html#aa9e39b411f3893ff060df3afc9890e58',1,'eonc::optimizer_options_t::sd_t']]],
+  ['type_112',['type',['../structeonc_1_1PotRegistry_1_1InstanceRecord.html#ae6ad39a155ef553ecf4fbd7b386e87ee',1,'eonc::PotRegistry::InstanceRecord']]],
+  ['type_5falive_113',['type_alive',['../classeonc_1_1PotRegistry.html#a9ede73a599d49dfeec6041efe0918a79',1,'eonc::PotRegistry']]],
+  ['type_5fforce_5fcalls_114',['type_force_calls',['../classeonc_1_1PotRegistry.html#a65a77d05d2ad8e2c59ff8829551e7431',1,'eonc::PotRegistry']]],
+  ['typestats_115',['TypeStats',['../structeonc_1_1PotRegistry_1_1TypeStats.html',1,'eonc::PotRegistry']]]
 ];

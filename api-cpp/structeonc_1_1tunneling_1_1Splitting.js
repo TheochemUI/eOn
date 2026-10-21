@@ -1,5 +1,6 @@
 var structeonc_1_1tunneling_1_1Splitting =
 [
+    [ "asymmetry", "structeonc_1_1tunneling_1_1Splitting.html#a4aa5aa67c62dfa033702fab58583d647", null ],
     [ "tlsEnergy", "structeonc_1_1tunneling_1_1Splitting.html#a80a130fb4bc3109a9096d5f68d841c4a", null ],
     [ "action", "structeonc_1_1tunneling_1_1Splitting.html#a62180f50fa7872589b846770541bb092", null ],
     [ "barrier", "structeonc_1_1tunneling_1_1Splitting.html#a3e467d80dda24d6a36abbf41c630ea9e", null ],

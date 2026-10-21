@@ -45,6 +45,7 @@ var structeonc_1_1instanton__options__t =
     [ "saddle_filename", "structeonc_1_1instanton__options__t.html#acbec8fbcd163d8d5d8abc60af70f6a81", null ],
     [ "saddle_hessian_filename", "structeonc_1_1instanton__options__t.html#a190145821ab3a139cea5878d3ea55500", null ],
     [ "springs", "structeonc_1_1instanton__options__t.html#a10bb41472ceab6de812e8c81253a1a06", null ],
+    [ "symmetrize", "structeonc_1_1instanton__options__t.html#a5e508f61a16511195b7f8ae7a8dc2d72", null ],
     [ "temperature", "structeonc_1_1instanton__options__t.html#aabfe9726b50466ad95c95e273f0b86e0", null ],
     [ "temperatures", "structeonc_1_1instanton__options__t.html#a1a1fa97d5bc1aadf7a374976b2c80883", null ]
 ];

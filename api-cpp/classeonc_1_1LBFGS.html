@@ -536,94 +536,105 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  210</span>      <a class="code hl_variable" href="#a3284aef4d15d65d7e56ee9e877730932">m_iteration</a> == 0 &amp;&amp; <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.auto_scale</div>
 <div class="line"><span class="lineno">  211</span>          ? <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;knownCurvature()</div>
 <div class="line"><span class="lineno">  212</span>          : std::nullopt;</div>
-<div class="line"><span class="lineno">  213</span>  <span class="keywordflow">if</span> (known &amp;&amp; std::isfinite(*known) &amp;&amp; *known &gt; 0.0) {</div>
-<div class="line"><span class="lineno">  214</span>    H0 = 1.0 / *known;</div>
-<div class="line"><span class="lineno">  215</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.max_inverse_curvature &gt; 0.0) {</div>
-<div class="line"><span class="lineno">  216</span>      H0 = std::min(H0, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.max_inverse_curvature);</div>
-<div class="line"><span class="lineno">  217</span>    }</div>
-<div class="line"><span class="lineno">  218</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>, <span class="stringliteral">&quot;[LBFGS] H0={:.4e} (known curvature)&quot;</span>, H0);</div>
-<div class="line"><span class="lineno">  219</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a3284aef4d15d65d7e56ee9e877730932">m_iteration</a> == 0 &amp;&amp; <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.auto_scale &amp;&amp;</div>
-<div class="line"><span class="lineno">  220</span>             <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;supportsFiniteDifferenceCurvature()) {</div>
-<div class="line"><span class="lineno">  221</span>    <span class="keyword">const</span> Eigen::VectorXd fhat = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a2af38029cd82d08b069d5465d02247c8">eonc::exact::normalized</a>(a_f);</div>
-<div class="line"><span class="lineno">  222</span>    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(mulAdd(r, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.finiteDifference, fhat));</div>
-<div class="line"><span class="lineno">  223</span>    Eigen::VectorXd dg = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient(<span class="keyword">true</span>) + a_f;</div>
-<div class="line"><span class="lineno">  224</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> C = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(dg, fhat) / <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.finiteDifference;</div>
-<div class="line"><span class="lineno">  225</span>    H0 = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#ac4a440a0ec6d054b05ecd14567d41f97">eonc::safemath::safe_recip</a>(C, -1.0);</div>
-<div class="line"><span class="lineno">  226</span>    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(r);</div>
-<div class="line"><span class="lineno">  227</span>    <span class="keywordflow">if</span> (H0 &lt; 0) {</div>
-<div class="line"><span class="lineno">  228</span>      QUILL_LOG_WARNING(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>,</div>
-<div class="line"><span class="lineno">  229</span>                        <span class="stringliteral">&quot;[LBFGS] Negative curvature calculated via FD: {:.4e} &quot;</span></div>
-<div class="line"><span class="lineno">  230</span>                        <span class="stringliteral">&quot;eV/A^2, take max move step&quot;</span>,</div>
-<div class="line"><span class="lineno">  231</span>                        C);</div>
-<div class="line"><span class="lineno">  232</span>      <a class="code hl_function" href="#ad0c78e6bdb73ddd2d71fd9d645d3f8a8">reset</a>();</div>
-<div class="line"><span class="lineno">  233</span>      <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a>(1000 * a_f, a_maxMove);</div>
-<div class="line"><span class="lineno">  234</span>    }</div>
-<div class="line"><span class="lineno">  235</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>, <span class="stringliteral">&quot;[LBFGS] Curvature calculated via FD: {:.4e} eV/A^2&quot;</span>,</div>
-<div class="line"><span class="lineno">  236</span>                    C);</div>
-<div class="line"><span class="lineno">  237</span>  }</div>
-<div class="line"><span class="lineno">  238</span> </div>
-<div class="line"><span class="lineno">  239</span>  <span class="keyword">const</span> <span class="keyword">auto</span> idx =</div>
-<div class="line"><span class="lineno">  240</span>      twoLoopIndex(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a854d861e3dfae09166f84b26c982720a">m_s</a>.size()),</div>
-<div class="line"><span class="lineno">  241</span>                   <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.extra_updates));</div>
-<div class="line"><span class="lineno">  242</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> loopmax = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(idx.size());</div>
-<div class="line"><span class="lineno">  243</span>  std::vector&lt;double&gt; a(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(loopmax));</div>
-<div class="line"><span class="lineno">  244</span> </div>
-<div class="line"><span class="lineno">  245</span>  Eigen::VectorXd q = -f;</div>
-<div class="line"><span class="lineno">  246</span> </div>
-<div class="line"><span class="lineno">  247</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = loopmax - 1; k &gt;= 0; k--) {</div>
-<div class="line"><span class="lineno">  248</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> i = idx[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)];</div>
-<div class="line"><span class="lineno">  249</span>    a[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)] =</div>
-<div class="line"><span class="lineno">  250</span>        <a class="code hl_variable" href="#a14eff494f304d1af8aa70e7f6ef2e672">m_rho</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] *</div>
-<div class="line"><span class="lineno">  251</span>        <a class="code hl_function" href="namespaceeonc_1_1exact.html#aecf44d795d407c88376491394a7d8bb6">eonc::exact::orderedDot</a>(<a class="code hl_variable" href="#a854d861e3dfae09166f84b26c982720a">m_s</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)], q);</div>
-<div class="line"><span class="lineno">  252</span>    mulAddInto(q, -a[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)], <a class="code hl_variable" href="#a52228dc72ad3429b817ea1f1a1a1ca13">m_y</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)]);</div>
-<div class="line"><span class="lineno">  253</span>  }</div>
-<div class="line"><span class="lineno">  254</span> </div>
-<div class="line"><span class="lineno">  255</span>  Eigen::VectorXd z = <a class="code hl_function" href="#ae91e674b470bdb3adde63a4373049637">applyH0</a>(q, H0, r);</div>
-<div class="line"><span class="lineno">  256</span> </div>
-<div class="line"><span class="lineno">  257</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; loopmax; k++) {</div>
-<div class="line"><span class="lineno">  258</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> i = idx[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)];</div>
-<div class="line"><span class="lineno">  259</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> b = <a class="code hl_variable" href="#a14eff494f304d1af8aa70e7f6ef2e672">m_rho</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] *</div>
-<div class="line"><span class="lineno">  260</span>                     <a class="code hl_function" href="namespaceeonc_1_1exact.html#aecf44d795d407c88376491394a7d8bb6">eonc::exact::orderedDot</a>(<a class="code hl_variable" href="#a52228dc72ad3429b817ea1f1a1a1ca13">m_y</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)], z);</div>
-<div class="line"><span class="lineno">  261</span>    mulAddInto(z, a[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)] - b, <a class="code hl_variable" href="#a854d861e3dfae09166f84b26c982720a">m_s</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)]);</div>
-<div class="line"><span class="lineno">  262</span>  }</div>
-<div class="line"><span class="lineno">  263</span> </div>
-<div class="line"><span class="lineno">  264</span>  Eigen::VectorXd d = -z;</div>
+<div class="line"><span class="lineno">  213</span>  <span class="comment">// A reported curvature is the curvature of this objective&#39;s gradient.</span></div>
+<div class="line"><span class="lineno">  214</span>  <span class="comment">// |C_tau| is not that number for a min-mode search, so min-mode does</span></div>
+<div class="line"><span class="lineno">  215</span>  <span class="comment">// not report it. When a reported scale already asks for more than</span></div>
+<div class="line"><span class="lineno">  216</span>  <span class="comment">// max_move, the cap would choose the length and the probe below runs.</span></div>
+<div class="line"><span class="lineno">  217</span>  <span class="keywordtype">bool</span> knownFits = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  218</span>  <span class="keywordflow">if</span> (known &amp;&amp; std::isfinite(*known) &amp;&amp; *known &gt; 0.0) {</div>
+<div class="line"><span class="lineno">  219</span>    <span class="keywordtype">double</span> hKnown = 1.0 / *known;</div>
+<div class="line"><span class="lineno">  220</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.max_inverse_curvature &gt; 0.0) {</div>
+<div class="line"><span class="lineno">  221</span>      hKnown = std::min(hKnown, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.max_inverse_curvature);</div>
+<div class="line"><span class="lineno">  222</span>    }</div>
+<div class="line"><span class="lineno">  223</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> knownMotion = <a class="code hl_function" href="namespaceeonc_1_1geometry.html#ad497bf4a395093329446fdbcb934bcb8">eonc::geometry::maxAtomMotionV</a>(hKnown * f);</div>
+<div class="line"><span class="lineno">  224</span>    <span class="keywordflow">if</span> (knownMotion &lt; a_maxMove) {</div>
+<div class="line"><span class="lineno">  225</span>      H0 = hKnown;</div>
+<div class="line"><span class="lineno">  226</span>      knownFits = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  227</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>, <span class="stringliteral">&quot;[LBFGS] H0={:.4e} (known curvature)&quot;</span>, H0);</div>
+<div class="line"><span class="lineno">  228</span>    }</div>
+<div class="line"><span class="lineno">  229</span>  }</div>
+<div class="line"><span class="lineno">  230</span>  <span class="keywordflow">if</span> (!knownFits &amp;&amp; <a class="code hl_variable" href="#a3284aef4d15d65d7e56ee9e877730932">m_iteration</a> == 0 &amp;&amp; <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.auto_scale &amp;&amp;</div>
+<div class="line"><span class="lineno">  231</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;supportsFiniteDifferenceCurvature()) {</div>
+<div class="line"><span class="lineno">  232</span>    <span class="keyword">const</span> Eigen::VectorXd fhat = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a2af38029cd82d08b069d5465d02247c8">eonc::exact::normalized</a>(a_f);</div>
+<div class="line"><span class="lineno">  233</span>    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(mulAdd(r, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.finiteDifference, fhat));</div>
+<div class="line"><span class="lineno">  234</span>    Eigen::VectorXd dg = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient(<span class="keyword">true</span>) + a_f;</div>
+<div class="line"><span class="lineno">  235</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> C = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(dg, fhat) / <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.finiteDifference;</div>
+<div class="line"><span class="lineno">  236</span>    H0 = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#ac4a440a0ec6d054b05ecd14567d41f97">eonc::safemath::safe_recip</a>(C, -1.0);</div>
+<div class="line"><span class="lineno">  237</span>    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(r);</div>
+<div class="line"><span class="lineno">  238</span>    <span class="keywordflow">if</span> (H0 &lt; 0) {</div>
+<div class="line"><span class="lineno">  239</span>      QUILL_LOG_WARNING(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>,</div>
+<div class="line"><span class="lineno">  240</span>                        <span class="stringliteral">&quot;[LBFGS] Negative curvature calculated via FD: {:.4e} &quot;</span></div>
+<div class="line"><span class="lineno">  241</span>                        <span class="stringliteral">&quot;eV/A^2, take max move step&quot;</span>,</div>
+<div class="line"><span class="lineno">  242</span>                        C);</div>
+<div class="line"><span class="lineno">  243</span>      <a class="code hl_function" href="#ad0c78e6bdb73ddd2d71fd9d645d3f8a8">reset</a>();</div>
+<div class="line"><span class="lineno">  244</span>      <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a>(1000 * a_f, a_maxMove);</div>
+<div class="line"><span class="lineno">  245</span>    }</div>
+<div class="line"><span class="lineno">  246</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>, <span class="stringliteral">&quot;[LBFGS] Curvature calculated via FD: {:.4e} eV/A^2&quot;</span>,</div>
+<div class="line"><span class="lineno">  247</span>                    C);</div>
+<div class="line"><span class="lineno">  248</span>  }</div>
+<div class="line"><span class="lineno">  249</span> </div>
+<div class="line"><span class="lineno">  250</span>  <span class="keyword">const</span> <span class="keyword">auto</span> idx =</div>
+<div class="line"><span class="lineno">  251</span>      twoLoopIndex(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a854d861e3dfae09166f84b26c982720a">m_s</a>.size()),</div>
+<div class="line"><span class="lineno">  252</span>                   <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.extra_updates));</div>
+<div class="line"><span class="lineno">  253</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> loopmax = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(idx.size());</div>
+<div class="line"><span class="lineno">  254</span>  std::vector&lt;double&gt; a(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(loopmax));</div>
+<div class="line"><span class="lineno">  255</span> </div>
+<div class="line"><span class="lineno">  256</span>  Eigen::VectorXd q = -f;</div>
+<div class="line"><span class="lineno">  257</span> </div>
+<div class="line"><span class="lineno">  258</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = loopmax - 1; k &gt;= 0; k--) {</div>
+<div class="line"><span class="lineno">  259</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> i = idx[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)];</div>
+<div class="line"><span class="lineno">  260</span>    a[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)] =</div>
+<div class="line"><span class="lineno">  261</span>        <a class="code hl_variable" href="#a14eff494f304d1af8aa70e7f6ef2e672">m_rho</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] *</div>
+<div class="line"><span class="lineno">  262</span>        <a class="code hl_function" href="namespaceeonc_1_1exact.html#aecf44d795d407c88376491394a7d8bb6">eonc::exact::orderedDot</a>(<a class="code hl_variable" href="#a854d861e3dfae09166f84b26c982720a">m_s</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)], q);</div>
+<div class="line"><span class="lineno">  263</span>    mulAddInto(q, -a[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)], <a class="code hl_variable" href="#a52228dc72ad3429b817ea1f1a1a1ca13">m_y</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)]);</div>
+<div class="line"><span class="lineno">  264</span>  }</div>
 <div class="line"><span class="lineno">  265</span> </div>
-<div class="line"><span class="lineno">  266</span>  <span class="keywordtype">double</span> distance = <a class="code hl_function" href="namespaceeonc_1_1geometry.html#ad497bf4a395093329446fdbcb934bcb8">eonc::geometry::maxAtomMotionV</a>(d);</div>
-<div class="line"><span class="lineno">  267</span>  <span class="keywordflow">if</span> (distance &gt;= a_maxMove &amp;&amp; <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.distance_reset) {</div>
-<div class="line"><span class="lineno">  268</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>,</div>
-<div class="line"><span class="lineno">  269</span>                    <span class="stringliteral">&quot;[LBFGS] reset memory, proposed step too large: {:.4f}&quot;</span>,</div>
-<div class="line"><span class="lineno">  270</span>                    distance);</div>
-<div class="line"><span class="lineno">  271</span>    <a class="code hl_function" href="#ad0c78e6bdb73ddd2d71fd9d645d3f8a8">reset</a>();</div>
-<div class="line"><span class="lineno">  272</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a>(H0 * f, a_maxMove);</div>
+<div class="line"><span class="lineno">  266</span>  Eigen::VectorXd z = <a class="code hl_function" href="#ae91e674b470bdb3adde63a4373049637">applyH0</a>(q, H0, r);</div>
+<div class="line"><span class="lineno">  267</span> </div>
+<div class="line"><span class="lineno">  268</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; loopmax; k++) {</div>
+<div class="line"><span class="lineno">  269</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> i = idx[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)];</div>
+<div class="line"><span class="lineno">  270</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> b = <a class="code hl_variable" href="#a14eff494f304d1af8aa70e7f6ef2e672">m_rho</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] *</div>
+<div class="line"><span class="lineno">  271</span>                     <a class="code hl_function" href="namespaceeonc_1_1exact.html#aecf44d795d407c88376491394a7d8bb6">eonc::exact::orderedDot</a>(<a class="code hl_variable" href="#a52228dc72ad3429b817ea1f1a1a1ca13">m_y</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)], z);</div>
+<div class="line"><span class="lineno">  272</span>    mulAddInto(z, a[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)] - b, <a class="code hl_variable" href="#a854d861e3dfae09166f84b26c982720a">m_s</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)]);</div>
 <div class="line"><span class="lineno">  273</span>  }</div>
 <div class="line"><span class="lineno">  274</span> </div>
-<div class="line"><span class="lineno">  275</span>  <span class="keywordtype">double</span> vd =</div>
-<div class="line"><span class="lineno">  276</span>      <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(<a class="code hl_function" href="namespaceeonc_1_1exact.html#a2af38029cd82d08b069d5465d02247c8">eonc::exact::normalized</a>(d), <a class="code hl_function" href="namespaceeonc_1_1exact.html#a2af38029cd82d08b069d5465d02247c8">eonc::exact::normalized</a>(f));</div>
-<div class="line"><span class="lineno">  277</span>  <span class="keywordflow">if</span> (vd &gt; 1.0)</div>
-<div class="line"><span class="lineno">  278</span>    vd = 1.0;</div>
-<div class="line"><span class="lineno">  279</span>  <span class="keywordflow">if</span> (vd &lt; -1.0)</div>
-<div class="line"><span class="lineno">  280</span>    vd = -1.0;</div>
-<div class="line"><span class="lineno">  281</span>  <span class="keywordtype">double</span> angle = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a54d5df2519372b82461f76667d6f0223">eonc::safemath::safe_acos</a>(vd) * (180.0 / <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a>);</div>
-<div class="line"><span class="lineno">  282</span>  <span class="keywordflow">if</span> (angle &gt; 90.0 &amp;&amp; <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.angle_reset) {</div>
-<div class="line"><span class="lineno">  283</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>,</div>
-<div class="line"><span class="lineno">  284</span>                    <span class="stringliteral">&quot;[LBFGS] reset memory, angle between LBFGS angle and &quot;</span></div>
-<div class="line"><span class="lineno">  285</span>                    <span class="stringliteral">&quot;force too large: {:.4f}&quot;</span>,</div>
-<div class="line"><span class="lineno">  286</span>                    angle);</div>
-<div class="line"><span class="lineno">  287</span>    <a class="code hl_function" href="#ad0c78e6bdb73ddd2d71fd9d645d3f8a8">reset</a>();</div>
-<div class="line"><span class="lineno">  288</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a>(H0 * f, a_maxMove);</div>
-<div class="line"><span class="lineno">  289</span>  }</div>
-<div class="line"><span class="lineno">  290</span> </div>
-<div class="line"><span class="lineno">  291</span>  maybeProjectRigid(d, r, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.project_rigid);</div>
-<div class="line"><span class="lineno">  292</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a>(d, a_maxMove);</div>
-<div class="line"><span class="lineno">  293</span>}</div>
+<div class="line"><span class="lineno">  275</span>  Eigen::VectorXd d = -z;</div>
+<div class="line"><span class="lineno">  276</span> </div>
+<div class="line"><span class="lineno">  277</span>  <span class="keywordtype">double</span> distance = <a class="code hl_function" href="namespaceeonc_1_1geometry.html#ad497bf4a395093329446fdbcb934bcb8">eonc::geometry::maxAtomMotionV</a>(d);</div>
+<div class="line"><span class="lineno">  278</span>  <span class="keywordflow">if</span> (distance &gt;= a_maxMove &amp;&amp; <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.distance_reset) {</div>
+<div class="line"><span class="lineno">  279</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>,</div>
+<div class="line"><span class="lineno">  280</span>                    <span class="stringliteral">&quot;[LBFGS] reset memory, proposed step too large: {:.4f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  281</span>                    distance);</div>
+<div class="line"><span class="lineno">  282</span>    <a class="code hl_function" href="#ad0c78e6bdb73ddd2d71fd9d645d3f8a8">reset</a>();</div>
+<div class="line"><span class="lineno">  283</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a>(H0 * f, a_maxMove);</div>
+<div class="line"><span class="lineno">  284</span>  }</div>
+<div class="line"><span class="lineno">  285</span> </div>
+<div class="line"><span class="lineno">  286</span>  <span class="keywordtype">double</span> vd =</div>
+<div class="line"><span class="lineno">  287</span>      <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(<a class="code hl_function" href="namespaceeonc_1_1exact.html#a2af38029cd82d08b069d5465d02247c8">eonc::exact::normalized</a>(d), <a class="code hl_function" href="namespaceeonc_1_1exact.html#a2af38029cd82d08b069d5465d02247c8">eonc::exact::normalized</a>(f));</div>
+<div class="line"><span class="lineno">  288</span>  <span class="keywordflow">if</span> (vd &gt; 1.0)</div>
+<div class="line"><span class="lineno">  289</span>    vd = 1.0;</div>
+<div class="line"><span class="lineno">  290</span>  <span class="keywordflow">if</span> (vd &lt; -1.0)</div>
+<div class="line"><span class="lineno">  291</span>    vd = -1.0;</div>
+<div class="line"><span class="lineno">  292</span>  <span class="keywordtype">double</span> angle = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a54d5df2519372b82461f76667d6f0223">eonc::safemath::safe_acos</a>(vd) * (180.0 / <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a>);</div>
+<div class="line"><span class="lineno">  293</span>  <span class="keywordflow">if</span> (angle &gt; 90.0 &amp;&amp; <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.angle_reset) {</div>
+<div class="line"><span class="lineno">  294</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>,</div>
+<div class="line"><span class="lineno">  295</span>                    <span class="stringliteral">&quot;[LBFGS] reset memory, angle between LBFGS angle and &quot;</span></div>
+<div class="line"><span class="lineno">  296</span>                    <span class="stringliteral">&quot;force too large: {:.4f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  297</span>                    angle);</div>
+<div class="line"><span class="lineno">  298</span>    <a class="code hl_function" href="#ad0c78e6bdb73ddd2d71fd9d645d3f8a8">reset</a>();</div>
+<div class="line"><span class="lineno">  299</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a>(H0 * f, a_maxMove);</div>
+<div class="line"><span class="lineno">  300</span>  }</div>
+<div class="line"><span class="lineno">  301</span> </div>
+<div class="line"><span class="lineno">  302</span>  maybeProjectRigid(d, r, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.project_rigid);</div>
+<div class="line"><span class="lineno">  303</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a>(d, a_maxMove);</div>
+<div class="line"><span class="lineno">  304</span>}</div>
 <div class="ttc" id="aclasseonc_1_1LBFGS_html_a14eff494f304d1af8aa70e7f6ef2e672"><div class="ttname"><a href="#a14eff494f304d1af8aa70e7f6ef2e672">eonc::LBFGS::m_rho</a></div><div class="ttdeci">std::deque&lt; double &gt; m_rho</div><div class="ttdef"><b>Definition</b> <a href="LBFGS_8h_source.html#l00065">LBFGS.h:65</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LBFGS_html_a3284aef4d15d65d7e56ee9e877730932"><div class="ttname"><a href="#a3284aef4d15d65d7e56ee9e877730932">eonc::LBFGS::m_iteration</a></div><div class="ttdeci">int m_iteration</div><div class="ttdef"><b>Definition</b> <a href="LBFGS_8h_source.html#l00060">LBFGS.h:60</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LBFGS_html_a52228dc72ad3429b817ea1f1a1a1ca13"><div class="ttname"><a href="#a52228dc72ad3429b817ea1f1a1a1ca13">eonc::LBFGS::m_y</a></div><div class="ttdeci">std::deque&lt; Eigen::VectorXd &gt; m_y</div><div class="ttdef"><b>Definition</b> <a href="LBFGS_8h_source.html#l00064">LBFGS.h:64</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LBFGS_html_a854d861e3dfae09166f84b26c982720a"><div class="ttname"><a href="#a854d861e3dfae09166f84b26c982720a">eonc::LBFGS::m_s</a></div><div class="ttdeci">std::deque&lt; Eigen::VectorXd &gt; m_s</div><div class="ttdef"><b>Definition</b> <a href="LBFGS_8h_source.html#l00063">LBFGS.h:63</a></div></div>
-<div class="ttc" id="aclasseonc_1_1LBFGS_html_a86f366cc1e97dc79132b2f9b855de51d"><div class="ttname"><a href="#a86f366cc1e97dc79132b2f9b855de51d">eonc::LBFGS::step</a></div><div class="ttdeci">int step(double a_maxMove) override</div><div class="ttdef"><b>Definition</b> <a href="LBFGS_8cpp_source.html#l00396">LBFGS.cpp:396</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LBFGS_html_a86f366cc1e97dc79132b2f9b855de51d"><div class="ttname"><a href="#a86f366cc1e97dc79132b2f9b855de51d">eonc::LBFGS::step</a></div><div class="ttdeci">int step(double a_maxMove) override</div><div class="ttdef"><b>Definition</b> <a href="LBFGS_8cpp_source.html#l00407">LBFGS.cpp:407</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LBFGS_html_ab81c7c1b467bfdba7725b6590c885ce0"><div class="ttname"><a href="#ab81c7c1b467bfdba7725b6590c885ce0">eonc::LBFGS::hessianStep</a></div><div class="ttdeci">Eigen::VectorXd hessianStep(double a_maxMove, const Eigen::VectorXd &amp;a_f)</div><div class="ttdef"><b>Definition</b> <a href="LBFGS_8cpp_source.html#l00118">LBFGS.cpp:118</a></div></div>
-<div class="ttc" id="aclasseonc_1_1LBFGS_html_ad0c78e6bdb73ddd2d71fd9d645d3f8a8"><div class="ttname"><a href="#ad0c78e6bdb73ddd2d71fd9d645d3f8a8">eonc::LBFGS::reset</a></div><div class="ttdeci">void reset()</div><div class="ttdef"><b>Definition</b> <a href="LBFGS_8cpp_source.html#l00295">LBFGS.cpp:295</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LBFGS_html_ad0c78e6bdb73ddd2d71fd9d645d3f8a8"><div class="ttname"><a href="#ad0c78e6bdb73ddd2d71fd9d645d3f8a8">eonc::LBFGS::reset</a></div><div class="ttdeci">void reset()</div><div class="ttdef"><b>Definition</b> <a href="LBFGS_8cpp_source.html#l00306">LBFGS.cpp:306</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LBFGS_html_ae91e674b470bdb3adde63a4373049637"><div class="ttname"><a href="#ae91e674b470bdb3adde63a4373049637">eonc::LBFGS::applyH0</a></div><div class="ttdeci">Eigen::VectorXd applyH0(const Eigen::VectorXd &amp;q, double H0, const Eigen::VectorXd &amp;pos) const</div><div class="ttdef"><b>Definition</b> <a href="LBFGS_8cpp_source.html#l00101">LBFGS.cpp:101</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1exact_html_a155cb43dcb40b742b39c7649e6efd248"><div class="ttname"><a href="namespaceeonc_1_1exact.html#a155cb43dcb40b742b39c7649e6efd248">eonc::exact::squaredNorm</a></div><div class="ttdeci">double squaredNorm(const Eigen::MatrixBase&lt; A &gt; &amp;x)</div><div class="ttdef"><b>Definition</b> <a href="ExactReduction_8h_source.html#l00085">ExactReduction.h:85</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1exact_html_a2af38029cd82d08b069d5465d02247c8"><div class="ttname"><a href="namespaceeonc_1_1exact.html#a2af38029cd82d08b069d5465d02247c8">eonc::exact::normalized</a></div><div class="ttdeci">A::PlainObject normalized(const Eigen::MatrixBase&lt; A &gt; &amp;x, double min_norm=1e-300)</div><div class="ttdoc">x / norm(x), or zero below min_norm (the safemath convention).</div><div class="ttdef"><b>Definition</b> <a href="ExactReduction_8h_source.html#l00106">ExactReduction.h:106</a></div></div>
@@ -769,13 +780,13 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LBFGS_8cpp_source.html#l00295">295</a> of file <a class="el" href="LBFGS_8cpp_source.html">LBFGS.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  295</span>                  {</div>
-<div class="line"><span class="lineno">  296</span>  <a class="code hl_variable" href="#a854d861e3dfae09166f84b26c982720a">m_s</a>.clear();</div>
-<div class="line"><span class="lineno">  297</span>  <a class="code hl_variable" href="#a52228dc72ad3429b817ea1f1a1a1ca13">m_y</a>.clear();</div>
-<div class="line"><span class="lineno">  298</span>  <a class="code hl_variable" href="#a14eff494f304d1af8aa70e7f6ef2e672">m_rho</a>.clear();</div>
-<div class="line"><span class="lineno">  299</span>  <a class="code hl_variable" href="#a5f3b83150d37fee96eab4fee87d97ce3">m_eHist</a>.clear();</div>
-<div class="line"><span class="lineno">  300</span>}</div>
+<p class="definition">Definition at line <a class="el" href="LBFGS_8cpp_source.html#l00306">306</a> of file <a class="el" href="LBFGS_8cpp_source.html">LBFGS.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  306</span>                  {</div>
+<div class="line"><span class="lineno">  307</span>  <a class="code hl_variable" href="#a854d861e3dfae09166f84b26c982720a">m_s</a>.clear();</div>
+<div class="line"><span class="lineno">  308</span>  <a class="code hl_variable" href="#a52228dc72ad3429b817ea1f1a1a1ca13">m_y</a>.clear();</div>
+<div class="line"><span class="lineno">  309</span>  <a class="code hl_variable" href="#a14eff494f304d1af8aa70e7f6ef2e672">m_rho</a>.clear();</div>
+<div class="line"><span class="lineno">  310</span>  <a class="code hl_variable" href="#a5f3b83150d37fee96eab4fee87d97ce3">m_eHist</a>.clear();</div>
+<div class="line"><span class="lineno">  311</span>}</div>
 <div class="ttc" id="aclasseonc_1_1LBFGS_html_a5f3b83150d37fee96eab4fee87d97ce3"><div class="ttname"><a href="#a5f3b83150d37fee96eab4fee87d97ce3">eonc::LBFGS::m_eHist</a></div><div class="ttdeci">std::deque&lt; double &gt; m_eHist</div><div class="ttdef"><b>Definition</b> <a href="LBFGS_8h_source.html#l00066">LBFGS.h:66</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -809,16 +820,16 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1Optimizer.html#a94dd8b89c732857574c03586efa25273">eonc::Optimizer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="LBFGS_8cpp_source.html#l00466">466</a> of file <a class="el" href="LBFGS_8cpp_source.html">LBFGS.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  466</span>                                                  {</div>
-<div class="line"><span class="lineno">  467</span>  <span class="keywordtype">int</span> status;</div>
-<div class="line"><span class="lineno">  468</span>  <span class="keywordflow">while</span> (!<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() &amp;&amp; <a class="code hl_variable" href="#a3284aef4d15d65d7e56ee9e877730932">m_iteration</a> &lt; a_maxSteps) {</div>
-<div class="line"><span class="lineno">  469</span>    status = <a class="code hl_function" href="#a86f366cc1e97dc79132b2f9b855de51d">step</a>(a_maxMove);</div>
-<div class="line"><span class="lineno">  470</span>    <span class="keywordflow">if</span> (status &lt; 0)</div>
-<div class="line"><span class="lineno">  471</span>      <span class="keywordflow">return</span> -1;</div>
-<div class="line"><span class="lineno">  472</span>  }</div>
-<div class="line"><span class="lineno">  473</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
-<div class="line"><span class="lineno">  474</span>}</div>
+<p class="definition">Definition at line <a class="el" href="LBFGS_8cpp_source.html#l00477">477</a> of file <a class="el" href="LBFGS_8cpp_source.html">LBFGS.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  477</span>                                                  {</div>
+<div class="line"><span class="lineno">  478</span>  <span class="keywordtype">int</span> status;</div>
+<div class="line"><span class="lineno">  479</span>  <span class="keywordflow">while</span> (!<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() &amp;&amp; <a class="code hl_variable" href="#a3284aef4d15d65d7e56ee9e877730932">m_iteration</a> &lt; a_maxSteps) {</div>
+<div class="line"><span class="lineno">  480</span>    status = <a class="code hl_function" href="#a86f366cc1e97dc79132b2f9b855de51d">step</a>(a_maxMove);</div>
+<div class="line"><span class="lineno">  481</span>    <span class="keywordflow">if</span> (status &lt; 0)</div>
+<div class="line"><span class="lineno">  482</span>      <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">  483</span>  }</div>
+<div class="line"><span class="lineno">  484</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  485</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -847,78 +858,78 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1Optimizer.html#aa66365f3f15e6d4b9829e555cfc9f2b5">eonc::Optimizer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="LBFGS_8cpp_source.html#l00396">396</a> of file <a class="el" href="LBFGS_8cpp_source.html">LBFGS.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  396</span>                                {</div>
-<div class="line"><span class="lineno">  397</span>  <span class="keywordtype">int</span> status = 0;</div>
-<div class="line"><span class="lineno">  398</span>  Eigen::VectorXd r = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPositions();</div>
-<div class="line"><span class="lineno">  399</span>  Eigen::VectorXd f = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient();</div>
-<div class="line"><span class="lineno">  400</span>  <span class="keyword">const</span> std::string &amp;accept = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.accept;</div>
-<div class="line"><span class="lineno">  401</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> energyTests = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;gradientMatchesEnergy();</div>
-<div class="line"><span class="lineno">  402</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> energyRequested = accept == <span class="stringliteral">&quot;energy&quot;</span> || accept == <span class="stringliteral">&quot;nonmonotone&quot;</span> ||</div>
-<div class="line"><span class="lineno">  403</span>                               <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.secant == <span class="stringliteral">&quot;zhangxu&quot;</span>;</div>
-<div class="line"><span class="lineno">  404</span>  <span class="keywordflow">if</span> (energyRequested &amp;&amp; !energyTests &amp;&amp; <a class="code hl_variable" href="#a3284aef4d15d65d7e56ee9e877730932">m_iteration</a> == 0) {</div>
-<div class="line"><span class="lineno">  405</span>    <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[LBFGS] energy tests off (lbfgs_accept = {}, &quot;</span></div>
-<div class="line"><span class="lineno">  406</span>                     <span class="stringliteral">&quot;lbfgs_secant = {}): a band or saddle objective&#39;s &quot;</span></div>
-<div class="line"><span class="lineno">  407</span>                     <span class="stringliteral">&quot;gradient is not its energy gradient&quot;</span>,</div>
-<div class="line"><span class="lineno">  408</span>                     accept, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.secant);</div>
-<div class="line"><span class="lineno">  409</span>  }</div>
-<div class="line"><span class="lineno">  410</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> energyAccept =</div>
-<div class="line"><span class="lineno">  411</span>      energyTests &amp;&amp; (accept == <span class="stringliteral">&quot;energy&quot;</span> || accept == <span class="stringliteral">&quot;nonmonotone&quot;</span>);</div>
-<div class="line"><span class="lineno">  412</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> needE =</div>
-<div class="line"><span class="lineno">  413</span>      energyAccept ||</div>
-<div class="line"><span class="lineno">  414</span>      (energyTests &amp;&amp; <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.secant == <span class="stringliteral">&quot;zhangxu&quot;</span>);</div>
-<div class="line"><span class="lineno">  415</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> e0 = needE ? <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getEnergy() : 0.0;</div>
-<div class="line"><span class="lineno">  416</span> </div>
-<div class="line"><span class="lineno">  417</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a3284aef4d15d65d7e56ee9e877730932">m_iteration</a> &gt; 0) {</div>
-<div class="line"><span class="lineno">  418</span>    status = <a class="code hl_function" href="#a1e91f0aaa4d3858d2b251b9612c03a59">update</a>(r, <a class="code hl_variable" href="#a8e87d425e449ca147e204b6265eea11d">m_rPrev</a>, f, <a class="code hl_variable" href="#a2892d980e8e353f8a2d5c3abe640629b">m_fPrev</a>, e0, <a class="code hl_variable" href="#ab13b2479f0760585d4ed58f482ad4de7">m_ePrev</a>);</div>
-<div class="line"><span class="lineno">  419</span>  }</div>
-<div class="line"><span class="lineno">  420</span>  <span class="keywordflow">if</span> (status &lt; 0)</div>
-<div class="line"><span class="lineno">  421</span>    <span class="keywordflow">return</span> -1;</div>
-<div class="line"><span class="lineno">  422</span> </div>
-<div class="line"><span class="lineno">  423</span>  Eigen::VectorXd dr = <a class="code hl_function" href="#aefc648b78220c46fcce4fe276e78f85c">getStep</a>(a_maxMove, f);</div>
-<div class="line"><span class="lineno">  424</span>  <span class="keywordflow">if</span> (energyAccept) {</div>
-<div class="line"><span class="lineno">  425</span>    <span class="keyword">constexpr</span> <span class="keywordtype">double</span> max_erise = 1.0e-8;</div>
-<div class="line"><span class="lineno">  426</span>    <span class="keywordtype">double</span> ref = e0;</div>
-<div class="line"><span class="lineno">  427</span>    <span class="keywordflow">if</span> (accept == <span class="stringliteral">&quot;nonmonotone&quot;</span> &amp;&amp; !<a class="code hl_variable" href="#a5f3b83150d37fee96eab4fee87d97ce3">m_eHist</a>.empty()) {</div>
-<div class="line"><span class="lineno">  428</span>      ref = *std::max_element(<a class="code hl_variable" href="#a5f3b83150d37fee96eab4fee87d97ce3">m_eHist</a>.begin(), <a class="code hl_variable" href="#a5f3b83150d37fee96eab4fee87d97ce3">m_eHist</a>.end());</div>
-<div class="line"><span class="lineno">  429</span>    }</div>
-<div class="line"><span class="lineno">  430</span>    <span class="keywordtype">double</span> alpha = 1.0;</div>
-<div class="line"><span class="lineno">  431</span>    <span class="keywordtype">bool</span> accepted = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  432</span>    <span class="keywordtype">double</span> e_acc = e0;</div>
-<div class="line"><span class="lineno">  433</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> dec = 0; dec &lt; 10; ++dec) {</div>
-<div class="line"><span class="lineno">  434</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(mulAdd(r, alpha, dr));</div>
-<div class="line"><span class="lineno">  435</span>      e_acc = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getEnergy();</div>
-<div class="line"><span class="lineno">  436</span>      <span class="keywordflow">if</span> (e_acc - ref &lt;= max_erise) {</div>
-<div class="line"><span class="lineno">  437</span>        accepted = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  438</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  439</span>      }</div>
-<div class="line"><span class="lineno">  440</span>      alpha *= 0.5;</div>
-<div class="line"><span class="lineno">  441</span>    }</div>
-<div class="line"><span class="lineno">  442</span>    <span class="keywordflow">if</span> (!accepted) {</div>
-<div class="line"><span class="lineno">  443</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(r);</div>
-<div class="line"><span class="lineno">  444</span>      <a class="code hl_function" href="#ad0c78e6bdb73ddd2d71fd9d645d3f8a8">reset</a>();</div>
-<div class="line"><span class="lineno">  445</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(</div>
-<div class="line"><span class="lineno">  446</span>          r + <a class="code hl_function" href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a>(0.1 * f, a_maxMove));</div>
-<div class="line"><span class="lineno">  447</span>      e_acc = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getEnergy();</div>
-<div class="line"><span class="lineno">  448</span>    }</div>
-<div class="line"><span class="lineno">  449</span>    <a class="code hl_variable" href="#a5f3b83150d37fee96eab4fee87d97ce3">m_eHist</a>.push_back(e_acc);</div>
-<div class="line"><span class="lineno">  450</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a5f3b83150d37fee96eab4fee87d97ce3">m_eHist</a>.size() &gt; 5) {</div>
-<div class="line"><span class="lineno">  451</span>      <a class="code hl_variable" href="#a5f3b83150d37fee96eab4fee87d97ce3">m_eHist</a>.pop_front();</div>
+<p class="definition">Definition at line <a class="el" href="LBFGS_8cpp_source.html#l00407">407</a> of file <a class="el" href="LBFGS_8cpp_source.html">LBFGS.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  407</span>                                {</div>
+<div class="line"><span class="lineno">  408</span>  <span class="keywordtype">int</span> status = 0;</div>
+<div class="line"><span class="lineno">  409</span>  Eigen::VectorXd r = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  410</span>  Eigen::VectorXd f = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient();</div>
+<div class="line"><span class="lineno">  411</span>  <span class="keyword">const</span> std::string &amp;accept = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.accept;</div>
+<div class="line"><span class="lineno">  412</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> energyTests = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;gradientMatchesEnergy();</div>
+<div class="line"><span class="lineno">  413</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> energyRequested = accept == <span class="stringliteral">&quot;energy&quot;</span> || accept == <span class="stringliteral">&quot;nonmonotone&quot;</span> ||</div>
+<div class="line"><span class="lineno">  414</span>                               <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.secant == <span class="stringliteral">&quot;zhangxu&quot;</span>;</div>
+<div class="line"><span class="lineno">  415</span>  <span class="keywordflow">if</span> (energyRequested &amp;&amp; !energyTests &amp;&amp; <a class="code hl_variable" href="#a3284aef4d15d65d7e56ee9e877730932">m_iteration</a> == 0) {</div>
+<div class="line"><span class="lineno">  416</span>    <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[LBFGS] energy tests off (lbfgs_accept = {}, &quot;</span></div>
+<div class="line"><span class="lineno">  417</span>                     <span class="stringliteral">&quot;lbfgs_secant = {}): a band or saddle objective&#39;s &quot;</span></div>
+<div class="line"><span class="lineno">  418</span>                     <span class="stringliteral">&quot;gradient is not its energy gradient&quot;</span>,</div>
+<div class="line"><span class="lineno">  419</span>                     accept, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.secant);</div>
+<div class="line"><span class="lineno">  420</span>  }</div>
+<div class="line"><span class="lineno">  421</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> energyAccept =</div>
+<div class="line"><span class="lineno">  422</span>      energyTests &amp;&amp; (accept == <span class="stringliteral">&quot;energy&quot;</span> || accept == <span class="stringliteral">&quot;nonmonotone&quot;</span>);</div>
+<div class="line"><span class="lineno">  423</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> needE =</div>
+<div class="line"><span class="lineno">  424</span>      energyAccept ||</div>
+<div class="line"><span class="lineno">  425</span>      (energyTests &amp;&amp; <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs.secant == <span class="stringliteral">&quot;zhangxu&quot;</span>);</div>
+<div class="line"><span class="lineno">  426</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> e0 = needE ? <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getEnergy() : 0.0;</div>
+<div class="line"><span class="lineno">  427</span> </div>
+<div class="line"><span class="lineno">  428</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a3284aef4d15d65d7e56ee9e877730932">m_iteration</a> &gt; 0) {</div>
+<div class="line"><span class="lineno">  429</span>    status = <a class="code hl_function" href="#a1e91f0aaa4d3858d2b251b9612c03a59">update</a>(r, <a class="code hl_variable" href="#a8e87d425e449ca147e204b6265eea11d">m_rPrev</a>, f, <a class="code hl_variable" href="#a2892d980e8e353f8a2d5c3abe640629b">m_fPrev</a>, e0, <a class="code hl_variable" href="#ab13b2479f0760585d4ed58f482ad4de7">m_ePrev</a>);</div>
+<div class="line"><span class="lineno">  430</span>  }</div>
+<div class="line"><span class="lineno">  431</span>  <span class="keywordflow">if</span> (status &lt; 0)</div>
+<div class="line"><span class="lineno">  432</span>    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">  433</span> </div>
+<div class="line"><span class="lineno">  434</span>  Eigen::VectorXd dr = <a class="code hl_function" href="#aefc648b78220c46fcce4fe276e78f85c">getStep</a>(a_maxMove, f);</div>
+<div class="line"><span class="lineno">  435</span>  <span class="keywordflow">if</span> (energyAccept) {</div>
+<div class="line"><span class="lineno">  436</span>    <span class="keyword">constexpr</span> <span class="keywordtype">double</span> max_erise = 1.0e-8;</div>
+<div class="line"><span class="lineno">  437</span>    <span class="keywordtype">double</span> ref = e0;</div>
+<div class="line"><span class="lineno">  438</span>    <span class="keywordflow">if</span> (accept == <span class="stringliteral">&quot;nonmonotone&quot;</span> &amp;&amp; !<a class="code hl_variable" href="#a5f3b83150d37fee96eab4fee87d97ce3">m_eHist</a>.empty()) {</div>
+<div class="line"><span class="lineno">  439</span>      ref = *std::max_element(<a class="code hl_variable" href="#a5f3b83150d37fee96eab4fee87d97ce3">m_eHist</a>.begin(), <a class="code hl_variable" href="#a5f3b83150d37fee96eab4fee87d97ce3">m_eHist</a>.end());</div>
+<div class="line"><span class="lineno">  440</span>    }</div>
+<div class="line"><span class="lineno">  441</span>    <span class="keywordtype">double</span> alpha = 1.0;</div>
+<div class="line"><span class="lineno">  442</span>    <span class="keywordtype">bool</span> accepted = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  443</span>    <span class="keywordtype">double</span> e_acc = e0;</div>
+<div class="line"><span class="lineno">  444</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> dec = 0; dec &lt; 10; ++dec) {</div>
+<div class="line"><span class="lineno">  445</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(mulAdd(r, alpha, dr));</div>
+<div class="line"><span class="lineno">  446</span>      e_acc = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getEnergy();</div>
+<div class="line"><span class="lineno">  447</span>      <span class="keywordflow">if</span> (e_acc - ref &lt;= max_erise) {</div>
+<div class="line"><span class="lineno">  448</span>        accepted = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  449</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  450</span>      }</div>
+<div class="line"><span class="lineno">  451</span>      alpha *= 0.5;</div>
 <div class="line"><span class="lineno">  452</span>    }</div>
-<div class="line"><span class="lineno">  453</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  454</span>    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(r + dr);</div>
-<div class="line"><span class="lineno">  455</span>  }</div>
-<div class="line"><span class="lineno">  456</span> </div>
-<div class="line"><span class="lineno">  457</span>  <a class="code hl_variable" href="#a8e87d425e449ca147e204b6265eea11d">m_rPrev</a> = r;</div>
-<div class="line"><span class="lineno">  458</span>  <a class="code hl_variable" href="#a2892d980e8e353f8a2d5c3abe640629b">m_fPrev</a> = f;</div>
-<div class="line"><span class="lineno">  459</span>  <a class="code hl_variable" href="#ab13b2479f0760585d4ed58f482ad4de7">m_ePrev</a> = e0;</div>
-<div class="line"><span class="lineno">  460</span> </div>
-<div class="line"><span class="lineno">  461</span>  <a class="code hl_variable" href="#a3284aef4d15d65d7e56ee9e877730932">m_iteration</a>++;</div>
-<div class="line"><span class="lineno">  462</span> </div>
-<div class="line"><span class="lineno">  463</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
-<div class="line"><span class="lineno">  464</span>}</div>
+<div class="line"><span class="lineno">  453</span>    <span class="keywordflow">if</span> (!accepted) {</div>
+<div class="line"><span class="lineno">  454</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(r);</div>
+<div class="line"><span class="lineno">  455</span>      <a class="code hl_function" href="#ad0c78e6bdb73ddd2d71fd9d645d3f8a8">reset</a>();</div>
+<div class="line"><span class="lineno">  456</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(</div>
+<div class="line"><span class="lineno">  457</span>          r + <a class="code hl_function" href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a>(0.1 * f, a_maxMove));</div>
+<div class="line"><span class="lineno">  458</span>      e_acc = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getEnergy();</div>
+<div class="line"><span class="lineno">  459</span>    }</div>
+<div class="line"><span class="lineno">  460</span>    <a class="code hl_variable" href="#a5f3b83150d37fee96eab4fee87d97ce3">m_eHist</a>.push_back(e_acc);</div>
+<div class="line"><span class="lineno">  461</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a5f3b83150d37fee96eab4fee87d97ce3">m_eHist</a>.size() &gt; 5) {</div>
+<div class="line"><span class="lineno">  462</span>      <a class="code hl_variable" href="#a5f3b83150d37fee96eab4fee87d97ce3">m_eHist</a>.pop_front();</div>
+<div class="line"><span class="lineno">  463</span>    }</div>
+<div class="line"><span class="lineno">  464</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  465</span>    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(r + dr);</div>
+<div class="line"><span class="lineno">  466</span>  }</div>
+<div class="line"><span class="lineno">  467</span> </div>
+<div class="line"><span class="lineno">  468</span>  <a class="code hl_variable" href="#a8e87d425e449ca147e204b6265eea11d">m_rPrev</a> = r;</div>
+<div class="line"><span class="lineno">  469</span>  <a class="code hl_variable" href="#a2892d980e8e353f8a2d5c3abe640629b">m_fPrev</a> = f;</div>
+<div class="line"><span class="lineno">  470</span>  <a class="code hl_variable" href="#ab13b2479f0760585d4ed58f482ad4de7">m_ePrev</a> = e0;</div>
+<div class="line"><span class="lineno">  471</span> </div>
+<div class="line"><span class="lineno">  472</span>  <a class="code hl_variable" href="#a3284aef4d15d65d7e56ee9e877730932">m_iteration</a>++;</div>
+<div class="line"><span class="lineno">  473</span> </div>
+<div class="line"><span class="lineno">  474</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  475</span>}</div>
 <div class="ttc" id="aEonLogger_8h_html_a85fddaf0620c36ee3fcf865df53a9327"><div class="ttname"><a href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a></div><div class="ttdeci">#define EONC_LOG_WARNING(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00322">EonLogger.h:322</a></div></div>
-<div class="ttc" id="aclasseonc_1_1LBFGS_html_a1e91f0aaa4d3858d2b251b9612c03a59"><div class="ttname"><a href="#a1e91f0aaa4d3858d2b251b9612c03a59">eonc::LBFGS::update</a></div><div class="ttdeci">int update(const Eigen::VectorXd &amp;a_r1, const Eigen::VectorXd &amp;a_r0, const Eigen::VectorXd &amp;a_f1, const Eigen::VectorXd &amp;a_f0, double a_e1, double a_e0)</div><div class="ttdef"><b>Definition</b> <a href="LBFGS_8cpp_source.html#l00302">LBFGS.cpp:302</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LBFGS_html_a1e91f0aaa4d3858d2b251b9612c03a59"><div class="ttname"><a href="#a1e91f0aaa4d3858d2b251b9612c03a59">eonc::LBFGS::update</a></div><div class="ttdeci">int update(const Eigen::VectorXd &amp;a_r1, const Eigen::VectorXd &amp;a_r0, const Eigen::VectorXd &amp;a_f1, const Eigen::VectorXd &amp;a_f0, double a_e1, double a_e0)</div><div class="ttdef"><b>Definition</b> <a href="LBFGS_8cpp_source.html#l00313">LBFGS.cpp:313</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LBFGS_html_ab13b2479f0760585d4ed58f482ad4de7"><div class="ttname"><a href="#ab13b2479f0760585d4ed58f482ad4de7">eonc::LBFGS::m_ePrev</a></div><div class="ttdeci">double m_ePrev</div><div class="ttdef"><b>Definition</b> <a href="LBFGS_8h_source.html#l00070">LBFGS.h:70</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LBFGS_html_aefc648b78220c46fcce4fe276e78f85c"><div class="ttname"><a href="#aefc648b78220c46fcce4fe276e78f85c">eonc::LBFGS::getStep</a></div><div class="ttdeci">Eigen::VectorXd getStep(double a_maxMove, const Eigen::VectorXd &amp;a_f)</div><div class="ttdef"><b>Definition</b> <a href="LBFGS_8cpp_source.html#l00164">LBFGS.cpp:164</a></div></div>
 </div><!-- fragment -->
@@ -971,98 +982,98 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LBFGS_8cpp_source.html#l00302">302</a> of file <a class="el" href="LBFGS_8cpp_source.html">LBFGS.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  304</span>                                            {</div>
-<div class="line"><span class="lineno">  305</span>  Eigen::VectorXd s0 = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;difference(a_r1, a_r0);</div>
-<div class="line"><span class="lineno">  306</span> </div>
-<div class="line"><span class="lineno">  307</span>  <span class="comment">// y0 is the change in the gradient, not the force</span></div>
-<div class="line"><span class="lineno">  308</span>  Eigen::VectorXd y0 = a_f0 - a_f1;</div>
-<div class="line"><span class="lineno">  309</span>  <span class="keywordtype">double</span> sy = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(s0, y0);</div>
-<div class="line"><span class="lineno">  310</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;cfg = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs;</div>
-<div class="line"><span class="lineno">  311</span>  <span class="keyword">const</span> std::string &amp;curv = cfg.curvature;</div>
-<div class="line"><span class="lineno">  312</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> H0 = std::max(cfg.inverse_curvature, 1.0e-16);</div>
-<div class="line"><span class="lineno">  313</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> ss = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a155cb43dcb40b742b39c7649e6efd248">eonc::exact::squaredNorm</a>(s0);</div>
-<div class="line"><span class="lineno">  314</span> </div>
-<div class="line"><span class="lineno">  315</span>  <span class="keywordflow">if</span> (cfg.secant == <span class="stringliteral">&quot;zhangxu&quot;</span> &amp;&amp; <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;gradientMatchesEnergy() &amp;&amp;</div>
-<div class="line"><span class="lineno">  316</span>      ss &gt; kLbfgsEps) {</div>
-<div class="line"><span class="lineno">  317</span>    <span class="comment">// Zhang, Deng, Chen, JOTA 102, 147 (1999); Zhang and Xu, JOTA 2001.</span></div>
-<div class="line"><span class="lineno">  318</span>    <span class="comment">// t = 6(f_k - f_{k+1}) + 3(g_k + g_{k+1})·s, ŷ = y + (t - y·s)/||s||^2 s.</span></div>
-<div class="line"><span class="lineno">  319</span>    <span class="comment">// Forces f = -g, so (g_k + g_{k+1})·s = -(f0 + f1)·s.</span></div>
-<div class="line"><span class="lineno">  320</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> t =</div>
-<div class="line"><span class="lineno">  321</span>        6.0 * (a_e0 - a_e1) - 3.0 * <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(a_f0 + a_f1, s0);</div>
-<div class="line"><span class="lineno">  322</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> theta = t - sy;</div>
-<div class="line"><span class="lineno">  323</span>    mulAddInto(y0, theta / ss, s0);</div>
-<div class="line"><span class="lineno">  324</span>    sy = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(s0, y0);</div>
-<div class="line"><span class="lineno">  325</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>, <span class="stringliteral">&quot;[LBFGS] Zhang-Xu θ={:.4e} s·ŷ={:.4e}&quot;</span>, theta, sy);</div>
-<div class="line"><span class="lineno">  326</span>  }</div>
-<div class="line"><span class="lineno">  327</span> </div>
-<div class="line"><span class="lineno">  328</span>  <span class="keywordtype">double</span> sBs = ss / H0;</div>
-<div class="line"><span class="lineno">  329</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="#a9d87a97212fc8d680e76cd59b1ecf1cc">usesPrecon</a>() &amp;&amp; a_r1.size() &gt;= 6 &amp;&amp; a_r1.size() % 3 == 0) {</div>
-<div class="line"><span class="lineno">  330</span>    <span class="keyword">const</span> Eigen::MatrixXd P = <a class="code hl_function" href="#ae91d6d58b5cf2e3e81a49efd68bd56af">buildPrecon</a>(a_r1);</div>
-<div class="line"><span class="lineno">  331</span>    sBs = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(s0, P * s0);</div>
-<div class="line"><span class="lineno">  332</span>  }</div>
-<div class="line"><span class="lineno">  333</span> </div>
-<div class="line"><span class="lineno">  334</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> gnorm = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a5fc310e3d2dec128339f8f3b105b829e">eonc::exact::norm</a>(a_f1);</div>
-<div class="line"><span class="lineno">  335</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> sn = std::sqrt(ss);</div>
-<div class="line"><span class="lineno">  336</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> yn = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a5fc310e3d2dec128339f8f3b105b829e">eonc::exact::norm</a>(y0);</div>
-<div class="line"><span class="lineno">  337</span> </div>
-<div class="line"><span class="lineno">  338</span>  <span class="keywordflow">if</span> (curv == <span class="stringliteral">&quot;cautious&quot;</span>) {</div>
-<div class="line"><span class="lineno">  339</span>    <span class="comment">// Li and Fukushima, J. Comput. Appl. Math. 129, 15 (2001).</span></div>
-<div class="line"><span class="lineno">  340</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> thresh =</div>
-<div class="line"><span class="lineno">  341</span>        cfg.cautious_eps * ss *</div>
-<div class="line"><span class="lineno">  342</span>        std::pow(std::max(gnorm, 1.0e-30), cfg.cautious_alpha);</div>
-<div class="line"><span class="lineno">  343</span>    <span class="keywordflow">if</span> (sy &lt; thresh) {</div>
-<div class="line"><span class="lineno">  344</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>, <span class="stringliteral">&quot;[LBFGS] Li-Fukushima skip, s·y={:.4e} &lt; {:.4e}&quot;</span>,</div>
-<div class="line"><span class="lineno">  345</span>                      sy, thresh);</div>
-<div class="line"><span class="lineno">  346</span>      <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">  347</span>    }</div>
-<div class="line"><span class="lineno">  348</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (std::abs(sy) &lt; kLbfgsEps || (curv != <span class="stringliteral">&quot;reset&quot;</span> &amp;&amp; sy &lt; 0.2 * sBs)) {</div>
-<div class="line"><span class="lineno">  349</span>    <span class="keywordflow">if</span> (curv == <span class="stringliteral">&quot;skip&quot;</span>) {</div>
-<div class="line"><span class="lineno">  350</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>, <span class="stringliteral">&quot;[LBFGS] skip pair, s·y={:.4e}&quot;</span>, sy);</div>
-<div class="line"><span class="lineno">  351</span>      <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">  352</span>    }</div>
-<div class="line"><span class="lineno">  353</span>    <span class="keywordflow">if</span> (curv == <span class="stringliteral">&quot;damped&quot;</span> &amp;&amp; sBs &gt; sy) {</div>
-<div class="line"><span class="lineno">  354</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> theta = std::clamp(0.8 * sBs / (sBs - sy), 0.0, 1.0);</div>
-<div class="line"><span class="lineno">  355</span>      <span class="keyword">const</span> Eigen::VectorXd B0s =</div>
-<div class="line"><span class="lineno">  356</span>          (<a class="code hl_function" href="#a9d87a97212fc8d680e76cd59b1ecf1cc">usesPrecon</a>() &amp;&amp; a_r1.size() &gt;= 6 &amp;&amp; a_r1.size() % 3 == 0)</div>
-<div class="line"><span class="lineno">  357</span>              ? Eigen::VectorXd(<a class="code hl_function" href="#ae91d6d58b5cf2e3e81a49efd68bd56af">buildPrecon</a>(a_r1) * s0)</div>
-<div class="line"><span class="lineno">  358</span>              : Eigen::VectorXd(s0 / H0);</div>
-<div class="line"><span class="lineno">  359</span>      y0 = theta * y0 + (1.0 - theta) * B0s;</div>
-<div class="line"><span class="lineno">  360</span>      sy = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(s0, y0);</div>
-<div class="line"><span class="lineno">  361</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>, <span class="stringliteral">&quot;[LBFGS] Powell damp θ={:.3f} s·ŷ={:.4e}&quot;</span>, theta,</div>
-<div class="line"><span class="lineno">  362</span>                      sy);</div>
-<div class="line"><span class="lineno">  363</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (std::abs(sy) &lt; kLbfgsEps) {</div>
-<div class="line"><span class="lineno">  364</span>      QUILL_LOG_WARNING(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>,</div>
-<div class="line"><span class="lineno">  365</span>                        <span class="stringliteral">&quot;[LBFGS] s0.y0 too small ({:.4e}), resetting memory&quot;</span>,</div>
-<div class="line"><span class="lineno">  366</span>                        <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(s0, y0));</div>
-<div class="line"><span class="lineno">  367</span>      <a class="code hl_function" href="#ad0c78e6bdb73ddd2d71fd9d645d3f8a8">reset</a>();</div>
-<div class="line"><span class="lineno">  368</span>      <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">  369</span>    }</div>
-<div class="line"><span class="lineno">  370</span>  }</div>
-<div class="line"><span class="lineno">  371</span> </div>
-<div class="line"><span class="lineno">  372</span>  <span class="keywordflow">if</span> (!std::isfinite(sy)) {</div>
-<div class="line"><span class="lineno">  373</span>    QUILL_LOG_WARNING(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>, <span class="stringliteral">&quot;[LBFGS] non-finite s·y, resetting memory&quot;</span>);</div>
-<div class="line"><span class="lineno">  374</span>    <a class="code hl_function" href="#ad0c78e6bdb73ddd2d71fd9d645d3f8a8">reset</a>();</div>
-<div class="line"><span class="lineno">  375</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">  376</span>  }</div>
-<div class="line"><span class="lineno">  377</span>  <span class="comment">// Relative overlap skip belongs to skip/damped/cautious. reset</span></div>
-<div class="line"><span class="lineno">  378</span>  <span class="comment">// keeps the ASE rule: only |s·y| &lt; kLbfgsEps drops the pair.</span></div>
-<div class="line"><span class="lineno">  379</span>  <span class="keywordflow">if</span> (curv != <span class="stringliteral">&quot;reset&quot;</span> &amp;&amp; sy &lt;= 1.0e-8 * sn * yn) {</div>
-<div class="line"><span class="lineno">  380</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>, <span class="stringliteral">&quot;[LBFGS] overlap skip, s·y={:.4e}&quot;</span>, sy);</div>
-<div class="line"><span class="lineno">  381</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">  382</span>  }</div>
-<div class="line"><span class="lineno">  383</span> </div>
-<div class="line"><span class="lineno">  384</span>  <a class="code hl_variable" href="#a14eff494f304d1af8aa70e7f6ef2e672">m_rho</a>.push_back(<a class="code hl_function" href="namespaceeonc_1_1safemath.html#ac4a440a0ec6d054b05ecd14567d41f97">eonc::safemath::safe_recip</a>(sy, 0.0));</div>
-<div class="line"><span class="lineno">  385</span>  <a class="code hl_variable" href="#a854d861e3dfae09166f84b26c982720a">m_s</a>.push_back(std::move(s0));</div>
-<div class="line"><span class="lineno">  386</span>  <a class="code hl_variable" href="#a52228dc72ad3429b817ea1f1a1a1ca13">m_y</a>.push_back(std::move(y0));</div>
-<div class="line"><span class="lineno">  387</span> </div>
-<div class="line"><span class="lineno">  388</span>  <span class="keywordflow">if</span> (<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a854d861e3dfae09166f84b26c982720a">m_s</a>.size()) &gt; <a class="code hl_variable" href="#aa343ea2acac59cfe79e2b682334b73eb">m_memory</a>) {</div>
-<div class="line"><span class="lineno">  389</span>    <a class="code hl_variable" href="#a854d861e3dfae09166f84b26c982720a">m_s</a>.pop_front();</div>
-<div class="line"><span class="lineno">  390</span>    <a class="code hl_variable" href="#a52228dc72ad3429b817ea1f1a1a1ca13">m_y</a>.pop_front();</div>
-<div class="line"><span class="lineno">  391</span>    <a class="code hl_variable" href="#a14eff494f304d1af8aa70e7f6ef2e672">m_rho</a>.pop_front();</div>
-<div class="line"><span class="lineno">  392</span>  }</div>
-<div class="line"><span class="lineno">  393</span>  <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">  394</span>}</div>
+<p class="definition">Definition at line <a class="el" href="LBFGS_8cpp_source.html#l00313">313</a> of file <a class="el" href="LBFGS_8cpp_source.html">LBFGS.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  315</span>                                            {</div>
+<div class="line"><span class="lineno">  316</span>  Eigen::VectorXd s0 = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;difference(a_r1, a_r0);</div>
+<div class="line"><span class="lineno">  317</span> </div>
+<div class="line"><span class="lineno">  318</span>  <span class="comment">// y0 is the change in the gradient, not the force</span></div>
+<div class="line"><span class="lineno">  319</span>  Eigen::VectorXd y0 = a_f0 - a_f1;</div>
+<div class="line"><span class="lineno">  320</span>  <span class="keywordtype">double</span> sy = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(s0, y0);</div>
+<div class="line"><span class="lineno">  321</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;cfg = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs;</div>
+<div class="line"><span class="lineno">  322</span>  <span class="keyword">const</span> std::string &amp;curv = cfg.curvature;</div>
+<div class="line"><span class="lineno">  323</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> H0 = std::max(cfg.inverse_curvature, 1.0e-16);</div>
+<div class="line"><span class="lineno">  324</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> ss = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a155cb43dcb40b742b39c7649e6efd248">eonc::exact::squaredNorm</a>(s0);</div>
+<div class="line"><span class="lineno">  325</span> </div>
+<div class="line"><span class="lineno">  326</span>  <span class="keywordflow">if</span> (cfg.secant == <span class="stringliteral">&quot;zhangxu&quot;</span> &amp;&amp; <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;gradientMatchesEnergy() &amp;&amp;</div>
+<div class="line"><span class="lineno">  327</span>      ss &gt; kLbfgsEps) {</div>
+<div class="line"><span class="lineno">  328</span>    <span class="comment">// Zhang, Deng, Chen, JOTA 102, 147 (1999); Zhang and Xu, JOTA 2001.</span></div>
+<div class="line"><span class="lineno">  329</span>    <span class="comment">// t = 6(f_k - f_{k+1}) + 3(g_k + g_{k+1})·s, ŷ = y + (t - y·s)/||s||^2 s.</span></div>
+<div class="line"><span class="lineno">  330</span>    <span class="comment">// Forces f = -g, so (g_k + g_{k+1})·s = -(f0 + f1)·s.</span></div>
+<div class="line"><span class="lineno">  331</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> t =</div>
+<div class="line"><span class="lineno">  332</span>        6.0 * (a_e0 - a_e1) - 3.0 * <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(a_f0 + a_f1, s0);</div>
+<div class="line"><span class="lineno">  333</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> theta = t - sy;</div>
+<div class="line"><span class="lineno">  334</span>    mulAddInto(y0, theta / ss, s0);</div>
+<div class="line"><span class="lineno">  335</span>    sy = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(s0, y0);</div>
+<div class="line"><span class="lineno">  336</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>, <span class="stringliteral">&quot;[LBFGS] Zhang-Xu θ={:.4e} s·ŷ={:.4e}&quot;</span>, theta, sy);</div>
+<div class="line"><span class="lineno">  337</span>  }</div>
+<div class="line"><span class="lineno">  338</span> </div>
+<div class="line"><span class="lineno">  339</span>  <span class="keywordtype">double</span> sBs = ss / H0;</div>
+<div class="line"><span class="lineno">  340</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="#a9d87a97212fc8d680e76cd59b1ecf1cc">usesPrecon</a>() &amp;&amp; a_r1.size() &gt;= 6 &amp;&amp; a_r1.size() % 3 == 0) {</div>
+<div class="line"><span class="lineno">  341</span>    <span class="keyword">const</span> Eigen::MatrixXd P = <a class="code hl_function" href="#ae91d6d58b5cf2e3e81a49efd68bd56af">buildPrecon</a>(a_r1);</div>
+<div class="line"><span class="lineno">  342</span>    sBs = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(s0, P * s0);</div>
+<div class="line"><span class="lineno">  343</span>  }</div>
+<div class="line"><span class="lineno">  344</span> </div>
+<div class="line"><span class="lineno">  345</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> gnorm = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a5fc310e3d2dec128339f8f3b105b829e">eonc::exact::norm</a>(a_f1);</div>
+<div class="line"><span class="lineno">  346</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> sn = std::sqrt(ss);</div>
+<div class="line"><span class="lineno">  347</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> yn = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a5fc310e3d2dec128339f8f3b105b829e">eonc::exact::norm</a>(y0);</div>
+<div class="line"><span class="lineno">  348</span> </div>
+<div class="line"><span class="lineno">  349</span>  <span class="keywordflow">if</span> (curv == <span class="stringliteral">&quot;cautious&quot;</span>) {</div>
+<div class="line"><span class="lineno">  350</span>    <span class="comment">// Li and Fukushima, J. Comput. Appl. Math. 129, 15 (2001).</span></div>
+<div class="line"><span class="lineno">  351</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> thresh =</div>
+<div class="line"><span class="lineno">  352</span>        cfg.cautious_eps * ss *</div>
+<div class="line"><span class="lineno">  353</span>        std::pow(std::max(gnorm, 1.0e-30), cfg.cautious_alpha);</div>
+<div class="line"><span class="lineno">  354</span>    <span class="keywordflow">if</span> (sy &lt; thresh) {</div>
+<div class="line"><span class="lineno">  355</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>, <span class="stringliteral">&quot;[LBFGS] Li-Fukushima skip, s·y={:.4e} &lt; {:.4e}&quot;</span>,</div>
+<div class="line"><span class="lineno">  356</span>                      sy, thresh);</div>
+<div class="line"><span class="lineno">  357</span>      <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">  358</span>    }</div>
+<div class="line"><span class="lineno">  359</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (std::abs(sy) &lt; kLbfgsEps || (curv != <span class="stringliteral">&quot;reset&quot;</span> &amp;&amp; sy &lt; 0.2 * sBs)) {</div>
+<div class="line"><span class="lineno">  360</span>    <span class="keywordflow">if</span> (curv == <span class="stringliteral">&quot;skip&quot;</span>) {</div>
+<div class="line"><span class="lineno">  361</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>, <span class="stringliteral">&quot;[LBFGS] skip pair, s·y={:.4e}&quot;</span>, sy);</div>
+<div class="line"><span class="lineno">  362</span>      <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">  363</span>    }</div>
+<div class="line"><span class="lineno">  364</span>    <span class="keywordflow">if</span> (curv == <span class="stringliteral">&quot;damped&quot;</span> &amp;&amp; sBs &gt; sy) {</div>
+<div class="line"><span class="lineno">  365</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> theta = std::clamp(0.8 * sBs / (sBs - sy), 0.0, 1.0);</div>
+<div class="line"><span class="lineno">  366</span>      <span class="keyword">const</span> Eigen::VectorXd B0s =</div>
+<div class="line"><span class="lineno">  367</span>          (<a class="code hl_function" href="#a9d87a97212fc8d680e76cd59b1ecf1cc">usesPrecon</a>() &amp;&amp; a_r1.size() &gt;= 6 &amp;&amp; a_r1.size() % 3 == 0)</div>
+<div class="line"><span class="lineno">  368</span>              ? Eigen::VectorXd(<a class="code hl_function" href="#ae91d6d58b5cf2e3e81a49efd68bd56af">buildPrecon</a>(a_r1) * s0)</div>
+<div class="line"><span class="lineno">  369</span>              : Eigen::VectorXd(s0 / H0);</div>
+<div class="line"><span class="lineno">  370</span>      y0 = theta * y0 + (1.0 - theta) * B0s;</div>
+<div class="line"><span class="lineno">  371</span>      sy = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(s0, y0);</div>
+<div class="line"><span class="lineno">  372</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>, <span class="stringliteral">&quot;[LBFGS] Powell damp θ={:.3f} s·ŷ={:.4e}&quot;</span>, theta,</div>
+<div class="line"><span class="lineno">  373</span>                      sy);</div>
+<div class="line"><span class="lineno">  374</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (std::abs(sy) &lt; kLbfgsEps) {</div>
+<div class="line"><span class="lineno">  375</span>      QUILL_LOG_WARNING(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>,</div>
+<div class="line"><span class="lineno">  376</span>                        <span class="stringliteral">&quot;[LBFGS] s0.y0 too small ({:.4e}), resetting memory&quot;</span>,</div>
+<div class="line"><span class="lineno">  377</span>                        <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(s0, y0));</div>
+<div class="line"><span class="lineno">  378</span>      <a class="code hl_function" href="#ad0c78e6bdb73ddd2d71fd9d645d3f8a8">reset</a>();</div>
+<div class="line"><span class="lineno">  379</span>      <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">  380</span>    }</div>
+<div class="line"><span class="lineno">  381</span>  }</div>
+<div class="line"><span class="lineno">  382</span> </div>
+<div class="line"><span class="lineno">  383</span>  <span class="keywordflow">if</span> (!std::isfinite(sy)) {</div>
+<div class="line"><span class="lineno">  384</span>    QUILL_LOG_WARNING(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>, <span class="stringliteral">&quot;[LBFGS] non-finite s·y, resetting memory&quot;</span>);</div>
+<div class="line"><span class="lineno">  385</span>    <a class="code hl_function" href="#ad0c78e6bdb73ddd2d71fd9d645d3f8a8">reset</a>();</div>
+<div class="line"><span class="lineno">  386</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">  387</span>  }</div>
+<div class="line"><span class="lineno">  388</span>  <span class="comment">// Relative overlap skip belongs to skip/damped/cautious. reset</span></div>
+<div class="line"><span class="lineno">  389</span>  <span class="comment">// keeps the ASE rule: only |s·y| &lt; kLbfgsEps drops the pair.</span></div>
+<div class="line"><span class="lineno">  390</span>  <span class="keywordflow">if</span> (curv != <span class="stringliteral">&quot;reset&quot;</span> &amp;&amp; sy &lt;= 1.0e-8 * sn * yn) {</div>
+<div class="line"><span class="lineno">  391</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ad13f4b42b6609a4fc5d994dc3e56ea91">m_log</a>, <span class="stringliteral">&quot;[LBFGS] overlap skip, s·y={:.4e}&quot;</span>, sy);</div>
+<div class="line"><span class="lineno">  392</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">  393</span>  }</div>
+<div class="line"><span class="lineno">  394</span> </div>
+<div class="line"><span class="lineno">  395</span>  <a class="code hl_variable" href="#a14eff494f304d1af8aa70e7f6ef2e672">m_rho</a>.push_back(<a class="code hl_function" href="namespaceeonc_1_1safemath.html#ac4a440a0ec6d054b05ecd14567d41f97">eonc::safemath::safe_recip</a>(sy, 0.0));</div>
+<div class="line"><span class="lineno">  396</span>  <a class="code hl_variable" href="#a854d861e3dfae09166f84b26c982720a">m_s</a>.push_back(std::move(s0));</div>
+<div class="line"><span class="lineno">  397</span>  <a class="code hl_variable" href="#a52228dc72ad3429b817ea1f1a1a1ca13">m_y</a>.push_back(std::move(y0));</div>
+<div class="line"><span class="lineno">  398</span> </div>
+<div class="line"><span class="lineno">  399</span>  <span class="keywordflow">if</span> (<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a854d861e3dfae09166f84b26c982720a">m_s</a>.size()) &gt; <a class="code hl_variable" href="#aa343ea2acac59cfe79e2b682334b73eb">m_memory</a>) {</div>
+<div class="line"><span class="lineno">  400</span>    <a class="code hl_variable" href="#a854d861e3dfae09166f84b26c982720a">m_s</a>.pop_front();</div>
+<div class="line"><span class="lineno">  401</span>    <a class="code hl_variable" href="#a52228dc72ad3429b817ea1f1a1a1ca13">m_y</a>.pop_front();</div>
+<div class="line"><span class="lineno">  402</span>    <a class="code hl_variable" href="#a14eff494f304d1af8aa70e7f6ef2e672">m_rho</a>.pop_front();</div>
+<div class="line"><span class="lineno">  403</span>  }</div>
+<div class="line"><span class="lineno">  404</span>  <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">  405</span>}</div>
 <div class="ttc" id="anamespaceeonc_1_1exact_html_a5fc310e3d2dec128339f8f3b105b829e"><div class="ttname"><a href="namespaceeonc_1_1exact.html#a5fc310e3d2dec128339f8f3b105b829e">eonc::exact::norm</a></div><div class="ttdeci">double norm(const Eigen::MatrixBase&lt; A &gt; &amp;x)</div><div class="ttdoc">sqrt of the correctly rounded squared norm; IEEE sqrt is itself correctly rounded,...</div><div class="ttdef"><b>Definition</b> <a href="ExactReduction_8h_source.html#l00092">ExactReduction.h:92</a></div></div>
 </div><!-- fragment -->
 </div>

@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['rgpot_5fengine_5facquire_5freason_0',['rgpot_engine_acquire_reason',['../engine__c__abi_8h.html#a0de09379b1e277b837472f09146bffef',1,'engine_c_abi.h']]],
-  ['runstatus_1',['RunStatus',['../namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459',1,'eonc']]]
+  ['pbcconvention_0',['PbcConvention',['../namespaceeonc.html#a80ab802e9396a8f80486e4ee8a309a8f',1,'eonc']]],
+  ['potlayout_1',['PotLayout',['../classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056',1,'eonc::Potential']]],
+  ['pottype_2',['PotType',['../namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2',1,'eonc']]]
 ];

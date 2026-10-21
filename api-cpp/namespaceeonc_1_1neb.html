@@ -301,10 +301,10 @@ Functions</h2></td></tr>
 <tr class="memdesc:a7ce2fa2921058fefa4c8580e5d23a6e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unit tangent at a fractional image index.  <br /></td></tr>
 <tr class="memitem:a8d42b1b31322ea1b17cc94c29905b20a" id="r_a8d42b1b31322ea1b17cc94c29905b20a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a8d42b1b31322ea1b17cc94c29905b20a">printImageData</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt; &gt; &amp;tangent, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="namespaceeonc.html#a2ccaf2c1835c240d5fff93174bd0a416">EigenmodeStrategy</a> &gt; &gt; &amp;eigenmode_solvers, long numImages, bool estimateEigenvalues, bool writeToFile, size_t idx, <a class="el" href="structeonc_1_1log_1_1Scoped.html">eonc::log::Scoped</a> log, double referenceEnergy=std::numeric_limits&lt; double &gt;::quiet_NaN())</td></tr>
 <tr class="memdesc:a8d42b1b31322ea1b17cc94c29905b20a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print NEB image data to log and optionally to file.  <br /></td></tr>
-<tr class="memitem:a9630b57c5dcabe75684b8dd8743d080e" id="r_a9630b57c5dcabe75684b8dd8743d080e"><td class="memItemLeft">std::vector&lt; readcon::ConFrame &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a9630b57c5dcabe75684b8dd8743d080e">pathToConFrames</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt; &gt; &amp;tangent, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="namespaceeonc.html#a2ccaf2c1835c240d5fff93174bd0a416">EigenmodeStrategy</a> &gt; &gt; &amp;eigenmode_solvers, long numImages, bool estimateEigenvalues, std::optional&lt; size_t &gt; bandIndex=std::nullopt, double referenceEnergy=std::numeric_limits&lt; double &gt;::quiet_NaN(), const std::vector&lt; double &gt; *quantumFreeEnergy=nullptr)</td></tr>
-<tr class="memdesc:a9630b57c5dcabe75684b8dd8743d080e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build stamped ConFrames for a NEB band (same metadata as writePathCon).  <br /></td></tr>
-<tr class="memitem:a2ae190e4531fb367d1fd07abbd58da85" id="r_a2ae190e4531fb367d1fd07abbd58da85"><td class="memItemLeft"><a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">eonc::io::IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="#a2ae190e4531fb367d1fd07abbd58da85">writePathCon</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt; &gt; &amp;tangent, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="namespaceeonc.html#a2ccaf2c1835c240d5fff93174bd0a416">EigenmodeStrategy</a> &gt; &gt; &amp;eigenmode_solvers, long numImages, bool estimateEigenvalues, std::string filename, std::optional&lt; size_t &gt; bandIndex=std::nullopt, double referenceEnergy=std::numeric_limits&lt; double &gt;::quiet_NaN(), const std::vector&lt; double &gt; *quantumFreeEnergy=nullptr)</td></tr>
-<tr class="memdesc:a2ae190e4531fb367d1fd07abbd58da85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a NEB band as a multi-frame .con via readcon ConFrameBuilder::clone().  <br /></td></tr>
+<tr class="memitem:a0b0b79f1d3ef549df1cc6739798e14ca" id="r_a0b0b79f1d3ef549df1cc6739798e14ca"><td class="memItemLeft">std::vector&lt; readcon::ConFrame &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a0b0b79f1d3ef549df1cc6739798e14ca">pathToConFrames</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt; &gt; &amp;tangent, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="namespaceeonc.html#a2ccaf2c1835c240d5fff93174bd0a416">EigenmodeStrategy</a> &gt; &gt; &amp;eigenmode_solvers, long numImages, bool estimateEigenvalues, std::optional&lt; size_t &gt; bandIndex=std::nullopt, double referenceEnergy=std::numeric_limits&lt; double &gt;::quiet_NaN(), const std::vector&lt; double &gt; *quantumFreeEnergy=nullptr, const <a class="el" href="structeonc_1_1tunneling_1_1BandWalls.html">eonc::tunneling::BandWalls</a> *walls=nullptr)</td></tr>
+<tr class="memdesc:a0b0b79f1d3ef549df1cc6739798e14ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build stamped ConFrames for a NEB band (same metadata as writePathCon).  <br /></td></tr>
+<tr class="memitem:a89b1f9f8437fc241385cc924270ab8b8" id="r_a89b1f9f8437fc241385cc924270ab8b8"><td class="memItemLeft"><a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">eonc::io::IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="#a89b1f9f8437fc241385cc924270ab8b8">writePathCon</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt; &gt; &amp;tangent, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="namespaceeonc.html#a2ccaf2c1835c240d5fff93174bd0a416">EigenmodeStrategy</a> &gt; &gt; &amp;eigenmode_solvers, long numImages, bool estimateEigenvalues, std::string filename, std::optional&lt; size_t &gt; bandIndex=std::nullopt, double referenceEnergy=std::numeric_limits&lt; double &gt;::quiet_NaN(), const std::vector&lt; double &gt; *quantumFreeEnergy=nullptr, const <a class="el" href="structeonc_1_1tunneling_1_1BandWalls.html">eonc::tunneling::BandWalls</a> *walls=nullptr)</td></tr>
+<tr class="memdesc:a89b1f9f8437fc241385cc924270ab8b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a NEB band as a multi-frame .con via readcon ConFrameBuilder::clone().  <br /></td></tr>
 <tr class="memitem:a377ee5e00739d25ad100873c536639fe" id="r_a377ee5e00739d25ad100873c536639fe"><td class="memItemLeft"><a class="el" href="#affa141d3b7384b5ef305b86f6dea04d9">SpringStrategy</a>&#160;</td><td class="memItemRight"><a class="el" href="#a377ee5e00739d25ad100873c536639fe">buildSpringStrategy</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;path, long numImages, int atoms, double maxEnergy, double E_ref)</td></tr>
 <tr class="memdesc:a377ee5e00739d25ad100873c536639fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the appropriate spring strategy from parameters and current path state.  <br /></td></tr>
 <tr class="memitem:a4ab91f7a0f596014d073cffbb2cb82b1" id="r_a4ab91f7a0f596014d073cffbb2cb82b1"><td class="memItemLeft"><a class="el" href="#af783a3d27fdfd2b4a612cad047051293">TangentStrategy</a>&#160;</td><td class="memItemRight"><a class="el" href="#a4ab91f7a0f596014d073cffbb2cb82b1">buildTangentStrategy</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
@@ -989,8 +989,8 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">  206</span>}</div>
 <div class="ttc" id="anamespaceeonc_1_1log_html"><div class="ttname"><a href="namespaceeonc_1_1log.html">eonc::log</a></div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00029">EonLogger.h:29</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00111">EonLogger.h:111</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb_1_1ExtremaResult_html"><div class="ttname"><a href="structeonc_1_1neb_1_1ExtremaResult.html">eonc::neb::ExtremaResult</a></div><div class="ttdef"><b>Definition</b> <a href="NEBSplineExtrema_8h_source.html#l00029">NEBSplineExtrema.h:29</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb_1_1ExtremaResult_html_a8db5cd9d5ca14aa60c2021288e66d1c9"><div class="ttname"><a href="structeonc_1_1neb_1_1ExtremaResult.html#a8db5cd9d5ca14aa60c2021288e66d1c9">eonc::neb::ExtremaResult::positions</a></div><div class="ttdeci">std::vector&lt; double &gt; positions</div><div class="ttdef"><b>Definition</b> <a href="NEBSplineExtrema_8h_source.html#l00031">NEBSplineExtrema.h:31</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb_1_1ExtremaResult_html"><div class="ttname"><a href="structeonc_1_1neb_1_1ExtremaResult.html">eonc::neb::ExtremaResult</a></div><div class="ttdef"><b>Definition</b> <a href="NEBSplineExtrema_8h_source.html#l00033">NEBSplineExtrema.h:33</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb_1_1ExtremaResult_html_a8db5cd9d5ca14aa60c2021288e66d1c9"><div class="ttname"><a href="structeonc_1_1neb_1_1ExtremaResult.html#a8db5cd9d5ca14aa60c2021288e66d1c9">eonc::neb::ExtremaResult::positions</a></div><div class="ttdeci">std::vector&lt; double &gt; positions</div><div class="ttdef"><b>Definition</b> <a href="NEBSplineExtrema_8h_source.html#l00035">NEBSplineExtrema.h:35</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1413,8 +1413,8 @@ Functions</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a9630b57c5dcabe75684b8dd8743d080e" name="a9630b57c5dcabe75684b8dd8743d080e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9630b57c5dcabe75684b8dd8743d080e">&#9670;&#160;</a></span>pathToConFrames()</h2>
+<a id="a0b0b79f1d3ef549df1cc6739798e14ca" name="a0b0b79f1d3ef549df1cc6739798e14ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b0b79f1d3ef549df1cc6739798e14ca">&#9670;&#160;</a></span>pathToConFrames()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1460,7 +1460,12 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; double &gt; *</td>          <td class="paramname"><span class="paramname"><em>quantumFreeEnergy</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
+          <td class="paramtype">const std::vector&lt; double &gt; *</td>          <td class="paramname"><span class="paramname"><em>quantumFreeEnergy</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeonc_1_1tunneling_1_1BandWalls.html">eonc::tunneling::BandWalls</a> *</td>          <td class="paramname"><span class="paramname"><em>walls</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -1471,82 +1476,97 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Build stamped ConFrames for a NEB band (same metadata as writePathCon). </p>
-<p>Empty on invalid path size. Does not write to disk. <span class="tt">referenceEnergy</span> is the energy relative energies are measured from; NaN means path[0]. A zoomed band passes its original reactant energy, since zoom moves path[0] to the start of its window. </p>
+<p>Empty on invalid path size. Does not write to disk. <span class="tt">referenceEnergy</span> is the energy relative energies are measured from; NaN means path[0]. A zoomed band passes its original reactant energy, since zoom moves path[0] to the start of its window. <span class="tt">walls</span> are the outer walls <a class="el" href="namespaceeonc_1_1tunneling.html#a3847ecad99497fda1f08ed26cda2722a" title="The walls of both ends of a band, after Khomenko et al.">tunneling::bandWalls</a> sampled past both minima; without them the one-dimensional levels continue each well by its fit. </p>
 
 <p class="definition">Definition at line <a class="el" href="NEBSplineExtrema_8cpp_source.html#l00311">311</a> of file <a class="el" href="NEBSplineExtrema_8cpp_source.html">NEBSplineExtrema.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  316</span>                                                                        {</div>
-<div class="line"><span class="lineno">  317</span>  <span class="keyword">const</span> <span class="keywordtype">size_t</span> nframes = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(numImages) + 2;</div>
-<div class="line"><span class="lineno">  318</span>  <span class="keywordflow">if</span> (path.size() &lt; nframes) {</div>
-<div class="line"><span class="lineno">  319</span>    <span class="keywordflow">return</span> {};</div>
-<div class="line"><span class="lineno">  320</span>  }</div>
-<div class="line"><span class="lineno">  321</span> </div>
-<div class="line"><span class="lineno">  322</span>  <span class="keywordtype">double</span> distTotal = 0.0;</div>
-<div class="line"><span class="lineno">  323</span>  std::vector&lt;eonc::io::ConFrameMetadata&gt; metas;</div>
-<div class="line"><span class="lineno">  324</span>  metas.reserve(nframes);</div>
-<div class="line"><span class="lineno">  325</span> </div>
-<div class="line"><span class="lineno">  326</span>  <span class="comment">// The mass-weighted arc length rides beside the Cartesian one: it is the</span></div>
-<div class="line"><span class="lineno">  327</span>  <span class="comment">// coordinate a tunnelling integral along the band runs over. A structure</span></div>
-<div class="line"><span class="lineno">  328</span>  <span class="comment">// without masses leaves it out rather than failing the write.</span></div>
-<div class="line"><span class="lineno">  329</span>  <span class="keywordtype">double</span> distMw = 0.0;</div>
-<div class="line"><span class="lineno">  330</span>  <span class="keywordtype">bool</span> haveMw = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  331</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt;= numImages + 1; i++) {</div>
-<div class="line"><span class="lineno">  332</span>    <span class="keywordflow">if</span> (i &gt; 0) {</div>
-<div class="line"><span class="lineno">  333</span>      distTotal += path[i]-&gt;distanceTo(*path[i - 1]);</div>
-<div class="line"><span class="lineno">  334</span>      <span class="keywordflow">if</span> (haveMw) {</div>
-<div class="line"><span class="lineno">  335</span>        <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  336</span>          distMw +=</div>
-<div class="line"><span class="lineno">  337</span>              <a class="code hl_function" href="namespaceeonc_1_1tunneling.html#aa278720cfec81feaf90b3a4db6759257">eonc::tunneling::massWeightedDistance</a>(*path[i - 1], *path[i]);</div>
-<div class="line"><span class="lineno">  338</span>        } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::invalid_argument &amp;) {</div>
-<div class="line"><span class="lineno">  339</span>          haveMw = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  340</span>        }</div>
-<div class="line"><span class="lineno">  341</span>      }</div>
-<div class="line"><span class="lineno">  342</span>    }</div>
-<div class="line"><span class="lineno">  343</span>    metas.push_back(neb_frame_metadata(path, tangent, eigenmode_solvers,</div>
-<div class="line"><span class="lineno">  344</span>                                       numImages, estimateEigenvalues, i,</div>
-<div class="line"><span class="lineno">  345</span>                                       distTotal, bandIndex, referenceEnergy));</div>
-<div class="line"><span class="lineno">  346</span>    <span class="keywordflow">if</span> (haveMw) {</div>
-<div class="line"><span class="lineno">  347</span>      metas.back().scalars.push_back({<span class="stringliteral">&quot;reaction_coordinate_mw&quot;</span>, distMw});</div>
-<div class="line"><span class="lineno">  348</span>    }</div>
-<div class="line"><span class="lineno">  349</span>  }</div>
-<div class="line"><span class="lineno">  350</span>  <span class="comment">// The band&#39;s one-dimensional tunnelling estimate goes on its first frame:</span></div>
-<div class="line"><span class="lineno">  351</span>  <span class="comment">// the well frequencies, the WKB action and the splitting a two-level-system</span></div>
-<div class="line"><span class="lineno">  352</span>  <span class="comment">// screen reads. Left out when an image has no mass or an end well is flat.</span></div>
-<div class="line"><span class="lineno">  353</span>  <span class="keywordflow">if</span> (haveMw &amp;&amp; !metas.empty()) {</div>
-<div class="line"><span class="lineno">  354</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  355</span>      std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; ends(</div>
-<div class="line"><span class="lineno">  356</span>          path.begin(), path.begin() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(nframes));</div>
-<div class="line"><span class="lineno">  357</span>      <span class="keyword">const</span> <span class="keyword">auto</span> split = <a class="code hl_function" href="namespaceeonc_1_1tunneling.html#a2495523c57566dbd072d73e8a0512d05">eonc::tunneling::bandSplitting</a>(</div>
-<div class="line"><span class="lineno">  358</span>          ends, referenceOrFirst(path, referenceEnergy));</div>
-<div class="line"><span class="lineno">  359</span>      <span class="keyword">auto</span> &amp;head = metas.front().scalars;</div>
-<div class="line"><span class="lineno">  360</span>      head.push_back({<span class="stringliteral">&quot;hbar_omega_reactant&quot;</span>, split.hwReactant});</div>
-<div class="line"><span class="lineno">  361</span>      head.push_back({<span class="stringliteral">&quot;hbar_omega_product&quot;</span>, split.hwProduct});</div>
-<div class="line"><span class="lineno">  362</span>      head.push_back({<span class="stringliteral">&quot;tunnel_action&quot;</span>, split.action});</div>
-<div class="line"><span class="lineno">  363</span>      head.push_back({<span class="stringliteral">&quot;tunnel_splitting&quot;</span>, split.delta0});</div>
-<div class="line"><span class="lineno">  364</span>      head.push_back({<span class="stringliteral">&quot;tls_energy&quot;</span>, split.tlsEnergy()});</div>
-<div class="line"><span class="lineno">  365</span>      head.push_back({<span class="stringliteral">&quot;tunnel_deep_wells&quot;</span>, split.deepWells ? 1.0 : 0.0});</div>
-<div class="line"><span class="lineno">  366</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::invalid_argument &amp;) {</div>
-<div class="line"><span class="lineno">  367</span>    }</div>
-<div class="line"><span class="lineno">  368</span>  }</div>
-<div class="line"><span class="lineno">  369</span>  <span class="keywordflow">if</span> (quantumFreeEnergy != <span class="keyword">nullptr</span> &amp;&amp; quantumFreeEnergy-&gt;size() == nframes) {</div>
-<div class="line"><span class="lineno">  370</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="namespaceeonc_1_1potential__owner.html#a6e2727e7a4a63edac40c9973a54e1b75">reactant</a> = quantumFreeEnergy-&gt;front();</div>
-<div class="line"><span class="lineno">  371</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> barrier = *std::max_element(quantumFreeEnergy-&gt;begin(),</div>
-<div class="line"><span class="lineno">  372</span>                                             quantumFreeEnergy-&gt;end()) -</div>
-<div class="line"><span class="lineno">  373</span>                           <a class="code hl_variable" href="namespaceeonc_1_1potential__owner.html#a6e2727e7a4a63edac40c9973a54e1b75">reactant</a>;</div>
-<div class="line"><span class="lineno">  374</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nframes; ++i) {</div>
-<div class="line"><span class="lineno">  375</span>      metas[i].scalars.push_back(</div>
-<div class="line"><span class="lineno">  376</span>          {<span class="stringliteral">&quot;quantum_free_energy&quot;</span>, (*quantumFreeEnergy)[i]});</div>
-<div class="line"><span class="lineno">  377</span>      metas[i].scalars.push_back({<span class="stringliteral">&quot;zpe_corrected_barrier&quot;</span>, barrier});</div>
-<div class="line"><span class="lineno">  378</span>    }</div>
-<div class="line"><span class="lineno">  379</span>  }</div>
-<div class="line"><span class="lineno">  380</span> </div>
-<div class="line"><span class="lineno">  381</span>  std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; band(</div>
-<div class="line"><span class="lineno">  382</span>      path.begin(), path.begin() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(nframes));</div>
-<div class="line"><span class="lineno">  383</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1io.html#a82c7b62eba032ea919c9cc6abf2ba8af">eonc::io::buildNebPathFrames</a>(band, metas);</div>
-<div class="line"><span class="lineno">  384</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  317</span>                                         {</div>
+<div class="line"><span class="lineno">  318</span>  <span class="keyword">const</span> <span class="keywordtype">size_t</span> nframes = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(numImages) + 2;</div>
+<div class="line"><span class="lineno">  319</span>  <span class="keywordflow">if</span> (path.size() &lt; nframes) {</div>
+<div class="line"><span class="lineno">  320</span>    <span class="keywordflow">return</span> {};</div>
+<div class="line"><span class="lineno">  321</span>  }</div>
+<div class="line"><span class="lineno">  322</span> </div>
+<div class="line"><span class="lineno">  323</span>  <span class="keywordtype">double</span> distTotal = 0.0;</div>
+<div class="line"><span class="lineno">  324</span>  std::vector&lt;eonc::io::ConFrameMetadata&gt; metas;</div>
+<div class="line"><span class="lineno">  325</span>  metas.reserve(nframes);</div>
+<div class="line"><span class="lineno">  326</span> </div>
+<div class="line"><span class="lineno">  327</span>  <span class="comment">// The mass-weighted arc length rides beside the Cartesian one: it is the</span></div>
+<div class="line"><span class="lineno">  328</span>  <span class="comment">// coordinate a tunnelling integral along the band runs over. A structure</span></div>
+<div class="line"><span class="lineno">  329</span>  <span class="comment">// without masses leaves it out rather than failing the write.</span></div>
+<div class="line"><span class="lineno">  330</span>  <span class="keywordtype">double</span> distMw = 0.0;</div>
+<div class="line"><span class="lineno">  331</span>  <span class="keywordtype">bool</span> haveMw = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  332</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt;= numImages + 1; i++) {</div>
+<div class="line"><span class="lineno">  333</span>    <span class="keywordflow">if</span> (i &gt; 0) {</div>
+<div class="line"><span class="lineno">  334</span>      distTotal += path[i]-&gt;distanceTo(*path[i - 1]);</div>
+<div class="line"><span class="lineno">  335</span>      <span class="keywordflow">if</span> (haveMw) {</div>
+<div class="line"><span class="lineno">  336</span>        <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  337</span>          distMw +=</div>
+<div class="line"><span class="lineno">  338</span>              <a class="code hl_function" href="namespaceeonc_1_1tunneling.html#aa278720cfec81feaf90b3a4db6759257">eonc::tunneling::massWeightedDistance</a>(*path[i - 1], *path[i]);</div>
+<div class="line"><span class="lineno">  339</span>        } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::invalid_argument &amp;) {</div>
+<div class="line"><span class="lineno">  340</span>          haveMw = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  341</span>        }</div>
+<div class="line"><span class="lineno">  342</span>      }</div>
+<div class="line"><span class="lineno">  343</span>    }</div>
+<div class="line"><span class="lineno">  344</span>    metas.push_back(neb_frame_metadata(path, tangent, eigenmode_solvers,</div>
+<div class="line"><span class="lineno">  345</span>                                       numImages, estimateEigenvalues, i,</div>
+<div class="line"><span class="lineno">  346</span>                                       distTotal, bandIndex, referenceEnergy));</div>
+<div class="line"><span class="lineno">  347</span>    <span class="keywordflow">if</span> (haveMw) {</div>
+<div class="line"><span class="lineno">  348</span>      metas.back().scalars.push_back({<span class="stringliteral">&quot;reaction_coordinate_mw&quot;</span>, distMw});</div>
+<div class="line"><span class="lineno">  349</span>    }</div>
+<div class="line"><span class="lineno">  350</span>  }</div>
+<div class="line"><span class="lineno">  351</span>  <span class="comment">// The band&#39;s one-dimensional tunnelling estimate goes on its first frame:</span></div>
+<div class="line"><span class="lineno">  352</span>  <span class="comment">// the well frequencies, the WKB action and the splitting a two-level-system</span></div>
+<div class="line"><span class="lineno">  353</span>  <span class="comment">// screen reads. Left out when an image has no mass or an end well is flat.</span></div>
+<div class="line"><span class="lineno">  354</span>  <span class="keywordflow">if</span> (haveMw &amp;&amp; !metas.empty()) {</div>
+<div class="line"><span class="lineno">  355</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  356</span>      std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; ends(</div>
+<div class="line"><span class="lineno">  357</span>          path.begin(), path.begin() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(nframes));</div>
+<div class="line"><span class="lineno">  358</span>      <span class="keyword">const</span> <span class="keyword">auto</span> split = <a class="code hl_function" href="namespaceeonc_1_1tunneling.html#a2495523c57566dbd072d73e8a0512d05">eonc::tunneling::bandSplitting</a>(</div>
+<div class="line"><span class="lineno">  359</span>          ends, referenceOrFirst(path, referenceEnergy));</div>
+<div class="line"><span class="lineno">  360</span>      <span class="keyword">auto</span> &amp;head = metas.front().scalars;</div>
+<div class="line"><span class="lineno">  361</span>      head.push_back({<span class="stringliteral">&quot;hbar_omega_reactant&quot;</span>, split.hwReactant});</div>
+<div class="line"><span class="lineno">  362</span>      head.push_back({<span class="stringliteral">&quot;hbar_omega_product&quot;</span>, split.hwProduct});</div>
+<div class="line"><span class="lineno">  363</span>      head.push_back({<span class="stringliteral">&quot;tunnel_action&quot;</span>, split.action});</div>
+<div class="line"><span class="lineno">  364</span>      head.push_back({<span class="stringliteral">&quot;tunnel_splitting&quot;</span>, split.delta0});</div>
+<div class="line"><span class="lineno">  365</span>      head.push_back({<span class="stringliteral">&quot;tunnel_asymmetry_zpe&quot;</span>, split.asymmetry()});</div>
+<div class="line"><span class="lineno">  366</span>      head.push_back({<span class="stringliteral">&quot;tls_energy&quot;</span>, split.tlsEnergy()});</div>
+<div class="line"><span class="lineno">  367</span>      head.push_back({<span class="stringliteral">&quot;tunnel_deep_wells&quot;</span>, split.deepWells ? 1.0 : 0.0});</div>
+<div class="line"><span class="lineno">  368</span>      <span class="comment">// The same band solved exactly in one dimension: the energy of the</span></div>
+<div class="line"><span class="lineno">  369</span>      <span class="comment">// two-level system and its two parts.</span></div>
+<div class="line"><span class="lineno">  370</span>      <span class="keyword">const</span> <span class="keyword">auto</span> profile = <a class="code hl_function" href="namespaceeonc_1_1tunneling.html#adf1fc5b8e161786148a511f43b7ca57a">eonc::tunneling::bandProfile</a>(</div>
+<div class="line"><span class="lineno">  371</span>          ends, referenceOrFirst(path, referenceEnergy));</div>
+<div class="line"><span class="lineno">  372</span>      <span class="keyword">const</span> <span class="keyword">auto</span> levels = <a class="code hl_function" href="namespaceeonc_1_1tunneling.html#acaaf29e4b5fa68c33f3150090d1b5566">eonc::tunneling::bandLevels</a>(profile, walls);</div>
+<div class="line"><span class="lineno">  373</span>      head.push_back({<span class="stringliteral">&quot;tls_energy_dvr&quot;</span>, levels.gap});</div>
+<div class="line"><span class="lineno">  374</span>      head.push_back({<span class="stringliteral">&quot;tunnel_asymmetry_dvr&quot;</span>, levels.asymmetry});</div>
+<div class="line"><span class="lineno">  375</span>      head.push_back({<span class="stringliteral">&quot;tunnel_splitting_dvr&quot;</span>, levels.delta0});</div>
+<div class="line"><span class="lineno">  376</span>      head.push_back({<span class="stringliteral">&quot;tunnel_wall_sampled&quot;</span>, walls != <span class="keyword">nullptr</span> ? 1.0 : 0.0});</div>
+<div class="line"><span class="lineno">  377</span>      head.push_back({<span class="stringliteral">&quot;tunnel_double_well&quot;</span>,</div>
+<div class="line"><span class="lineno">  378</span>                      <a class="code hl_function" href="namespaceeonc_1_1tunneling.html#a73cb9eac7e58b11242acca588a05a28b">eonc::tunneling::singleBarrier</a>(profile) ? 1.0 : 0.0});</div>
+<div class="line"><span class="lineno">  379</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::invalid_argument &amp;) {</div>
+<div class="line"><span class="lineno">  380</span>    }</div>
+<div class="line"><span class="lineno">  381</span>  }</div>
+<div class="line"><span class="lineno">  382</span>  <span class="keywordflow">if</span> (quantumFreeEnergy != <span class="keyword">nullptr</span> &amp;&amp; quantumFreeEnergy-&gt;size() == nframes) {</div>
+<div class="line"><span class="lineno">  383</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="namespaceeonc_1_1potential__owner.html#a6e2727e7a4a63edac40c9973a54e1b75">reactant</a> = quantumFreeEnergy-&gt;front();</div>
+<div class="line"><span class="lineno">  384</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> barrier = *std::max_element(quantumFreeEnergy-&gt;begin(),</div>
+<div class="line"><span class="lineno">  385</span>                                             quantumFreeEnergy-&gt;end()) -</div>
+<div class="line"><span class="lineno">  386</span>                           <a class="code hl_variable" href="namespaceeonc_1_1potential__owner.html#a6e2727e7a4a63edac40c9973a54e1b75">reactant</a>;</div>
+<div class="line"><span class="lineno">  387</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nframes; ++i) {</div>
+<div class="line"><span class="lineno">  388</span>      metas[i].scalars.push_back(</div>
+<div class="line"><span class="lineno">  389</span>          {<span class="stringliteral">&quot;quantum_free_energy&quot;</span>, (*quantumFreeEnergy)[i]});</div>
+<div class="line"><span class="lineno">  390</span>      metas[i].scalars.push_back({<span class="stringliteral">&quot;zpe_corrected_barrier&quot;</span>, barrier});</div>
+<div class="line"><span class="lineno">  391</span>    }</div>
+<div class="line"><span class="lineno">  392</span>  }</div>
+<div class="line"><span class="lineno">  393</span> </div>
+<div class="line"><span class="lineno">  394</span>  std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; band(</div>
+<div class="line"><span class="lineno">  395</span>      path.begin(), path.begin() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(nframes));</div>
+<div class="line"><span class="lineno">  396</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1io.html#a82c7b62eba032ea919c9cc6abf2ba8af">eonc::io::buildNebPathFrames</a>(band, metas);</div>
+<div class="line"><span class="lineno">  397</span>}</div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_a82c7b62eba032ea919c9cc6abf2ba8af"><div class="ttname"><a href="namespaceeonc_1_1io.html#a82c7b62eba032ea919c9cc6abf2ba8af">eonc::io::buildNebPathFrames</a></div><div class="ttdeci">std::vector&lt; readcon::ConFrame &gt; buildNebPathFrames(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path, const std::vector&lt; ConFrameMetadata &gt; &amp;metadata_per_image)</div><div class="ttdoc">Build NEB band ConFrames without writing (clone builder path of writeNebPath).</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8cpp_source.html#l00934">ConFileIO.cpp:934</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1potential__owner_html_a6e2727e7a4a63edac40c9973a54e1b75"><div class="ttname"><a href="namespaceeonc_1_1potential__owner.html#a6e2727e7a4a63edac40c9973a54e1b75">eonc::potential_owner::reactant</a></div><div class="ttdeci">constexpr long reactant</div><div class="ttdef"><b>Definition</b> <a href="PotentialOwner_8h_source.html#l00011">PotentialOwner.h:11</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1tunneling_html_a2495523c57566dbd072d73e8a0512d05"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#a2495523c57566dbd072d73e8a0512d05">eonc::tunneling::bandSplitting</a></div><div class="ttdeci">Splitting bandSplitting(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;band, double referenceEnergy)</div><div class="ttdoc">The splitting of a converged band, with the well frequencies from the band&#39;s curvature at each end.</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8cpp_source.html#l00532">Tunneling.cpp:532</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1tunneling_html_aa278720cfec81feaf90b3a4db6759257"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#aa278720cfec81feaf90b3a4db6759257">eonc::tunneling::massWeightedDistance</a></div><div class="ttdeci">double massWeightedDistance(const Matter &amp;a, const Matter &amp;b)</div><div class="ttdoc">sqrt(sum_i m_i |b_i - a_i|^2) under the minimum image of a&#39;s cell.</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8cpp_source.html#l00060">Tunneling.cpp:60</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1tunneling_html_a2495523c57566dbd072d73e8a0512d05"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#a2495523c57566dbd072d73e8a0512d05">eonc::tunneling::bandSplitting</a></div><div class="ttdeci">Splitting bandSplitting(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;band, double referenceEnergy)</div><div class="ttdoc">The splitting of a converged band, with the well frequencies from the band&#39;s curvature at each end.</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8cpp_source.html#l00550">Tunneling.cpp:550</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1tunneling_html_a73cb9eac7e58b11242acca588a05a28b"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#a73cb9eac7e58b11242acca588a05a28b">eonc::tunneling::singleBarrier</a></div><div class="ttdeci">bool singleBarrier(const Profile &amp;p)</div><div class="ttdoc">Whether a profile is one double well: its images rise to exactly one maximum between the two ends.</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8cpp_source.html#l00557">Tunneling.cpp:557</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1tunneling_html_aa278720cfec81feaf90b3a4db6759257"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#aa278720cfec81feaf90b3a4db6759257">eonc::tunneling::massWeightedDistance</a></div><div class="ttdeci">double massWeightedDistance(const Matter &amp;a, const Matter &amp;b)</div><div class="ttdoc">sqrt(sum_i m_i |b_i - a_i|^2) under the minimum image of a&#39;s cell.</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8cpp_source.html#l00061">Tunneling.cpp:61</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1tunneling_html_acaaf29e4b5fa68c33f3150090d1b5566"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#acaaf29e4b5fa68c33f3150090d1b5566">eonc::tunneling::bandLevels</a></div><div class="ttdeci">Levels bandLevels(const Profile &amp;p, const BandWalls *walls)</div><div class="ttdoc">dvrLevels on a band: the profile between the images, and past each end the well&#39;s fit a s^2 + b s^3 c...</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8cpp_source.html#l00689">Tunneling.cpp:689</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1tunneling_html_adf1fc5b8e161786148a511f43b7ca57a"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#adf1fc5b8e161786148a511f43b7ca57a">eonc::tunneling::bandProfile</a></div><div class="ttdeci">Profile bandProfile(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;band, double referenceEnergy)</div><div class="ttdoc">The energy of a band against its mass-weighted arc length, measured from referenceEnergy.</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8cpp_source.html#l00540">Tunneling.cpp:540</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1828,8 +1848,8 @@ Functions</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a2ae190e4531fb367d1fd07abbd58da85" name="a2ae190e4531fb367d1fd07abbd58da85"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2ae190e4531fb367d1fd07abbd58da85">&#9670;&#160;</a></span>writePathCon()</h2>
+<a id="a89b1f9f8437fc241385cc924270ab8b8" name="a89b1f9f8437fc241385cc924270ab8b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89b1f9f8437fc241385cc924270ab8b8">&#9670;&#160;</a></span>writePathCon()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1880,7 +1900,12 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; double &gt; *</td>          <td class="paramname"><span class="paramname"><em>quantumFreeEnergy</em></span>&#160;)</td>
+          <td class="paramtype">const std::vector&lt; double &gt; *</td>          <td class="paramname"><span class="paramname"><em>quantumFreeEnergy</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeonc_1_1tunneling_1_1BandWalls.html">eonc::tunneling::BandWalls</a> *</td>          <td class="paramname"><span class="paramname"><em>walls</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -1892,19 +1917,19 @@ Functions</h2></td></tr>
 
 <p>Write a NEB band as a multi-frame .con via readcon ConFrameBuilder::clone(). </p>
 
-<p class="definition">Definition at line <a class="el" href="NEBSplineExtrema_8cpp_source.html#l00386">386</a> of file <a class="el" href="NEBSplineExtrema_8cpp_source.html">NEBSplineExtrema.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  392</span>                                                {</div>
-<div class="line"><span class="lineno">  393</span>  <span class="keyword">auto</span> frames = <a class="code hl_function" href="#a9630b57c5dcabe75684b8dd8743d080e">pathToConFrames</a>(path, tangent, eigenmode_solvers, numImages,</div>
-<div class="line"><span class="lineno">  394</span>                                estimateEigenvalues, bandIndex, referenceEnergy,</div>
-<div class="line"><span class="lineno">  395</span>                                quantumFreeEnergy);</div>
-<div class="line"><span class="lineno">  396</span>  <span class="keywordflow">if</span> (frames.empty()) {</div>
-<div class="line"><span class="lineno">  397</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">eonc::io::IoStatus::InvalidArgument</a>;</div>
-<div class="line"><span class="lineno">  398</span>  }</div>
-<div class="line"><span class="lineno">  399</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1io.html#a2a321dfc9b8cf6c615a518a3f79ccdd0">eonc::io::writeConFrames</a>(std::move(filename), frames);</div>
-<div class="line"><span class="lineno">  400</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBSplineExtrema_8cpp_source.html#l00399">399</a> of file <a class="el" href="NEBSplineExtrema_8cpp_source.html">NEBSplineExtrema.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  406</span>                                         {</div>
+<div class="line"><span class="lineno">  407</span>  <span class="keyword">auto</span> frames = <a class="code hl_function" href="#a0b0b79f1d3ef549df1cc6739798e14ca">pathToConFrames</a>(path, tangent, eigenmode_solvers, numImages,</div>
+<div class="line"><span class="lineno">  408</span>                                estimateEigenvalues, bandIndex, referenceEnergy,</div>
+<div class="line"><span class="lineno">  409</span>                                quantumFreeEnergy, walls);</div>
+<div class="line"><span class="lineno">  410</span>  <span class="keywordflow">if</span> (frames.empty()) {</div>
+<div class="line"><span class="lineno">  411</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">eonc::io::IoStatus::InvalidArgument</a>;</div>
+<div class="line"><span class="lineno">  412</span>  }</div>
+<div class="line"><span class="lineno">  413</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1io.html#a2a321dfc9b8cf6c615a518a3f79ccdd0">eonc::io::writeConFrames</a>(std::move(filename), frames);</div>
+<div class="line"><span class="lineno">  414</span>}</div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_a2a321dfc9b8cf6c615a518a3f79ccdd0"><div class="ttname"><a href="namespaceeonc_1_1io.html#a2a321dfc9b8cf6c615a518a3f79ccdd0">eonc::io::writeConFrames</a></div><div class="ttdeci">IoStatus writeConFrames(std::string filename, const std::vector&lt; readcon::ConFrame &gt; &amp;frames)</div><div class="ttdoc">Write already-built ConFrames to a multi-frame .con (temp or durable).</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8cpp_source.html#l00983">ConFileIO.cpp:983</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">eonc::io::IoStatus::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00035">ConFileIO.h:35</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1neb_html_a9630b57c5dcabe75684b8dd8743d080e"><div class="ttname"><a href="#a9630b57c5dcabe75684b8dd8743d080e">eonc::neb::pathToConFrames</a></div><div class="ttdeci">std::vector&lt; readcon::ConFrame &gt; pathToConFrames(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; AtomMatrix &gt; &gt; &amp;tangent, const std::vector&lt; std::shared_ptr&lt; EigenmodeStrategy &gt; &gt; &amp;eigenmode_solvers, long numImages, bool estimateEigenvalues, std::optional&lt; size_t &gt; bandIndex, double referenceEnergy, const std::vector&lt; double &gt; *quantumFreeEnergy)</div><div class="ttdoc">Build stamped ConFrames for a NEB band (same metadata as writePathCon).</div><div class="ttdef"><b>Definition</b> <a href="NEBSplineExtrema_8cpp_source.html#l00311">NEBSplineExtrema.cpp:311</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1neb_html_a0b0b79f1d3ef549df1cc6739798e14ca"><div class="ttname"><a href="#a0b0b79f1d3ef549df1cc6739798e14ca">eonc::neb::pathToConFrames</a></div><div class="ttdeci">std::vector&lt; readcon::ConFrame &gt; pathToConFrames(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; AtomMatrix &gt; &gt; &amp;tangent, const std::vector&lt; std::shared_ptr&lt; EigenmodeStrategy &gt; &gt; &amp;eigenmode_solvers, long numImages, bool estimateEigenvalues, std::optional&lt; size_t &gt; bandIndex, double referenceEnergy, const std::vector&lt; double &gt; *quantumFreeEnergy, const eonc::tunneling::BandWalls *walls)</div><div class="ttdoc">Build stamped ConFrames for a NEB band (same metadata as writePathCon).</div><div class="ttdef"><b>Definition</b> <a href="NEBSplineExtrema_8cpp_source.html#l00311">NEBSplineExtrema.cpp:311</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

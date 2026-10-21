@@ -234,202 +234,306 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('QuantumFreeEne
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Tunneling_8h.html">eon/Tunneling.h</a>&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;Eigen/Eigenvalues&gt;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span>{</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keywordtype">double</span> lnTwoSinh(<span class="keywordtype">double</span> x) {</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>  <span class="keywordflow">if</span> (!(x &gt; 0.0) || !std::isfinite(x)) {</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;the sinh argument must be positive&quot;</span>);</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>  }</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>  <span class="keywordflow">if</span> (x &gt; 16.0) {</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">return</span> x + std::log1p(-std::exp(-2.0 * x));</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>  }</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  <span class="keywordflow">return</span> std::log(2.0 * std::sinh(x));</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>Eigen::VectorXi mobileAtoms(<span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;matter) {</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> n = matter.<a class="code hl_function" href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>();</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>  Eigen::VectorXi ids(n);</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>  <span class="keywordtype">long</span> count = 0;</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> atom = 0; atom &lt; n; ++atom) {</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">if</span> (!matter.<a class="code hl_function" href="classMatter.html#aeccfa311325cb6f4fb520cf071fef679">getFixed</a>(atom)) {</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>      ids(count++) = atom;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    }</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>  }</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>  ids.conservativeResize(count);</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  <span class="keywordflow">return</span> ids;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>Eigen::VectorXd massWeightedTangent(<span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;matter,</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                                    <span class="keyword">const</span> Eigen::VectorXi &amp;mobile,</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                                    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;cartesian) {</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>  <span class="keywordflow">if</span> (cartesian.rows() != matter.<a class="code hl_function" href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>() || cartesian.cols() != 3) {</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;the tangent is not N by 3&quot;</span>);</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  }</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  Eigen::VectorXd tangent(3 * mobile.size());</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; mobile.size(); ++k) {</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> atom = mobile(k);</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> mass = matter.<a class="code hl_function" href="classMatter.html#a93d383455b1ebb40c68e520ddd832c3a">getMass</a>(atom);</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">if</span> (!(mass &gt; 0.0)) {</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>      <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;a perpendicular mode needs a positive mass&quot;</span>);</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    }</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> scale = std::sqrt(mass);</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> dim = 0; dim &lt; 3; ++dim) {</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>      tangent(3 * k + dim) = cartesian(atom, dim) * scale;</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    }</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  }</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>  <span class="keywordflow">return</span> tangent;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> imageTangent(<span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; &amp;path,</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                        <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;AtomMatrix&gt;&gt; &amp;tangent,</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                        <span class="keywordtype">long</span> index) {</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> last = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(path.size()) - 1;</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>  <span class="keywordflow">if</span> (index &lt;= 0) {</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">return</span> path[0]-&gt;pbc(path[1]-&gt;getPositions() - path[0]-&gt;getPositions());</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  }</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>  <span class="keywordflow">if</span> (index &gt;= last) {</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordflow">return</span> path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(last - 1)]-&gt;<a class="code hl_namespace" href="namespaceeonc_1_1pbc.html">pbc</a>(</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(last)]-&gt;getPositions() -</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(last - 1)]-&gt;getPositions());</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>  }</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>  <span class="keywordflow">if</span> (<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(index) &lt; tangent.size() &amp;&amp; tangent[index]) {</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordflow">return</span> *tangent[index];</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  }</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>  <span class="keywordflow">return</span> path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(index - 1)]-&gt;<a class="code hl_namespace" href="namespaceeonc_1_1pbc.html">pbc</a>(</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>      path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(index + 1)]-&gt;getPositions() -</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>      path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(index - 1)]-&gt;getPositions());</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>} <span class="comment">// namespace</span></div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
-<div class="foldopen" id="foldopen00079" data-start="{" data-end="}">
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adafa5e51b56cd1a0c5361023b2ccc6cb">   79</a></span><span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeonc.html#adafa5e51b56cd1a0c5361023b2ccc6cb">harmonicModeFreeEnergy</a>(<span class="keywordtype">double</span> hbarOmegaEv, <span class="keywordtype">double</span> temperature) {</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>  <span class="keywordflow">if</span> (!(hbarOmegaEv &gt; 0.0) || !std::isfinite(hbarOmegaEv)) {</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="stringliteral">&quot;a perpendicular mode needs a positive hbar omega&quot;</span>);</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>  }</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>  <span class="keywordflow">if</span> (!(temperature &gt; 0.0)) {</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">return</span> 0.5 * hbarOmegaEv;</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>  }</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> x = hbarOmegaEv / (2.0 * <a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#af7d7cff7a86f5d8ade50e485b3b184e9">tunneling::kBoltzmann</a> * temperature);</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#af7d7cff7a86f5d8ade50e485b3b184e9">tunneling::kBoltzmann</a> * temperature * lnTwoSinh(x);</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
-</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
-<div class="foldopen" id="foldopen00091" data-start="{" data-end="}">
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a5174833620beb2fe246e67972d8fa56e">   91</a></span>Eigen::VectorXd <a class="code hl_function" href="namespaceeonc.html#a5174833620beb2fe246e67972d8fa56e">perpendicularEigenvalues</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;hessian,</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                                         <span class="keyword">const</span> Eigen::VectorXd &amp;tangent) {</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> n = hessian.rows();</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>  <span class="keywordflow">if</span> (hessian.cols() != n || tangent.size() != n || n &lt; 1) {</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;the Hessian and the tangent sizes differ&quot;</span>);</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>  }</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> norm = tangent.norm();</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>  <span class="keywordflow">if</span> (!(norm &gt; 0.0) || !std::isfinite(norm)) {</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;the tangent is zero&quot;</span>);</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>  }</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>  <span class="keyword">const</span> Eigen::VectorXd unit = tangent / norm;</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>  <span class="keyword">const</span> Eigen::MatrixXd projector =</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>      Eigen::MatrixXd::Identity(n, n) - unit * unit.transpose();</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  <span class="keyword">const</span> Eigen::MatrixXd projected = projector * hessian * projector;</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>  Eigen::SelfAdjointEigenSolver&lt;Eigen::MatrixXd&gt; solver(projected);</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  <span class="keywordflow">if</span> (solver.info() != Eigen::Success) {</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;the perpendicular Hessian did not diagonalize&quot;</span>);</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>  }</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>  <span class="keyword">const</span> Eigen::VectorXd values = solver.eigenvalues();</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>  <span class="keywordtype">long</span> drop = 0;</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>  <span class="keywordtype">double</span> nearest = std::abs(values(0));</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 1; i &lt; values.size(); ++i) {</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> gap = std::abs(values(i));</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">if</span> (gap &lt; nearest) {</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>      nearest = gap;</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>      drop = i;</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    }</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;Eigen/QR&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keywordtype">double</span> lnTwoSinh(<span class="keywordtype">double</span> x) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>  <span class="keywordflow">if</span> (!(x &gt; 0.0) || !std::isfinite(x)) {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;the sinh argument must be positive&quot;</span>);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>  }</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>  <span class="keywordflow">if</span> (x &gt; 16.0) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">return</span> x + std::log1p(-std::exp(-2.0 * x));</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>  }</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>  <span class="keywordflow">return</span> std::log(2.0 * std::sinh(x));</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>Eigen::VectorXi mobileAtoms(<span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;matter) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> n = matter.<a class="code hl_function" href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>  Eigen::VectorXi ids(n);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>  <span class="keywordtype">long</span> count = 0;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> atom = 0; atom &lt; n; ++atom) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">if</span> (!matter.<a class="code hl_function" href="classMatter.html#aeccfa311325cb6f4fb520cf071fef679">getFixed</a>(atom)) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>      ids(count++) = atom;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  ids.conservativeResize(count);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  <span class="keywordflow">return</span> ids;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>Eigen::VectorXd massWeightedTangent(<span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;matter,</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                                    <span class="keyword">const</span> Eigen::VectorXi &amp;mobile,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                                    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;cartesian) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  <span class="keywordflow">if</span> (cartesian.rows() != matter.<a class="code hl_function" href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>() || cartesian.cols() != 3) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;the tangent is not N by 3&quot;</span>);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  Eigen::VectorXd tangent(3 * mobile.size());</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; mobile.size(); ++k) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> atom = mobile(k);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> mass = matter.<a class="code hl_function" href="classMatter.html#a93d383455b1ebb40c68e520ddd832c3a">getMass</a>(atom);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">if</span> (!(mass &gt; 0.0)) {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>      <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;a perpendicular mode needs a positive mass&quot;</span>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    }</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> scale = std::sqrt(mass);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> dim = 0; dim &lt; 3; ++dim) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>      tangent(3 * k + dim) = cartesian(atom, dim) * scale;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>  }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>  <span class="keywordflow">return</span> tangent;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="comment">// Three translations, then three rotations about the centre of mass, over</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="comment">// the mobile atoms in mass-weighted coordinates. Positions are taken at</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="comment">// their minimum image from atom 0, so a cluster across a cell face turns as</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="comment">// one.</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>Eigen::MatrixXd rigidGenerators(<span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;matter,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                                <span class="keyword">const</span> Eigen::VectorXi &amp;mobile) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> raw = matter.<a class="code hl_function" href="classMatter.html#a2472b3c954d101c0810da69ed442b244">getPositions</a>();</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff = raw;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>  diff.rowwise() -= raw.row(0);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> whole = matter.<a class="code hl_function" href="classMatter.html#a5fe171bc21bf698aa9589fc66a118b7a">pbc</a>(diff);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>  whole.rowwise() += raw.row(0);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  Eigen::RowVector3d com = Eigen::RowVector3d::Zero();</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  <span class="keywordtype">double</span> total = 0.0;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; mobile.size(); ++k) {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> mass = matter.<a class="code hl_function" href="classMatter.html#a93d383455b1ebb40c68e520ddd832c3a">getMass</a>(mobile(k));</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    com += mass * whole.row(mobile(k));</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    total += mass;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>  }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  com /= total;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>  Eigen::MatrixXd out = Eigen::MatrixXd::Zero(3 * mobile.size(), 6);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; mobile.size(); ++k) {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> scale = std::sqrt(matter.<a class="code hl_function" href="classMatter.html#a93d383455b1ebb40c68e520ddd832c3a">getMass</a>(mobile(k)));</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">const</span> Eigen::Vector3d x = (whole.row(mobile(k)) - com).transpose();</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c = 0; c &lt; 3; ++c) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>      out(3 * k + c, c) = scale;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>      Eigen::Vector3d axis = Eigen::Vector3d::Zero();</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>      axis(c) = 1.0;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>      out.block(3 * k, 3 + c, 3, 1) = scale * axis.cross(x);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>  }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>  <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> imageTangent(<span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; &amp;path,</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                        <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;AtomMatrix&gt;&gt; &amp;tangent,</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                        <span class="keywordtype">long</span> index) {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> last = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(path.size()) - 1;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>  <span class="keywordflow">if</span> (index &lt;= 0) {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">return</span> path[0]-&gt;pbc(path[1]-&gt;getPositions() - path[0]-&gt;getPositions());</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>  }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>  <span class="keywordflow">if</span> (index &gt;= last) {</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">return</span> path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(last - 1)]-&gt;<a class="code hl_namespace" href="namespaceeonc_1_1pbc.html">pbc</a>(</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(last)]-&gt;getPositions() -</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(last - 1)]-&gt;getPositions());</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>  }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  <span class="keywordflow">if</span> (<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(index) &lt; tangent.size() &amp;&amp; tangent[index]) {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">return</span> *tangent[index];</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>  <span class="keywordflow">return</span> path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(index - 1)]-&gt;<a class="code hl_namespace" href="namespaceeonc_1_1pbc.html">pbc</a>(</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>      path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(index + 1)]-&gt;getPositions() -</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>      path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(index - 1)]-&gt;getPositions());</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>}</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>} <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="foldopen" id="foldopen00114" data-start="{" data-end="}">
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adafa5e51b56cd1a0c5361023b2ccc6cb">  114</a></span><span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeonc.html#adafa5e51b56cd1a0c5361023b2ccc6cb">harmonicModeFreeEnergy</a>(<span class="keywordtype">double</span> hbarOmegaEv, <span class="keywordtype">double</span> temperature) {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>  <span class="keywordflow">if</span> (!(hbarOmegaEv &gt; 0.0) || !std::isfinite(hbarOmegaEv)) {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <span class="stringliteral">&quot;a perpendicular mode needs a positive hbar omega&quot;</span>);</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>  }</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>  Eigen::VectorXd kept(values.size() - 1);</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>  <span class="keywordtype">long</span> write = 0;</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; values.size(); ++i) {</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordflow">if</span> (i == drop) {</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    }</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    kept(write++) = values(i);</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>  }</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>  <span class="keywordflow">return</span> kept;</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>}</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>  <span class="keywordflow">if</span> (!(temperature &gt; 0.0)) {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordflow">return</span> 0.5 * hbarOmegaEv;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>  }</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> x = hbarOmegaEv / (2.0 * <a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#af7d7cff7a86f5d8ade50e485b3b184e9">tunneling::kBoltzmann</a> * temperature);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#af7d7cff7a86f5d8ade50e485b3b184e9">tunneling::kBoltzmann</a> * temperature * lnTwoSinh(x);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}</div>
 </div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
-<div class="foldopen" id="foldopen00130" data-start="{" data-end="}">
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a0e1938c6f5ac1c67a68f39a3edae3d78">  130</a></span><span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeonc.html#a0e1938c6f5ac1c67a68f39a3edae3d78">perpendicularHarmonicFreeEnergy</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;hessian,</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                                       <span class="keyword">const</span> Eigen::VectorXd &amp;tangent,</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                                       <span class="keywordtype">double</span> temperature) {</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>  <span class="keyword">const</span> Eigen::VectorXd lambda = <a class="code hl_function" href="namespaceeonc.html#a5174833620beb2fe246e67972d8fa56e">perpendicularEigenvalues</a>(hessian, tangent);</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>  <span class="keywordtype">double</span> sum = 0.0;</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; lambda.size(); ++i) {</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordflow">if</span> (!(lambda(i) &gt; 0.0)) {</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    }</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> hw = <a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#a9226451a02d96e8651470ee1fb21eaa9">tunneling::kHbar</a> * std::sqrt(lambda(i));</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    sum += <a class="code hl_function" href="namespaceeonc.html#adafa5e51b56cd1a0c5361023b2ccc6cb">harmonicModeFreeEnergy</a>(hw, temperature);</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>  }</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>  <span class="keywordflow">return</span> sum;</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>}</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="foldopen" id="foldopen00126" data-start="{" data-end="}">
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="namespaceeonc.html#ae04f3f63b0711057b71f16472e0bbb88">  126</a></span>Eigen::VectorXd <a class="code hl_function" href="namespaceeonc.html#ae04f3f63b0711057b71f16472e0bbb88">complementEigenvalues</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;hessian,</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                                      <span class="keyword">const</span> Eigen::MatrixXd &amp;removed) {</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> n = hessian.rows();</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>  <span class="keywordflow">if</span> (hessian.cols() != n || n &lt; 1 ||</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>      (removed.cols() &gt; 0 &amp;&amp; removed.rows() != n)) {</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        <span class="stringliteral">&quot;the Hessian and the removed directions differ in size&quot;</span>);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>  }</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>  <span class="keyword">const</span> Eigen::MatrixXd sym = 0.5 * (hessian + hessian.transpose());</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>  <span class="comment">// Unit columns, so that the rank decision compares directions and not</span></div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>  <span class="comment">// their lengths. A column at round-off of the longest (the rotation about</span></div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>  <span class="comment">// a linear molecule&#39;s axis) removes nothing, rather than a direction of</span></div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>  <span class="comment">// noise scaled up.</span></div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>  Eigen::MatrixXd unit(n, removed.cols());</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>  <span class="keywordtype">long</span> kept = 0;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> largest =</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>      removed.cols() &gt; 0 ? removed.colwise().norm().maxCoeff() : 0.0;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>  <span class="keywordflow">if</span> (!std::isfinite(largest)) {</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;a removed direction is not finite&quot;</span>);</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>  }</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> c = 0; c &lt; removed.cols(); ++c) {</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> norm = removed.col(c).norm();</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keywordflow">if</span> (norm &gt; 1e-8 * largest) {</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>      unit.col(kept++) = removed.col(c) / norm;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    }</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>  }</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>  Eigen::MatrixXd complement = Eigen::MatrixXd::Identity(n, n);</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>  <span class="keywordflow">if</span> (kept &gt; 0) {</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    Eigen::ColPivHouseholderQR&lt;Eigen::MatrixXd&gt; qr(unit.leftCols(kept));</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    qr.setThreshold(1e-8);</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> rank = qr.rank();</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keyword">const</span> Eigen::MatrixXd q = qr.householderQ();</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    complement = q.rightCols(n - rank);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>  }</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>  <span class="keywordflow">if</span> (complement.cols() == 0) {</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keywordflow">return</span> Eigen::VectorXd();</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>  }</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>  <span class="keyword">const</span> Eigen::MatrixXd reduced = complement.transpose() * sym * complement;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>  Eigen::SelfAdjointEigenSolver&lt;Eigen::MatrixXd&gt; solver(</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>      0.5 * (reduced + reduced.transpose()), Eigen::EigenvaluesOnly);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>  <span class="keywordflow">if</span> (solver.info() != Eigen::Success) {</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;the projected Hessian did not diagonalize&quot;</span>);</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>  }</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>  <span class="keywordflow">return</span> solver.eigenvalues();</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>}</div>
 </div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>std::vector&lt;double&gt;</div>
-<div class="foldopen" id="foldopen00146" data-start="{" data-end="}">
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="namespaceeonc.html#ac39276e0968b53c5fa4d689cde2707a5">  146</a></span><a class="code hl_function" href="namespaceeonc.html#ac39276e0968b53c5fa4d689cde2707a5">quantumFreeEnergies</a>(<span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; &amp;path,</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>                    <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;AtomMatrix&gt;&gt; &amp;tangent,</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                    <span class="keywordtype">double</span> temperature, <span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params) {</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>  std::vector&lt;double&gt; freeEnergy;</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>  freeEnergy.reserve(path.size());</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> image = 0; image &lt; static_cast&lt;long&gt;(path.size()); ++image) {</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;matter = *path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(image)];</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> potential = matter.<a class="code hl_function" href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>();</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keyword">const</span> Eigen::VectorXi mobile = mobileAtoms(matter);</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordflow">if</span> (mobile.size() == 0) {</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>      freeEnergy.push_back(potential);</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    }</div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <a class="code hl_class" href="classeonc_1_1Hessian.html">Hessian</a> hess(params, &amp;matter);</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    hess.<a class="code hl_function" href="classeonc_1_1Hessian.html#a4eb27ec72a16b678aa44ec274b4fe2c4">writeHessianFile</a>(<span class="keyword">false</span>);</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keyword">const</span> Eigen::MatrixXd weighted = hess.<a class="code hl_function" href="classeonc_1_1Hessian.html#a5b24e6cd380f6c6195ce3ff0746406d2">getHessian</a>(&amp;matter, mobile);</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keywordflow">if</span> (weighted.rows() != 3 * mobile.size()) {</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;the image Hessian is empty&quot;</span>);</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    }</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> cart = imageTangent(path, tangent, image);</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keyword">const</span> Eigen::VectorXd direction = massWeightedTangent(matter, mobile, cart);</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    freeEnergy.push_back(potential + <a class="code hl_function" href="namespaceeonc.html#a0e1938c6f5ac1c67a68f39a3edae3d78">perpendicularHarmonicFreeEnergy</a>(</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>                                         weighted, direction, temperature));</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>  }</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>  <span class="keywordflow">return</span> freeEnergy;</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>}</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="foldopen" id="foldopen00172" data-start="{" data-end="}">
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a013ccd97822f213f0716e0a81d21b87a">  172</a></span><span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeonc.html#a013ccd97822f213f0716e0a81d21b87a">complementHarmonicFreeEnergy</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;hessian,</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>                                    <span class="keyword">const</span> Eigen::MatrixXd &amp;removed,</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>                                    <span class="keywordtype">double</span> temperature) {</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>  <span class="keyword">const</span> Eigen::VectorXd lambda = <a class="code hl_function" href="namespaceeonc.html#ae04f3f63b0711057b71f16472e0bbb88">complementEigenvalues</a>(hessian, removed);</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>  <span class="keywordtype">double</span> sum = 0.0;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; lambda.size(); ++i) {</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keywordflow">if</span> (!(lambda(i) &gt; 0.0)) {</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    }</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> hw = <a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#a9226451a02d96e8651470ee1fb21eaa9">tunneling::kHbar</a> * std::sqrt(lambda(i));</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    sum += <a class="code hl_function" href="namespaceeonc.html#adafa5e51b56cd1a0c5361023b2ccc6cb">harmonicModeFreeEnergy</a>(hw, temperature);</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>  }</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>  <span class="keywordflow">return</span> sum;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>}</div>
 </div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>} <span class="comment">// namespace eonc</span></div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="foldopen" id="foldopen00187" data-start="{" data-end="}">
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a5174833620beb2fe246e67972d8fa56e">  187</a></span>Eigen::VectorXd <a class="code hl_function" href="namespaceeonc.html#a5174833620beb2fe246e67972d8fa56e">perpendicularEigenvalues</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;hessian,</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>                                         <span class="keyword">const</span> Eigen::VectorXd &amp;tangent) {</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> n = hessian.rows();</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>  <span class="keywordflow">if</span> (hessian.cols() != n || tangent.size() != n || n &lt; 1) {</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;the Hessian and the tangent sizes differ&quot;</span>);</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>  }</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> norm = tangent.norm();</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>  <span class="keywordflow">if</span> (!(norm &gt; 0.0) || !std::isfinite(norm)) {</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;the tangent is zero&quot;</span>);</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>  }</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc.html#ae04f3f63b0711057b71f16472e0bbb88">complementEigenvalues</a>(hessian, tangent / norm);</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>}</div>
+</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="foldopen" id="foldopen00200" data-start="{" data-end="}">
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a0e1938c6f5ac1c67a68f39a3edae3d78">  200</a></span><span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeonc.html#a0e1938c6f5ac1c67a68f39a3edae3d78">perpendicularHarmonicFreeEnergy</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;hessian,</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>                                       <span class="keyword">const</span> Eigen::VectorXd &amp;tangent,</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                                       <span class="keywordtype">double</span> temperature) {</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>  <span class="keyword">const</span> Eigen::VectorXd lambda = <a class="code hl_function" href="namespaceeonc.html#a5174833620beb2fe246e67972d8fa56e">perpendicularEigenvalues</a>(hessian, tangent);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>  <span class="keywordtype">double</span> sum = 0.0;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; lambda.size(); ++i) {</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keywordflow">if</span> (!(lambda(i) &gt; 0.0)) {</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    }</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> hw = <a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#a9226451a02d96e8651470ee1fb21eaa9">tunneling::kHbar</a> * std::sqrt(lambda(i));</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    sum += <a class="code hl_function" href="namespaceeonc.html#adafa5e51b56cd1a0c5361023b2ccc6cb">harmonicModeFreeEnergy</a>(hw, temperature);</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>  }</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>  <span class="keywordflow">return</span> sum;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>}</div>
+</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>std::vector&lt;double&gt;</div>
+<div class="foldopen" id="foldopen00216" data-start="{" data-end="}">
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno"><a class="line" href="namespaceeonc.html#ac39276e0968b53c5fa4d689cde2707a5">  216</a></span><a class="code hl_function" href="namespaceeonc.html#ac39276e0968b53c5fa4d689cde2707a5">quantumFreeEnergies</a>(<span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; &amp;path,</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>                    <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;AtomMatrix&gt;&gt; &amp;tangent,</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>                    <span class="keywordtype">double</span> temperature, <span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params) {</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>  std::vector&lt;double&gt; freeEnergy;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>  freeEnergy.reserve(path.size());</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> last = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(path.size()) - 1;</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>  std::array&lt;bool, 3&gt; rotations{{<span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>}};</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>  <span class="keywordtype">bool</span> rotationsSet = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> image = 0; image &lt;= last; ++image) {</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;matter = *path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(image)];</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> potential = matter.<a class="code hl_function" href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>();</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    <span class="keyword">const</span> Eigen::VectorXi mobile = mobileAtoms(matter);</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    <span class="keywordflow">if</span> (mobile.size() == 0) {</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>      freeEnergy.push_back(potential);</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    }</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    <a class="code hl_class" href="classeonc_1_1Hessian.html">Hessian</a> hess(params, &amp;matter);</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    hess.<a class="code hl_function" href="classeonc_1_1Hessian.html#a4eb27ec72a16b678aa44ec274b4fe2c4">writeHessianFile</a>(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    <span class="keyword">const</span> Eigen::MatrixXd weighted = hess.<a class="code hl_function" href="classeonc_1_1Hessian.html#a5b24e6cd380f6c6195ce3ff0746406d2">getHessian</a>(&amp;matter, mobile);</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <span class="keywordflow">if</span> (weighted.rows() != 3 * mobile.size()) {</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;the image Hessian is empty&quot;</span>);</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    }</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    std::vector&lt;Eigen::VectorXd&gt; removed;</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    <span class="keywordflow">if</span> (mobile.size() == matter.<a class="code hl_function" href="classeonc_1_1Matter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>()) {</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>      <span class="keyword">const</span> Eigen::MatrixXd generators = rigidGenerators(matter, mobile);</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>      <span class="keywordflow">if</span> (!rotationsSet) {</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>        rotations = <a class="code hl_function" href="namespaceeonc_1_1tunneling.html#ae557ba00e3ff17943fe8c4f65ad1aa1d">tunneling::rotationZeroModes</a>(weighted, generators).<a class="code hl_variable" href="structeonc_1_1tunneling_1_1RotationZeroModes.html#a1d3c4500a805d1a47c077bf7e60d3e93">zero</a>;</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        rotationsSet = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>      }</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c = 0; c &lt; 3; ++c) {</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        removed.emplace_back(generators.col(c));</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>        <span class="keywordflow">if</span> (rotations[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(c)]) {</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>          removed.emplace_back(generators.col(3 + c));</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>        }</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>      }</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    }</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    <span class="keywordflow">if</span> (image &gt; 0 &amp;&amp; image &lt; last) {</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>      removed.push_back(massWeightedTangent(</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>          matter, mobile, imageTangent(path, tangent, image)));</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    }</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    Eigen::MatrixXd columns(weighted.rows(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(removed.size()));</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 0; k &lt; removed.size(); ++k) {</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>      columns.col(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(k)) = removed[k];</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    }</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    freeEnergy.push_back(potential + <a class="code hl_function" href="namespaceeonc.html#a013ccd97822f213f0716e0a81d21b87a">complementHarmonicFreeEnergy</a>(</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>                                         weighted, columns, temperature));</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>  }</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>  <span class="keywordflow">return</span> freeEnergy;</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>}</div>
+</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>} <span class="comment">// namespace eonc</span></div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
 <div class="ttc" id="aHessian_8h_html"><div class="ttname"><a href="Hessian_8h.html">Hessian.h</a></div></div>
 <div class="ttc" id="aQuantumFreeEnergy_8h_html"><div class="ttname"><a href="QuantumFreeEnergy_8h.html">QuantumFreeEnergy.h</a></div></div>
 <div class="ttc" id="aTunneling_8h_html"><div class="ttname"><a href="Tunneling_8h.html">Tunneling.h</a></div></div>
+<div class="ttc" id="aclassMatter_html_a2472b3c954d101c0810da69ed442b244"><div class="ttname"><a href="classMatter.html#a2472b3c954d101c0810da69ed442b244">Matter::getPositions</a></div><div class="ttdeci">const AtomMatrix &amp; getPositions() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00375">Matter.cpp:375</a></div></div>
 <div class="ttc" id="aclassMatter_html_a5b678e80aa584c41d54e221d04bb729e"><div class="ttname"><a href="classMatter.html#a5b678e80aa584c41d54e221d04bb729e">Matter::numberOfAtoms</a></div><div class="ttdeci">long int numberOfAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00340">Matter.cpp:340</a></div></div>
+<div class="ttc" id="aclassMatter_html_a5fe171bc21bf698aa9589fc66a118b7a"><div class="ttname"><a href="classMatter.html#a5fe171bc21bf698aa9589fc66a118b7a">Matter::pbc</a></div><div class="ttdeci">AtomMatrix pbc(const AtomMatrix &amp;diff) const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00940">Matter.cpp:940</a></div></div>
 <div class="ttc" id="aclassMatter_html_a93d383455b1ebb40c68e520ddd832c3a"><div class="ttname"><a href="classMatter.html#a93d383455b1ebb40c68e520ddd832c3a">Matter::getMass</a></div><div class="ttdeci">double getMass(long int atom) const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00545">Matter.cpp:545</a></div></div>
 <div class="ttc" id="aclassMatter_html_aeccfa311325cb6f4fb520cf071fef679"><div class="ttname"><a href="classMatter.html#aeccfa311325cb6f4fb520cf071fef679">Matter::getFixed</a></div><div class="ttdeci">int getFixed(long int atom) const</div><div class="ttdoc">1 if every Cartesian axis of the atom is fixed, else 0.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00572">Matter.cpp:572</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Hessian_html"><div class="ttname"><a href="classeonc_1_1Hessian.html">eonc::Hessian</a></div><div class="ttdef"><b>Definition</b> <a href="Hessian_8h_source.html#l00047">Hessian.h:47</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Hessian_html_a4eb27ec72a16b678aa44ec274b4fe2c4"><div class="ttname"><a href="classeonc_1_1Hessian.html#a4eb27ec72a16b678aa44ec274b4fe2c4">eonc::Hessian::writeHessianFile</a></div><div class="ttdeci">void writeHessianFile(bool on) noexcept</div><div class="ttdoc">Whether a finished Hessian goes to hessian.dat (on by default).</div><div class="ttdef"><b>Definition</b> <a href="Hessian_8h_source.html#l00061">Hessian.h:61</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Hessian_html_a5b24e6cd380f6c6195ce3ff0746406d2"><div class="ttname"><a href="classeonc_1_1Hessian.html#a5b24e6cd380f6c6195ce3ff0746406d2">eonc::Hessian::getHessian</a></div><div class="ttdeci">MatrixXd getHessian(Matter *matterIn, const VectorXi &amp;atomsIn)</div><div class="ttdef"><b>Definition</b> <a href="Hessian_8cpp_source.html#l00146">Hessian.cpp:146</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Matter_html"><div class="ttname"><a href="classeonc_1_1Matter.html">eonc::Matter</a></div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00094">Matter.h:94</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a5b678e80aa584c41d54e221d04bb729e"><div class="ttname"><a href="classeonc_1_1Matter.html#a5b678e80aa584c41d54e221d04bb729e">eonc::Matter::numberOfAtoms</a></div><div class="ttdeci">long int numberOfAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00340">Matter.cpp:340</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Matter_html_a991745c4fb760027221d419b8cf6fd8e"><div class="ttname"><a href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">eonc::Matter::getPotentialEnergy</a></div><div class="ttdeci">double getPotentialEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00621">Matter.cpp:621</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html"><div class="ttname"><a href="classeonc_1_1Parameters.html">eonc::Parameters</a></div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00035">Parameters.h:35</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1pbc_html"><div class="ttname"><a href="namespaceeonc_1_1pbc.html">eonc::pbc</a></div><div class="ttdef"><b>Definition</b> <a href="MinimumImage_8cpp_source.html#l00006">MinimumImage.cpp:6</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1tunneling_html_a9226451a02d96e8651470ee1fb21eaa9"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#a9226451a02d96e8651470ee1fb21eaa9">eonc::tunneling::kHbar</a></div><div class="ttdeci">constexpr double kHbar</div><div class="ttdoc">hbar in eV^0.5 amu^0.5 Angstrom, correctly rounded from the exact SI values (h = 6....</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00039">Tunneling.h:39</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1tunneling_html_ae557ba00e3ff17943fe8c4f65ad1aa1d"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#ae557ba00e3ff17943fe8c4f65ad1aa1d">eonc::tunneling::rotationZeroModes</a></div><div class="ttdeci">RotationZeroModes rotationZeroModes(const MatrixXd &amp;hess, const MatrixXd &amp;generators, double fraction)</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8cpp_source.html#l05172">Tunneling.cpp:5172</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1tunneling_html_af7d7cff7a86f5d8ade50e485b3b184e9"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#af7d7cff7a86f5d8ade50e485b3b184e9">eonc::tunneling::kBoltzmann</a></div><div class="ttdeci">constexpr double kBoltzmann</div><div class="ttdoc">Boltzmann constant in eV / K, correctly rounded from the exact 1.380649e-23 J / K.</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00043">Tunneling.h:43</a></div></div>
 <div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00023">ARTnSaddleSearch.cpp:23</a></div></div>
-<div class="ttc" id="anamespaceeonc_html_a0e1938c6f5ac1c67a68f39a3edae3d78"><div class="ttname"><a href="namespaceeonc.html#a0e1938c6f5ac1c67a68f39a3edae3d78">eonc::perpendicularHarmonicFreeEnergy</a></div><div class="ttdeci">double perpendicularHarmonicFreeEnergy(const Eigen::MatrixXd &amp;hessian, const Eigen::VectorXd &amp;tangent, double temperature)</div><div class="ttdoc">Sum of harmonicModeFreeEnergy over the positive perpendicular eigenvalues.</div><div class="ttdef"><b>Definition</b> <a href="#l00130">QuantumFreeEnergy.cpp:130</a></div></div>
-<div class="ttc" id="anamespaceeonc_html_a5174833620beb2fe246e67972d8fa56e"><div class="ttname"><a href="namespaceeonc.html#a5174833620beb2fe246e67972d8fa56e">eonc::perpendicularEigenvalues</a></div><div class="ttdeci">Eigen::VectorXd perpendicularEigenvalues(const Eigen::MatrixXd &amp;hessian, const Eigen::VectorXd &amp;tangent)</div><div class="ttdoc">Eigenvalues of the mass-weighted Hessian after the tangent direction is removed.</div><div class="ttdef"><b>Definition</b> <a href="#l00091">QuantumFreeEnergy.cpp:91</a></div></div>
-<div class="ttc" id="anamespaceeonc_html_ac39276e0968b53c5fa4d689cde2707a5"><div class="ttname"><a href="namespaceeonc.html#ac39276e0968b53c5fa4d689cde2707a5">eonc::quantumFreeEnergies</a></div><div class="ttdeci">std::vector&lt; double &gt; quantumFreeEnergies(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; AtomMatrix &gt; &gt; &amp;tangent, double temperature, const Parameters &amp;params)</div><div class="ttdoc">F(s) = V(s) + the perpendicular harmonic free energy, one entry per image.</div><div class="ttdef"><b>Definition</b> <a href="#l00146">QuantumFreeEnergy.cpp:146</a></div></div>
-<div class="ttc" id="anamespaceeonc_html_adafa5e51b56cd1a0c5361023b2ccc6cb"><div class="ttname"><a href="namespaceeonc.html#adafa5e51b56cd1a0c5361023b2ccc6cb">eonc::harmonicModeFreeEnergy</a></div><div class="ttdeci">double harmonicModeFreeEnergy(double hbarOmegaEv, double temperature)</div><div class="ttdoc">kT ln(2 sinh(beta hbar omega / 2)) in eV.</div><div class="ttdef"><b>Definition</b> <a href="#l00079">QuantumFreeEnergy.cpp:79</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a013ccd97822f213f0716e0a81d21b87a"><div class="ttname"><a href="namespaceeonc.html#a013ccd97822f213f0716e0a81d21b87a">eonc::complementHarmonicFreeEnergy</a></div><div class="ttdeci">double complementHarmonicFreeEnergy(const Eigen::MatrixXd &amp;hessian, const Eigen::MatrixXd &amp;removed, double temperature)</div><div class="ttdoc">Sum of harmonicModeFreeEnergy over the positive eigenvalues on the complement of removed.</div><div class="ttdef"><b>Definition</b> <a href="#l00172">QuantumFreeEnergy.cpp:172</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0e1938c6f5ac1c67a68f39a3edae3d78"><div class="ttname"><a href="namespaceeonc.html#a0e1938c6f5ac1c67a68f39a3edae3d78">eonc::perpendicularHarmonicFreeEnergy</a></div><div class="ttdeci">double perpendicularHarmonicFreeEnergy(const Eigen::MatrixXd &amp;hessian, const Eigen::VectorXd &amp;tangent, double temperature)</div><div class="ttdoc">Sum of harmonicModeFreeEnergy over the positive perpendicular eigenvalues.</div><div class="ttdef"><b>Definition</b> <a href="#l00200">QuantumFreeEnergy.cpp:200</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a5174833620beb2fe246e67972d8fa56e"><div class="ttname"><a href="namespaceeonc.html#a5174833620beb2fe246e67972d8fa56e">eonc::perpendicularEigenvalues</a></div><div class="ttdeci">Eigen::VectorXd perpendicularEigenvalues(const Eigen::MatrixXd &amp;hessian, const Eigen::VectorXd &amp;tangent)</div><div class="ttdoc">Eigenvalues of the mass-weighted Hessian after the tangent direction is removed: one fewer than the H...</div><div class="ttdef"><b>Definition</b> <a href="#l00187">QuantumFreeEnergy.cpp:187</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_ac39276e0968b53c5fa4d689cde2707a5"><div class="ttname"><a href="namespaceeonc.html#ac39276e0968b53c5fa4d689cde2707a5">eonc::quantumFreeEnergies</a></div><div class="ttdeci">std::vector&lt; double &gt; quantumFreeEnergies(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; AtomMatrix &gt; &gt; &amp;tangent, double temperature, const Parameters &amp;params)</div><div class="ttdoc">F(s) = V(s) + the harmonic free energy of the vibrations, one entry per image.</div><div class="ttdef"><b>Definition</b> <a href="#l00216">QuantumFreeEnergy.cpp:216</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adafa5e51b56cd1a0c5361023b2ccc6cb"><div class="ttname"><a href="namespaceeonc.html#adafa5e51b56cd1a0c5361023b2ccc6cb">eonc::harmonicModeFreeEnergy</a></div><div class="ttdeci">double harmonicModeFreeEnergy(double hbarOmegaEv, double temperature)</div><div class="ttdoc">kT ln(2 sinh(beta hbar omega / 2)) in eV.</div><div class="ttdef"><b>Definition</b> <a href="#l00114">QuantumFreeEnergy.cpp:114</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_ae04f3f63b0711057b71f16472e0bbb88"><div class="ttname"><a href="namespaceeonc.html#ae04f3f63b0711057b71f16472e0bbb88">eonc::complementEigenvalues</a></div><div class="ttdeci">Eigen::VectorXd complementEigenvalues(const Eigen::MatrixXd &amp;hessian, const Eigen::MatrixXd &amp;removed)</div><div class="ttdoc">Eigenvalues of the mass-weighted Hessian on the orthogonal complement of the columns of removed,...</div><div class="ttdef"><b>Definition</b> <a href="#l00126">QuantumFreeEnergy.cpp:126</a></div></div>
+<div class="ttc" id="astructeonc_1_1tunneling_1_1RotationZeroModes_html_a1d3c4500a805d1a47c077bf7e60d3e93"><div class="ttname"><a href="structeonc_1_1tunneling_1_1RotationZeroModes.html#a1d3c4500a805d1a47c077bf7e60d3e93">eonc::tunneling::RotationZeroModes::zero</a></div><div class="ttdeci">std::array&lt; bool, 3 &gt; zero</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00599">Tunneling.h:599</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

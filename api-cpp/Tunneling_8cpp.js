@@ -1,16 +1,21 @@
 var Tunneling_8cpp =
 [
     [ "eonc::tunneling::addFrictionBath", "namespaceeonc_1_1tunneling.html#a8d1352ec2e303524525bfc5a6883ed0a", null ],
+    [ "eonc::tunneling::bandLevels", "namespaceeonc_1_1tunneling.html#acaaf29e4b5fa68c33f3150090d1b5566", null ],
+    [ "eonc::tunneling::bandProfile", "namespaceeonc_1_1tunneling.html#adf1fc5b8e161786148a511f43b7ca57a", null ],
     [ "eonc::tunneling::bandSplitting", "namespaceeonc_1_1tunneling.html#a2495523c57566dbd072d73e8a0512d05", null ],
+    [ "eonc::tunneling::bandWalls", "namespaceeonc_1_1tunneling.html#a3847ecad99497fda1f08ed26cda2722a", null ],
     [ "eonc::tunneling::bofillKeepingInertia", "namespaceeonc_1_1tunneling.html#a286d79c463ec76b03bb1e2d49e7dc544", null ],
     [ "eonc::tunneling::closedRingPotential", "namespaceeonc_1_1tunneling.html#a34a098aacb621b005c9bd33dffb2262d", null ],
     [ "eonc::tunneling::crossoverTemperature", "namespaceeonc_1_1tunneling.html#abd56cb2ecb4e0bdf8158c4a290e96a6f", null ],
     [ "eonc::tunneling::cyclicRingLogAbsDet", "namespaceeonc_1_1tunneling.html#a2481aceea7ce1c7469f8d4971cf9a39f", null ],
     [ "eonc::tunneling::cyclicRingSolve", "namespaceeonc_1_1tunneling.html#a2f6918325fd1e6095a1353ed939c1eeb", null ],
+    [ "eonc::tunneling::dvrLevels", "namespaceeonc_1_1tunneling.html#aca4624a053f5076e358fb289cc20438a", null ],
     [ "eonc::tunneling::harmonicTstLogRate", "namespaceeonc_1_1tunneling.html#a9b9a6287ee89bd247a241b07073774b6", null ],
     [ "eonc::tunneling::hbarOmega", "namespaceeonc_1_1tunneling.html#ae0fe7d3746d8e82845cca6153413eb79", null ],
     [ "eonc::tunneling::instantonRate", "namespaceeonc_1_1tunneling.html#a37bb4215a03e27898a872074d229cde5", null ],
     [ "eonc::tunneling::instantonSplitting", "namespaceeonc_1_1tunneling.html#a4656ac9701b42c731f9f7c84a635f57c", null ],
+    [ "eonc::tunneling::logRotationalRatio", "namespaceeonc_1_1tunneling.html#a73124219e5f180a11e9475f027a62187", null ],
     [ "eonc::tunneling::massWeightedDistance", "namespaceeonc_1_1tunneling.html#aa278720cfec81feaf90b3a4db6759257", null ],
     [ "eonc::tunneling::massWeightedPath", "namespaceeonc_1_1tunneling.html#ae97faba8a678294124517dfe33f7223e", null ],
     [ "eonc::tunneling::optimizeInstanton", "namespaceeonc_1_1tunneling.html#af0ee54cc399a779b8b15819aab321aa5", null ],
@@ -22,8 +27,11 @@ var Tunneling_8cpp =
     [ "eonc::tunneling::ringFromPath", "namespaceeonc_1_1tunneling.html#ac78012ce57ddd9afa1f62208984a342c", null ],
     [ "eonc::tunneling::ringSpectrum", "namespaceeonc_1_1tunneling.html#a1089a42ba25794895fbe87015363c185", null ],
     [ "eonc::tunneling::rotationZeroModes", "namespaceeonc_1_1tunneling.html#ae557ba00e3ff17943fe8c4f65ad1aa1d", null ],
+    [ "eonc::tunneling::singleBarrier", "namespaceeonc_1_1tunneling.html#a73cb9eac7e58b11242acca588a05a28b", null ],
     [ "eonc::tunneling::wellCurvature", "namespaceeonc_1_1tunneling.html#aa0aeb8495929af6bf06268578baf07e8", null ],
+    [ "eonc::tunneling::wellFit", "namespaceeonc_1_1tunneling.html#accbdff278abb20edc119a1c646de8489", null ],
     [ "eonc::tunneling::wkbAction", "namespaceeonc_1_1tunneling.html#a39200e7272b41f1e43249b8248aa9931", null ],
     [ "eonc::tunneling::wkbLogRateAlongPath", "namespaceeonc_1_1tunneling.html#acaab88438127f267c951cd93e89ced78", null ],
-    [ "eonc::tunneling::wkbSplitting", "namespaceeonc_1_1tunneling.html#a9859c2618af08b80c94e154595dfea7d", null ]
+    [ "eonc::tunneling::wkbSplitting", "namespaceeonc_1_1tunneling.html#a9859c2618af08b80c94e154595dfea7d", null ],
+    [ "eonc::tunneling::zeroPointDifference", "namespaceeonc_1_1tunneling.html#a17cfc6419320d8b3ad88acb7efeac72f", null ]
 ];
