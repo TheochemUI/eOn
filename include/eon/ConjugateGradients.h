@@ -17,6 +17,8 @@
 #include "Optimizer.h"
 #include "Parameters.h"
 
+#include <vector>
+
 namespace eonc {
 
 /**
@@ -49,7 +51,9 @@ public:
         m_directionOld{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
         m_directionNorm{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
         m_force{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
-        m_forceOld{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())} {}
+        m_forceOld{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
+        m_secantPos{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
+        m_secantDir{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())} {}
   //! Conjugant Gradient deconstructor
   ~ConjugateGradients() = default;
 
@@ -79,6 +83,21 @@ private:
   Eigen::VectorXd m_force;
   //! Previous force vector
   Eigen::VectorXd m_forceOld;
+  //! Geometry and projected force of the last real step. The next step
+  //! length is the secant curvature of that step, so the line search does
+  //! not spend a finite-difference probe.
+  Eigen::VectorXd m_secantPos;
+  Eigen::VectorXd m_secantDir;
+  double m_secantProj{0.0};
+  bool m_haveSecant{false};
+  Eigen::VectorXd m_secantForce;
+  // Per-atom secant curvature (eV/A^2). Soft atoms can take a longer
+  // step than the stiffest mode along the search direction.
+  std::vector<double> m_atomCurv;
+  // Trust region for the secant step. A step that raised the force is
+  // not reused at full length.
+  double m_lastMotion{0.0};
+  double m_lastForceNorm{0.0};
   eonc::log::FileScoped m_log{"cg", "_cg.log"};
 
   //! Counts the number of discrete steps until algorithm convergence
