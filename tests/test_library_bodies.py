@@ -752,7 +752,7 @@ def test_table_poscar_atoms_and_small_helpers(tmp_path):
 
     lock = LockFile(lock_path)
     assert lock.islocked() is False
-    assert lock.aquirelock() is True
+    assert lock.acquirelock() is True
     assert lock.islocked() is True
     lock.removelock()
 

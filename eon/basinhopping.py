@@ -248,7 +248,7 @@ def main(config: ConfigClass = None):
 
     lock = locking.LockFile(str(Path(config.path_results) / "lockfile"))
 
-    if lock.aquirelock():
+    if lock.acquirelock():
         if config.comm_type == 'mpi':
             from eon.mpiwait import mpiwait
             while True:

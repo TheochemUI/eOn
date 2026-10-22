@@ -641,7 +641,7 @@ def main(config: ConfigClass = None):
             print("Not restarting")
             sys.exit(1)
 
-    if lock.aquirelock():
+    if lock.acquirelock():
         if options.continuous or config.comm_type == 'mpi':
             # define a wait method.
             if config.comm_type == 'mpi':

@@ -31,7 +31,8 @@ driver holds an exclusive flock for the life of the run, so a reused
 process id is not treated as the owner.
 
 `LockFile.acquirelock` takes the lock. `aquirelock` is the previous
-spelling and still calls `acquirelock`.
+spelling and still calls `acquirelock`. The akmc, basin hopping,
+parallel replica, and escape rate drivers call `acquirelock`.
 
 ```{note}
 From 2.0 on, prefer a workflow manager over eOn-generated submit
