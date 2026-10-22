@@ -416,34 +416,32 @@ class ServerMinModeExplorer(MinModeExplorer):
         MinModeExplorer.__init__(self, states, previous_state, state, superbasin, config=config)
 
     def save(self):
-        f = open("explorer.pickle", "wb")
         d = self.__dict__.copy()
         del d['states']
         del d['previous_state']
         del d['state']
         del d['comm']
-        pickle.dump(d, f, pickle.HIGHEST_PROTOCOL)
-        f.close()
+        with io.atomic_write("explorer.pickle", mode="wb") as f:
+            pickle.dump(d, f, pickle.HIGHEST_PROTOCOL)
 
-        f = open("searches.log", 'w')
-        f.write("%9s %13s %11s %10s\n" % ("search_id", "job_type", "status", "job_name"))
-        for search_id in self.job_info:
-            fmt = "%9i %13s %11s %10s\n"
-            lines = {'saddle_search':None, 'min1':None, 'min2':None}
-            for name, job in list(self.job_info[search_id].items()):
-                lines[job['type']] = fmt % (search_id, job['type'], job['status'], name)
+        with io.atomic_write("searches.log") as f:
+            f.write("%9s %13s %11s %10s\n" % ("search_id", "job_type", "status", "job_name"))
+            for search_id in self.job_info:
+                fmt = "%9i %13s %11s %10s\n"
+                lines = {'saddle_search':None, 'min1':None, 'min2':None}
+                for name, job in list(self.job_info[search_id].items()):
+                    lines[job['type']] = fmt % (search_id, job['type'], job['status'], name)
 
-            if lines['saddle_search']:
-                f.write(lines['saddle_search'])
-            if lines['min1']:
-                f.write(lines['min1'])
-            else:
-                f.write(fmt % (search_id, 'min1', 'not_running', ''))
-            if lines['min2']:
-                f.write(lines['min2'])
-            else:
-                f.write(fmt % (search_id, 'min2', 'not_running', ''))
-        f.close()
+                if lines['saddle_search']:
+                    f.write(lines['saddle_search'])
+                if lines['min1']:
+                    f.write(lines['min1'])
+                else:
+                    f.write(fmt % (search_id, 'min1', 'not_running', ''))
+                if lines['min2']:
+                    f.write(lines['min2'])
+                else:
+                    f.write(fmt % (search_id, 'min2', 'not_running', ''))
 
     def explore(self):
         Path(self.config.path_jobs_in).mkdir(parents=True, exist_ok=True)
