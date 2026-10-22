@@ -385,6 +385,34 @@ TEST_CASE("Mild mode curvature yields to the effective-force probe",
   REQUIRE(calls == 4);
 }
 
+TEST_CASE("Mild mode keeps the known-curvature scale under max_move",
+          "[ImprovedDimer][lbfgs]") {
+  // The mode scale is mild (|C_tau| = 2). r2549 keeps that scale even
+  // when the uncapped step is longer than max_move.
+  Parameters parameters;
+  prepareMinMode(parameters);
+  const Eigen::Vector3d r0(0.01, 0.05, 0.05);
+  const Eigen::Vector3d tau(1.0, 0.0, 0.0);
+  const Eigen::Vector3d feff(-2.0 * r0.x(), -50.0 * r0.y(), -50.0 * r0.z());
+  const Eigen::Vector3d fhat = feff.normalized();
+
+  auto pot = std::make_shared<DiagHessianPot>(-2.0, 50.0, 50.0);
+  auto matter = oneAtom(pot, parameters, r0);
+  AtomMatrix mode(1, 3);
+  mode.row(0) = tau.transpose();
+  const long before = static_cast<long>(pot->forceCallCounter.load());
+  eonc::MinModeSaddleSearch search(matter, mode, 0.0, parameters, pot);
+  const int status = search.run(1);
+  const long calls = static_cast<long>(pot->forceCallCounter.load()) - before;
+  const Eigen::Vector3d step = matter->getPositions().row(0).transpose() - r0;
+  INFO("status " << status << " force calls " << calls << " step "
+                 << step.norm());
+  REQUIRE(step.norm() == Catch::Approx(0.2).margin(1e-8));
+  REQUIRE(step.normalized().dot(fhat) == Catch::Approx(1.0).margin(1e-6));
+  // Centre, forward image, and accepted step.
+  REQUIRE(calls == 3);
+}
+
 // Saddle along x, with a wall on the far side of the saddle. A long
 // steepest-descent step crosses the wall. max_energy stays 20.
 class FarWallPot final : public eonc::Potential {
