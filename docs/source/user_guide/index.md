@@ -45,7 +45,8 @@ aiida
 Each of the sections and methods may still be included in a configuration file
 with the appropriate section header (used by the `eonclient` binary, the AKMC
 server, and optional workdir helpers). Boolean values may be written `true`,
-`false`, `1`, `0`, `T`, `t`, `F`, or `f`.
+`false`, `1`, `0`, `T`, `t`, `F`, or `f`. Server-side process search without a
+default prefactor, or with a bundle size other than 1, exits with status 1.
 
 ## Overview
 
