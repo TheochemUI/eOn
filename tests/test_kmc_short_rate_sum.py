@@ -91,7 +91,7 @@ def test_short_rate_sum_still_steps(tmp_path, monkeypatch):
     state0 = _State(0, procs)
     state1 = _State(1, {})
     cfg = _config(tmp_path)
-    current, _previous, time, steps = kmc_step(
+    landed, _previous, time, steps = kmc_step(
         state0,
         _States({0: state0, 1: state1}),
         0.0,
@@ -101,4 +101,4 @@ def test_short_rate_sum_still_steps(tmp_path, monkeypatch):
     )
     assert steps == 1
     assert time > 0.0
-    assert current.number == 1
+    assert landed.number == 1
