@@ -34,6 +34,9 @@ searches in the region around the atoms that moved significantly from state
 computational costs. If this region is local, the overall cost does not
 increase with the total system size.
 
+A process id of zero is a real exit. Superbasin recycling can select
+it when it is the fastest process from the basin into the new state.
+
 ## Configuration
 
 ```{code-block} ini
