@@ -146,7 +146,13 @@ class ASKMC:
         mod_proctable_path = Path(current_state.path) / "askmc_processtable"
         if not mod_proctable_path.is_file():
             return {}
-        lines = mod_proctable_path.read_text().splitlines()
+        lines = io.DurableTable(
+            mod_proctable_path,
+            header_lines=1,
+            min_fields=9,
+            exact=True,
+            label="modified process table %s" % mod_proctable_path,
+        ).lines()
         procs = {}
         for l in lines[1:]:
             l = l.strip().split()
@@ -178,12 +184,20 @@ class ASKMC:
                                              proc['view_count']))
 
     def append_modified_process_table(self, current_state, process_id, saddle_energy, prefactor, product, product_energy, product_prefactor, barrier, rate, view_count):
-        """ Append a single line to the modified process table on disk. """
+        """Append one modified-process row, then flush and sync it.
+
+        A torn final line is cut off first.
+        """
         mod_proctable_path = Path(current_state.path) / "askmc_processtable"
         if not mod_proctable_path.is_file():
             self.save_modified_process_table(current_state, {})
-        with mod_proctable_path.open("a") as fo:
-            fo.write(processtable_line % (process_id, saddle_energy, prefactor, product, product_energy, product_prefactor, barrier, rate, view_count))
+        line = processtable_line % (
+            process_id, saddle_energy, prefactor, product, product_energy,
+            product_prefactor, barrier, rate, view_count,
+        )
+        io.DurableTable(
+            mod_proctable_path, header_lines=1, min_fields=9, exact=True
+        ).append(line)
 
     def get_process_id(self, current_state_procs, next_state_num, flag):
         """ Return the process id of the process going from the current state
