@@ -528,9 +528,13 @@ class AKMCState(state.State):
         """
         if self.procs is not None and not force:
             return
-        f = open(self.proctable_path)
-        lines = f.readlines()
-        f.close()
+        lines = io.DurableTable(
+            self.proctable_path,
+            header_lines=1,
+            min_fields=9,
+            exact=True,
+            label="State %s processtable" % self.number,
+        ).lines()
         self.procs = {}
         n_rows = 0
         for l in lines[1:]:
@@ -624,8 +628,11 @@ class AKMCState(state.State):
 
     def append_process_table(self, id, saddle_energy, prefactor, product, product_energy,
                              product_prefactor, barrier, rate, repeats):
-        """ Append to the process table.  Append a single line to the process table file.  If we
-            have loaded the process table, also append it to the process table in memory. """
+        """Append one line to the process table and to the in-memory copy.
+
+        A torn final line is cut off first. The new line is written
+        once, then flushed and synced.
+        """
         self.load_process_table(force=True)
         if id in self.procs:
             raise RuntimeError(
@@ -633,10 +640,11 @@ class AKMCState(state.State):
                 "use allocate_process_id() for a content-addressed free id"
                 % (id, self.number)
             )
-        f = open(self.proctable_path, 'a')
-        f.write(self.processtable_line % (id, saddle_energy, prefactor, product, product_energy,
-                                          product_prefactor, barrier, rate, repeats))
-        f.close()
+        line = self.processtable_line % (id, saddle_energy, prefactor, product, product_energy,
+                                          product_prefactor, barrier, rate, repeats)
+        io.DurableTable(
+            self.proctable_path, header_lines=1, min_fields=9, exact=True
+        ).append(line)
         self.procs[id] = {"saddle_energy":    saddle_energy,
                           "prefactor":        prefactor,
                           "product":          product,
