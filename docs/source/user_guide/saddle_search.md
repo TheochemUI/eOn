@@ -112,7 +112,8 @@ default `meson setup`.
 ## Output
 
 The saddle search writes:
-- `saddle.con`: the saddle point structure
+- `saddle.con`: the saddle point structure. A `.con` rewrite replaces the
+  file in one step, so a failed write leaves the previous file.
 - `mode.dat`: eigenvector at the saddle (Nx3 whitespace-separated)
 - `results.dat`: energy, force calls, convergence status, eigenvalue
 
