@@ -325,7 +325,11 @@ class Communicator:
         chunks = [ data[i:i+self.bundle_size] for i in range(0, len(data), self.bundle_size) ]
         for chunk in chunks:
             job_path = Path(self.scratchpath) / chunk[0]["id"]
-            job_path.mkdir()
+            if job_path.is_dir():
+                shutil.rmtree(job_path)
+            elif job_path.exists():
+                job_path.unlink()
+            job_path.mkdir(parents=True, exist_ok=True)
 
             for filename, (file_contents, file_permissions) in invariants.items():
                 dest = job_path / filename
