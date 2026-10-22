@@ -40,6 +40,9 @@ leaves the previous file.
 A process id of zero is a real exit. Superbasin recycling can select
 it when it is the fastest process from the basin into the new state.
 
+Superbasin recycling reads the coarse-graining scheme name `mcamc`
+when it decides whether the state just left a superbasin.
+
 ## Configuration
 
 ```{code-block} ini
