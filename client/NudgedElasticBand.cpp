@@ -33,9 +33,11 @@
 
 #include "ForEachImage.h"
 #include "eon/EonLogger.h"
+#include <algorithm>
 #include <cmath>
 #include <exception>
 #include <format>
+#include <limits>
 #include <memory>
 #include <mutex>
 #include <stdexcept>
@@ -333,6 +335,15 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
   long zoomAt{-1};
   // Activation uses the stepping projection; acceptance uses configured CI.
   double activation_force{0.0};
+  // Conjugate gradient has no curvature history to damp a bad step.
+  // A jump in the band force shortens the next CG step, and a stall
+  // drops the search direction. LBFGS keeps the configured length:
+  // shortening it here left bands short of the cap.
+  const double moveBase = params.optimizer_options().max_move;
+  const bool adaptCg = params.neb_options().opt_method == OptType::CG;
+  double moveNow = moveBase;
+  double bestForce = std::numeric_limits<double>::infinity();
+  int stall = 0;
 
   while (this->status != NEBStatus::GOOD) {
     if (!path.empty()) {
@@ -554,7 +565,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
 
 #ifdef WITH_RGSADDLE
       if (rustBand) {
-        rustBand->step(params.optimizer_options().max_move);
+        rustBand->step(moveNow);
       } else
 #endif
       {
@@ -571,10 +582,42 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
                          magic_enum::enum_name<OptType>(
                              params.optimizer_options().refine.method));
         }
-        activeOptim->step(params.optimizer_options().max_move);
+        activeOptim->step(moveNow);
       }
 
       activation_force = convergenceForce();
+      if (adaptCg && activation_force < bestForce * 0.98) {
+        bestForce = activation_force;
+        stall = 0;
+        if (moveNow < moveBase && convForce > 0.0 &&
+            activation_force < 0.8 * convForce) {
+          moveNow = std::min(moveBase, moveNow * 1.5);
+        }
+      } else if (adaptCg) {
+        ++stall;
+        if (convForce > 0.0 && activation_force > 2.0 * convForce) {
+          moveNow = std::max(moveNow * 0.5, moveBase * 0.2);
+        }
+        if (stall >= 12) {
+          moveNow = std::max(moveBase * 0.2, moveNow * 0.5);
+          stall = 0;
+#ifdef WITH_RGSADDLE
+          if (rustBand) {
+            rustBand->reset();
+          } else
+#endif
+          {
+            optim = eonc::helpers::create::mkOptim(
+                objf, params.neb_options().opt_method, params);
+            if (refine_optim) {
+              refine_optim = eonc::helpers::create::mkOptim(
+                  objf, params.optimizer_options().refine.method, params);
+            }
+          }
+          QUILL_LOG_DEBUG(log, "Band stalled; reset optimizer, step {:.4e}",
+                          moveNow);
+        }
+      }
       setCIEnabled(params.neb_options().climbing_image.enabled);
     }
 

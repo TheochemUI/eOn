@@ -46,6 +46,9 @@ public:
   // the centre, and a batching mode solver's first displaced image
   // with it, so a following getGradient() still uses that image.
   virtual bool pastClimbCeiling() { return false; }
+  // The band reuses the previous displacement as a secant. A minimizer
+  // and a dimer translation keep a finite-difference probe each step.
+  virtual bool reuseDisplacementCurvature() const { return false; }
   // A curvature the objective already knows (eV / A^2, magnitude), so
   // L-BFGS can seed H0 from it instead of spending a force call on the
   // finite-difference probe. Empty when nothing is known.
