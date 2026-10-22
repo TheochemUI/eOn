@@ -29,6 +29,12 @@ kelvin. A temperature or `kB` that is not positive rejects the uphill hop.
 Other hops are accepted. `quenching_steps` reject an uphill hop and skip
 the factor.
 
+## State directories
+
+Registering a minimum creates `states/<n>/`. If that directory is already
+present, the minimum is written into it. A second pass does not raise
+`FileExistsError`.
+
 ## Notes
 
 - `eOn` defaults to letting displacements occur from minimized structures as per

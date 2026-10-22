@@ -73,7 +73,10 @@ class BHStates:
             self.energy_table.write()
 
             state_path = Path(self.config.path_states) / str(state_number)
-            state_path.mkdir()
+            # A crash, or a second writer, may have created this directory
+            # before the geometry landed. mkdir without exist_ok then
+            # raises and the minimum is never stored.
+            state_path.mkdir(exist_ok=True)
 
             result_files['minimum.con'] = result_files['min.con']
             del result_files['min.con']

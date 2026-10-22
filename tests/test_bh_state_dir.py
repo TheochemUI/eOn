@@ -45,5 +45,5 @@ def test_existing_state_directory_receives_the_minimum(tmp_path):
     io.savecon(buf, atoms)
     buf.seek(0)
     assert states.add_state({"min.con": buf}, {"minimum_energy": -1.25}) is True
-    loaded = io.loadcon(state_dir / "minimum.con")
+    loaded = io.loadcon(str(state_dir / "minimum.con"))
     assert np.allclose(loaded.r, atoms.r)
