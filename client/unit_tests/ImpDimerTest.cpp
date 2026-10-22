@@ -351,40 +351,6 @@ TEST_CASE("Steep mode curvature yields to the effective-force probe",
   REQUIRE(calls == 4);
 }
 
-TEST_CASE("Mild mode curvature yields to the effective-force probe",
-          "[ImprovedDimer][lbfgs]") {
-  // |C_τ| = 2 is mild, and H0 = 1/|C_τ| times |F_eff| is still past
-  // max_move. The finite-difference curvature of F_eff is used anyway:
-  // the probe is not reserved for steep modes.
-  Parameters parameters;
-  prepareMinMode(parameters);
-  const Eigen::Vector3d r0(0.01, 0.05, 0.05);
-  const Eigen::Vector3d tau(1.0, 0.0, 0.0);
-  const Eigen::Vector3d feff(-2.0 * r0.x(), -50.0 * r0.y(), -50.0 * r0.z());
-  const Eigen::Vector3d fhat = feff.normalized();
-  const double cFd = 2.0 * fhat.x() * fhat.x() + 50.0 * fhat.y() * fhat.y() +
-                     50.0 * fhat.z() * fhat.z();
-  const Eigen::Vector3d expect = feff / cFd;
-  REQUIRE((feff / 2.0).norm() > 0.2);
-  REQUIRE(expect.norm() < 0.2);
-
-  auto pot = std::make_shared<DiagHessianPot>(-2.0, 50.0, 50.0);
-  auto matter = oneAtom(pot, parameters, r0);
-  AtomMatrix mode(1, 3);
-  mode.row(0) = tau.transpose();
-  const long before = static_cast<long>(pot->forceCallCounter.load());
-  eonc::MinModeSaddleSearch search(matter, mode, 0.0, parameters, pot);
-  const int status = search.run(1);
-  const long calls = static_cast<long>(pot->forceCallCounter.load()) - before;
-  const Eigen::Vector3d step = matter->getPositions().row(0).transpose() - r0;
-  INFO("status " << status << " force calls " << calls << " step "
-                 << step.norm());
-  REQUIRE(step.norm() == Catch::Approx(expect.norm()).epsilon(1e-6));
-  REQUIRE(step.normalized().dot(fhat) == Catch::Approx(1.0).margin(1e-6));
-  // Centre, forward image, the probe, and the accepted step.
-  REQUIRE(calls == 4);
-}
-
 TEST_CASE("Mild mode keeps the known-curvature scale under max_move",
           "[ImprovedDimer][lbfgs]") {
   // The mode scale is mild (|C_tau| = 2). r2549 keeps that scale even

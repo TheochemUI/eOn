@@ -105,12 +105,19 @@ public:
 
   ~MinModeObjectiveFunction() override = default;
 
-  // |C_tau| is the curvature of the potential along the mode. The
-  // translated force is F - 2 (F·tau) tau, and the curvature of that
-  // force is not |C_tau|. Reporting the mode scale as H0 takes a first
-  // step the finite-difference probe of F_eff would not, including
-  // when that step is shorter than max_move.
-  std::optional<double> knownCurvature() const override { return std::nullopt; }
+  // The lowest mode's curvature, once the mode is known and negative.
+  // L-BFGS keeps this scale when the capped step is still in-family for
+  // mild modes, and probes F_eff for steep modes that would overrun.
+  std::optional<double> knownCurvature() const override {
+    if (iteration == 0 || !minModeMethod) {
+      return std::nullopt;
+    }
+    const double c = eonc::eigenmodeGetEigenvalue(*minModeMethod);
+    if (!std::isfinite(c) || c >= 0.0) {
+      return std::nullopt;
+    }
+    return -c;
+  }
 
   // The translation force has its component along the mode reversed, so
   // the search climbs the potential energy that getEnergy() returns.

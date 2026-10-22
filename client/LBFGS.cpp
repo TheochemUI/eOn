@@ -210,10 +210,12 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
       m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale
           ? m_objf->knownCurvature()
           : std::nullopt;
-  // A reported curvature is the curvature of this objective's gradient.
-  // |C_tau| is not that number for a min-mode search, so min-mode does
-  // not report it. When a reported scale already asks for more than
-  // max_move, the cap would choose the length and the probe below runs.
+  // |C_tau| is the mode scale. The translated force on a negative mode is
+  // F - 2 (F·tau) tau. When |C_tau| is steep and H0 = 1/|C_tau| already
+  // asks for more than max_move, the cap chooses the length and the first
+  // step leaves the basin r2549 finds with one finite-difference probe of
+  // F_eff. A milder mode keeps the capped |C_tau| step.
+  constexpr double kSteepMode = 30.0;
   bool knownFits = false;
   if (known && std::isfinite(*known) && *known > 0.0) {
     double hKnown = 1.0 / *known;
@@ -221,7 +223,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
       hKnown = std::min(hKnown, m_optConfig.opts.lbfgs.max_inverse_curvature);
     }
     const double knownMotion = eonc::geometry::maxAtomMotionV(hKnown * f);
-    if (knownMotion < a_maxMove) {
+    if (knownMotion < a_maxMove || *known < kSteepMode) {
       H0 = hKnown;
       knownFits = true;
       QUILL_LOG_DEBUG(m_log, "[LBFGS] H0={:.4e} (known curvature)", H0);
