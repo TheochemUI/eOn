@@ -196,6 +196,33 @@ def get_superbasin_scheme(states, config):
     return superbasining
 
 
+# Summing normalized rates can stop this far short of 1. A draw inside
+# the gap still belongs to the last process. ``random_sample`` is
+# half-open at 1, so a draw of 1 is outside the gap.
+_RATE_SUM_ULPS = 4
+
+
+def _draw_in_rounding_gap(draw, total):
+    """True when *draw* sits a few ulps past *total* and below 1.
+
+    ``np.random.random_sample`` draws from [0, 1). The running sum of
+    normalized rates can stop a few ulps short of 1, and a draw in that
+    gap still belongs to the last process. A draw of 1, or a draw well
+    past the sum, is a real mismatch.
+    """
+    draw = float(draw)
+    total = float(total)
+    if not (math.isfinite(draw) and math.isfinite(total)):
+        return False
+    if not (0.0 <= draw < 1.0):
+        return False
+    gap = draw - total
+    if gap < 0.0:
+        return False
+    allowance = _RATE_SUM_ULPS * math.ulp(max(abs(total), 1.0))
+    return gap <= allowance
+
+
 def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: ConfigClass = None):
     if config is None:
         raise TypeError("kmc_step requires a ConfigClass instance")
@@ -348,11 +375,15 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
                         nsid = i
                         break
                 else:
-                    logger.warning("Warning: Failed to select rate; p = " + str(p))
-                    # The counter moved before the draw. No row was taken,
-                    # so this attempt is not a step.
-                    steps -= 1
-                    break
+                    if rate_table and _draw_in_rounding_gap(u, p):
+                        # The running sum stopped a few ulps short of the draw.
+                        nsid = len(rate_table) - 1
+                    else:
+                        logger.warning("Warning: Failed to select rate; p = " + str(p))
+                        # The counter moved before the draw. No row was taken,
+                        # so this attempt is not a step.
+                        steps -= 1
+                        break
 
             next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
             mean_time = 1.0/ratesum
