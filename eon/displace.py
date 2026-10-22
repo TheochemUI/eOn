@@ -225,8 +225,10 @@ class Displace:
         self.radius = radius
         self.hole_epicenters = hole_epicenters
 
-        # ## mike w.
-        self.void_bias_fraction = 0.2  # self.config.void_bias_fraction
+        # Schema default is 0. A partial config object omits the field.
+        self.void_bias_fraction = float(
+            getattr(self.config, "void_bias_fraction", 0.0)
+        )
 
         # temporary numpy array of same size as self.reactant.r
         self.temp_array = np.zeros(self.reactant.r.shape)
