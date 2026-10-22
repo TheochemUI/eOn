@@ -35,12 +35,12 @@ def test_mcamc_records_the_exited_basin(tmp_path, monkeypatch):
     )
     previous = _State(0, {1: {"product": 4, "rate": 3.0}})
     other = _State(2, {1: {"product": 9, "rate": 1.0}})
-    current = _State(4)
+    arrived = _State(4)
     recycler = SB_Recycling(
-        states=SimpleNamespace(),
-        previous_state=previous,
-        current_state=current,
-        move_distance=0.5,
+        SimpleNamespace(),
+        previous,
+        arrived,
+        0.5,
         recycle_save=False,
         path=str(tmp_path / "recycle"),
         sb_scheme="mcamc",
