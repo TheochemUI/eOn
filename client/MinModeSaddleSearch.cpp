@@ -11,6 +11,7 @@
 */
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/ConjugateGradients.h"
+#include "eon/Dimer.h"
 #include "eon/EigenmodeStrategy.h"
 #include "eon/EonLogger.h"
 #include "eon/EpiCenters.h"
@@ -105,11 +106,22 @@ public:
 
   ~MinModeObjectiveFunction() override = default;
 
-  // The lowest mode's curvature, once the mode is known and negative.
-  // L-BFGS keeps this scale when the capped step is still in-family for
-  // mild modes, and probes F_eff for steep modes that would overrun.
+  // |C_tau| is the curvature of the potential along the mode. The
+  // translated force is F - 2 (F·tau) tau, and that force has a
+  // different curvature. Improved dimer and Lanczos do not report the
+  // mode scale, so their first L-BFGS step measures F_eff. That probe
+  // is what the LJ13 and Pt heptamer force-call counts follow.
+  //
+  // The classic dimer (improved = false) is the adatom AKMC catalogue
+  // path. It reports the negative mode curvature. L-BFGS keeps the
+  // capped scale for a mild mode whose uncapped step exceeds max_move,
+  // and probes F_eff for a steep overrun.
   std::optional<double> knownCurvature() const override {
     if (iteration == 0 || !minModeMethod) {
+      return std::nullopt;
+    }
+    // ImprovedDimer is a sibling of Dimer, not a subclass.
+    if (dynamic_cast<Dimer *>(minModeMethod.get()) == nullptr) {
       return std::nullopt;
     }
     const double c = eonc::eigenmodeGetEigenvalue(*minModeMethod);

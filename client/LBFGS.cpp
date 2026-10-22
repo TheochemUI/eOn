@@ -210,11 +210,13 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
       m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale
           ? m_objf->knownCurvature()
           : std::nullopt;
-  // |C_tau| is the mode scale. The translated force on a negative mode is
-  // F - 2 (F·tau) tau. When |C_tau| is steep and H0 = 1/|C_tau| already
-  // asks for more than max_move, the cap chooses the length and the first
-  // step leaves the basin r2549 finds with one finite-difference probe of
-  // F_eff. A milder mode keeps the capped |C_tau| step.
+  // A reported curvature is the classic dimer's |C_tau|. The translated
+  // force on a negative mode is F - 2 (F·tau) tau. When |C_tau| is steep
+  // and H0 = 1/|C_tau| already asks for more than max_move, the cap
+  // chooses the length and the first step leaves the basin r2549 finds
+  // with one finite-difference probe of F_eff. A milder mode keeps the
+  // capped |C_tau| step. Improved dimer and Lanczos report nothing, so
+  // they take that probe on every first step.
   constexpr double kSteepMode = 30.0;
   bool knownFits = false;
   if (known && std::isfinite(*known) && *known > 0.0) {
