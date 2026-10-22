@@ -35,20 +35,20 @@ def test_process_id_zero_is_the_fastest_exit(tmp_path, monkeypatch):
     )
     fast = _State(0, {0: {"product": 4, "rate": 10.0}})
     slow = _State(1, {5: {"product": 4, "rate": 1.0}})
-    current = _State(4)
+    arrived = _State(4)
     recycler = SB_Recycling(
-        states=SimpleNamespace(),
-        previous_state=slow,
-        current_state=current,
-        move_distance=0.5,
-        recycle_save=False,
-        path=str(tmp_path / "recycle"),
-        sb_scheme="mcacm",
-        superbasining=_Scheme(_Basin([slow, fast])),
+        SimpleNamespace(),
+        slow,
+        arrived,
+        0.5,
+        False,
+        str(tmp_path / "recycle"),
+        "mcacm",
+        _Scheme(_Basin([slow, fast])),
     )
     chosen = {
         pair[0]: pair[1]
         for pair in recycler.sb_state_nums
     }
-    assert chosen[fast.number] == current.number
+    assert chosen[fast.number] == arrived.number
     assert chosen[slow.number] is None
