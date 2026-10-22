@@ -57,7 +57,9 @@ The server is reponsible for the time evolution of the system by the KMC
 algorithm. Each process leading to a new state is tabulated in a rate table and
 one transition is selected stochastically with a probability proportional to its
 rate. The transition time is drawn from a first-order distribution for the total
-rate of escape from the state.
+rate of escape from the state. If the states directory already exists and
+`state_table` is missing, the server creates an empty table before it counts
+states.
 
 A complete tutorial is [also provided](project:../tutorials/akmc.md).
 

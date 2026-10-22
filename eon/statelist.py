@@ -2,6 +2,7 @@
 """ The statelist module. """
 
 import logging
+import os
 from pathlib import Path
 
 from eon import atoms
@@ -27,15 +28,24 @@ class StateList:
         self.use_identical = self.config.comp_use_identical
         self.StateClass = StateClass
 
-        # Paths
+        # Create the statelist directory and an empty table when either is
+        # missing. A crash between the two leaves a directory that must
+        # still resume.
         root = Path(self.path)
         self.state_table_path = str(root / "state_table")
-
-        # Create the statelist directory if it does not exist.
         if not root.is_dir():
             logger.warning("State list path does not exist; Creating: %s" % self.path)
-            root.mkdir(parents=True)
-            Path(self.state_table_path).write_text("")
+        root.mkdir(parents=True, exist_ok=True)
+        try:
+            fd = os.open(
+                self.state_table_path,
+                os.O_CREAT | os.O_EXCL | os.O_WRONLY,
+                0o644,
+            )
+        except FileExistsError:
+            pass
+        else:
+            os.close(fd)
 
         # Create the zero state directory if it does not exist.
         if not (root / "0").is_dir():
