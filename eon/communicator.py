@@ -50,6 +50,22 @@ def sort_nicely(l):
     l.sort(key=alphanum_key)
 
 
+def replace_result_dir(src, dest):
+    """Move a finished job directory onto dest.
+
+    shutil.move into a directory that already exists nests the job
+    inside it. A harvest that runs again has to replace that directory.
+    """
+    src = Path(src)
+    dest = Path(dest)
+    if dest.is_dir():
+        shutil.rmtree(dest)
+    elif dest.exists():
+        dest.unlink()
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.move(str(src), str(dest))
+
+
 # MPI may only be constructed once per process; non-MPI communicators are
 # cached per ConfigClass instance so dual-config / tests do not cross-wire.
 _mpi_communicator = None
@@ -432,7 +448,7 @@ class MPI(Communicator):
                     Path(self.config.path_root) / self.config.debug_results_path / jobdir,
                 )
             dest_dir = Path(resultspath) / jobdir
-            shutil.move(str(Path(self.scratchpath) / jobdir), str(dest_dir))
+            replace_result_dir(Path(self.scratchpath) / jobdir, dest_dir)
         for bundle in self.unbundle(resultspath, keep_result):
             for result in bundle:
                 yield result
@@ -535,7 +551,7 @@ class Local(Communicator):
                     Path(self.config.path_root) / self.config.debug_results_path / jobdir,
                 )
             dest_dir = Path(resultspath) / jobdir
-            shutil.move(str(scratch / jobdir), str(dest_dir))
+            replace_result_dir(scratch / jobdir, dest_dir)
         for bundle in self.unbundle(resultspath, keep_result):
             for result in bundle:
                 yield result
@@ -690,7 +706,7 @@ class Script(Communicator):
                     Path(self.config.path_root) / self.config.debug_results_path / jobdir,
                 )
             dest_dir = Path(resultspath) / jobdir
-            shutil.move(str(scratch / jobdir), str(dest_dir))
+            replace_result_dir(scratch / jobdir, dest_dir)
 
         for bundle in self.unbundle(resultspath, keep_result):
             for result in bundle:

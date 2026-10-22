@@ -176,3 +176,8 @@ starts them from its wrapper inside the job (`srun -n 48 cpmd.x ...`); the
 client itself stays one process. When a state reaches its confidence the
 server cancels only the jobs still queued. Jobs that already finished are
 harvested on the next pass and filtered by state.
+
+A finished job is moved onto its result directory. When that directory
+is already there, from a harvest that died before the directory was
+replaced, it is removed first. Moving into the existing directory would
+nest the job and leave the stale `results.dat` in place.
