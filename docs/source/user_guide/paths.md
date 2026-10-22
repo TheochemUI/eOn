@@ -14,6 +14,9 @@ For standalone client usage (the common case), the default paths are sufficient
 and this section can be left unconfigured.
 ```
 
+When `main_directory` does not exist yet, it is not this working directory.
+The confirmation prompt still runs.
+
 ## Configuration
 
 ```{code-block} ini
