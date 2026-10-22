@@ -86,6 +86,11 @@ minimum-image `(next - prev) / 2`. A bead that has crossed a periodic
 face takes the short step. The acceptance test is on the
 [basin hopping](project:basin_hopping.md) page.
 
+For min-mode searches translated with L-BFGS, the first translation step keeps
+the mode-curvature scale on mild negative modes, then applies `max_move` as the
+cap. Steep negative modes that would overrun that cap still use the finite-
+difference effective-force probe for the first scaling step.
+
 ## Configuration
 
 ```{code-block} ini
