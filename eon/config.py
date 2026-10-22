@@ -212,7 +212,11 @@ class ConfigClass:
 
         # Rye-requested check
         # Should we have some kind of sanity-check module/function somewhere?
-        if not gave_config and not Path(self.path_root).samefile(Path.cwd()):
+        try:
+            root_is_here = Path(self.path_root).samefile(Path.cwd())
+        except OSError:
+            root_is_here = False
+        if not gave_config and not root_is_here:
             res = input("The config.ini file in the current directory does not point to the current directory. Are you sure you want to continue? (y/N) ").lower()
             if len(res)>0 and res[0] == 'y':
                 pass
