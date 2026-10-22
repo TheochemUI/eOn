@@ -47,8 +47,9 @@ drawn from a Gaussian distribution with standard deviation
 ### Displacing all listed atoms
 
 When `displace_all_listed` is **true** and a listed-atom strategy is selected,
-*every* atom in `displace_atom_list` (or `displace_type_list`) is displaced,
-not a single random pick. Atoms within `displace_radius` of *any*
+*every* atom in `displace_atom_list` or `displace_type_list` is displaced,
+not a single random pick. The server passes the flag into both the atom
+list and the type list. Atoms within `displace_radius` of *any*
 displaced atom are also included. Set `displace_radius` to 0 to restrict the
 displacement strictly to the listed atoms.
 
