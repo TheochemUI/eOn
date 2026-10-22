@@ -27,13 +27,13 @@ def test_first_visit_meets_nf(tmp_path, monkeypatch):
         "rate": 1.0,
         "repeats": 0,
     }
-    current_dir = tmp_path / "state 0"
+    origin_dir = tmp_path / "state 0"
     next_dir = tmp_path / "state 1"
-    current_dir.mkdir()
+    origin_dir.mkdir()
     next_dir.mkdir()
-    current = _State(0, current_dir, {3: proc})
+    origin = _State(0, origin_dir, {3: proc})
     nxt = _State(1, next_dir, {})
-    states = {0: current, 1: nxt}
+    states = {0: origin, 1: nxt}
     ask = ASKMC(
         kT=0.025,
         states=type("S", (), {"get_state": staticmethod(lambda n: states[n])})(),
@@ -50,5 +50,5 @@ def test_first_visit_meets_nf(tmp_path, monkeypatch):
     assert ask.Nf == 1
     seen = []
     monkeypatch.setattr(ask, "raiseup", lambda *args, **kwargs: seen.append(args))
-    ask.register_transition(current, nxt)
+    ask.register_transition(origin, nxt)
     assert seen
