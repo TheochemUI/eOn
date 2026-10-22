@@ -38,6 +38,9 @@ are reported only when the clients finish their full trajectories. The
 server increments the simulation time {math}`t` until the first transition
 occurs.
 
+The process table is replaced in one step. A rewrite that is killed
+leaves the previous rows in place.
+
 To run Parallel Replica jobs:
 - Set {any}`job <eon.schema.MainConfig.job>` to *parallel_replica* in the
 **[Main]** section.
