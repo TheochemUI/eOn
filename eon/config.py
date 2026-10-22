@@ -8,6 +8,54 @@ import numpy as np
 import yaml
 
 
+class LiteralPercentInterpolation(configparser.BasicInterpolation):
+    """Basic interpolation that keeps a lone percent sign.
+
+    ``%(name)s`` still expands and ``%%`` is still one percent sign. A
+    percent that is neither of those is the character itself, so a path
+    such as ``/tmp/a%b`` can be a main_directory.
+    """
+
+    def _interpolate_some(self, parser, option, accum, rest, section, map, depth):
+        rawval = parser.get(section, option, raw=True, fallback=rest)
+        if depth > configparser.MAX_INTERPOLATION_DEPTH:
+            raise configparser.InterpolationDepthError(option, section, rawval)
+        while rest:
+            p = rest.find("%")
+            if p < 0:
+                accum.append(rest)
+                return
+            if p > 0:
+                accum.append(rest[:p])
+                rest = rest[p:]
+            c = rest[1:2]
+            if c == "%":
+                accum.append("%")
+                rest = rest[2:]
+            elif c == "(":
+                m = self._KEYCRE.match(rest)
+                if m is None:
+                    raise configparser.InterpolationSyntaxError(
+                        option, section,
+                        "bad interpolation variable reference %r" % rest)
+                var = parser.optionxform(m.group(1))
+                rest = rest[m.end():]
+                try:
+                    v = map[var]
+                except KeyError:
+                    raise configparser.InterpolationMissingOptionError(
+                        option, section, rawval, var) from None
+                if "%" in v:
+                    self._interpolate_some(
+                        parser, option, accum, v, section, map, depth + 1
+                    )
+                else:
+                    accum.append(v)
+            else:
+                accum.append("%")
+                rest = rest[1:]
+
+
 def canonical_listed_value(raw, values):
     """Return the listed spelling.
 
@@ -61,7 +109,9 @@ class ConfigClass:
             return None
         self.init_done = True
 
-        parser = configparser.ConfigParser()
+        parser = configparser.ConfigParser(
+            interpolation=LiteralPercentInterpolation()
+        )
 
         for i in range(len(self.format)):
             parser.add_section(self.format[i].name)

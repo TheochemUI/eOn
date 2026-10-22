@@ -14,6 +14,10 @@ For standalone client usage (the common case), the default paths are sufficient
 and this section can be left unconfigured.
 ```
 
+A path may contain a percent sign. `main_directory = /tmp/a%b` is that
+directory. `%(main_directory)s` still expands, and `%%` is still one
+percent sign.
+
 ## Configuration
 
 ```{code-block} ini
