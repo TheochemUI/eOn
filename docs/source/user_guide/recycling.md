@@ -37,6 +37,9 @@ increase with the total system size.
 Recycling metadata is replaced in one step. A write that stops partway
 leaves the previous file.
 
+A process id of zero is a real exit. Superbasin recycling can select
+it when it is the fastest process from the basin into the new state.
+
 ## Configuration
 
 ```{code-block} ini
