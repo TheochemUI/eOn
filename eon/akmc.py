@@ -348,8 +348,10 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
                         nsid = i
                         break
                 else:
+                    # The running sum can stop a ulp short of 1. That draw
+                    # still belongs to the last process.
                     logger.warning("Warning: Failed to select rate; p = " + str(p))
-                    break
+                    nsid = len(rate_table) - 1
 
             next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
             mean_time = 1.0/ratesum
