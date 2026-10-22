@@ -36,7 +36,8 @@ the same.  However, we make all replicas run the same number of MD steps to
 avoid biasing the successful transition trajectories. Results
 are reported only when the clients finish their full trajectories. The
 server increments the simulation time {math}`t` until the first transition
-occurs.
+occurs. The incoming job directory is created when it is already present.
+Escape rate uses the same directory.
 
 To run Parallel Replica jobs:
 - Set {any}`job <eon.schema.MainConfig.job>` to *parallel_replica* in the

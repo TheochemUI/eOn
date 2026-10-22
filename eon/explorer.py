@@ -303,7 +303,7 @@ class ClientMinModeExplorer(MinModeExplorer):
                 except (OSError, IOError):
                     pass
             if not jobs_in.is_dir():
-                jobs_in.mkdir(parents=True)
+                jobs_in.mkdir(parents=True, exist_ok=True)
 
         # Function used by communicator to determine whether to discard a result
         def keep_result(name):
@@ -460,7 +460,7 @@ class ServerMinModeExplorer(MinModeExplorer):
             except OSError as msg:
                 logger.error("Error cleaning up %s: %s", self.config.path_jobs_in, msg)
             else:
-                jobs_in.mkdir(parents=True)
+                jobs_in.mkdir(parents=True, exist_ok=True)
 
         Path(self.config.path_incomplete).mkdir(parents=True, exist_ok=True)
 

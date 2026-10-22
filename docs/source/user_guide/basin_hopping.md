@@ -13,7 +13,9 @@ is taken to be the energy of a local minimum
 
 The driver stores `bh.log` and `lockfile` in the results directory. A second
 driver in that directory logs `Couldn't get lock` and exits. See
-{doc}`communicator` for how the lock is taken.
+{doc}`communicator` for how the lock is taken. Registering results and
+recording a new state both create their directory when that path is already
+present.
 
 At each basin hopping step the client will print out:
 - the current energy (`current`),
