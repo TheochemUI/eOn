@@ -37,8 +37,15 @@ Cap'n Proto messages passed into the C ABI. The `rgpot` Meson subproject is
 3.3.0. rgpot 3.5.0 changed the C++ layout of PotCaps, LJConfig,
 LJClusterConfig and MorseConfig but kept soversion 3. 3.5.1 publishes
 that layout as librgpot.so.4. An older install fails at configure time.
-The Meson wrap is the fallback. A CPMD run that splits ranks uses the
-flag in the CPMD section.
+The Meson wrap is the fallback. The checkout is
+`e40fd175f5230098d56333bf2aff38cd839dc810` (rgpot 3.5.1 or newer,
+librgpot.so.4). rgpot develop
+`9e1abb3cd3eeb5cd276c3ad20a809d46fc395ec6` stores the EON r2549 aluminium
+parameters at single precision. That develop tree has no EMT interface,
+no calculator groups, and soversion 3, so the wrap does not check it
+out. `rgpot-eam-al-r2549-literals.patch` applies those literals on this
+checkout. A CPMD run that splits ranks uses the flag in the CPMD
+section.
 
 ## Configuration
 
