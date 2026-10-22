@@ -67,7 +67,7 @@ def prng_state_path(config):
 
 def save_prng_state(path):
     state = np.random.get_state()
-    with open(path, 'wb') as fh:
+    with atomic_write(path, mode='wb') as fh:
         pickle.dump(state, fh, pickle.HIGHEST_PROTOCOL)
 
 def get_prng_state(path):
