@@ -18,3 +18,9 @@ def test_emt_is_the_rgpot_adapter():
     assert "1.914263" in pin
     wrap = (ROOT / "subprojects" / "rgpot.wrap").read_text(encoding="utf-8")
     assert "e40fd175f5230098d56333bf2aff38cd839dc810" in wrap
+    assert "rgpot-eam-al-r2549-literals.patch" in wrap
+    patch = (
+        ROOT / "subprojects" / "packagefiles" / "rgpot-eam-al-r2549-literals.patch"
+    ).read_text(encoding="utf-8")
+    assert "real(7.1, real32)" in patch
+    assert "9e1abb3cd3eeb5cd276c3ad20a809d46fc395ec6" in wrap
