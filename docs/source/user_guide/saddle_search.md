@@ -101,6 +101,10 @@ face takes the short step. The acceptance test is on the
 
 ## Gaussian process dimer
 
+The GPR dimer `converged_angle` default is 0.08 and
+`relaxation_converged_angle` is 0.001, the client values. These are not
+the classical dimer angle.
+
 `min_mode_method = gprdimer` runs the Gaussian process dimer from a
 `gpr_optim` checkout in `subprojects/gpr_optim`, for example
 `rsync -a ../gpr_optim/ subprojects/gpr_optim/`. Under `-Dwith_gprd=auto`
