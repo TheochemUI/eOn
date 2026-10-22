@@ -86,6 +86,18 @@ minimum-image `(next - prev) / 2`. A bead that has crossed a periodic
 face takes the short step. The acceptance test is on the
 [basin hopping](project:basin_hopping.md) page.
 
+A classic dimer (`[Dimer] improved = false`) translated with L-BFGS reports
+the mode curvature `|C_tau|` once that mode is negative. The first translation
+step keeps `H0 = 1/|C_tau|` when the step fits in `max_move`, and also when
+the mode is milder than 30 eV/Å² and the cap would otherwise choose the
+length. A steeper mode whose uncapped step exceeds `max_move` is measured
+with one finite-difference probe of the effective force. Improved dimer and
+Lanczos do not report `|C_tau|`. Their first step is that probe, and
+`max_move` is only the cap. The adatom AKMC templates use the classic dimer.
+The LJ13 and Pt heptamer force-call counts follow the probe. A build with
+`-Dwith_rgsaddle` rotates every dimer and Lanczos search in rgsaddle. The
+scale still follows `improved = false`.
+
 ## Configuration
 
 ```{code-block} ini
