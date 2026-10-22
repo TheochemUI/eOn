@@ -37,7 +37,9 @@ avoid biasing the successful transition trajectories. Results
 are reported only when the clients finish their full trajectories. The
 server increments the simulation time {math}`t` until the first transition
 occurs. The incoming job directory is created when it is already present.
-Escape rate uses the same directory.
+Escape rate uses the same directory. Every finished search is included in the mean speedup, including
+the search that found the transition. The register returns the sum and
+the count of those searches.
 
 To run Parallel Replica jobs:
 - Set {any}`job <eon.schema.MainConfig.job>` to *parallel_replica* in the
