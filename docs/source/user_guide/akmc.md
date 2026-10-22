@@ -56,9 +56,11 @@ transitions to those that meet the documented thresholds.
 The server is reponsible for the time evolution of the system by the KMC
 algorithm. Each process leading to a new state is tabulated in a rate table and
 one transition is selected stochastically with a probability proportional to its
-rate. The transition time is drawn from a first-order distribution for the total
-rate of escape from the state. A draw that matches no row does not advance
-the step count, and the state and the simulation time stay as they were.
+rate. When the running sum of the normalized rates stops short of a draw
+below 1, the last process in the table is taken and the step is kept. A
+draw that matches no row does not advance the step count, and the state
+and the simulation time stay as they were. The transition time is drawn
+from a first-order distribution for the total rate of escape from the state.
 
 A complete tutorial is [also provided](project:../tutorials/akmc.md).
 
