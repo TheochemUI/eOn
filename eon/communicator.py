@@ -656,9 +656,9 @@ class Script(Communicator):
             pass
 
     def save_jobids(self):
-        f = open(self.job_id_path, "wb")
-        pickle.dump(self.jobids, f)
-        f.close()
+        from eon import fileio as io
+        with io.atomic_write(self.job_id_path, mode='wb') as handle:
+            pickle.dump(self.jobids, handle)
 
     def get_results(self, resultspath, keep_result):
         '''Moves work from scratchpath to results path.'''

@@ -171,6 +171,9 @@ type = "cluster"
 script_path = "/path/to/eon/tools/clusters/slurm"
 ```
 
+The map from batch ids to eOn job ids is replaced in one step. A
+rewrite that is killed leaves the previous map in place.
+
 A potential that needs several MPI ranks, such as CPMD behind `ext_pot`,
 starts them from its wrapper inside the job (`srun -n 48 cpmd.x ...`); the
 client itself stays one process. When a state reaches its confidence the
