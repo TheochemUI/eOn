@@ -11,7 +11,6 @@
 */
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/ConjugateGradients.h"
-#include "eon/Dimer.h"
 #include "eon/EigenmodeStrategy.h"
 #include "eon/EonLogger.h"
 #include "eon/EpiCenters.h"
@@ -116,12 +115,17 @@ public:
   // path. It reports the negative mode curvature. L-BFGS keeps the
   // capped scale for a mild mode whose uncapped step exceeds max_move,
   // and probes F_eff for a steep overrun.
+  //
+  // With rgsaddle the rotation of every dimer and Lanczos search is
+  // one solver type, so the C++ class does not say which search this
+  // is. The scale follows the dimer setting.
   std::optional<double> knownCurvature() const override {
     if (iteration == 0 || !minModeMethod) {
       return std::nullopt;
     }
-    // ImprovedDimer is a sibling of Dimer, not a subclass.
-    if (dynamic_cast<Dimer *>(minModeMethod.get()) == nullptr) {
+    if (params.saddle_search_options().minmode_method !=
+            LowestEigenmode::MINMODE_DIMER ||
+        params.dimer_options().improved) {
       return std::nullopt;
     }
     const double c = eonc::eigenmodeGetEigenvalue(*minModeMethod);

@@ -50,6 +50,9 @@ uncapped step exceeds `max_move` takes one finite-difference probe of the
 effective force. Improved dimer and Lanczos do not report `|C_tau|`. Those
 searches climb on the effective force, so the first step is the probe and
 `max_move` is only the cap. Later steps still use the `[LBFGS]` secant scale.
+A build that rotates the mode in rgsaddle uses the same rule.
+`improved = false` reports `|C_tau|`, and the improved dimer and Lanczos
+do not.
 
 ### QuickMin
 

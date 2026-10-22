@@ -391,6 +391,8 @@ TEST_CASE("Classic dimer keeps the known-curvature scale under max_move",
   // The adatom AKMC catalogue uses the classic dimer. |C_tau| = 2 is
   // mild, and the uncapped step is longer than max_move. That search
   // keeps the capped mode scale. The improved dimer, above, probes.
+  // An rgsaddle build rotates this search too. The scale still follows
+  // improved = false, so the capped step is the same.
   Parameters parameters;
   prepareMinMode(parameters, false);
   const Eigen::Vector3d r0(0.01, 0.05, 0.05);

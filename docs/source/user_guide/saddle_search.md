@@ -94,7 +94,9 @@ length. A steeper mode whose uncapped step exceeds `max_move` is measured
 with one finite-difference probe of the effective force. Improved dimer and
 Lanczos do not report `|C_tau|`. Their first step is that probe, and
 `max_move` is only the cap. The adatom AKMC templates use the classic dimer.
-The LJ13 and Pt heptamer force-call counts follow the probe.
+The LJ13 and Pt heptamer force-call counts follow the probe. A build with
+`-Dwith_rgsaddle` rotates every dimer and Lanczos search in rgsaddle. The
+scale still follows `improved = false`.
 
 ## Configuration
 
