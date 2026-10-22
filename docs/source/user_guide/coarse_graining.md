@@ -80,6 +80,9 @@ synced. A final line with no newline or the wrong number of fields is
 dropped, and the next append cuts that tail off first. A write that
 stops partway leaves the previous rows.
 
+The counters in `askmc_data.txt` are replaced in one step. A write that
+stops partway leaves the previous counters.
+
 ## amsel discover_decide
 
 `[amsel] discover_decide = true` runs on the current state's process table.

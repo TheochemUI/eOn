@@ -126,14 +126,13 @@ class ASKMC:
     def save_askmc_metadata(self, sb_check_count, num_rate_changes):
         """ Save the current values of the AS-KMC data. """
         data_path = Path(self.path) / "askmc_data.txt"
-        data_path.write_text(
-            (
-                "[Info for the Chatterjee & Voter AS-KMC method]\n"
-                "sb_check_count = %d\n"
-                "num_rate_changes = %d\n"
-            )
-            % (sb_check_count, num_rate_changes)
-        )
+        text = (
+            "[Info for the Chatterjee & Voter AS-KMC method]\n"
+            "sb_check_count = %d\n"
+            "num_rate_changes = %d\n"
+        ) % (sb_check_count, num_rate_changes)
+        with io.atomic_write(str(data_path)) as handle:
+            handle.write(text)
 
     def get_real_process_table(self, current_state):
         """ Return the real process table. """
