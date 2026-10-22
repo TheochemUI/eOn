@@ -15,6 +15,24 @@ needed. In `eOn` there are several different ways to run jobs. One can run them
 locally on the server, via MPI,  or using a job queuing system such as
 [SGE](http://www.oracle.com/us/products/tools/oracle-grid-engine-075549.html).
 
+## One driver in a directory
+
+`akmc`, `parallel_replica`, `unbiased_parallel_replica`, `basin_hopping`,
+and `escape_rate` share a lock file named `lockfile` in the results
+directory. The driver creates that file with an exclusive open, writes
+its process id, and flushes the file. A second driver that finds a live
+owner leaves without starting a second run. Basin hopping, parallel
+replica, and escape rate log `Couldn't get lock`. Adaptive kinetic Monte
+Carlo logs the owner's process id and exits.
+
+A lock whose process is gone, or a file that is empty or cut off mid-write,
+is removed and the driver tries once more. On platforms with `fcntl` the
+driver holds an exclusive flock for the life of the run, so a reused
+process id is not treated as the owner.
+
+`LockFile.acquirelock` takes the lock. `aquirelock` is the previous
+spelling and still calls `acquirelock`.
+
 ```{note}
 From 2.0 on, prefer a workflow manager over eOn-generated submit
 scripts. For AiiDA the plugin is {doc}`aiida` (`pip install aiida-eon`).

@@ -1,6 +1,5 @@
 """Catalog storage, entry points, and the explorer branches still left open."""
 
-import os
 import sys
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
@@ -251,7 +250,10 @@ def test_job_mains_reset_report_and_refuse(tmp_path, monkeypatch, capsys):
 
     locked = tmp_path / "locked"
     locked_root, locked_ini = _ini(locked, "akmc")
-    (locked_root / "lockfile").write_text("%i\n" % os.getpid())
+    from eon.locking import LockFile
+
+    held = LockFile(locked_root / "lockfile")
+    assert held.acquirelock()
     monkeypatch.chdir(locked_root)
     monkeypatch.setattr(sys, "argv", ["akmc", str(locked_ini), "-q"])
     with pytest.raises(SystemExit) as caught:

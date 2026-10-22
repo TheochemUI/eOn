@@ -63,7 +63,9 @@ job = process_search
 
 In the configuration, the server runs `akmc`, `parallel_replica`,
 `unbiased_parallel_replica`, `basin_hopping`, and `escape_rate` itself. The
-server accepts those names as written. Any other `job` the server accepts is
+server accepts those names as written. Those jobs share one `lockfile` in
+the results directory, so a second driver exits instead of running beside
+the first. See {doc}`communicator`. Any other `job` the server accepts is
 one client job. The client matches that `job` to `JobType` without regard to
 case. A name outside the enumeration stops the client with `No known job could
 be constructed`.
