@@ -175,11 +175,12 @@ class SB_Recycling:
         """ Write to disk the superbasin state list, and the new possibilities to consider.
             Also write how far along in this superbasin recycling process we are. """
         data_path = Path(self.path) / "recycling_data.txt"
-        data_path.write_text(
-            "Superbasin Recycling Metadata\n"
-            "'Prev_Superbasin_state_list' = %s\n" % repr(self.sb_state_nums)
-            + "'in_progress' = %s\n" % self.in_progress
-        )
+        with io.atomic_write(data_path) as handle:
+            handle.write(
+                "Superbasin Recycling Metadata\n"
+                "'Prev_Superbasin_state_list' = %s\n" % repr(self.sb_state_nums)
+                + "'in_progress' = %s\n" % self.in_progress
+            )
 
     def read_metadata(self):
         """ Read the metadata and return the superbasin state list, the "current/previous"
@@ -444,15 +445,16 @@ class Recycling:
 
     def write_recycling_metadata(self):
         """ Write the recycling metadata file located in the current state's directory. """
-        Path(self.metadata_path).write_text(
-            "Recycling Metadata\n"
-            "Reference State:  %d\n" % self.ref_state.number
-            + "Current Process Number = %d\n" % self.process_number
-            + "Number of processes = %d\n" % self.num_procs
-            + "Indices of 'moved' atoms = %s\n" % repr(self.moved)
-            + "Indices of 'unmoved' atoms = %s\n" % repr(self.unmoved)
-            + "Indices of 'process' atoms = %s\n" % repr(self.process_atoms)
-        )
+        with io.atomic_write(self.metadata_path) as handle:
+            handle.write(
+                "Recycling Metadata\n"
+                "Reference State:  %d\n" % self.ref_state.number
+                + "Current Process Number = %d\n" % self.process_number
+                + "Number of processes = %d\n" % self.num_procs
+                + "Indices of 'moved' atoms = %s\n" % repr(self.moved)
+                + "Indices of 'unmoved' atoms = %s\n" % repr(self.unmoved)
+                + "Indices of 'process' atoms = %s\n" % repr(self.process_atoms)
+            )
 
     def get_moved_indices(self):
         """ Return the indices of atoms that moved in the process getting
