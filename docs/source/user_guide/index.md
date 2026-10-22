@@ -44,7 +44,8 @@ aiida
 
 Each of the sections and methods may still be included in a configuration file
 with the appropriate section header (used by the `eonclient` binary, the AKMC
-server, and optional workdir helpers).
+server, and optional workdir helpers). Server-side process search without a
+default prefactor, or with a bundle size other than 1, exits with status 1.
 
 ## Overview
 
