@@ -2063,6 +2063,16 @@ Optimizer:
                 - sd
                 - xtsci
 
+        opt_backend:
+            kind: string
+            default: eon
+            values:
+                - eon
+                - rgmin
+            # rgmin runs lbfgs, fire, cg, sd and qm as rgmin sessions
+            # (build with -Dwith_rgmin). Band and min-mode translation
+            # steps stay on eOn's optimizers.
+
         convergence_metric:
             kind: string
             default: norm
@@ -2231,6 +2241,7 @@ Optimizer:
                 - bb
                 - dogleg
                 - fire2
+                - quickmin
 
         xtsci_qn_step:
             kind: string
@@ -2834,6 +2845,7 @@ Xtsci:
                 - bb
                 - dogleg
                 - fire2
+                - quickmin
 
         qn_step:
             kind: string

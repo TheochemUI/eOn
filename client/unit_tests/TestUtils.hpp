@@ -19,6 +19,7 @@
 #include "quill/Backend.h"
 #include "quill/Frontend.h"
 #include "quill/sinks/NullSink.h"
+#include <atomic>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -63,25 +64,41 @@ auto IsApprox(const T &expected, double threshold = 1e-4) {
 ///
 /// Many eOn internals (CIniFile::GetValue, Matter, Potential) call
 /// quill::Frontend::get_logger("combi"). If the backend isn't started
-/// or the logger isn't registered, get_logger() returns nullptr → segfault.
+/// or the logger isn't registered, get_logger() returns nullptr and the
+/// next log crashes.
 ///
 /// This struct ensures:
 /// 1. quill::Backend is started before tests run
 /// 2. A "combi" logger exists (with NullSink to discard output)
 /// 3. Backend is stopped cleanly on teardown
 ///
+/// Do not probe the logger with eonc::log::get(). That fallback creates
+/// a console logger named "combi" when none exists, and this constructor
+/// then leaves it in place. Dimer and Lanczos info lines go to that
+/// stdout sink. Meson captures the pipe; on Windows the pipe buffer is
+/// a few kilobytes and fwrite blocks the logging thread until the
+/// runner reads. test_bench_parity fills the pipe and misses its 30s
+/// limit. Register the null sink against Frontend directly.
+///
 /// Usage: Just instantiate as a static global in your test file:
 ///   static helpers::test::QuillTestLogger _quill_setup;
 struct QuillTestLogger {
   QuillTestLogger() {
-    if (!eonc::log::get()) {
+    if (quill::Frontend::get_logger("combi")) {
+      return;
+    }
+    try {
       quill::Backend::start();
+    } catch (...) {
+    }
+    try {
       auto null_sink = quill::Frontend::create_or_get_sink<quill::NullSink>(
           "null_test_sink");
       quill::Frontend::create_or_get_logger(
           "combi", std::move(null_sink),
           quill::PatternFormatterOptions{"%(message)"},
           quill::ClockSourceType::System);
+    } catch (...) {
     }
   }
   ~QuillTestLogger() = default;
@@ -141,6 +158,30 @@ private:
   std::shared_ptr<Threads> threads_;
   std::function<void()> on_force_;
   std::unique_ptr<eonc::Potential> lj_;
+};
+
+/// Counts the kernel evaluations behind eOn's own forceCallCounter, so a
+/// test can check that a path through a library still counts every one.
+class CountingPotential final : public eonc::Potential {
+public:
+  explicit CountingPotential(std::shared_ptr<eonc::Potential> inner)
+      : Potential(PotType::LJ),
+        inner_{std::move(inner)} {}
+
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    ++kernelCalls;
+    inner_->force(nAtoms, positions, atomicNrs, forces, energy, variance, box);
+  }
+  [[nodiscard]] double finiteCutoff() const noexcept override {
+    return inner_->finiteCutoff();
+  }
+
+  std::atomic<size_t> kernelCalls{0};
+
+private:
+  std::shared_ptr<eonc::Potential> inner_;
 };
 
 } // namespace eonc::helpers::test

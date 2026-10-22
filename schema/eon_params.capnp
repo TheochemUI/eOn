@@ -135,11 +135,11 @@ struct OptimizerSdOptions {
 }
 
 struct OptimizerXtsciOptions {
-  # Engine-local solver. Tokens match xtsci-optimize xts_method_t:
+  # Engine-local solver. Tokens match rgmin_method_t:
   # lbfgs, bfgs, sr1, sr2, newton, rfo, steepest, adam, pso,
   # polak_ribiere, fletcher_reeves, hestenes_stiefel, dai_yuan,
   # conjugate_descent, hager_zhang, liu_storey, fr_pr,
-  # fire, bb, dogleg, fire2
+  # fire, bb, dogleg, fire2, quickmin
   method @0 :Text = "lbfgs";
   # How an L-BFGS session uses a host Hessian. Tokens match
   # xts_qn_step_t: lbfgs (two-loop, P is H0), newton, rfo.
@@ -174,6 +174,10 @@ struct OptimizerOptions {
   quickmin @9 :OptimizerQuickminOptions;
   sd @10 :OptimizerSdOptions;
   xtsci @11 :OptimizerXtsciOptions;
+  # Who runs lbfgs, fire, cg, sd and qm: eon, or rgmin (needs a build that
+  # links rgmin). rgmin only takes objectives whose gradient is the
+  # derivative of their energy; band and min-mode steps stay in eOn.
+  optBackend @12 :Text = "eon";
 }
 
 # ---------------------------------------------------------------------

@@ -43,6 +43,15 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 namespace fs = std::filesystem;
 
+TEST_CASE("bench parity logger discards lines", "[bench_parity][logger]") {
+  // The console fallback fills the pipe Meson reads on Windows.
+  quill::Logger *log = eonc::log::get();
+  REQUIRE(log != nullptr);
+  const auto &sinks = log->get_sinks();
+  REQUIRE(sinks.size() == 1);
+  REQUIRE(dynamic_cast<quill::NullSink *>(sinks.front().get()) != nullptr);
+}
+
 class ParityRun {
 public:
   explicit ParityRun(const std::string &system)
@@ -134,6 +143,14 @@ static std::string saddleConfig(const std::string &job,
          "[Lanczos]\ntolerance = 0.1\nmax_iterations = 10\nquit_early = true\n";
 }
 
+// With -Dwith_rgsaddle the dimer and Lanczos rotations run in rgsaddle, so
+// the min-mode counts pinned below do not describe them.
+#ifdef WITH_RGSADDLE
+constexpr bool kEonMinMode = false;
+#else
+constexpr bool kEonMinMode = true;
+#endif
+
 static void requireNear350(long calls, long pinned) {
   INFO("force calls " << calls << ", pinned " << pinned);
   REQUIRE(calls >= pinned * 9 / 10);
@@ -191,28 +208,38 @@ TEST_CASE("Min-mode L-BFGS saddle searches match eOn 3.5.0",
     double maxMove;
     long calls;
     double saddleEnergy;
+    // The saddle the other min-mode method reaches from the same start.
+    double otherSaddleEnergy;
   };
   // LJ13 dimer was 390 and Lanczos 115 under the one-rotation CG
   // restart and an H0 taken from |C_tau|. Carrying CG after every
   // translation, and taking the first step from a finite-difference
   // probe of F_eff, uses 310 and 135 calls. The saddles are unchanged.
   // The ±10% window is the same width around those counts.
-  const auto c =
-      GENERATE(Case{"lj13_saddle", "lj", "dimer", 0.1, 310, -38.963676},
-               Case{"lj13_saddle", "lj", "lanczos", 0.1, 135, -39.036018},
-               Case{"Pt_Heptamer_FrozenLayers", "morse_pt", "dimer", 0.2, 292,
-                    -1774.365034},
-               Case{"Pt_Heptamer_FrozenLayers", "morse_pt", "lanczos", 0.2, 118,
-                    -1774.704903});
+  const auto c = GENERATE(
+      Case{"lj13_saddle", "lj", "dimer", 0.1, 310, -38.963676, -39.036018},
+      Case{"lj13_saddle", "lj", "lanczos", 0.1, 135, -39.036018, -38.963676},
+      Case{"Pt_Heptamer_FrozenLayers", "morse_pt", "dimer", 0.2, 292,
+           -1774.365034, -1774.704903},
+      Case{"Pt_Heptamer_FrozenLayers", "morse_pt", "lanczos", 0.2, 118,
+           -1774.704903, -1774.365034});
   const std::string accept = GENERATE("none", "energy");
   CAPTURE(c.system, c.minmode, accept);
   ParityRun run(c.system);
   auto results = run.run(
       saddleConfig("saddle_search", c.potential, c.minmode, accept, c.maxMove));
   REQUIRE(results.at("termination_reason") == "0");
-  requireNear350(std::stol(results.at("total_force_calls")), c.calls);
-  REQUIRE(std::stod(results.at("potential_energy_saddle")) ==
-          Catch::Approx(c.saddleEnergy).margin(1e-4));
+  if (kEonMinMode) {
+    requireNear350(std::stol(results.at("total_force_calls")), c.calls);
+  }
+  const double saddle = std::stod(results.at("potential_energy_saddle"));
+  if (kEonMinMode) {
+    REQUIRE(saddle == Catch::Approx(c.saddleEnergy).margin(1e-4));
+  } else {
+    // The rgsaddle rotation may take the search to the other saddle.
+    REQUIRE((saddle == Catch::Approx(c.saddleEnergy).margin(1e-4) ||
+             saddle == Catch::Approx(c.otherSaddleEnergy).margin(1e-4)));
+  }
 }
 
 TEST_CASE("Saddle and process searches count per-image potential calls",
@@ -239,7 +266,7 @@ TEST_CASE("Saddle and process searches count per-image potential calls",
   job->run();
   const long made = calls - before;
   auto results = run.results();
-  if (parallel) {
+  if (parallel && kEonMinMode) {
     // The second dimer image ran on its own instance.
     REQUIRE(static_cast<long>(pot->forceCallCounter.load()) < made);
   }
@@ -250,13 +277,17 @@ TEST_CASE("Saddle and process searches count per-image potential calls",
     // saddle calls. The total is one more. The ±10% window stays on
     // that total.
     const long saddleCalls = std::stol(results.at("force_calls_saddle"));
-    REQUIRE(saddleCalls == 309);
-    requireNear350(saddleCalls + 1, 310);
+    if (kEonMinMode) {
+      REQUIRE(saddleCalls == 309);
+      requireNear350(saddleCalls + 1, 310);
+    }
   } else {
     REQUIRE(results.at("termination_reason") == "0");
     REQUIRE(std::stol(results.at("total_force_calls")) == made);
     REQUIRE(std::stol(results.at("force_calls_saddle")) == made - 1);
-    requireNear350(made, 310);
+    if (kEonMinMode) {
+      requireNear350(made, 310);
+    }
   }
 }
 

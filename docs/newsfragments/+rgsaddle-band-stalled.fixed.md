@@ -1,0 +1,1 @@
+A nudged elastic band stepped by rgsaddle no longer aborts when the session reports a stalled step (the band left unchanged above the force tolerance); the band stays put and the run ends at `max_iterations`, as with eOn's own optimizers.

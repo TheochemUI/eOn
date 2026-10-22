@@ -235,6 +235,8 @@ void apply_ssot_defaults(Parameters &p) {
       std::string(GD::OPTIMIZER_XTSCI_MANIFOLD);
   ParametersLoadAccess::optimizer_options(p).xtsci_method =
       std::string(GD::OPTIMIZER_XTSCI_METHOD);
+  ParametersLoadAccess::optimizer_options(p).backend =
+      std::string(GD::OPTIMIZER_OPT_BACKEND);
 
   ParametersLoadAccess::optimizer_options(p).cg.no_overshooting =
       GD::OPTIMIZER_CG_NO_OVERSHOOTING;

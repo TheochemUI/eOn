@@ -122,6 +122,7 @@ json to_json(const Parameters &p) {
   j["Optimizer"] = {
       {"opt_method",
        enum_to_json(ParametersLoadAccess::optimizer_options(p).method)},
+      {"opt_backend", ParametersLoadAccess::optimizer_options(p).backend},
       {"convergence_metric",
        ParametersLoadAccess::optimizer_options(p).convergence_metric},
       {"max_iterations",
@@ -586,6 +587,17 @@ void from_json(const json &j, Parameters &p) {
       throw std::invalid_argument(std::format(
           "unknown convergence_metric: {}",
           ParametersLoadAccess::optimizer_options(p).convergence_metric));
+    }
+    JSON_OPT(s, "opt_backend",
+             ParametersLoadAccess::optimizer_options(p).backend);
+    for (char &c : ParametersLoadAccess::optimizer_options(p).backend) {
+      c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    }
+    if (ParametersLoadAccess::optimizer_options(p).backend != "eon" &&
+        ParametersLoadAccess::optimizer_options(p).backend != "rgmin") {
+      throw std::invalid_argument(
+          std::format("unknown opt_backend: {} (eon, rgmin)",
+                      ParametersLoadAccess::optimizer_options(p).backend));
     }
     JSON_OPT(s, "max_iterations",
              ParametersLoadAccess::optimizer_options(p).max_iterations);

@@ -23,7 +23,7 @@ AMS
   See {doc}`user_guide/potential`.
 
 BFGS
-  Broyden-Fletcher-Goldfarb-Shanno. xtsci-optimize supplies the dense
+  Broyden-Fletcher-Goldfarb-Shanno. rgmin (formerly xtsci-optimize) supplies the dense
   inverse-BFGS. LBFGS is the limited-memory form.
   See {doc}`user_guide/minimization`.
 
@@ -119,7 +119,7 @@ NEB
   See {doc}`user_guide/neb`.
 
 NLCG
-  Nonlinear conjugate gradient. xtsci-optimize keeps the conjugacy across
+  Nonlinear conjugate gradient. rgmin keeps the conjugacy across
   outer steps.
   See {doc}`user_guide/minimization`.
 

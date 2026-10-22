@@ -136,7 +136,7 @@ void bind_enums(nb::module_ &m) {
       .value("LBFGS", eonc::OptType::LBFGS)
       .value("FIRE", eonc::OptType::FIRE)
       .value("SD", eonc::OptType::SD)
-#ifdef WITH_XTSCI
+#ifdef WITH_RGMIN
       .value("XTSCI", eonc::OptType::XTSCI)
 #endif
       ;

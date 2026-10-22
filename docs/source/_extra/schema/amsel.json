@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/amsel.json",
+  "title": "amsel",
+  "description": "``[amsel]`` keys. Field names and defaults match ``eon/config.yaml``.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "discover_decide": {
+      "default": false,
+      "description": "Call amsel discover_decide on the current state's process table at each KMC step, without waiting for the repeat-count confidence.\n\nIndependent of :any:`eon.schema.CoarseGrainingConfig.use_mcamc`.\nThe repeat-count confidence scheme does not hold this step. A barrier\nstrictly below ``e_min_init`` is an in-basin edge. A barrier at or\nabove ``e_min_init`` is an exit. A table with no faster edge still\nleaves: the transient set is the entry state. The exit time and the\nexit channel come from the mean-rate method (MRM) or from\nfirst-passage-time analysis (FPTA). Those kernels are the ``amsel``\npackage. When that package is absent the log line is\n``amsel discover_decide status=unavailable`` and no step is taken\nuntil the confidence threshold is met. A product column of -1 is still\nan exit: the absorbing label is a 32-bit id, and the hop creates the\nproduct state from the process id.",
+      "type": "boolean"
+    },
+    "e_min_init": {
+      "default": 0.5,
+      "description": "Initial transition-state cutoff in eV. A barrier strictly below this cutoff stays inside the basin.",
+      "type": "number"
+    },
+    "e_min_step": {
+      "default": 0.05,
+      "description": "Step, in eV, by which discover_decide lowers the cutoff when it retightens the basin.",
+      "type": "number"
+    },
+    "e_min_floor": {
+      "default": 0.05,
+      "description": "Lowest transition-state cutoff, in eV, that discover_decide will use.",
+      "type": "number"
+    },
+    "cv_threshold": {
+      "default": 10.0,
+      "description": "Largest coefficient of variation for which a basin is accepted.",
+      "type": "number"
+    },
+    "on_error": {
+      "default": "fallback_single",
+      "description": "Result of a failed amsel call.\n\n``fallback_single`` returns status ``fallback_single`` with\n``available`` true, and the step is ordinary KMC.\n``unavailable_mcamc`` returns status ``unavailable`` with\n``available`` false. ``raise`` re-raises the exception.\n``unavailable`` with ``available`` true is not a status this model\nnames.",
+      "enum": [
+        "fallback_single",
+        "unavailable_mcamc",
+        "raise"
+      ],
+      "type": "string"
+    }
+  }
+}

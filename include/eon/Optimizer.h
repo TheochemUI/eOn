@@ -17,6 +17,9 @@
 
 #include "EonLogger.h"
 
+#include <optional>
+#include <string>
+
 namespace eonc {
 
 /** @defgroup Optimizers Structure optimizers
@@ -103,6 +106,20 @@ public:
 };
 
 namespace helpers::create {
+/// The rgmin method token mkOptim runs for a_otype when [Optimizer]
+/// opt_backend = rgmin. Empty for any other backend, for a method rgmin
+/// does not stand in for, and for an objective whose gradient is not the
+/// derivative of its energy (band and min-mode translation), which rgmin's
+/// line searches would read as a potential.
+[[nodiscard]] std::optional<std::string>
+rgminMethodFor(const ObjectiveFunction &a_objf, OptType a_otype,
+               const Parameters &a_params);
+
+/// rgminMethodFor without the objective test: what a minimization of a
+/// potential energy runs under opt_backend = rgmin.
+[[nodiscard]] std::optional<std::string>
+rgminBackendMethod(OptType a_otype, const Parameters &a_params);
+
 [[nodiscard]] std::unique_ptr<Optimizer>
 mkOptim(std::shared_ptr<ObjectiveFunction> a_objf, OptType a_otype,
         const Parameters &a_params);

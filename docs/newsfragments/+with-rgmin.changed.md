@@ -1,0 +1,1 @@
+`-Dwith_rgmin` (feature, default `auto`) replaces `-Dwith_xtsci`. The client builds against rgmin 0.4.0 (`rgmin.h`, the `rgmin_*` names), the renamed xtsci-optimize, whose install no longer ships `xts.h`. `auto` links an rgmin found by pkg-config and changes no result until an input selects it.

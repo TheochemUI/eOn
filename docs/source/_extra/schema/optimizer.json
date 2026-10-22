@@ -8,7 +8,7 @@
   "properties": {
     "opt_method": {
       "default": "cg",
-      "description": "The optimization method to use.\n\nOptions:\n  - ``box``: Optimizes the atom positions and box using quickmin\n  - ``cg``: Conjugate gradient\n  - ``qm``: Quickmin\n  - ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer\n  - ``fire``: Fast inertial relaxation engine\n  - ``sd``: Steepest descent\n  - ``xtsci``: xtsci-optimize engine. Pick the solver with ``[Xtsci] method``. Needs ``-Dwith_xtsci=true``.",
+      "description": "The optimization method to use.\n\nOptions:\n  - ``box``: Optimizes the atom positions and box using quickmin\n  - ``cg``: Conjugate gradient\n  - ``qm``: Quickmin\n  - ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer\n  - ``fire``: Fast inertial relaxation engine\n  - ``sd``: Steepest descent\n  - ``xtsci``: rgmin engine (formerly xtsci-optimize). Pick the solver with ``[Xtsci] method``. Needs a build that links rgmin (``-Dwith_rgmin``).",
       "enum": [
         "box",
         "cg",
@@ -17,6 +17,15 @@
         "fire",
         "sd",
         "xtsci"
+      ],
+      "type": "string"
+    },
+    "opt_backend": {
+      "default": "eon",
+      "description": "Who runs the lbfgs, fire, cg, sd and qm optimizers.\n\nOptions:\n  - ``eon``: eOn's own optimizers (default)\n  - ``rgmin``: rgmin sessions: lbfgs is rgmin L-BFGS, fire is FIRE, cg is\n    Polak-Ribiere CG, sd is steepest descent, qm is quick-min. Needs a\n    build that links rgmin (``-Dwith_rgmin``). Applies to every\n    objective whose gradient is the derivative of its energy\n    (relaxations, the per-image IDPP path, BGSD); the nudged elastic\n    band, the collective IDPP band and min-mode translation steps stay\n    on eOn's optimizers. ``[LBFGS] lbfgs_memory`` and the ``[Xtsci]``\n    session keys still apply.",
+      "enum": [
+        "eon",
+        "rgmin"
       ],
       "type": "string"
     },

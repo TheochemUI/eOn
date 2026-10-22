@@ -86,6 +86,7 @@
     "Optimizer.max_iterations",
     "Optimizer.max_move",
     "Optimizer.max_time_step",
+    "Optimizer.opt_backend",
     "Optimizer.opt_method",
     "Optimizer.qm_steepest_descent",
     "Optimizer.sd_alpha",
