@@ -72,6 +72,11 @@ A final line with no newline or the wrong number of fields is dropped, and
 the next append cuts that tail off first. A write that stops partway leaves
 the previous table.
 
+A new state is recorded by appending one line to `state_table`, then
+flushing and syncing it. A final line with no newline or the wrong number
+of fields is dropped, and the next append cuts that tail off first. A
+write that stops partway leaves the previous table.
+
 A complete tutorial is [also provided](project:../tutorials/akmc.md).
 
 ## State list
