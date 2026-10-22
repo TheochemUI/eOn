@@ -182,6 +182,9 @@ def register_results(comm, current_state, states, config: ConfigClass = None):
         # read in the results
         result['results'] = io.parse_results(result['results.dat'])
         speedup += result['results']['speedup']
+        # Count this search before a transition breaks the loop. The
+        # sum already includes it, and the mean divides by this count.
+        num_registered += 1
         if result['results']['transition_found'] == 1:
             result['results']['transition_time_s'] += state.get_time()
             time = result['results']['transition_time_s']
@@ -196,7 +199,6 @@ def register_results(comm, current_state, states, config: ConfigClass = None):
             break
         else:
             state.inc_time(result['results']['simulation_time_s'])
-        num_registered += 1
 
     logger.info("Processed results: %i", num_registered)
     if num_registered >=1:
