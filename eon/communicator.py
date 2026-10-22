@@ -187,6 +187,35 @@ class Communicator:
         self.scratchpath = str(scratch)
         self.bundle_size = bundle_size
 
+    def _place_finished_job(self, src, resultspath, jobdir):
+        """Move a finished job directory onto resultspath.
+
+        An existing results directory is replaced. shutil.move would
+        otherwise put the new directory inside the old one, and the
+        harvest would keep the previous results. A debug copy is
+        replaced the same way, so a second pass for the same job name
+        does not raise.
+        """
+        src = Path(src)
+        if self.config.debug_keep_all_results:
+            debug = (
+                Path(self.config.path_root)
+                / self.config.debug_results_path
+                / jobdir
+            )
+            debug.parent.mkdir(parents=True, exist_ok=True)
+            if debug.is_dir():
+                shutil.rmtree(debug)
+            elif debug.exists():
+                debug.unlink()
+            shutil.copytree(src, debug)
+        dest = Path(resultspath) / jobdir
+        if dest.is_dir():
+            shutil.rmtree(dest)
+        elif dest.exists():
+            dest.unlink()
+        shutil.move(str(src), str(dest))
+
     def submit_jobs(self, data, invariants):
         '''Throws CommunicatorError if fails.'''
         raise NotImplementedError()
@@ -426,13 +455,9 @@ class MPI(Communicator):
                              jobdir, self.scratchpath)
                 continue
 
-            if self.config.debug_keep_all_results:
-                shutil.copytree(
-                    Path(self.scratchpath) / jobdir,
-                    Path(self.config.path_root) / self.config.debug_results_path / jobdir,
-                )
-            dest_dir = Path(resultspath) / jobdir
-            shutil.move(str(Path(self.scratchpath) / jobdir), str(dest_dir))
+            self._place_finished_job(
+                Path(self.scratchpath) / jobdir, resultspath, jobdir
+            )
         for bundle in self.unbundle(resultspath, keep_result):
             for result in bundle:
                 yield result
@@ -529,13 +554,7 @@ class Local(Communicator):
         jobdirs = [p.name for p in scratch.iterdir() if p.is_dir()]
 
         for jobdir in jobdirs:
-            if self.config.debug_keep_all_results:
-                shutil.copytree(
-                    scratch / jobdir,
-                    Path(self.config.path_root) / self.config.debug_results_path / jobdir,
-                )
-            dest_dir = Path(resultspath) / jobdir
-            shutil.move(str(scratch / jobdir), str(dest_dir))
+            self._place_finished_job(scratch / jobdir, resultspath, jobdir)
         for bundle in self.unbundle(resultspath, keep_result):
             for result in bundle:
                 yield result
@@ -684,13 +703,7 @@ class Script(Communicator):
         sort_nicely(jobdirs)
 
         for jobdir in jobdirs:
-            if self.config.debug_keep_all_results:
-                shutil.copytree(
-                    scratch / jobdir,
-                    Path(self.config.path_root) / self.config.debug_results_path / jobdir,
-                )
-            dest_dir = Path(resultspath) / jobdir
-            shutil.move(str(scratch / jobdir), str(dest_dir))
+            self._place_finished_job(scratch / jobdir, resultspath, jobdir)
 
         for bundle in self.unbundle(resultspath, keep_result):
             for result in bundle:
