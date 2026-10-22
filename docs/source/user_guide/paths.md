@@ -14,6 +14,9 @@ For standalone client usage (the common case), the default paths are sufficient
 and this section can be left unconfigured.
 ```
 
+`prng.pkl` under the main directory is replaced in one step. A write that
+fails leaves the previous random state.
+
 ## Configuration
 
 ```{code-block} ini
