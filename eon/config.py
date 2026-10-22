@@ -256,6 +256,7 @@ class ConfigClass:
         self.process_search_minimization_offset = parser.getfloat('Process Search', 'minimization_offset')
         self.process_search_default_prefactor = parser.getfloat('Prefactor', 'default_value')
         self.process_search_minimize_first = parser.getboolean('Process Search', 'minimize_first')
+        self.process_search_known_saddles = parser.getboolean('Process Search', 'known_saddles')
 
         # Saddle Search options
         self.saddle_method = parser.get('Saddle Search', 'method')

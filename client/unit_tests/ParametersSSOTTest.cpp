@@ -35,6 +35,7 @@ TEST_CASE("Parameters constructor applies Cap'n Proto SSoT defaults",
   REQUIRE(p.optimizer_options().method == OptType::CG);
   REQUIRE(p.optimizer_options().max_iterations == 1000);
   REQUIRE(p.process_search_options().minimize_first == true);
+  REQUIRE(p.process_search_options().known_saddles == true);
   REQUIRE(p.structure_comparison_options().distance_difference ==
           Catch::Approx(0.1));
   REQUIRE(p.rgpot_options().backend == "nwchemc");

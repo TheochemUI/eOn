@@ -836,6 +836,13 @@ CATALOG = {
           "ordinal": 1,
           "snake": "minimization_offset",
           "type": "Float64"
+        },
+        {
+          "capnp": "knownSaddles",
+          "default": True,
+          "ordinal": 2,
+          "snake": "known_saddles",
+          "type": "Bool"
         }
       ],
       "struct": "ProcessSearchOptions"

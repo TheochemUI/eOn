@@ -89,6 +89,7 @@ struct StructureComparisonOptions {
 struct ProcessSearchOptions {
   minimizeFirst @0 :Bool = true;
   minimizationOffset @1 :Float64 = 0.2;
+  knownSaddles @2 :Bool = true;
 }
 
 # ---------------------------------------------------------------------

@@ -1118,6 +1118,10 @@ Process Search:
             kind: boolean
             default: True
 
+        known_saddles:
+            kind: boolean
+            default: True
+
 ################################################################################
 
 Prefactor:

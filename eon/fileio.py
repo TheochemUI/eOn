@@ -266,6 +266,23 @@ def _file_ends_with_newline(path):
         return True
 
 
+def save_known_saddles(fileout, saddles, reactant):
+    '''
+    Write the known saddles of a state for a process search client.
+        saddles:  (saddle energy, Structure) pairs
+        reactant: the state's reactant; only its free atoms are written
+
+    Layout: "<count> <free atoms>", then per saddle its energy and one
+    "x y z" line per free atom, in reactant order.
+    '''
+    free = reactant.atom_is_free()
+    fileout.write("%d %d\n" % (len(saddles), int(free.sum())))
+    for energy, saddle in saddles:
+        fileout.write("%.10f\n" % energy)
+        for x, y, z in np.asarray(saddle.r)[free]:
+            fileout.write("%.6f %.6f %.6f\n" % (x, y, z))
+
+
 def savecon(fileout, p, w = 'w'):
     '''
     Save a con file via readcon.

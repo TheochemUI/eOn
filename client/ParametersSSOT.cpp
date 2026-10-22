@@ -168,6 +168,8 @@ void apply_ssot_defaults(Parameters &p) {
       GD::PROCESS_SEARCH_MINIMIZE_FIRST;
   ParametersLoadAccess::process_search_options(p).minimization_offset =
       GD::PROCESS_SEARCH_MINIMIZATION_OFFSET;
+  ParametersLoadAccess::process_search_options(p).known_saddles =
+      GD::PROCESS_SEARCH_KNOWN_SADDLES;
 
   ParametersLoadAccess::optimizer_options(p).method =
       opt_from_ssot(GD::OPTIMIZER_OPT_METHOD);

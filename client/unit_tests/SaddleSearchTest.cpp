@@ -83,6 +83,40 @@ TEST_CASE_METHOD(SaddleSearchFixture,
 }
 
 TEST_CASE_METHOD(SaddleSearchFixture,
+                 "MinModeSaddleSearch stops at a known saddle",
+                 "[saddle_search]") {
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 1000;
+  long nAtoms = matter->numberOfAtoms();
+  AtomMatrix mode = AtomMatrix::Zero(nAtoms, 3);
+  mode(0, 0) = 1.0;
+  mode(0, 1) = -0.5;
+  mode.normalize();
+  const AtomMatrix start = matter->getPositions();
+  const double reactantEnergy = matter->getPotentialEnergy();
+
+  MinModeSaddleSearch first(matter, mode, reactantEnergy, params, pot);
+  const size_t callsBefore = pot->forceCallCounter.load();
+  REQUIRE(first.run() == MinModeSaddleSearch::STATUS_GOOD);
+  const size_t fullCalls = pot->forceCallCounter.load() - callsBefore;
+  const AtomMatrix saddle = matter->getPositions();
+  const double saddleEnergy = matter->getPotentialEnergy();
+
+  auto again = std::make_shared<Matter>(pot, params);
+  *again = *matter;
+  again->setPositions(start);
+  MinModeSaddleSearch second(again, mode, reactantEnergy, params, pot);
+  second.setKnownSaddles({saddle}, {saddleEnergy});
+  const size_t againBefore = pot->forceCallCounter.load();
+  REQUIRE(second.run() == MinModeSaddleSearch::STATUS_KNOWN_SADDLE);
+  REQUIRE(pot->forceCallCounter.load() - againBefore < fullCalls);
+  REQUIRE(again->perAtomNorm(*matter) <
+          params.structure_comparison_options().distance_difference);
+  REQUIRE(MinModeSaddleSearch::statusMessage(
+              MinModeSaddleSearch::STATUS_KNOWN_SADDLE) ==
+          "Climb reached a known saddle");
+}
+
+TEST_CASE_METHOD(SaddleSearchFixture,
                  "MinModeSaddleSearch reports finite eigenvalue after run",
                  "[saddle_search]") {
   long nAtoms = matter->numberOfAtoms();

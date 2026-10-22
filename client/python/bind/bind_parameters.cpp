@@ -1332,6 +1332,16 @@ void bind_parameters(nb::module_ &m) {
             eonc::ParametersLoadAccess::process_search_options(s)
                 .minimize_first = v;
           })
+      .def_prop_rw(
+          "process_search_known_saddles",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::process_search_options(s)
+                .known_saddles;
+          },
+          [](eonc::Parameters &s, bool v) {
+            eonc::ParametersLoadAccess::process_search_options(s)
+                .known_saddles = v;
+          })
 
       // --- Structure comparison ---
 
