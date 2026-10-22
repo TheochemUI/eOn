@@ -1496,9 +1496,9 @@ class SaddleSearchConfig(BaseModel):
     perp_force_ratio: float = Field(
         default=0.0, description="The ratio of perpendicular force, undocumented."
     )
-    confine_positive_min_force: float = Field(
+    confine_positive_min_move: float = Field(
         default=0.5,
-        description="The minimum force for confining the positive region of the PES, undocumented.",
+        description="The minimum force component for confining the positive region of the PES. The client reads this key.",
     )
     confine_positive_scale_ratio: float = Field(
         default=0.9,

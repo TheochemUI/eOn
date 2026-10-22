@@ -43,6 +43,8 @@ Once the epicenter is chosen, all atoms within `displace_radius` of the
 epicenter are displaced. Each displaced atom receives a random perturbation
 drawn from a Gaussian distribution with standard deviation
 `displace_magnitude` (in Ångströms) independently in each Cartesian direction.
+When positive confinement is on, `confine_positive_min_move` is the minimum
+force component. That is the key the client reads.
 
 ### Displacing all listed atoms
 

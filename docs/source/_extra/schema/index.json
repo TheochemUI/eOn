@@ -133,7 +133,7 @@
         "max_single_displace",
         "remove_rotation",
         "perp_force_ratio",
-        "confine_positive_min_force",
+        "confine_positive_min_move",
         "confine_positive_scale_ratio",
         "confine_positive_boost",
         "confine_positive_min_active"

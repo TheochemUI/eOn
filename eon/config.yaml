@@ -1909,7 +1909,7 @@ Saddle Search:
             kind: int
             default: 20
 
-        confine_positive_min_force:
+        confine_positive_min_move:
             kind: float
             default: 0.5
 

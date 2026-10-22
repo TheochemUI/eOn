@@ -282,9 +282,9 @@
       "description": "The ratio of perpendicular force, undocumented.",
       "type": "number"
     },
-    "confine_positive_min_force": {
+    "confine_positive_min_move": {
       "default": 0.5,
-      "description": "The minimum force for confining the positive region of the PES, undocumented.",
+      "description": "The minimum force component for confining the positive region of the PES. The client reads this key.",
       "type": "number"
     },
     "confine_positive_scale_ratio": {
