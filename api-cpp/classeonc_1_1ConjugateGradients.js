@@ -8,11 +8,19 @@ var classeonc_1_1ConjugateGradients =
     [ "run", "classeonc_1_1ConjugateGradients.html#a3ac964ba30a70201233f36389f22e2c9", null ],
     [ "single_step", "classeonc_1_1ConjugateGradients.html#a1f4829d27c30d3e950c7525e564a9c92", null ],
     [ "step", "classeonc_1_1ConjugateGradients.html#ab6c546fa19fce2191794cc2f771b7abc", null ],
+    [ "m_atomCurv", "classeonc_1_1ConjugateGradients.html#a7702f4463ff1aefb064ac6e7ad985234", null ],
     [ "m_cg_i", "classeonc_1_1ConjugateGradients.html#a59e7cb42c970482dd523e0f52956433e", null ],
     [ "m_direction", "classeonc_1_1ConjugateGradients.html#aade8c61d0393fcc5bac7b5db8ce31614", null ],
     [ "m_directionNorm", "classeonc_1_1ConjugateGradients.html#a2de0bdb23d86e6eeb445a1fa0d4158d2", null ],
     [ "m_directionOld", "classeonc_1_1ConjugateGradients.html#a2fa4863deaee58bd920e5bcfd447ab28", null ],
     [ "m_force", "classeonc_1_1ConjugateGradients.html#a25bb3119cc6c478296f09434f7dcafbe", null ],
     [ "m_forceOld", "classeonc_1_1ConjugateGradients.html#ae01c04ea295a7d03490538974ba0ddab", null ],
-    [ "m_log", "classeonc_1_1ConjugateGradients.html#ae4cd215ba150decb4fd0dde059fc91c0", null ]
+    [ "m_haveSecant", "classeonc_1_1ConjugateGradients.html#a894bedb66ac7390303dd23cc67bac120", null ],
+    [ "m_lastForceNorm", "classeonc_1_1ConjugateGradients.html#a0fb74c99534e6a53ac63bd17bbfede96", null ],
+    [ "m_lastMotion", "classeonc_1_1ConjugateGradients.html#ab8e657a1718e00a72364b8e2ef22f875", null ],
+    [ "m_log", "classeonc_1_1ConjugateGradients.html#ae4cd215ba150decb4fd0dde059fc91c0", null ],
+    [ "m_secantDir", "classeonc_1_1ConjugateGradients.html#a687a6ce4f3494276460aa3ec206eec2d", null ],
+    [ "m_secantForce", "classeonc_1_1ConjugateGradients.html#ad0da1050c98fd5533e0ad94aaa970aea", null ],
+    [ "m_secantPos", "classeonc_1_1ConjugateGradients.html#a038153c785f449150f638b856e252781", null ],
+    [ "m_secantProj", "classeonc_1_1ConjugateGradients.html#a82e9470ba0845f4fa6cb0b4948ae8995", null ]
 ];

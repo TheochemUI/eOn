@@ -1,7 +1,9 @@
 var namespaceeonc_1_1helpers =
 [
     [ "create", "namespaceeonc_1_1helpers_1_1create.html", [
-      [ "mkOptim", "namespaceeonc_1_1helpers_1_1create.html#a5b0011df69b04b52916bd7150ab60fc4", null ]
+      [ "mkOptim", "namespaceeonc_1_1helpers_1_1create.html#a5b0011df69b04b52916bd7150ab60fc4", null ],
+      [ "rgminBackendMethod", "namespaceeonc_1_1helpers_1_1create.html#a24b176612de70bd79607315c85f8f8de", null ],
+      [ "rgminMethodFor", "namespaceeonc_1_1helpers_1_1create.html#a87a76c344015a2f92c9860ab10a1705f", null ]
     ] ],
     [ "eigen", "namespaceeonc_1_1helpers_1_1eigen.html", [
       [ "addVectorRow", "namespaceeonc_1_1helpers_1_1eigen.html#aeee29e62be5e7cd4e9ec8d1bfa30a5b7", null ],

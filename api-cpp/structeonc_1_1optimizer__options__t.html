@@ -252,6 +252,8 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:acab93a4b6bb247ebe449e4d509e82378" id="r_acab93a4b6bb247ebe449e4d509e82378"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a>&#160;</td><td class="memItemRight"><a class="el" href="#acab93a4b6bb247ebe449e4d509e82378">method</a> {<a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">OptType::CG</a>}</td></tr>
+<tr class="memitem:a47e7d4f1915ebc7611ef705246900b91" id="r_a47e7d4f1915ebc7611ef705246900b91"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a47e7d4f1915ebc7611ef705246900b91">backend</a> {&quot;eon&quot;}</td></tr>
+<tr class="memdesc:a47e7d4f1915ebc7611ef705246900b91"><td class="mdescLeft">&#160;</td><td class="mdescRight">"eon" or "rgmin".  <br /></td></tr>
 <tr class="memitem:acc0ff43c401ceac1e05987e84260294d" id="r_acc0ff43c401ceac1e05987e84260294d"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#acc0ff43c401ceac1e05987e84260294d">xtsci_method</a> {&quot;lbfgs&quot;}</td></tr>
 <tr class="memitem:acca28ae813934018cd3812df676ef2e1" id="r_acca28ae813934018cd3812df676ef2e1"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1optimizer__options__t_1_1xtsci__t.html">eonc::optimizer_options_t::xtsci_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#acca28ae813934018cd3812df676ef2e1">xtsci</a></td></tr>
 <tr class="memitem:a7e31e8289ce41b166812bf91dd32440c" id="r_a7e31e8289ce41b166812bf91dd32440c"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a7e31e8289ce41b166812bf91dd32440c">convergence_metric</a> {&quot;norm&quot;}</td></tr>
@@ -273,6 +275,26 @@ Public Attributes</h2></td></tr>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00255">255</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
 </div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a47e7d4f1915ebc7611ef705246900b91" name="a47e7d4f1915ebc7611ef705246900b91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47e7d4f1915ebc7611ef705246900b91">&#9670;&#160;</a></span>backend</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::optimizer_options_t::backend {&quot;eon&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"eon" or "rgmin". </p>
+<p>rgmin runs lbfgs, fire, cg, sd and qm as rgmin sessions wherever the objective's gradient is the derivative of its energy; band and min-mode translation steps stay on eOn's optimizers. </p>
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00260">260</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  260</span>{<span class="stringliteral">&quot;eon&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="add8050a2674351302e31a734c520a95a" name="add8050a2674351302e31a734c520a95a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#add8050a2674351302e31a734c520a95a">&#9670;&#160;</a></span>cg</h2>
 
@@ -299,8 +321,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00270">270</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  270</span>{0.01};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00274">274</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  274</span>{0.01};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -316,8 +338,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00266">266</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  266</span>{<span class="stringliteral">&quot;norm&quot;</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00270">270</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  270</span>{<span class="stringliteral">&quot;norm&quot;</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -333,7 +355,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00267">267</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00271">271</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
 
 </div>
 </div>
@@ -363,8 +385,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00268">268</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  268</span>{1000};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00272">272</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  272</span>{1000};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -380,8 +402,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00269">269</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  269</span>{0.2};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00273">273</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  273</span>{0.2};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -397,8 +419,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00274">274</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  274</span>{0.0}; <span class="comment">// computed: input / timeUnit</span></div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00278">278</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  278</span>{0.0}; <span class="comment">// computed: input / timeUnit</span></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -414,8 +436,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00273">273</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  273</span>{2.5};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00277">277</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  277</span>{2.5};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -491,8 +513,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00272">272</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  272</span>{0.0}; <span class="comment">// computed: input / timeUnit</span></div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00276">276</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  276</span>{0.0}; <span class="comment">// computed: input / timeUnit</span></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -508,8 +530,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00271">271</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  271</span>{1.0};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00275">275</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  275</span>{1.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -539,8 +561,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00257">257</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  257</span>{<span class="stringliteral">&quot;lbfgs&quot;</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00261">261</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  261</span>{<span class="stringliteral">&quot;lbfgs&quot;</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>

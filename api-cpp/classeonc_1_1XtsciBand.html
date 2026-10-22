@@ -418,8 +418,8 @@ Friends</h2></td></tr>
 <div class="ttc" id="aclasseonc_1_1XtsciBand_html_ac8856358569d1d02eea8adde44078f79"><div class="ttname"><a href="#ac8856358569d1d02eea8adde44078f79">eonc::XtsciBand::m_maxMove</a></div><div class="ttdeci">double m_maxMove</div><div class="ttdef"><b>Definition</b> <a href="XtsciBand_8h_source.html#l00058">XtsciBand.h:58</a></div></div>
 <div class="ttc" id="aclasseonc_1_1XtsciBand_html_ae5a31d96b67529efdb7ec9aa46db27bc"><div class="ttname"><a href="#ae5a31d96b67529efdb7ec9aa46db27bc">eonc::XtsciBand::m_springKs</a></div><div class="ttdeci">std::vector&lt; double &gt; m_springKs</div><div class="ttdef"><b>Definition</b> <a href="XtsciBand_8h_source.html#l00055">XtsciBand.h:55</a></div></div>
 <div class="ttc" id="astructeonc_1_1main__options__t_html_a75af4b974ecda59c75b5425a71001e32"><div class="ttname"><a href="structeonc_1_1main__options__t.html#a75af4b974ecda59c75b5425a71001e32">eonc::main_options_t::parallel</a></div><div class="ttdeci">bool parallel</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00042">ParametersOptions.h:42</a></div></div>
-<div class="ttc" id="astructeonc_1_1optimizer__options__t_1_1lbfgs__t_html_a50370f0adc5e4b6dec99a21ec7970a20"><div class="ttname"><a href="structeonc_1_1optimizer__options__t_1_1lbfgs__t.html#a50370f0adc5e4b6dec99a21ec7970a20">eonc::optimizer_options_t::lbfgs_t::memory</a></div><div class="ttdeci">long memory</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00280">ParametersOptions.h:280</a></div></div>
-<div class="ttc" id="astructeonc_1_1optimizer__options__t_html_ac66493c6be3d64dc0b86430b71abcade"><div class="ttname"><a href="structeonc_1_1optimizer__options__t.html#ac66493c6be3d64dc0b86430b71abcade">eonc::optimizer_options_t::max_move</a></div><div class="ttdeci">double max_move</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00269">ParametersOptions.h:269</a></div></div>
+<div class="ttc" id="astructeonc_1_1optimizer__options__t_1_1lbfgs__t_html_a50370f0adc5e4b6dec99a21ec7970a20"><div class="ttname"><a href="structeonc_1_1optimizer__options__t_1_1lbfgs__t.html#a50370f0adc5e4b6dec99a21ec7970a20">eonc::optimizer_options_t::lbfgs_t::memory</a></div><div class="ttdeci">long memory</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00284">ParametersOptions.h:284</a></div></div>
+<div class="ttc" id="astructeonc_1_1optimizer__options__t_html_ac66493c6be3d64dc0b86430b71abcade"><div class="ttname"><a href="structeonc_1_1optimizer__options__t.html#ac66493c6be3d64dc0b86430b71abcade">eonc::optimizer_options_t::max_move</a></div><div class="ttdeci">double max_move</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00273">ParametersOptions.h:273</a></div></div>
 <div class="ttc" id="astructeonc_1_1optimizer__options__t_html_aecd561f518b5642e657026cf221610f3"><div class="ttname"><a href="structeonc_1_1optimizer__options__t.html#aecd561f518b5642e657026cf221610f3">eonc::optimizer_options_t::lbfgs</a></div><div class="ttdeci">struct eonc::optimizer_options_t::lbfgs_t lbfgs</div></div>
 </div><!-- fragment -->
 </div>
@@ -592,24 +592,24 @@ template&lt;typename Work&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="XtsciBand_8cpp_source.html#l00564">564</a> of file <a class="el" href="XtsciBand_8cpp_source.html">XtsciBand.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  564</span>                                         {</div>
-<div class="line"><span class="lineno">  565</span>  <span class="keyword">const</span> <span class="keyword">auto</span> nImages = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;numImages + 2);</div>
-<div class="line"><span class="lineno">  566</span>  <span class="keyword">const</span> <span class="keyword">auto</span> nAtoms = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;atoms);</div>
-<div class="line"><span class="lineno">  567</span>  std::vector&lt;double&gt; positions(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nImages * 3 * nAtoms));</div>
-<div class="line"><span class="lineno">  568</span>  <span class="keywordflow">if</span> (rgsaddle_band_positions(<a class="code hl_variable" href="#a81b2c74c485f46df6c0351b87a00e119">m_band</a>, positions.data()) != RGSADDLE_OK) {</div>
-<div class="line"><span class="lineno">  569</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  570</span>  }</div>
-<div class="line"><span class="lineno">  571</span>  <span class="keyword">const</span> <span class="keyword">auto</span> dof = <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(3 * nAtoms);</div>
-<div class="line"><span class="lineno">  572</span>  <span class="keywordflow">for</span> (int64_t i = 0; i &lt; nImages; ++i) {</div>
-<div class="line"><span class="lineno">  573</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;pos = <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)]-&gt;getPositions();</div>
-<div class="line"><span class="lineno">  574</span>    <span class="keywordflow">if</span> (!std::equal(pos.data(), pos.data() + dof,</div>
-<div class="line"><span class="lineno">  575</span>                    positions.begin() + i * dof)) {</div>
-<div class="line"><span class="lineno">  576</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  577</span>    }</div>
-<div class="line"><span class="lineno">  578</span>  }</div>
-<div class="line"><span class="lineno">  579</span>  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  580</span>}</div>
+<p class="definition">Definition at line <a class="el" href="XtsciBand_8cpp_source.html#l00574">574</a> of file <a class="el" href="XtsciBand_8cpp_source.html">XtsciBand.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  574</span>                                         {</div>
+<div class="line"><span class="lineno">  575</span>  <span class="keyword">const</span> <span class="keyword">auto</span> nImages = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;numImages + 2);</div>
+<div class="line"><span class="lineno">  576</span>  <span class="keyword">const</span> <span class="keyword">auto</span> nAtoms = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;atoms);</div>
+<div class="line"><span class="lineno">  577</span>  std::vector&lt;double&gt; positions(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nImages * 3 * nAtoms));</div>
+<div class="line"><span class="lineno">  578</span>  <span class="keywordflow">if</span> (rgsaddle_band_positions(<a class="code hl_variable" href="#a81b2c74c485f46df6c0351b87a00e119">m_band</a>, positions.data()) != RGSADDLE_OK) {</div>
+<div class="line"><span class="lineno">  579</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  580</span>  }</div>
+<div class="line"><span class="lineno">  581</span>  <span class="keyword">const</span> <span class="keyword">auto</span> dof = <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(3 * nAtoms);</div>
+<div class="line"><span class="lineno">  582</span>  <span class="keywordflow">for</span> (int64_t i = 0; i &lt; nImages; ++i) {</div>
+<div class="line"><span class="lineno">  583</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;pos = <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)]-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  584</span>    <span class="keywordflow">if</span> (!std::equal(pos.data(), pos.data() + dof,</div>
+<div class="line"><span class="lineno">  585</span>                    positions.begin() + i * dof)) {</div>
+<div class="line"><span class="lineno">  586</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  587</span>    }</div>
+<div class="line"><span class="lineno">  588</span>  }</div>
+<div class="line"><span class="lineno">  589</span>  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  590</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -657,73 +657,80 @@ template&lt;typename Work&gt; </div>
 <div class="line"><span class="lineno">  459</span>  }</div>
 <div class="line"><span class="lineno">  460</span><span class="preprocessor">#endif</span></div>
 <div class="line"><span class="lineno">  461</span>  rgsaddle_report_t report{};</div>
-<div class="line"><span class="lineno">  462</span>  checkStatus(xts_band_step(<a class="code hl_variable" href="#a81b2c74c485f46df6c0351b87a00e119">m_band</a>, surfaceCallback, <span class="keyword">this</span>, &amp;report),</div>
-<div class="line"><span class="lineno">  463</span>              <span class="stringliteral">&quot;xts_band_step&quot;</span>);</div>
-<div class="line"><span class="lineno">  464</span>  <span class="keyword">const</span> <span class="keyword">auto</span> dof = <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ac074e61dba4a60ed4c896533bb5118bf">m_fixed</a>[0].size());</div>
-<div class="line"><span class="lineno">  465</span>  std::vector&lt;double&gt; positions(<a class="code hl_variable" href="#ac074e61dba4a60ed4c896533bb5118bf">m_fixed</a>.size() * <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(dof), 0.0);</div>
-<div class="line"><span class="lineno">  466</span>  checkStatus(rgsaddle_band_positions(<a class="code hl_variable" href="#a81b2c74c485f46df6c0351b87a00e119">m_band</a>, positions.data()),</div>
-<div class="line"><span class="lineno">  467</span>              <span class="stringliteral">&quot;rgsaddle_band_positions&quot;</span>);</div>
-<div class="line"><span class="lineno">  468</span>  <span class="comment">// The session reports -1 until an image climbs; the host then holds no</span></div>
-<div class="line"><span class="lineno">  469</span>  <span class="comment">// climbing image either, so its convergence test reads the whole band.</span></div>
-<div class="line"><span class="lineno">  470</span>  <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;climbingImage = report.ci_index &gt; 0 ? report.ci_index : 0;</div>
-<div class="line"><span class="lineno">  471</span>  <span class="keyword">const</span> int64_t interior = nImages - 2;</div>
-<div class="line"><span class="lineno">  472</span><span class="preprocessor">#if RGSADDLE_ABI_MINOR &gt;= 5</span></div>
-<div class="line"><span class="lineno">  473</span>  <span class="comment">// The session&#39;s evaluation of the accepted band and its projected force.</span></div>
-<div class="line"><span class="lineno">  474</span>  <span class="comment">// An image whose last evaluation was elsewhere (the solver backed off to</span></div>
-<div class="line"><span class="lineno">  475</span>  <span class="comment">// a point it evaluated earlier) takes that evaluation instead of a fresh</span></div>
-<div class="line"><span class="lineno">  476</span>  <span class="comment">// force call, and the host convergence check reads the session&#39;s force.</span></div>
-<div class="line"><span class="lineno">  477</span>  std::vector&lt;double&gt; energies(<a class="code hl_variable" href="#ac074e61dba4a60ed4c896533bb5118bf">m_fixed</a>.size());</div>
-<div class="line"><span class="lineno">  478</span>  std::vector&lt;double&gt; gradients(<a class="code hl_variable" href="#ac074e61dba4a60ed4c896533bb5118bf">m_fixed</a>.size() * <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(dof));</div>
-<div class="line"><span class="lineno">  479</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> evaluated =</div>
-<div class="line"><span class="lineno">  480</span>      rgsaddle_band_evaluation(<a class="code hl_variable" href="#a81b2c74c485f46df6c0351b87a00e119">m_band</a>, energies.data(), gradients.data(),</div>
-<div class="line"><span class="lineno">  481</span>                               <span class="keyword">nullptr</span>) == RGSADDLE_OK;</div>
-<div class="line"><span class="lineno">  482</span>  std::vector&lt;double&gt; projected(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(interior * dof));</div>
-<div class="line"><span class="lineno">  483</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> haveProjection =</div>
-<div class="line"><span class="lineno">  484</span>      rgsaddle_band_evaluation(<a class="code hl_variable" href="#a81b2c74c485f46df6c0351b87a00e119">m_band</a>, <span class="keyword">nullptr</span>, <span class="keyword">nullptr</span>, projected.data()) ==</div>
-<div class="line"><span class="lineno">  485</span>      RGSADDLE_OK;</div>
-<div class="line"><span class="lineno">  486</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  487</span>  <span class="comment">// Endpoints are fixed by the session. Each interior image takes the</span></div>
-<div class="line"><span class="lineno">  488</span>  <span class="comment">// accepted point; interior fixed atoms stay put. The accepted point is</span></div>
-<div class="line"><span class="lineno">  489</span>  <span class="comment">// usually the band&#39;s last evaluation, which the image still holds.</span></div>
-<div class="line"><span class="lineno">  490</span>  <a class="code hl_function" href="#a966ea52b513b113a5c908172ba1d51aa">forImages</a>(interior, [&amp;](int64_t k) {</div>
-<div class="line"><span class="lineno">  491</span>    <span class="keyword">const</span> <span class="keyword">auto</span> i = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k + 1);</div>
-<div class="line"><span class="lineno">  492</span>    Matter &amp;image = *<a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;path[i];</div>
-<div class="line"><span class="lineno">  493</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos =</div>
-<div class="line"><span class="lineno">  494</span>        AtomMatrix::Map(positions.data() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(i) * dof,</div>
-<div class="line"><span class="lineno">  495</span>                        <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;atoms, 3);</div>
-<div class="line"><span class="lineno">  496</span>    pinRows(<a class="code hl_variable" href="#ac074e61dba4a60ed4c896533bb5118bf">m_fixed</a>[i], image, &amp;pos);</div>
-<div class="line"><span class="lineno">  497</span>    moveTo(image, pos);</div>
-<div class="line"><span class="lineno">  498</span><span class="preprocessor">#if RGSADDLE_ABI_MINOR &gt;= 5</span></div>
-<div class="line"><span class="lineno">  499</span>    <span class="keywordflow">if</span> (evaluated &amp;&amp; image.<a class="code hl_function" href="classMatter.html#aa093532bd3da96f1e556173582439ba8">needsForceUpdate</a>()) {</div>
-<div class="line"><span class="lineno">  500</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> grad = AtomMatrix::Map(</div>
-<div class="line"><span class="lineno">  501</span>          gradients.data() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(i) * dof, <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;atoms,</div>
-<div class="line"><span class="lineno">  502</span>          3);</div>
-<div class="line"><span class="lineno">  503</span>      image.<a class="code hl_function" href="classMatter.html#ae8f48b323344180bbaa6277617a0f069">setEvaluation</a>(-grad, energies[i]);</div>
-<div class="line"><span class="lineno">  504</span>    }</div>
-<div class="line"><span class="lineno">  505</span>    <span class="keywordflow">if</span> (haveProjection) {</div>
-<div class="line"><span class="lineno">  506</span>      *<a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;projectedForce[i] = AtomMatrix::Map(</div>
-<div class="line"><span class="lineno">  507</span>          projected.data() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(k) * dof, <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;atoms,</div>
-<div class="line"><span class="lineno">  508</span>          3);</div>
-<div class="line"><span class="lineno">  509</span>    }</div>
-<div class="line"><span class="lineno">  510</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  511</span>  });</div>
-<div class="line"><span class="lineno">  512</span><span class="preprocessor">#if RGSADDLE_ABI_MINOR &gt;= 5</span></div>
-<div class="line"><span class="lineno">  513</span>  <span class="keywordflow">if</span> (haveProjection) {</div>
-<div class="line"><span class="lineno">  514</span>    <span class="comment">// The session already projected the force. The host convergence</span></div>
-<div class="line"><span class="lineno">  515</span>    <span class="comment">// check reads that force and does not rebuild it, so the highest</span></div>
-<div class="line"><span class="lineno">  516</span>    <span class="comment">// image (sp.con), the climbing image and the tangents (neb.dat) are</span></div>
-<div class="line"><span class="lineno">  517</span>    <span class="comment">// refreshed here from the accepted band.</span></div>
-<div class="line"><span class="lineno">  518</span>    <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;adoptSessionProjection(report.ci_index);</div>
-<div class="line"><span class="lineno">  519</span>    <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;movedAfterForceCall = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  520</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  521</span>  }</div>
-<div class="line"><span class="lineno">  522</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  523</span>  <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;movedAfterForceCall = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  524</span>}</div>
+<div class="line"><span class="lineno">  462</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> rc = xts_band_step(<a class="code hl_variable" href="#a81b2c74c485f46df6c0351b87a00e119">m_band</a>, surfaceCallback, <span class="keyword">this</span>, &amp;report);</div>
+<div class="line"><span class="lineno">  463</span><span class="preprocessor">#if RGSADDLE_ABI_MINOR &gt;= 17</span></div>
+<div class="line"><span class="lineno">  464</span>  <span class="comment">// A stalled step leaves the band as it was. The NEB loop then runs into</span></div>
+<div class="line"><span class="lineno">  465</span>  <span class="comment">// max_iterations, as it does when a host optimizer stops making progress.</span></div>
+<div class="line"><span class="lineno">  466</span>  <span class="keywordflow">if</span> (rc == RGSADDLE_STALLED) {</div>
+<div class="line"><span class="lineno">  467</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  468</span>  }</div>
+<div class="line"><span class="lineno">  469</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  470</span>  checkStatus(rc, <span class="stringliteral">&quot;xts_band_step&quot;</span>);</div>
+<div class="line"><span class="lineno">  471</span>  <span class="keyword">const</span> <span class="keyword">auto</span> dof = <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ac074e61dba4a60ed4c896533bb5118bf">m_fixed</a>[0].size());</div>
+<div class="line"><span class="lineno">  472</span>  std::vector&lt;double&gt; positions(<a class="code hl_variable" href="#ac074e61dba4a60ed4c896533bb5118bf">m_fixed</a>.size() * <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(dof), 0.0);</div>
+<div class="line"><span class="lineno">  473</span>  checkStatus(rgsaddle_band_positions(<a class="code hl_variable" href="#a81b2c74c485f46df6c0351b87a00e119">m_band</a>, positions.data()),</div>
+<div class="line"><span class="lineno">  474</span>              <span class="stringliteral">&quot;rgsaddle_band_positions&quot;</span>);</div>
+<div class="line"><span class="lineno">  475</span>  <span class="comment">// The session reports -1 until an image climbs; the host then holds no</span></div>
+<div class="line"><span class="lineno">  476</span>  <span class="comment">// climbing image either, so its convergence test reads the whole band.</span></div>
+<div class="line"><span class="lineno">  477</span>  <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;climbingImage = report.ci_index &gt; 0 ? report.ci_index : 0;</div>
+<div class="line"><span class="lineno">  478</span>  <span class="keyword">const</span> int64_t interior = nImages - 2;</div>
+<div class="line"><span class="lineno">  479</span><span class="preprocessor">#if RGSADDLE_ABI_MINOR &gt;= 5</span></div>
+<div class="line"><span class="lineno">  480</span>  <span class="comment">// The session&#39;s evaluation of the accepted band and its projected force.</span></div>
+<div class="line"><span class="lineno">  481</span>  <span class="comment">// An image whose last evaluation was elsewhere (the solver backed off to</span></div>
+<div class="line"><span class="lineno">  482</span>  <span class="comment">// a point it evaluated earlier) takes that evaluation instead of a fresh</span></div>
+<div class="line"><span class="lineno">  483</span>  <span class="comment">// force call, and the host convergence check reads the session&#39;s force.</span></div>
+<div class="line"><span class="lineno">  484</span>  std::vector&lt;double&gt; energies(<a class="code hl_variable" href="#ac074e61dba4a60ed4c896533bb5118bf">m_fixed</a>.size());</div>
+<div class="line"><span class="lineno">  485</span>  std::vector&lt;double&gt; gradients(<a class="code hl_variable" href="#ac074e61dba4a60ed4c896533bb5118bf">m_fixed</a>.size() * <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(dof));</div>
+<div class="line"><span class="lineno">  486</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> evaluated =</div>
+<div class="line"><span class="lineno">  487</span>      rgsaddle_band_evaluation(<a class="code hl_variable" href="#a81b2c74c485f46df6c0351b87a00e119">m_band</a>, energies.data(), gradients.data(),</div>
+<div class="line"><span class="lineno">  488</span>                               <span class="keyword">nullptr</span>) == RGSADDLE_OK;</div>
+<div class="line"><span class="lineno">  489</span>  std::vector&lt;double&gt; projected(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(interior * dof));</div>
+<div class="line"><span class="lineno">  490</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> haveProjection =</div>
+<div class="line"><span class="lineno">  491</span>      rgsaddle_band_evaluation(<a class="code hl_variable" href="#a81b2c74c485f46df6c0351b87a00e119">m_band</a>, <span class="keyword">nullptr</span>, <span class="keyword">nullptr</span>, projected.data()) ==</div>
+<div class="line"><span class="lineno">  492</span>      RGSADDLE_OK;</div>
+<div class="line"><span class="lineno">  493</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  494</span>  <span class="comment">// Endpoints are fixed by the session. Each interior image takes the</span></div>
+<div class="line"><span class="lineno">  495</span>  <span class="comment">// accepted point; interior fixed atoms stay put. The accepted point is</span></div>
+<div class="line"><span class="lineno">  496</span>  <span class="comment">// usually the band&#39;s last evaluation, which the image still holds.</span></div>
+<div class="line"><span class="lineno">  497</span>  <a class="code hl_function" href="#a966ea52b513b113a5c908172ba1d51aa">forImages</a>(interior, [&amp;](int64_t k) {</div>
+<div class="line"><span class="lineno">  498</span>    <span class="keyword">const</span> <span class="keyword">auto</span> i = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k + 1);</div>
+<div class="line"><span class="lineno">  499</span>    Matter &amp;image = *<a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;path[i];</div>
+<div class="line"><span class="lineno">  500</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos =</div>
+<div class="line"><span class="lineno">  501</span>        AtomMatrix::Map(positions.data() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(i) * dof,</div>
+<div class="line"><span class="lineno">  502</span>                        <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;atoms, 3);</div>
+<div class="line"><span class="lineno">  503</span>    pinRows(<a class="code hl_variable" href="#ac074e61dba4a60ed4c896533bb5118bf">m_fixed</a>[i], image, &amp;pos);</div>
+<div class="line"><span class="lineno">  504</span>    moveTo(image, pos);</div>
+<div class="line"><span class="lineno">  505</span><span class="preprocessor">#if RGSADDLE_ABI_MINOR &gt;= 5</span></div>
+<div class="line"><span class="lineno">  506</span>    <span class="keywordflow">if</span> (evaluated &amp;&amp; image.<a class="code hl_function" href="classMatter.html#aa093532bd3da96f1e556173582439ba8">needsForceUpdate</a>()) {</div>
+<div class="line"><span class="lineno">  507</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> grad = AtomMatrix::Map(</div>
+<div class="line"><span class="lineno">  508</span>          gradients.data() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(i) * dof, <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;atoms,</div>
+<div class="line"><span class="lineno">  509</span>          3);</div>
+<div class="line"><span class="lineno">  510</span>      image.<a class="code hl_function" href="classMatter.html#ae8f48b323344180bbaa6277617a0f069">setEvaluation</a>(-grad, energies[i]);</div>
+<div class="line"><span class="lineno">  511</span>    }</div>
+<div class="line"><span class="lineno">  512</span>    <span class="keywordflow">if</span> (haveProjection) {</div>
+<div class="line"><span class="lineno">  513</span>      *<a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;projectedForce[i] = AtomMatrix::Map(</div>
+<div class="line"><span class="lineno">  514</span>          projected.data() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(k) * dof, <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;atoms,</div>
+<div class="line"><span class="lineno">  515</span>          3);</div>
+<div class="line"><span class="lineno">  516</span>    }</div>
+<div class="line"><span class="lineno">  517</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  518</span>  });</div>
+<div class="line"><span class="lineno">  519</span><span class="preprocessor">#if RGSADDLE_ABI_MINOR &gt;= 5</span></div>
+<div class="line"><span class="lineno">  520</span>  <span class="keywordflow">if</span> (haveProjection) {</div>
+<div class="line"><span class="lineno">  521</span>    <span class="comment">// The session already projected the force. The host convergence</span></div>
+<div class="line"><span class="lineno">  522</span>    <span class="comment">// check reads that force and does not rebuild it, so the highest</span></div>
+<div class="line"><span class="lineno">  523</span>    <span class="comment">// image (sp.con), the climbing image and the tangents (neb.dat) are</span></div>
+<div class="line"><span class="lineno">  524</span>    <span class="comment">// refreshed here from the accepted band.</span></div>
+<div class="line"><span class="lineno">  525</span>    <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;adoptSessionProjection(report.ci_index);</div>
+<div class="line"><span class="lineno">  526</span>    <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;movedAfterForceCall = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  527</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  528</span>  }</div>
+<div class="line"><span class="lineno">  529</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  530</span>  <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;movedAfterForceCall = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  531</span>}</div>
 <div class="ttc" id="aclassMatter_html_aa093532bd3da96f1e556173582439ba8"><div class="ttname"><a href="classMatter.html#aa093532bd3da96f1e556173582439ba8">Matter::needsForceUpdate</a></div><div class="ttdeci">bool needsForceUpdate() const</div><div class="ttdoc">Whether forces need recomputation (positions or surface epoch changed).</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00220">Matter.h:220</a></div></div>
 <div class="ttc" id="aclassMatter_html_ae8f48b323344180bbaa6277617a0f069"><div class="ttname"><a href="classMatter.html#ae8f48b323344180bbaa6277617a0f069">Matter::setEvaluation</a></div><div class="ttdeci">void setEvaluation(const AtomMatrix &amp;forces, double energy)</div><div class="ttdoc">Puts a known evaluation back after a position reset: the forces and energy of a geometry this object ...</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00238">Matter.h:238</a></div></div>
-<div class="ttc" id="aclasseonc_1_1XtsciBand_html_a0129886a46261e78b12523cff96061d4"><div class="ttname"><a href="#a0129886a46261e78b12523cff96061d4">eonc::XtsciBand::sessionMatchesPath</a></div><div class="ttdeci">bool sessionMatchesPath() const</div><div class="ttdef"><b>Definition</b> <a href="XtsciBand_8cpp_source.html#l00564">XtsciBand.cpp:564</a></div></div>
-<div class="ttc" id="aclasseonc_1_1XtsciBand_html_a3367658d5f0340df5f77e00cfd89f61a"><div class="ttname"><a href="#a3367658d5f0340df5f77e00cfd89f61a">eonc::XtsciBand::stepSolid</a></div><div class="ttdeci">void stepSolid()</div><div class="ttdef"><b>Definition</b> <a href="XtsciBand_8cpp_source.html#l00526">XtsciBand.cpp:526</a></div></div>
+<div class="ttc" id="aclasseonc_1_1XtsciBand_html_a0129886a46261e78b12523cff96061d4"><div class="ttname"><a href="#a0129886a46261e78b12523cff96061d4">eonc::XtsciBand::sessionMatchesPath</a></div><div class="ttdeci">bool sessionMatchesPath() const</div><div class="ttdef"><b>Definition</b> <a href="XtsciBand_8cpp_source.html#l00574">XtsciBand.cpp:574</a></div></div>
+<div class="ttc" id="aclasseonc_1_1XtsciBand_html_a3367658d5f0340df5f77e00cfd89f61a"><div class="ttname"><a href="#a3367658d5f0340df5f77e00cfd89f61a">eonc::XtsciBand::stepSolid</a></div><div class="ttdeci">void stepSolid()</div><div class="ttdef"><b>Definition</b> <a href="XtsciBand_8cpp_source.html#l00533">XtsciBand.cpp:533</a></div></div>
 <div class="ttc" id="aclasseonc_1_1XtsciBand_html_a966ea52b513b113a5c908172ba1d51aa"><div class="ttname"><a href="#a966ea52b513b113a5c908172ba1d51aa">eonc::XtsciBand::forImages</a></div><div class="ttdeci">void forImages(int64_t n, Work &amp;&amp;work)</div><div class="ttdef"><b>Definition</b> <a href="XtsciBand_8cpp_source.html#l00403">XtsciBand.cpp:403</a></div></div>
 <div class="ttc" id="aclasseonc_1_1XtsciBand_html_ac074e61dba4a60ed4c896533bb5118bf"><div class="ttname"><a href="#ac074e61dba4a60ed4c896533bb5118bf">eonc::XtsciBand::m_fixed</a></div><div class="ttdeci">std::vector&lt; AtomMatrix &gt; m_fixed</div><div class="ttdef"><b>Definition</b> <a href="XtsciBand_8h_source.html#l00057">XtsciBand.h:57</a></div></div>
 <div class="ttc" id="aclasseonc_1_1XtsciBand_html_adb3d7ad08e840078dd00888d86a6f2a7"><div class="ttname"><a href="#adb3d7ad08e840078dd00888d86a6f2a7">eonc::XtsciBand::syncFromPath</a></div><div class="ttdeci">void syncFromPath()</div><div class="ttdoc">Copy the current path into the session.</div><div class="ttdef"><b>Definition</b> <a href="XtsciBand_8cpp_source.html#l00414">XtsciBand.cpp:414</a></div></div>
@@ -753,44 +760,47 @@ template&lt;typename Work&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="XtsciBand_8cpp_source.html#l00526">526</a> of file <a class="el" href="XtsciBand_8cpp_source.html">XtsciBand.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  526</span>                          {</div>
-<div class="line"><span class="lineno">  527</span><span class="preprocessor">#if RGSADDLE_ABI_MINOR &gt;= 17</span></div>
-<div class="line"><span class="lineno">  528</span>  <span class="keyword">const</span> <span class="keyword">auto</span> nImages = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;numImages + 2);</div>
-<div class="line"><span class="lineno">  529</span>  <span class="keyword">const</span> <span class="keyword">auto</span> nAtoms = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;atoms);</div>
-<div class="line"><span class="lineno">  530</span>  <a class="code hl_variable" href="#ac074e61dba4a60ed4c896533bb5118bf">m_fixed</a>.resize(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nImages));</div>
-<div class="line"><span class="lineno">  531</span>  <span class="keywordflow">for</span> (int64_t i = 0; i &lt; nImages; ++i) {</div>
-<div class="line"><span class="lineno">  532</span>    <a class="code hl_variable" href="#ac074e61dba4a60ed4c896533bb5118bf">m_fixed</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] = <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;path[i]-&gt;getPositions();</div>
-<div class="line"><span class="lineno">  533</span>  }</div>
-<div class="line"><span class="lineno">  534</span>  rgsaddle_report_t report{};</div>
-<div class="line"><span class="lineno">  535</span>  checkStatus(</div>
-<div class="line"><span class="lineno">  536</span>      rgsaddle_band_step_solid(<a class="code hl_variable" href="#a81b2c74c485f46df6c0351b87a00e119">m_band</a>, solidSurfaceCallback, <span class="keyword">this</span>, &amp;report),</div>
-<div class="line"><span class="lineno">  537</span>      <span class="stringliteral">&quot;rgsaddle_band_step_solid&quot;</span>);</div>
-<div class="line"><span class="lineno">  538</span>  <span class="keyword">const</span> <span class="keyword">auto</span> dof = <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(3 * nAtoms);</div>
-<div class="line"><span class="lineno">  539</span>  std::vector&lt;double&gt; positions(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nImages * dof));</div>
-<div class="line"><span class="lineno">  540</span>  std::vector&lt;double&gt; cells(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nImages * 9));</div>
-<div class="line"><span class="lineno">  541</span>  checkStatus(rgsaddle_band_positions(<a class="code hl_variable" href="#a81b2c74c485f46df6c0351b87a00e119">m_band</a>, positions.data()),</div>
-<div class="line"><span class="lineno">  542</span>              <span class="stringliteral">&quot;rgsaddle_band_positions&quot;</span>);</div>
-<div class="line"><span class="lineno">  543</span>  checkStatus(rgsaddle_band_cells(<a class="code hl_variable" href="#a81b2c74c485f46df6c0351b87a00e119">m_band</a>, cells.data()), <span class="stringliteral">&quot;rgsaddle_band_cells&quot;</span>);</div>
-<div class="line"><span class="lineno">  544</span>  <span class="keywordflow">for</span> (int64_t i = 1; i + 1 &lt; nImages; ++i) {</div>
-<div class="line"><span class="lineno">  545</span>    Matter &amp;image = *<a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)];</div>
-<div class="line"><span class="lineno">  546</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos =</div>
-<div class="line"><span class="lineno">  547</span>        AtomMatrix::Map(positions.data() + i * dof, <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;atoms, 3);</div>
-<div class="line"><span class="lineno">  548</span>    pinRows(<a class="code hl_variable" href="#ac074e61dba4a60ed4c896533bb5118bf">m_fixed</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)], image, &amp;pos);</div>
-<div class="line"><span class="lineno">  549</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell = cellFromRowMajor(cells.data() + 9 * i);</div>
-<div class="line"><span class="lineno">  550</span>    <span class="keywordflow">if</span> (image.<a class="code hl_function" href="classMatter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>() != cell) {</div>
-<div class="line"><span class="lineno">  551</span>      image.<a class="code hl_function" href="classMatter.html#a3c4002006e09f4e4b7fa2ffbf191db26">setCell</a>(cell);</div>
-<div class="line"><span class="lineno">  552</span>    }</div>
-<div class="line"><span class="lineno">  553</span>    moveTo(image, pos);</div>
-<div class="line"><span class="lineno">  554</span>  }</div>
-<div class="line"><span class="lineno">  555</span>  <span class="keywordflow">if</span> (report.ci_index &gt;= 0) {</div>
-<div class="line"><span class="lineno">  556</span>    <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;climbingImage = report.ci_index;</div>
-<div class="line"><span class="lineno">  557</span>  }</div>
-<div class="line"><span class="lineno">  558</span>  <span class="comment">// eOn&#39;s convergence force reads its own joint projection of the moved</span></div>
-<div class="line"><span class="lineno">  559</span>  <span class="comment">// band (projectedForce and projectedCellForce); rebuild it there.</span></div>
-<div class="line"><span class="lineno">  560</span>  <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;movedAfterForceCall = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  561</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  562</span>}</div>
+<p class="definition">Definition at line <a class="el" href="XtsciBand_8cpp_source.html#l00533">533</a> of file <a class="el" href="XtsciBand_8cpp_source.html">XtsciBand.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  533</span>                          {</div>
+<div class="line"><span class="lineno">  534</span><span class="preprocessor">#if RGSADDLE_ABI_MINOR &gt;= 17</span></div>
+<div class="line"><span class="lineno">  535</span>  <span class="keyword">const</span> <span class="keyword">auto</span> nImages = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;numImages + 2);</div>
+<div class="line"><span class="lineno">  536</span>  <span class="keyword">const</span> <span class="keyword">auto</span> nAtoms = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;atoms);</div>
+<div class="line"><span class="lineno">  537</span>  <a class="code hl_variable" href="#ac074e61dba4a60ed4c896533bb5118bf">m_fixed</a>.resize(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nImages));</div>
+<div class="line"><span class="lineno">  538</span>  <span class="keywordflow">for</span> (int64_t i = 0; i &lt; nImages; ++i) {</div>
+<div class="line"><span class="lineno">  539</span>    <a class="code hl_variable" href="#ac074e61dba4a60ed4c896533bb5118bf">m_fixed</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] = <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;path[i]-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  540</span>  }</div>
+<div class="line"><span class="lineno">  541</span>  rgsaddle_report_t report{};</div>
+<div class="line"><span class="lineno">  542</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> rc =</div>
+<div class="line"><span class="lineno">  543</span>      rgsaddle_band_step_solid(<a class="code hl_variable" href="#a81b2c74c485f46df6c0351b87a00e119">m_band</a>, solidSurfaceCallback, <span class="keyword">this</span>, &amp;report);</div>
+<div class="line"><span class="lineno">  544</span>  <span class="keywordflow">if</span> (rc == RGSADDLE_STALLED) {</div>
+<div class="line"><span class="lineno">  545</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  546</span>  }</div>
+<div class="line"><span class="lineno">  547</span>  checkStatus(rc, <span class="stringliteral">&quot;rgsaddle_band_step_solid&quot;</span>);</div>
+<div class="line"><span class="lineno">  548</span>  <span class="keyword">const</span> <span class="keyword">auto</span> dof = <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(3 * nAtoms);</div>
+<div class="line"><span class="lineno">  549</span>  std::vector&lt;double&gt; positions(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nImages * dof));</div>
+<div class="line"><span class="lineno">  550</span>  std::vector&lt;double&gt; cells(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nImages * 9));</div>
+<div class="line"><span class="lineno">  551</span>  checkStatus(rgsaddle_band_positions(<a class="code hl_variable" href="#a81b2c74c485f46df6c0351b87a00e119">m_band</a>, positions.data()),</div>
+<div class="line"><span class="lineno">  552</span>              <span class="stringliteral">&quot;rgsaddle_band_positions&quot;</span>);</div>
+<div class="line"><span class="lineno">  553</span>  checkStatus(rgsaddle_band_cells(<a class="code hl_variable" href="#a81b2c74c485f46df6c0351b87a00e119">m_band</a>, cells.data()), <span class="stringliteral">&quot;rgsaddle_band_cells&quot;</span>);</div>
+<div class="line"><span class="lineno">  554</span>  <span class="keywordflow">for</span> (int64_t i = 1; i + 1 &lt; nImages; ++i) {</div>
+<div class="line"><span class="lineno">  555</span>    Matter &amp;image = *<a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)];</div>
+<div class="line"><span class="lineno">  556</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos =</div>
+<div class="line"><span class="lineno">  557</span>        AtomMatrix::Map(positions.data() + i * dof, <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;atoms, 3);</div>
+<div class="line"><span class="lineno">  558</span>    pinRows(<a class="code hl_variable" href="#ac074e61dba4a60ed4c896533bb5118bf">m_fixed</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)], image, &amp;pos);</div>
+<div class="line"><span class="lineno">  559</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell = cellFromRowMajor(cells.data() + 9 * i);</div>
+<div class="line"><span class="lineno">  560</span>    <span class="keywordflow">if</span> (image.<a class="code hl_function" href="classMatter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>() != cell) {</div>
+<div class="line"><span class="lineno">  561</span>      image.<a class="code hl_function" href="classMatter.html#a3c4002006e09f4e4b7fa2ffbf191db26">setCell</a>(cell);</div>
+<div class="line"><span class="lineno">  562</span>    }</div>
+<div class="line"><span class="lineno">  563</span>    moveTo(image, pos);</div>
+<div class="line"><span class="lineno">  564</span>  }</div>
+<div class="line"><span class="lineno">  565</span>  <span class="keywordflow">if</span> (report.ci_index &gt;= 0) {</div>
+<div class="line"><span class="lineno">  566</span>    <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;climbingImage = report.ci_index;</div>
+<div class="line"><span class="lineno">  567</span>  }</div>
+<div class="line"><span class="lineno">  568</span>  <span class="comment">// eOn&#39;s convergence force reads its own joint projection of the moved</span></div>
+<div class="line"><span class="lineno">  569</span>  <span class="comment">// band (projectedForce and projectedCellForce); rebuild it there.</span></div>
+<div class="line"><span class="lineno">  570</span>  <a class="code hl_variable" href="#a0926f776e6dc24a017b26048d53c458d">m_neb</a>-&gt;movedAfterForceCall = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  571</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  572</span>}</div>
 <div class="ttc" id="aclassMatter_html_a3c4002006e09f4e4b7fa2ffbf191db26"><div class="ttname"><a href="classMatter.html#a3c4002006e09f4e4b7fa2ffbf191db26">Matter::setCell</a></div><div class="ttdeci">void setCell(const Matrix3d &amp;newCell)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00344">Matter.cpp:344</a></div></div>
 <div class="ttc" id="aclassMatter_html_a527727dfd88d55bc617c3633a1ca5776"><div class="ttname"><a href="classMatter.html#a527727dfd88d55bc617c3633a1ca5776">Matter::getCell</a></div><div class="ttdeci">Matrix3d getCell() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00342">Matter.cpp:342</a></div></div>
 </div><!-- fragment -->

@@ -19,6 +19,7 @@
         "global_optimization",
         "gp_surrogate",
         "hessian",
+        "instanton",
         "minimization",
         "monte_carlo",
         "molecular_dynamics",

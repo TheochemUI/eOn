@@ -18,14 +18,60 @@
     },
     "thermostat": {
       "default": "none",
-      "description": "Thermostat to use for the dynamics simulation.\n\nOptions:\n- ``none``: NVE dynamics with the verlet algorithm. Initial velocities set by temperature.\n- ``andersen``: Andersen thermostat with the Verlet algorithm.\n- ``langevin``: Langevin thermostat with the Verlet algorithm.\n- ``nose_hoover``: Nosé-Hoover thermostat with the Verlet algorithm.",
+      "description": "Thermostat to use for the dynamics simulation.\n\nOptions:\n- ``none``: NVE dynamics with the verlet algorithm. Initial velocities set by temperature.\n- ``andersen``: Andersen thermostat with the Verlet algorithm.\n- ``langevin``: Langevin thermostat with the Verlet algorithm.\n- ``nose_hoover``: Nosé-Hoover thermostat with the Verlet algorithm.\n- ``pile``: path-integral Langevin equation on the ring-polymer normal modes.\n- ``piglet``: normal-mode GLE on the internal modes, Langevin on the centroid.",
       "enum": [
         "none",
         "andersen",
         "langevin",
-        "nose_hoover"
+        "nose_hoover",
+        "pile",
+        "piglet"
       ],
       "type": "string"
+    },
+    "path_beads": {
+      "default": 8,
+      "description": "Beads in a pile or piglet trajectory.",
+      "minimum": 1,
+      "type": "integer"
+    },
+    "path_springs": {
+      "default": "trotter",
+      "description": "Trotter ring-polymer springs, or economised springs. eco is refused with piglet.",
+      "enum": [
+        "trotter",
+        "eco"
+      ],
+      "type": "string"
+    },
+    "path_eco_omega_max": {
+      "default": 0.0,
+      "description": "Highest physical frequency, in internal frequency units, reproduced by economised springs.",
+      "minimum": 0.0,
+      "type": "number"
+    },
+    "path_gle_file": {
+      "default": "",
+      "description": "Normal-mode GLE matrices for piglet. The file starts with the mode count and the matrix dimension, then each mode's drift matrix and covariance.",
+      "type": "string"
+    },
+    "path_pile_tau": {
+      "default": 100.0,
+      "description": "Centroid Langevin damping time, in femtoseconds.",
+      "exclusiveMinimum": 0.0,
+      "type": "number"
+    },
+    "path_pile_scale": {
+      "default": 1.0,
+      "description": "Scales the critical damping of the internal PILE modes.",
+      "exclusiveMinimum": 0.0,
+      "type": "number"
+    },
+    "path_seed": {
+      "default": 1,
+      "description": "Seed for the path-integral random numbers.",
+      "minimum": 0,
+      "type": "integer"
     },
     "andersen_collision_period": {
       "default": 100.0,

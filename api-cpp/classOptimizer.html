@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classOptimizer
 <area href="classeonc_1_1LBFGS.html" alt="eonc::LBFGS" shape="rect" coords="334,56,491,80"/>
 <area href="classeonc_1_1Quickmin.html" alt="eonc::Quickmin" shape="rect" coords="501,56,658,80"/>
 <area href="classeonc_1_1SteepestDescent.html" alt="eonc::SteepestDescent" shape="rect" coords="668,56,825,80"/>
-<area href="classeonc_1_1XtsciOptimizer.html" title="xtsci-optimize backend." alt="eonc::XtsciOptimizer" shape="rect" coords="835,56,992,80"/>
+<area href="classeonc_1_1XtsciOptimizer.html" title="rgmin backend (opt_method = xtsci, or opt_backend = rgmin)." alt="eonc::XtsciOptimizer" shape="rect" coords="835,56,992,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -281,7 +281,7 @@ Private Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Abstract base of the structure optimizers. </p>
 
-<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00065">65</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00068">68</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a51ef8ef5f774fa7125131d8a5dd72710" name="a51ef8ef5f774fa7125131d8a5dd72710"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a51ef8ef5f774fa7125131d8a5dd72710">&#9670;&#160;</a></span>Optimizer() <span class="overload">[1/4]</span></h2>
@@ -310,16 +310,16 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00074">74</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   76</span>      : <a class="code hl_variable" href="#a1567f50d8b2ed886cd5805cd26d4f1ed">m_otype</a>{a_config.opts.method}, <a class="code hl_variable" href="#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>{a_config}, <a class="code hl_variable" href="#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>{a_objf} {</div>
-<div class="line"><span class="lineno">   77</span>    <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(</div>
-<div class="line"><span class="lineno">   78</span>        <span class="stringliteral">&quot;You should explicitly set an optimizer while constructing the &quot;</span></div>
-<div class="line"><span class="lineno">   79</span>        <span class="stringliteral">&quot;optimizer!!\n Defaulting to opt_method from the parameters&quot;</span>);</div>
-<div class="line"><span class="lineno">   80</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00077">77</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   79</span>      : <a class="code hl_variable" href="#a1567f50d8b2ed886cd5805cd26d4f1ed">m_otype</a>{a_config.opts.method}, <a class="code hl_variable" href="#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>{a_config}, <a class="code hl_variable" href="#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>{a_objf} {</div>
+<div class="line"><span class="lineno">   80</span>    <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(</div>
+<div class="line"><span class="lineno">   81</span>        <span class="stringliteral">&quot;You should explicitly set an optimizer while constructing the &quot;</span></div>
+<div class="line"><span class="lineno">   82</span>        <span class="stringliteral">&quot;optimizer!!\n Defaulting to opt_method from the parameters&quot;</span>);</div>
+<div class="line"><span class="lineno">   83</span>  }</div>
 <div class="ttc" id="aEonLogger_8h_html_a85fddaf0620c36ee3fcf865df53a9327"><div class="ttname"><a href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a></div><div class="ttdeci">#define EONC_LOG_WARNING(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00322">EonLogger.h:322</a></div></div>
-<div class="ttc" id="aclassOptimizer_html_a1567f50d8b2ed886cd5805cd26d4f1ed"><div class="ttname"><a href="#a1567f50d8b2ed886cd5805cd26d4f1ed">Optimizer::m_otype</a></div><div class="ttdeci">const OptType m_otype</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00067">Optimizer.h:67</a></div></div>
-<div class="ttc" id="aclassOptimizer_html_a3bfcee12036bd655e29a065e8e1c1f4d"><div class="ttname"><a href="#a3bfcee12036bd655e29a065e8e1c1f4d">Optimizer::m_optConfig</a></div><div class="ttdeci">const OptimizerConfig m_optConfig</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00070">Optimizer.h:70</a></div></div>
-<div class="ttc" id="aclassOptimizer_html_ac396cbda1caadf57ff9df7eda4db1822"><div class="ttname"><a href="#ac396cbda1caadf57ff9df7eda4db1822">Optimizer::m_objf</a></div><div class="ttdeci">std::shared_ptr&lt; ObjectiveFunction &gt; m_objf</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00071">Optimizer.h:71</a></div></div>
+<div class="ttc" id="aclassOptimizer_html_a1567f50d8b2ed886cd5805cd26d4f1ed"><div class="ttname"><a href="#a1567f50d8b2ed886cd5805cd26d4f1ed">Optimizer::m_otype</a></div><div class="ttdeci">const OptType m_otype</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00070">Optimizer.h:70</a></div></div>
+<div class="ttc" id="aclassOptimizer_html_a3bfcee12036bd655e29a065e8e1c1f4d"><div class="ttname"><a href="#a3bfcee12036bd655e29a065e8e1c1f4d">Optimizer::m_optConfig</a></div><div class="ttdeci">const OptimizerConfig m_optConfig</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00073">Optimizer.h:73</a></div></div>
+<div class="ttc" id="aclassOptimizer_html_ac396cbda1caadf57ff9df7eda4db1822"><div class="ttname"><a href="#ac396cbda1caadf57ff9df7eda4db1822">Optimizer::m_objf</a></div><div class="ttdeci">std::shared_ptr&lt; ObjectiveFunction &gt; m_objf</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00074">Optimizer.h:74</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -355,8 +355,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00081">81</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   83</span>      : <a class="code hl_variable" href="#a1567f50d8b2ed886cd5805cd26d4f1ed">m_otype</a>{a_optype}, <a class="code hl_variable" href="#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>{a_config}, <a class="code hl_variable" href="#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>{a_objf} {}</div>
+<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00084">84</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   86</span>      : <a class="code hl_variable" href="#a1567f50d8b2ed886cd5805cd26d4f1ed">m_otype</a>{a_optype}, <a class="code hl_variable" href="#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>{a_config}, <a class="code hl_variable" href="#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>{a_objf} {}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -387,9 +387,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00087">87</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   89</span>      : <a class="code hl_function" href="#a51ef8ef5f774fa7125131d8a5dd72710">Optimizer</a>(a_objf, OptimizerConfig::fromParams(a_params)) {}</div>
-<div class="ttc" id="aclassOptimizer_html_a51ef8ef5f774fa7125131d8a5dd72710"><div class="ttname"><a href="#a51ef8ef5f774fa7125131d8a5dd72710">Optimizer::Optimizer</a></div><div class="ttdeci">Optimizer(std::shared_ptr&lt; ObjectiveFunction &gt; a_objf, const OptimizerConfig &amp;a_config)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00074">Optimizer.h:74</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00090">90</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   92</span>      : <a class="code hl_function" href="#a51ef8ef5f774fa7125131d8a5dd72710">Optimizer</a>(a_objf, OptimizerConfig::fromParams(a_params)) {}</div>
+<div class="ttc" id="aclassOptimizer_html_a51ef8ef5f774fa7125131d8a5dd72710"><div class="ttname"><a href="#a51ef8ef5f774fa7125131d8a5dd72710">Optimizer::Optimizer</a></div><div class="ttdeci">Optimizer(std::shared_ptr&lt; ObjectiveFunction &gt; a_objf, const OptimizerConfig &amp;a_config)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00077">Optimizer.h:77</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -425,8 +425,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00091">91</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   93</span>      : <a class="code hl_function" href="#a51ef8ef5f774fa7125131d8a5dd72710">Optimizer</a>(a_objf, a_optype, OptimizerConfig::fromParams(a_params)) {}</div>
+<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00094">94</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   96</span>      : <a class="code hl_function" href="#a51ef8ef5f774fa7125131d8a5dd72710">Optimizer</a>(a_objf, a_optype, OptimizerConfig::fromParams(a_params)) {}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -479,8 +479,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00102">102</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  102</span>{}</div>
+<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00105">105</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  105</span>{}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -559,7 +559,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00071">71</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00074">74</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
 
 </div>
 </div>
@@ -583,7 +583,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00070">70</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00073">73</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
 
 </div>
 </div>
@@ -607,7 +607,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00067">67</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00070">70</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
 
 </div>
 </div>

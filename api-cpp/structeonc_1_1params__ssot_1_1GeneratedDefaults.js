@@ -52,6 +52,7 @@ var structeonc_1_1params__ssot_1_1GeneratedDefaults =
     [ "OPTIMIZER_MAX_ITERATIONS", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a0cff4ed3ea74eb17564607a442e47dfb", null ],
     [ "OPTIMIZER_MAX_MOVE", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a1d8631a0bf4d30afe0511ea401f24268", null ],
     [ "OPTIMIZER_MAX_TIME_STEP", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a1fa16a6f2ad786a4a7d234bc9c676282", null ],
+    [ "OPTIMIZER_OPT_BACKEND", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a62de0390d949989b71351fd5226b7c5d", null ],
     [ "OPTIMIZER_OPT_METHOD", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a92ba85e0edc7622027f846fb1266015f", null ],
     [ "OPTIMIZER_QUICKMIN_STEEPEST_DESCENT", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a5b26fc187cc40982508f30f300b507b7", null ],
     [ "OPTIMIZER_SD_ALPHA", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a49476e91ab7d7a76d22b4da03c124c59", null ],

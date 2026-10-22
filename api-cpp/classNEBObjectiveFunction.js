@@ -12,6 +12,7 @@ var classNEBObjectiveFunction =
     [ "gradientMatchesEnergy", "classNEBObjectiveFunction.html#a89d1e5655bca0863be93d9aabcc85e41", null ],
     [ "isConverged", "classNEBObjectiveFunction.html#a8e752fbd1e367a9c573239cb20e01341", null ],
     [ "isUncertain", "classNEBObjectiveFunction.html#ace98066ce47a2bd62c91b9ec68636734", null ],
+    [ "reuseDisplacementCurvature", "classNEBObjectiveFunction.html#abb4cc2cd409959a9e7603a5f398e4bc9", null ],
     [ "setPositions", "classNEBObjectiveFunction.html#af16aa1b71afc9ded3769415a31aad88b", null ],
     [ "supportsFiniteDifferenceCurvature", "classNEBObjectiveFunction.html#a68ab21a59496d0ed70471e5b8a3ee30e", null ],
     [ "neb", "classNEBObjectiveFunction.html#a7f5773f645eaaaadf740cf82af64b760", null ],

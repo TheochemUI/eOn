@@ -9,6 +9,7 @@ var classeonc_1_1CollectiveIDPPObjectiveFunction =
     [ "getGradient", "classeonc_1_1CollectiveIDPPObjectiveFunction.html#ae56376728840b0ce19ab0ebbc02dae89", null ],
     [ "getIDPPForces", "classeonc_1_1CollectiveIDPPObjectiveFunction.html#aea3cbca62ba66d196b1cc55d88fce469", null ],
     [ "getPositions", "classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad7ce828dd4a5e7d148638c537720d071", null ],
+    [ "gradientMatchesEnergy", "classeonc_1_1CollectiveIDPPObjectiveFunction.html#a01444cc9eeee2b94cfcad6cf86d8d87f", null ],
     [ "isConverged", "classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad14619c344e18ab9d89134de660af44e", null ],
     [ "setPositions", "classeonc_1_1CollectiveIDPPObjectiveFunction.html#a074596ff89086f0b6c4c4735031d53d0", null ],
     [ "dFinal", "classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad72dd2b2af6601f7933ef97e89f39d8a", null ],

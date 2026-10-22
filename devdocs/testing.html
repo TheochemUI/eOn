@@ -573,6 +573,13 @@ Do not substitute a looser tolerance to finish the table.</p>
 <p>Tests use <a class="reference external" href="https://github.com/catchorg/Catch2">Catch2</a> (amalgamated, vendored
 in <code class="docutils literal notranslate"><span class="pre">thirdparty/catch2/</span></code>). Each test file is compiled with the amalgamated
 source and linked against <code class="docutils literal notranslate"><span class="pre">eonclib</span></code>.</p>
+<p>A test file that logs through the <code class="docutils literal notranslate"><span class="pre">combi</span></code> logger declares
+<code class="docutils literal notranslate"><span class="pre">static</span> <span class="pre">eonc::helpers::test::QuillTestLogger</span></code>. That logger is a null sink.
+It must be registered with <code class="docutils literal notranslate"><span class="pre">quill::Frontend</span></code> directly: <code class="docutils literal notranslate"><span class="pre">eonc::log::get()</span></code>
+installs a console logger when <code class="docutils literal notranslate"><span class="pre">combi</span></code> does not exist yet, and the helper
+would then keep it. Dimer and Lanczos info lines would fill the stdout
+pipe Meson captures. On Windows that pipe is a few kilobytes and the
+write blocks, so <code class="docutils literal notranslate"><span class="pre">test_bench_parity</span></code> runs past its 30 second limit.</p>
 <p>Registration uses meson’s array iteration:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span data-line="1">test_array = [
 </span><span data-line="2">    [&#39;test_name&#39;, &#39;TestFile.cpp&#39;, &#39;data_dir&#39;],

@@ -244,6 +244,8 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('Optimizer_8h.h
 <code>#include &quot;<a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Parameters_8h_source.html">Parameters.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>&quot;</code><br />
+<code>#include &lt;optional&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
 </div>
 <p><a href="Optimizer_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -263,6 +265,10 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a87a76c344015a2f92c9860ab10a1705f" id="r_a87a76c344015a2f92c9860ab10a1705f"><td class="memItemLeft">std::optional&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers_1_1create.html#a87a76c344015a2f92c9860ab10a1705f">eonc::helpers::create::rgminMethodFor</a> (const <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> &amp;a_objf, <a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a> a_otype, const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memdesc:a87a76c344015a2f92c9860ab10a1705f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The rgmin method token mkOptim runs for a_otype when [<a class="el" href="classeonc_1_1Optimizer.html" title="Abstract base of the structure optimizers.">Optimizer</a>] opt_backend = rgmin.  <br /></td></tr>
+<tr class="memitem:a24b176612de70bd79607315c85f8f8de" id="r_a24b176612de70bd79607315c85f8f8de"><td class="memItemLeft">std::optional&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers_1_1create.html#a24b176612de70bd79607315c85f8f8de">eonc::helpers::create::rgminBackendMethod</a> (<a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a> a_otype, const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memdesc:a24b176612de70bd79607315c85f8f8de"><td class="mdescLeft">&#160;</td><td class="mdescRight">rgminMethodFor without the objective test: what a minimization of a potential energy runs under opt_backend = rgmin.  <br /></td></tr>
 <tr class="memitem:a5b0011df69b04b52916bd7150ab60fc4" id="r_a5b0011df69b04b52916bd7150ab60fc4"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classOptimizer.html">Optimizer</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers_1_1create.html#a5b0011df69b04b52916bd7150ab60fc4">eonc::helpers::create::mkOptim</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, <a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a> a_otype, const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>

@@ -583,9 +583,9 @@ Swart-Bickelhaupt strong/weak screen of Lindh
 <code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">precon</span></code> takes the same tokens.</p></li>
 </ul>
 <p>Newton and RFO are not L-BFGS. They live in
-<a class="reference external" href="https://github.com/HaoZeke/xtsci-optimize">xtsci-optimize</a> as
-<code class="docutils literal notranslate"><span class="pre">Method::Newton</span></code>. Build eOn with <code class="docutils literal notranslate"><span class="pre">-Dwith_xtsci=true</span></code> and select them
-from the INI:</p>
+<a class="reference external" href="https://github.com/OmniPotentRPC/rgmin">rgmin</a> (formerly xtsci-optimize) as
+<code class="docutils literal notranslate"><span class="pre">Method::Newton</span></code>. Build eOn against rgmin (<code class="docutils literal notranslate"><span class="pre">-Dwith_rgmin=enabled</span></code>, see
+<a class="reference internal" href="optimizer.html"><span class="std std-doc">Optimizer</span></a>) and select them from the INI:</p>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Optimizer]</span>
 </span><span data-line="2"><span class="na">opt_method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">xtsci</span>
 </span><span data-line="3"><span class="na">converged_force</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.01</span>
@@ -598,12 +598,16 @@ from the INI:</p>
 </span></pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">highs</span> <span class="pre">=</span> <span class="pre">true</span></code> asks HiGHS for the step (Newton QP on the
-host pair matrix, or two-loop plus boxes). Build xtsci-optimize
+host pair matrix, or two-loop plus boxes). Build rgmin
 with <code class="docutils literal notranslate"><span class="pre">--features</span> <span class="pre">capi,highs</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">rfo</span></code> is Banerjee RFO. The pair Hessian is still built in eOn
-(<code class="docutils literal notranslate"><span class="pre">lbfgs_precon</span></code>) and handed to Rust through <code class="docutils literal notranslate"><span class="pre">xts_minimize_hess</span></code>. The
-engine also runs the other xtsci-optimize methods (<code class="docutils literal notranslate"><span class="pre">lbfgs</span></code>, <code class="docutils literal notranslate"><span class="pre">bfgs</span></code>,
-<code class="docutils literal notranslate"><span class="pre">sr1</span></code>, <code class="docutils literal notranslate"><span class="pre">sr2</span></code>, <code class="docutils literal notranslate"><span class="pre">steepest</span></code>, <code class="docutils literal notranslate"><span class="pre">adam</span></code>, <code class="docutils literal notranslate"><span class="pre">pso</span></code>, and the NLCG conjugacies).</p>
+(<code class="docutils literal notranslate"><span class="pre">lbfgs_precon</span></code>) and handed to Rust through <code class="docutils literal notranslate"><span class="pre">rgmin_minimize_hess</span></code>. The
+engine also runs the other rgmin methods (<code class="docutils literal notranslate"><span class="pre">lbfgs</span></code>, <code class="docutils literal notranslate"><span class="pre">bfgs</span></code>,
+<code class="docutils literal notranslate"><span class="pre">sr1</span></code>, <code class="docutils literal notranslate"><span class="pre">sr2</span></code>, <code class="docutils literal notranslate"><span class="pre">steepest</span></code>, <code class="docutils literal notranslate"><span class="pre">adam</span></code>, <code class="docutils literal notranslate"><span class="pre">pso</span></code>, <code class="docutils literal notranslate"><span class="pre">quickmin</span></code>, and the NLCG
+conjugacies).</p>
+<p>To keep <code class="docutils literal notranslate"><span class="pre">opt_method</span> <span class="pre">=</span> <span class="pre">lbfgs</span></code>, <code class="docutils literal notranslate"><span class="pre">fire</span></code>, <code class="docutils literal notranslate"><span class="pre">cg</span></code>, <code class="docutils literal notranslate"><span class="pre">sd</span></code> or <code class="docutils literal notranslate"><span class="pre">qm</span></code> and only move
+the step into rgmin, set <code class="docutils literal notranslate"><span class="pre">[Optimizer]</span> <span class="pre">opt_backend</span> <span class="pre">=</span> <span class="pre">rgmin</span></code>; the method
+map is in <a class="reference internal" href="optimizer.html"><span class="std std-doc">Optimizer</span></a>.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">lbfgs_h0</span> <span class="pre">=</span> <span class="pre">sy_yy</span></code> (Nocedal–Wright 7.20), <code class="docutils literal notranslate"><span class="pre">ss_sy</span></code> (Barzilai–Borwein
 2), or <code class="docutils literal notranslate"><span class="pre">adaptive</span></code> (the smaller of the two when both are positive).</p></li>
@@ -660,6 +664,7 @@ An optional <code class="docutils literal notranslate"><span class="pre">[Refine
 <dt class="field-odd">Fields<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">opt_method</span> <span class="pre">(Literal['box',</span> <span class="pre">'cg',</span> <span class="pre">'qm',</span> <span class="pre">'lbfgs',</span> <span class="pre">'fire',</span> <span class="pre">'sd',</span> <span class="pre">'xtsci'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">opt_backend</span> <span class="pre">(Literal['eon',</span> <span class="pre">'rgmin'])</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">convergence_metric</span> <span class="pre">(Literal['norm',</span> <span class="pre">'rms',</span> <span class="pre">'max_atom',</span> <span class="pre">'max_component'])</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">converged_force</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_move</span> <span class="pre">(float)</span></code></p></li>
@@ -679,11 +684,31 @@ An optional <code class="docutils literal notranslate"><span class="pre">[Refine
 <li><p><code class="docutils literal notranslate"><span class="pre">lbfgs</span></code>: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">fire</span></code>: Fast inertial relaxation engine</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sd</span></code>: Steepest descent</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">xtsci</span></code>: xtsci-optimize engine. Pick the solver with <code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">method</span></code>. Needs <code class="docutils literal notranslate"><span class="pre">-Dwith_xtsci=true</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xtsci</span></code>: rgmin engine (formerly xtsci-optimize). Pick the solver with <code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">method</span></code>. Needs a build that links rgmin (<code class="docutils literal notranslate"><span class="pre">-Dwith_rgmin</span></code>).</p></li>
 </ul>
 </dd>
 </dl>
 <p>The optimization method to use.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">opt_backend</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.15)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'eon'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rgmin'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'eon'</span></span></dt>
+<dd><dl class="simple">
+<dt>Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">eon</span></code>: eOn’s own optimizers (default)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rgmin</span></code>: rgmin sessions: lbfgs is rgmin L-BFGS, fire is FIRE, cg is
+Polak-Ribiere CG, sd is steepest descent, qm is quick-min. Needs a
+build that links rgmin (<code class="docutils literal notranslate"><span class="pre">-Dwith_rgmin</span></code>). Applies to every
+objective whose gradient is the derivative of its energy
+(relaxations, the per-image IDPP path, BGSD); the nudged elastic
+band, the collective IDPP band and min-mode translation steps stay
+on eOn’s optimizers. <code class="docutils literal notranslate"><span class="pre">[LBFGS]</span> <span class="pre">lbfgs_memory</span></code> and the <code class="docutils literal notranslate"><span class="pre">[Xtsci]</span></code>
+session keys still apply.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Who runs the lbfgs, fire, cg, sd and qm optimizers.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">

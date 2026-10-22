@@ -292,6 +292,14 @@ Private Attributes</h2></td></tr>
 <tr class="memdesc:a25bb3119cc6c478296f09434f7dcafbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current force vector.  <br /></td></tr>
 <tr class="memitem:ae01c04ea295a7d03490538974ba0ddab" id="r_ae01c04ea295a7d03490538974ba0ddab"><td class="memItemLeft">Eigen::VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#ae01c04ea295a7d03490538974ba0ddab">m_forceOld</a></td></tr>
 <tr class="memdesc:ae01c04ea295a7d03490538974ba0ddab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Previous force vector.  <br /></td></tr>
+<tr class="memitem:a038153c785f449150f638b856e252781" id="r_a038153c785f449150f638b856e252781"><td class="memItemLeft">Eigen::VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a038153c785f449150f638b856e252781">m_secantPos</a></td></tr>
+<tr class="memitem:a687a6ce4f3494276460aa3ec206eec2d" id="r_a687a6ce4f3494276460aa3ec206eec2d"><td class="memItemLeft">Eigen::VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a687a6ce4f3494276460aa3ec206eec2d">m_secantDir</a></td></tr>
+<tr class="memitem:a82e9470ba0845f4fa6cb0b4948ae8995" id="r_a82e9470ba0845f4fa6cb0b4948ae8995"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a82e9470ba0845f4fa6cb0b4948ae8995">m_secantProj</a> {0.0}</td></tr>
+<tr class="memitem:a894bedb66ac7390303dd23cc67bac120" id="r_a894bedb66ac7390303dd23cc67bac120"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a894bedb66ac7390303dd23cc67bac120">m_haveSecant</a> {false}</td></tr>
+<tr class="memitem:ad0da1050c98fd5533e0ad94aaa970aea" id="r_ad0da1050c98fd5533e0ad94aaa970aea"><td class="memItemLeft">Eigen::VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#ad0da1050c98fd5533e0ad94aaa970aea">m_secantForce</a></td></tr>
+<tr class="memitem:a7702f4463ff1aefb064ac6e7ad985234" id="r_a7702f4463ff1aefb064ac6e7ad985234"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a7702f4463ff1aefb064ac6e7ad985234">m_atomCurv</a></td></tr>
+<tr class="memitem:ab8e657a1718e00a72364b8e2ef22f875" id="r_ab8e657a1718e00a72364b8e2ef22f875"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ab8e657a1718e00a72364b8e2ef22f875">m_lastMotion</a> {0.0}</td></tr>
+<tr class="memitem:a0fb74c99534e6a53ac63bd17bbfede96" id="r_a0fb74c99534e6a53ac63bd17bbfede96"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a0fb74c99534e6a53ac63bd17bbfede96">m_lastForceNorm</a> {0.0}</td></tr>
 <tr class="memitem:ae4cd215ba150decb4fd0dde059fc91c0" id="r_ae4cd215ba150decb4fd0dde059fc91c0"><td class="memItemLeft"><a class="el" href="structeonc_1_1log_1_1FileScoped.html">eonc::log::FileScoped</a>&#160;</td><td class="memItemRight"><a class="el" href="#ae4cd215ba150decb4fd0dde059fc91c0">m_log</a> {&quot;cg&quot;, &quot;_cg.log&quot;}</td></tr>
 <tr class="memitem:a59e7cb42c970482dd523e0f52956433e" id="r_a59e7cb42c970482dd523e0f52956433e"><td class="memItemLeft">size_t&#160;</td><td class="memItemRight"><a class="el" href="#a59e7cb42c970482dd523e0f52956433e">m_cg_i</a> {0}</td></tr>
 <tr class="memdesc:a59e7cb42c970482dd523e0f52956433e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the number of discrete steps until algorithm convergence.  <br /></td></tr>
@@ -305,7 +313,7 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Decleration of the Conjugate Gradients optimizer. </p>
 
-<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00038">38</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00040">40</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a64fdf457c0ab0d0e5172b88039915c6e" name="a64fdf457c0ab0d0e5172b88039915c6e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a64fdf457c0ab0d0e5172b88039915c6e">&#9670;&#160;</a></span>ConjugateGradients()</h2>
@@ -343,21 +351,25 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00045">45</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   47</span>      : <a class="code hl_function" href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">Optimizer</a>(a_objf, <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">OptType::CG</a>, <a class="code hl_function" href="structeonc_1_1OptimizerConfig.html#abcfc681e415bb093ecdc44ed452e7e0d">OptimizerConfig::fromParams</a>(a_params)),</div>
-<div class="line"><span class="lineno">   48</span>        <a class="code hl_variable" href="#aade8c61d0393fcc5bac7b5db8ce31614">m_direction</a>{Eigen::VectorXd::Zero(a_objf-&gt;degreesOfFreedom())},</div>
-<div class="line"><span class="lineno">   49</span>        <a class="code hl_variable" href="#a2fa4863deaee58bd920e5bcfd447ab28">m_directionOld</a>{Eigen::VectorXd::Zero(a_objf-&gt;degreesOfFreedom())},</div>
-<div class="line"><span class="lineno">   50</span>        <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>{Eigen::VectorXd::Zero(a_objf-&gt;degreesOfFreedom())},</div>
-<div class="line"><span class="lineno">   51</span>        <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>{Eigen::VectorXd::Zero(a_objf-&gt;degreesOfFreedom())},</div>
-<div class="line"><span class="lineno">   52</span>        <a class="code hl_variable" href="#ae01c04ea295a7d03490538974ba0ddab">m_forceOld</a>{Eigen::VectorXd::Zero(a_objf-&gt;degreesOfFreedom())} {}</div>
-<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a25bb3119cc6c478296f09434f7dcafbe"><div class="ttname"><a href="#a25bb3119cc6c478296f09434f7dcafbe">eonc::ConjugateGradients::m_force</a></div><div class="ttdeci">Eigen::VectorXd m_force</div><div class="ttdoc">Current force vector.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00080">ConjugateGradients.h:80</a></div></div>
-<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a2de0bdb23d86e6eeb445a1fa0d4158d2"><div class="ttname"><a href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">eonc::ConjugateGradients::m_directionNorm</a></div><div class="ttdeci">Eigen::VectorXd m_directionNorm</div><div class="ttdoc">Normalised version of the current direction vector.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00078">ConjugateGradients.h:78</a></div></div>
-<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a2fa4863deaee58bd920e5bcfd447ab28"><div class="ttname"><a href="#a2fa4863deaee58bd920e5bcfd447ab28">eonc::ConjugateGradients::m_directionOld</a></div><div class="ttdeci">Eigen::VectorXd m_directionOld</div><div class="ttdoc">Algorithms previous step direction.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00076">ConjugateGradients.h:76</a></div></div>
-<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_aade8c61d0393fcc5bac7b5db8ce31614"><div class="ttname"><a href="#aade8c61d0393fcc5bac7b5db8ce31614">eonc::ConjugateGradients::m_direction</a></div><div class="ttdeci">Eigen::VectorXd m_direction</div><div class="ttdoc">Current step direction of the conjugate gradient.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00074">ConjugateGradients.h:74</a></div></div>
-<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_ae01c04ea295a7d03490538974ba0ddab"><div class="ttname"><a href="#ae01c04ea295a7d03490538974ba0ddab">eonc::ConjugateGradients::m_forceOld</a></div><div class="ttdeci">Eigen::VectorXd m_forceOld</div><div class="ttdoc">Previous force vector.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00082">ConjugateGradients.h:82</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Optimizer_html_a51ef8ef5f774fa7125131d8a5dd72710"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">eonc::Optimizer::Optimizer</a></div><div class="ttdeci">Optimizer(std::shared_ptr&lt; ObjectiveFunction &gt; a_objf, const OptimizerConfig &amp;a_config)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00074">Optimizer.h:74</a></div></div>
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00047">47</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   49</span>      : <a class="code hl_function" href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">Optimizer</a>(a_objf, <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">OptType::CG</a>, <a class="code hl_function" href="structeonc_1_1OptimizerConfig.html#abcfc681e415bb093ecdc44ed452e7e0d">OptimizerConfig::fromParams</a>(a_params)),</div>
+<div class="line"><span class="lineno">   50</span>        <a class="code hl_variable" href="#aade8c61d0393fcc5bac7b5db8ce31614">m_direction</a>{Eigen::VectorXd::Zero(a_objf-&gt;degreesOfFreedom())},</div>
+<div class="line"><span class="lineno">   51</span>        <a class="code hl_variable" href="#a2fa4863deaee58bd920e5bcfd447ab28">m_directionOld</a>{Eigen::VectorXd::Zero(a_objf-&gt;degreesOfFreedom())},</div>
+<div class="line"><span class="lineno">   52</span>        <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>{Eigen::VectorXd::Zero(a_objf-&gt;degreesOfFreedom())},</div>
+<div class="line"><span class="lineno">   53</span>        <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>{Eigen::VectorXd::Zero(a_objf-&gt;degreesOfFreedom())},</div>
+<div class="line"><span class="lineno">   54</span>        <a class="code hl_variable" href="#ae01c04ea295a7d03490538974ba0ddab">m_forceOld</a>{Eigen::VectorXd::Zero(a_objf-&gt;degreesOfFreedom())},</div>
+<div class="line"><span class="lineno">   55</span>        <a class="code hl_variable" href="#a038153c785f449150f638b856e252781">m_secantPos</a>{Eigen::VectorXd::Zero(a_objf-&gt;degreesOfFreedom())},</div>
+<div class="line"><span class="lineno">   56</span>        <a class="code hl_variable" href="#a687a6ce4f3494276460aa3ec206eec2d">m_secantDir</a>{Eigen::VectorXd::Zero(a_objf-&gt;degreesOfFreedom())} {}</div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a038153c785f449150f638b856e252781"><div class="ttname"><a href="#a038153c785f449150f638b856e252781">eonc::ConjugateGradients::m_secantPos</a></div><div class="ttdeci">Eigen::VectorXd m_secantPos</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00090">ConjugateGradients.h:90</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a25bb3119cc6c478296f09434f7dcafbe"><div class="ttname"><a href="#a25bb3119cc6c478296f09434f7dcafbe">eonc::ConjugateGradients::m_force</a></div><div class="ttdeci">Eigen::VectorXd m_force</div><div class="ttdoc">Current force vector.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00084">ConjugateGradients.h:84</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a2de0bdb23d86e6eeb445a1fa0d4158d2"><div class="ttname"><a href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">eonc::ConjugateGradients::m_directionNorm</a></div><div class="ttdeci">Eigen::VectorXd m_directionNorm</div><div class="ttdoc">Normalised version of the current direction vector.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00082">ConjugateGradients.h:82</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a2fa4863deaee58bd920e5bcfd447ab28"><div class="ttname"><a href="#a2fa4863deaee58bd920e5bcfd447ab28">eonc::ConjugateGradients::m_directionOld</a></div><div class="ttdeci">Eigen::VectorXd m_directionOld</div><div class="ttdoc">Algorithms previous step direction.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00080">ConjugateGradients.h:80</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a687a6ce4f3494276460aa3ec206eec2d"><div class="ttname"><a href="#a687a6ce4f3494276460aa3ec206eec2d">eonc::ConjugateGradients::m_secantDir</a></div><div class="ttdeci">Eigen::VectorXd m_secantDir</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00091">ConjugateGradients.h:91</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_aade8c61d0393fcc5bac7b5db8ce31614"><div class="ttname"><a href="#aade8c61d0393fcc5bac7b5db8ce31614">eonc::ConjugateGradients::m_direction</a></div><div class="ttdeci">Eigen::VectorXd m_direction</div><div class="ttdoc">Current step direction of the conjugate gradient.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00078">ConjugateGradients.h:78</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_ae01c04ea295a7d03490538974ba0ddab"><div class="ttname"><a href="#ae01c04ea295a7d03490538974ba0ddab">eonc::ConjugateGradients::m_forceOld</a></div><div class="ttdeci">Eigen::VectorXd m_forceOld</div><div class="ttdoc">Previous force vector.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00086">ConjugateGradients.h:86</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Optimizer_html_a51ef8ef5f774fa7125131d8a5dd72710"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">eonc::Optimizer::Optimizer</a></div><div class="ttdeci">Optimizer(std::shared_ptr&lt; ObjectiveFunction &gt; a_objf, const OptimizerConfig &amp;a_config)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00077">Optimizer.h:77</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">eonc::OptType::CG</a></div><div class="ttdeci">@ CG</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00108">BaseStructures.h:108</a></div></div>
-<div class="ttc" id="astructeonc_1_1OptimizerConfig_html_abcfc681e415bb093ecdc44ed452e7e0d"><div class="ttname"><a href="structeonc_1_1OptimizerConfig.html#abcfc681e415bb093ecdc44ed452e7e0d">eonc::OptimizerConfig::fromParams</a></div><div class="ttdeci">static OptimizerConfig fromParams(const Parameters &amp;p)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00057">Optimizer.h:57</a></div></div>
+<div class="ttc" id="astructeonc_1_1OptimizerConfig_html_abcfc681e415bb093ecdc44ed452e7e0d"><div class="ttname"><a href="structeonc_1_1OptimizerConfig.html#abcfc681e415bb093ecdc44ed452e7e0d">eonc::OptimizerConfig::fromParams</a></div><div class="ttdeci">static OptimizerConfig fromParams(const Parameters &amp;p)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00060">Optimizer.h:60</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -435,8 +447,8 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   45</span> </div>
 <div class="line"><span class="lineno">   46</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#aade8c61d0393fcc5bac7b5db8ce31614">m_direction</a>;</div>
 <div class="line"><span class="lineno">   47</span>}</div>
-<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a59e7cb42c970482dd523e0f52956433e"><div class="ttname"><a href="#a59e7cb42c970482dd523e0f52956433e">eonc::ConjugateGradients::m_cg_i</a></div><div class="ttdeci">size_t m_cg_i</div><div class="ttdoc">Counts the number of discrete steps until algorithm convergence.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00086">ConjugateGradients.h:86</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Optimizer_html_a3bfcee12036bd655e29a065e8e1c1f4d"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">eonc::Optimizer::m_optConfig</a></div><div class="ttdeci">const OptimizerConfig m_optConfig</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00070">Optimizer.h:70</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a59e7cb42c970482dd523e0f52956433e"><div class="ttname"><a href="#a59e7cb42c970482dd523e0f52956433e">eonc::ConjugateGradients::m_cg_i</a></div><div class="ttdeci">size_t m_cg_i</div><div class="ttdoc">Counts the number of discrete steps until algorithm convergence.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00105">ConjugateGradients.h:105</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Optimizer_html_a3bfcee12036bd655e29a065e8e1c1f4d"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">eonc::Optimizer::m_optConfig</a></div><div class="ttdeci">const OptimizerConfig m_optConfig</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00073">Optimizer.h:73</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1exact_html_a155cb43dcb40b742b39c7649e6efd248"><div class="ttname"><a href="namespaceeonc_1_1exact.html#a155cb43dcb40b742b39c7649e6efd248">eonc::exact::squaredNorm</a></div><div class="ttdeci">double squaredNorm(const Eigen::MatrixBase&lt; A &gt; &amp;x)</div><div class="ttdef"><b>Definition</b> <a href="ExactReduction_8h_source.html#l00085">ExactReduction.h:85</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1exact_html_a2af38029cd82d08b069d5465d02247c8"><div class="ttname"><a href="namespaceeonc_1_1exact.html#a2af38029cd82d08b069d5465d02247c8">eonc::exact::normalized</a></div><div class="ttdeci">A::PlainObject normalized(const Eigen::MatrixBase&lt; A &gt; &amp;x, double min_norm=1e-300)</div><div class="ttdoc">x / norm(x), or zero below min_norm (the safemath convention).</div><div class="ttdef"><b>Definition</b> <a href="ExactReduction_8h_source.html#l00106">ExactReduction.h:106</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1exact_html_a6b3d75c60fb3ef9c1f3572b0982cde13"><div class="ttname"><a href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a></div><div class="ttdeci">double dot(const double *x, const double *y, std::size_t n)</div><div class="ttdoc">Round-to-nearest-even value of the exact sum of x[i] * y[i].</div><div class="ttdef"><b>Definition</b> <a href="ExactReduction_8cpp_source.html#l00451">ExactReduction.cpp:451</a></div></div>
@@ -530,7 +542,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  124</span>  <span class="keywordflow">return</span> 0;</div>
 <div class="line"><span class="lineno">  125</span>}</div>
 <div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a2b14c37392a348a66b5a9daf8c6f2ce2"><div class="ttname"><a href="#a2b14c37392a348a66b5a9daf8c6f2ce2">eonc::ConjugateGradients::getStep</a></div><div class="ttdeci">Eigen::VectorXd getStep()</div><div class="ttdoc">Gets the direction of the next step.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8cpp_source.html#l00020">ConjugateGradients.cpp:20</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Optimizer_html_ac396cbda1caadf57ff9df7eda4db1822"><div class="ttname"><a href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">eonc::Optimizer::m_objf</a></div><div class="ttdeci">std::shared_ptr&lt; ObjectiveFunction &gt; m_objf</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00071">Optimizer.h:71</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Optimizer_html_ac396cbda1caadf57ff9df7eda4db1822"><div class="ttname"><a href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">eonc::Optimizer::m_objf</a></div><div class="ttdeci">std::shared_ptr&lt; ObjectiveFunction &gt; m_objf</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00074">Optimizer.h:74</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -602,15 +614,15 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1Optimizer.html#a94dd8b89c732857574c03586efa25273">eonc::Optimizer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8cpp_source.html#l00205">205</a> of file <a class="el" href="ConjugateGradients_8cpp_source.html">ConjugateGradients.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  205</span>                                                                    {</div>
-<div class="line"><span class="lineno">  206</span>  <span class="keywordtype">size_t</span> iterations = 0;</div>
-<div class="line"><span class="lineno">  207</span>  <span class="keywordflow">while</span> (!<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() &amp;&amp; iterations &lt; a_maxIterations) {</div>
-<div class="line"><span class="lineno">  208</span>    <a class="code hl_function" href="#ab6c546fa19fce2191794cc2f771b7abc">step</a>(a_maxMove);</div>
-<div class="line"><span class="lineno">  209</span>    iterations++;</div>
-<div class="line"><span class="lineno">  210</span>  }</div>
-<div class="line"><span class="lineno">  211</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
-<div class="line"><span class="lineno">  212</span>}</div>
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8cpp_source.html#l00369">369</a> of file <a class="el" href="ConjugateGradients_8cpp_source.html">ConjugateGradients.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  369</span>                                                                    {</div>
+<div class="line"><span class="lineno">  370</span>  <span class="keywordtype">size_t</span> iterations = 0;</div>
+<div class="line"><span class="lineno">  371</span>  <span class="keywordflow">while</span> (!<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() &amp;&amp; iterations &lt; a_maxIterations) {</div>
+<div class="line"><span class="lineno">  372</span>    <a class="code hl_function" href="#ab6c546fa19fce2191794cc2f771b7abc">step</a>(a_maxMove);</div>
+<div class="line"><span class="lineno">  373</span>    iterations++;</div>
+<div class="line"><span class="lineno">  374</span>  }</div>
+<div class="line"><span class="lineno">  375</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  376</span>}</div>
 <div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_ab6c546fa19fce2191794cc2f771b7abc"><div class="ttname"><a href="#ab6c546fa19fce2191794cc2f771b7abc">eonc::ConjugateGradients::step</a></div><div class="ttdeci">int step(double a_maxMove) override</div><div class="ttdoc">Calls the next step in the algorithm.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8cpp_source.html#l00056">ConjugateGradients.cpp:56</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -649,79 +661,250 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  131</span> </div>
 <div class="line"><span class="lineno">  132</span>  <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a> = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient();</div>
 <div class="line"><span class="lineno">  133</span>  pos = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPositions();</div>
-<div class="line"><span class="lineno">  134</span>  <a class="code hl_function" href="#a2b14c37392a348a66b5a9daf8c6f2ce2">getStep</a>();</div>
-<div class="line"><span class="lineno">  135</span> </div>
-<div class="line"><span class="lineno">  136</span>  <span class="comment">// move system an infinitesimal step to determine the optimal step size along</span></div>
-<div class="line"><span class="lineno">  137</span>  <span class="comment">// the search line</span></div>
-<div class="line"><span class="lineno">  138</span>  posStep = pos + <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a> * <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.finiteDifference;</div>
-<div class="line"><span class="lineno">  139</span>  <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(posStep);</div>
-<div class="line"><span class="lineno">  140</span>  forceAfterStep = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient(<span class="keyword">true</span>);</div>
-<div class="line"><span class="lineno">  141</span> </div>
-<div class="line"><span class="lineno">  142</span>  <span class="comment">// Determine curvature</span></div>
-<div class="line"><span class="lineno">  143</span>  <span class="keywordtype">double</span> projectedForce1 = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(<a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>, <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>);</div>
-<div class="line"><span class="lineno">  144</span>  <span class="keywordtype">double</span> projectedForce2 = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(forceAfterStep, <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>);</div>
-<div class="line"><span class="lineno">  145</span>  <span class="keywordtype">double</span> curvature = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(</div>
-<div class="line"><span class="lineno">  146</span>      projectedForce1 - projectedForce2, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.finiteDifference, 0.0);</div>
-<div class="line"><span class="lineno">  147</span> </div>
-<div class="line"><span class="lineno">  148</span>  <span class="keywordtype">double</span> stepSize = a_maxMove;</div>
-<div class="line"><span class="lineno">  149</span> </div>
-<div class="line"><span class="lineno">  150</span>  <span class="keywordflow">if</span> (curvature &gt; 0.0) {</div>
-<div class="line"><span class="lineno">  151</span>    stepSize = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(projectedForce1, curvature, a_maxMove);</div>
-<div class="line"><span class="lineno">  152</span>  }</div>
-<div class="line"><span class="lineno">  153</span> </div>
-<div class="line"><span class="lineno">  154</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.bowlBreakout &amp;&amp; a_maxMove &lt; 0.0) {</div>
-<div class="line"><span class="lineno">  155</span>    stepSize = -a_maxMove;</div>
-<div class="line"><span class="lineno">  156</span>    a_maxMove = -a_maxMove;</div>
-<div class="line"><span class="lineno">  157</span>  }</div>
-<div class="line"><span class="lineno">  158</span> </div>
-<div class="line"><span class="lineno">  159</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.cg.no_overshooting) {</div>
-<div class="line"><span class="lineno">  160</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.bowlBreakout) {</div>
-<div class="line"><span class="lineno">  161</span>      <span class="comment">// max displacement is based on system not single atom</span></div>
-<div class="line"><span class="lineno">  162</span>      pos += <a class="code hl_function" href="namespaceeonc_1_1geometry.html#a74dc4eb878fa1a742ba96bd30d2ec237">eonc::geometry::maxMotionAppliedV</a>(stepSize * <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>,</div>
-<div class="line"><span class="lineno">  163</span>                                               a_maxMove);</div>
-<div class="line"><span class="lineno">  164</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  165</span>      pos += <a class="code hl_function" href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a>(stepSize * <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>,</div>
-<div class="line"><span class="lineno">  166</span>                                                   a_maxMove);</div>
-<div class="line"><span class="lineno">  167</span>    }</div>
-<div class="line"><span class="lineno">  168</span>    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(pos);</div>
-<div class="line"><span class="lineno">  169</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  170</span>    <span class="comment">// negative if product of the projected forces before and after the step are</span></div>
-<div class="line"><span class="lineno">  171</span>    <span class="comment">// in opposite directions</span></div>
-<div class="line"><span class="lineno">  172</span>    <span class="keywordtype">double</span> passedMinimum = -1.;</div>
-<div class="line"><span class="lineno">  173</span>    <span class="keywordtype">double</span> forceChange = 0.;</div>
-<div class="line"><span class="lineno">  174</span>    <span class="keywordflow">while</span> (passedMinimum &lt; 0.0 &amp;&amp;</div>
-<div class="line"><span class="lineno">  175</span>           0.1 * std::abs(projectedForce1) &lt; std::abs(projectedForce2)) {</div>
-<div class="line"><span class="lineno">  176</span>      posStep = pos + <a class="code hl_function" href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a>(</div>
-<div class="line"><span class="lineno">  177</span>                          stepSize * <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>, a_maxMove);</div>
-<div class="line"><span class="lineno">  178</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(posStep);</div>
-<div class="line"><span class="lineno">  179</span>      forceAfterStep = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient(<span class="keyword">true</span>);</div>
-<div class="line"><span class="lineno">  180</span>      projectedForce2 = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(forceAfterStep, <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>);</div>
-<div class="line"><span class="lineno">  181</span> </div>
-<div class="line"><span class="lineno">  182</span>      passedMinimum = projectedForce1 * projectedForce2;</div>
-<div class="line"><span class="lineno">  183</span>      <span class="keywordflow">if</span> (passedMinimum &lt; 0.0 &amp;&amp;</div>
-<div class="line"><span class="lineno">  184</span>          0.1 * std::abs(projectedForce1) &lt; std::abs(projectedForce2)) {</div>
-<div class="line"><span class="lineno">  185</span>        forceChange = (projectedForce1 - projectedForce2);</div>
-<div class="line"><span class="lineno">  186</span>        stepSize = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(projectedForce1, forceChange, 0.0) *</div>
-<div class="line"><span class="lineno">  187</span>                   stepSize;</div>
-<div class="line"><span class="lineno">  188</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ae4cd215ba150decb4fd0dde059fc91c0">m_log</a>, <span class="stringliteral">&quot;Force changed {}, step size adjusted to {}&quot;</span>,</div>
-<div class="line"><span class="lineno">  189</span>                        forceChange, stepSize);</div>
-<div class="line"><span class="lineno">  190</span>      }</div>
-<div class="line"><span class="lineno">  191</span>    }</div>
-<div class="line"><span class="lineno">  192</span>  }</div>
-<div class="line"><span class="lineno">  193</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.cg.knock_out_max_move) {</div>
-<div class="line"><span class="lineno">  194</span>    <span class="keywordflow">if</span> (stepSize &gt;= a_maxMove) {</div>
-<div class="line"><span class="lineno">  195</span>      <span class="comment">// knockout old search direction</span></div>
-<div class="line"><span class="lineno">  196</span>      <a class="code hl_variable" href="#a2fa4863deaee58bd920e5bcfd447ab28">m_directionOld</a>.setZero();</div>
-<div class="line"><span class="lineno">  197</span>      <a class="code hl_variable" href="#ae01c04ea295a7d03490538974ba0ddab">m_forceOld</a>.setZero();</div>
-<div class="line"><span class="lineno">  198</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ae4cd215ba150decb4fd0dde059fc91c0">m_log</a>, <span class="stringliteral">&quot;Resetting the old search direction&quot;</span>);</div>
-<div class="line"><span class="lineno">  199</span>    }</div>
-<div class="line"><span class="lineno">  200</span>  }</div>
-<div class="line"><span class="lineno">  201</span> </div>
-<div class="line"><span class="lineno">  202</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
-<div class="line"><span class="lineno">  203</span>}</div>
-<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_ae4cd215ba150decb4fd0dde059fc91c0"><div class="ttname"><a href="#ae4cd215ba150decb4fd0dde059fc91c0">eonc::ConjugateGradients::m_log</a></div><div class="ttdeci">eonc::log::FileScoped m_log</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00083">ConjugateGradients.h:83</a></div></div>
+<div class="line"><span class="lineno">  134</span>  <span class="keyword">const</span> Eigen::VectorXd posBefore = pos;</div>
+<div class="line"><span class="lineno">  135</span>  <a class="code hl_function" href="#a2b14c37392a348a66b5a9daf8c6f2ce2">getStep</a>();</div>
+<div class="line"><span class="lineno">  136</span> </div>
+<div class="line"><span class="lineno">  137</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;reuseDisplacementCurvature()) {</div>
+<div class="line"><span class="lineno">  138</span>    <span class="comment">// Minimization and dimer translation. One finite-difference probe</span></div>
+<div class="line"><span class="lineno">  139</span>    <span class="comment">// along the search line, then a Newton length, every iteration.</span></div>
+<div class="line"><span class="lineno">  140</span>    posStep = pos + <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a> * <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.finiteDifference;</div>
+<div class="line"><span class="lineno">  141</span>    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(posStep);</div>
+<div class="line"><span class="lineno">  142</span>    forceAfterStep = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient(<span class="keyword">true</span>);</div>
+<div class="line"><span class="lineno">  143</span> </div>
+<div class="line"><span class="lineno">  144</span>    <span class="keywordtype">double</span> projectedForce1 = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(<a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>, <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>);</div>
+<div class="line"><span class="lineno">  145</span>    <span class="keywordtype">double</span> projectedForce2 = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(forceAfterStep, <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>);</div>
+<div class="line"><span class="lineno">  146</span>    <span class="keywordtype">double</span> curvature = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(</div>
+<div class="line"><span class="lineno">  147</span>        projectedForce1 - projectedForce2, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.finiteDifference, 0.0);</div>
+<div class="line"><span class="lineno">  148</span> </div>
+<div class="line"><span class="lineno">  149</span>    <span class="keywordtype">double</span> stepSize = a_maxMove;</div>
+<div class="line"><span class="lineno">  150</span>    <span class="keywordflow">if</span> (curvature &gt; 0.0) {</div>
+<div class="line"><span class="lineno">  151</span>      stepSize =</div>
+<div class="line"><span class="lineno">  152</span>          <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(projectedForce1, curvature, a_maxMove);</div>
+<div class="line"><span class="lineno">  153</span>    }</div>
+<div class="line"><span class="lineno">  154</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.bowlBreakout &amp;&amp; a_maxMove &lt; 0.0) {</div>
+<div class="line"><span class="lineno">  155</span>      stepSize = -a_maxMove;</div>
+<div class="line"><span class="lineno">  156</span>      a_maxMove = -a_maxMove;</div>
+<div class="line"><span class="lineno">  157</span>    }</div>
+<div class="line"><span class="lineno">  158</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.cg.no_overshooting) {</div>
+<div class="line"><span class="lineno">  159</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.bowlBreakout) {</div>
+<div class="line"><span class="lineno">  160</span>        pos += <a class="code hl_function" href="namespaceeonc_1_1geometry.html#a74dc4eb878fa1a742ba96bd30d2ec237">eonc::geometry::maxMotionAppliedV</a>(stepSize * <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>,</div>
+<div class="line"><span class="lineno">  161</span>                                                 a_maxMove);</div>
+<div class="line"><span class="lineno">  162</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  163</span>        pos += <a class="code hl_function" href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a>(stepSize * <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>,</div>
+<div class="line"><span class="lineno">  164</span>                                                     a_maxMove);</div>
+<div class="line"><span class="lineno">  165</span>      }</div>
+<div class="line"><span class="lineno">  166</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(pos);</div>
+<div class="line"><span class="lineno">  167</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  168</span>      <span class="keywordtype">double</span> passedMinimum = -1.;</div>
+<div class="line"><span class="lineno">  169</span>      <span class="keywordtype">double</span> forceChange = 0.;</div>
+<div class="line"><span class="lineno">  170</span>      <span class="keywordflow">while</span> (passedMinimum &lt; 0.0 &amp;&amp;</div>
+<div class="line"><span class="lineno">  171</span>             0.1 * std::abs(projectedForce1) &lt; std::abs(projectedForce2)) {</div>
+<div class="line"><span class="lineno">  172</span>        posStep = pos + <a class="code hl_function" href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a>(</div>
+<div class="line"><span class="lineno">  173</span>                            stepSize * <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>, a_maxMove);</div>
+<div class="line"><span class="lineno">  174</span>        <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(posStep);</div>
+<div class="line"><span class="lineno">  175</span>        forceAfterStep = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient(<span class="keyword">true</span>);</div>
+<div class="line"><span class="lineno">  176</span>        projectedForce2 = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(forceAfterStep, <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>);</div>
+<div class="line"><span class="lineno">  177</span>        passedMinimum = projectedForce1 * projectedForce2;</div>
+<div class="line"><span class="lineno">  178</span>        <span class="keywordflow">if</span> (passedMinimum &lt; 0.0 &amp;&amp;</div>
+<div class="line"><span class="lineno">  179</span>            0.1 * std::abs(projectedForce1) &lt; std::abs(projectedForce2)) {</div>
+<div class="line"><span class="lineno">  180</span>          forceChange = (projectedForce1 - projectedForce2);</div>
+<div class="line"><span class="lineno">  181</span>          stepSize =</div>
+<div class="line"><span class="lineno">  182</span>              <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(projectedForce1, forceChange, 0.0) *</div>
+<div class="line"><span class="lineno">  183</span>              stepSize;</div>
+<div class="line"><span class="lineno">  184</span>          QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ae4cd215ba150decb4fd0dde059fc91c0">m_log</a>, <span class="stringliteral">&quot;Force changed {}, step size adjusted to {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  185</span>                          forceChange, stepSize);</div>
+<div class="line"><span class="lineno">  186</span>        }</div>
+<div class="line"><span class="lineno">  187</span>      }</div>
+<div class="line"><span class="lineno">  188</span>    }</div>
+<div class="line"><span class="lineno">  189</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.cg.knock_out_max_move) {</div>
+<div class="line"><span class="lineno">  190</span>      <span class="keywordflow">if</span> (stepSize &gt;= a_maxMove) {</div>
+<div class="line"><span class="lineno">  191</span>        <a class="code hl_variable" href="#a2fa4863deaee58bd920e5bcfd447ab28">m_directionOld</a>.setZero();</div>
+<div class="line"><span class="lineno">  192</span>        <a class="code hl_variable" href="#ae01c04ea295a7d03490538974ba0ddab">m_forceOld</a>.setZero();</div>
+<div class="line"><span class="lineno">  193</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ae4cd215ba150decb4fd0dde059fc91c0">m_log</a>, <span class="stringliteral">&quot;Resetting the old search direction&quot;</span>);</div>
+<div class="line"><span class="lineno">  194</span>      }</div>
+<div class="line"><span class="lineno">  195</span>    }</div>
+<div class="line"><span class="lineno">  196</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  197</span>  }</div>
+<div class="line"><span class="lineno">  198</span> </div>
+<div class="line"><span class="lineno">  199</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> maxMove = std::fabs(a_maxMove);</div>
+<div class="line"><span class="lineno">  200</span>  <span class="keywordtype">double</span> projectedForce1 = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(<a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>, <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>);</div>
+<div class="line"><span class="lineno">  201</span>  <span class="keywordflow">if</span> (projectedForce1 &lt;= 0.0 &amp;&amp; <a class="code hl_function" href="namespaceeonc_1_1exact.html#a155cb43dcb40b742b39c7649e6efd248">eonc::exact::squaredNorm</a>(<a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>) &gt; 0.0) {</div>
+<div class="line"><span class="lineno">  202</span>    <span class="comment">// A restarted mix can point uphill. Step along the force.</span></div>
+<div class="line"><span class="lineno">  203</span>    <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a> = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a2af38029cd82d08b069d5465d02247c8">eonc::exact::normalized</a>(<a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>);</div>
+<div class="line"><span class="lineno">  204</span>    projectedForce1 = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(<a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>, <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>);</div>
+<div class="line"><span class="lineno">  205</span>  }</div>
+<div class="line"><span class="lineno">  206</span>  <span class="keywordtype">double</span> stepSize = maxMove;</div>
+<div class="line"><span class="lineno">  207</span> </div>
+<div class="line"><span class="lineno">  208</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.cg.no_overshooting) {</div>
+<div class="line"><span class="lineno">  209</span>    <span class="comment">// The overshoot guard still probes. The stock band path does not.</span></div>
+<div class="line"><span class="lineno">  210</span>    posStep = pos + <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a> * <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.finiteDifference;</div>
+<div class="line"><span class="lineno">  211</span>    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(posStep);</div>
+<div class="line"><span class="lineno">  212</span>    forceAfterStep = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient(<span class="keyword">true</span>);</div>
+<div class="line"><span class="lineno">  213</span>    <span class="keywordtype">double</span> projectedForce2 = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(forceAfterStep, <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>);</div>
+<div class="line"><span class="lineno">  214</span>    <span class="keywordtype">double</span> curvature = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(</div>
+<div class="line"><span class="lineno">  215</span>        projectedForce1 - projectedForce2, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.finiteDifference, 0.0);</div>
+<div class="line"><span class="lineno">  216</span>    <span class="keywordflow">if</span> (curvature &gt; 0.0) {</div>
+<div class="line"><span class="lineno">  217</span>      stepSize =</div>
+<div class="line"><span class="lineno">  218</span>          <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(projectedForce1, curvature, a_maxMove);</div>
+<div class="line"><span class="lineno">  219</span>    }</div>
+<div class="line"><span class="lineno">  220</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.bowlBreakout &amp;&amp; a_maxMove &lt; 0.0) {</div>
+<div class="line"><span class="lineno">  221</span>      stepSize = -a_maxMove;</div>
+<div class="line"><span class="lineno">  222</span>      a_maxMove = -a_maxMove;</div>
+<div class="line"><span class="lineno">  223</span>    }</div>
+<div class="line"><span class="lineno">  224</span>    <span class="keywordtype">double</span> passedMinimum = -1.;</div>
+<div class="line"><span class="lineno">  225</span>    <span class="keywordtype">double</span> forceChange = 0.;</div>
+<div class="line"><span class="lineno">  226</span>    <span class="keywordflow">while</span> (passedMinimum &lt; 0.0 &amp;&amp;</div>
+<div class="line"><span class="lineno">  227</span>           0.1 * std::abs(projectedForce1) &lt; std::abs(projectedForce2)) {</div>
+<div class="line"><span class="lineno">  228</span>      posStep = pos + <a class="code hl_function" href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a>(</div>
+<div class="line"><span class="lineno">  229</span>                          stepSize * <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>, a_maxMove);</div>
+<div class="line"><span class="lineno">  230</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(posStep);</div>
+<div class="line"><span class="lineno">  231</span>      forceAfterStep = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient(<span class="keyword">true</span>);</div>
+<div class="line"><span class="lineno">  232</span>      projectedForce2 = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(forceAfterStep, <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>);</div>
+<div class="line"><span class="lineno">  233</span> </div>
+<div class="line"><span class="lineno">  234</span>      passedMinimum = projectedForce1 * projectedForce2;</div>
+<div class="line"><span class="lineno">  235</span>      <span class="keywordflow">if</span> (passedMinimum &lt; 0.0 &amp;&amp;</div>
+<div class="line"><span class="lineno">  236</span>          0.1 * std::abs(projectedForce1) &lt; std::abs(projectedForce2)) {</div>
+<div class="line"><span class="lineno">  237</span>        forceChange = (projectedForce1 - projectedForce2);</div>
+<div class="line"><span class="lineno">  238</span>        stepSize = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(projectedForce1, forceChange, 0.0) *</div>
+<div class="line"><span class="lineno">  239</span>                   stepSize;</div>
+<div class="line"><span class="lineno">  240</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ae4cd215ba150decb4fd0dde059fc91c0">m_log</a>, <span class="stringliteral">&quot;Force changed {}, step size adjusted to {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  241</span>                        forceChange, stepSize);</div>
+<div class="line"><span class="lineno">  242</span>      }</div>
+<div class="line"><span class="lineno">  243</span>    }</div>
+<div class="line"><span class="lineno">  244</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  245</span>    <span class="comment">// First step: one finite-difference probe, then a Newton length.</span></div>
+<div class="line"><span class="lineno">  246</span>    <span class="comment">// Later steps: secant curvature of the previous real displacement.</span></div>
+<div class="line"><span class="lineno">  247</span>    <span class="comment">// A restart only drops the old search direction. The trust region</span></div>
+<div class="line"><span class="lineno">  248</span>    <span class="comment">// shrinks when that step raised the force, so a bad length is not</span></div>
+<div class="line"><span class="lineno">  249</span>    <span class="comment">// repeated at the max-move cap.</span></div>
+<div class="line"><span class="lineno">  250</span>    <span class="keywordtype">double</span> trust = maxMove;</div>
+<div class="line"><span class="lineno">  251</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> fd = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.finiteDifference;</div>
+<div class="line"><span class="lineno">  252</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a894bedb66ac7390303dd23cc67bac120">m_haveSecant</a> &amp;&amp; fd &gt; 0.0) {</div>
+<div class="line"><span class="lineno">  253</span>      posStep = pos + <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a> * fd;</div>
+<div class="line"><span class="lineno">  254</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(posStep);</div>
+<div class="line"><span class="lineno">  255</span>      forceAfterStep = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient(<span class="keyword">true</span>);</div>
+<div class="line"><span class="lineno">  256</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> projectedForce2 =</div>
+<div class="line"><span class="lineno">  257</span>          <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(forceAfterStep, <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>);</div>
+<div class="line"><span class="lineno">  258</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> curvature = (projectedForce1 - projectedForce2) / fd;</div>
+<div class="line"><span class="lineno">  259</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(pos);</div>
+<div class="line"><span class="lineno">  260</span>      <span class="keywordflow">if</span> (curvature &gt; 0.0 &amp;&amp; projectedForce1 &gt; 0.0) {</div>
+<div class="line"><span class="lineno">  261</span>        stepSize = projectedForce1 / curvature;</div>
+<div class="line"><span class="lineno">  262</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  263</span>        stepSize = 0.25 * maxMove;</div>
+<div class="line"><span class="lineno">  264</span>      }</div>
+<div class="line"><span class="lineno">  265</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a894bedb66ac7390303dd23cc67bac120">m_haveSecant</a>) {</div>
+<div class="line"><span class="lineno">  266</span>      <span class="keyword">const</span> Eigen::VectorXd disp = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;difference(pos, <a class="code hl_variable" href="#a038153c785f449150f638b856e252781">m_secantPos</a>);</div>
+<div class="line"><span class="lineno">  267</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> ds = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(disp, <a class="code hl_variable" href="#a687a6ce4f3494276460aa3ec206eec2d">m_secantDir</a>);</div>
+<div class="line"><span class="lineno">  268</span>      <span class="keywordflow">if</span> (std::abs(ds) &gt; 1e-14) {</div>
+<div class="line"><span class="lineno">  269</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> projNow = <a class="code hl_function" href="namespaceeonc_1_1exact.html#a6b3d75c60fb3ef9c1f3572b0982cde13">eonc::exact::dot</a>(<a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>, <a class="code hl_variable" href="#a687a6ce4f3494276460aa3ec206eec2d">m_secantDir</a>);</div>
+<div class="line"><span class="lineno">  270</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> curvature = (<a class="code hl_variable" href="#a82e9470ba0845f4fa6cb0b4948ae8995">m_secantProj</a> - projNow) / ds;</div>
+<div class="line"><span class="lineno">  271</span>        <span class="keywordflow">if</span> (curvature &gt; 0.0 &amp;&amp; projectedForce1 &gt; 0.0) {</div>
+<div class="line"><span class="lineno">  272</span>          stepSize = projectedForce1 / curvature;</div>
+<div class="line"><span class="lineno">  273</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  274</span>          stepSize = 0.25 * maxMove;</div>
+<div class="line"><span class="lineno">  275</span>        }</div>
+<div class="line"><span class="lineno">  276</span>      }</div>
+<div class="line"><span class="lineno">  277</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ad0da1050c98fd5533e0ad94aaa970aea">m_secantForce</a>.size() == <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>.size() &amp;&amp; <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>.size() &gt;= 6 &amp;&amp;</div>
+<div class="line"><span class="lineno">  278</span>          <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>.size() % 3 == 0) {</div>
+<div class="line"><span class="lineno">  279</span>        <span class="keyword">const</span> <span class="keywordtype">long</span> nAtoms = <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>.size() / 3;</div>
+<div class="line"><span class="lineno">  280</span>        <span class="keywordflow">if</span> (<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a7702f4463ff1aefb064ac6e7ad985234">m_atomCurv</a>.size()) != nAtoms) {</div>
+<div class="line"><span class="lineno">  281</span>          <a class="code hl_variable" href="#a7702f4463ff1aefb064ac6e7ad985234">m_atomCurv</a>.assign(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nAtoms), 0.0);</div>
+<div class="line"><span class="lineno">  282</span>        }</div>
+<div class="line"><span class="lineno">  283</span>        <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a = 0; a &lt; nAtoms; ++a) {</div>
+<div class="line"><span class="lineno">  284</span>          <span class="keyword">const</span> <span class="keyword">auto</span> dsAtom = disp.segment(3 * a, 3);</div>
+<div class="line"><span class="lineno">  285</span>          <span class="keyword">const</span> <span class="keywordtype">double</span> dsn = dsAtom.squaredNorm();</div>
+<div class="line"><span class="lineno">  286</span>          <span class="keywordflow">if</span> (dsn &lt; 1e-12) {</div>
+<div class="line"><span class="lineno">  287</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  288</span>          }</div>
+<div class="line"><span class="lineno">  289</span>          <span class="keyword">const</span> <span class="keyword">auto</span> df =</div>
+<div class="line"><span class="lineno">  290</span>              <a class="code hl_variable" href="#ad0da1050c98fd5533e0ad94aaa970aea">m_secantForce</a>.segment(3 * a, 3) - <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>.segment(3 * a, 3);</div>
+<div class="line"><span class="lineno">  291</span>          <span class="keyword">const</span> <span class="keywordtype">double</span> c = df.dot(dsAtom) / dsn;</div>
+<div class="line"><span class="lineno">  292</span>          <span class="keywordflow">if</span> (c &gt; 0.05) {</div>
+<div class="line"><span class="lineno">  293</span>            <a class="code hl_variable" href="#a7702f4463ff1aefb064ac6e7ad985234">m_atomCurv</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(a)] = c;</div>
+<div class="line"><span class="lineno">  294</span>          }</div>
+<div class="line"><span class="lineno">  295</span>        }</div>
+<div class="line"><span class="lineno">  296</span>      }</div>
+<div class="line"><span class="lineno">  297</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ab8e657a1718e00a72364b8e2ef22f875">m_lastMotion</a> &gt; 0.0) {</div>
+<div class="line"><span class="lineno">  298</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> fNorm = std::sqrt(<a class="code hl_function" href="namespaceeonc_1_1exact.html#a155cb43dcb40b742b39c7649e6efd248">eonc::exact::squaredNorm</a>(<a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>));</div>
+<div class="line"><span class="lineno">  299</span>        <span class="comment">// Halve the trust when the force rose. A slower grow stalls the</span></div>
+<div class="line"><span class="lineno">  300</span>        <span class="comment">// stiff pairs at the iteration cap, so a falling force may double.</span></div>
+<div class="line"><span class="lineno">  301</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> grow = (fNorm &gt; <a class="code hl_variable" href="#a0fb74c99534e6a53ac63bd17bbfede96">m_lastForceNorm</a> * 1.05) ? 0.5 : 2.0;</div>
+<div class="line"><span class="lineno">  302</span>        trust = std::min(maxMove, grow * <a class="code hl_variable" href="#ab8e657a1718e00a72364b8e2ef22f875">m_lastMotion</a>);</div>
+<div class="line"><span class="lineno">  303</span>      }</div>
+<div class="line"><span class="lineno">  304</span>    }</div>
+<div class="line"><span class="lineno">  305</span> </div>
+<div class="line"><span class="lineno">  306</span>    Eigen::VectorXd delta = <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>;</div>
+<div class="line"><span class="lineno">  307</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.bowlBreakout &amp;&amp; a_maxMove &lt; 0.0) {</div>
+<div class="line"><span class="lineno">  308</span>      stepSize = maxMove;</div>
+<div class="line"><span class="lineno">  309</span>      a_maxMove = maxMove;</div>
+<div class="line"><span class="lineno">  310</span>      trust = maxMove;</div>
+<div class="line"><span class="lineno">  311</span>      delta *= stepSize;</div>
+<div class="line"><span class="lineno">  312</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  313</span>      delta *= stepSize;</div>
+<div class="line"><span class="lineno">  314</span>    }</div>
+<div class="line"><span class="lineno">  315</span> </div>
+<div class="line"><span class="lineno">  316</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.bowlBreakout) {</div>
+<div class="line"><span class="lineno">  317</span>      pos += <a class="code hl_function" href="namespaceeonc_1_1geometry.html#a74dc4eb878fa1a742ba96bd30d2ec237">eonc::geometry::maxMotionAppliedV</a>(delta, a_maxMove);</div>
+<div class="line"><span class="lineno">  318</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a7702f4463ff1aefb064ac6e7ad985234">m_atomCurv</a>.empty() &amp;&amp;</div>
+<div class="line"><span class="lineno">  319</span>               <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a7702f4463ff1aefb064ac6e7ad985234">m_atomCurv</a>.size()) * 3 == delta.size()) {</div>
+<div class="line"><span class="lineno">  320</span>      <span class="comment">// Per-atom Newton length, then a cap. A scalar step is stuck on</span></div>
+<div class="line"><span class="lineno">  321</span>      <span class="comment">// the stiffest atom and crawls along the soft ones.</span></div>
+<div class="line"><span class="lineno">  322</span>      <span class="keyword">const</span> <span class="keywordtype">long</span> nAtoms = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a7702f4463ff1aefb064ac6e7ad985234">m_atomCurv</a>.size());</div>
+<div class="line"><span class="lineno">  323</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a = 0; a &lt; nAtoms; ++a) {</div>
+<div class="line"><span class="lineno">  324</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> c = <a class="code hl_variable" href="#a7702f4463ff1aefb064ac6e7ad985234">m_atomCurv</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(a)];</div>
+<div class="line"><span class="lineno">  325</span>        <span class="keyword">auto</span> seg = delta.segment(3 * a, 3);</div>
+<div class="line"><span class="lineno">  326</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> motion = seg.norm();</div>
+<div class="line"><span class="lineno">  327</span>        <span class="keywordflow">if</span> (!(c &gt; 0.0) || motion &lt; 1e-14) {</div>
+<div class="line"><span class="lineno">  328</span>          <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  329</span>        }</div>
+<div class="line"><span class="lineno">  330</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> newton = <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>.segment(3 * a, 3).norm() / c;</div>
+<div class="line"><span class="lineno">  331</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> target = std::min(trust, std::max(newton, 0.0));</div>
+<div class="line"><span class="lineno">  332</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> scale = std::min(4.0, target / motion);</div>
+<div class="line"><span class="lineno">  333</span>        <span class="keywordflow">if</span> (scale &gt; 0.0 &amp;&amp; std::abs(scale - 1.0) &gt; 1e-6) {</div>
+<div class="line"><span class="lineno">  334</span>          seg *= scale;</div>
+<div class="line"><span class="lineno">  335</span>        }</div>
+<div class="line"><span class="lineno">  336</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> capped = seg.norm();</div>
+<div class="line"><span class="lineno">  337</span>        <span class="keywordflow">if</span> (capped &gt; trust) {</div>
+<div class="line"><span class="lineno">  338</span>          seg *= trust / capped;</div>
+<div class="line"><span class="lineno">  339</span>        }</div>
+<div class="line"><span class="lineno">  340</span>      }</div>
+<div class="line"><span class="lineno">  341</span>      pos += delta;</div>
+<div class="line"><span class="lineno">  342</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  343</span>      pos += <a class="code hl_function" href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a>(delta, trust);</div>
+<div class="line"><span class="lineno">  344</span>    }</div>
+<div class="line"><span class="lineno">  345</span>    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(pos);</div>
+<div class="line"><span class="lineno">  346</span>    <a class="code hl_variable" href="#a0fb74c99534e6a53ac63bd17bbfede96">m_lastForceNorm</a> = std::sqrt(<a class="code hl_function" href="namespaceeonc_1_1exact.html#a155cb43dcb40b742b39c7649e6efd248">eonc::exact::squaredNorm</a>(<a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>));</div>
+<div class="line"><span class="lineno">  347</span>    <a class="code hl_variable" href="#ab8e657a1718e00a72364b8e2ef22f875">m_lastMotion</a> =</div>
+<div class="line"><span class="lineno">  348</span>        <a class="code hl_function" href="namespaceeonc_1_1geometry.html#ad497bf4a395093329446fdbcb934bcb8">eonc::geometry::maxAtomMotionV</a>(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;difference(pos, posBefore));</div>
+<div class="line"><span class="lineno">  349</span>    <a class="code hl_variable" href="#a038153c785f449150f638b856e252781">m_secantPos</a> = posBefore;</div>
+<div class="line"><span class="lineno">  350</span>    <a class="code hl_variable" href="#ad0da1050c98fd5533e0ad94aaa970aea">m_secantForce</a> = <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>;</div>
+<div class="line"><span class="lineno">  351</span>    <a class="code hl_variable" href="#a687a6ce4f3494276460aa3ec206eec2d">m_secantDir</a> = <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>;</div>
+<div class="line"><span class="lineno">  352</span>    <a class="code hl_variable" href="#a82e9470ba0845f4fa6cb0b4948ae8995">m_secantProj</a> = projectedForce1;</div>
+<div class="line"><span class="lineno">  353</span>    <a class="code hl_variable" href="#a894bedb66ac7390303dd23cc67bac120">m_haveSecant</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  354</span>  }</div>
+<div class="line"><span class="lineno">  355</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.cg.knock_out_max_move) {</div>
+<div class="line"><span class="lineno">  356</span>    <span class="keywordflow">if</span> (stepSize &gt;= a_maxMove) {</div>
+<div class="line"><span class="lineno">  357</span>      <span class="comment">// knockout old search direction</span></div>
+<div class="line"><span class="lineno">  358</span>      <a class="code hl_variable" href="#a2fa4863deaee58bd920e5bcfd447ab28">m_directionOld</a>.setZero();</div>
+<div class="line"><span class="lineno">  359</span>      <a class="code hl_variable" href="#ae01c04ea295a7d03490538974ba0ddab">m_forceOld</a>.setZero();</div>
+<div class="line"><span class="lineno">  360</span>      <a class="code hl_variable" href="#a894bedb66ac7390303dd23cc67bac120">m_haveSecant</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  361</span>      <a class="code hl_variable" href="#a7702f4463ff1aefb064ac6e7ad985234">m_atomCurv</a>.clear();</div>
+<div class="line"><span class="lineno">  362</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ae4cd215ba150decb4fd0dde059fc91c0">m_log</a>, <span class="stringliteral">&quot;Resetting the old search direction&quot;</span>);</div>
+<div class="line"><span class="lineno">  363</span>    }</div>
+<div class="line"><span class="lineno">  364</span>  }</div>
+<div class="line"><span class="lineno">  365</span> </div>
+<div class="line"><span class="lineno">  366</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  367</span>}</div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a0fb74c99534e6a53ac63bd17bbfede96"><div class="ttname"><a href="#a0fb74c99534e6a53ac63bd17bbfede96">eonc::ConjugateGradients::m_lastForceNorm</a></div><div class="ttdeci">double m_lastForceNorm</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00101">ConjugateGradients.h:101</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a7702f4463ff1aefb064ac6e7ad985234"><div class="ttname"><a href="#a7702f4463ff1aefb064ac6e7ad985234">eonc::ConjugateGradients::m_atomCurv</a></div><div class="ttdeci">std::vector&lt; double &gt; m_atomCurv</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00097">ConjugateGradients.h:97</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a82e9470ba0845f4fa6cb0b4948ae8995"><div class="ttname"><a href="#a82e9470ba0845f4fa6cb0b4948ae8995">eonc::ConjugateGradients::m_secantProj</a></div><div class="ttdeci">double m_secantProj</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00092">ConjugateGradients.h:92</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a894bedb66ac7390303dd23cc67bac120"><div class="ttname"><a href="#a894bedb66ac7390303dd23cc67bac120">eonc::ConjugateGradients::m_haveSecant</a></div><div class="ttdeci">bool m_haveSecant</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00093">ConjugateGradients.h:93</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_ab8e657a1718e00a72364b8e2ef22f875"><div class="ttname"><a href="#ab8e657a1718e00a72364b8e2ef22f875">eonc::ConjugateGradients::m_lastMotion</a></div><div class="ttdeci">double m_lastMotion</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00100">ConjugateGradients.h:100</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_ad0da1050c98fd5533e0ad94aaa970aea"><div class="ttname"><a href="#ad0da1050c98fd5533e0ad94aaa970aea">eonc::ConjugateGradients::m_secantForce</a></div><div class="ttdeci">Eigen::VectorXd m_secantForce</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00094">ConjugateGradients.h:94</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_ae4cd215ba150decb4fd0dde059fc91c0"><div class="ttname"><a href="#ae4cd215ba150decb4fd0dde059fc91c0">eonc::ConjugateGradients::m_log</a></div><div class="ttdeci">eonc::log::FileScoped m_log</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00102">ConjugateGradients.h:102</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1geometry_html_a74dc4eb878fa1a742ba96bd30d2ec237"><div class="ttname"><a href="namespaceeonc_1_1geometry.html#a74dc4eb878fa1a742ba96bd30d2ec237">eonc::geometry::maxMotionAppliedV</a></div><div class="ttdeci">VectorXd maxMotionAppliedV(const VectorXd v1, double maxMotion)</div><div class="ttdef"><b>Definition</b> <a href="GeometryAnalysis_8cpp_source.html#l00346">GeometryAnalysis.cpp:346</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1geometry_html_acbf42a1f91c3c4317451f0c12a60aeee"><div class="ttname"><a href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a></div><div class="ttdeci">VectorXd maxAtomMotionAppliedV(const VectorXd v1, double maxMotion)</div><div class="ttdef"><b>Definition</b> <a href="GeometryAnalysis_8cpp_source.html#l00324">GeometryAnalysis.cpp:324</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1geometry_html_ad497bf4a395093329446fdbcb934bcb8"><div class="ttname"><a href="namespaceeonc_1_1geometry.html#ad497bf4a395093329446fdbcb934bcb8">eonc::geometry::maxAtomMotionV</a></div><div class="ttdeci">double maxAtomMotionV(const VectorXd v1)</div><div class="ttdef"><b>Definition</b> <a href="GeometryAnalysis_8cpp_source.html#l00278">GeometryAnalysis.cpp:278</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -771,6 +954,30 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a7702f4463ff1aefb064ac6e7ad985234" name="a7702f4463ff1aefb064ac6e7ad985234"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7702f4463ff1aefb064ac6e7ad985234">&#9670;&#160;</a></span>m_atomCurv</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; eonc::ConjugateGradients::m_atomCurv</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00097">97</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+
+</div>
+</div>
 <a id="a59e7cb42c970482dd523e0f52956433e" name="a59e7cb42c970482dd523e0f52956433e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a59e7cb42c970482dd523e0f52956433e">&#9670;&#160;</a></span>m_cg_i</h2>
 
@@ -793,8 +1000,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Counts the number of discrete steps until algorithm convergence. </p>
 
-<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00086">86</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   86</span>{0};</div>
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00105">105</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  105</span>{0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -820,7 +1027,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Current step direction of the conjugate gradient. </p>
 
-<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00074">74</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00078">78</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
 
 </div>
 </div>
@@ -846,7 +1053,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Normalised version of the current direction vector. </p>
 
-<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00078">78</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00082">82</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
 
 </div>
 </div>
@@ -872,7 +1079,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Algorithms previous step direction. </p>
 
-<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00076">76</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00080">80</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
 
 </div>
 </div>
@@ -898,7 +1105,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Current force vector. </p>
 
-<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00080">80</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00084">84</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
 
 </div>
 </div>
@@ -924,8 +1131,83 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Previous force vector. </p>
 
-<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00082">82</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00086">86</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
 
+</div>
+</div>
+<a id="a894bedb66ac7390303dd23cc67bac120" name="a894bedb66ac7390303dd23cc67bac120"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a894bedb66ac7390303dd23cc67bac120">&#9670;&#160;</a></span>m_haveSecant</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::ConjugateGradients::m_haveSecant {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00093">93</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   93</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0fb74c99534e6a53ac63bd17bbfede96" name="a0fb74c99534e6a53ac63bd17bbfede96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fb74c99534e6a53ac63bd17bbfede96">&#9670;&#160;</a></span>m_lastForceNorm</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::ConjugateGradients::m_lastForceNorm {0.0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00101">101</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  101</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab8e657a1718e00a72364b8e2ef22f875" name="ab8e657a1718e00a72364b8e2ef22f875"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8e657a1718e00a72364b8e2ef22f875">&#9670;&#160;</a></span>m_lastMotion</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::ConjugateGradients::m_lastMotion {0.0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00100">100</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  100</span>{0.0};</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="ae4cd215ba150decb4fd0dde059fc91c0" name="ae4cd215ba150decb4fd0dde059fc91c0"></a>
@@ -948,8 +1230,106 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00083">83</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   83</span>{<span class="stringliteral">&quot;cg&quot;</span>, <span class="stringliteral">&quot;_cg.log&quot;</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00102">102</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  102</span>{<span class="stringliteral">&quot;cg&quot;</span>, <span class="stringliteral">&quot;_cg.log&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a687a6ce4f3494276460aa3ec206eec2d" name="a687a6ce4f3494276460aa3ec206eec2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a687a6ce4f3494276460aa3ec206eec2d">&#9670;&#160;</a></span>m_secantDir</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd eonc::ConjugateGradients::m_secantDir</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00091">91</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+
+</div>
+</div>
+<a id="ad0da1050c98fd5533e0ad94aaa970aea" name="ad0da1050c98fd5533e0ad94aaa970aea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0da1050c98fd5533e0ad94aaa970aea">&#9670;&#160;</a></span>m_secantForce</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd eonc::ConjugateGradients::m_secantForce</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00094">94</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+
+</div>
+</div>
+<a id="a038153c785f449150f638b856e252781" name="a038153c785f449150f638b856e252781"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a038153c785f449150f638b856e252781">&#9670;&#160;</a></span>m_secantPos</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd eonc::ConjugateGradients::m_secantPos</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Geometry and projected force of the last real step. The next step length is the secant curvature of that step, so the line search does not spend a finite-difference probe. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00090">90</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+
+</div>
+</div>
+<a id="a82e9470ba0845f4fa6cb0b4948ae8995" name="a82e9470ba0845f4fa6cb0b4948ae8995"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82e9470ba0845f4fa6cb0b4948ae8995">&#9670;&#160;</a></span>m_secantProj</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::ConjugateGradients::m_secantProj {0.0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00092">92</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   92</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>

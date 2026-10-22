@@ -354,6 +354,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#configuration">Configuration</a><ul>
 <li><a class="reference internal" href="#eon.schema.OptimizerConfig"><code class="docutils literal notranslate"><span class="pre">OptimizerConfig</span></code></a><ul>
 <li><a class="reference internal" href="#eon.schema.OptimizerConfig.opt_method"><code class="docutils literal notranslate">opt_method</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.OptimizerConfig.opt_backend"><code class="docutils literal notranslate">opt_backend</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.OptimizerConfig.convergence_metric"><code class="docutils literal notranslate">convergence_metric</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.OptimizerConfig.converged_force"><code class="docutils literal notranslate">converged_force</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.OptimizerConfig.max_move"><code class="docutils literal notranslate">max_move</span></code></a></li>
@@ -422,6 +423,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 </ul>
 </li>
+<li><a class="reference internal" href="#rgmin-backend">rgmin backend</a></li>
 <li><a class="reference internal" href="#xtsci">Xtsci</a><ul>
 <li><a class="reference internal" href="#eon.schema.XtsciConfig"><code class="docutils literal notranslate"><span class="pre">XtsciConfig</span></code></a><ul>
 <li><a class="reference internal" href="#eon.schema.XtsciConfig.method"><code class="docutils literal notranslate">method</span></code></a></li>
@@ -434,12 +436,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 </ul>
 </li>
-</ul>
-</li>
-<li><a class="reference internal" href="#references">References</a><ul>
 <li><a class="reference internal" href="#rgsaddle-band-and-min-mode">Rgsaddle band and min-mode</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#references">References</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
   data-type="github" data-user="TheochemUI" data-repo="eOn">
@@ -563,6 +563,7 @@ before being passed to the optimizer</p></li>
 <dt class="field-odd">Fields<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">opt_method</span> <span class="pre">(Literal['box',</span> <span class="pre">'cg',</span> <span class="pre">'qm',</span> <span class="pre">'lbfgs',</span> <span class="pre">'fire',</span> <span class="pre">'sd',</span> <span class="pre">'xtsci'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">opt_backend</span> <span class="pre">(Literal['eon',</span> <span class="pre">'rgmin'])</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">convergence_metric</span> <span class="pre">(Literal['norm',</span> <span class="pre">'rms',</span> <span class="pre">'max_atom',</span> <span class="pre">'max_component'])</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">converged_force</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_move</span> <span class="pre">(float)</span></code></p></li>
@@ -582,11 +583,31 @@ before being passed to the optimizer</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">lbfgs</span></code>: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">fire</span></code>: Fast inertial relaxation engine</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sd</span></code>: Steepest descent</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">xtsci</span></code>: xtsci-optimize engine. Pick the solver with <code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">method</span></code>. Needs <code class="docutils literal notranslate"><span class="pre">-Dwith_xtsci=true</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xtsci</span></code>: rgmin engine (formerly xtsci-optimize). Pick the solver with <code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">method</span></code>. Needs a build that links rgmin (<code class="docutils literal notranslate"><span class="pre">-Dwith_rgmin</span></code>).</p></li>
 </ul>
 </dd>
 </dl>
 <p>The optimization method to use.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.OptimizerConfig.opt_backend">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">opt_backend</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.15)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'eon'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rgmin'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'eon'</span></span><a class="headerlink" href="#eon.schema.OptimizerConfig.opt_backend" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">eon</span></code>: eOn’s own optimizers (default)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rgmin</span></code>: rgmin sessions: lbfgs is rgmin L-BFGS, fire is FIRE, cg is
+Polak-Ribiere CG, sd is steepest descent, qm is quick-min. Needs a
+build that links rgmin (<code class="docutils literal notranslate"><span class="pre">-Dwith_rgmin</span></code>). Applies to every
+objective whose gradient is the derivative of its energy
+(relaxations, the per-image IDPP path, BGSD); the nudged elastic
+band, the collective IDPP band and min-mode translation steps stay
+on eOn’s optimizers. <code class="docutils literal notranslate"><span class="pre">[LBFGS]</span> <span class="pre">lbfgs_memory</span></code> and the <code class="docutils literal notranslate"><span class="pre">[Xtsci]</span></code>
+session keys still apply.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Who runs the lbfgs, fire, cg, sd and qm optimizers.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -949,24 +970,94 @@ finite-difference probe, with <code class="docutils literal notranslate"><span c
 </dd></dl>
 
 </section>
+<section id="rgmin-backend">
+<h3>rgmin backend<a class="headerlink" href="#rgmin-backend" title="Link to this heading">¶</a></h3>
+<p>eOn’s minimizers can run inside rgmin, the Rust minimizer library
+(formerly xtsci-optimize), instead of eOn’s own C++ code. Two keys select
+it:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[Optimizer]</span> <span class="pre">opt_backend</span> <span class="pre">=</span> <span class="pre">rgmin</span></code> keeps <code class="docutils literal notranslate"><span class="pre">opt_method</span></code> and hands the
+step to the rgmin solver of the same name.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[Optimizer]</span> <span class="pre">opt_method</span> <span class="pre">=</span> <span class="pre">xtsci</span></code> runs whichever rgmin solver
+<code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">method</span></code> names, including those eOn has no native version of
+(<code class="docutils literal notranslate"><span class="pre">bfgs</span></code>, <code class="docutils literal notranslate"><span class="pre">newton</span></code>, <code class="docutils literal notranslate"><span class="pre">rfo</span></code>, <code class="docutils literal notranslate"><span class="pre">dogleg</span></code>, <code class="docutils literal notranslate"><span class="pre">fire2</span></code>, …).</p></li>
+</ul>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">opt_method</span></code></p></th>
+<th class="head"><p>rgmin solver under <code class="docutils literal notranslate"><span class="pre">opt_backend</span> <span class="pre">=</span> <span class="pre">rgmin</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lbfgs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lbfgs</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fire</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fire</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cg</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">polak_ribiere</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sd</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">steepest</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">qm</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">quickmin</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Optimizer]</span>
+</span><span data-line="2"><span class="na">opt_method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">lbfgs</span>
+</span><span data-line="3"><span class="na">opt_backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">rgmin</span>
+</span></pre></div>
+</div>
+<p>Both need a client that links rgmin. <code class="docutils literal notranslate"><span class="pre">-Dwith_rgmin=auto</span></code> (the
+default) links an rgmin found by pkg-config and changes nothing until an
+input selects it; <code class="docutils literal notranslate"><span class="pre">-Dwith_rgmin=enabled</span></code> makes a missing rgmin a
+configure error. <code class="docutils literal notranslate"><span class="pre">-Dwith_xtsci=true</span></code> is the deprecated spelling of
+<code class="docutils literal notranslate"><span class="pre">enabled</span></code>. The client needs rgmin 0.4.0 or newer, installed with</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">cargo<span class="w"> </span>cinstall<span class="w"> </span>--release<span class="w"> </span>--features<span class="w"> </span>capi<span class="w"> </span>--prefix<span class="o">=</span><span class="nv">$PREFIX</span>
+</span><span data-line="2"><span class="c1"># cinstall regenerates rgmin.h; the C++ client needs the curated header</span>
+</span><span data-line="3">cp<span class="w"> </span>include/rgmin.h<span class="w"> </span><span class="nv">$PREFIX</span>/include/
+</span><span data-line="4">cp<span class="w"> </span>-r<span class="w"> </span>include/dlpack<span class="w"> </span><span class="nv">$PREFIX</span>/include/
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">eonclient</span> <span class="pre">--features</span></code> lists <code class="docutils literal notranslate"><span class="pre">rgmin</span> <span class="pre">minimizers</span></code> when it is linked.
+A client without rgmin rejects <code class="docutils literal notranslate"><span class="pre">opt_backend</span> <span class="pre">=</span> <span class="pre">rgmin</span></code> with an error
+naming <code class="docutils literal notranslate"><span class="pre">-Dwith_rgmin</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">opt_backend</span></code> only applies where the optimizer minimizes an energy
+whose gradient is the force: relaxations in every job, NEB endpoint
+minimization, the per-image IDPP path and BGSD. The NEB band, the
+collective IDPP band and the min-mode translation step are not
+minimizations of an energy, so they keep eOn’s optimizer; the rgsaddle
+section below covers the band.</p>
+<p>Matter evaluates every energy and force rgmin asks for, so
+<code class="docutils literal notranslate"><span class="pre">total_force_calls</span></code> counts the same calls as with <code class="docutils literal notranslate"><span class="pre">opt_backend</span> <span class="pre">=</span> <span class="pre">eon</span></code>.
+The host loop applies <code class="docutils literal notranslate"><span class="pre">converged_force</span></code>, <code class="docutils literal notranslate"><span class="pre">max_iterations</span></code> and
+<code class="docutils literal notranslate"><span class="pre">max_move</span></code> (as eOn’s largest per-atom move) as before. rgmin reads
+<code class="docutils literal notranslate"><span class="pre">time_step</span></code> for <code class="docutils literal notranslate"><span class="pre">fire</span></code> and <code class="docutils literal notranslate"><span class="pre">qm</span></code>, <code class="docutils literal notranslate"><span class="pre">[LBFGS]</span> <span class="pre">lbfgs_memory</span></code> for the
+memory, and the <code class="docutils literal notranslate"><span class="pre">[Xtsci]</span></code> or <code class="docutils literal notranslate"><span class="pre">[LBFGS]</span></code> preconditioner and acceptance
+keys described below. The other <code class="docutils literal notranslate"><span class="pre">[FIRE]</span></code>, <code class="docutils literal notranslate"><span class="pre">[CG]</span></code>, <code class="docutils literal notranslate"><span class="pre">[QuickMin]</span></code>
+and <code class="docutils literal notranslate"><span class="pre">[SD]</span></code> keys belong to eOn’s own solvers and do not reach rgmin.</p>
+</section>
 <section id="xtsci">
 <h3>Xtsci<a class="headerlink" href="#xtsci" title="Link to this heading">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">opt_method</span> <span class="pre">=</span> <span class="pre">xtsci</span></code> selects the xtsci-optimize engine. The solver
-inside that engine is <code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">method</span></code>. Build with
-<code class="docutils literal notranslate"><span class="pre">-Dwith_xtsci=true</span></code>. The adapter holds an <code class="docutils literal notranslate"><span class="pre">xts_solver_t</span></code> session;
-each <code class="docutils literal notranslate"><span class="pre">step()</span></code> is one outer iteration so L-BFGS pairs and NLCG
+<p><code class="docutils literal notranslate"><span class="pre">opt_method</span> <span class="pre">=</span> <span class="pre">xtsci</span></code> selects the rgmin engine. The solver inside that
+engine is <code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">method</span></code>. The adapter holds an <code class="docutils literal notranslate"><span class="pre">rgmin_solver_t</span></code>
+session; each <code class="docutils literal notranslate"><span class="pre">step()</span></code> is one outer iteration so L-BFGS pairs and NLCG
 conjugacy survive the host loop.</p>
 <p>When <code class="docutils literal notranslate"><span class="pre">eindir-core</span></code> is on the pkg-config path, the same backend borrows
 an <code class="docutils literal notranslate"><span class="pre">eindir_objective_t</span></code> around the <code class="docutils literal notranslate"><span class="pre">ObjectiveFunction</span></code>. The adapter
 checks the eindir ABI stamp, the gradient feature bit, and the semantic
 descriptor (eV, angstrom, analytic forces) before dispatch.
-<code class="docutils literal notranslate"><span class="pre">Optimizer::run</span></code> then calls <code class="docutils literal notranslate"><span class="pre">xts_minimize_eindir</span></code> unless the step
-needs a host Hessian. <code class="docutils literal notranslate"><span class="pre">step()</span></code> stays one <code class="docutils literal notranslate"><span class="pre">xts_solver_t</span></code> iteration.
-LBFGS, CG, and the other built-in solvers are unchanged.</p>
+<code class="docutils literal notranslate"><span class="pre">Optimizer::run</span></code> then calls <code class="docutils literal notranslate"><span class="pre">rgmin_minimize_eindir</span></code> unless the step
+needs a host Hessian. <code class="docutils literal notranslate"><span class="pre">step()</span></code> stays one <code class="docutils literal notranslate"><span class="pre">rgmin_solver_t</span></code> iteration.</p>
 <p><code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">qn_step</span></code>, <code class="docutils literal notranslate"><span class="pre">precon</span></code>, and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are the first-class
 knobs for an L-BFGS session. They map onto
-<code class="docutils literal notranslate"><span class="pre">xts_solver_set_qn_step</span></code>, <code class="docutils literal notranslate"><span class="pre">xts_solver_step_hess_fg</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">xts_solver_set_accept</span></code>. Energy and forces share one
+<code class="docutils literal notranslate"><span class="pre">rgmin_solver_set_qn_step</span></code>, <code class="docutils literal notranslate"><span class="pre">rgmin_solver_step_hess_fg</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">rgmin_solver_set_accept</span></code>. Energy and forces share one
 <code class="docutils literal notranslate"><span class="pre">potential-&gt;force()</span></code> call. <code class="docutils literal notranslate"><span class="pre">accept</span> <span class="pre">=</span> <span class="pre">none</span></code> takes the
 maxmove-clipped step (one geometry). <code class="docutils literal notranslate"><span class="pre">nonmonotone</span></code> is the Grippo
 window used by the rematch INI. The pair / Lindh matrix is still
@@ -975,7 +1066,7 @@ built in eOn. Two-loop plus that matrix is (H_0 = P^{-1});
 <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">newton</span></code> is a different, memoryless Newton solver.</p>
 <p>The native <code class="docutils literal notranslate"><span class="pre">[LBFGS]</span></code> optimizer is unchanged. <code class="docutils literal notranslate"><span class="pre">lbfgs_step</span></code>,
 <code class="docutils literal notranslate"><span class="pre">lbfgs_precon</span></code>, and <code class="docutils literal notranslate"><span class="pre">lbfgs_accept</span></code> still drive it, and the
-xtsci adapter falls back to them when the <code class="docutils literal notranslate"><span class="pre">[Xtsci]</span></code> fields are
+rgmin adapter falls back to them when the <code class="docutils literal notranslate"><span class="pre">[Xtsci]</span></code> fields are
 left at their defaults.</p>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Optimizer]</span>
 </span><span data-line="2"><span class="na">opt_method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">xtsci</span>
@@ -993,7 +1084,7 @@ left at their defaults.</p>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Fields<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">method</span> <span class="pre">(Literal['lbfgs',</span> <span class="pre">'bfgs',</span> <span class="pre">'sr1',</span> <span class="pre">'sr2',</span> <span class="pre">'newton',</span> <span class="pre">'rfo',</span> <span class="pre">'steepest',</span> <span class="pre">'adam',</span> <span class="pre">'pso',</span> <span class="pre">'polak_ribiere',</span> <span class="pre">'fletcher_reeves',</span> <span class="pre">'hestenes_stiefel',</span> <span class="pre">'dai_yuan',</span> <span class="pre">'conjugate_descent',</span> <span class="pre">'hager_zhang',</span> <span class="pre">'liu_storey',</span> <span class="pre">'fr_pr',</span> <span class="pre">'fire',</span> <span class="pre">'bb',</span> <span class="pre">'dogleg',</span> <span class="pre">'fire2'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">method</span> <span class="pre">(Literal['lbfgs',</span> <span class="pre">'bfgs',</span> <span class="pre">'sr1',</span> <span class="pre">'sr2',</span> <span class="pre">'newton',</span> <span class="pre">'rfo',</span> <span class="pre">'steepest',</span> <span class="pre">'adam',</span> <span class="pre">'pso',</span> <span class="pre">'polak_ribiere',</span> <span class="pre">'fletcher_reeves',</span> <span class="pre">'hestenes_stiefel',</span> <span class="pre">'dai_yuan',</span> <span class="pre">'conjugate_descent',</span> <span class="pre">'hager_zhang',</span> <span class="pre">'liu_storey',</span> <span class="pre">'fr_pr',</span> <span class="pre">'fire',</span> <span class="pre">'bb',</span> <span class="pre">'dogleg',</span> <span class="pre">'fire2',</span> <span class="pre">'quickmin'])</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">qn_step</span> <span class="pre">(Literal['lbfgs',</span> <span class="pre">'newton',</span> <span class="pre">'rfo'])</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">precon</span> <span class="pre">(Literal['none',</span> <span class="pre">'pair',</span> <span class="pre">'pair_abs',</span> <span class="pre">'pair_full',</span> <span class="pre">'exp',</span> <span class="pre">'c1',</span> <span class="pre">'lindh',</span> <span class="pre">'lindh_full',</span> <span class="pre">'fischer',</span> <span class="pre">'schlegel',</span> <span class="pre">'swart'])</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">accept</span> <span class="pre">(Literal['none',</span> <span class="pre">'energy',</span> <span class="pre">'nonmonotone'])</span></code></p></li>
@@ -1004,9 +1095,9 @@ left at their defaults.</p>
 </dl>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.XtsciConfig.method">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.15)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'lbfgs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bfgs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sr1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sr2'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'newton'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rfo'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'steepest'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'adam'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pso'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'polak_ribiere'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fletcher_reeves'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'hestenes_stiefel'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dai_yuan'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'conjugate_descent'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'hager_zhang'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'liu_storey'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fr_pr'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fire'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bb'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dogleg'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fire2'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lbfgs'</span></span><a class="headerlink" href="#eon.schema.XtsciConfig.method" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.15)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'lbfgs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bfgs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sr1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sr2'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'newton'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rfo'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'steepest'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'adam'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pso'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'polak_ribiere'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fletcher_reeves'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'hestenes_stiefel'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dai_yuan'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'conjugate_descent'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'hager_zhang'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'liu_storey'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fr_pr'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fire'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bb'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dogleg'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fire2'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'quickmin'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lbfgs'</span></span><a class="headerlink" href="#eon.schema.XtsciConfig.method" title="Link to this definition">¶</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">opt_method</span> <span class="pre">=</span> <span class="pre">xtsci</span></code> selects the engine. This field selects the
-method the engine runs. Tokens match <code class="docutils literal notranslate"><span class="pre">xts_method_t</span></code>.</p>
+method the engine runs. Tokens match <code class="docutils literal notranslate"><span class="pre">rgmin_method_t</span></code>.</p>
 <dl class="simple">
 <dt>Quasi-Newton:</dt><dd><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">lbfgs</span></code>: two-loop L-BFGS (Nocedal-Wright 7.4)</p></li>
@@ -1015,7 +1106,7 @@ method the engine runs. Tokens match <code class="docutils literal notranslate">
 <li><p><code class="docutils literal notranslate"><span class="pre">sr2</span></code>: SR2 Hessian update</p></li>
 </ul>
 </dd>
-<dt>Hessian (pair Hessian from eOn, <code class="docutils literal notranslate"><span class="pre">xts_minimize_hess</span></code>):</dt><dd><ul class="simple">
+<dt>Hessian (pair Hessian from eOn, <code class="docutils literal notranslate"><span class="pre">rgmin_minimize_hess</span></code>):</dt><dd><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">newton</span></code>: Levenberg-shifted Newton</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">rfo</span></code>: Banerjee / Baker rational function optimization</p></li>
 </ul>
@@ -1027,6 +1118,8 @@ method the engine runs. Tokens match <code class="docutils literal notranslate">
 <li><p><code class="docutils literal notranslate"><span class="pre">fire</span></code>: Bitzek FIRE (one fused force per geometry)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">fire2</span></code>: Guénolé FIRE 2.0</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">bb</span></code>: Barzilai-Borwein spectral step</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">quickmin</span></code>: quick-min, the velocity projected on the force
+(rgmin ABI minor 29)</p></li>
 </ul>
 </dd>
 <dt>Trust-region Hessian (pair Hessian from eOn):</dt><dd><ul class="simple">
@@ -1040,7 +1133,7 @@ method the engine runs. Tokens match <code class="docutils literal notranslate">
 </ul>
 </dd>
 </dl>
-<p>Solver inside the xtsci-optimize engine (opt_method = xtsci).</p>
+<p>Solver inside the rgmin engine (opt_method = xtsci).</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -1049,7 +1142,7 @@ method the engine runs. Tokens match <code class="docutils literal notranslate">
 <dd><p>Only used when <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">lbfgs</span></code>. <code class="docutils literal notranslate"><span class="pre">lbfgs</span></code> is two-loop with
 optional <code class="docutils literal notranslate"><span class="pre">precon</span></code> as (H_0 = P^{-1}). <code class="docutils literal notranslate"><span class="pre">newton</span></code> / <code class="docutils literal notranslate"><span class="pre">rfo</span></code> take
 that same host matrix as the step (eOn rematch).</p>
-<p>How an L-BFGS session uses a host Hessian (xts_qn_step_t).</p>
+<p>How an L-BFGS session uses a host Hessian (rgmin_qn_step_t).</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -1058,7 +1151,7 @@ that same host matrix as the step (eOn rematch).</p>
 <dd><p><code class="docutils literal notranslate"><span class="pre">pair</span></code> is the Mones PSD clip. <code class="docutils literal notranslate"><span class="pre">pair_full</span></code> keeps signed
 curvature. <code class="docutils literal notranslate"><span class="pre">lindh_full</span></code> / <code class="docutils literal notranslate"><span class="pre">fischer</span></code> / <code class="docutils literal notranslate"><span class="pre">schlegel</span></code> / <code class="docutils literal notranslate"><span class="pre">swart</span></code>
 are Cartesian model Hessians (B^T k B). The matrix is assembled
-in eOn and passed through <code class="docutils literal notranslate"><span class="pre">xts_solver_step_hess</span></code>.</p>
+in eOn and passed through <code class="docutils literal notranslate"><span class="pre">rgmin_solver_step_hess</span></code>.</p>
 <p>Host pair / model Hessian kind. Built in eOn, not in xtsci.</p>
 </dd></dl>
 
@@ -1067,7 +1160,7 @@ in eOn and passed through <code class="docutils literal notranslate"><span class
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">accept</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.15)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'energy'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'nonmonotone'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></span><a class="headerlink" href="#eon.schema.XtsciConfig.accept" title="Link to this definition">¶</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">none</span></code> takes the maxmove-clipped step (one oracle). <code class="docutils literal notranslate"><span class="pre">energy</span></code>
 refuses a rise. <code class="docutils literal notranslate"><span class="pre">nonmonotone</span></code> is the Grippo window of five.</p>
-<p>How the session takes a proposed step (xts_accept_t).</p>
+<p>How the session takes a proposed step (rgmin_accept_t).</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -1075,8 +1168,8 @@ refuses a rise. <code class="docutils literal notranslate"><span class="pre">non
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">highs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.XtsciConfig.highs" title="Link to this definition">¶</a></dt>
 <dd><p>When true, xtsci asks HiGHS for the step: Newton QP on the host
 pair Hessian if one is passed, otherwise two-loop plus boxes.
-Needs <code class="docutils literal notranslate"><span class="pre">--features</span> <span class="pre">highs</span></code> on the xtsci-optimize build.</p>
-<p>HiGHS feasible-set step (xts_solver_set_highs).</p>
+Needs <code class="docutils literal notranslate"><span class="pre">--features</span> <span class="pre">highs</span></code> on the rgmin build.</p>
+<p>HiGHS feasible-set step (rgmin_solver_set_highs).</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -1088,48 +1181,69 @@ Needs <code class="docutils literal notranslate"><span class="pre">--features</s
 (S^{n-1}), <code class="docutils literal notranslate"><span class="pre">so3</span></code> a row-major 9-vector, <code class="docutils literal notranslate"><span class="pre">stiefel</span></code> is
 (mathrm{St}(n,1)), <code class="docutils literal notranslate"><span class="pre">se3</span></code> is rotation then translation
 (length 12).</p>
-<p>Embedded manifold (xts_manifold_t).</p>
+<p>Embedded manifold (rgmin_manifold_t).</p>
 </dd></dl>
 
 </dd></dl>
 
 </section>
-</section>
-<section id="references">
-<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
-<div class="docutils container" id="id3">
-<div role="list" class="citation-list">
-<div class="citation" id="id78" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">OPT_STH08</a><span class="fn-bracket">]</span></span>
-<p>Daniel Sheppard, Rye Terrell, and Graeme Henkelman. Optimization methods for finding minimum energy paths. <em>The Journal of Chemical Physics</em>, 128(13):134106, April 2008. <a class="reference external" href="https://doi.org/10.1063/1.2841941">doi:10.1063/1.2841941</a>.</p>
-</div>
-</div>
-</div>
 <section id="rgsaddle-band-and-min-mode">
 <h3>Rgsaddle band and min-mode<a class="headerlink" href="#rgsaddle-band-and-min-mode" title="Link to this heading">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">[Nudged</span> <span class="pre">Elastic</span> <span class="pre">Band]</span> <span class="pre">opt_method</span> <span class="pre">=</span> <span class="pre">xtsci</span></code> with <code class="docutils literal notranslate"><span class="pre">-Dwith_rgsaddle=true</span></code> steps the band
-through a rgsaddle session instead of the flattened band objective.
-<code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">method</span> <span class="pre">=</span> <span class="pre">fire</span></code> is the band stepper. <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">lbfgs</span></code>
-selects the L-BFGS session. Matter still owns the images, and the NEB
-loop still owns climbing policy, resampling, and the spline.
-<code class="docutils literal notranslate"><span class="pre">-Dwith_rgsaddle=true</span></code> needs rgsaddle 0.2.0 or newer. The surface
-callback returns a status. The first band request carries every image.
-Later requests carry the interior images, or one image. When the
-coordinates already match, that image stays put and its energy and
-forces stay with it. The images that move go out as one batch. The
+<p>rgsaddle, the Rust saddle-search library, steps the NEB band and rotates
+the min-mode dimer when the client is built with <code class="docutils literal notranslate"><span class="pre">-Dwith_rgsaddle=true</span></code>
+(rgsaddle 0.2.0 or newer, found by pkg-config). There is no runtime
+switch: in such a build the existing keys pick the rgsaddle path.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Input</p></th>
+<th class="head"><p>Build without rgsaddle</p></th>
+<th class="head"><p>Build with <code class="docutils literal notranslate"><span class="pre">-Dwith_rgsaddle=true</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">[Nudged</span> <span class="pre">Elastic</span> <span class="pre">Band]</span> <span class="pre">opt_method</span> <span class="pre">=</span> <span class="pre">lbfgs</span></code>, <code class="docutils literal notranslate"><span class="pre">fire</span></code> or <code class="docutils literal notranslate"><span class="pre">xtsci</span></code>, non-geometric spring</p></td>
+<td><p>eOn optimizer on the band objective</p></td>
+<td><p>rgsaddle band session</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">[Nudged</span> <span class="pre">Elastic</span> <span class="pre">Band]</span> <span class="pre">opt_method</span> <span class="pre">=</span> <span class="pre">cg</span></code>, <code class="docutils literal notranslate"><span class="pre">sd</span></code>, <code class="docutils literal notranslate"><span class="pre">qm</span></code>, or a geometric spring</p></td>
+<td><p>eOn optimizer</p></td>
+<td><p>eOn optimizer</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">[Saddle</span> <span class="pre">Search]</span> <span class="pre">min_mode_method</span> <span class="pre">=</span> <span class="pre">dimer</span></code>, <code class="docutils literal notranslate"><span class="pre">lanczos</span></code> or <code class="docutils literal notranslate"><span class="pre">xtsci</span></code></p></td>
+<td><p>eOn dimer or Lanczos (<code class="docutils literal notranslate"><span class="pre">xtsci</span></code> is an error)</p></td>
+<td><p>rotation in an rgsaddle session</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">min_mode_method</span> <span class="pre">=</span> <span class="pre">davidson</span></code>, <code class="docutils literal notranslate"><span class="pre">gprdimer</span></code></p></td>
+<td><p>eOn</p></td>
+<td><p>eOn</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">eonclient</span> <span class="pre">--features</span></code> lists <code class="docutils literal notranslate"><span class="pre">rgsaddle</span> <span class="pre">band</span> <span class="pre">and</span> <span class="pre">min-mode</span></code> in such a
+build. In the band session <code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">method</span> <span class="pre">=</span> <span class="pre">fire</span></code> is the band stepper
+and <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">lbfgs</span></code> selects the L-BFGS session; <code class="docutils literal notranslate"><span class="pre">opt_method</span> <span class="pre">=</span> <span class="pre">lbfgs</span></code>
+and <code class="docutils literal notranslate"><span class="pre">fire</span></code> pick the matching stepper. <code class="docutils literal notranslate"><span class="pre">[Optimizer]</span> <span class="pre">refine_*</span></code> does not
+apply to a band stepped by rgsaddle. Matter still owns the images, and
+the NEB loop still owns climbing policy, resampling, and the spline.
+The surface callback returns a status. The first band request carries
+every image. Later requests carry the interior images, or one image.
+When the coordinates already match, that image stays put and its energy
+and forces stay with it. The images that move go out as one batch. The
 client resends the band only after a reparameterization, or after
-another move outside the session.</p>
+another move outside the session. Every image evaluation goes through
+Matter, so <code class="docutils literal notranslate"><span class="pre">force_calls_neb</span></code> keeps its meaning.</p>
 <p><code class="docutils literal notranslate"><span class="pre">min_mode_method</span> <span class="pre">=</span> <span class="pre">xtsci</span></code> rotates the lowest mode in that session
 with a zero translation cap. The min-mode callback reads the centre
 from its cached evaluation and runs a displaced probe on a copy. The
 min-mode saddle search still climbs with the selected optimizer.
-In a build with <code class="docutils literal notranslate"><span class="pre">-Dwith_rgsaddle=true</span></code>, <code class="docutils literal notranslate"><span class="pre">min_mode_method</span> <span class="pre">=</span> <span class="pre">dimer</span></code>
-and <code class="docutils literal notranslate"><span class="pre">lanczos</span></code> rotate in the same session, <code class="docutils literal notranslate"><span class="pre">lanczos</span></code> as a Lanczos
-session. Davidson and the GP dimer keep their own solvers.
-Against rgsaddle ABI minor 5 or newer one session serves every step of the
-search: the client moves it to each new centre with the gradient it
-already has, so the centre costs no extra call, and the previous
-mode seeds the next rotation.</p>
+<code class="docutils literal notranslate"><span class="pre">min_mode_method</span> <span class="pre">=</span> <span class="pre">dimer</span></code> and <code class="docutils literal notranslate"><span class="pre">lanczos</span></code> rotate in the same session,
+<code class="docutils literal notranslate"><span class="pre">lanczos</span></code> as a Lanczos session. Davidson and the GP dimer keep their
+own solvers. Against rgsaddle ABI minor 5 or newer one session serves
+every step of the search: the client moves it to each new centre with
+the gradient it already has, so the centre costs no extra call, and the
+previous mode seeds the next rotation.</p>
 <p>The session takes its settings from the dimer and Hessian keys:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
@@ -1175,6 +1289,17 @@ mode seeds the next rotation.</p>
 central differences here. <code class="docutils literal notranslate"><span class="pre">[Dimer]</span> <span class="pre">rotation_angle</span></code> is a trial angle
 of the host dimer and does not reach the session.</p>
 </section>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
+<div class="docutils container" id="id3">
+<div role="list" class="citation-list">
+<div class="citation" id="id78" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">OPT_STH08</a><span class="fn-bracket">]</span></span>
+<p>Daniel Sheppard, Rye Terrell, and Graeme Henkelman. Optimization methods for finding minimum energy paths. <em>The Journal of Chemical Physics</em>, 128(13):134106, April 2008. <a class="reference external" href="https://doi.org/10.1063/1.2841941">doi:10.1063/1.2841941</a>.</p>
+</div>
+</div>
+</div>
 </section>
 </section>
 <hr class="footnotes docutils" />

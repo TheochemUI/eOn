@@ -571,15 +571,17 @@ adaptive kinetic Monte Carlo is <code class="docutils literal notranslate"><span
 <td><p>O(N)</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>xtsci</strong></p></td>
-<td><p>Engine: L-BFGS, BFGS, SR1/SR2, Newton, RFO, NLCG, Adam, PSO</p></td>
-<td><p>Needs <code class="docutils literal notranslate"><span class="pre">-Dwith_xtsci=true</span></code></p></td>
+<td><p>rgmin engine: L-BFGS, BFGS, SR1/SR2, Newton, RFO, NLCG, Adam, PSO</p></td>
+<td><p>Needs a build with rgmin (<code class="docutils literal notranslate"><span class="pre">-Dwith_rgmin</span></code>)</p></td>
 <td><p>O(N) or O(N²) pair Hessian</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <p>For most tasks, start with <strong>LBFGS</strong>. If it fails to converge, try <strong>FIRE</strong>
-or the refinement feature (start with FIRE, switch to LBFGS at threshold).</p>
+or the refinement feature (start with FIRE, switch to LBFGS at threshold).
+In a build with rgmin, <code class="docutils literal notranslate"><span class="pre">[Optimizer]</span> <span class="pre">opt_backend</span> <span class="pre">=</span> <span class="pre">rgmin</span></code> runs the same
+<code class="docutils literal notranslate"><span class="pre">opt_method</span></code> through rgmin instead of eOn’s own solver.</p>
 <p>See <a class="reference internal" href="optimizer.html"><span class="std std-doc">Optimizer</span></a> for configuration details.</p>
 </section>
 <section id="global-optimization">

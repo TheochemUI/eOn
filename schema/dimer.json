@@ -18,12 +18,12 @@
     },
     "converged_angle": {
       "default": 5.0,
-      "description": "The dimer is considered converged if it will be rotated fewer degrees than this angle.",
+      "description": "The dimer is considered converged if it will be rotated fewer degrees than this angle. min_mode_method = xtsci passes it to rgsaddle as rotation_angle_tol, in radians.",
       "type": "number"
     },
     "rotations_max": {
       "default": 10,
-      "description": "This is the maximum number of rotations allowed for the dimer for each minimum mode estimation.",
+      "description": "This is the maximum number of rotations allowed for the dimer for each minimum mode estimation, and the rotation budget of min_mode_method = xtsci.",
       "type": "integer"
     },
     "finite_angle": {
@@ -48,7 +48,7 @@
     },
     "torque_min": {
       "default": 0.1,
-      "description": "Minimum torque for the dimer. [not improved]",
+      "description": "Minimum torque for the dimer. [not improved] min_mode_method = xtsci passes it to rgsaddle as rotation_tol.",
       "type": "number"
     },
     "torque_max": {

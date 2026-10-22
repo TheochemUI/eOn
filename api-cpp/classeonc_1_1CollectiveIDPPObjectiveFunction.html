@@ -255,6 +255,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa59008f2d48bbce0debd9ca90af5c8ab" id="r_aa59008f2d48bbce0debd9ca90af5c8ab"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#aa59008f2d48bbce0debd9ca90af5c8ab">CollectiveIDPPObjectiveFunction</a> (std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &amp;pathRef, const <a class="el" href="classParameters.html">Parameters</a> &amp;paramsPassed)</td></tr>
 <tr class="memitem:af41aeccb67babc20d5b59683cb3cedd3" id="r_af41aeccb67babc20d5b59683cb3cedd3"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#af41aeccb67babc20d5b59683cb3cedd3">getEnergy</a> () override</td></tr>
 <tr class="memitem:ae56376728840b0ce19ab0ebbc02dae89" id="r_ae56376728840b0ce19ab0ebbc02dae89"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#ae56376728840b0ce19ab0ebbc02dae89">getGradient</a> (bool fdstep=false) override</td></tr>
+<tr class="memitem:a01444cc9eeee2b94cfcad6cf86d8d87f" id="r_a01444cc9eeee2b94cfcad6cf86d8d87f"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a01444cc9eeee2b94cfcad6cf86d8d87f">gradientMatchesEnergy</a> () const override</td></tr>
 <tr class="memitem:a074596ff89086f0b6c4c4735031d53d0" id="r_a074596ff89086f0b6c4c4735031d53d0"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a074596ff89086f0b6c4c4735031d53d0">setPositions</a> (const VectorXd &amp;x) override</td></tr>
 <tr class="memitem:ad7ce828dd4a5e7d148638c537720d071" id="r_ad7ce828dd4a5e7d148638c537720d071"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#ad7ce828dd4a5e7d148638c537720d071">getPositions</a> () override</td></tr>
 <tr class="memitem:a6ff974cc9d2eb6cdde24300f3fc97547" id="r_a6ff974cc9d2eb6cdde24300f3fc97547"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a6ff974cc9d2eb6cdde24300f3fc97547">degreesOfFreedom</a> () override</td></tr>
@@ -265,8 +266,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7539f6688c5b9e68654bf0a8762e8c34 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_a7539f6688c5b9e68654bf0a8762e8c34"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">ObjectiveFunction</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;paramsPassed)</td></tr>
 <tr class="memitem:a2757b1b7f7d80d47c033ee32adb8d667 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_a2757b1b7f7d80d47c033ee32adb8d667"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#a2757b1b7f7d80d47c033ee32adb8d667">~ObjectiveFunction</a> ()</td></tr>
 <tr class="memitem:a1b411c5e39f354a9ec1058e84c172e54 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_a1b411c5e39f354a9ec1058e84c172e54"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#a1b411c5e39f354a9ec1058e84c172e54">supportsFiniteDifferenceCurvature</a> () const</td></tr>
-<tr class="memitem:aa9f96f1fb32c3cdf731ce3ee44050f4c inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_aa9f96f1fb32c3cdf731ce3ee44050f4c"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#aa9f96f1fb32c3cdf731ce3ee44050f4c">gradientMatchesEnergy</a> () const</td></tr>
 <tr class="memitem:aed670e2d912830cd74f380930905a874 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_aed670e2d912830cd74f380930905a874"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#aed670e2d912830cd74f380930905a874">pastClimbCeiling</a> ()</td></tr>
+<tr class="memitem:aeeaefd073a29b4e005f8a958684f296f inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_aeeaefd073a29b4e005f8a958684f296f"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#aeeaefd073a29b4e005f8a958684f296f">reuseDisplacementCurvature</a> () const</td></tr>
 <tr class="memitem:aa52b364b8d8eb6fcb6cddc409aaa6691 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_aa52b364b8d8eb6fcb6cddc409aaa6691"><td class="memItemLeft">virtual std::optional&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#aa52b364b8d8eb6fcb6cddc409aaa6691">knownCurvature</a> () const</td></tr>
 <tr class="memitem:af3271abcddd3c2ec4808a5b3f25e4b77 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_af3271abcddd3c2ec4808a5b3f25e4b77"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#af3271abcddd3c2ec4808a5b3f25e4b77">minimumImage</a> (Eigen::Ref&lt; Eigen::Vector3d &gt;) const</td></tr>
 <tr class="memitem:a8f2672688adbd931070f00fa29b72be8 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_a8f2672688adbd931070f00fa29b72be8"><td class="memItemLeft">virtual VectorXd&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#a8f2672688adbd931070f00fa29b72be8">getMasses</a> () const</td></tr>
@@ -328,9 +329,9 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   81</span>    <a class="code hl_variable" href="#ad72dd2b2af6601f7933ef97e89f39d8a">dFinal</a> = <a class="code hl_function" href="#a12ee0b620e9f7b73c3f7a63d87876726">getDistanceMatrix</a>(<a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>.back());</div>
 <div class="line"><span class="lineno">   82</span>  }</div>
 <div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_a12ee0b620e9f7b73c3f7a63d87876726"><div class="ttname"><a href="#a12ee0b620e9f7b73c3f7a63d87876726">eonc::CollectiveIDPPObjectiveFunction::getDistanceMatrix</a></div><div class="ttdeci">MatrixXd getDistanceMatrix(const Matter &amp;m)</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8cpp_source.html#l00098">IDPPObjectiveFunction.cpp:98</a></div></div>
-<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_a82d4561fb213f6fcbfe14415269d772f"><div class="ttname"><a href="#a82d4561fb213f6fcbfe14415269d772f">eonc::CollectiveIDPPObjectiveFunction::dInit</a></div><div class="ttdeci">MatrixXd dInit</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8hpp_source.html#l00131">IDPPObjectiveFunction.hpp:131</a></div></div>
-<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_ac40fc648c4d4475cbcd821d4768e1386"><div class="ttname"><a href="#ac40fc648c4d4475cbcd821d4768e1386">eonc::CollectiveIDPPObjectiveFunction::path</a></div><div class="ttdeci">std::vector&lt; Matter &gt; &amp; path</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8hpp_source.html#l00130">IDPPObjectiveFunction.hpp:130</a></div></div>
-<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_ad72dd2b2af6601f7933ef97e89f39d8a"><div class="ttname"><a href="#ad72dd2b2af6601f7933ef97e89f39d8a">eonc::CollectiveIDPPObjectiveFunction::dFinal</a></div><div class="ttdeci">MatrixXd dFinal</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8hpp_source.html#l00131">IDPPObjectiveFunction.hpp:131</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_a82d4561fb213f6fcbfe14415269d772f"><div class="ttname"><a href="#a82d4561fb213f6fcbfe14415269d772f">eonc::CollectiveIDPPObjectiveFunction::dInit</a></div><div class="ttdeci">MatrixXd dInit</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8hpp_source.html#l00132">IDPPObjectiveFunction.hpp:132</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_ac40fc648c4d4475cbcd821d4768e1386"><div class="ttname"><a href="#ac40fc648c4d4475cbcd821d4768e1386">eonc::CollectiveIDPPObjectiveFunction::path</a></div><div class="ttdeci">std::vector&lt; Matter &gt; &amp; path</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8hpp_source.html#l00131">IDPPObjectiveFunction.hpp:131</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_ad72dd2b2af6601f7933ef97e89f39d8a"><div class="ttname"><a href="#ad72dd2b2af6601f7933ef97e89f39d8a">eonc::CollectiveIDPPObjectiveFunction::dFinal</a></div><div class="ttdeci">MatrixXd dFinal</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8hpp_source.html#l00132">IDPPObjectiveFunction.hpp:132</a></div></div>
 <div class="ttc" id="aclasseonc_1_1ObjectiveFunction_html_a7539f6688c5b9e68654bf0a8762e8c34"><div class="ttname"><a href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">eonc::ObjectiveFunction::ObjectiveFunction</a></div><div class="ttdeci">ObjectiveFunction(const Parameters &amp;paramsPassed)</div><div class="ttdef"><b>Definition</b> <a href="ObjectiveFunction_8h_source.html#l00025">ObjectiveFunction.h:25</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -361,11 +362,11 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#ae183480aed0570a0187cabe81bd11ffb">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00110">110</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  110</span>                                  {</div>
-<div class="line"><span class="lineno">  111</span>    <span class="keywordflow">return</span> 3 * <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>[0].numberOfFreeAtoms()) *</div>
-<div class="line"><span class="lineno">  112</span>           (<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>.size()) - 2);</div>
-<div class="line"><span class="lineno">  113</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00111">111</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  111</span>                                  {</div>
+<div class="line"><span class="lineno">  112</span>    <span class="keywordflow">return</span> 3 * <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>[0].numberOfFreeAtoms()) *</div>
+<div class="line"><span class="lineno">  113</span>           (<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>.size()) - 2);</div>
+<div class="line"><span class="lineno">  114</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -398,12 +399,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#a71d9f4b931fccd6ae74a054a92ab1fa9">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00123">123</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  123</span>                                                                     {</div>
-<div class="line"><span class="lineno">  124</span>    <span class="comment">// Simple difference for this purpose, assuming pre-aligned or handling PBC</span></div>
-<div class="line"><span class="lineno">  125</span>    <span class="comment">// inside</span></div>
-<div class="line"><span class="lineno">  126</span>    <span class="keywordflow">return</span> a - b;</div>
-<div class="line"><span class="lineno">  127</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00124">124</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  124</span>                                                                     {</div>
+<div class="line"><span class="lineno">  125</span>    <span class="comment">// Simple difference for this purpose, assuming pre-aligned or handling PBC</span></div>
+<div class="line"><span class="lineno">  126</span>    <span class="comment">// inside</span></div>
+<div class="line"><span class="lineno">  127</span>    <span class="keywordflow">return</span> a - b;</div>
+<div class="line"><span class="lineno">  128</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -432,9 +433,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#adb5aa05d56bdb3f5eca741688f4f4e2d">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00121">121</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  121</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a7ee49dc77ec38ae36ddb7f305515e1ad">lastMaxForce</a>; }</div>
-<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_a7ee49dc77ec38ae36ddb7f305515e1ad"><div class="ttname"><a href="#a7ee49dc77ec38ae36ddb7f305515e1ad">eonc::CollectiveIDPPObjectiveFunction::lastMaxForce</a></div><div class="ttdeci">double lastMaxForce</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8hpp_source.html#l00132">IDPPObjectiveFunction.hpp:132</a></div></div>
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00122">122</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  122</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a7ee49dc77ec38ae36ddb7f305515e1ad">lastMaxForce</a>; }</div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_a7ee49dc77ec38ae36ddb7f305515e1ad"><div class="ttname"><a href="#a7ee49dc77ec38ae36ddb7f305515e1ad">eonc::CollectiveIDPPObjectiveFunction::lastMaxForce</a></div><div class="ttdeci">double lastMaxForce</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8hpp_source.html#l00133">IDPPObjectiveFunction.hpp:133</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -682,18 +683,48 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#aa06776d23dd7b6ffa23db1555d657261">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00098">98</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   98</span>                                   {</div>
-<div class="line"><span class="lineno">   99</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> nfree = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>[0].numberOfFreeAtoms());</div>
-<div class="line"><span class="lineno">  100</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> seg = 3 * nfree;</div>
-<div class="line"><span class="lineno">  101</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> n_free_images = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>.size()) - 2;</div>
-<div class="line"><span class="lineno">  102</span>    VectorXd pos(seg * n_free_images);</div>
-<div class="line"><span class="lineno">  103</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; <a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>.size() - 1; ++i) {</div>
-<div class="line"><span class="lineno">  104</span>      pos.segment(seg * <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(i - 1), seg) =</div>
-<div class="line"><span class="lineno">  105</span>          <a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>[i].getPositionsFreeV();</div>
-<div class="line"><span class="lineno">  106</span>    }</div>
-<div class="line"><span class="lineno">  107</span>    <span class="keywordflow">return</span> pos;</div>
-<div class="line"><span class="lineno">  108</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00099">99</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   99</span>                                   {</div>
+<div class="line"><span class="lineno">  100</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> nfree = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>[0].numberOfFreeAtoms());</div>
+<div class="line"><span class="lineno">  101</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> seg = 3 * nfree;</div>
+<div class="line"><span class="lineno">  102</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> n_free_images = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>.size()) - 2;</div>
+<div class="line"><span class="lineno">  103</span>    VectorXd pos(seg * n_free_images);</div>
+<div class="line"><span class="lineno">  104</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; <a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>.size() - 1; ++i) {</div>
+<div class="line"><span class="lineno">  105</span>      pos.segment(seg * <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(i - 1), seg) =</div>
+<div class="line"><span class="lineno">  106</span>          <a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>[i].getPositionsFreeV();</div>
+<div class="line"><span class="lineno">  107</span>    }</div>
+<div class="line"><span class="lineno">  108</span>    <span class="keywordflow">return</span> pos;</div>
+<div class="line"><span class="lineno">  109</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a01444cc9eeee2b94cfcad6cf86d8d87f" name="a01444cc9eeee2b94cfcad6cf86d8d87f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01444cc9eeee2b94cfcad6cf86d8d87f">&#9670;&#160;</a></span>gradientMatchesEnergy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::CollectiveIDPPObjectiveFunction::gradientMatchesEnergy </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1ObjectiveFunction.html#aa9f96f1fb32c3cdf731ce3ee44050f4c">eonc::ObjectiveFunction</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00089">89</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   89</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -722,12 +753,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#a90d7874f2d2686d628c9d6057f841925">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00116">116</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  116</span>                              {</div>
-<div class="line"><span class="lineno">  117</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#a0d1bde2e35ef4c8f90e6a1b05c1744bf">getConvergence</a>() &lt;</div>
-<div class="line"><span class="lineno">  118</span>           <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.neb_options().initialization.force_tolerance;</div>
-<div class="line"><span class="lineno">  119</span>  }</div>
-<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_a0d1bde2e35ef4c8f90e6a1b05c1744bf"><div class="ttname"><a href="#a0d1bde2e35ef4c8f90e6a1b05c1744bf">eonc::CollectiveIDPPObjectiveFunction::getConvergence</a></div><div class="ttdeci">double getConvergence() override</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8hpp_source.html#l00121">IDPPObjectiveFunction.hpp:121</a></div></div>
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00117">117</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  117</span>                              {</div>
+<div class="line"><span class="lineno">  118</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#a0d1bde2e35ef4c8f90e6a1b05c1744bf">getConvergence</a>() &lt;</div>
+<div class="line"><span class="lineno">  119</span>           <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.neb_options().initialization.force_tolerance;</div>
+<div class="line"><span class="lineno">  120</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_a0d1bde2e35ef4c8f90e6a1b05c1744bf"><div class="ttname"><a href="#a0d1bde2e35ef4c8f90e6a1b05c1744bf">eonc::CollectiveIDPPObjectiveFunction::getConvergence</a></div><div class="ttdeci">double getConvergence() override</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8hpp_source.html#l00122">IDPPObjectiveFunction.hpp:122</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -756,14 +787,14 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#ab285e512e05c11a1438a93d72a0ec527">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00090">90</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   90</span>                                                {</div>
-<div class="line"><span class="lineno">   91</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> nfree = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>[0].numberOfFreeAtoms());</div>
-<div class="line"><span class="lineno">   92</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> seg = 3 * nfree;</div>
-<div class="line"><span class="lineno">   93</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; <a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>.size() - 1; ++i) {</div>
-<div class="line"><span class="lineno">   94</span>      <a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>[i].setPositionsFreeV(x.segment(seg * <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(i - 1), seg));</div>
-<div class="line"><span class="lineno">   95</span>    }</div>
-<div class="line"><span class="lineno">   96</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00091">91</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   91</span>                                                {</div>
+<div class="line"><span class="lineno">   92</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> nfree = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>[0].numberOfFreeAtoms());</div>
+<div class="line"><span class="lineno">   93</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> seg = 3 * nfree;</div>
+<div class="line"><span class="lineno">   94</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; <a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>.size() - 1; ++i) {</div>
+<div class="line"><span class="lineno">   95</span>      <a class="code hl_variable" href="#ac40fc648c4d4475cbcd821d4768e1386">path</a>[i].setPositionsFreeV(x.segment(seg * <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(i - 1), seg));</div>
+<div class="line"><span class="lineno">   96</span>    }</div>
+<div class="line"><span class="lineno">   97</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -788,7 +819,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00131">131</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00132">132</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
 
 </div>
 </div>
@@ -812,7 +843,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00131">131</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00132">132</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
 
 </div>
 </div>
@@ -836,7 +867,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00132">132</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00133">133</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
 
 </div>
 </div>
@@ -860,7 +891,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00130">130</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00131">131</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
 
 </div>
 </div>

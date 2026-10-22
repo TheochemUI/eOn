@@ -240,6 +240,10 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('namespaceeonc_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a87a76c344015a2f92c9860ab10a1705f" id="r_a87a76c344015a2f92c9860ab10a1705f"><td class="memItemLeft">std::optional&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a87a76c344015a2f92c9860ab10a1705f">rgminMethodFor</a> (const <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> &amp;a_objf, <a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a> a_otype, const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memdesc:a87a76c344015a2f92c9860ab10a1705f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The rgmin method token mkOptim runs for a_otype when [<a class="el" href="classeonc_1_1Optimizer.html" title="Abstract base of the structure optimizers.">Optimizer</a>] opt_backend = rgmin.  <br /></td></tr>
+<tr class="memitem:a24b176612de70bd79607315c85f8f8de" id="r_a24b176612de70bd79607315c85f8f8de"><td class="memItemLeft">std::optional&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a24b176612de70bd79607315c85f8f8de">rgminBackendMethod</a> (<a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a> a_otype, const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memdesc:a24b176612de70bd79607315c85f8f8de"><td class="mdescLeft">&#160;</td><td class="mdescRight">rgminMethodFor without the objective test: what a minimization of a potential energy runs under opt_backend = rgmin.  <br /></td></tr>
 <tr class="memitem:a5b0011df69b04b52916bd7150ab60fc4" id="r_a5b0011df69b04b52916bd7150ab60fc4"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classOptimizer.html">Optimizer</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a5b0011df69b04b52916bd7150ab60fc4">mkOptim</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, <a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a> a_otype, const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
@@ -275,45 +279,57 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Optimizer_8cpp_source.html#l00024">24</a> of file <a class="el" href="Optimizer_8cpp_source.html">Optimizer.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   26</span>                                                               {</div>
-<div class="line"><span class="lineno">   27</span>  <span class="keywordflow">switch</span> (a_otype) {</div>
-<div class="line"><span class="lineno">   28</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ab7426fb9c3932995306fceba2874d057">OptType::FIRE</a>: {</div>
-<div class="line"><span class="lineno">   29</span>    <span class="keywordflow">return</span> std::make_unique&lt;FIRE&gt;(a_objf, a_params);</div>
-<div class="line"><span class="lineno">   30</span>  }</div>
-<div class="line"><span class="lineno">   31</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ad86cb697d0458a9fbfbadb6cd1e9e936">OptType::QM</a>: {</div>
-<div class="line"><span class="lineno">   32</span>    <span class="keywordflow">return</span> std::make_unique&lt;Quickmin&gt;(a_objf, a_params);</div>
-<div class="line"><span class="lineno">   33</span>  }</div>
-<div class="line"><span class="lineno">   34</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">OptType::CG</a>: {</div>
-<div class="line"><span class="lineno">   35</span>    <span class="keywordflow">return</span> std::make_unique&lt;ConjugateGradients&gt;(a_objf, a_params);</div>
-<div class="line"><span class="lineno">   36</span>  }</div>
-<div class="line"><span class="lineno">   37</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c">OptType::LBFGS</a>: {</div>
-<div class="line"><span class="lineno">   38</span>    <span class="keywordflow">return</span> std::make_unique&lt;LBFGS&gt;(a_objf, a_params);</div>
-<div class="line"><span class="lineno">   39</span>  }</div>
-<div class="line"><span class="lineno">   40</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0">OptType::SD</a>: {</div>
-<div class="line"><span class="lineno">   41</span>    <span class="keywordflow">return</span> std::make_unique&lt;SteepestDescent&gt;(a_objf, a_params);</div>
-<div class="line"><span class="lineno">   42</span>  }</div>
-<div class="line"><span class="lineno">   43</span><span class="preprocessor">#ifdef WITH_XTSCI</span></div>
-<div class="line"><span class="lineno">   44</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a786f60c57ac658b1e2507b082736371d">OptType::XTSCI</a>: {</div>
-<div class="line"><span class="lineno">   45</span>    <span class="keywordflow">return</span> std::make_unique&lt;XtsciOptimizer&gt;(a_objf, a_params);</div>
-<div class="line"><span class="lineno">   46</span>  }</div>
-<div class="line"><span class="lineno">   47</span><span class="preprocessor">#else</span></div>
-<div class="line"><span class="lineno">   48</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a786f60c57ac658b1e2507b082736371d">OptType::XTSCI</a>: {</div>
-<div class="line"><span class="lineno">   49</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">   50</span>        <span class="stringliteral">&quot;[Optimizer] opt_method=xtsci needs -Dwith_xtsci=true&quot;</span>);</div>
-<div class="line"><span class="lineno">   51</span>  }</div>
-<div class="line"><span class="lineno">   52</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">   53</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a6adf97f83acf6453d4a6a4b1070f3754">OptType::None</a>: {</div>
-<div class="line"><span class="lineno">   54</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;[Optimizer] Cannot create None&quot;</span>);</div>
-<div class="line"><span class="lineno">   55</span>  }</div>
-<div class="line"><span class="lineno">   56</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a88183b946cc5f0e8c96b2e66e1c74a7e">OptType::Unknown</a>: {</div>
-<div class="line"><span class="lineno">   57</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;[Optimizer] Cannot create Unknown&quot;</span>);</div>
-<div class="line"><span class="lineno">   58</span>  }</div>
-<div class="line"><span class="lineno">   59</span>  <span class="keywordflow">default</span>: {</div>
-<div class="line"><span class="lineno">   60</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Unsupported optimization type&quot;</span>);</div>
-<div class="line"><span class="lineno">   61</span>  }</div>
-<div class="line"><span class="lineno">   62</span>  }</div>
-<div class="line"><span class="lineno">   63</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Optimizer_8cpp_source.html#l00055">55</a> of file <a class="el" href="Optimizer_8cpp_source.html">Optimizer.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   57</span>                                                               {</div>
+<div class="line"><span class="lineno">   58</span>  <span class="keywordflow">if</span> (<span class="keyword">auto</span> method = <a class="code hl_function" href="#a87a76c344015a2f92c9860ab10a1705f">rgminMethodFor</a>(*a_objf, a_otype, a_params)) {</div>
+<div class="line"><span class="lineno">   59</span><span class="preprocessor">#ifdef WITH_RGMIN</span></div>
+<div class="line"><span class="lineno">   60</span>    <span class="keywordflow">return</span> std::make_unique&lt;XtsciOptimizer&gt;(a_objf, a_params,</div>
+<div class="line"><span class="lineno">   61</span>                                            std::move(*method));</div>
+<div class="line"><span class="lineno">   62</span><span class="preprocessor">#else</span></div>
+<div class="line"><span class="lineno">   63</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">   64</span>        <span class="stringliteral">&quot;[Optimizer] opt_backend=rgmin needs a build that links rgmin &quot;</span></div>
+<div class="line"><span class="lineno">   65</span>        <span class="stringliteral">&quot;(-Dwith_rgmin=enabled)&quot;</span>);</div>
+<div class="line"><span class="lineno">   66</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">   67</span>  }</div>
+<div class="line"><span class="lineno">   68</span>  <span class="keywordflow">switch</span> (a_otype) {</div>
+<div class="line"><span class="lineno">   69</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ab7426fb9c3932995306fceba2874d057">OptType::FIRE</a>: {</div>
+<div class="line"><span class="lineno">   70</span>    <span class="keywordflow">return</span> std::make_unique&lt;FIRE&gt;(a_objf, a_params);</div>
+<div class="line"><span class="lineno">   71</span>  }</div>
+<div class="line"><span class="lineno">   72</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ad86cb697d0458a9fbfbadb6cd1e9e936">OptType::QM</a>: {</div>
+<div class="line"><span class="lineno">   73</span>    <span class="keywordflow">return</span> std::make_unique&lt;Quickmin&gt;(a_objf, a_params);</div>
+<div class="line"><span class="lineno">   74</span>  }</div>
+<div class="line"><span class="lineno">   75</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">OptType::CG</a>: {</div>
+<div class="line"><span class="lineno">   76</span>    <span class="keywordflow">return</span> std::make_unique&lt;ConjugateGradients&gt;(a_objf, a_params);</div>
+<div class="line"><span class="lineno">   77</span>  }</div>
+<div class="line"><span class="lineno">   78</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c">OptType::LBFGS</a>: {</div>
+<div class="line"><span class="lineno">   79</span>    <span class="keywordflow">return</span> std::make_unique&lt;LBFGS&gt;(a_objf, a_params);</div>
+<div class="line"><span class="lineno">   80</span>  }</div>
+<div class="line"><span class="lineno">   81</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0">OptType::SD</a>: {</div>
+<div class="line"><span class="lineno">   82</span>    <span class="keywordflow">return</span> std::make_unique&lt;SteepestDescent&gt;(a_objf, a_params);</div>
+<div class="line"><span class="lineno">   83</span>  }</div>
+<div class="line"><span class="lineno">   84</span><span class="preprocessor">#ifdef WITH_RGMIN</span></div>
+<div class="line"><span class="lineno">   85</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a786f60c57ac658b1e2507b082736371d">OptType::XTSCI</a>: {</div>
+<div class="line"><span class="lineno">   86</span>    <span class="keywordflow">return</span> std::make_unique&lt;XtsciOptimizer&gt;(a_objf, a_params);</div>
+<div class="line"><span class="lineno">   87</span>  }</div>
+<div class="line"><span class="lineno">   88</span><span class="preprocessor">#else</span></div>
+<div class="line"><span class="lineno">   89</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a786f60c57ac658b1e2507b082736371d">OptType::XTSCI</a>: {</div>
+<div class="line"><span class="lineno">   90</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">   91</span>        <span class="stringliteral">&quot;[Optimizer] opt_method=xtsci needs a build that links rgmin &quot;</span></div>
+<div class="line"><span class="lineno">   92</span>        <span class="stringliteral">&quot;(-Dwith_rgmin=enabled)&quot;</span>);</div>
+<div class="line"><span class="lineno">   93</span>  }</div>
+<div class="line"><span class="lineno">   94</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">   95</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a6adf97f83acf6453d4a6a4b1070f3754">OptType::None</a>: {</div>
+<div class="line"><span class="lineno">   96</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;[Optimizer] Cannot create None&quot;</span>);</div>
+<div class="line"><span class="lineno">   97</span>  }</div>
+<div class="line"><span class="lineno">   98</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a88183b946cc5f0e8c96b2e66e1c74a7e">OptType::Unknown</a>: {</div>
+<div class="line"><span class="lineno">   99</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;[Optimizer] Cannot create Unknown&quot;</span>);</div>
+<div class="line"><span class="lineno">  100</span>  }</div>
+<div class="line"><span class="lineno">  101</span>  <span class="keywordflow">default</span>: {</div>
+<div class="line"><span class="lineno">  102</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Unsupported optimization type&quot;</span>);</div>
+<div class="line"><span class="lineno">  103</span>  }</div>
+<div class="line"><span class="lineno">  104</span>  }</div>
+<div class="line"><span class="lineno">  105</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_1_1create_html_a87a76c344015a2f92c9860ab10a1705f"><div class="ttname"><a href="#a87a76c344015a2f92c9860ab10a1705f">eonc::helpers::create::rgminMethodFor</a></div><div class="ttdeci">std::optional&lt; std::string &gt; rgminMethodFor(const ObjectiveFunction &amp;a_objf, OptType a_otype, const Parameters &amp;a_params)</div><div class="ttdoc">The rgmin method token mkOptim runs for a_otype when [Optimizer] opt_backend = rgmin.</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8cpp_source.html#l00025">Optimizer.cpp:25</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c">eonc::OptType::LBFGS</a></div><div class="ttdeci">@ LBFGS</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00109">BaseStructures.h:109</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0">eonc::OptType::SD</a></div><div class="ttdeci">@ SD</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00111">BaseStructures.h:111</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">eonc::OptType::CG</a></div><div class="ttdeci">@ CG</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00108">BaseStructures.h:108</a></div></div>
@@ -322,6 +338,107 @@ Functions</h2></td></tr>
 <div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56a88183b946cc5f0e8c96b2e66e1c74a7e"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a88183b946cc5f0e8c96b2e66e1c74a7e">eonc::OptType::Unknown</a></div><div class="ttdeci">@ Unknown</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00105">BaseStructures.h:105</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56ab7426fb9c3932995306fceba2874d057"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ab7426fb9c3932995306fceba2874d057">eonc::OptType::FIRE</a></div><div class="ttdeci">@ FIRE</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00110">BaseStructures.h:110</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56ad86cb697d0458a9fbfbadb6cd1e9e936"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ad86cb697d0458a9fbfbadb6cd1e9e936">eonc::OptType::QM</a></div><div class="ttdeci">@ QM</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00107">BaseStructures.h:107</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a24b176612de70bd79607315c85f8f8de" name="a24b176612de70bd79607315c85f8f8de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24b176612de70bd79607315c85f8f8de">&#9670;&#160;</a></span>rgminBackendMethod()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; std::string &gt; eonc::helpers::create::rgminBackendMethod </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a></td>          <td class="paramname"><span class="paramname"><em>a_otype</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>a_params</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>rgminMethodFor without the objective test: what a minimization of a potential energy runs under opt_backend = rgmin. </p>
+
+<p class="definition">Definition at line <a class="el" href="Optimizer_8cpp_source.html#l00034">34</a> of file <a class="el" href="Optimizer_8cpp_source.html">Optimizer.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   35</span>                                                                          {</div>
+<div class="line"><span class="lineno">   36</span>  <span class="keywordflow">if</span> (a_params.<a class="code hl_function" href="classeonc_1_1Parameters.html#ae491b6ef463ab273a332843a66f9bdb8">optimizer_options</a>().<a class="code hl_variable" href="structeonc_1_1optimizer__options__t.html#a47e7d4f1915ebc7611ef705246900b91">backend</a> != <span class="stringliteral">&quot;rgmin&quot;</span>) {</div>
+<div class="line"><span class="lineno">   37</span>    <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><span class="lineno">   38</span>  }</div>
+<div class="line"><span class="lineno">   39</span>  <span class="keywordflow">switch</span> (a_otype) {</div>
+<div class="line"><span class="lineno">   40</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c">OptType::LBFGS</a>:</div>
+<div class="line"><span class="lineno">   41</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;lbfgs&quot;</span>;</div>
+<div class="line"><span class="lineno">   42</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ab7426fb9c3932995306fceba2874d057">OptType::FIRE</a>:</div>
+<div class="line"><span class="lineno">   43</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;fire&quot;</span>;</div>
+<div class="line"><span class="lineno">   44</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">OptType::CG</a>:</div>
+<div class="line"><span class="lineno">   45</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;polak_ribiere&quot;</span>;</div>
+<div class="line"><span class="lineno">   46</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0">OptType::SD</a>:</div>
+<div class="line"><span class="lineno">   47</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;steepest&quot;</span>;</div>
+<div class="line"><span class="lineno">   48</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ad86cb697d0458a9fbfbadb6cd1e9e936">OptType::QM</a>:</div>
+<div class="line"><span class="lineno">   49</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;quickmin&quot;</span>;</div>
+<div class="line"><span class="lineno">   50</span>  <span class="keywordflow">default</span>:</div>
+<div class="line"><span class="lineno">   51</span>    <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><span class="lineno">   52</span>  }</div>
+<div class="line"><span class="lineno">   53</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_ae491b6ef463ab273a332843a66f9bdb8"><div class="ttname"><a href="classeonc_1_1Parameters.html#ae491b6ef463ab273a332843a66f9bdb8">eonc::Parameters::optimizer_options</a></div><div class="ttdeci">const optimizer_options_t &amp; optimizer_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00131">ParametersAccess.cpp:131</a></div></div>
+<div class="ttc" id="astructeonc_1_1optimizer__options__t_html_a47e7d4f1915ebc7611ef705246900b91"><div class="ttname"><a href="structeonc_1_1optimizer__options__t.html#a47e7d4f1915ebc7611ef705246900b91">eonc::optimizer_options_t::backend</a></div><div class="ttdeci">std::string backend</div><div class="ttdoc">&quot;eon&quot; or &quot;rgmin&quot;.</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00260">ParametersOptions.h:260</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a87a76c344015a2f92c9860ab10a1705f" name="a87a76c344015a2f92c9860ab10a1705f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87a76c344015a2f92c9860ab10a1705f">&#9670;&#160;</a></span>rgminMethodFor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; std::string &gt; eonc::helpers::create::rgminMethodFor </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>a_objf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a></td>          <td class="paramname"><span class="paramname"><em>a_otype</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>a_params</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The rgmin method token mkOptim runs for a_otype when [<a class="el" href="classeonc_1_1Optimizer.html" title="Abstract base of the structure optimizers.">Optimizer</a>] opt_backend = rgmin. </p>
+<p>Empty for any other backend, for a method rgmin does not stand in for, and for an objective whose gradient is not the derivative of its energy (band and min-mode translation), which rgmin's line searches would read as a potential. </p>
+
+<p class="definition">Definition at line <a class="el" href="Optimizer_8cpp_source.html#l00025">25</a> of file <a class="el" href="Optimizer_8cpp_source.html">Optimizer.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   27</span>                                                                      {</div>
+<div class="line"><span class="lineno">   28</span>  <span class="keywordflow">if</span> (!a_objf.<a class="code hl_function" href="classeonc_1_1ObjectiveFunction.html#aa9f96f1fb32c3cdf731ce3ee44050f4c">gradientMatchesEnergy</a>()) {</div>
+<div class="line"><span class="lineno">   29</span>    <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><span class="lineno">   30</span>  }</div>
+<div class="line"><span class="lineno">   31</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#a24b176612de70bd79607315c85f8f8de">rgminBackendMethod</a>(a_otype, a_params);</div>
+<div class="line"><span class="lineno">   32</span>}</div>
+<div class="ttc" id="aclasseonc_1_1ObjectiveFunction_html_aa9f96f1fb32c3cdf731ce3ee44050f4c"><div class="ttname"><a href="classeonc_1_1ObjectiveFunction.html#aa9f96f1fb32c3cdf731ce3ee44050f4c">eonc::ObjectiveFunction::gradientMatchesEnergy</a></div><div class="ttdeci">virtual bool gradientMatchesEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="ObjectiveFunction_8h_source.html#l00040">ObjectiveFunction.h:40</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_1_1create_html_a24b176612de70bd79607315c85f8f8de"><div class="ttname"><a href="#a24b176612de70bd79607315c85f8f8de">eonc::helpers::create::rgminBackendMethod</a></div><div class="ttdeci">std::optional&lt; std::string &gt; rgminBackendMethod(OptType a_otype, const Parameters &amp;a_params)</div><div class="ttdoc">rgminMethodFor without the objective test: what a minimization of a potential energy runs under opt_b...</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8cpp_source.html#l00034">Optimizer.cpp:34</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

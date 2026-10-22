@@ -396,7 +396,7 @@ Variables</h2></td></tr>
 <div class="line"><span class="lineno">  250</span>    <span class="keywordflow">throw</span> std::runtime_error(err != <span class="keyword">nullptr</span> ? err</div>
 <div class="line"><span class="lineno">  251</span>                                            : <span class="stringliteral">&quot;eindir descriptor mismatch&quot;</span>);</div>
 <div class="line"><span class="lineno">  252</span>  }</div>
-<div class="line"><span class="lineno">  253</span>  <span class="keyword">const</span> <span class="keyword">auto</span> xts = xts_abi_stamp();</div>
+<div class="line"><span class="lineno">  253</span>  <span class="keyword">const</span> <span class="keyword">auto</span> xts = rgmin_abi_stamp();</div>
 <div class="line"><span class="lineno">  254</span>  provenance_slot() =</div>
 <div class="line"><span class="lineno">  255</span>      std::format(<span class="stringliteral">&quot;xts-{}.{}.{}+eindir-{}.{}-layout-{}&quot;</span>, xts.abi_major,</div>
 <div class="line"><span class="lineno">  256</span>                  xts.abi_minor, xts.layout_revision, stamp.abi_major,</div>
@@ -645,17 +645,17 @@ Variables</h2></td></tr>
 <div class="line"><span class="lineno">  305</span>  <span class="keywordflow">if</span> (state == <span class="keyword">nullptr</span> || x == <span class="keyword">nullptr</span>) {</div>
 <div class="line"><span class="lineno">  306</span>    <span class="keywordflow">return</span> 1;</div>
 <div class="line"><span class="lineno">  307</span>  }</div>
-<div class="line"><span class="lineno">  308</span>  <span class="keyword">auto</span> *tensor = xts_tensor_borrow_cpu_f64(x, n);</div>
+<div class="line"><span class="lineno">  308</span>  <span class="keyword">auto</span> *tensor = rgmin_tensor_borrow_cpu_f64(x, n);</div>
 <div class="line"><span class="lineno">  309</span>  <span class="keywordflow">if</span> (tensor == <span class="keyword">nullptr</span>) {</div>
 <div class="line"><span class="lineno">  310</span>    <span class="keywordflow">return</span> 2;</div>
 <div class="line"><span class="lineno">  311</span>  }</div>
 <div class="line"><span class="lineno">  312</span>  <span class="keyword">const</span> <span class="keyword">auto</span> stamp = eindir_core_abi_stamp();</div>
-<div class="line"><span class="lineno">  313</span>  xts_control_t control{maxiter, gtol, istep, memory, 0.0};</div>
-<div class="line"><span class="lineno">  314</span>  xts_report_t report{};</div>
+<div class="line"><span class="lineno">  313</span>  rgmin_control_t control{maxiter, gtol, istep, memory, 0.0};</div>
+<div class="line"><span class="lineno">  314</span>  rgmin_report_t report{};</div>
 <div class="line"><span class="lineno">  315</span>  <span class="keyword">const</span> <span class="keyword">auto</span> status =</div>
-<div class="line"><span class="lineno">  316</span>      xts_minimize_eindir(&amp;state-&gt;obj, &amp;stamp, tensor, &amp;control,</div>
-<div class="line"><span class="lineno">  317</span>                          <span class="keyword">static_cast&lt;</span>xts_method_t<span class="keyword">&gt;</span>(method), &amp;report);</div>
-<div class="line"><span class="lineno">  318</span>  xts_tensor_free(tensor);</div>
+<div class="line"><span class="lineno">  316</span>      rgmin_minimize_eindir(&amp;state-&gt;obj, &amp;stamp, tensor, &amp;control,</div>
+<div class="line"><span class="lineno">  317</span>                            <span class="keyword">static_cast&lt;</span>rgmin_method_t<span class="keyword">&gt;</span>(method), &amp;report);</div>
+<div class="line"><span class="lineno">  318</span>  rgmin_tensor_free(tensor);</div>
 <div class="line"><span class="lineno">  319</span>  <span class="keywordflow">if</span> (value_out != <span class="keyword">nullptr</span>) {</div>
 <div class="line"><span class="lineno">  320</span>    *value_out = report.value;</div>
 <div class="line"><span class="lineno">  321</span>  }</div>

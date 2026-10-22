@@ -25,6 +25,23 @@
       "default": 1e-06,
       "description": "The value assigned to zero frequencies.",
       "type": "number"
+    },
+    "fd_scheme": {
+      "default": "one_sided",
+      "description": "Finite-difference stencil of the assembled Hessian and of the Lanczos and Davidson Hessian-vector products: one_sided, central, or fourth (fourth_order, central4). min_mode_method = xtsci takes forward differences for one_sided and central differences for central and fourth.",
+      "enum": [
+        "one_sided",
+        "central",
+        "fourth",
+        "fourth_order",
+        "central4"
+      ],
+      "type": "string"
+    },
+    "write_modes": {
+      "default": true,
+      "description": "Write every normal mode to modes.con: the Cartesian mode as a displacements section, with its eigenvalue, hbar omega and wavenumber as frame metadata.",
+      "type": "boolean"
     }
   }
 }

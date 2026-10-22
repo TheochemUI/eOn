@@ -6,6 +6,7 @@ var structeonc_1_1optimizer__options__t =
     [ "cg_t", "structeonc_1_1optimizer__options__t_1_1cg__t.html", "structeonc_1_1optimizer__options__t_1_1cg__t" ],
     [ "quickmin_t", "structeonc_1_1optimizer__options__t_1_1quickmin__t.html", "structeonc_1_1optimizer__options__t_1_1quickmin__t" ],
     [ "sd_t", "structeonc_1_1optimizer__options__t_1_1sd__t.html", "structeonc_1_1optimizer__options__t_1_1sd__t" ],
+    [ "backend", "structeonc_1_1optimizer__options__t.html#a47e7d4f1915ebc7611ef705246900b91", null ],
     [ "cg", "structeonc_1_1optimizer__options__t.html#add8050a2674351302e31a734c520a95a", null ],
     [ "converged_force", "structeonc_1_1optimizer__options__t.html#adf9632713ea430156d4e50dceb70a3c4", null ],
     [ "convergence_metric", "structeonc_1_1optimizer__options__t.html#a7e31e8289ce41b166812bf91dd32440c", null ],

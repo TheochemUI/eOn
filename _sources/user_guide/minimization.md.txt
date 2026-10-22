@@ -117,9 +117,9 @@ Further L-BFGS knobs, all optional and off by default:
   `[Xtsci] precon` takes the same tokens.
 
 Newton and RFO are not L-BFGS. They live in
-[xtsci-optimize](https://github.com/HaoZeke/xtsci-optimize) as
-`Method::Newton`. Build eOn with `-Dwith_xtsci=true` and select them
-from the INI:
+[rgmin](https://github.com/OmniPotentRPC/rgmin) (formerly xtsci-optimize) as
+`Method::Newton`. Build eOn against rgmin (`-Dwith_rgmin=enabled`, see
+<project:optimizer.md>) and select them from the INI:
 
 ```{code-block} ini
 [Optimizer]
@@ -134,13 +134,18 @@ lbfgs_precon = pair
 ```
 
 `[Xtsci] highs = true` asks HiGHS for the step (Newton QP on the
-host pair matrix, or two-loop plus boxes). Build xtsci-optimize
+host pair matrix, or two-loop plus boxes). Build rgmin
 with `--features capi,highs`.
 
 `method = rfo` is Banerjee RFO. The pair Hessian is still built in eOn
-(`lbfgs_precon`) and handed to Rust through `xts_minimize_hess`. The
-engine also runs the other xtsci-optimize methods (`lbfgs`, `bfgs`,
-`sr1`, `sr2`, `steepest`, `adam`, `pso`, and the NLCG conjugacies).
+(`lbfgs_precon`) and handed to Rust through `rgmin_minimize_hess`. The
+engine also runs the other rgmin methods (`lbfgs`, `bfgs`,
+`sr1`, `sr2`, `steepest`, `adam`, `pso`, `quickmin`, and the NLCG
+conjugacies).
+
+To keep `opt_method = lbfgs`, `fire`, `cg`, `sd` or `qm` and only move
+the step into rgmin, set `[Optimizer] opt_backend = rgmin`; the method
+map is in <project:optimizer.md>.
 - `lbfgs_h0 = sy_yy` (Nocedal–Wright 7.20), `ss_sy` (Barzilai–Borwein
   2), or `adaptive` (the smaller of the two when both are positive).
 - `lbfgs_accept = none` (default) takes the two-loop step, matching

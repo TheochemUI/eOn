@@ -15,6 +15,7 @@ var classeonc_1_1ObjectiveFunction =
     [ "knownCurvature", "classeonc_1_1ObjectiveFunction.html#aa52b364b8d8eb6fcb6cddc409aaa6691", null ],
     [ "minimumImage", "classeonc_1_1ObjectiveFunction.html#af3271abcddd3c2ec4808a5b3f25e4b77", null ],
     [ "pastClimbCeiling", "classeonc_1_1ObjectiveFunction.html#aed670e2d912830cd74f380930905a874", null ],
+    [ "reuseDisplacementCurvature", "classeonc_1_1ObjectiveFunction.html#aeeaefd073a29b4e005f8a958684f296f", null ],
     [ "setPositions", "classeonc_1_1ObjectiveFunction.html#ab285e512e05c11a1438a93d72a0ec527", null ],
     [ "supportsFiniteDifferenceCurvature", "classeonc_1_1ObjectiveFunction.html#a1b411c5e39f354a9ec1058e84c172e54", null ],
     [ "params", "classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871", null ]
