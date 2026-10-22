@@ -75,6 +75,8 @@ def disk_full(limit=24):
 
 """A stopped append leaves a parsable process table."""
 
+import logging
+
 import pytest
 
 from types import SimpleNamespace
@@ -119,3 +121,42 @@ def test_stopped_append_leaves_the_process_table(tmp_path):
     state.load_process_table(force=True)
     assert 7 not in state.procs
     assert 1 in state.procs
+
+
+def _torn_tail(kind):
+    whole = AKMCState.processtable_line % (9, 1.23456, 1.0e12, 4, 0.0, 1.0e12, 0.3, 0.5, 0)
+    if kind == "newline":
+        return whole.rstrip("\n")
+    return "9 1.23456\n"
+
+
+@pytest.mark.parametrize("kind", ["newline", "fields"])
+def test_torn_tail_is_dropped(tmp_path, caplog, kind):
+    table = tmp_path / "processtable"
+    state = _state(table)
+    table.write_bytes(table.read_bytes() + _torn_tail(kind).encode())
+    state.procs = None
+    caplog.set_level(logging.WARNING, logger="state")
+    state.load_process_table(force=True)
+    assert 1 in state.procs
+    assert 9 not in state.procs
+    assert "torn final line" in caplog.text
+
+
+@pytest.mark.parametrize("kind", ["newline", "fields"])
+def test_append_cuts_off_a_torn_tail(tmp_path, kind):
+    table = tmp_path / "processtable"
+    state = _state(table)
+    table.write_bytes(table.read_bytes() + _torn_tail(kind).encode())
+    state.append_process_table(7, 0.3, 1.0e12, 3, 0.0, 1.0e12, 0.3, 0.5, 0)
+    text = table.read_text()
+    assert "1.23456" not in text
+    assert text.startswith(AKMCState.processtable_header)
+    assert text.endswith(
+        AKMCState.processtable_line % (7, 0.3, 1.0e12, 3, 0.0, 1.0e12, 0.3, 0.5, 0)
+    )
+    state.procs = None
+    state.load_process_table(force=True)
+    assert 1 in state.procs
+    assert 7 in state.procs
+    assert 9 not in state.procs
