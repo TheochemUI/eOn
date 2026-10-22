@@ -20,6 +20,13 @@ From 2.0 on, prefer a workflow manager over eOn-generated submit
 scripts. For AiiDA the plugin is {doc}`aiida` (`pip install aiida-eon`).
 ```
 
+## Result intake
+
+Before a pass registers finished work, the server removes `jobs_in` and
+creates it again. That create tolerates a directory that is already
+present, so a second writer or a cleanup that did not finish does not
+abort the pass with `FileExistsError`.
+
 ## Configuration
 
 ```{code-block} ini
