@@ -300,9 +300,9 @@ class BasinHoppingConfig(BaseModel):
     **uniform** will select a random number between the positive and negative
     values of :any:`eon.schema.BasinHoppingConfig.displacement`.
     """
-    max_displacement_algorithm: str = Field(
-        default=0,
-        description="Method for displacements.",
+    displacement_algorithm: Literal["standard", "linear", "quadratic"] = Field(
+        default="standard",
+        description="How the maximum displacement changes: standard, linear, or quadratic. The client reads this key.",
     )
     quenching_steps: int = Field(
         default=0,
