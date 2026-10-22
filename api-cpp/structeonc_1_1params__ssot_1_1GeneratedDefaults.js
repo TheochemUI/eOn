@@ -74,6 +74,7 @@ var structeonc_1_1params__ssot_1_1GeneratedDefaults =
     [ "POTENTIAL_PAIR_SWITCH_WIDTH", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#ad6ce610920fa550eb40de4e8c84517a9", null ],
     [ "POTENTIAL_POTENTIAL", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a5f1a37c19385fb8acab63f605e26659c", null ],
     [ "POTENTIAL_POTENTIALS_PATH", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a116871e5f1794e7af7ee6b19d64b45b2", null ],
+    [ "PROCESS_SEARCH_KNOWN_SADDLES", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#afa5de117304c7c202eb88c3cb378210c", null ],
     [ "PROCESS_SEARCH_MINIMIZATION_OFFSET", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a026f576c093ce4659ebdcfa0493af04f", null ],
     [ "PROCESS_SEARCH_MINIMIZE_FIRST", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a9f947a05746694838c3cca91a6da82a6", null ],
     [ "RGPOTPOT_BACKEND", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#abb3e43d9913bb8b2ef64e7636e07aaf8", null ],

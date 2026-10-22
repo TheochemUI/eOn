@@ -78,7 +78,8 @@
       "id": "https://eondocs.org/schema/process-search.json",
       "keys": [
         "minimization_offset",
-        "minimize_first"
+        "minimize_first",
+        "known_saddles"
       ]
     },
     "Saddle Search": {

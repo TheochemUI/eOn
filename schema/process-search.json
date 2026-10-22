@@ -15,6 +15,11 @@
       "default": true,
       "description": "Every time a process search is run by a client the reactant will be minimized first before doing any saddle searches.",
       "type": "boolean"
+    },
+    "known_saddles": {
+      "default": true,
+      "description": "Stop a min-mode climb that reaches a saddle the state already has.\n\nThe server sends each min-mode process search the saddles found from\nits state: the processes, and the saddles of searches that converged\nbut failed afterwards (not connected, bad prefactor, barrier out of\nwindow, unconverged minima, failed prefactor, negative barrier). A\nclimb point with negative curvature that matches one of them in energy\nand structure, under the structure comparison, ends the search with\nstatus 23 before the endpoint minimizations. The server records it as a\nrepeat of that process or as the same failed saddle again. Both the\nserver and the client read the key; with it false the server sends no\nlist and the client ignores one.",
+      "type": "boolean"
     }
   }
 }

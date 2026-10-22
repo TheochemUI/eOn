@@ -1537,12 +1537,12 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="user_guide/kdb.html#eon.schema.KDBConfig.kdb_name">kdb_name (eon.schema.KDBConfig attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="user_guide/kdb.html#eon.schema.KDBConfig.kdb_nf">kdb_nf (eon.schema.KDBConfig attribute)</a>
 </li>
       <li><a href="user_guide/kdb.html#eon.schema.KDBConfig.kdb_only">kdb_only (eon.schema.KDBConfig attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="user_guide/paths.html#eon.schema.PathsConfig.kdb_scratch">kdb_scratch (eon.schema.PathsConfig attribute)</a>
 </li>
       <li><a href="user_guide/debug.html#eon.schema.DebugConfig.keep_all_result_files">keep_all_result_files (eon.schema.DebugConfig attribute)</a>
@@ -1550,6 +1550,14 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="user_guide/debug.html#eon.schema.DebugConfig.keep_bad_saddles">keep_bad_saddles (eon.schema.DebugConfig attribute)</a>
 </li>
       <li><a href="apidocs/eon/eon.akmc.html#eon.akmc.kmc_step">kmc_step() (in module eon.akmc)</a>
+</li>
+      <li><a href="apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.KNOWN_BAD_TERMINATIONS">KNOWN_BAD_TERMINATIONS (eon.akmcstate.AKMCState attribute)</a>
+</li>
+      <li><a href="apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.KNOWN_SADDLE">KNOWN_SADDLE (eon.akmcstate.AKMCState attribute)</a>
+</li>
+      <li><a href="user_guide/process_search.html#eon.schema.ProcessSearchConfig.known_saddles">known_saddles (eon.schema.ProcessSearchConfig attribute)</a>
+</li>
+      <li><a href="apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.known_saddles">known_saddles() (eon.akmcstate.AKMCState method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1630,6 +1638,8 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="apidocs/eon/eon.escaperate.html#eon.escaperate.load_end_state_table">load_end_state_table() (in module eon.escaperate)</a>
 </li>
       <li><a href="apidocs/eon/eon.concorpus.html#eon.concorpus.load_frame_text">load_frame_text() (in module eon.concorpus)</a>
+</li>
+      <li><a href="apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.load_known_bad_saddles">load_known_bad_saddles() (eon.akmcstate.AKMCState method)</a>
 </li>
       <li><a href="apidocs/eon/eon.fileio.html#eon.fileio.load_mode">load_mode() (in module eon.fileio)</a>
 </li>
@@ -2434,6 +2444,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="user_guide/debug.html#eon.schema.DebugConfig.register_extra_results">register_extra_results (eon.schema.DebugConfig attribute)</a>
 </li>
+      <li><a href="apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.register_known_saddle">register_known_saddle() (eon.akmcstate.AKMCState method)</a>
+</li>
       <li><a href="apidocs/eon/eon.akmcstatelist.html#eon.akmcstatelist.AKMCStateList.register_process">register_process() (eon.akmcstatelist.AKMCStateList method)</a>
 
       <ul>
@@ -2537,6 +2549,8 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="apidocs/eon/eon.escaperate.html#eon.escaperate.save_end_state_table">save_end_state_table() (in module eon.escaperate)</a>
 </li>
       <li><a href="apidocs/eon/eon.communicator.html#eon.communicator.Script.save_jobids">save_jobids() (eon.communicator.Script method)</a>
+</li>
+      <li><a href="apidocs/eon/eon.fileio.html#eon.fileio.save_known_saddles">save_known_saddles() (in module eon.fileio)</a>
 </li>
       <li><a href="apidocs/eon/eon.fileio.html#eon.fileio.save_mode">save_mode() (in module eon.fileio)</a>
 </li>
@@ -2705,6 +2719,8 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="user_guide/debug.html#eon.schema.DebugConfig.stop_criterion">stop_criterion (eon.schema.DebugConfig attribute)</a>
 </li>
       <li><a href="apidocs/eon/eon.concorpus.html#eon.concorpus.store_frame_text">store_frame_text() (in module eon.concorpus)</a>
+</li>
+      <li><a href="apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.store_known_bad_saddle">store_known_bad_saddle() (eon.akmcstate.AKMCState method)</a>
 </li>
       <li><a href="apidocs/eon/eon.concorpus.html#eon.concorpus.stored_frame_text">stored_frame_text() (in module eon.concorpus)</a>
 </li>

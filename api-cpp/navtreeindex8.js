@@ -1,5 +1,10 @@
 var NAVTREEINDEX8 =
 {
+"classeonc_1_1Dimer.html#ad409df79730909aaa5bdadbf52189d91":[5,0,0,36,10],
+"classeonc_1_1Dimer.html#aecb2f7372c66b9d939223f9a5b5a9fd5":[3,0,1,49,3],
+"classeonc_1_1Dimer.html#aecb2f7372c66b9d939223f9a5b5a9fd5":[5,0,0,36,3],
+"classeonc_1_1Dimer.html#af0ead37b6a2ed39ddd4ce16f64f572e2":[3,0,1,49,0],
+"classeonc_1_1Dimer.html#af0ead37b6a2ed39ddd4ce16f64f572e2":[5,0,0,36,0],
 "classeonc_1_1DimerModeLostException.html":[3,0,1,51],
 "classeonc_1_1DimerModeLostException.html":[5,0,0,38],
 "classeonc_1_1DimerModeLostException.html#a6b963710dbf4dc17f12923e58b454760":[3,0,1,51,0],
@@ -244,10 +249,5 @@ var NAVTREEINDEX8 =
 "classeonc_1_1GlobalOptimization.html#a73f0b7455159ff3f58686a7cd8139d00":[5,0,0,54,0],
 "classeonc_1_1GlobalOptimization.html#a92f8e8f0d3fef7bc650cdffacb0eba2d":[3,0,1,67,2],
 "classeonc_1_1GlobalOptimization.html#a92f8e8f0d3fef7bc650cdffacb0eba2d":[5,0,0,54,2],
-"classeonc_1_1GlobalOptimization.html#a9a05761ed173f20cbc746e6f67fbca9a":[3,0,1,67,3],
-"classeonc_1_1GlobalOptimization.html#a9a05761ed173f20cbc746e6f67fbca9a":[5,0,0,54,3],
-"classeonc_1_1GlobalOptimization.html#aa99ef061570fcccb65cec8b700df8bc8":[3,0,1,67,1],
-"classeonc_1_1GlobalOptimization.html#aa99ef061570fcccb65cec8b700df8bc8":[5,0,0,54,1],
-"classeonc_1_1GlobalOptimizationJob.html":[3,0,1,68],
-"classeonc_1_1GlobalOptimizationJob.html":[5,0,0,55]
+"classeonc_1_1GlobalOptimization.html#a9a05761ed173f20cbc746e6f67fbca9a":[3,0,1,67,3]
 };
