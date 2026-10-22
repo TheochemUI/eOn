@@ -144,8 +144,13 @@ class StateList:
         """
         if self.state_table is not None and not force:
             return
-        with open(self.state_table_path, 'r') as f:
-            lines = f.readlines()
+        lines = io.DurableTable(
+            self.state_table_path,
+            header_lines=0,
+            min_fields=2,
+            exact=True,
+            label="state_table %s" % self.state_table_path,
+        ).lines()
         self.state_table = []
         for l in lines:
             parts = l.split()
@@ -160,14 +165,20 @@ class StateList:
                     f.write("% 7d %16.5f\n" % (i, self.state_table[i]))
 
     def append_state_table(self, energy):
+        """Append one state row, then flush and sync it.
+
+        A torn final line is cut off first.
+        """
         number = self.get_num_states()
         if energy is None:
             raise IOError(
                 "State %i has no reactant energy in its info file; it cannot "
                 "be added to the state table" % number
             )
-        with open(self.state_table_path, 'a') as f:
-            f.write("% 7d %16.5f\n" % (number, energy))
+        line = "% 7d %16.5f\n" % (number, energy)
+        io.DurableTable(
+            self.state_table_path, header_lines=0, min_fields=2, exact=True
+        ).append(line)
         if self.state_table != None:
             self.state_table.append(energy)
 
