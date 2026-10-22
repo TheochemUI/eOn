@@ -12,7 +12,9 @@ simulation data is stored on the server and clients are sent jobs and return the
 results. Each time `eOn` is run it first checks to see if any results have come
 back from clients and processes them, then submits more jobs if
 needed. A bundled results file whose index is past the number of
-results files is still harvested. In `eOn` there are several different ways to run jobs. One can run them
+results files is still harvested. A finished job replaces a results directory of the same name, and
+the harvested files are the new ones. The same replacement applies to a
+debug copy kept for that job. In `eOn` there are several different ways to run jobs. One can run them
 locally on the server, via MPI,  or using a job queuing system such as
 [SGE](http://www.oracle.com/us/products/tools/oracle-grid-engine-075549.html).
 
