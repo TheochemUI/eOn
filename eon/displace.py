@@ -70,6 +70,7 @@ class DisplacementManager:
                 cutoff=self.config.comp_neighbor_cutoff,
                 use_covalent=self.config.comp_use_covalent,
                 covalent_scale=self.config.comp_covalent_scale,
+                displace_all=self.config.displace_all_listed,
                 config=self.config,
             )
         if self.config.displace_not_FCC_HCP_weight > 0:
