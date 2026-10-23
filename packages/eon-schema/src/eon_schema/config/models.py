@@ -3256,8 +3256,14 @@ class GPRDimerConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
     finite_angle: float = Field(default=0.005)
-    converged_angle: float = Field(default=5.0)
-    relaxation_converged_angle: float = Field(default=0.005)
+    converged_angle: float = Field(
+        default=0.08,
+        description="Initial rotation convergence. The client default is 0.08. This is not the classical dimer angle.",
+    )
+    relaxation_converged_angle: float = Field(
+        default=0.001,
+        description="Rotation convergence after relaxation. The client default is 0.001.",
+    )
     max_initial_rotation_iterations: int = Field(default=6)
     max_relaxation_rotation_iterations: int = Field(default=10)
     divisor_t_dimer: int = Field(default=10)
