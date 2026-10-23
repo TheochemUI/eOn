@@ -28,7 +28,9 @@ Carlo logs the owner's process id and exits.
 A lock whose process is gone, or a file that is empty or cut off mid-write,
 is removed and the driver tries once more. On platforms with `fcntl` the
 driver holds an exclusive flock for the life of the run, so a reused
-process id is not treated as the owner.
+process id is not treated as the owner. The driver removes the lock when
+it exits. A forked child does not remove it. The parent keeps the lock
+until the parent exits.
 
 `LockFile.acquirelock` takes the lock. `aquirelock` is the previous
 spelling and still calls `acquirelock`. The akmc, basin hopping,

@@ -444,9 +444,18 @@ def main(config: ConfigClass = None):
     if options.no_submit:
         config.comm_job_buffer_size = 0
 
+    # The log and the lock both live under path_results. Metadata
+    # creates that directory only after the lock is held. The lock
+    # path is resolved from the working directory, so create that
+    # parent as well as path_results.
+    results = Path(config.path_results)
+    results.mkdir(parents=True, exist_ok=True)
+    lock_path = (Path.cwd() / results / "lockfile").absolute()
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+
     #setup logging
     logging.basicConfig(level=logging.DEBUG,
-            filename=str(Path(config.path_results) / "akmc.log"),
+            filename=str(results / "akmc.log"),
             format="%(asctime)s %(levelname)s:%(name)s: %(message)s",
             datefmt="%F %T")
     logging.raiseExceptions = False
@@ -459,7 +468,7 @@ def main(config: ConfigClass = None):
         console.setFormatter(formatter)
         rootlogger.addHandler(console)
 
-    lock = locking.LockFile(str((Path.cwd() / config.path_results / "lockfile").absolute()))
+    lock = locking.LockFile(str(lock_path))
 
     # Some options are mutually exclusive. Let's check them now.
     exclusive_options = {}

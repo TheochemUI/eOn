@@ -42,12 +42,17 @@ Each of the optimizer methods have their own settings as well.
 .. autopydantic_model:: eon.schema.LBFGSConfig
 ```
 
-For min-mode saddle searches (for example, `min_mode_method = dimer`), the
-dimer mode curvature (`|C_tau|`) is not used as a known first-step Hessian
-scale for translation. The translation objective climbs on an effective
-force, so the initial L-BFGS scale still follows the usual `[LBFGS]`
-controls (`lbfgs_inverse_curvature`, `lbfgs_auto_scale`) and its own
-finite-difference probe, with `max_move` as the final cap.
+A classic dimer (`[Dimer] improved = false`) reports `|C_tau|` as a known
+first-step scale when the mode is negative. L-BFGS keeps `H0 = 1/|C_tau|`
+when that step fits in `max_move`, and also when the mode is milder than
+30 eV/Å² and the cap would otherwise set the length. A steeper mode whose
+uncapped step exceeds `max_move` takes one finite-difference probe of the
+effective force. Improved dimer and Lanczos do not report `|C_tau|`. Those
+searches climb on the effective force, so the first step is the probe and
+`max_move` is only the cap. Later steps still use the `[LBFGS]` secant scale.
+A build that rotates the mode in rgsaddle uses the same rule.
+`improved = false` reports `|C_tau|`, and the improved dimer and Lanczos
+do not.
 
 ### QuickMin
 

@@ -106,11 +106,34 @@ public:
   ~MinModeObjectiveFunction() override = default;
 
   // |C_tau| is the curvature of the potential along the mode. The
-  // translated force is F - 2 (F·tau) tau, and the curvature of that
-  // force is not |C_tau|. Reporting the mode scale as H0 takes a first
-  // step the finite-difference probe of F_eff would not, including
-  // when that step is shorter than max_move.
-  std::optional<double> knownCurvature() const override { return std::nullopt; }
+  // translated force is F - 2 (F·tau) tau, and that force has a
+  // different curvature. Improved dimer and Lanczos do not report the
+  // mode scale, so their first L-BFGS step measures F_eff. That probe
+  // is what the LJ13 and Pt heptamer force-call counts follow.
+  //
+  // The classic dimer (improved = false) is the adatom AKMC catalogue
+  // path. It reports the negative mode curvature. L-BFGS keeps the
+  // capped scale for a mild mode whose uncapped step exceeds max_move,
+  // and probes F_eff for a steep overrun.
+  //
+  // With rgsaddle the rotation of every dimer and Lanczos search is
+  // one solver type, so the C++ class does not say which search this
+  // is. The scale follows the dimer setting.
+  std::optional<double> knownCurvature() const override {
+    if (iteration == 0 || !minModeMethod) {
+      return std::nullopt;
+    }
+    if (params.saddle_search_options().minmode_method !=
+            LowestEigenmode::MINMODE_DIMER ||
+        params.dimer_options().improved) {
+      return std::nullopt;
+    }
+    const double c = eonc::eigenmodeGetEigenvalue(*minModeMethod);
+    if (!std::isfinite(c) || c >= 0.0) {
+      return std::nullopt;
+    }
+    return -c;
+  }
 
   // The translation force has its component along the mode reversed, so
   // the search climbs the potential energy that getEnergy() returns.

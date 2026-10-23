@@ -110,10 +110,11 @@ class LockFile:
         self.lock_path = Path(lock_path)
         self.pid = None
         self._fd = None
-        # Pid this object wrote. removelock unlinks only when the file
-        # still contains that pid. The value is copied into a forked
-        # child, so the child's copy still matches the file.
+        # Pid this object wrote. removelock unlinks only when this
+        # process still owns that pid. A forked child copies the value,
+        # so the pid check and the disarm flag both have to refuse it.
         self._owner_pid = None
+        self._disarmed = False
 
     def islocked(self):
         kind, payload, holder = self._classify()
@@ -151,15 +152,29 @@ class LockFile:
         )
         return self.acquirelock()
 
-    def removelock(self):
-        """Unlink the lock when it still contains the pid this object wrote.
+    def _arm_fork_guard(self):
+        if not hasattr(os, "register_at_fork"):
+            return
 
-        A missing file, or a file another driver has replaced, is left
-        alone. A LockFile that never acquired the lock does not delete
-        whatever happens to sit at the path.
+        def after_child():
+            atexit.unregister(self.removelock)
+            self._disarmed = True
+
+        os.register_at_fork(after_in_child=after_child)
+
+    def removelock(self):
+        """Unlink the lock when this process still owns it.
+
+        A forked child inherits this method, the stored pid, and the
+        atexit hook. Exit in the child must not delete the parent's
+        file. A missing file, or a file another driver has replaced, is
+        left alone. A LockFile that never acquired the lock does not
+        delete whatever happens to sit at the path.
         """
+        if self._disarmed:
+            return
         owner = self._owner_pid
-        if owner is None:
+        if owner is None or os.getpid() != owner:
             return
         try:
             text = self.lock_path.read_text()
@@ -178,6 +193,10 @@ class LockFile:
             pass
 
     def _try_create(self):
+        # Arm before the file exists so a fork during the write still
+        # drops the exit handler in the child.
+        self._disarmed = False
+        self._arm_fork_guard()
         flags = _cloexec(os.O_CREAT | os.O_EXCL | os.O_WRONLY)
         try:
             fd = os.open(os.fspath(self.lock_path), flags, 0o644)

@@ -294,3 +294,29 @@ def test_two_basin_hopping_drivers_one_lock(tmp_path: Path):
     result = root / "jobs" / "scratch" / "0" / "results.dat"
     assert result.is_file()
     assert "minimum_energy" in result.read_text()
+
+
+def test_forked_child_exit_keeps_the_lock(tmp_path: Path):
+    lock = LockFile(tmp_path / "lockfile")
+    assert lock.aquirelock()
+    path = lock.lock_path
+    parent = os.getpid()
+    pid = os.fork()
+    if pid == 0:
+        try:
+            # The exit hook copied into the child must leave the file alone.
+            lock.removelock()
+            text = path.read_text().strip()
+            ok = path.is_file() and text == str(parent) and text != str(os.getpid())
+            if hasattr(os, "register_at_fork"):
+                ok = ok and lock._disarmed
+        except Exception:
+            ok = False
+        os._exit(0 if ok else 1)
+    _child, status = os.waitpid(pid, 0)
+    assert os.WIFEXITED(status)
+    assert os.WEXITSTATUS(status) == 0
+    assert path.is_file()
+    assert int(path.read_text().strip()) == parent
+    lock.removelock()
+    assert not path.exists()

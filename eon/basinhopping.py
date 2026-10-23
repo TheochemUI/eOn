@@ -231,9 +231,15 @@ def main(config: ConfigClass = None):
             print("Not resetting.")
             sys.exit(1)
 
+    # The log and the lock both live under path_results. That directory
+    # is not created anywhere else in this driver.
+    results = Path(config.path_results)
+    results.mkdir(parents=True, exist_ok=True)
+    lock_path = results / "lockfile"
+
     # setup logging
     logging.basicConfig(level=logging.DEBUG,
-            filename=str(Path(config.path_results) / "bh.log"),
+            filename=str(results / "bh.log"),
             format="%(asctime)s %(levelname)s:%(name)s: %(message)s",
             datefmt="%F %T")
     logging.raiseExceptions = False
@@ -246,7 +252,7 @@ def main(config: ConfigClass = None):
         console.setFormatter(formatter)
         rootlogger.addHandler(console)
 
-    lock = locking.LockFile(str(Path(config.path_results) / "lockfile"))
+    lock = locking.LockFile(str(lock_path))
 
     if lock.acquirelock():
         if config.comm_type == 'mpi':

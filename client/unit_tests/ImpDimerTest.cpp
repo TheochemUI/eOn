@@ -298,7 +298,7 @@ TEST_CASE("ImprovedDimer CG direction persists after a multi-rotation estimate",
           Catch::Approx(0.0).margin(1e-10));
 }
 
-static void prepareMinMode(Parameters &parameters) {
+static void prepareMinMode(Parameters &parameters, bool improved = true) {
   ParametersLoadAccess::main_options(parameters).parallel = false;
   ParametersLoadAccess::main_options(parameters).finiteDifference = 0.01;
   ParametersLoadAccess::main_options(parameters).removeNetForce = false;
@@ -306,7 +306,7 @@ static void prepareMinMode(Parameters &parameters) {
   ParametersLoadAccess::optimizer_options(parameters).max_move = 0.2;
   ParametersLoadAccess::optimizer_options(parameters).lbfgs.auto_scale = true;
   ParametersLoadAccess::dimer_options(parameters).opt_method = OptType::CG;
-  ParametersLoadAccess::dimer_options(parameters).improved = true;
+  ParametersLoadAccess::dimer_options(parameters).improved = improved;
   ParametersLoadAccess::dimer_options(parameters).converged_angle = 180.0;
   ParametersLoadAccess::dimer_options(parameters).rotations_max = 1;
   ParametersLoadAccess::saddle_search_options(parameters).minmode_method =
@@ -353,9 +353,10 @@ TEST_CASE("Steep mode curvature yields to the effective-force probe",
 
 TEST_CASE("Mild mode curvature yields to the effective-force probe",
           "[ImprovedDimer][lbfgs]") {
-  // |C_τ| = 2 is mild, and H0 = 1/|C_τ| times |F_eff| is still past
-  // max_move. The finite-difference curvature of F_eff is used anyway:
-  // the probe is not reserved for steep modes.
+  // |C_tau| = 2 is mild, and H0 = 1/|C_tau| times |F_eff| is still past
+  // max_move. Improved dimer and Lanczos do not report the mode scale.
+  // The finite-difference curvature of F_eff is used, and the accepted
+  // step is that shorter step. The classic dimer is the case below.
   Parameters parameters;
   prepareMinMode(parameters);
   const Eigen::Vector3d r0(0.01, 0.05, 0.05);
@@ -383,6 +384,38 @@ TEST_CASE("Mild mode curvature yields to the effective-force probe",
   REQUIRE(step.normalized().dot(fhat) == Catch::Approx(1.0).margin(1e-6));
   // Centre, forward image, the probe, and the accepted step.
   REQUIRE(calls == 4);
+}
+
+TEST_CASE("Classic dimer keeps the known-curvature scale under max_move",
+          "[Dimer][lbfgs]") {
+  // The adatom AKMC catalogue uses the classic dimer. |C_tau| = 2 is
+  // mild, and the uncapped step is longer than max_move. That search
+  // keeps the capped mode scale. The improved dimer, above, probes.
+  // An rgsaddle build rotates this search too. The scale still follows
+  // improved = false, so the capped step is the same.
+  Parameters parameters;
+  prepareMinMode(parameters, false);
+  const Eigen::Vector3d r0(0.01, 0.05, 0.05);
+  const Eigen::Vector3d tau(1.0, 0.0, 0.0);
+  const Eigen::Vector3d feff(-2.0 * r0.x(), -50.0 * r0.y(), -50.0 * r0.z());
+  const Eigen::Vector3d fhat = feff.normalized();
+
+  auto pot = std::make_shared<DiagHessianPot>(-2.0, 50.0, 50.0);
+  auto matter = oneAtom(pot, parameters, r0);
+  AtomMatrix mode(1, 3);
+  mode.row(0) = tau.transpose();
+  const long before = static_cast<long>(pot->forceCallCounter.load());
+  eonc::MinModeSaddleSearch search(matter, mode, 0.0, parameters, pot);
+  const int status = search.run(1);
+  const long calls = static_cast<long>(pot->forceCallCounter.load()) - before;
+  const Eigen::Vector3d step = matter->getPositions().row(0).transpose() - r0;
+  INFO("status " << status << " force calls " << calls << " step "
+                 << step.norm());
+  REQUIRE(step.norm() == Catch::Approx(0.2).margin(1e-8));
+  REQUIRE(step.normalized().dot(fhat) == Catch::Approx(1.0).margin(1e-6));
+  // The mode scale is capped. There is no finite-difference probe of
+  // F_eff, which is the extra call on the improved dimer.
+  REQUIRE(calls == 3);
 }
 
 // Saddle along x, with a wall on the far side of the saddle. A long

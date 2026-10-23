@@ -249,9 +249,15 @@ def main(config: ConfigClass = None):
             print("Reset")
         sys.exit(0)
 
+    # The log and the lock both live under path_results. Metadata
+    # creates that directory only after the lock is held.
+    results = Path(config.path_results)
+    results.mkdir(parents=True, exist_ok=True)
+    lock_path = results / "lockfile"
+
     # setup logging
     logging.basicConfig(level=logging.DEBUG,
-            filename=str(Path(config.path_results) / "pr.log"),
+            filename=str(results / "pr.log"),
             format="%(asctime)s %(levelname)s:%(name)s: %(message)s",
             datefmt="%F %T")
     logging.raiseExceptions = False
@@ -264,7 +270,7 @@ def main(config: ConfigClass = None):
         console.setFormatter(formatter)
         rootlogger.addHandler(console)
 
-    lock = locking.LockFile(str(Path(config.path_results) / "lockfile"))
+    lock = locking.LockFile(str(lock_path))
 
     if lock.acquirelock():
         if options.continuous or config.comm_type == 'mpi':
