@@ -65,6 +65,11 @@ the approximate amount of error the user might expect in eventual superbasin
 exit direction and time compared to normal KMC simulation
 ({any}`eon.schema.CoarseGrainingConfig.askmc_confidence`).
 
+A new modified-process row is appended as one line, then flushed and
+synced. A final line with no newline or the wrong number of fields is
+dropped, and the next append cuts that tail off first. A write that
+stops partway leaves the previous rows.
+
 ## amsel discover_decide
 
 `[amsel] discover_decide = true` runs on the current state's process table.
