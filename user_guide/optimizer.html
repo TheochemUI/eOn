@@ -811,12 +811,17 @@ session keys still apply.</p></li>
 
 </dd></dl>
 
-<p>For min-mode saddle searches (for example, <code class="docutils literal notranslate"><span class="pre">min_mode_method</span> <span class="pre">=</span> <span class="pre">dimer</span></code>), the
-dimer mode curvature (<code class="docutils literal notranslate"><span class="pre">|C_tau|</span></code>) is not used as a known first-step Hessian
-scale for translation. The translation objective climbs on an effective
-force, so the initial L-BFGS scale still follows the usual <code class="docutils literal notranslate"><span class="pre">[LBFGS]</span></code>
-controls (<code class="docutils literal notranslate"><span class="pre">lbfgs_inverse_curvature</span></code>, <code class="docutils literal notranslate"><span class="pre">lbfgs_auto_scale</span></code>) and its own
-finite-difference probe, with <code class="docutils literal notranslate"><span class="pre">max_move</span></code> as the final cap.</p>
+<p>A classic dimer (<code class="docutils literal notranslate"><span class="pre">[Dimer]</span> <span class="pre">improved</span> <span class="pre">=</span> <span class="pre">false</span></code>) reports <code class="docutils literal notranslate"><span class="pre">|C_tau|</span></code> as a known
+first-step scale when the mode is negative. L-BFGS keeps <code class="docutils literal notranslate"><span class="pre">H0</span> <span class="pre">=</span> <span class="pre">1/|C_tau|</span></code>
+when that step fits in <code class="docutils literal notranslate"><span class="pre">max_move</span></code>, and also when the mode is milder than
+30 eV/Å² and the cap would otherwise set the length. A steeper mode whose
+uncapped step exceeds <code class="docutils literal notranslate"><span class="pre">max_move</span></code> takes one finite-difference probe of the
+effective force. Improved dimer and Lanczos do not report <code class="docutils literal notranslate"><span class="pre">|C_tau|</span></code>. Those
+searches climb on the effective force, so the first step is the probe and
+<code class="docutils literal notranslate"><span class="pre">max_move</span></code> is only the cap. Later steps still use the <code class="docutils literal notranslate"><span class="pre">[LBFGS]</span></code> secant scale.
+A build that rotates the mode in rgsaddle uses the same rule.
+<code class="docutils literal notranslate"><span class="pre">improved</span> <span class="pre">=</span> <span class="pre">false</span></code> reports <code class="docutils literal notranslate"><span class="pre">|C_tau|</span></code>, and the improved dimer and Lanczos
+do not.</p>
 </section>
 <section id="quickmin">
 <h3>QuickMin<a class="headerlink" href="#quickmin" title="Link to this heading">¶</a></h3>

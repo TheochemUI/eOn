@@ -351,6 +351,7 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#lock-file">Lock file</a></li>
 <li><a class="reference internal" href="#configuration">Configuration</a><ul>
 <li><a class="reference internal" href="#eon.schema.CommunicatorConfig"><code class="docutils literal notranslate"><span class="pre">CommunicatorConfig</span></code></a><ul>
 <li><a class="reference internal" href="#eon.schema.CommunicatorConfig.type"><code class="docutils literal notranslate">type</span></code></a></li>
@@ -476,11 +477,17 @@ back from clients and processes them, then submits more jobs if
 needed. In <code class="docutils literal notranslate"><span class="pre">eOn</span></code> there are several different ways to run jobs. One can run them
 locally on the server, via MPI,  or using a job queuing system such as
 <a class="reference external" href="http://www.oracle.com/us/products/tools/oracle-grid-engine-075549.html">SGE</a>.</p>
+<section id="lock-file">
+<h2>Lock file<a class="headerlink" href="#lock-file" title="Link to this heading">¶</a></h2>
+<p>Each server driver stores <code class="docutils literal notranslate"><span class="pre">lockfile</span></code> in the results directory and removes
+that file when the driver exits. A forked child does not remove it. The
+parent keeps the lock until the parent exits.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>From 2.0 on, prefer a workflow manager over eOn-generated submit
 scripts. For AiiDA the plugin is <a class="reference internal" href="aiida.html"><span class="doc">AiiDA (aiida-eon)</span></a> (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">aiida-eon</span></code>).</p>
 </div>
+</section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Communicator]</span>

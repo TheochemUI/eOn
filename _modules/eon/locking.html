@@ -417,54 +417,95 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="8">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lock_path</span><span class="p">):</span>
 </span><span data-line="9">        <span class="bp">self</span><span class="o">.</span><span class="n">lock_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">lock_path</span><span class="p">)</span>
 </span><span data-line="10">        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="11">
+</span><span data-line="11">        <span class="bp">self</span><span class="o">.</span><span class="n">_owner_pid</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="12">        <span class="bp">self</span><span class="o">.</span><span class="n">_disarmed</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="13">
 <div class="viewcode-block" id="LockFile.islocked">
 <a class="viewcode-back" href="../../apidocs/eon/eon.locking.html#eon.locking.LockFile.islocked">[docs]</a>
-</span><span data-line="12">    <span class="k">def</span><span class="w"> </span><span class="nf">islocked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="13">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-</span><span data-line="14">            <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="15">        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lock_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-</span><span data-line="16">
-</span><span data-line="17">        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
-</span><span data-line="18">            <span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
-</span><span data-line="19">
-</span><span data-line="20">            <span class="n">kernel32</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span>
-</span><span data-line="21">            <span class="n">handle</span> <span class="o">=</span> <span class="n">kernel32</span><span class="o">.</span><span class="n">OpenProcess</span><span class="p">(</span><span class="mh">0x100000</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>  <span class="c1"># SYNCHRONIZE</span>
-</span><span data-line="22">            <span class="k">if</span> <span class="n">handle</span><span class="p">:</span>
-</span><span data-line="23">                <span class="n">kernel32</span><span class="o">.</span><span class="n">CloseHandle</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
-</span><span data-line="24">                <span class="n">alive</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span data-line="25">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="26">                <span class="n">alive</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="27">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="28">            <span class="k">try</span><span class="p">:</span>
-</span><span data-line="29">                <span class="n">os</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span data-line="30">                <span class="n">alive</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span data-line="31">            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-</span><span data-line="32">                <span class="n">alive</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="33">
-</span><span data-line="34">        <span class="k">if</span> <span class="ow">not</span> <span class="n">alive</span><span class="p">:</span>
-</span><span data-line="35">            <span class="bp">self</span><span class="o">.</span><span class="n">removelock</span><span class="p">()</span>
-</span><span data-line="36">            <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="37">        <span class="k">return</span> <span class="kc">True</span></div>
+</span><span data-line="14">    <span class="k">def</span><span class="w"> </span><span class="nf">islocked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="15">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+</span><span data-line="16">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="17">        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lock_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+</span><span data-line="18">
+</span><span data-line="19">        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
+</span><span data-line="20">            <span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
+</span><span data-line="21">
+</span><span data-line="22">            <span class="n">kernel32</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span>
+</span><span data-line="23">            <span class="n">handle</span> <span class="o">=</span> <span class="n">kernel32</span><span class="o">.</span><span class="n">OpenProcess</span><span class="p">(</span><span class="mh">0x100000</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>  <span class="c1"># SYNCHRONIZE</span>
+</span><span data-line="24">            <span class="k">if</span> <span class="n">handle</span><span class="p">:</span>
+</span><span data-line="25">                <span class="n">kernel32</span><span class="o">.</span><span class="n">CloseHandle</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
+</span><span data-line="26">                <span class="n">alive</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="27">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="28">                <span class="n">alive</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="29">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="30">            <span class="k">try</span><span class="p">:</span>
+</span><span data-line="31">                <span class="n">os</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span data-line="32">                <span class="n">alive</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="33">            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+</span><span data-line="34">                <span class="n">alive</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="35">
+</span><span data-line="36">        <span class="k">if</span> <span class="ow">not</span> <span class="n">alive</span><span class="p">:</span>
+</span><span data-line="37">            <span class="bp">self</span><span class="o">.</span><span class="n">removelock</span><span class="p">()</span>
+</span><span data-line="38">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="39">        <span class="k">return</span> <span class="kc">True</span></div>
 
-</span><span data-line="38">
+</span><span data-line="40">
 <div class="viewcode-block" id="LockFile.aquirelock">
 <a class="viewcode-back" href="../../apidocs/eon/eon.locking.html#eon.locking.LockFile.aquirelock">[docs]</a>
-</span><span data-line="39">    <span class="k">def</span><span class="w"> </span><span class="nf">aquirelock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="40">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">islocked</span><span class="p">():</span>
-</span><span data-line="41">            <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="42">
-</span><span data-line="43">        <span class="bp">self</span><span class="o">.</span><span class="n">lock_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%i</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">())</span>
-</span><span data-line="44">        <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">removelock</span><span class="p">)</span>
-</span><span data-line="45">
-</span><span data-line="46">        <span class="k">return</span> <span class="kc">True</span></div>
+</span><span data-line="41">    <span class="k">def</span><span class="w"> </span><span class="nf">aquirelock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="42">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">islocked</span><span class="p">():</span>
+</span><span data-line="43">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="44">
+</span><span data-line="45">        <span class="bp">self</span><span class="o">.</span><span class="n">_owner_pid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span>
+</span><span data-line="46">        <span class="bp">self</span><span class="o">.</span><span class="n">_disarmed</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="47">        <span class="c1"># Arm before the file exists so a fork during the write still</span>
+</span><span data-line="48">        <span class="c1"># drops the exit handler in the child.</span>
+</span><span data-line="49">        <span class="bp">self</span><span class="o">.</span><span class="n">_arm_fork_guard</span><span class="p">()</span>
+</span><span data-line="50">        <span class="bp">self</span><span class="o">.</span><span class="n">lock_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%i</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_owner_pid</span><span class="p">)</span>
+</span><span data-line="51">        <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">removelock</span><span class="p">)</span>
+</span><span data-line="52">
+</span><span data-line="53">        <span class="k">return</span> <span class="kc">True</span></div>
 
-</span><span data-line="47">
+</span><span data-line="54">
+</span><span data-line="55">    <span class="k">def</span><span class="w"> </span><span class="nf">_arm_fork_guard</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="56">        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">os</span><span class="p">,</span> <span class="s2">&quot;register_at_fork&quot;</span><span class="p">):</span>
+</span><span data-line="57">            <span class="k">return</span>
+</span><span data-line="58">
+</span><span data-line="59">        <span class="k">def</span><span class="w"> </span><span class="nf">after_child</span><span class="p">():</span>
+</span><span data-line="60">            <span class="n">atexit</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">removelock</span><span class="p">)</span>
+</span><span data-line="61">            <span class="bp">self</span><span class="o">.</span><span class="n">_disarmed</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="62">
+</span><span data-line="63">        <span class="n">os</span><span class="o">.</span><span class="n">register_at_fork</span><span class="p">(</span><span class="n">after_in_child</span><span class="o">=</span><span class="n">after_child</span><span class="p">)</span>
+</span><span data-line="64">
 <div class="viewcode-block" id="LockFile.removelock">
 <a class="viewcode-back" href="../../apidocs/eon/eon.locking.html#eon.locking.LockFile.removelock">[docs]</a>
-</span><span data-line="48">    <span class="k">def</span><span class="w"> </span><span class="nf">removelock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="49">        <span class="bp">self</span><span class="o">.</span><span class="n">lock_path</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">missing_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
-</div>
+</span><span data-line="65">    <span class="k">def</span><span class="w"> </span><span class="nf">removelock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="66">        <span class="c1"># A forked child inherits this method and the pid written above.</span>
+</span><span data-line="67">        <span class="c1"># Exit in the child must not delete the parent&#39;s lock file.</span>
+</span><span data-line="68">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disarmed</span><span class="p">:</span>
+</span><span data-line="69">            <span class="k">return</span>
+</span><span data-line="70">        <span class="n">owner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_owner_pid</span>
+</span><span data-line="71">        <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span> <span class="o">!=</span> <span class="n">owner</span><span class="p">:</span>
+</span><span data-line="72">            <span class="k">return</span>
+</span><span data-line="73">        <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="74">            <span class="k">try</span><span class="p">:</span>
+</span><span data-line="75">                <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+</span><span data-line="76">            <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+</span><span data-line="77">                <span class="bp">self</span><span class="o">.</span><span class="n">_release_claim</span><span class="p">()</span>
+</span><span data-line="78">                <span class="k">return</span>
+</span><span data-line="79">            <span class="k">if</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">(</span><span class="n">owner</span><span class="p">):</span>
+</span><span data-line="80">                <span class="k">return</span>
+</span><span data-line="81">        <span class="bp">self</span><span class="o">.</span><span class="n">lock_path</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">missing_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="82">        <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="83">            <span class="bp">self</span><span class="o">.</span><span class="n">_release_claim</span><span class="p">()</span></div>
+
+</span><span data-line="84">
+</span><span data-line="85">    <span class="k">def</span><span class="w"> </span><span class="nf">_release_claim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="86">        <span class="bp">self</span><span class="o">.</span><span class="n">_owner_pid</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="87">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="88">            <span class="n">atexit</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">removelock</span><span class="p">)</span>
+</span><span data-line="89">        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="90">            <span class="k">pass</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">

@@ -612,6 +612,17 @@ dimer on the highest interior image. The dimer direction is the
 minimum-image <code class="docutils literal notranslate"><span class="pre">(next</span> <span class="pre">-</span> <span class="pre">prev)</span> <span class="pre">/</span> <span class="pre">2</span></code>. A bead that has crossed a periodic
 face takes the short step. The acceptance test is on the
 <a class="reference internal" href="basin_hopping.html"><span class="std std-doc">basin hopping</span></a> page.</p>
+<p>A classic dimer (<code class="docutils literal notranslate"><span class="pre">[Dimer]</span> <span class="pre">improved</span> <span class="pre">=</span> <span class="pre">false</span></code>) translated with L-BFGS reports
+the mode curvature <code class="docutils literal notranslate"><span class="pre">|C_tau|</span></code> once that mode is negative. The first translation
+step keeps <code class="docutils literal notranslate"><span class="pre">H0</span> <span class="pre">=</span> <span class="pre">1/|C_tau|</span></code> when the step fits in <code class="docutils literal notranslate"><span class="pre">max_move</span></code>, and also when
+the mode is milder than 30 eV/Å² and the cap would otherwise choose the
+length. A steeper mode whose uncapped step exceeds <code class="docutils literal notranslate"><span class="pre">max_move</span></code> is measured
+with one finite-difference probe of the effective force. Improved dimer and
+Lanczos do not report <code class="docutils literal notranslate"><span class="pre">|C_tau|</span></code>. Their first step is that probe, and
+<code class="docutils literal notranslate"><span class="pre">max_move</span></code> is only the cap. The adatom AKMC templates use the classic dimer.
+The LJ13 and Pt heptamer force-call counts follow the probe. A build with
+<code class="docutils literal notranslate"><span class="pre">-Dwith_rgsaddle</span></code> rotates every dimer and Lanczos search in rgsaddle. The
+scale still follows <code class="docutils literal notranslate"><span class="pre">improved</span> <span class="pre">=</span> <span class="pre">false</span></code>.</p>
 </section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
