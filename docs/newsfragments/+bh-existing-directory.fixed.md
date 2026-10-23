@@ -1,0 +1,1 @@
+Basin hopping creates the incoming job directory and a new state directory when either is already present. Parallel replica, escape rate, and the process-search explorer do the same for the incoming job directory.

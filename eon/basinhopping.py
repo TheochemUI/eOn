@@ -73,7 +73,7 @@ class BHStates:
             self.energy_table.write()
 
             state_path = Path(self.config.path_states) / str(state_number)
-            state_path.mkdir()
+            state_path.mkdir(exist_ok=True)
 
             result_files['minimum.con'] = result_files['min.con']
             del result_files['min.con']
@@ -167,7 +167,7 @@ def register_results(comm, bhstates, config):
     jobs_in = Path(config.path_jobs_in)
     if jobs_in.is_dir():
         shutil.rmtree(jobs_in)
-    jobs_in.mkdir(parents=True)
+    jobs_in.mkdir(parents=True, exist_ok=True)
 
     # Function used by communicator to determine whether to discard a result
     def keep_result(name):
@@ -254,7 +254,7 @@ def main(config: ConfigClass = None):
 
     lock = locking.LockFile(str(lock_path))
 
-    if lock.aquirelock():
+    if lock.acquirelock():
         if config.comm_type == 'mpi':
             from eon.mpiwait import mpiwait
             while True:

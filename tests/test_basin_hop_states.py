@@ -1,11 +1,13 @@
 """Basin hopping records a new minimum and can draw it back."""
 
+import shutil
 from io import StringIO
+from pathlib import Path
 
 import numpy as np
 
 from eon import fileio as io
-from eon.basinhopping import BHStates
+from eon.basinhopping import BHStates, register_results
 from eon.config import ConfigClass
 from eon.structure import Structure
 
@@ -59,3 +61,28 @@ def test_new_minimum_can_be_drawn(tmp_path):
     again.seek(0)
     states.add_state({"min.con": again}, {"minimum_energy": -1.25})
     assert states.energy_table.rows[0]["repeats"] == 1
+
+
+def test_add_state_accepts_an_existing_directory(tmp_path):
+    atoms, buf = _min()
+    states = BHStates(_config(tmp_path))
+    state_dir = Path(tmp_path) / "states" / "0"
+    state_dir.mkdir(parents=True)
+    states.add_state({"min.con": buf}, {"minimum_energy": -1.25})
+    assert (state_dir / "minimum.con").is_file()
+    loaded = io.loadcon(str(state_dir / "minimum.con"))
+    assert np.allclose(loaded.r, atoms.r)
+
+
+class _EmptyComm:
+    def get_results(self, path, keep):
+        return iter(())
+
+
+def test_register_results_accepts_an_existing_job_directory(tmp_path, monkeypatch):
+    cfg = _config(tmp_path)
+    jobs = Path(cfg.path_jobs_in)
+    jobs.mkdir(parents=True)
+    monkeypatch.setattr(shutil, "rmtree", lambda path: None)
+    register_results(_EmptyComm(), BHStates(cfg), cfg)
+    assert jobs.is_dir()

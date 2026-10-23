@@ -157,7 +157,7 @@ def register_results(comm, current_state, states, config: ConfigClass = None):
     jobs_in = Path(config.path_jobs_in)
     if jobs_in.is_dir():
         shutil.rmtree(jobs_in)
-    jobs_in.mkdir(parents=True)
+    jobs_in.mkdir(parents=True, exist_ok=True)
 
     # Function used by communicator to determine whether to discard a result
     def keep_result(name):
@@ -272,7 +272,7 @@ def main(config: ConfigClass = None):
 
     lock = locking.LockFile(str(lock_path))
 
-    if lock.aquirelock():
+    if lock.acquirelock():
         if options.continuous or config.comm_type == 'mpi':
             # define a wait method.
             if config.comm_type == 'mpi':
