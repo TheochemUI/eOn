@@ -44,6 +44,10 @@ epicenter are displaced. Each displaced atom receives a random perturbation
 drawn from a Gaussian distribution with standard deviation
 `displace_magnitude` (in Ångströms) independently in each Cartesian direction.
 
+`void_bias_fraction` mixes a repulsive neighbor direction into that
+displacement. Zero, the default, leaves the Gaussian direction unchanged.
+The example `akmc-al-void-biasing` sets it to 0.2.
+
 ### Displacing all listed atoms
 
 When `displace_all_listed` is **true** and a listed-atom strategy is selected,
