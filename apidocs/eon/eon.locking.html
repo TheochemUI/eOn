@@ -356,6 +356,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#api">API</a><ul>
 <li><a class="reference internal" href="#eon.locking.LockFile"><code class="docutils literal notranslate"><span class="pre">LockFile</span></code></a><ul>
 <li><a class="reference internal" href="#eon.locking.LockFile.islocked"><code class="docutils literal notranslate">islocked()</span></code></a></li>
+<li><a class="reference internal" href="#eon.locking.LockFile.acquirelock"><code class="docutils literal notranslate">acquirelock()</span></code></a></li>
 <li><a class="reference internal" href="#eon.locking.LockFile.aquirelock"><code class="docutils literal notranslate">aquirelock()</span></code></a></li>
 <li><a class="reference internal" href="#eon.locking.LockFile.removelock"><code class="docutils literal notranslate">removelock()</span></code></a></li>
 </ul>
@@ -451,6 +452,18 @@ data-aria-dark="Switch to auto color mode">
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="eon.locking.LockFile.acquirelock">
+<span class="sig-name descname"><span class="pre">acquirelock</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/locking.html#LockFile.acquirelock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.locking.LockFile.acquirelock" title="Link to this definition">¶</a></dt>
+<dd><p>Create the lock, or take it over when the holder is gone.</p>
+<p>The create is <code class="docutils literal notranslate"><span class="pre">O_CREAT|O_EXCL|O_WRONLY</span></code>. The pid is written and
+fsynced, and on platforms with fcntl the descriptor is held under
+an exclusive flock for the life of this process. If the file
+already exists, a dead pid or a truncated file is removed and the
+create is tried once more. A live pid whose flock is not held is
+the same as a dead holder: the pid was reused.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="eon.locking.LockFile.aquirelock">
 <span class="sig-name descname"><span class="pre">aquirelock</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/locking.html#LockFile.aquirelock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.locking.LockFile.aquirelock" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -458,7 +471,13 @@ data-aria-dark="Switch to auto color mode">
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.locking.LockFile.removelock">
 <span class="sig-name descname"><span class="pre">removelock</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/locking.html#LockFile.removelock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.locking.LockFile.removelock" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Unlink the lock when this process still owns it.</p>
+<p>A forked child inherits this method, the stored pid, and the
+atexit hook. Exit in the child must not delete the parent’s
+file. A missing file, or a file another driver has replaced, is
+left alone. A LockFile that never acquired the lock does not
+delete whatever happens to sit at the path.</p>
+</dd></dl>
 
 </dd></dl>
 

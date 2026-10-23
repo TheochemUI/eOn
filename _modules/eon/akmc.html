@@ -1077,7 +1077,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="650">            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not restarting&quot;</span><span class="p">)</span>
 </span><span data-line="651">            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </span><span data-line="652">
-</span><span data-line="653">    <span class="k">if</span> <span class="n">lock</span><span class="o">.</span><span class="n">aquirelock</span><span class="p">():</span>
+</span><span data-line="653">    <span class="k">if</span> <span class="n">lock</span><span class="o">.</span><span class="n">acquirelock</span><span class="p">():</span>
 </span><span data-line="654">        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">continuous</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">comm_type</span> <span class="o">==</span> <span class="s1">&#39;mpi&#39;</span><span class="p">:</span>
 </span><span data-line="655">            <span class="c1"># define a wait method.</span>
 </span><span data-line="656">            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">comm_type</span> <span class="o">==</span> <span class="s1">&#39;mpi&#39;</span><span class="p">:</span>

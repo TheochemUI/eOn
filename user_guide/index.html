@@ -501,7 +501,9 @@ configuration file would include the lines:</p>
 </div>
 <p>In the configuration, the server runs <code class="docutils literal notranslate"><span class="pre">akmc</span></code>, <code class="docutils literal notranslate"><span class="pre">parallel_replica</span></code>,
 <code class="docutils literal notranslate"><span class="pre">unbiased_parallel_replica</span></code>, <code class="docutils literal notranslate"><span class="pre">basin_hopping</span></code>, and <code class="docutils literal notranslate"><span class="pre">escape_rate</span></code> itself. The
-server accepts those names as written. Any other <code class="docutils literal notranslate"><span class="pre">job</span></code> the server accepts is
+server accepts those names as written. Those jobs share one <code class="docutils literal notranslate"><span class="pre">lockfile</span></code> in
+the results directory, so a second driver exits instead of running beside
+the first. See <a class="reference internal" href="communicator.html"><span class="doc">Communicator</span></a>. Any other <code class="docutils literal notranslate"><span class="pre">job</span></code> the server accepts is
 one client job. The client matches that <code class="docutils literal notranslate"><span class="pre">job</span></code> to <code class="docutils literal notranslate"><span class="pre">JobType</span></code> without regard to
 case. A name outside the enumeration stops the client with <code class="docutils literal notranslate"><span class="pre">No</span> <span class="pre">known</span> <span class="pre">job</span> <span class="pre">could</span> <span class="pre">be</span> <span class="pre">constructed</span></code>.</p>
 <p>Spellings that do not match a client job are <code class="docutils literal notranslate"><span class="pre">finite_differences</span></code> (use

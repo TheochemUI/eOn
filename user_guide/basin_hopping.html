@@ -475,6 +475,11 @@ data-aria-dark="Switch to auto color mode">
 <p>Basin hopping is a Monte Carlo method in which the energy of each configuration
 is taken to be the energy of a local minimum
 <span id="id1">[<a class="reference internal" href="#id93" title="David J. Wales and Jonathan P. K. Doye. Global Optimization by Basin-Hopping and the Lowest Energy Structures of Lennard-Jones Clusters Containing up to 110 Atoms. The Journal of Physical Chemistry A, 101(28):5111–5116, July 1997. doi:10.1021/jp970984n.">BH_WD97</a>]</span>.</p>
+<p>The driver stores <code class="docutils literal notranslate"><span class="pre">bh.log</span></code> and <code class="docutils literal notranslate"><span class="pre">lockfile</span></code> in the results directory. A second
+driver in that directory logs <code class="docutils literal notranslate"><span class="pre">Couldn't</span> <span class="pre">get</span> <span class="pre">lock</span></code> and exits. See
+<a class="reference internal" href="communicator.html"><span class="doc">Communicator</span></a> for how the lock is taken. Registering results and
+recording a new state both create their directory when that path is already
+present.</p>
 <p>At each basin hopping step the client will print out:</p>
 <ul class="simple">
 <li><p>the current energy (<code class="docutils literal notranslate"><span class="pre">current</span></code>),</p></li>

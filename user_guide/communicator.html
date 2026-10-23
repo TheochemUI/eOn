@@ -351,7 +351,7 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
-<li><a class="reference internal" href="#lock-file">Lock file</a></li>
+<li><a class="reference internal" href="#one-driver-in-a-directory">One driver in a directory</a></li>
 <li><a class="reference internal" href="#configuration">Configuration</a><ul>
 <li><a class="reference internal" href="#eon.schema.CommunicatorConfig"><code class="docutils literal notranslate"><span class="pre">CommunicatorConfig</span></code></a><ul>
 <li><a class="reference internal" href="#eon.schema.CommunicatorConfig.type"><code class="docutils literal notranslate">type</span></code></a></li>
@@ -477,11 +477,24 @@ back from clients and processes them, then submits more jobs if
 needed. In <code class="docutils literal notranslate"><span class="pre">eOn</span></code> there are several different ways to run jobs. One can run them
 locally on the server, via MPI,  or using a job queuing system such as
 <a class="reference external" href="http://www.oracle.com/us/products/tools/oracle-grid-engine-075549.html">SGE</a>.</p>
-<section id="lock-file">
-<h2>Lock file<a class="headerlink" href="#lock-file" title="Link to this heading">¶</a></h2>
-<p>Each server driver stores <code class="docutils literal notranslate"><span class="pre">lockfile</span></code> in the results directory and removes
-that file when the driver exits. A forked child does not remove it. The
-parent keeps the lock until the parent exits.</p>
+<section id="one-driver-in-a-directory">
+<h2>One driver in a directory<a class="headerlink" href="#one-driver-in-a-directory" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">akmc</span></code>, <code class="docutils literal notranslate"><span class="pre">parallel_replica</span></code>, <code class="docutils literal notranslate"><span class="pre">unbiased_parallel_replica</span></code>, <code class="docutils literal notranslate"><span class="pre">basin_hopping</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">escape_rate</span></code> share a lock file named <code class="docutils literal notranslate"><span class="pre">lockfile</span></code> in the results
+directory. The driver creates that file with an exclusive open, writes
+its process id, and flushes the file. A second driver that finds a live
+owner leaves without starting a second run. Basin hopping, parallel
+replica, and escape rate log <code class="docutils literal notranslate"><span class="pre">Couldn't</span> <span class="pre">get</span> <span class="pre">lock</span></code>. Adaptive kinetic Monte
+Carlo logs the owner’s process id and exits.</p>
+<p>A lock whose process is gone, or a file that is empty or cut off mid-write,
+is removed and the driver tries once more. On platforms with <code class="docutils literal notranslate"><span class="pre">fcntl</span></code> the
+driver holds an exclusive flock for the life of the run, so a reused
+process id is not treated as the owner. The driver removes the lock when
+it exits. A forked child does not remove it. The parent keeps the lock
+until the parent exits.</p>
+<p><code class="docutils literal notranslate"><span class="pre">LockFile.acquirelock</span></code> takes the lock. <code class="docutils literal notranslate"><span class="pre">aquirelock</span></code> is the previous
+spelling and still calls <code class="docutils literal notranslate"><span class="pre">acquirelock</span></code>. The akmc, basin hopping,
+parallel replica, and escape rate drivers call <code class="docutils literal notranslate"><span class="pre">acquirelock</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>From 2.0 on, prefer a workflow manager over eOn-generated submit

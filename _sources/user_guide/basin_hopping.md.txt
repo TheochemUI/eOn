@@ -11,6 +11,12 @@ Basin hopping is a Monte Carlo method in which the energy of each configuration
 is taken to be the energy of a local minimum
 {cite:p}`bh-walesGlobalOptimizationBasinHopping1997`.
 
+The driver stores `bh.log` and `lockfile` in the results directory. A second
+driver in that directory logs `Couldn't get lock` and exits. See
+{doc}`communicator` for how the lock is taken. Registering results and
+recording a new state both create their directory when that path is already
+present.
+
 At each basin hopping step the client will print out:
 - the current energy (`current`),
 - the trial energy (`trial`),

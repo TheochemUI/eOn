@@ -486,7 +486,8 @@ the same.  However, we make all replicas run the same number of MD steps to
 avoid biasing the successful transition trajectories. Results
 are reported only when the clients finish their full trajectories. The
 server increments the simulation time <span class="math notranslate nohighlight">\(t\)</span> until the first transition
-occurs.</p>
+occurs. The incoming job directory is created when it is already present.
+Escape rate uses the same directory.</p>
 <p>To run Parallel Replica jobs:</p>
 <ul class="simple">
 <li><p>Set <a class="reference internal" href="main.html#eon.schema.MainConfig.job" title="eon.schema.MainConfig.job"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">job</span></code></a> to <em>parallel_replica</em> in the

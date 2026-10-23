@@ -584,7 +584,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="157">    <span class="n">jobs_in</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">)</span>
 </span><span data-line="158">    <span class="k">if</span> <span class="n">jobs_in</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
 </span><span data-line="159">        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">jobs_in</span><span class="p">)</span>
-</span><span data-line="160">    <span class="n">jobs_in</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="160">    <span class="n">jobs_in</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span data-line="161">
 </span><span data-line="162">    <span class="c1"># Function used by communicator to determine whether to discard a result</span>
 </span><span data-line="163">    <span class="k">def</span><span class="w"> </span><span class="nf">keep_result</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
@@ -702,7 +702,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="272">
 </span><span data-line="273">    <span class="n">lock</span> <span class="o">=</span> <span class="n">locking</span><span class="o">.</span><span class="n">LockFile</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">lock_path</span><span class="p">))</span>
 </span><span data-line="274">
-</span><span data-line="275">    <span class="k">if</span> <span class="n">lock</span><span class="o">.</span><span class="n">aquirelock</span><span class="p">():</span>
+</span><span data-line="275">    <span class="k">if</span> <span class="n">lock</span><span class="o">.</span><span class="n">acquirelock</span><span class="p">():</span>
 </span><span data-line="276">        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">continuous</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">comm_type</span> <span class="o">==</span> <span class="s1">&#39;mpi&#39;</span><span class="p">:</span>
 </span><span data-line="277">            <span class="c1"># define a wait method.</span>
 </span><span data-line="278">            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">comm_type</span> <span class="o">==</span> <span class="s1">&#39;mpi&#39;</span><span class="p">:</span>
