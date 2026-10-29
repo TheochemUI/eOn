@@ -183,6 +183,27 @@ The native ``[LBFGS]`` optimizer is unchanged. ``lbfgs_step``,
 rgmin adapter falls back to them when the ``[Xtsci]`` fields are
 left at their defaults.
 
+``precon = rgmin_exp`` is the Exp preconditioner of
+{cite:t}`opt-packwoodUniversalPreconditionerSimulating2016` built inside
+rgmin instead of eOn. The adapter sends the minimum-image atom pairs
+within ``2 r_nn`` (or ``[LBFGS] lbfgs_precon_rcut``) with
+``lbfgs_precon_A``. rgmin assembles the sparse matrix with
+``c_stab = 0.1``, estimates ``mu`` from one extra force call, and solves
+it by conjugate gradients. The pairs are rebuilt once an atom has moved
+``r_nn / 2``. The eOn ``exp`` kind is a dense \(3N \times 3N\) matrix
+factorized each step, so its cost grows as \(N^3\). ``rgmin_exp`` only
+applies to the L-BFGS two-loop step, and ``qn_step = newton``, RFO or
+dogleg with it is an error.
+
+```{code-block} ini
+[Optimizer]
+opt_method = lbfgs
+opt_backend = rgmin
+
+[Xtsci]
+precon = rgmin_exp
+```
+
 ```{code-block} ini
 [Optimizer]
 opt_method = xtsci
