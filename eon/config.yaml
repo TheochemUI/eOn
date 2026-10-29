@@ -2270,6 +2270,7 @@ Optimizer:
                 - fischer
                 - schlegel
                 - swart
+                - rgmin_exp
 
         xtsci_accept:
             kind: string
@@ -2874,6 +2875,7 @@ Xtsci:
                 - fischer
                 - schlegel
                 - swart
+                - rgmin_exp
 
         accept:
             kind: string
