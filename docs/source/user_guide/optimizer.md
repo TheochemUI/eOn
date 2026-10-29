@@ -165,7 +165,8 @@ an ``eindir_objective_t`` around the ``ObjectiveFunction``. The adapter
 checks the eindir ABI stamp, the gradient feature bit, and the semantic
 descriptor (eV, angstrom, analytic forces) before dispatch.
 ``Optimizer::run`` then calls ``rgmin_minimize_eindir`` unless the step
-needs a host Hessian or the method is ``fire2``. ``step()`` stays one
+needs a host Hessian, the method is ``fire2``, or ``precon`` is
+``rgmin_exp``. ``step()`` stays one
 ``rgmin_solver_t`` iteration. Both paths give ``fire``, ``fire2`` and
 ``quickmin`` the ``time_step`` as their time step, and give the other
 methods ``max_move`` as their first step.
@@ -198,6 +199,27 @@ The native ``[LBFGS]`` optimizer is unchanged. ``lbfgs_step``,
 ``lbfgs_precon``, and ``lbfgs_accept`` still drive it, and the
 rgmin adapter falls back to them when the ``[Xtsci]`` fields are
 left at their defaults.
+
+``precon = rgmin_exp`` is the Exp preconditioner of
+{cite:t}`opt-packwoodUniversalPreconditionerSimulating2016` built inside
+rgmin instead of eOn. The adapter sends the minimum-image atom pairs
+within ``2 r_nn`` (or ``[LBFGS] lbfgs_precon_rcut``) with
+``lbfgs_precon_A``. rgmin assembles the sparse matrix with
+``c_stab = 0.1``, estimates ``mu`` from one extra force call, and solves
+it by conjugate gradients. The pairs are rebuilt once an atom has moved
+``r_nn / 2``. The eOn ``exp`` kind is a dense \(3N \times 3N\) matrix
+factorized each step, so its cost grows as \(N^3\). ``rgmin_exp`` only
+applies to the L-BFGS two-loop step, and ``qn_step = newton``, RFO or
+dogleg with it is an error.
+
+```{code-block} ini
+[Optimizer]
+opt_method = lbfgs
+opt_backend = rgmin
+
+[Xtsci]
+precon = rgmin_exp
+```
 
 ```{code-block} ini
 [Optimizer]
