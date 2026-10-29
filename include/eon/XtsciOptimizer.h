@@ -54,8 +54,12 @@ private:
   // Solver state. write_report updates this in place. Do not refresh
   // from Matter::getPositions: PBC wrap would break last-x reuse.
   Eigen::VectorXd m_x;
+  // Geometry of the last rgmin_exp pair list, and its r_nn.
+  Eigen::VectorXd m_preconAt;
+  double m_preconRnn{0.0};
 
   void ensureSolver(double a_maxMove);
+  void refreshExpPrecon();
 };
 
 } // namespace eonc
