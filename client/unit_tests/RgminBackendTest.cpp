@@ -19,12 +19,15 @@
 #include "eon/Potential.h"
 #ifdef WITH_RGMIN
 #include "eon/XtsciOptimizer.h"
+#include <rgmin.h>
 #endif
 
+#include <cmath>
 #include <memory>
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace tests {
 
@@ -143,6 +146,94 @@ TEST_CASE("opt_backend = rgmin relaxes a displaced LJ cluster",
   REQUIRE(matter.maxForce() < 0.01);
   REQUIRE(matter.getPotentialEnergy() == Catch::Approx(eMin).margin(0.01));
 }
+
+#if RGMIN_ABI_VERSION_MINOR >= 32
+
+namespace {
+
+// fcc Pt, 3 x 3 x 3 cells, one vacancy, every atom pushed off its site.
+void rattledPtVacancy(Matter &matter) {
+  const double a0 = 2.744 * std::sqrt(2.0);
+  const double base[4][3] = {
+      {0.0, 0.0, 0.0}, {0.5, 0.5, 0.0}, {0.5, 0.0, 0.5}, {0.0, 0.5, 0.5}};
+  std::vector<Eigen::RowVector3d> sites;
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      for (int k = 0; k < 3; ++k) {
+        for (const auto &b : base) {
+          sites.emplace_back((i + b[0]) * a0, (j + b[1]) * a0, (k + b[2]) * a0);
+        }
+      }
+    }
+  }
+  sites.erase(sites.begin());
+  const auto n = static_cast<long>(sites.size());
+  matter.resize(n);
+  AtomMatrix x(n, 3);
+  for (long i = 0; i < n; ++i) {
+    matter.setAtomicNr(i, 78);
+    for (int c = 0; c < 3; ++c) {
+      x(i, c) = sites[static_cast<size_t>(i)](c) +
+                0.1 * std::sin(1.7 * static_cast<double>(3 * i + c) + 0.3);
+    }
+  }
+  matter.setCell(Matrix3d::Identity() * 3.0 * a0);
+  matter.setPeriodic(true);
+  matter.setPositions(x);
+}
+
+struct Relaxed {
+  bool converged;
+  double energy;
+  size_t counted;
+  size_t kernel;
+};
+
+Relaxed relaxPt(const std::string &a_precon) {
+  Parameters params = ljParams(OptType::LBFGS, "rgmin");
+  ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
+  ParametersLoadAccess::optimizer_options(params).xtsci.precon = a_precon;
+  auto morse = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::MORSE_PT, params));
+  auto pot = std::make_shared<eonc::helpers::test::CountingPotential>(morse);
+  Matter matter(pot, params);
+  rattledPtVacancy(matter);
+  const size_t counterBefore = pot->forceCallCounter;
+  const size_t kernelBefore = pot->kernelCalls;
+  const bool ok = matter.relax(/*quiet=*/true);
+  return {ok && matter.maxForce() < 0.01, matter.getPotentialEnergy(),
+          pot->forceCallCounter - counterBefore,
+          pot->kernelCalls - kernelBefore};
+}
+
+} // namespace
+
+TEST_CASE("Xtsci.precon = rgmin_exp relaxes a periodic Pt vacancy cell",
+          "[optimizer][rgmin][minimization][precon]") {
+  const Relaxed plain = relaxPt("none");
+  const Relaxed exp = relaxPt("rgmin_exp");
+  CAPTURE(plain.counted, exp.counted, plain.energy, exp.energy);
+  REQUIRE(plain.converged);
+  REQUIRE(exp.converged);
+  REQUIRE(exp.kernel > 0);
+  REQUIRE(exp.counted == exp.kernel);
+  REQUIRE(exp.energy == Catch::Approx(plain.energy).margin(1.0e-3));
+  REQUIRE(exp.counted < plain.counted);
+}
+
+TEST_CASE("Xtsci.precon = rgmin_exp refuses a host Hessian step",
+          "[optimizer][rgmin][precon]") {
+  Parameters params = ljParams(OptType::LBFGS, "rgmin");
+  ParametersLoadAccess::optimizer_options(params).xtsci.precon = "rgmin_exp";
+  ParametersLoadAccess::optimizer_options(params).xtsci.qn_step = "newton";
+  auto lj = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  Matter matter(lj, params);
+  matter.con2matter(std::string("reactant.con"));
+  REQUIRE_THROWS_AS(matter.relax(/*quiet=*/true), std::invalid_argument);
+}
+
+#endif
 
 TEST_CASE("opt_method = xtsci still reads [Xtsci] method",
           "[optimizer][rgmin]") {
