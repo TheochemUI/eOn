@@ -47,7 +47,7 @@
     },
     "precon": {
       "default": "none",
-      "description": "Host pair / model Hessian kind. Built in eOn, not in xtsci.\n\n``pair`` is the Mones PSD clip. ``pair_full`` keeps signed\ncurvature. ``lindh_full`` / ``fischer`` / ``schlegel`` / ``swart``\nare Cartesian model Hessians (B^T k B). The matrix is assembled\nin eOn and passed through ``rgmin_solver_step_hess``.",
+      "description": "Host pair / model Hessian kind, built in eOn. rgmin_exp is the sparse Packwood Exp metric built in rgmin.\n\n``pair`` is the Mones PSD clip. ``pair_full`` keeps signed\ncurvature. ``lindh_full`` / ``fischer`` / ``schlegel`` / ``swart``\nare Cartesian model Hessians (B^T k B). The matrix is assembled\nin eOn and passed through ``rgmin_solver_step_hess``.\n``rgmin_exp`` sends rgmin the minimum-image pairs within\n``2 r_nn`` (or ``lbfgs_precon_rcut``). rgmin assembles the sparse\nExp matrix, estimates ``mu`` with one force call, and solves it\nby conjugate gradients.",
       "enum": [
         "none",
         "pair",
@@ -59,7 +59,8 @@
         "lindh_full",
         "fischer",
         "schlegel",
-        "swart"
+        "swart",
+        "rgmin_exp"
       ],
       "type": "string"
     },
