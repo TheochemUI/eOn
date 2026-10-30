@@ -11,6 +11,7 @@
 */
 
 #include "eon/NEBZoom.h"
+#include "eon/NEBInitialPaths.hpp"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Parameters.h"
@@ -91,6 +92,37 @@ linePath(const std::shared_ptr<eonc::Potential> &pot, const Parameters &params,
     path.push_back(std::move(image));
   }
   return path;
+}
+
+TEST_CASE("Path reparameterization interpolates across a periodic cell face",
+          "[neb][zoom][ocineb]") {
+  Parameters params;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(eonc::PotType::LJ, params));
+  auto path = linePath(pot, params, 5);
+  const double x[] = {8.0, 8.25, 9.5, 0.5, 2.0};
+  for (std::size_t i = 0; i < path.size(); ++i) {
+    path[i]->setCell(Matrix3d::Identity() * 10.0);
+    path[i]->setPeriodic(true);
+    AtomMatrix pos = AtomMatrix::Zero(1, 3);
+    pos(0, 0) = x[i];
+    path[i]->setPositions(pos);
+  }
+  const AtomMatrix first = path.front()->getPositions();
+  const AtomMatrix last = path.back()->getPositions();
+  eonc::helpers::neb_paths::resamplePathInPlace(path);
+  REQUIRE(path.front()->getPositions().isApprox(first, 0.0));
+  REQUIRE(path.back()->getPositions().isApprox(last, 0.0));
+  // The middle image is near x=10 (x=0 in this cell), rather than x=5.
+  REQUIRE(path[2]->pbc(path[2]->getPositions())(0, 0) ==
+          Catch::Approx(0.0).margin(0.02));
+  for (std::size_t i = 1; i < path.size(); ++i) {
+    const AtomMatrix step =
+        path[i]->pbc(path[i]->getPositions() - path[i - 1]->getPositions());
+    REQUIRE(step(0, 0) > 0.0);
+    REQUIRE(step.norm() < 2.0);
+    REQUIRE(path[i]->getPositions().allFinite());
+  }
 }
 
 TEST_CASE("Zoom redistribution packs the band onto the window", "[neb][zoom]") {

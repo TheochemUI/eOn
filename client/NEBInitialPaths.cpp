@@ -453,11 +453,15 @@ void resamplePathInPlace(std::span<std::shared_ptr<Matter>> path) {
   if (n < 3)
     return;
 
-  // Calculate cumulative arc length
+  // Interpolation and arc length use the same continuous coordinate chart.
+  // Wrapped endpoints of an interior segment must not span the whole cell.
+  std::vector<AtomMatrix> origPos(n);
+  origPos[0] = path[0]->getPositions();
   std::vector<double> arcLength(n, 0.0);
   for (size_t i = 1; i < n; ++i) {
     AtomMatrix diff =
         path[i]->pbc(path[i]->getPositions() - path[i - 1]->getPositions());
+    origPos[i] = origPos[i - 1] + diff;
     arcLength[i] = arcLength[i - 1] + diff.norm();
   }
   double totalLength = arcLength.back();
@@ -485,11 +489,6 @@ void resamplePathInPlace(std::span<std::shared_ptr<Matter>> path) {
     }
     tangents[i] = T;
   }
-
-  // Store original positions for interpolation source
-  std::vector<AtomMatrix> origPos(n);
-  for (size_t i = 0; i < n; ++i)
-    origPos[i] = path[i]->getPositions();
 
   // Redistribute interior images at equal arc-length intervals (in-place)
   size_t nInterior = n - 2;

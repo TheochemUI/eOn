@@ -56,9 +56,9 @@ public:
                        const int *const *atomicNrs, double *const *forces,
                        double *energies, double *variances,
                        const double *const *boxes, const long *owners) override;
-  /// NWChem molecular SCF does not support PBC; CPMD may be periodic.
+  /// Molecular tasks retain Cartesian coordinates across storage-cell faces.
   [[nodiscard]] bool requiresIsolatedMoleculeLayout() const noexcept override {
-    return backend_ == "nwchemc";
+    return backend_ == "nwchemc" || isolatedMolecule_;
   }
   [[nodiscard]] const std::string &backend() const noexcept { return backend_; }
   [[nodiscard]] bool engineAvailable() const;
@@ -90,6 +90,7 @@ private:
 
   std::unique_ptr<RGPotEngine> impl_;
   std::string backend_;
+  bool isolatedMolecule_{false};
   bool driver_{true};
   bool stopped_{false};
   bool dropped_{false};

@@ -110,6 +110,7 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
 
   impl_ = std::make_unique<RGPotEngine>(opt);
   backend_ = impl_->backend();
+  isolatedMolecule_ = backend_ == "uma" && opt.task_name == "omol";
   driver_ = impl_->worldRank() == 0;
   std::cout
       << "RgpotPot: in-process rgpot backend=" << backend_
