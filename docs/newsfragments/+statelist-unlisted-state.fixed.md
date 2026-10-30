@@ -1,0 +1,1 @@
+A server pass that stops while it creates a new state no longer hands that state's directory and reactant to the next new state. This applies to aKMC, parallel replica and escape rate. On the next pass a directory that a process of a listed state already reaches is added to `state_table`, and one that no process reaches is removed.

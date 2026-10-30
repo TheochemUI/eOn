@@ -2,6 +2,7 @@
 """ The statelist module. """
 
 import logging
+import shutil
 from pathlib import Path
 
 from eon import atoms
@@ -66,6 +67,8 @@ class StateList:
         if self.get_num_states() == 0:
             zst = self.get_state(0)
             self.append_state_table(zst.get_energy())
+        while self._settle_unlisted_state(self.get_num_states()):
+            pass
 
         # Load the state object containing the process we want the product for.
         st = self.get_state(state_number)
@@ -120,6 +123,37 @@ class StateList:
 
         # Return the product state.
         return newst
+
+    def _settle_unlisted_state(self, number):
+        """Finish or drop states/<number> when state_table has no row for it.
+
+        A new state is renamed into place, then a reactant process is
+        pointed at it, then its row is appended. A pass that stops before
+        the row leaves a directory that the next new state would reuse,
+        together with its reactant. When a process of any listed state
+        already points at it, the row is appended. When none does, the
+        directory contains only the staged copy of a product and is removed.
+        The "previous state" key in info is not used: PRState.set_energy
+        rewrites info without it.
+        Returns True when a row was appended.
+        """
+        path = Path(self.state_path(number))
+        if number == 0 or not path.is_dir():
+            return False
+        for listed in range(number):
+            reactant = self.get_state(listed)
+            reactant.load_process_table(force=True)
+            for proc in reactant.procs.values():
+                if proc["product"] == number:
+                    state = self.get_state(number)
+                    if state.get_energy() is None:
+                        state.set_energy(proc["product_energy"])
+                    logger.warning("State %i was not in the state table; adding it", number)
+                    self.append_state_table(proc["product_energy"])
+                    return True
+        logger.warning("Removing state %i, which no process reaches", number)
+        shutil.rmtree(path)
+        return False
 
     def get_state(self, state_number):
         ''' Returns a state object. '''
