@@ -179,6 +179,50 @@ TEST_CASE("OCI redistributes a helpful molecular walk and resets the band",
   }
 }
 
+TEST_CASE("CI convergence requires the physical maximum-atom force",
+          "[neb][regression][climbing_image][convergence]") {
+  Parameters params;
+  auto &options = ParametersLoadAccess::neb_options(params);
+  options.image_count = 1;
+  options.initialization.method = NEBInit::LINEAR;
+  options.endpoints.minimize = false;
+  options.climbing_image.enabled = true;
+  options.climbing_image.converged_only = GENERATE(false, true);
+  options.force_tolerance = 0.05;
+  ParametersLoadAccess::optimizer_options(params).convergence_metric = "max_atom";
+  ParametersLoadAccess::main_options(params).removeNetForce = false;
+  auto pot = std::make_shared<MolecularSaddlePotential>();
+  auto reactant = std::make_shared<Matter>(pot, params);
+  reactant->resize(3);
+  reactant->setPeriodic(false);
+  reactant->setCell(Matrix3d::Identity() * 25.0);
+  for (int atom = 0; atom < 3; ++atom) {
+    reactant->setAtomicNr(atom, 1);
+    reactant->setMass(atom, 1.0);
+  }
+  reactant->setFixed(2, true);
+  AtomMatrix centre = AtomMatrix::Zero(3, 3);
+  centre(0, 0) = 0.03;
+  centre(2, 2) = 5.0;
+  AtomMatrix tangent = AtomMatrix::Zero(3, 3);
+  tangent(0, 0) = std::cos(std::acos(-1.0) / 8.0);
+  tangent(1, 0) = std::sin(std::acos(-1.0) / 8.0);
+  reactant->setPositions(centre - 0.2 * tangent);
+  auto product = std::make_shared<Matter>(*reactant);
+  product->setPositions(centre + 0.2 * tangent);
+  NudgedElasticBand neb(reactant, product, params, pot);
+  neb.path[1]->setPositions(centre);
+  neb.setCIEnabled(true);
+  neb.updateForces();
+  REQUIRE(neb.climbingImage == 1);
+  const double projected = neb.projectedForce[1]->rowwise().norm().maxCoeff();
+  REQUIRE(projected == Catch::Approx(0.06 / std::sqrt(2.0)).margin(1e-12));
+  REQUIRE(projected < options.force_tolerance);
+  REQUIRE(neb.convergenceForce() == Catch::Approx(0.06).margin(1e-12));
+  NEBObjectiveFunction objective(&neb, params);
+  REQUIRE_FALSE(objective.isConverged());
+}
+
 class NEBRegressionFixture {
 protected:
   Parameters params;
