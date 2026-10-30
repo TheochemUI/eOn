@@ -2,6 +2,7 @@
 """ The statelist module. """
 
 import logging
+import os
 from pathlib import Path
 
 from eon import atoms
@@ -9,6 +10,119 @@ from eon import fileio as io
 from eon.config import ConfigClass # Typing
 
 logger = logging.getLogger('statelist')
+
+
+def _intact_prefix(data, header_lines, min_fields, exact):
+    """Bytes to keep, and whether the final line was torn.
+
+    A final line past the header is torn when it has no trailing newline
+    or the wrong number of fields. ``exact`` requires that count;
+    otherwise the line needs at least ``min_fields``.
+    """
+    if not data:
+        return data, False
+    if data.endswith(b"\n"):
+        end = len(data) - 1
+        prev = data.rfind(b"\n", 0, end)
+        start = 0 if prev < 0 else prev + 1
+        if data[:start].count(b"\n") < header_lines:
+            return data, False
+        count = len(data[start:end].split())
+        ok = count == min_fields if exact else count >= min_fields
+        if ok:
+            return data, False
+        return data[:start], True
+    prev = data.rfind(b"\n")
+    start = 0 if prev < 0 else prev + 1
+    if data[:start].count(b"\n") < header_lines:
+        return data, False
+    return data[:start], True
+
+
+def _last_line_start(handle, size, ends_nl):
+    """Byte offset of the final line. ``ends_nl`` skips a trailing newline."""
+    skip = 1 if ends_nl else 0
+    found = 0
+    pos = size
+    while pos > 0:
+        step = min(4096, pos)
+        pos -= step
+        handle.seek(pos)
+        chunk = handle.read(step)
+        idx = len(chunk)
+        while True:
+            idx = chunk.rfind(b"\n", 0, idx)
+            if idx < 0:
+                break
+            found += 1
+            if found > skip:
+                return pos + idx + 1
+    return 0
+
+
+def _preceding_newlines(handle, start, need):
+    if need <= 0 or start <= 0:
+        return 0
+    handle.seek(0)
+    remaining = start
+    count = 0
+    while remaining > 0 and count < need:
+        chunk = handle.read(min(4096, remaining))
+        if not chunk:
+            break
+        remaining -= len(chunk)
+        count += chunk.count(b"\n")
+    return count
+
+
+def _torn_keep(path, header_lines, min_fields, exact):
+    """Cut off a torn tail. Return the length to restore if the append fails.
+
+    Only the tail, and enough of the front to see the header, is read.
+    """
+    path = Path(path)
+    if not path.is_file():
+        return 0
+    size = path.stat().st_size
+    if size == 0:
+        return 0
+    with open(path, "rb") as handle:
+        handle.seek(size - 1)
+        ends_nl = handle.read(1) == b"\n"
+        start = _last_line_start(handle, size, ends_nl)
+        if _preceding_newlines(handle, start, header_lines) < header_lines:
+            return size
+        if not ends_nl:
+            keep = start
+        else:
+            handle.seek(start)
+            fields = len(handle.read(size - 1 - start).split())
+            bad = fields != min_fields if exact else fields < min_fields
+            keep = start if bad else size
+    if keep != size:
+        os.truncate(path, keep)
+    return keep
+
+
+def _append_line(path, line, header_lines, min_fields, exact):
+    """Append one full line, after cutting off a torn tail.
+
+    The line is a single write, followed by a flush and an fsync. If
+    that raises, the file is truncated back to the length it had once
+    the torn tail was gone.
+    """
+    restore = _torn_keep(path, header_lines, min_fields, exact)
+    try:
+        with open(path, "a") as handle:
+            handle.write(line)
+            handle.flush()
+            os.fsync(handle.fileno())
+    except BaseException:
+        try:
+            os.truncate(path, restore)
+        except OSError:
+            pass
+        raise
 
 
 class StateList:
@@ -144,8 +258,14 @@ class StateList:
         """
         if self.state_table is not None and not force:
             return
-        with open(self.state_table_path, 'r') as f:
-            lines = f.readlines()
+        data = Path(self.state_table_path).read_bytes()
+        kept, torn = _intact_prefix(data, 0, 2, True)
+        if torn:
+            logger.warning(
+                "state_table %s has a torn final line; dropping it",
+                self.state_table_path,
+            )
+        lines = kept.decode().splitlines()
         self.state_table = []
         for l in lines:
             parts = l.split()
@@ -166,8 +286,8 @@ class StateList:
                 "State %i has no reactant energy in its info file; it cannot "
                 "be added to the state table" % number
             )
-        with open(self.state_table_path, 'a') as f:
-            f.write("% 7d %16.5f\n" % (number, energy))
+        line = "% 7d %16.5f\n" % (number, energy)
+        _append_line(self.state_table_path, line, 0, 2, True)
         if self.state_table != None:
             self.state_table.append(energy)
 
