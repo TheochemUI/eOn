@@ -404,6 +404,19 @@ TEST_CASE("the rgsaddle band moves the cells and refreshes the force",
 }
 #endif
 
+#ifdef WITH_RGSADDLE_BAND_PRECON
+TEST_CASE("the rgsaddle band refuses the exp metric on a solid-state band",
+          "[neb][solid_state][rgsaddle][band_precon]") {
+  Band solid(true, 0.4);
+  ParametersLoadAccess::neb_options(solid.params).opt_method =
+      eonc::OptType::LBFGS;
+  ParametersLoadAccess::neb_options(solid.params).band.precon = "exp";
+  auto neb = solid.neb();
+  REQUIRE_THROWS_WITH(eonc::XtsciBand(*neb, solid.params),
+                      Catch::Matchers::ContainsSubstring("solid_state"));
+}
+#endif
+
 TEST_CASE("solid_state refuses a potential that does not report stress",
           "[neb][solid_state]") {
   Band missing(true);
