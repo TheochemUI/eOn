@@ -693,29 +693,13 @@ double NudgedElasticBand::convergenceForce() {
     bandMax = std::max(bandMax, imageForce(i));
   }
 
-  // The CI reflection preserves the global Euclidean norm, but can
-  // reduce a maximum-atom or maximum-component norm below tolerance.
-  double physicalCIForce = 0.0;
-  if (ci_enabled_ && climbingImage > 0 && climbingImage <= numImages) {
-    physicalCIForce = eonc::neb::OCINEBController::forceMeasure(
-        path[climbingImage]->getForcesFree(),
-        params.optimizer_options().convergence_metric);
-    if (solidState_ &&
-        params.optimizer_options().convergence_metric == "norm") {
-      physicalCIForce = std::hypot(
-          physicalCIForce,
-          projectedCellForce[static_cast<size_t>(climbingImage)].norm());
-    }
-    bandMax = std::max(bandMax, physicalCIForce);
-  }
-
   const bool ciOnly = params.neb_options().climbing_image.converged_only &&
                       ci_enabled_ && climbingImage != 0;
   if (!ciOnly) {
     return bandMax;
   }
 
-  const double ciForce = std::max(imageForce(climbingImage), physicalCIForce);
+  const double ciForce = imageForce(climbingImage);
   const double slack = params.neb_options().climbing_image.band_slack;
   const double tol = params.neb_options().force_tolerance;
   if (slack > 0.0 && bandMax > slack * tol) {
