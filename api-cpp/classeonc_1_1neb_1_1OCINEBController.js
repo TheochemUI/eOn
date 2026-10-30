@@ -4,6 +4,7 @@ var classeonc_1_1neb_1_1OCINEBController =
     [ "MMFResult", "structeonc_1_1neb_1_1OCINEBController_1_1MMFResult.html", "structeonc_1_1neb_1_1OCINEBController_1_1MMFResult" ],
     [ "OCINEBController", "classeonc_1_1neb_1_1OCINEBController.html#a2fb2b83cc4d09f1eb7ac4ec6dc74bd7d", null ],
     [ "convergedClimb", "classeonc_1_1neb_1_1OCINEBController.html#af642e0bf28466710742818975800bdf4", null ],
+    [ "forceMeasure", "classeonc_1_1neb_1_1OCINEBController.html#adc887c925ccc9ec7740eeedc763b002c", null ],
     [ "fromParams", "classeonc_1_1neb_1_1OCINEBController.html#a23f8d62af902431487d76507f079e7c0", null ],
     [ "initBaseline", "classeonc_1_1neb_1_1OCINEBController.html#a945a3b27ff9e51b7a94d61747e67b887", null ],
     [ "resetStability", "classeonc_1_1neb_1_1OCINEBController.html#a4a77466640953dd3953699c1e9d832c4", null ],

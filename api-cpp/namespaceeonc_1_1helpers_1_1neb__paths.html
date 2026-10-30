@@ -889,76 +889,79 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">  377</span> </div>
 <div class="line"><span class="lineno">  378</span>  <span class="keywordtype">size_t</span> n = densePath.size();</div>
 <div class="line"><span class="lineno">  379</span> </div>
-<div class="line"><span class="lineno">  380</span>  <span class="comment">// Calculate cumulative arc length along the path</span></div>
-<div class="line"><span class="lineno">  381</span>  std::vector&lt;double&gt; arcLength(n, 0.0);</div>
-<div class="line"><span class="lineno">  382</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; n; ++i) {</div>
-<div class="line"><span class="lineno">  383</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff = densePath[i].pbc(densePath[i].getPositions() -</div>
-<div class="line"><span class="lineno">  384</span>                                       densePath[i - 1].getPositions());</div>
-<div class="line"><span class="lineno">  385</span>    arcLength[i] = arcLength[i - 1] + diff.norm();</div>
-<div class="line"><span class="lineno">  386</span>  }</div>
-<div class="line"><span class="lineno">  387</span>  <span class="keywordtype">double</span> totalLength = arcLength.back();</div>
-<div class="line"><span class="lineno">  388</span> </div>
-<div class="line"><span class="lineno">  389</span>  <span class="comment">// Calculate tangents for cubic interpolation</span></div>
-<div class="line"><span class="lineno">  390</span>  std::vector&lt;AtomMatrix&gt; tangents(n);</div>
-<div class="line"><span class="lineno">  391</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; n; ++i) {</div>
-<div class="line"><span class="lineno">  392</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> T;</div>
-<div class="line"><span class="lineno">  393</span>    <span class="keywordflow">if</span> (i == 0) {</div>
-<div class="line"><span class="lineno">  394</span>      T = densePath[i].pbc(densePath[i + 1].getPositions() -</div>
-<div class="line"><span class="lineno">  395</span>                           densePath[i].getPositions());</div>
-<div class="line"><span class="lineno">  396</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (i == n - 1) {</div>
-<div class="line"><span class="lineno">  397</span>      T = densePath[i].pbc(densePath[i].getPositions() -</div>
-<div class="line"><span class="lineno">  398</span>                           densePath[i - 1].getPositions());</div>
-<div class="line"><span class="lineno">  399</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  400</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dNext = densePath[i].pbc(densePath[i + 1].getPositions() -</div>
-<div class="line"><span class="lineno">  401</span>                                          densePath[i].getPositions());</div>
-<div class="line"><span class="lineno">  402</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dPrev = densePath[i].pbc(densePath[i].getPositions() -</div>
-<div class="line"><span class="lineno">  403</span>                                          densePath[i - 1].getPositions());</div>
-<div class="line"><span class="lineno">  404</span>      T = 0.5 * (dNext + dPrev);</div>
-<div class="line"><span class="lineno">  405</span>    }</div>
-<div class="line"><span class="lineno">  406</span>    <span class="comment">// Scale tangent by local segment length for proper spline parameterization</span></div>
-<div class="line"><span class="lineno">  407</span>    <span class="keywordflow">if</span> (i &gt; 0 &amp;&amp; i &lt; n - 1) {</div>
-<div class="line"><span class="lineno">  408</span>      <span class="keywordtype">double</span> localScale = (arcLength[i + 1] - arcLength[i - 1]) / 2.0;</div>
-<div class="line"><span class="lineno">  409</span>      T = T.normalized() * localScale;</div>
-<div class="line"><span class="lineno">  410</span>    }</div>
-<div class="line"><span class="lineno">  411</span>    tangents[i] = T;</div>
-<div class="line"><span class="lineno">  412</span>  }</div>
-<div class="line"><span class="lineno">  413</span> </div>
-<div class="line"><span class="lineno">  414</span>  std::vector&lt;Matter&gt; resampled;</div>
-<div class="line"><span class="lineno">  415</span>  resampled.reserve(targetCount + 2);</div>
-<div class="line"><span class="lineno">  416</span>  resampled.push_back(densePath.front());</div>
-<div class="line"><span class="lineno">  417</span> </div>
-<div class="line"><span class="lineno">  418</span>  <span class="comment">// Place new images at equal arc-length intervals</span></div>
-<div class="line"><span class="lineno">  419</span>  <span class="keywordtype">double</span> segmentLength = totalLength / (targetCount + 1);</div>
+<div class="line"><span class="lineno">  380</span>  <span class="comment">// Arc length and interpolation share a continuous coordinate chart.</span></div>
+<div class="line"><span class="lineno">  381</span>  std::vector&lt;AtomMatrix&gt; origPos(n);</div>
+<div class="line"><span class="lineno">  382</span>  origPos[0] = densePath[0].getPositions();</div>
+<div class="line"><span class="lineno">  383</span>  std::vector&lt;double&gt; arcLength(n, 0.0);</div>
+<div class="line"><span class="lineno">  384</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; n; ++i) {</div>
+<div class="line"><span class="lineno">  385</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff = densePath[i].pbc(densePath[i].getPositions() -</div>
+<div class="line"><span class="lineno">  386</span>                                       densePath[i - 1].getPositions());</div>
+<div class="line"><span class="lineno">  387</span>    origPos[i] = origPos[i - 1] + diff;</div>
+<div class="line"><span class="lineno">  388</span>    arcLength[i] = arcLength[i - 1] + diff.norm();</div>
+<div class="line"><span class="lineno">  389</span>  }</div>
+<div class="line"><span class="lineno">  390</span>  <span class="keywordtype">double</span> totalLength = arcLength.back();</div>
+<div class="line"><span class="lineno">  391</span> </div>
+<div class="line"><span class="lineno">  392</span>  <span class="comment">// Calculate tangents for cubic interpolation</span></div>
+<div class="line"><span class="lineno">  393</span>  std::vector&lt;AtomMatrix&gt; tangents(n);</div>
+<div class="line"><span class="lineno">  394</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; n; ++i) {</div>
+<div class="line"><span class="lineno">  395</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> T;</div>
+<div class="line"><span class="lineno">  396</span>    <span class="keywordflow">if</span> (i == 0) {</div>
+<div class="line"><span class="lineno">  397</span>      T = densePath[i].pbc(densePath[i + 1].getPositions() -</div>
+<div class="line"><span class="lineno">  398</span>                           densePath[i].getPositions());</div>
+<div class="line"><span class="lineno">  399</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (i == n - 1) {</div>
+<div class="line"><span class="lineno">  400</span>      T = densePath[i].pbc(densePath[i].getPositions() -</div>
+<div class="line"><span class="lineno">  401</span>                           densePath[i - 1].getPositions());</div>
+<div class="line"><span class="lineno">  402</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  403</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dNext = densePath[i].pbc(densePath[i + 1].getPositions() -</div>
+<div class="line"><span class="lineno">  404</span>                                          densePath[i].getPositions());</div>
+<div class="line"><span class="lineno">  405</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dPrev = densePath[i].pbc(densePath[i].getPositions() -</div>
+<div class="line"><span class="lineno">  406</span>                                          densePath[i - 1].getPositions());</div>
+<div class="line"><span class="lineno">  407</span>      T = 0.5 * (dNext + dPrev);</div>
+<div class="line"><span class="lineno">  408</span>    }</div>
+<div class="line"><span class="lineno">  409</span>    <span class="comment">// Scale tangent by local segment length for proper spline parameterization</span></div>
+<div class="line"><span class="lineno">  410</span>    <span class="keywordflow">if</span> (i &gt; 0 &amp;&amp; i &lt; n - 1) {</div>
+<div class="line"><span class="lineno">  411</span>      <span class="keywordtype">double</span> localScale = (arcLength[i + 1] - arcLength[i - 1]) / 2.0;</div>
+<div class="line"><span class="lineno">  412</span>      T = T.normalized() * localScale;</div>
+<div class="line"><span class="lineno">  413</span>    }</div>
+<div class="line"><span class="lineno">  414</span>    tangents[i] = T;</div>
+<div class="line"><span class="lineno">  415</span>  }</div>
+<div class="line"><span class="lineno">  416</span> </div>
+<div class="line"><span class="lineno">  417</span>  std::vector&lt;Matter&gt; resampled;</div>
+<div class="line"><span class="lineno">  418</span>  resampled.reserve(targetCount + 2);</div>
+<div class="line"><span class="lineno">  419</span>  resampled.push_back(densePath.front());</div>
 <div class="line"><span class="lineno">  420</span> </div>
-<div class="line"><span class="lineno">  421</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt;= targetCount; ++i) {</div>
-<div class="line"><span class="lineno">  422</span>    <span class="keywordtype">double</span> targetArc = i * segmentLength;</div>
+<div class="line"><span class="lineno">  421</span>  <span class="comment">// Place new images at equal arc-length intervals</span></div>
+<div class="line"><span class="lineno">  422</span>  <span class="keywordtype">double</span> segmentLength = totalLength / (targetCount + 1);</div>
 <div class="line"><span class="lineno">  423</span> </div>
-<div class="line"><span class="lineno">  424</span>    <span class="comment">// Find the segment containing this arc length</span></div>
-<div class="line"><span class="lineno">  425</span>    <span class="keywordtype">size_t</span> lowIdx = 0;</div>
-<div class="line"><span class="lineno">  426</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 1; j &lt; n; ++j) {</div>
-<div class="line"><span class="lineno">  427</span>      <span class="keywordflow">if</span> (arcLength[j] &gt;= targetArc) {</div>
-<div class="line"><span class="lineno">  428</span>        lowIdx = j - 1;</div>
-<div class="line"><span class="lineno">  429</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  430</span>      }</div>
-<div class="line"><span class="lineno">  431</span>    }</div>
-<div class="line"><span class="lineno">  432</span>    <span class="keywordtype">size_t</span> highIdx = lowIdx + 1;</div>
-<div class="line"><span class="lineno">  433</span> </div>
-<div class="line"><span class="lineno">  434</span>    <span class="comment">// Interpolation parameter within this segment</span></div>
-<div class="line"><span class="lineno">  435</span>    <span class="keywordtype">double</span> segmentArc = arcLength[highIdx] - arcLength[lowIdx];</div>
-<div class="line"><span class="lineno">  436</span>    <span class="keywordtype">double</span> f = (segmentArc &gt; 1e-10)</div>
-<div class="line"><span class="lineno">  437</span>                   ? (targetArc - arcLength[lowIdx]) / segmentArc</div>
-<div class="line"><span class="lineno">  438</span>                   : 0.0;</div>
-<div class="line"><span class="lineno">  439</span> </div>
-<div class="line"><span class="lineno">  440</span>    Matter newImg(densePath[0]);</div>
-<div class="line"><span class="lineno">  441</span>    newImg.setPositions(<a class="code hl_function" href="#a056c7b9e05eb6de75f8b18a3d257c2e1">cubicInterpolate</a>(</div>
-<div class="line"><span class="lineno">  442</span>        densePath[lowIdx].getPositions(), tangents[lowIdx],</div>
-<div class="line"><span class="lineno">  443</span>        densePath[highIdx].getPositions(), tangents[highIdx], f));</div>
-<div class="line"><span class="lineno">  444</span>    resampled.push_back(newImg);</div>
-<div class="line"><span class="lineno">  445</span>  }</div>
-<div class="line"><span class="lineno">  446</span> </div>
-<div class="line"><span class="lineno">  447</span>  resampled.push_back(densePath.back());</div>
-<div class="line"><span class="lineno">  448</span>  <span class="keywordflow">return</span> resampled;</div>
-<div class="line"><span class="lineno">  449</span>}</div>
+<div class="line"><span class="lineno">  424</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt;= targetCount; ++i) {</div>
+<div class="line"><span class="lineno">  425</span>    <span class="keywordtype">double</span> targetArc = i * segmentLength;</div>
+<div class="line"><span class="lineno">  426</span> </div>
+<div class="line"><span class="lineno">  427</span>    <span class="comment">// Find the segment containing this arc length</span></div>
+<div class="line"><span class="lineno">  428</span>    <span class="keywordtype">size_t</span> lowIdx = 0;</div>
+<div class="line"><span class="lineno">  429</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 1; j &lt; n; ++j) {</div>
+<div class="line"><span class="lineno">  430</span>      <span class="keywordflow">if</span> (arcLength[j] &gt;= targetArc) {</div>
+<div class="line"><span class="lineno">  431</span>        lowIdx = j - 1;</div>
+<div class="line"><span class="lineno">  432</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  433</span>      }</div>
+<div class="line"><span class="lineno">  434</span>    }</div>
+<div class="line"><span class="lineno">  435</span>    <span class="keywordtype">size_t</span> highIdx = lowIdx + 1;</div>
+<div class="line"><span class="lineno">  436</span> </div>
+<div class="line"><span class="lineno">  437</span>    <span class="comment">// Interpolation parameter within this segment</span></div>
+<div class="line"><span class="lineno">  438</span>    <span class="keywordtype">double</span> segmentArc = arcLength[highIdx] - arcLength[lowIdx];</div>
+<div class="line"><span class="lineno">  439</span>    <span class="keywordtype">double</span> f = (segmentArc &gt; 1e-10)</div>
+<div class="line"><span class="lineno">  440</span>                   ? (targetArc - arcLength[lowIdx]) / segmentArc</div>
+<div class="line"><span class="lineno">  441</span>                   : 0.0;</div>
+<div class="line"><span class="lineno">  442</span> </div>
+<div class="line"><span class="lineno">  443</span>    Matter newImg(densePath[0]);</div>
+<div class="line"><span class="lineno">  444</span>    newImg.setPositions(<a class="code hl_function" href="#a056c7b9e05eb6de75f8b18a3d257c2e1">cubicInterpolate</a>(</div>
+<div class="line"><span class="lineno">  445</span>        origPos[lowIdx], tangents[lowIdx], origPos[highIdx],</div>
+<div class="line"><span class="lineno">  446</span>        tangents[highIdx], f));</div>
+<div class="line"><span class="lineno">  447</span>    resampled.push_back(newImg);</div>
+<div class="line"><span class="lineno">  448</span>  }</div>
+<div class="line"><span class="lineno">  449</span> </div>
+<div class="line"><span class="lineno">  450</span>  resampled.push_back(densePath.back());</div>
+<div class="line"><span class="lineno">  451</span>  <span class="keywordflow">return</span> resampled;</div>
+<div class="line"><span class="lineno">  452</span>}</div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_1_1neb__paths_html_a056c7b9e05eb6de75f8b18a3d257c2e1"><div class="ttname"><a href="#a056c7b9e05eb6de75f8b18a3d257c2e1">eonc::helpers::neb_paths::cubicInterpolate</a></div><div class="ttdeci">AtomMatrix cubicInterpolate(const AtomMatrix &amp;P0, const AtomMatrix &amp;T0, const AtomMatrix &amp;P1, const AtomMatrix &amp;T1, double f)</div><div class="ttdoc">Interpolates positions using a cubic Hermite spline.</div><div class="ttdef"><b>Definition</b> <a href="NEBInitialPaths_8cpp_source.html#l00358">NEBInitialPaths.cpp:358</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -987,71 +990,70 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00451">451</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  451</span>                                                              {</div>
-<div class="line"><span class="lineno">  452</span>  <span class="keywordtype">size_t</span> n = path.size();</div>
-<div class="line"><span class="lineno">  453</span>  <span class="keywordflow">if</span> (n &lt; 3)</div>
-<div class="line"><span class="lineno">  454</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  455</span> </div>
-<div class="line"><span class="lineno">  456</span>  <span class="comment">// Calculate cumulative arc length</span></div>
-<div class="line"><span class="lineno">  457</span>  std::vector&lt;double&gt; arcLength(n, 0.0);</div>
-<div class="line"><span class="lineno">  458</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; n; ++i) {</div>
-<div class="line"><span class="lineno">  459</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff =</div>
-<div class="line"><span class="lineno">  460</span>        path[i]-&gt;pbc(path[i]-&gt;getPositions() - path[i - 1]-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  461</span>    arcLength[i] = arcLength[i - 1] + diff.norm();</div>
-<div class="line"><span class="lineno">  462</span>  }</div>
-<div class="line"><span class="lineno">  463</span>  <span class="keywordtype">double</span> totalLength = arcLength.back();</div>
-<div class="line"><span class="lineno">  464</span>  <span class="keywordflow">if</span> (totalLength &lt; 1e-12)</div>
-<div class="line"><span class="lineno">  465</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  466</span> </div>
-<div class="line"><span class="lineno">  467</span>  <span class="comment">// Tangents for cubic interpolation</span></div>
-<div class="line"><span class="lineno">  468</span>  std::vector&lt;AtomMatrix&gt; tangents(n);</div>
-<div class="line"><span class="lineno">  469</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; n; ++i) {</div>
-<div class="line"><span class="lineno">  470</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> T;</div>
-<div class="line"><span class="lineno">  471</span>    <span class="keywordflow">if</span> (i == 0) {</div>
-<div class="line"><span class="lineno">  472</span>      T = path[i]-&gt;pbc(path[i + 1]-&gt;getPositions() - path[i]-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  473</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (i == n - 1) {</div>
-<div class="line"><span class="lineno">  474</span>      T = path[i]-&gt;pbc(path[i]-&gt;getPositions() - path[i - 1]-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  475</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  476</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dN =</div>
-<div class="line"><span class="lineno">  477</span>          path[i]-&gt;pbc(path[i + 1]-&gt;getPositions() - path[i]-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  478</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dP =</div>
-<div class="line"><span class="lineno">  479</span>          path[i]-&gt;pbc(path[i]-&gt;getPositions() - path[i - 1]-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  480</span>      T = 0.5 * (dN + dP);</div>
-<div class="line"><span class="lineno">  481</span>    }</div>
-<div class="line"><span class="lineno">  482</span>    <span class="keywordflow">if</span> (i &gt; 0 &amp;&amp; i &lt; n - 1) {</div>
-<div class="line"><span class="lineno">  483</span>      <span class="keywordtype">double</span> localScale = (arcLength[i + 1] - arcLength[i - 1]) / 2.0;</div>
-<div class="line"><span class="lineno">  484</span>      T = T.normalized() * localScale;</div>
-<div class="line"><span class="lineno">  485</span>    }</div>
-<div class="line"><span class="lineno">  486</span>    tangents[i] = T;</div>
-<div class="line"><span class="lineno">  487</span>  }</div>
-<div class="line"><span class="lineno">  488</span> </div>
-<div class="line"><span class="lineno">  489</span>  <span class="comment">// Store original positions for interpolation source</span></div>
-<div class="line"><span class="lineno">  490</span>  std::vector&lt;AtomMatrix&gt; origPos(n);</div>
-<div class="line"><span class="lineno">  491</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; n; ++i)</div>
-<div class="line"><span class="lineno">  492</span>    origPos[i] = path[i]-&gt;getPositions();</div>
-<div class="line"><span class="lineno">  493</span> </div>
-<div class="line"><span class="lineno">  494</span>  <span class="comment">// Redistribute interior images at equal arc-length intervals (in-place)</span></div>
-<div class="line"><span class="lineno">  495</span>  <span class="keywordtype">size_t</span> nInterior = n - 2;</div>
-<div class="line"><span class="lineno">  496</span>  <span class="keywordtype">double</span> segLen = totalLength / (nInterior + 1);</div>
-<div class="line"><span class="lineno">  497</span> </div>
-<div class="line"><span class="lineno">  498</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt;= nInterior; ++i) {</div>
-<div class="line"><span class="lineno">  499</span>    <span class="keywordtype">double</span> targetArc = i * segLen;</div>
-<div class="line"><span class="lineno">  500</span>    <span class="keywordtype">size_t</span> lo = 0;</div>
-<div class="line"><span class="lineno">  501</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 1; j &lt; n; ++j) {</div>
-<div class="line"><span class="lineno">  502</span>      <span class="keywordflow">if</span> (arcLength[j] &gt;= targetArc) {</div>
-<div class="line"><span class="lineno">  503</span>        lo = j - 1;</div>
-<div class="line"><span class="lineno">  504</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  505</span>      }</div>
-<div class="line"><span class="lineno">  506</span>    }</div>
-<div class="line"><span class="lineno">  507</span>    <span class="keywordtype">size_t</span> hi = lo + 1;</div>
-<div class="line"><span class="lineno">  508</span>    <span class="keywordtype">double</span> sArc = arcLength[hi] - arcLength[lo];</div>
-<div class="line"><span class="lineno">  509</span>    <span class="keywordtype">double</span> f = (sArc &gt; 1e-10) ? (targetArc - arcLength[lo]) / sArc : 0.0;</div>
-<div class="line"><span class="lineno">  510</span> </div>
-<div class="line"><span class="lineno">  511</span>    path[i]-&gt;setPositions(<a class="code hl_function" href="#a056c7b9e05eb6de75f8b18a3d257c2e1">cubicInterpolate</a>(origPos[lo], tangents[lo],</div>
-<div class="line"><span class="lineno">  512</span>                                           origPos[hi], tangents[hi], f));</div>
-<div class="line"><span class="lineno">  513</span>  }</div>
-<div class="line"><span class="lineno">  514</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00454">454</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  454</span>                                                              {</div>
+<div class="line"><span class="lineno">  455</span>  <span class="keywordtype">size_t</span> n = path.size();</div>
+<div class="line"><span class="lineno">  456</span>  <span class="keywordflow">if</span> (n &lt; 3)</div>
+<div class="line"><span class="lineno">  457</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  458</span> </div>
+<div class="line"><span class="lineno">  459</span>  <span class="comment">// Interpolation and arc length use the same continuous coordinate chart.</span></div>
+<div class="line"><span class="lineno">  460</span>  <span class="comment">// Wrapped endpoints of an interior segment must not span the whole cell.</span></div>
+<div class="line"><span class="lineno">  461</span>  std::vector&lt;AtomMatrix&gt; origPos(n);</div>
+<div class="line"><span class="lineno">  462</span>  origPos[0] = path[0]-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  463</span>  std::vector&lt;double&gt; arcLength(n, 0.0);</div>
+<div class="line"><span class="lineno">  464</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; n; ++i) {</div>
+<div class="line"><span class="lineno">  465</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff =</div>
+<div class="line"><span class="lineno">  466</span>        path[i]-&gt;pbc(path[i]-&gt;getPositions() - path[i - 1]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  467</span>    origPos[i] = origPos[i - 1] + diff;</div>
+<div class="line"><span class="lineno">  468</span>    arcLength[i] = arcLength[i - 1] + diff.norm();</div>
+<div class="line"><span class="lineno">  469</span>  }</div>
+<div class="line"><span class="lineno">  470</span>  <span class="keywordtype">double</span> totalLength = arcLength.back();</div>
+<div class="line"><span class="lineno">  471</span>  <span class="keywordflow">if</span> (totalLength &lt; 1e-12)</div>
+<div class="line"><span class="lineno">  472</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  473</span> </div>
+<div class="line"><span class="lineno">  474</span>  <span class="comment">// Tangents for cubic interpolation</span></div>
+<div class="line"><span class="lineno">  475</span>  std::vector&lt;AtomMatrix&gt; tangents(n);</div>
+<div class="line"><span class="lineno">  476</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; n; ++i) {</div>
+<div class="line"><span class="lineno">  477</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> T;</div>
+<div class="line"><span class="lineno">  478</span>    <span class="keywordflow">if</span> (i == 0) {</div>
+<div class="line"><span class="lineno">  479</span>      T = path[i]-&gt;pbc(path[i + 1]-&gt;getPositions() - path[i]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  480</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (i == n - 1) {</div>
+<div class="line"><span class="lineno">  481</span>      T = path[i]-&gt;pbc(path[i]-&gt;getPositions() - path[i - 1]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  482</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  483</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dN =</div>
+<div class="line"><span class="lineno">  484</span>          path[i]-&gt;pbc(path[i + 1]-&gt;getPositions() - path[i]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  485</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dP =</div>
+<div class="line"><span class="lineno">  486</span>          path[i]-&gt;pbc(path[i]-&gt;getPositions() - path[i - 1]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  487</span>      T = 0.5 * (dN + dP);</div>
+<div class="line"><span class="lineno">  488</span>    }</div>
+<div class="line"><span class="lineno">  489</span>    <span class="keywordflow">if</span> (i &gt; 0 &amp;&amp; i &lt; n - 1) {</div>
+<div class="line"><span class="lineno">  490</span>      <span class="keywordtype">double</span> localScale = (arcLength[i + 1] - arcLength[i - 1]) / 2.0;</div>
+<div class="line"><span class="lineno">  491</span>      T = T.normalized() * localScale;</div>
+<div class="line"><span class="lineno">  492</span>    }</div>
+<div class="line"><span class="lineno">  493</span>    tangents[i] = T;</div>
+<div class="line"><span class="lineno">  494</span>  }</div>
+<div class="line"><span class="lineno">  495</span> </div>
+<div class="line"><span class="lineno">  496</span>  <span class="comment">// Redistribute interior images at equal arc-length intervals (in-place)</span></div>
+<div class="line"><span class="lineno">  497</span>  <span class="keywordtype">size_t</span> nInterior = n - 2;</div>
+<div class="line"><span class="lineno">  498</span>  <span class="keywordtype">double</span> segLen = totalLength / (nInterior + 1);</div>
+<div class="line"><span class="lineno">  499</span> </div>
+<div class="line"><span class="lineno">  500</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt;= nInterior; ++i) {</div>
+<div class="line"><span class="lineno">  501</span>    <span class="keywordtype">double</span> targetArc = i * segLen;</div>
+<div class="line"><span class="lineno">  502</span>    <span class="keywordtype">size_t</span> lo = 0;</div>
+<div class="line"><span class="lineno">  503</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 1; j &lt; n; ++j) {</div>
+<div class="line"><span class="lineno">  504</span>      <span class="keywordflow">if</span> (arcLength[j] &gt;= targetArc) {</div>
+<div class="line"><span class="lineno">  505</span>        lo = j - 1;</div>
+<div class="line"><span class="lineno">  506</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  507</span>      }</div>
+<div class="line"><span class="lineno">  508</span>    }</div>
+<div class="line"><span class="lineno">  509</span>    <span class="keywordtype">size_t</span> hi = lo + 1;</div>
+<div class="line"><span class="lineno">  510</span>    <span class="keywordtype">double</span> sArc = arcLength[hi] - arcLength[lo];</div>
+<div class="line"><span class="lineno">  511</span>    <span class="keywordtype">double</span> f = (sArc &gt; 1e-10) ? (targetArc - arcLength[lo]) / sArc : 0.0;</div>
+<div class="line"><span class="lineno">  512</span> </div>
+<div class="line"><span class="lineno">  513</span>    path[i]-&gt;setPositions(<a class="code hl_function" href="#a056c7b9e05eb6de75f8b18a3d257c2e1">cubicInterpolate</a>(origPos[lo], tangents[lo],</div>
+<div class="line"><span class="lineno">  514</span>                                           origPos[hi], tangents[hi], f));</div>
+<div class="line"><span class="lineno">  515</span>  }</div>
+<div class="line"><span class="lineno">  516</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

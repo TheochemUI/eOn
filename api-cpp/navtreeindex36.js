@@ -1,5 +1,8 @@
 var NAVTREEINDEX36 =
 {
+"structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#af0946bfcda4a6ed36ef6b2b61f02a5de":[3,0,1,12,1,0,6],
+"structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#af0946bfcda4a6ed36ef6b2b61f02a5de":[5,0,0,6,1,0,6],
+"structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#afcdb0f295ab41b3528cb07373d89714b":[3,0,1,12,1,0,2],
 "structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#afcdb0f295ab41b3528cb07373d89714b":[5,0,0,6,1,0,2],
 "structeonc_1_1pathintegral_1_1Sample.html":[3,0,1,12,2],
 "structeonc_1_1pathintegral_1_1Sample.html":[5,0,0,6,2],
@@ -246,8 +249,5 @@ var NAVTREEINDEX36 =
 "structeonc_1_1rgpot__options__t.html#aed61bb40096957d35edd517aac135e51":[3,0,1,156,22],
 "structeonc_1_1rgpot__options__t.html#aed61bb40096957d35edd517aac135e51":[5,0,0,143,22],
 "structeonc_1_1rgpot__options__t.html#af14bfe61aef971ddc093384dd0fb5e64":[3,0,1,156,15],
-"structeonc_1_1rgpot__options__t.html#af14bfe61aef971ddc093384dd0fb5e64":[5,0,0,143,15],
-"structeonc_1_1saddle__search__options__t.html":[3,0,1,160],
-"structeonc_1_1saddle__search__options__t.html":[5,0,0,147],
-"structeonc_1_1saddle__search__options__t.html#a2706dea03b01949c7dde539cd812baeb":[3,0,1,160,15]
+"structeonc_1_1rgpot__options__t.html#af14bfe61aef971ddc093384dd0fb5e64":[5,0,0,143,15]
 };

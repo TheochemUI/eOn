@@ -27,6 +27,7 @@ var classRgpotPot =
     [ "driver_", "classRgpotPot.html#aa510f91f12397e12b96ccde20b0a3e9a", null ],
     [ "dropped_", "classRgpotPot.html#a8bcb7ba8f038e0c27f7464f7790121de", null ],
     [ "impl_", "classRgpotPot.html#a5dc28ce178c64749350e33931c191d34", null ],
+    [ "isolatedMolecule_", "classRgpotPot.html#a6d1660c1dbc93848d6059cc3403a5917", null ],
     [ "schedule_", "classRgpotPot.html#a4525f8f90b21598144f3e753f79fbe39", null ],
     [ "stopped_", "classRgpotPot.html#a79abcbb0876456ed0944f6b6446ba07f", null ],
     [ "systemsDone_", "classRgpotPot.html#a9dddb38e484330164f23d57b2d83d861", null ],

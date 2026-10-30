@@ -1,5 +1,8 @@
 var NAVTREEINDEX20 =
 {
+"classeonc_1_1pathintegral_1_1RingPolymer.html#a62aa9ca01651cc3c9648a2537e597ca9":[3,0,1,12,1,44],
+"classeonc_1_1pathintegral_1_1RingPolymer.html#a62aa9ca01651cc3c9648a2537e597ca9":[5,0,0,6,1,44],
+"classeonc_1_1pathintegral_1_1RingPolymer.html#a64f6ba13db5dd7e837e2419078100724":[3,0,1,12,1,27],
 "classeonc_1_1pathintegral_1_1RingPolymer.html#a64f6ba13db5dd7e837e2419078100724":[5,0,0,6,1,27],
 "classeonc_1_1pathintegral_1_1RingPolymer.html#a66b1b0a6fc4c1b5d830d20d5a290e074":[3,0,1,12,1,46],
 "classeonc_1_1pathintegral_1_1RingPolymer.html#a66b1b0a6fc4c1b5d830d20d5a290e074":[5,0,0,6,1,46],
@@ -246,8 +249,5 @@ var NAVTREEINDEX20 =
 "classeonc_1_1tunneling_1_1RingPolymerPotential.html#a0f15b5997d79a09744eab7333c044335":[3,0,1,21,17,23],
 "classeonc_1_1tunneling_1_1RingPolymerPotential.html#a0f15b5997d79a09744eab7333c044335":[5,0,0,8,17,23],
 "classeonc_1_1tunneling_1_1RingPolymerPotential.html#a125ad5adec5707339a4cc5c725d31a0b":[3,0,1,21,17,4],
-"classeonc_1_1tunneling_1_1RingPolymerPotential.html#a125ad5adec5707339a4cc5c725d31a0b":[5,0,0,8,17,4],
-"classeonc_1_1tunneling_1_1RingPolymerPotential.html#a1a7a62794fbf3bb7a22decf4de9679d6":[3,0,1,21,17,8],
-"classeonc_1_1tunneling_1_1RingPolymerPotential.html#a1a7a62794fbf3bb7a22decf4de9679d6":[5,0,0,8,17,8],
-"classeonc_1_1tunneling_1_1RingPolymerPotential.html#a1d72a16d96169a2b2848798dec51a11a":[3,0,1,21,17,19]
+"classeonc_1_1tunneling_1_1RingPolymerPotential.html#a125ad5adec5707339a4cc5c725d31a0b":[5,0,0,8,17,4]
 };

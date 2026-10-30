@@ -1,5 +1,8 @@
 var NAVTREEINDEX37 =
 {
+"structeonc_1_1saddle__search__options__t.html":[3,0,1,160],
+"structeonc_1_1saddle__search__options__t.html":[5,0,0,147],
+"structeonc_1_1saddle__search__options__t.html#a2706dea03b01949c7dde539cd812baeb":[3,0,1,160,15],
 "structeonc_1_1saddle__search__options__t.html#a2706dea03b01949c7dde539cd812baeb":[5,0,0,147,15],
 "structeonc_1_1saddle__search__options__t.html#a34a8f1aa9bcd823838c8a489f75545c4":[3,0,1,160,12],
 "structeonc_1_1saddle__search__options__t.html#a34a8f1aa9bcd823838c8a489f75545c4":[5,0,0,147,12],
@@ -246,8 +249,5 @@ var NAVTREEINDEX37 =
 "structeonc_1_1tunneling_1_1PhysicalQuadraticBath.html#a2eec39ac724724d75ce79c65f63ab3ba":[3,0,1,21,10,11],
 "structeonc_1_1tunneling_1_1PhysicalQuadraticBath.html#a2eec39ac724724d75ce79c65f63ab3ba":[5,0,0,8,10,11],
 "structeonc_1_1tunneling_1_1PhysicalQuadraticBath.html#a6093516d327224a69da25d967afa7dff":[3,0,1,21,10,5],
-"structeonc_1_1tunneling_1_1PhysicalQuadraticBath.html#a6093516d327224a69da25d967afa7dff":[5,0,0,8,10,5],
-"structeonc_1_1tunneling_1_1PhysicalQuadraticBath.html#a997bd30ac4e0109672cbf4baa2c3b854":[3,0,1,21,10,9],
-"structeonc_1_1tunneling_1_1PhysicalQuadraticBath.html#a997bd30ac4e0109672cbf4baa2c3b854":[5,0,0,8,10,9],
-"structeonc_1_1tunneling_1_1PhysicalQuadraticBath.html#a9c5bb1a8430e8623c95bb11fd18c1519":[3,0,1,21,10,12]
+"structeonc_1_1tunneling_1_1PhysicalQuadraticBath.html#a6093516d327224a69da25d967afa7dff":[5,0,0,8,10,5]
 };

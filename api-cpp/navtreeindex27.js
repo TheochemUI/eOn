@@ -1,5 +1,8 @@
 var NAVTREEINDEX27 =
 {
+"structeonc_1_1CalculatorGroupUse.html#ab37cc52489776b2dfd72682da8a5f338":[3,0,1,37,3],
+"structeonc_1_1CalculatorGroupUse.html#ab37cc52489776b2dfd72682da8a5f338":[5,0,0,24,3],
+"structeonc_1_1CalculatorGroupUse.html#ad658d8a5e9fd850adce0b08487f7a6cd":[3,0,1,37,13],
 "structeonc_1_1CalculatorGroupUse.html#ad658d8a5e9fd850adce0b08487f7a6cd":[5,0,0,24,13],
 "structeonc_1_1CalculatorGroupUse.html#af77aa6d4db77a61f1e4bd3d588b28fd8":[3,0,1,37,5],
 "structeonc_1_1CalculatorGroupUse.html#af77aa6d4db77a61f1e4bd3d588b28fd8":[5,0,0,24,5],
@@ -246,8 +249,5 @@ var NAVTREEINDEX27 =
 "structeonc_1_1JobResultEnvelope.html#a3f0aeb94db4e3fbb6963d452239e91f0":[3,0,1,107,11],
 "structeonc_1_1JobResultEnvelope.html#a3f0aeb94db4e3fbb6963d452239e91f0":[5,0,0,94,11],
 "structeonc_1_1JobResultEnvelope.html#a444a1d89805b553696e32638018c5afd":[3,0,1,107,28],
-"structeonc_1_1JobResultEnvelope.html#a444a1d89805b553696e32638018c5afd":[5,0,0,94,28],
-"structeonc_1_1JobResultEnvelope.html#a46aa8a42b30f17697b4b723a349a9f5c":[3,0,1,107,24],
-"structeonc_1_1JobResultEnvelope.html#a46aa8a42b30f17697b4b723a349a9f5c":[5,0,0,94,24],
-"structeonc_1_1JobResultEnvelope.html#a49b89d6be57cd79cf5bf95e3bba3d009":[3,0,1,107,4]
+"structeonc_1_1JobResultEnvelope.html#a444a1d89805b553696e32638018c5afd":[5,0,0,94,28]
 };
