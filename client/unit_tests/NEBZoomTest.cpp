@@ -110,6 +110,10 @@ TEST_CASE("Path reparameterization interpolates across a periodic cell face",
   }
   const AtomMatrix first = path.front()->getPositions();
   const AtomMatrix last = path.back()->getPositions();
+  std::vector<eonc::Matter> dense;
+  for (const auto &image : path) {
+    dense.push_back(*image);
+  }
   eonc::helpers::neb_paths::resamplePathInPlace(path);
   REQUIRE(path.front()->getPositions().isApprox(first, 0.0));
   REQUIRE(path.back()->getPositions().isApprox(last, 0.0));
@@ -122,6 +126,19 @@ TEST_CASE("Path reparameterization interpolates across a periodic cell face",
     REQUIRE(step(0, 0) > 0.0);
     REQUIRE(step.norm() < 2.0);
     REQUIRE(path[i]->getPositions().allFinite());
+  }
+  const auto resized = eonc::helpers::neb_paths::resamplePath(dense, 5);
+  REQUIRE(resized.size() == 7);
+  REQUIRE(resized.front().getPositions().isApprox(first, 0.0));
+  REQUIRE(resized.back().getPositions().isApprox(last, 0.0));
+  REQUIRE(resized[3].pbc(resized[3].getPositions())(0, 0) ==
+          Catch::Approx(0.0).margin(0.02));
+  for (std::size_t i = 1; i < resized.size(); ++i) {
+    const AtomMatrix step =
+        resized[i].pbc(resized[i].getPositions() - resized[i - 1].getPositions());
+    REQUIRE(step(0, 0) > 0.0);
+    REQUIRE(step.norm() < 2.0);
+    REQUIRE(resized[i].getPositions().allFinite());
   }
 }
 

@@ -377,11 +377,14 @@ std::vector<Matter> resamplePath(const std::vector<Matter> &densePath,
 
   size_t n = densePath.size();
 
-  // Calculate cumulative arc length along the path
+  // Arc length and interpolation share a continuous coordinate chart.
+  std::vector<AtomMatrix> origPos(n);
+  origPos[0] = densePath[0].getPositions();
   std::vector<double> arcLength(n, 0.0);
   for (size_t i = 1; i < n; ++i) {
     AtomMatrix diff = densePath[i].pbc(densePath[i].getPositions() -
                                        densePath[i - 1].getPositions());
+    origPos[i] = origPos[i - 1] + diff;
     arcLength[i] = arcLength[i - 1] + diff.norm();
   }
   double totalLength = arcLength.back();
@@ -439,8 +442,8 @@ std::vector<Matter> resamplePath(const std::vector<Matter> &densePath,
 
     Matter newImg(densePath[0]);
     newImg.setPositions(cubicInterpolate(
-        densePath[lowIdx].getPositions(), tangents[lowIdx],
-        densePath[highIdx].getPositions(), tangents[highIdx], f));
+        origPos[lowIdx], tangents[lowIdx], origPos[highIdx],
+        tangents[highIdx], f));
     resampled.push_back(newImg);
   }
 
