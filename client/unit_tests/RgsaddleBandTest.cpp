@@ -500,6 +500,22 @@ TEST_CASE("the exp metric refuses a non-uniform spring and one atom",
   REQUIRE_THROWS_WITH(eonc::XtsciBand(*neb, single.params),
                       ContainsSubstring("two atoms"));
 }
+
+TEST_CASE("the exp metric refuses fixed atoms",
+          "[neb][rgsaddle][band_precon]") {
+  using Catch::Matchers::ContainsSubstring;
+  LJBand fixture(OptType::LBFGS, "exp");
+  auto neb = fixture.neb();
+  for (auto &image : neb->path) {
+    image->setFixed(1, 1);
+  }
+  REQUIRE_THROWS_WITH(eonc::XtsciBand(*neb, fixture.params),
+                      ContainsSubstring("refused with fixed atoms"));
+  auto &band = ParametersLoadAccess::neb_options(fixture.params).band;
+  band.precon = "none";
+  band.stepper = "ode12r";
+  REQUIRE_NOTHROW(eonc::XtsciBand(*neb, fixture.params));
+}
 #endif
 
 TEST_CASE("a one-row band request evaluates off the band",

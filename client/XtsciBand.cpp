@@ -101,6 +101,17 @@ int32_t projectionKind(const neb_options_t &neb) {
   return RGSADDLE_PROJECTION_NEB;
 }
 
+#ifdef WITH_RGSADDLE_BAND_PRECON
+bool bandHasFixedAtoms(const NudgedElasticBand &neb) {
+  for (const auto &image : neb.path) {
+    if (image->numberOfFreeAtoms() < image->numberOfAtoms()) {
+      return true;
+    }
+  }
+  return false;
+}
+#endif
+
 // band_precon and band_stepper, refused here where rgsaddle 0.3.0 would
 // refuse the metric. A library older than ABI minor 22 reads ODE12r as
 // FIRE, so the loaded library is checked as well as the header.
@@ -148,6 +159,12 @@ void checkBandOptions(const NudgedElasticBand &neb, const neb_options_t &opt,
     throw std::invalid_argument(
         "band_precon = exp needs a uniform spring; energy_weighted and "
         "onsager_machlup are refused");
+  }
+  if (bandHasFixedAtoms(neb)) {
+    throw std::invalid_argument(
+        "band_precon = exp is refused with fixed atoms: the rgsaddle band "
+        "metric has no fixed-atom mask, so the step would move fixed atoms "
+        "that eOn pins back. Free every atom, or keep band_precon = none");
   }
 #endif
 }
