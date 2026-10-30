@@ -94,7 +94,8 @@ TEST_CASE("CI activates on a relaxed band with tangential saddle force",
 
 class MolecularSaddlePotential final : public eonc::Potential {
 public:
-  MolecularSaddlePotential() : Potential(PotType::UNKNOWN) {}
+  MolecularSaddlePotential()
+      : Potential(PotType::UNKNOWN) {}
   void force(long nAtoms, const double *positions, const int *, double *forces,
              double *energy, double *variance, const double *) override {
     *energy = 0.0;

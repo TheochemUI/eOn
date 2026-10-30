@@ -11,9 +11,9 @@
 */
 
 #include "eon/NEBZoom.h"
-#include "eon/NEBInitialPaths.hpp"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/NEBInitialPaths.hpp"
 #include "eon/Parameters.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
@@ -134,8 +134,8 @@ TEST_CASE("Path reparameterization interpolates across a periodic cell face",
   REQUIRE(resized[3].pbc(resized[3].getPositions())(0, 0) ==
           Catch::Approx(0.0).margin(0.02));
   for (std::size_t i = 1; i < resized.size(); ++i) {
-    const AtomMatrix step =
-        resized[i].pbc(resized[i].getPositions() - resized[i - 1].getPositions());
+    const AtomMatrix step = resized[i].pbc(resized[i].getPositions() -
+                                           resized[i - 1].getPositions());
     REQUIRE(step(0, 0) > 0.0);
     REQUIRE(step.norm() < 2.0);
     REQUIRE(resized[i].getPositions().allFinite());

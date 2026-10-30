@@ -907,8 +907,7 @@ TEST_CASE("OCI refinement stops before translating positive curvature",
   mode(0, 0) = 1.0;
   eonc::MinModeSaddleSearch search(matter, mode, 0.0, parameters, pot);
   const long before = static_cast<long>(pot->forceCallCounter.load());
-  REQUIRE(search.run(10) ==
-          eonc::MinModeSaddleSearch::STATUS_DIMER_LOST_MODE);
+  REQUIRE(search.run(10) == eonc::MinModeSaddleSearch::STATUS_DIMER_LOST_MODE);
   REQUIRE(search.getEigenvalue() == Catch::Approx(2.0).margin(1e-10));
   REQUIRE(matter->getPositions().isApprox(start, 0.0));
   // Only the centre and the forward curvature image are evaluated.

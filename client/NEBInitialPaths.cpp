@@ -441,9 +441,9 @@ std::vector<Matter> resamplePath(const std::vector<Matter> &densePath,
                    : 0.0;
 
     Matter newImg(densePath[0]);
-    newImg.setPositions(cubicInterpolate(
-        origPos[lowIdx], tangents[lowIdx], origPos[highIdx],
-        tangents[highIdx], f));
+    newImg.setPositions(cubicInterpolate(origPos[lowIdx], tangents[lowIdx],
+                                         origPos[highIdx], tangents[highIdx],
+                                         f));
     resampled.push_back(newImg);
   }
 
