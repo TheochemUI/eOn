@@ -183,11 +183,11 @@ class ConfigClass:
         self.akmc_server_side_process_search = parser.getboolean('AKMC', 'server_side_process_search')
         if self.akmc_server_side_process_search:
             if parser.getfloat('Prefactor', 'default_value') == 0:
-                print("Error: you must provide a default prefactor when using server-side process search mode.")
-                sys.exit()
+                print("Error: you must provide a default prefactor when using server-side process search mode.", file=sys.stderr)
+                sys.exit(1)
             if parser.getint('Communicator', 'jobs_per_bundle') != 1:
-                print("Error: you cannot use a bundle size other than 1 when using server-side process search mode.")
-                sys.exit()
+                print("Error: you cannot use a bundle size other than 1 when using server-side process search mode.", file=sys.stderr)
+                sys.exit(1)
         self.akmc_thermal_window = parser.getfloat('AKMC', 'thermally_accessible_window')
         self.akmc_max_thermal_window = parser.getfloat('AKMC', 'thermally_accessible_buffer')
         self.akmc_max_kmc_steps = parser.getint('AKMC', 'max_kmc_steps')
