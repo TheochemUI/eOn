@@ -13,6 +13,7 @@
 
 #include "Eigen.h"
 #include "Parameters.h"
+#include <string_view>
 
 namespace eonc {
 class NudgedElasticBand; // forward declaration
@@ -51,6 +52,9 @@ public:
   };
 
   MMFResult run(eonc::NudgedElasticBand &neb, double convForce);
+
+  /// Measure free-atom forces with the band's configured convergence metric.
+  static double forceMeasure(const AtomMatrix &freeForces, std::string_view metric);
 
   // Help is the walked image's raw force, not band convergenceForce().
   // After a downhill dimer step maxEnergyImage can hop; the band CI

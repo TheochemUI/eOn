@@ -11,11 +11,13 @@
 */
 #include "eon/NEBOcinebController.h"
 #include "eon/EonLogger.h"
+#include "eon/ForceNorm.h"
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/NudgedElasticBand.h"
 #include "eon/eonExceptions.hpp"
 #include <algorithm>
 #include <cmath>
+#include <stdexcept>
 
 namespace eonc::neb {
 
@@ -37,6 +39,17 @@ OCINEBController::fromParams(const Parameters &params) {
 
 OCINEBController::OCINEBController(const Config &cfg)
     : cfg_{cfg} {}
+
+double OCINEBController::forceMeasure(const AtomMatrix &freeForces,
+                                      std::string_view metric) {
+  if (metric == "norm")
+    return freeForces.norm();
+  if (metric == "max_atom")
+    return maxFreeAtomForceNorm(freeForces.data(), nullptr, freeForces.rows());
+  if (metric == "max_component")
+    return freeForces.size() == 0 ? 0.0 : freeForces.cwiseAbs().maxCoeff();
+  throw std::invalid_argument("OCINEB: unknown convergence metric");
+}
 
 void OCINEBController::initBaseline(double baseline_force) {
   baseline_force_ = baseline_force;
@@ -103,7 +116,9 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
     return {newForce, true, false};
   }
 
-  const double walkedForce = neb.path[walked]->getForcesFreeV().norm();
+  const double walkedForce = forceMeasure(
+      neb.path[walked]->getForcesFree(),
+      neb.params.optimizer_options().convergence_metric);
   const bool mmfHelped = walkHelped(walkedForce, convForce, mmfResult);
 
   if (mmfHelped) {

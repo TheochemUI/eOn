@@ -224,6 +224,25 @@ TEST_CASE("OCINEB walkHelped scores the walked image", "[neb][ocineb]") {
   REQUIRE_FALSE(OCINEBController::walkHelped(2.3855, 2.3855, 0));
 }
 
+TEST_CASE("OCINEB compares force improvement in the configured metric",
+          "[neb][ocineb]") {
+  using eonc::neb::OCINEBController;
+  AtomMatrix forces(2, 3);
+  forces << 0.03, 0.04, 0.0, 0.04, 0.0, 0.0;
+  REQUIRE(OCINEBController::forceMeasure(forces, "max_atom") ==
+          Catch::Approx(0.05));
+  REQUIRE(OCINEBController::forceMeasure(forces, "norm") ==
+          Catch::Approx(std::sqrt(0.0041)));
+  REQUIRE(OCINEBController::forceMeasure(forces, "max_component") ==
+          Catch::Approx(0.04));
+  REQUIRE(OCINEBController::walkHelped(
+      OCINEBController::forceMeasure(forces, "max_atom"), 0.06, 0));
+  REQUIRE_FALSE(OCINEBController::walkHelped(
+      OCINEBController::forceMeasure(forces, "norm"), 0.06, 0));
+  REQUIRE_THROWS_AS(OCINEBController::forceMeasure(forces, "invalid"),
+                    std::invalid_argument);
+}
+
 TEST_CASE("OCINEB positive curvature is not a converged climb",
           "[neb][ocineb]") {
   using eonc::neb::OCINEBController;
