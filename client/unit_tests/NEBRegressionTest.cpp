@@ -364,6 +364,29 @@ TEST_CASE_METHOD(NEBRegressionFixture,
 }
 
 TEST_CASE_METHOD(NEBRegressionFixture,
+                 "NEB refreshes the projection when climbing is switched",
+                 "[neb][regression][climbing_image]") {
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = true;
+  product->setPositions(reactant->getPositions());
+  NudgedElasticBand neb(reactant, product, params, pot);
+  neb.path[2]->con2matter(std::string("product.con"));
+  neb.setCIEnabled(false);
+  neb.updateForces();
+  NEBObjectiveFunction objective(&neb, params);
+  const VectorXd ordinary = objective.getGradient();
+  const auto calls = eonc::PotRegistry::get().total_force_calls();
+  neb.setCIEnabled(true);
+  const VectorXd climbing = objective.getGradient();
+  REQUIRE(neb.climbingImage == 2);
+  REQUIRE_FALSE(climbing.isApprox(ordinary, 1e-10));
+  REQUIRE(eonc::PotRegistry::get().total_force_calls() == calls);
+  neb.setCIEnabled(false);
+  REQUIRE(objective.getGradient().isApprox(ordinary, 1e-12));
+  REQUIRE(neb.climbingImage == 0);
+  REQUIRE(eonc::PotRegistry::get().total_force_calls() == calls);
+}
+
+TEST_CASE_METHOD(NEBRegressionFixture,
                  "Zoom NEB reports the barrier from the original reactant",
                  "[neb][regression][zoom]") {
   // The neb_lj13 pair: reactant -39.965352 eV, and an eonclient process
