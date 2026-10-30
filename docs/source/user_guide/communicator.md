@@ -157,7 +157,8 @@ mpirun -np 42 /path/to/eonclient
 A client whose job fails, through a potential error, a `config.ini` it cannot
 load or a job type it does not know, logs the error into that job's directory
 and hands the directory back without `results.dat`. The server logs
-`returned no results` for it and the rank takes the next job.
+`returned no results` for it and the rank takes the next job. Submitting
+the same job id again replaces that bundle directory.
 
 ### Cluster
 
