@@ -243,6 +243,26 @@ TEST_CASE("OCINEB compares force improvement in the configured metric",
                     std::invalid_argument);
 }
 
+TEST_CASE("OCINEB handoff compares physical forces before the CI reflection",
+          "[neb][ocineb]") {
+  using eonc::neb::OCINEBController;
+  AtomMatrix before = AtomMatrix::Zero(2, 3);
+  before(0, 0) = 0.06;
+  AtomMatrix tangent = AtomMatrix::Zero(2, 3);
+  const double angle = std::acos(-1.0) / 8.0;
+  tangent(0, 0) = std::cos(angle);
+  tangent(1, 0) = std::sin(angle);
+  const AtomMatrix projected =
+      eonc::neb::climbingImageForce(before, tangent, AtomMatrix::Zero(2, 3));
+  REQUIRE(projected.norm() == Catch::Approx(before.norm()));
+  REQUIRE(OCINEBController::forceMeasure(projected, "max_atom") ==
+          Catch::Approx(0.06 / std::sqrt(2.0)));
+  REQUIRE(OCINEBController::walkHelped(
+      0.05, OCINEBController::forceMeasure(before, "max_atom"), 0));
+  REQUIRE_FALSE(OCINEBController::walkHelped(
+      0.05, OCINEBController::forceMeasure(projected, "max_atom"), 0));
+}
+
 TEST_CASE("OCINEB positive curvature is not a converged climb",
           "[neb][ocineb]") {
   using eonc::neb::OCINEBController;
