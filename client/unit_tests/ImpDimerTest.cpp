@@ -893,4 +893,26 @@ TEST_CASE("Lanczos translation recovers a step that crosses max_energy",
   requireRecovered(OptType::SD, true);
 }
 
+TEST_CASE("OCI refinement stops before translating positive curvature",
+          "[ImprovedDimer][ocineb]") {
+  Parameters parameters;
+  prepareMinMode(parameters);
+  ParametersLoadAccess::neb_options(parameters).climbing_image.ocineb.use_mmf =
+      true;
+  const Eigen::Vector3d r0(0.1, 0.2, 0.3);
+  auto pot = std::make_shared<DiagHessianPot>(2.0, 4.0, 8.0);
+  auto matter = oneAtom(pot, parameters, r0);
+  const AtomMatrix start = matter->getPositions();
+  AtomMatrix mode = AtomMatrix::Zero(1, 3);
+  mode(0, 0) = 1.0;
+  eonc::MinModeSaddleSearch search(matter, mode, 0.0, parameters, pot);
+  const long before = static_cast<long>(pot->forceCallCounter.load());
+  REQUIRE(search.run(10) ==
+          eonc::MinModeSaddleSearch::STATUS_DIMER_LOST_MODE);
+  REQUIRE(search.getEigenvalue() == Catch::Approx(2.0).margin(1e-10));
+  REQUIRE(matter->getPositions().isApprox(start, 0.0));
+  // Only the centre and the forward curvature image are evaluated.
+  REQUIRE(static_cast<long>(pot->forceCallCounter.load()) - before == 2);
+}
+
 } /* namespace tests */

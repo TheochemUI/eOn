@@ -185,6 +185,12 @@ public:
 
     eigenvector = eonc::eigenmodeGetEigenvector(*minModeMethod);
     double eigenvalue = eonc::eigenmodeGetEigenvalue(*minModeMethod);
+    // OCI-NEB returns a positive-curvature image to the band before
+    // translating it away from the current path.
+    if (eigenvalue > 0.0 &&
+        params.neb_options().climbing_image.ocineb.use_mmf) {
+      throw eonc::DimerModeLostException();
+    }
 
     AtomMatrix proj = matDot(force, eigenvector) *
                       eonc::safemath::safe_normalized(eigenvector);
