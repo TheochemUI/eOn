@@ -1,0 +1,1 @@
+With rgsaddle ABI minor 22 or newer, `min_mode_method = dimer` on rgsaddle starts each rotation without the previous translation's rotation history, as eOn's dimer does. The Morse Pt saddle search takes 39 force calls again instead of 47.

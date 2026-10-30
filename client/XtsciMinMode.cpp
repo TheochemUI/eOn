@@ -13,9 +13,12 @@
 
 #include "eon/FiniteDifference.h"
 #include "eon/HelperFunctions.h"
+#include "eon/SafeMath.h"
 
 #include <rgsaddle.h>
 
+#include <algorithm>
+#include <cmath>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -172,12 +175,41 @@ void XtsciMinMode::compute(std::shared_ptr<Matter> matter,
                 "rgsaddle_minmode_set_mode");
   }
   const AtomMatrix gradient = -matter->getForces();
+#if RGSADDLE_ABI_MINOR >= 22
+  // From minor 22 a dimer session carries its rotation history across
+  // translations. eOn's dimer starts each rotation afresh; the reset
+  // drops that history and keeps the mode.
+  if (!lanczos) {
+    checkStatus(rgsaddle_minmode_reset(m_session), "rgsaddle_minmode_reset");
+  }
+#endif
   checkStatus(
       rgsaddle_minmode_set_position(m_session, saved.data(), gradient.data()),
       "rgsaddle_minmode_set_position");
   const int rc =
       xts_minmode_estimate(m_session, surfaceCallback, &ctx, &report);
   checkStatus(rc, "rgsaddle_minmode_estimate");
+#if RGSADDLE_ABI_MINOR >= 22
+  // From minor 22 a Lanczos estimate is one Hessian action and the host
+  // repeats it. The loop stops as eOn's Lanczos does: the curvature
+  // changes by less than [Lanczos] tolerance, or max_iterations actions.
+  if (lanczos) {
+    const auto &lz = params.lanczos_options();
+    int32_t rotations = report.rotations;
+    for (long k = 1; k < std::max(1L, lz.max_iterations); ++k) {
+      const double previous = report.curvature;
+      checkStatus(
+          xts_minmode_estimate(m_session, surfaceCallback, &ctx, &report),
+          "rgsaddle_minmode_estimate");
+      rotations += report.rotations;
+      if (eonc::safemath::safe_div(std::fabs(report.curvature - previous),
+                                   std::fabs(previous), 1.0) < lz.tolerance) {
+        break;
+      }
+    }
+    report.rotations = rotations;
+  }
+#endif
   checkStatus(rgsaddle_minmode_mode(m_session, mode.data()),
               "rgsaddle_minmode_mode");
 #else
