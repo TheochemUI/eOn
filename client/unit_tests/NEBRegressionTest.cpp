@@ -363,13 +363,32 @@ TEST_CASE_METHOD(NEBRegressionFixture,
   CHECK(eonc::PotRegistry::get().total_force_calls() == calls);
 }
 
-TEST_CASE_METHOD(NEBRegressionFixture,
-                 "NEB refreshes the projection when climbing is switched",
-                 "[neb][regression][climbing_image]") {
-  ParametersLoadAccess::neb_options(params).climbing_image.enabled = true;
-  product->setPositions(reactant->getPositions());
+TEST_CASE("NEB refreshes the projection when climbing is switched",
+          "[neb][regression][climbing_image]") {
+  Parameters params;
+  auto &options = ParametersLoadAccess::neb_options(params);
+  options.image_count = 3;
+  options.initialization.method = NEBInit::LINEAR;
+  options.endpoints.minimize = false;
+  options.climbing_image.enabled = true;
+  ParametersLoadAccess::main_options(params).removeNetForce = false;
+  auto pot = std::make_shared<MolecularSaddlePotential>();
+  auto reactant = std::make_shared<Matter>(pot, params);
+  reactant->resize(2);
+  reactant->setPeriodic(false);
+  reactant->setCell(Matrix3d::Identity() * 25.0);
+  reactant->setFixed(1, true);
+  AtomMatrix positions = AtomMatrix::Zero(2, 3);
+  positions(0, 0) = -1.0;
+  positions(1, 2) = 5.0;
+  reactant->setPositions(positions);
+  auto product = std::make_shared<Matter>(*reactant);
+  positions(0, 0) = 1.0;
+  product->setPositions(positions);
   NudgedElasticBand neb(reactant, product, params, pot);
-  neb.path[2]->con2matter(std::string("product.con"));
+  positions(0, 0) = 0.2;
+  positions(0, 1) = 0.2;
+  neb.path[2]->setPositions(positions);
   neb.setCIEnabled(false);
   neb.updateForces();
   NEBObjectiveFunction objective(&neb, params);
