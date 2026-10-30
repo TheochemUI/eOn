@@ -502,10 +502,18 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
     }
 
     if (iteration) {
+      // MMF refines the climbing image; the residual of another band
+      // image is independent of the force used by its activation rule.
+      double mmfForce = convForce;
+      if (climbingImage > 0 && climbingImage <= numImages) {
+        mmfForce = eonc::neb::OCINEBController::forceMeasure(
+            path[climbingImage]->getForcesFree(),
+            params.optimizer_options().convergence_metric);
+      }
       // MMF triggering via controller. Skipped on the zoom step so the
       // dimer sees the redistributed band, not the pre-zoom geometry.
       if (!zoomedThisStep &&
-          ocineb.shouldTrigger(convForce, ci_active, climbingImage, numImages,
+          ocineb.shouldTrigger(mmfForce, ci_active, climbingImage, numImages,
                                ocineb.stabilityCount())) {
         auto result = ocineb.run(*this, convForce);
 
