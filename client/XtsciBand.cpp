@@ -328,6 +328,13 @@ XtsciBand::XtsciBand(NudgedElasticBand &neb, const Parameters &params)
       neb.path[0]->numberOfFreeAtoms() < neb.path[0]->numberOfAtoms()) {
     config.flags |= RGSADDLE_BAND_KEEP_TRANSLATION;
   }
+#if RGSADDLE_ABI_MINOR >= 21
+  // From minor 21 a climbing session refines its climbing image alone
+  // unless told not to. eOn's own controller runs OCI-NEB (ci_mmf), so
+  // the session stays the plain CI-NEB, and every request keeps a band
+  // shape the surface callback reads.
+  config.flags |= RGSADDLE_BAND_NO_MIN_MODE;
+#endif
   config.tangent = tangentKind(nebOpt);
   config.spring = springKind(nebOpt);
   config.projection = projectionKind(nebOpt);
