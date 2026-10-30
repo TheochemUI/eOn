@@ -62,7 +62,7 @@ class SB_Recycling:
             # Get sb_state_nums and the sb_states
             if self.sb_scheme is None:
                 self.in_progress = False
-            elif self.sb_scheme == "mcacm":
+            elif self.sb_scheme in ("mcamc", "mcacm"):
                 # Getting the superbasin that the previous state was in (if it was in one)
                 containing_sb = self.superbasining.get_containing_superbasin(self.previous_state)
                 # If there was a return value other than None,
