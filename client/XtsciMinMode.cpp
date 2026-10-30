@@ -13,9 +13,12 @@
 
 #include "eon/FiniteDifference.h"
 #include "eon/HelperFunctions.h"
+#include "eon/SafeMath.h"
 
 #include <rgsaddle.h>
 
+#include <algorithm>
+#include <cmath>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -186,6 +189,27 @@ void XtsciMinMode::compute(std::shared_ptr<Matter> matter,
   const int rc =
       xts_minmode_estimate(m_session, surfaceCallback, &ctx, &report);
   checkStatus(rc, "rgsaddle_minmode_estimate");
+#if RGSADDLE_ABI_MINOR >= 22
+  // From minor 22 a Lanczos estimate is one Hessian action and the host
+  // repeats it. The loop stops as eOn's Lanczos does: the curvature
+  // changes by less than [Lanczos] tolerance, or max_iterations actions.
+  if (lanczos) {
+    const auto &lz = params.lanczos_options();
+    int32_t rotations = report.rotations;
+    for (long k = 1; k < std::max(1L, lz.max_iterations); ++k) {
+      const double previous = report.curvature;
+      checkStatus(
+          xts_minmode_estimate(m_session, surfaceCallback, &ctx, &report),
+          "rgsaddle_minmode_estimate");
+      rotations += report.rotations;
+      if (eonc::safemath::safe_div(std::fabs(report.curvature - previous),
+                                   std::fabs(previous), 1.0) < lz.tolerance) {
+        break;
+      }
+    }
+    report.rotations = rotations;
+  }
+#endif
   checkStatus(rgsaddle_minmode_mode(m_session, mode.data()),
               "rgsaddle_minmode_mode");
 #else
