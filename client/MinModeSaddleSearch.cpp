@@ -723,7 +723,10 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       }
     }
 
-    if (iteration == 0) {
+    // A rejected or restored mode already carries the curvature needed by
+    // the caller; solving it again would discard that handoff state.
+    if (iteration == 0 && status != STATUS_DIMER_LOST_MODE &&
+        status != STATUS_DIMER_RESTORED_BEST) {
       eonc::eigenmodeCompute(*minModeMethod, matter, mode);
     }
 
