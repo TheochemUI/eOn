@@ -172,6 +172,14 @@ void XtsciMinMode::compute(std::shared_ptr<Matter> matter,
                 "rgsaddle_minmode_set_mode");
   }
   const AtomMatrix gradient = -matter->getForces();
+#if RGSADDLE_ABI_MINOR >= 22
+  // From minor 22 a dimer session carries its rotation history across
+  // translations. eOn's dimer starts each rotation afresh; the reset
+  // drops that history and keeps the mode.
+  if (!lanczos) {
+    checkStatus(rgsaddle_minmode_reset(m_session), "rgsaddle_minmode_reset");
+  }
+#endif
   checkStatus(
       rgsaddle_minmode_set_position(m_session, saved.data(), gradient.data()),
       "rgsaddle_minmode_set_position");
