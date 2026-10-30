@@ -1,0 +1,1 @@
+The metatomic pyeonclient wheels build and test against one pinned set of torch 2.10.0, metatensor-torch 0.10.8, metatomic-torch 0.1.19 and vesin 0.6.2. Unpinned, the test env could resolve an older torch than the wheel was compiled with, and the wheel failed to import.

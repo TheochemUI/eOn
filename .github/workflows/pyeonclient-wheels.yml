@@ -59,6 +59,14 @@ on:
 permissions:
   contents: read
 
+env:
+  # The metatomic wheel loads only with the torch minor it was built against,
+  # so the build and test envs both install this set. Keep torch in step with
+  # pixi.toml and ci_metatomic.yml.
+  METATOMIC_PINS: >-
+    torch==2.10.0 metatensor==0.2.0 metatensor-core==0.2.6
+    metatensor-torch==0.10.8 metatomic-torch==0.1.19 vesin==0.6.2
+
 jobs:
   build:
     name: ${{ matrix.name }}
@@ -234,9 +242,7 @@ jobs:
             pip install --only-binary=:all: numpy || pip install numpy
             if [[ "${{ matrix.variant }}" == "metatomic" ]]; then
               # Must be visible to the build Python (no-isolation frontend).
-              pip install --only-binary=:all: 'torch' \
-                || pip install 'torch' --index-url https://download.pytorch.org/whl/cpu
-              pip install 'metatensor' 'metatensor-torch' 'metatomic-torch' 'vesin'
+              pip install --only-binary=:all: ${{ env.METATOMIC_PINS }}
               python -c "import torch, metatensor, metatensor.torch, metatomic.torch, vesin, pathlib; t=pathlib.Path(torch.__file__).resolve().parent; print('mta_modules_ok', torch.__version__, t); assert (t/'lib').is_dir(), t"
               # so find_library(c10) / runtime can resolve torch libs during link+test
               TORCH_LIB=$(python -c "import pathlib, torch; print(pathlib.Path(torch.__file__).resolve().parent / 'lib')")
@@ -247,7 +253,7 @@ jobs:
             fi
           # One command. cmd.exe runs only the first line of a multiline
           # before-build, so numpy never landed in the no-isolation env.
-          CIBW_BEFORE_BUILD_WINDOWS: python scripts/pyeonclient_cibw_before_windows.py ${{ matrix.variant }}
+          CIBW_BEFORE_BUILD_WINDOWS: python scripts/pyeonclient_cibw_before_windows.py ${{ matrix.variant }} ${{ env.METATOMIC_PINS }}
           # The private-SONAME step first (it renames librgpot and rewrites
           # RECORD), then auditwheel, which vendors the Fortran, OpenMP and
           # Cap'n Proto runtimes and sets the manylinux tag. A failed repair
@@ -261,7 +267,7 @@ jobs:
             auditwheel repair -w {dest_dir} {wheel}
             --exclude "libtorch*.so*" --exclude "libc10*.so*" --exclude "libshm.so*"
             --exclude "libmetatensor*.so*" --exclude "libmetatomic*.so*"'
-          CIBW_TEST_REQUIRES: ${{ matrix.variant == 'metatomic' && 'pytest numpy torch>=2.7 metatensor metatensor-torch metatomic-torch vesin' || 'pytest numpy' }}
+          CIBW_TEST_REQUIRES: ${{ matrix.variant == 'metatomic' && format('pytest numpy {0}', env.METATOMIC_PINS) || 'pytest numpy' }}
           CIBW_TEST_COMMAND: bash {project}/scripts/pyeonclient_cibw_test.sh
 
       - name: Tag metatomic wheels with local version (never collide with base)

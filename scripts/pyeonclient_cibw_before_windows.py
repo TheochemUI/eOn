@@ -6,7 +6,8 @@ value executes only the first line, so numpy (a pyproject build-system
 requirement under --no-isolation) was never installed.
 
 The variant is an argument because the build environment does not inherit
-every job variable. It is ``base`` or ``metatomic``.
+every job variable. It is ``base`` or ``metatomic``. The metatomic variant
+takes the pinned requirements after it; the test env installs the same pins.
 """
 
 from __future__ import annotations
@@ -22,6 +23,7 @@ def run(args: list[str]) -> None:
 
 def main(argv: list[str]) -> int:
     variant = argv[1] if len(argv) > 1 else ""
+    pins = argv[2:]
     py = sys.executable
     run(
         [
@@ -39,6 +41,9 @@ def main(argv: list[str]) -> int:
     )
     run([py, "-m", "pip", "install", "--only-binary=:all:", "numpy"])
     if variant == "metatomic":
+        torch_pins = [p for p in pins if p.startswith("torch=")]
+        if not torch_pins:
+            raise SystemExit("metatomic variant needs a torch== pin")
         run(
             [
                 py,
@@ -46,23 +51,12 @@ def main(argv: list[str]) -> int:
                 "pip",
                 "install",
                 "--only-binary=:all:",
-                "torch",
+                *torch_pins,
                 "--index-url",
                 "https://download.pytorch.org/whl/cpu",
             ]
         )
-        run(
-            [
-                py,
-                "-m",
-                "pip",
-                "install",
-                "metatensor",
-                "metatensor-torch",
-                "metatomic-torch",
-                "vesin",
-            ]
-        )
+        run([py, "-m", "pip", "install", *pins])
     return 0
 
 
