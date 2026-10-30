@@ -95,6 +95,9 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
   // climbingImage to a neighbor; band CI force is that neighbor.
   const long walked = neb.climbingImage;
   AtomMatrix savedPositions = neb.path[walked]->getPositions();
+  const double previousWalkedForce = forceMeasure(
+      neb.path[walked]->getForcesFree(),
+      neb.params.optimizer_options().convergence_metric);
   // The saved geometry is evaluated already; a restore puts its forces
   // back instead of asking the potential again.
   const AtomMatrix savedForces = neb.path[walked]->getForcesRaw();
@@ -119,15 +122,15 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
   const double walkedForce = forceMeasure(
       neb.path[walked]->getForcesFree(),
       neb.params.optimizer_options().convergence_metric);
-  const bool mmfHelped = walkHelped(walkedForce, convForce, mmfResult);
+  const bool mmfHelped = walkHelped(walkedForce, previousWalkedForce, mmfResult);
 
   if (mmfHelped) {
-    updateThresholdSuccess(convForce, walkedForce);
+    updateThresholdSuccess(previousWalkedForce, walkedForce);
     QUILL_LOG_DEBUG(log,
                     "MMF helped (status={}, walked={}, now_ci={}). "
                     "Walked force: {:.4f} -> {:.4f} ({:.2f}x baseline). "
                     "Band CI force: {:.4f}. New threshold: {:.4f}",
-                    mmfResult, walked, neb.climbingImage, convForce,
+                    mmfResult, walked, neb.climbingImage, previousWalkedForce,
                     walkedForce, walkedForce / baseline_force_, newForce,
                     current_threshold_);
   } else {
@@ -150,7 +153,7 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
         "MMF backoff (status={}, walked={}, now_ci={}). "
         "Walked force: {:.4f} -> {:.4f}, band CI: {:.4f}, "
         "Alignment:  {:.3f}. {}New threshold: {:.4f} ({:.2f}x baseline)",
-        mmfResult, walked, neb.climbingImage, convForce, walkedForce, newForce,
+        mmfResult, walked, neb.climbingImage, previousWalkedForce, walkedForce, newForce,
         alignment, restore ? "Restored CI. " : "", current_threshold_,
         current_threshold_ / baseline_force_);
   }
