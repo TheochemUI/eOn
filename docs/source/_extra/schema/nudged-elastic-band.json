@@ -113,7 +113,7 @@
     },
     "band_precon": {
       "default": "none",
-      "description": "Metric inside the band projection of the rgsaddle band.\n\n``exp`` installs the per-image exponential metric (Packwood et al.\n2016) in the band projection, as Makri, Ortner and Kermode (2019)\nwrite it. The spring constant is then the dimensionless\n``kappa = spring / mu``. Needs the rgsaddle band (``opt_method`` lbfgs,\nfire or xtsci on a build linked to rgsaddle 0.3.0 or newer). Refused with\n``solid_state``, with one atom per image, and with ``energy_weighted``\nor ``onsager_machlup``. The metric has no fixed-atom mask, so its step\nalso moves fixed atoms, which eOn then pins back.",
+      "description": "Metric inside the band projection of the rgsaddle band.\n\n``exp`` installs the per-image exponential metric (Packwood et al.\n2016) in the band projection, as Makri, Ortner and Kermode (2019)\nwrite it. The spring constant is then the dimensionless\n``kappa = spring / mu``. Needs the rgsaddle band (``opt_method`` lbfgs,\nfire or xtsci on a build linked to rgsaddle 0.3.0 or newer). Refused with\n``solid_state``, with one atom per image, and with ``energy_weighted``\nor ``onsager_machlup``. Also refused when any atom is fixed, until\nrgsaddle offers a fixed-atom mask for the metric. Experimental: it does\nnot yet reproduce the 2019 method.",
       "enum": [
         "none",
         "exp"

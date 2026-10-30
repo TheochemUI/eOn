@@ -2434,8 +2434,9 @@ class NudgedElasticBandConfig(BaseModel):
     ``kappa = spring / mu``. Needs the rgsaddle band (``opt_method`` lbfgs,
     fire or xtsci on a build linked to rgsaddle 0.3.0 or newer). Refused with
     ``solid_state``, with one atom per image, and with ``energy_weighted``
-    or ``onsager_machlup``. The metric has no fixed-atom mask, so its step
-    also moves fixed atoms, which eOn then pins back.
+    or ``onsager_machlup``. Also refused when any atom is fixed, until
+    rgsaddle offers a fixed-atom mask for the metric. Experimental: it does
+    not yet reproduce the 2019 method.
     """
     band_precon_mu: float = Field(
         default=0.0,
