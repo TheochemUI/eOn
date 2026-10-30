@@ -281,6 +281,8 @@ TEST_CASE("Saddle and process searches count per-image potential calls",
       REQUIRE(saddleCalls == 309);
       requireNear350(saddleCalls + 1, 310);
     }
+    // The failed prefactor Hessians are still force calls.
+    REQUIRE(std::stol(results.at("total_force_calls")) == made);
   } else {
     REQUIRE(results.at("termination_reason") == "0");
     REQUIRE(std::stol(results.at("total_force_calls")) == made);
@@ -289,6 +291,46 @@ TEST_CASE("Saddle and process searches count per-image potential calls",
       requireNear350(made, 310);
     }
   }
+}
+
+TEST_CASE("Process search counts the product prefactor calls",
+          "[bench_parity][process][parallel][force_calls]") {
+  using eonc::helpers::test::PerImageLJ;
+  // Only the moved atoms enter the Hessians, which keeps the free
+  // cluster's rigid-body modes out and lets the prefactors finish.
+  const std::string prefactor =
+      "[Prefactor]\nfilter_fraction = 0.9\nwithin_radius = 0.1\n";
+  std::map<bool, long> madeBy;
+  std::map<bool, long> prefactorCallsBy;
+  for (const bool parallel : {false, true}) {
+    CAPTURE(parallel);
+    ParityRun run("lj13_saddle");
+    run.enter(
+        saddleConfig("process_search", "lj", "dimer", "none", 0.1, parallel) +
+        prefactor);
+    Parameters params;
+    params.load("config.ini");
+    std::atomic<long> calls{0};
+    auto threads = std::make_shared<PerImageLJ::Threads>();
+    auto pot = std::make_shared<PerImageLJ>(threads, [&calls] { ++calls; });
+    eonc::ProcessSearchJob job(pot, params);
+    job.run();
+    const long made = calls;
+    auto results = run.results();
+    REQUIRE(results.at("termination_reason") == "0");
+    if (parallel) {
+      // The dimer image and the product minimum use their own instances.
+      REQUIRE(static_cast<long>(pot->forceCallCounter.load()) < made);
+    }
+    REQUIRE(std::stol(results.at("total_force_calls")) == made);
+    madeBy[parallel] = made;
+    prefactorCallsBy[parallel] =
+        std::stol(results.at("force_calls_prefactors"));
+  }
+  // [Main] parallel changes where the calls run, not how many are made.
+  REQUIRE(madeBy.at(true) == madeBy.at(false));
+  REQUIRE(prefactorCallsBy.at(false) > 0);
+  REQUIRE(prefactorCallsBy.at(true) == prefactorCallsBy.at(false));
 }
 
 } // namespace tests
