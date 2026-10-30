@@ -339,6 +339,7 @@ features_list = [
     ['EMBED_PYTHON', 'Embedded Python'],
     ['WITH_RGMIN', 'rgmin minimizers'],
     ['WITH_RGSADDLE', 'rgsaddle band and min-mode'],
+    ['WITH_RGSADDLE_BAND_PRECON', 'rgsaddle band exp metric and ODE12r'],
 ]
 
 # features_string + version.h are assembled AFTER optional with_* blocks append
@@ -397,6 +398,10 @@ if get_option('with_rgsaddle')
     )
     _deps += rgsaddle_dep
     _args += ['-DWITH_RGSADDLE']
+    # 0.3.0: rgsaddle_band_set_exp_precon and RGSADDLE_METHOD_ODE12R.
+    if rgsaddle_dep.version().version_compare('>=0.3.0')
+        _args += ['-DWITH_RGSADDLE_BAND_PRECON']
+    endif
 endif
 
 eigen_dep = dependency('eigen3', required: false)

@@ -2423,6 +2423,38 @@ class NudgedElasticBandConfig(BaseModel):
         default=False,
         description="Parallel spring from the difference of squared neighbour distances.",
     )
+    band_precon: Literal["none", "exp"] = Field(
+        default="none",
+        description="Metric inside the band projection of the rgsaddle band.",
+    )
+    """
+    ``exp`` installs the per-image exponential metric (Packwood et al.
+    2016) in the band projection, as Makri, Ortner and Kermode (2019)
+    write it. The spring constant is then the dimensionless
+    ``kappa = spring / mu``. Needs the rgsaddle band (``opt_method`` lbfgs,
+    fire or xtsci on a build linked to rgsaddle 0.3.0 or newer). Refused with
+    ``solid_state``, with one atom per image, and with ``energy_weighted``
+    or ``onsager_machlup``. Also refused when any atom is fixed, until
+    rgsaddle offers a fixed-atom mask for the metric. Experimental: it does
+    not yet reproduce the 2019 method.
+    """
+    band_precon_mu: float = Field(
+        default=0.0,
+        description="Energy scale mu of the band metric; 0 lets rgsaddle estimate it.",
+    )
+    """
+    The estimate takes two force calls on a copy of the first interior
+    image before the first step.
+    """
+    band_stepper: Literal["auto", "ode12r"] = Field(
+        default="auto",
+        description="Stepper of the rgsaddle band.",
+    )
+    """
+    ``auto`` follows ``opt_method``. ``ode12r`` is the adaptive ODE12r
+    stepper (Makri, Ortner and Kermode 2019), ODE12r-Exp with
+    ``band_precon = exp``. Needs rgsaddle 0.3.0 or newer.
+    """
     energy_weighted: bool = Field(
         default=False, description="Indicates if the energy-weighted method is used."
     )

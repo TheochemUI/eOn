@@ -1,0 +1,1 @@
+With rgsaddle ABI minor 22 or newer, `min_mode_method = lanczos` on rgsaddle repeats the one-action Lanczos estimate until the curvature changes by less than `[Lanczos] tolerance`, or for `max_iterations` actions. It used to stop after one action and leave the saddle search unconverged.

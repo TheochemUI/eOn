@@ -216,6 +216,9 @@ json to_json(const Parameters &p) {
        ParametersLoadAccess::neb_options(p).solid_state.weight},
       {"solid_state_pressure",
        ParametersLoadAccess::neb_options(p).solid_state.pressure},
+      {"band_precon", ParametersLoadAccess::neb_options(p).band.precon},
+      {"band_precon_mu", ParametersLoadAccess::neb_options(p).band.precon_mu},
+      {"band_stepper", ParametersLoadAccess::neb_options(p).band.stepper},
       {"temperature", ParametersLoadAccess::neb_options(p).quantum_temperature},
       {"tunnel_wall_points",
        ParametersLoadAccess::neb_options(p).tunnel_wall_points},
@@ -692,6 +695,12 @@ void from_json(const json &j, Parameters &p) {
              ParametersLoadAccess::neb_options(p).solid_state.weight);
     JSON_OPT(s, "solid_state_pressure",
              ParametersLoadAccess::neb_options(p).solid_state.pressure);
+    JSON_OPT(s, "band_precon",
+             ParametersLoadAccess::neb_options(p).band.precon);
+    JSON_OPT(s, "band_precon_mu",
+             ParametersLoadAccess::neb_options(p).band.precon_mu);
+    JSON_OPT(s, "band_stepper",
+             ParametersLoadAccess::neb_options(p).band.stepper);
     JSON_OPT(s, "temperature",
              ParametersLoadAccess::neb_options(p).quantum_temperature);
     JSON_OPT(s, "tunnel_wall_points",

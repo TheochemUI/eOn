@@ -1,0 +1,1 @@
+With rgsaddle ABI minor 21 or newer, a climbing nudged elastic band on rgsaddle no longer stops with `xts_band_step: SURFACE_FAILED`. eOn turns off the session's own refinement of the climbing image, so the band stays the plain CI-NEB, and `ci_mmf` stays the OCI-NEB switch.
