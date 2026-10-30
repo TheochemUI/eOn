@@ -18,6 +18,7 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/LBFGS.h"
+#include "eon/NEBOcinebController.h"
 #include "eon/NudgedElasticBand.h"
 #include "eon/PotRegistry.h"
 
@@ -89,6 +90,93 @@ TEST_CASE("CI activates on a relaxed band with tangential saddle force",
   REQUIRE(
       neb.path.front()->getPositions().isApprox(initial->getPositions(), 0.0));
   REQUIRE(neb.path.back()->getPositions().isApprox(final->getPositions(), 0.0));
+}
+
+class MolecularSaddlePotential final : public eonc::Potential {
+public:
+  MolecularSaddlePotential() : Potential(PotType::UNKNOWN) {}
+  void force(long nAtoms, const double *positions, const int *, double *forces,
+             double *energy, double *variance, const double *) override {
+    *energy = 0.0;
+    for (long atom = 0; atom < nAtoms; ++atom) {
+      for (int axis = 0; axis < 3; ++axis) {
+        const long index = 3 * atom + axis;
+        const double curvature = axis == 0 ? -2.0 : 4.0;
+        forces[index] = -curvature * positions[index];
+        *energy += 0.5 * curvature * positions[index] * positions[index];
+      }
+    }
+    if (variance) {
+      *variance = 0.0;
+    }
+  }
+};
+
+TEST_CASE("OCI redistributes a helpful molecular walk and resets the band",
+          "[neb][regression][ocineb]") {
+  Parameters params;
+  auto &nebOptions = ParametersLoadAccess::neb_options(params);
+  nebOptions.image_count = 3;
+  nebOptions.initialization.method = NEBInit::LINEAR;
+  nebOptions.endpoints.minimize = false;
+  nebOptions.force_tolerance = 0.001;
+  nebOptions.climbing_image.enabled = true;
+  nebOptions.climbing_image.ocineb.use_mmf = true;
+  nebOptions.climbing_image.ocineb.angle_tol = 0.85;
+  nebOptions.climbing_image.ocineb.max_steps = 100;
+  auto &optimizer = ParametersLoadAccess::optimizer_options(params);
+  optimizer.method = OptType::LBFGS;
+  optimizer.max_move = 0.2;
+  optimizer.convergence_metric = "max_atom";
+  ParametersLoadAccess::main_options(params).removeNetForce = false;
+  ParametersLoadAccess::main_options(params).parallel = false;
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).converged_angle = 0.01;
+  ParametersLoadAccess::saddle_search_options(params).converged_force = 0.001;
+  auto pot = std::make_shared<MolecularSaddlePotential>();
+  auto reactant = std::make_shared<Matter>(pot, params);
+  reactant->resize(2);
+  reactant->setPeriodic(false);
+  reactant->setCell(Matrix3d::Identity() * 25.0);
+  for (int atom = 0; atom < 2; ++atom) {
+    reactant->setAtomicNr(atom, 1);
+    reactant->setMass(atom, 1.0);
+  }
+  reactant->setFixed(1, true);
+  AtomMatrix positions = AtomMatrix::Zero(2, 3);
+  positions(0, 0) = -1.0;
+  positions(1, 2) = 5.0;
+  reactant->setPositions(positions);
+  auto product = std::make_shared<Matter>(*reactant);
+  positions(0, 0) = 1.0;
+  product->setPositions(positions);
+  NudgedElasticBand neb(reactant, product, params, pot);
+  const double x[] = {-0.6, 0.2, 0.6};
+  const double y[] = {0.1, 0.2, 0.1};
+  for (long image = 1; image <= 3; ++image) {
+    positions(0, 0) = x[image - 1];
+    positions(0, 1) = y[image - 1];
+    neb.path[image]->setPositions(positions);
+  }
+  neb.setCIEnabled(true);
+  neb.updateForces();
+  REQUIRE(neb.climbingImage == 2);
+  const AtomMatrix neighbor = neb.path[1]->getPositions();
+  const AtomMatrix first = neb.path.front()->getPositions();
+  const AtomMatrix last = neb.path.back()->getPositions();
+  eonc::neb::OCINEBController controller(
+      eonc::neb::OCINEBController::fromParams(params));
+  controller.initBaseline(neb.convergenceForce());
+  const auto result = controller.run(neb, neb.convergenceForce());
+  REQUIRE_FALSE(result.convergedAfterMMF);
+  REQUIRE(result.shouldResetOptimizer);
+  REQUIRE_FALSE(neb.path[1]->getPositions().isApprox(neighbor, 1e-10));
+  REQUIRE(neb.path.front()->getPositions().isApprox(first, 0.0));
+  REQUIRE(neb.path.back()->getPositions().isApprox(last, 0.0));
+  for (long image = 1; image <= 3; ++image) {
+    REQUIRE(neb.path[image]->getPositions().row(1).isApprox(first.row(1), 0.0));
+    REQUIRE(neb.path[image]->getPositions().row(0).norm() < 1.0);
+  }
 }
 
 class NEBRegressionFixture {

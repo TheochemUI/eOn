@@ -13,6 +13,7 @@
 #include "eon/EonLogger.h"
 #include "eon/ForceNorm.h"
 #include "eon/MinModeSaddleSearch.h"
+#include "eon/NEBInitialPaths.hpp"
 #include "eon/NudgedElasticBand.h"
 #include "eon/eonExceptions.hpp"
 #include <algorithm>
@@ -158,10 +159,19 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
         current_threshold_ / baseline_force_);
   }
 
+  if (mmfHelped) {
+    // A helpful walk changes the spacing for molecular and periodic paths.
+    // Reparameterization preserves endpoints and invalidates band secants.
+    eonc::helpers::neb_paths::resamplePathInPlace(
+        std::span{neb.path.data(), neb.path.size()});
+    neb.movedAfterForceCall = true;
+  }
+
   bool shouldReset =
+      mmfHelped ||
       (savedPositions - neb.path[walked]->getPositions()).norm() >
-      neb.params.optimizer_options().max_move *
-          neb.params.neb_options().image_count;
+          neb.params.optimizer_options().max_move *
+              neb.params.neb_options().image_count;
 
   if (shouldReset) {
     QUILL_LOG_DEBUG(log, "Resetting optimization history.");
