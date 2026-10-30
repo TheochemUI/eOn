@@ -1,0 +1,1 @@
+Basin hopping writes a new minimum's files under `states/<n>/` before it adds the row to `state_table`. A pass killed between the two used to leave a row with no `minimum.con`, so every later pool draw or energy match on that row failed. A state directory left without a row is now overwritten by the next new minimum.
