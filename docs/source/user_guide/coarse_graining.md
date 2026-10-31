@@ -24,6 +24,9 @@ by fast rates into "superbasins". Information about transitions between states
 in a superbasin is lost, but the rates for transitions across a superbasin are
 correct.
 
+A superbasin directory that already exists still gets a `storage` folder.
+A later merge archives the previous basin there.
+
 ## Accelerated Superbasin Kinetic Monte Carlo (AS-KMC)
 
 The second method, accelerated superbasin kinetic Monte Carlo (AS-KMC) of
