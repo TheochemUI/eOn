@@ -1,0 +1,1 @@
+With rgsaddle ABI minor 22 or newer, `min_mode_method = lanczos` on rgsaddle reads `[Lanczos] quit_early` again. When the curvature after the first Hessian action is within `tolerance` of the previous estimate, the search keeps the incoming mode and stops after that one action, as eOn's own Lanczos does.

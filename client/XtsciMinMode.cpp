@@ -193,10 +193,21 @@ void XtsciMinMode::compute(std::shared_ptr<Matter> matter,
   // From minor 22 a Lanczos estimate is one Hessian action and the host
   // repeats it. The loop stops as eOn's Lanczos does: the curvature
   // changes by less than [Lanczos] tolerance, or max_iterations actions.
+  // With quit_early, a first curvature within tolerance of the previous
+  // estimate keeps the incoming mode after one action, as eOn's Lanczos
+  // does.
   if (lanczos) {
     const auto &lz = params.lanczos_options();
+    const bool early =
+        lz.quit_early && m_eigenvalue != 0.0 &&
+        eonc::safemath::safe_div(std::fabs(report.curvature - m_eigenvalue),
+                                 std::fabs(m_eigenvalue), 1.0) <= lz.tolerance;
+    if (early) {
+      checkStatus(rgsaddle_minmode_set_mode(m_session, initialDirection.data()),
+                  "rgsaddle_minmode_set_mode");
+    }
     int32_t rotations = report.rotations;
-    for (long k = 1; k < std::max(1L, lz.max_iterations); ++k) {
+    for (long k = 1; !early && k < std::max(1L, lz.max_iterations); ++k) {
       const double previous = report.curvature;
       checkStatus(
           xts_minmode_estimate(m_session, surfaceCallback, &ctx, &report),
