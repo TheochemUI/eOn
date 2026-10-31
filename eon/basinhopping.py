@@ -67,11 +67,9 @@ class BHStates:
         if added:
             state_number = len(self.energy_table)
 
-            row = { 'state':state_number, 'energy':energy, 'repeats':0 }
-            self.energy_table.add_row(row)
-            self.energy_table.rows.sort(key=lambda r:-r['energy'])
-            self.energy_table.write()
-
+            # The files go in before the row: a pass killed in between
+            # leaves a directory with no row, which the next add_state
+            # overwrites, rather than a row whose minimum.con is missing.
             state_path = Path(self.config.path_states) / str(state_number)
             state_path.mkdir(exist_ok=True)
 
@@ -81,7 +79,13 @@ class BHStates:
             for fn, fh in list(result_files.items()):
                 if hasattr(fh, 'getvalue') == False:
                     continue
-                (state_path / fn).write_text(fh.getvalue())
+                with io.atomic_write(state_path / fn) as f:
+                    f.write(fh.getvalue())
+
+            row = { 'state':state_number, 'energy':energy, 'repeats':0 }
+            self.energy_table.add_row(row)
+            self.energy_table.rows.sort(key=lambda r:-r['energy'])
+            self.energy_table.write()
 
         return added
 

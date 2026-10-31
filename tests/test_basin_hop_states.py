@@ -5,6 +5,7 @@ from io import StringIO
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from eon import fileio as io
 from eon.basinhopping import BHStates, register_results
@@ -72,6 +73,58 @@ def test_add_state_accepts_an_existing_directory(tmp_path):
     assert (state_dir / "minimum.con").is_file()
     loaded = io.loadcon(str(state_dir / "minimum.con"))
     assert np.allclose(loaded.r, atoms.r)
+
+
+class _Killed(BaseException):
+    pass
+
+
+def _kill_after_table_write(monkeypatch):
+    write = io.Table.write
+
+    def write_then_die(table):
+        write(table)
+        raise _Killed
+
+    monkeypatch.setattr(io.Table, "write", write_then_die)
+
+
+def _killed_pass(cfg, monkeypatch):
+    _, buf = _min()
+    with monkeypatch.context() as m:
+        _kill_after_table_write(m)
+        with pytest.raises(_Killed):
+            BHStates(cfg).add_state({"min.con": buf}, {"minimum_energy": -1.25})
+
+
+def test_draw_after_a_kill_at_the_row_write(tmp_path, monkeypatch):
+    cfg = _config(tmp_path)
+    _killed_pass(cfg, monkeypatch)
+    states = BHStates(cfg)
+    assert len(states.energy_table) == 1
+    drawn = states.get_random_minimum()
+    assert io.loadcon(drawn).names == ["Pt"]
+
+
+def test_energy_match_after_a_kill_at_the_row_write(tmp_path, monkeypatch):
+    cfg = _config(tmp_path)
+    _killed_pass(cfg, monkeypatch)
+    _, buf = _min()
+    states = BHStates(cfg)
+    assert not states.add_state({"min.con": buf}, {"minimum_energy": -1.25})
+    assert states.energy_table.rows[0]["repeats"] == 1
+
+
+def test_add_state_replaces_a_directory_without_a_row(tmp_path):
+    atoms, buf = _min()
+    state_dir = Path(tmp_path) / "states" / "0"
+    state_dir.mkdir(parents=True)
+    (state_dir / "minimum.con").write_text("torn\n")
+    states = BHStates(_config(tmp_path))
+    assert states.add_state({"min.con": buf}, {"minimum_energy": -1.25})
+    loaded = io.loadcon(str(state_dir / "minimum.con"))
+    assert np.allclose(loaded.r, atoms.r)
+    assert [r["state"] for r in states.energy_table.rows] == [0]
 
 
 class _EmptyComm:
