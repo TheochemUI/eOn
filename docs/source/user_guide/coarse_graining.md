@@ -22,7 +22,8 @@ The first method, projective dynamics, described in
 {cite:t}`cg-novotnyTutorialAdvancedDynamic2001`, groups states that are joined
 by fast rates into "superbasins". Information about transitions between states
 in a superbasin is lost, but the rates for transitions across a superbasin are
-correct.
+correct. The numpy fallback copies the rate matrices and the cost vector, as
+the compiled solver does, so a later call sees the same input.
 
 ## Accelerated Superbasin Kinetic Monte Carlo (AS-KMC)
 

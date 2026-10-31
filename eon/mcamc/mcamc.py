@@ -94,6 +94,11 @@ def c_mcamc(Q, R, c, prec='dd'):
 
 
 def np_mcamc(Q, R, c, prec="NA"):
+    # The compiled solver copies. Scaling in place makes a second call
+    # solve a different system.
+    Q = np.array(Q, dtype=float, copy=True)
+    R = np.array(R, dtype=float, copy=True)
+    c = np.array(c, dtype=float, copy=True)
     for i in range(len(c)):
         c[i] = 1.0/c[i]
         Q[i] *= c[i]
