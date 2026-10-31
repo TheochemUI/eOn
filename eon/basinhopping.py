@@ -30,7 +30,11 @@ class BHStates:
     def get_random_minimum(self):
         if len(self.energy_table.rows) == 0: return None
         N = self.config.bh_initial_state_pool_size
-        self.energy_table.rows.sort(key=lambda r:-r['energy'])
+        # Ascending energy: the first N rows are the lowest energies.
+        # Negating the key with the default ascending sort kept the
+        # highest energies, so a pool of 1 restarted from the least
+        # stable minimum.
+        self.energy_table.rows.sort(key=lambda r: r['energy'])
         lowest_N = self.energy_table.rows[:N]
         i = random.choice(lowest_N)['state']
         minimum = Path(self.config.path_states) / str(i) / "minimum.con"

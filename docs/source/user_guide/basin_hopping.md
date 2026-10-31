@@ -35,6 +35,13 @@ kelvin. A temperature or `kB` that is not positive rejects the uphill hop.
 Other hops are accepted. `quenching_steps` reject an uphill hop and skip
 the factor.
 
+## Reactant pool
+
+The server stores each accepted minimum. When `initial_state_pool_size`
+is positive, the next reactant is drawn from that many lowest-energy
+minima. A pool size of 1 always restarts from the lowest energy stored
+so far. A pool size of 0 keeps using the original `pos.con`.
+
 ## Notes
 
 - `eOn` defaults to letting displacements occur from minimized structures as per
