@@ -298,8 +298,12 @@ TEST_CASE("Process search counts the product prefactor calls",
   using eonc::helpers::test::PerImageLJ;
   // Only the moved atoms enter the Hessians, which keeps the free
   // cluster's rigid-body modes out and lets the prefactors finish.
+  // Under rgsaddle the cluster can relax back to the reactant turned by
+  // about 10 degrees, depending on the system libm, so the minima are
+  // compared up to a rotation.
   const std::string prefactor =
-      "[Prefactor]\nfilter_fraction = 0.9\nwithin_radius = 0.1\n";
+      "[Prefactor]\nfilter_fraction = 0.9\nwithin_radius = 0.1\n"
+      "[Structure Comparison]\ncheck_rotation = true\n";
   std::map<bool, long> madeBy;
   std::map<bool, long> prefactorCallsBy;
   for (const bool parallel : {false, true}) {
