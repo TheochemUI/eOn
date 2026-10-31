@@ -651,6 +651,16 @@ struct neb_options_t {
     double pressure{0.0};
   } solid_state;
 
+  /// rgsaddle band only, rgsaddle 0.3.0 or newer. precon "exp" installs
+  /// the per-image exponential metric, and the spring constant is then
+  /// kappa = k / mu. precon_mu <= 0 lets rgsaddle estimate mu. stepper
+  /// "auto" follows opt_method; "ode12r" is the ODE12r band stepper.
+  struct band_options_t {
+    std::string precon{"none"};
+    double precon_mu{0.0};
+    std::string stepper{"auto"};
+  } band;
+
   /// Temperature in kelvin for the harmonic quantum free-energy profile.
   /// Zero leaves the band on the potential energy.
   double quantum_temperature{0.0};

@@ -1144,6 +1144,15 @@ int load_ini(const INIReader &ini, Parameters &params) {
   ParametersLoadAccess::neb_options(params).spring.geometric = ini.GetBoolean(
       neb_section, "geometric_spring",
       ParametersLoadAccess::neb_options(params).spring.geometric);
+  ParametersLoadAccess::neb_options(params).band.precon = toLowerCase(
+      ini.Get(neb_section, "band_precon",
+              ParametersLoadAccess::neb_options(params).band.precon));
+  ParametersLoadAccess::neb_options(params).band.precon_mu =
+      ini.GetReal(neb_section, "band_precon_mu",
+                  ParametersLoadAccess::neb_options(params).band.precon_mu);
+  ParametersLoadAccess::neb_options(params).band.stepper = toLowerCase(
+      ini.Get(neb_section, "band_stepper",
+              ParametersLoadAccess::neb_options(params).band.stepper));
   ParametersLoadAccess::neb_options(params).spring.om.enabled = ini.GetBoolean(
       neb_section, "onsager_machlup",
       ParametersLoadAccess::neb_options(params).spring.om.enabled);

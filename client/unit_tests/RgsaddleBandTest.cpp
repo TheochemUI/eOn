@@ -391,4 +391,191 @@ TEST_CASE("rgsaddle band surface evaluates its images on the image pool",
   }
 }
 
+// Three interior LJ images on the neb_morse cluster, one atom moved 0.5.
+struct LJBand {
+  Parameters params;
+  std::shared_ptr<Potential> pot;
+
+  LJBand(OptType method, std::string precon = "none",
+         std::string stepper = "auto") {
+    ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+    auto &neb = ParametersLoadAccess::neb_options(params);
+    neb.opt_method = method;
+    neb.image_count = 3;
+    neb.max_iterations = 3;
+    neb.force_tolerance = 1e-12;
+    neb.climbing_image.enabled = false;
+    neb.climbing_image.ocineb.use_mmf = false;
+    neb.initialization.method = NEBInit::LINEAR;
+    neb.endpoints.minimize = false;
+    neb.band.precon = std::move(precon);
+    neb.band.stepper = std::move(stepper);
+    ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
+  }
+
+  std::unique_ptr<NudgedElasticBand> neb(long atoms = 0) {
+    pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
+    auto reactant = std::make_shared<Matter>(pot, params);
+    auto product = std::make_shared<Matter>(pot, params);
+    reactant->con2matter(std::string("reactant.con"));
+    product->con2matter(std::string("reactant.con"));
+    if (atoms > 0) {
+      const AtomMatrix kept = reactant->getPositions().topRows(atoms);
+      for (auto *m : {reactant.get(), product.get()}) {
+        m->resize(atoms);
+        m->setAtomicNr(0, 1);
+        m->setPositions(kept);
+      }
+    }
+    auto shifted = product->getPositions();
+    shifted(0, 0) += 0.5;
+    product->setPositions(shifted);
+    return std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
+  }
+
+  // The middle interior image after three steps.
+  AtomMatrix run() {
+    auto band = neb();
+    static_cast<void>(band->compute());
+    REQUIRE(std::isfinite(band->path[2]->getPotentialEnergy()));
+    return band->path[2]->getPositions();
+  }
+};
+
+TEST_CASE("band_precon and band_stepper default off and refuse other values",
+          "[neb][rgsaddle][band_precon]") {
+  using Catch::Matchers::ContainsSubstring;
+  LJBand off(OptType::LBFGS);
+  REQUIRE(off.params.neb_options().band.precon == "none");
+  REQUIRE(off.params.neb_options().band.stepper == "auto");
+  auto neb = off.neb();
+  ParametersLoadAccess::neb_options(off.params).band.precon = "pair";
+  REQUIRE_THROWS_WITH(eonc::XtsciBand(*neb, off.params),
+                      ContainsSubstring("band_precon is none or exp"));
+  ParametersLoadAccess::neb_options(off.params).band.precon = "none";
+  ParametersLoadAccess::neb_options(off.params).band.stepper = "rk4";
+  REQUIRE_THROWS_WITH(eonc::XtsciBand(*neb, off.params),
+                      ContainsSubstring("band_stepper is auto or ode12r"));
+  // An eOn optimizer does not step the rgsaddle band.
+  REQUIRE_THROWS_WITH(LJBand(OptType::CG, "exp").neb()->compute(),
+                      ContainsSubstring("act on the rgsaddle band"));
+}
+
+#ifndef WITH_RGSADDLE_BAND_PRECON
+TEST_CASE("an rgsaddle older than 0.3.0 refuses band_precon and ode12r",
+          "[neb][rgsaddle][band_precon]") {
+  using Catch::Matchers::ContainsSubstring;
+  REQUIRE_THROWS_WITH(LJBand(OptType::LBFGS, "exp").neb()->compute(),
+                      ContainsSubstring("rgsaddle 0.3.0 or newer"));
+  REQUIRE_THROWS_WITH(LJBand(OptType::FIRE, "none", "ode12r").neb()->compute(),
+                      ContainsSubstring("rgsaddle 0.3.0 or newer"));
+}
+#else
+TEST_CASE("the exp metric and ode12r each change the rgsaddle band step",
+          "[neb][rgsaddle][band_precon]") {
+  const AtomMatrix lbfgs = LJBand(OptType::LBFGS).run();
+  const AtomMatrix fire = LJBand(OptType::FIRE).run();
+  const AtomMatrix ode = LJBand(OptType::FIRE, "none", "ode12r").run();
+  REQUIRE_FALSE(lbfgs.isApprox(LJBand(OptType::LBFGS, "exp").run(), 1e-10));
+  REQUIRE_FALSE(fire.isApprox(LJBand(OptType::FIRE, "exp").run(), 1e-10));
+  REQUIRE_FALSE(fire.isApprox(ode, 1e-10));
+  REQUIRE_FALSE(
+      ode.isApprox(LJBand(OptType::FIRE, "exp", "ode12r").run(), 1e-10));
+}
+
+TEST_CASE("the exp metric refuses a non-uniform spring and one atom",
+          "[neb][rgsaddle][band_precon]") {
+  using Catch::Matchers::ContainsSubstring;
+  LJBand weighted(OptType::LBFGS, "exp");
+  ParametersLoadAccess::neb_options(weighted.params).spring.weighting.enabled =
+      true;
+  REQUIRE_THROWS_WITH(weighted.neb()->compute(),
+                      ContainsSubstring("uniform spring"));
+  LJBand om(OptType::LBFGS, "exp");
+  ParametersLoadAccess::neb_options(om.params).spring.om.enabled = true;
+  REQUIRE_THROWS_WITH(om.neb()->compute(), ContainsSubstring("uniform spring"));
+  LJBand single(OptType::LBFGS, "exp");
+  auto neb = single.neb(1);
+  REQUIRE_THROWS_WITH(eonc::XtsciBand(*neb, single.params),
+                      ContainsSubstring("two atoms"));
+}
+
+TEST_CASE("the exp metric refuses fixed atoms",
+          "[neb][rgsaddle][band_precon]") {
+  using Catch::Matchers::ContainsSubstring;
+  LJBand fixture(OptType::LBFGS, "exp");
+  auto neb = fixture.neb();
+  for (auto &image : neb->path) {
+    image->setFixed(1, 1);
+  }
+  REQUIRE_THROWS_WITH(eonc::XtsciBand(*neb, fixture.params),
+                      ContainsSubstring("refused with fixed atoms"));
+  auto &band = ParametersLoadAccess::neb_options(fixture.params).band;
+  band.precon = "none";
+  band.stepper = "ode12r";
+  REQUIRE_NOTHROW(eonc::XtsciBand(*neb, fixture.params));
+}
+#endif
+
+TEST_CASE("a one-row band request evaluates off the band",
+          "[neb][rgsaddle][band_precon]") {
+  LJBand fixture(OptType::LBFGS);
+  auto neb = fixture.neb();
+  eonc::XtsciBand band(*neb, fixture.params);
+  const AtomMatrix held = neb->path[1]->getPositions();
+  AtomMatrix p = held;
+  p(1, 1) += 0.01;
+  Matter probe(*neb->path[1]);
+  probe.setPositions(p);
+  std::vector<double> e(1);
+  std::vector<double> g(static_cast<size_t>(3 * neb->atoms));
+  rgsaddle_surface_request_t req{};
+  req.version = RGSADDLE_VERSION_INIT;
+  req.n_images = 1;
+  req.n_atoms = neb->atoms;
+  req.positions = p.data();
+  req.energies = e.data();
+  req.gradients = g.data();
+  req.image = -1;
+  REQUIRE(eonc::xtsciBandSurface(&band, &req) == RGSADDLE_OK);
+  REQUIRE(e[0] == Catch::Approx(probe.getPotentialEnergy()));
+  REQUIRE(g[0] == Catch::Approx(-probe.getForces().data()[0]));
+  REQUIRE(neb->path[1]->getPositions() == held);
+}
+
+TEST_CASE("a one-row band request with an image or flags is a shape error",
+          "[neb][rgsaddle][band_precon]") {
+  LJBand fixture(OptType::LBFGS);
+  auto neb = fixture.neb();
+  eonc::XtsciBand band(*neb, fixture.params);
+  const AtomMatrix held = neb->path[1]->getPositions();
+  AtomMatrix p = held;
+  p(1, 1) += 0.01;
+  auto request = [&](uint64_t flags, int64_t image) {
+    std::vector<double> e(1, 0.0);
+    std::vector<double> g(static_cast<size_t>(3 * neb->atoms), 0.0);
+    rgsaddle_surface_request_t req{};
+    req.version = RGSADDLE_VERSION_INIT;
+    req.flags = flags;
+    req.n_images = 1;
+    req.n_atoms = neb->atoms;
+    req.positions = p.data();
+    req.energies = e.data();
+    req.gradients = g.data();
+    req.image = image;
+    const int rc = eonc::xtsciBandSurface(&band, &req);
+    return std::make_pair(rc, e[0]);
+  };
+  const std::pair<uint64_t, int64_t> refused[] = {
+      {0, 0}, {0, 1}, {RGSADDLE_REQ_ONE_IMAGE << 1, -1}};
+  for (const auto &[flags, image] : refused) {
+    const auto [rc, energy] = request(flags, image);
+    REQUIRE(rc == RGSADDLE_SHAPE);
+    REQUIRE(energy == 0.0);
+  }
+  REQUIRE(request(0, -1).first == RGSADDLE_OK);
+  REQUIRE(neb->path[1]->getPositions() == held);
+}
+
 } // namespace tests

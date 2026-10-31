@@ -319,6 +319,13 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
   } else
 #endif
   {
+    const auto &band = params.neb_options().band;
+    if (band.precon != "none" || band.stepper != "auto") {
+      throw std::invalid_argument(
+          "band_precon and band_stepper act on the rgsaddle band: a build "
+          "with rgsaddle, opt_method lbfgs, fire or xtsci, and no "
+          "geometric_spring");
+    }
     optim = eonc::helpers::create::mkOptim(
         objf, params.neb_options().opt_method, params);
     if (params.optimizer_options().refine.method != OptType::None) {

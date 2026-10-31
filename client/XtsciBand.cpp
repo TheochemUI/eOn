@@ -101,7 +101,80 @@ int32_t projectionKind(const neb_options_t &neb) {
   return RGSADDLE_PROJECTION_NEB;
 }
 
+#ifdef WITH_RGSADDLE_BAND_PRECON
+bool bandHasFixedAtoms(const NudgedElasticBand &neb) {
+  for (const auto &image : neb.path) {
+    if (image->numberOfFreeAtoms() < image->numberOfAtoms()) {
+      return true;
+    }
+  }
+  return false;
+}
+#endif
+
+// band_precon and band_stepper, refused here where rgsaddle 0.3.0 would
+// refuse the metric. A library older than ABI minor 22 reads ODE12r as
+// FIRE, so the loaded library is checked as well as the header.
+void checkBandOptions(const NudgedElasticBand &neb, const neb_options_t &opt,
+                      [[maybe_unused]] const rgsaddle_version_t &stamp) {
+  const auto &band = opt.band;
+  const bool exp = band.precon == "exp";
+  const bool ode12r = band.stepper == "ode12r";
+  if (!exp && band.precon != "none") {
+    throw std::invalid_argument("band_precon is none or exp, not '" +
+                                band.precon + "'");
+  }
+  if (!ode12r && band.stepper != "auto") {
+    throw std::invalid_argument("band_stepper is auto or ode12r, not '" +
+                                band.stepper + "'");
+  }
+  if (!exp && !ode12r) {
+    return;
+  }
+#ifndef WITH_RGSADDLE_BAND_PRECON
+  throw std::invalid_argument(
+      "band_precon = exp and band_stepper = ode12r need eOn built against "
+      "rgsaddle 0.3.0 or newer (built against ABI minor " +
+      std::to_string(RGSADDLE_ABI_MINOR) + ")");
+#else
+  if (stamp.minor < 22) {
+    throw std::runtime_error(
+        "band_precon = exp and band_stepper = ode12r need rgsaddle ABI "
+        "minor 22 or newer at run time (loaded minor " +
+        std::to_string(stamp.minor) + ")");
+  }
+  if (!exp) {
+    return;
+  }
+  if (neb.solidState()) {
+    throw std::invalid_argument(
+        "band_precon = exp is refused with solid_state; the metric has no "
+        "pair geometry for the cell block");
+  }
+  if (neb.atoms < 2) {
+    throw std::invalid_argument(
+        "band_precon = exp needs at least two atoms per image");
+  }
+  if (springKind(opt) != RGSADDLE_SPRING_UNIFORM) {
+    throw std::invalid_argument(
+        "band_precon = exp needs a uniform spring; energy_weighted and "
+        "onsager_machlup are refused");
+  }
+  if (bandHasFixedAtoms(neb)) {
+    throw std::invalid_argument(
+        "band_precon = exp is refused with fixed atoms: the rgsaddle band "
+        "metric has no fixed-atom mask, so the step would move fixed atoms "
+        "that eOn pins back. Free every atom, or keep band_precon = none");
+  }
+#endif
+}
+
 int32_t methodKind(const Parameters &params) {
+#ifdef WITH_RGSADDLE_BAND_PRECON
+  if (params.neb_options().band.stepper == "ode12r") {
+    return RGSADDLE_METHOD_ODE12R;
+  }
+#endif
   const auto nebMethod = params.neb_options().opt_method;
   if (nebMethod == OptType::FIRE) {
     return RGSADDLE_METHOD_FIRE;
@@ -166,6 +239,22 @@ int xtsciBandSurface(void *user, void *request) {
     } else if (req->n_images == band - 2) {
       rows = band - 2;
       first = 1;
+    } else if (req->n_images == 1) {
+      // With RGSADDLE_BAND_NO_MIN_MODE set, only the estimate of the band
+      // metric's energy scale sends one row: a point off the band near
+      // image 1. A copy of image 1 takes it, so no band image moves. That
+      // row comes batched, with image -1 and no flags.
+      if (req->image >= 0 || req->flags != 0) {
+        return RGSADDLE_SHAPE;
+      }
+      Matter probe(*neb->path[1]);
+      moveTo(probe, AtomMatrix::Map(req->positions, nAtoms, 3));
+      req->energies[0] = probe.getPotentialEnergy();
+      const double *src = probe.getForces().data();
+      for (int64_t k = 0; k < 3 * nAtoms; ++k) {
+        req->gradients[k] = -src[k];
+      }
+      return RGSADDLE_OK;
     } else {
       return RGSADDLE_SHAPE;
     }
@@ -310,6 +399,7 @@ XtsciBand::XtsciBand(NudgedElasticBand &neb, const Parameters &params)
     throw std::runtime_error("incompatible rgsaddle ABI");
   }
   const auto &nebOpt = params.neb_options();
+  checkBandOptions(neb, nebOpt, stamp);
   const auto nImages = static_cast<int64_t>(neb.numImages + 2);
   const auto nAtoms = static_cast<int64_t>(neb.atoms);
   if (nImages < 3 || nAtoms < 1) {
@@ -403,6 +493,18 @@ XtsciBand::XtsciBand(NudgedElasticBand &neb, const Parameters &params)
   if (m_band == nullptr) {
     throw std::runtime_error("rgsaddle_band_create failed");
   }
+#ifdef WITH_RGSADDLE_BAND_PRECON
+  if (nebOpt.band.precon == "exp") {
+    // a, c_stab and r_cut_factor at 0 take rgsaddle's 3, 0.1 and 2.
+    const int rc = rgsaddle_band_set_exp_precon(m_band, 0.0, 0.0,
+                                                nebOpt.band.precon_mu, 0.0);
+    if (rc != RGSADDLE_OK) {
+      rgsaddle_band_free(m_band);
+      m_band = nullptr;
+      checkStatus(rc, "rgsaddle_band_set_exp_precon");
+    }
+  }
+#endif
 }
 
 XtsciBand::~XtsciBand() { rgsaddle_band_free(m_band); }
