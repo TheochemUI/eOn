@@ -5,6 +5,7 @@ import ast
 import configparser
 import logging
 import math
+import os
 from pathlib import Path
 
 logger = logging.getLogger("state")
@@ -15,6 +16,119 @@ from eon import atoms, state
 from eon import fileio as io
 from eon.approach import prepared_imbalance
 from eon.config import ConfigClass  # Typing
+
+
+def _intact_prefix(data, header_lines, min_fields, exact):
+    """Bytes to keep, and whether the final line was torn.
+
+    A final line past the header is torn when it has no trailing newline
+    or the wrong number of fields. ``exact`` requires that count;
+    otherwise the line needs at least ``min_fields``.
+    """
+    if not data:
+        return data, False
+    if data.endswith(b"\n"):
+        end = len(data) - 1
+        prev = data.rfind(b"\n", 0, end)
+        start = 0 if prev < 0 else prev + 1
+        if data[:start].count(b"\n") < header_lines:
+            return data, False
+        count = len(data[start:end].split())
+        ok = count == min_fields if exact else count >= min_fields
+        if ok:
+            return data, False
+        return data[:start], True
+    prev = data.rfind(b"\n")
+    start = 0 if prev < 0 else prev + 1
+    if data[:start].count(b"\n") < header_lines:
+        return data, False
+    return data[:start], True
+
+
+def _last_line_start(handle, size, ends_nl):
+    """Byte offset of the final line. ``ends_nl`` skips a trailing newline."""
+    skip = 1 if ends_nl else 0
+    found = 0
+    pos = size
+    while pos > 0:
+        step = min(4096, pos)
+        pos -= step
+        handle.seek(pos)
+        chunk = handle.read(step)
+        idx = len(chunk)
+        while True:
+            idx = chunk.rfind(b"\n", 0, idx)
+            if idx < 0:
+                break
+            found += 1
+            if found > skip:
+                return pos + idx + 1
+    return 0
+
+
+def _preceding_newlines(handle, start, need):
+    if need <= 0 or start <= 0:
+        return 0
+    handle.seek(0)
+    remaining = start
+    count = 0
+    while remaining > 0 and count < need:
+        chunk = handle.read(min(4096, remaining))
+        if not chunk:
+            break
+        remaining -= len(chunk)
+        count += chunk.count(b"\n")
+    return count
+
+
+def _torn_keep(path, header_lines, min_fields, exact):
+    """Cut off a torn tail. Return the length to restore if the append fails.
+
+    Only the tail, and enough of the front to see the header, is read.
+    """
+    path = Path(path)
+    if not path.is_file():
+        return 0
+    size = path.stat().st_size
+    if size == 0:
+        return 0
+    with open(path, "rb") as handle:
+        handle.seek(size - 1)
+        ends_nl = handle.read(1) == b"\n"
+        start = _last_line_start(handle, size, ends_nl)
+        if _preceding_newlines(handle, start, header_lines) < header_lines:
+            return size
+        if not ends_nl:
+            keep = start
+        else:
+            handle.seek(start)
+            fields = len(handle.read(size - 1 - start).split())
+            bad = fields != min_fields if exact else fields < min_fields
+            keep = start if bad else size
+    if keep != size:
+        os.truncate(path, keep)
+    return keep
+
+
+def _append_line(path, line, header_lines, min_fields, exact):
+    """Append one full line, after cutting off a torn tail.
+
+    The line is a single write, followed by a flush and an fsync. If
+    that raises, the file is truncated back to the length it had once
+    the torn tail was gone.
+    """
+    restore = _torn_keep(path, header_lines, min_fields, exact)
+    try:
+        with open(path, "a") as handle:
+            handle.write(line)
+            handle.flush()
+            os.fsync(handle.fileno())
+    except BaseException:
+        try:
+            os.truncate(path, restore)
+        except OSError:
+            pass
+        raise
 
 
 class AKMCState(state.State):
@@ -271,7 +385,6 @@ class AKMCState(state.State):
         return id
 
     def append_search_result(self, result, comment, superbasin):
-        f = open(self.search_result_path, 'a')
         resultdata = result['results']
 
         if self.config.akmc_server_side_process_search:
@@ -282,15 +395,17 @@ class AKMCState(state.State):
         if superbasin:
             comment += " [%i]" % superbasin.id
 
-        f.write("%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (result[first_column],
-                 result["type"],
-                 resultdata["barrier_reactant_to_product"],
-                 resultdata["displacement_saddle_distance"],
-                 resultdata["force_calls_saddle"],
-                 resultdata["force_calls_minimization"],
-                 resultdata["force_calls_prefactors"],
-                 comment))
-        f.close()
+        line = "%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (
+            result[first_column],
+            result["type"],
+            resultdata["barrier_reactant_to_product"],
+            resultdata["displacement_saddle_distance"],
+            resultdata["force_calls_saddle"],
+            resultdata["force_calls_minimization"],
+            resultdata["force_calls_prefactors"],
+            comment,
+        )
+        _append_line(self.search_result_path, line, 2, 8, False)
         self.info.set("MetaData", "searches", self.get_number_of_searches() + 1)
 
     def get_ratetable(self, superbasin=None):
@@ -432,11 +547,7 @@ class AKMCState(state.State):
             # filter out recycled saddles if displace_moved_only is true
             dyn_saddles = set()
             if self.config.disp_moved_only:
-                f = open(self.search_result_path)
-                f.readline()
-                f.readline()
-
-                for line in f:
+                for line in self._search_result_data_lines():
                     status = line.split()[7]
                     if not (status.startswith('good') or status.startswith('repeat')):
                         continue
@@ -445,7 +556,6 @@ class AKMCState(state.State):
                         continue
                     pid = int(status.split('-')[1])
                     dyn_saddles.add(pid)
-                f.close()
 
                 rt = [entry
                       for entry in rt
@@ -705,17 +815,24 @@ class AKMCState(state.State):
             self.increment_time(0.0, self.config.saddle_dynamics_temperature)
             return dict([int(temp), float(time)] for temp, time in self.info.items("SearchTime", raw=True))
 
+    def _search_result_data_lines(self):
+        """Search-log rows after the two header lines, without a torn tail."""
+        path = Path(self.search_result_path)
+        if not path.is_file():
+            return []
+        kept, torn = _intact_prefix(path.read_bytes(), 2, 8, False)
+        if torn:
+            logger.warning(
+                "State %s search log has a torn final line; dropping it",
+                self.number,
+            )
+        return kept.decode().splitlines()[2:]
+
     def get_number_of_searches(self):
         n = self.info.get("MetaData", "searches", None)
         if n is not None:
             return int(n)
-        n = 0
-        if Path(self.search_result_path).is_file():
-            with Path(self.search_result_path).open() as f:
-                f.readline()
-                f.readline()
-                for line in f:
-                    n += 1
+        n = len(self._search_result_data_lines())
         self.info.set("MetaData", "searches", n)
         return n
 
