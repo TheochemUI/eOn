@@ -186,14 +186,17 @@ def register_results(comm, current_state, states, config: ConfigClass = None):
             result['results']['transition_time_s'] += state.get_time()
             time = result['results']['transition_time_s']
             process_id = state.add_process(result)
-            logger.info("Found transition with time: %.3e s", time)
-            if not transition and current_state.number==state.number:
-                transition = {'process_id':process_id, 'time':time}
-            state.zero_time()
-            num_cancelled = comm.cancel_state(state_num)
-            logger.info("Cancelled %i workunits from state %i",
-                        num_cancelled, state.number)
-            break
+            if process_id is None:
+                logger.warning("Rejected product for state %i", state.number)
+            else:
+                logger.info("Found transition with time: %.3e s", time)
+                if not transition and current_state.number==state.number:
+                    transition = {'process_id':process_id, 'time':time}
+                state.zero_time()
+                num_cancelled = comm.cancel_state(state_num)
+                logger.info("Cancelled %i workunits from state %i",
+                            num_cancelled, state.number)
+                break
         else:
             state.inc_time(result['results']['simulation_time_s'])
         num_registered += 1
