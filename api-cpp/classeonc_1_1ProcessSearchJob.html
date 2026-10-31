@@ -698,36 +698,38 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  441</span>  }</div>
 <div class="line"><span class="lineno">  442</span> </div>
 <div class="line"><span class="lineno">  443</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().default_value) {</div>
-<div class="line"><span class="lineno">  444</span>    fctmp = <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialCalls();</div>
-<div class="line"><span class="lineno">  445</span>    <span class="keywordtype">int</span> prefStatus;</div>
-<div class="line"><span class="lineno">  446</span>    <span class="keywordtype">double</span> pref1, pref2;</div>
-<div class="line"><span class="lineno">  447</span>    prefStatus = <a class="code hl_function" href="namespaceeonc_1_1Prefactor.html#a9139ed08e86e1089d6bf90d5d9d75d71">eonc::Prefactor::getPrefactors</a>(</div>
-<div class="line"><span class="lineno">  448</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>.get(), <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>.get(), <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>.get(), pref1, pref2);</div>
-<div class="line"><span class="lineno">  449</span>    <span class="keywordflow">if</span> (prefStatus == -1) {</div>
-<div class="line"><span class="lineno">  450</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Prefactor: bad calculation&quot;</span>);</div>
-<div class="line"><span class="lineno">  451</span>      <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960ac9d5cc3e0ddc359ccd44b84d8f0adf7b">MinModeSaddleSearch::STATUS_FAILED_PREFACTOR</a>;</div>
-<div class="line"><span class="lineno">  452</span>    }</div>
-<div class="line"><span class="lineno">  453</span>    <a class="code hl_variable" href="#a22973a4354dddb54a2c021f59b3f157e">fCallsPrefactors</a> += <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialCalls() - fctmp;</div>
-<div class="line"><span class="lineno">  454</span> </div>
-<div class="line"><span class="lineno">  455</span>    <span class="keywordflow">if</span> ((pref1 &gt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().max_value) ||</div>
-<div class="line"><span class="lineno">  456</span>        (pref1 &lt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().min_value)) {</div>
-<div class="line"><span class="lineno">  457</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Bad reactant-to-saddle prefactor: {}&quot;</span>, pref1);</div>
-<div class="line"><span class="lineno">  458</span>      <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960adb85c2a6c895cdeb6df2f29040dd088f">MinModeSaddleSearch::STATUS_BAD_PREFACTOR</a>;</div>
-<div class="line"><span class="lineno">  459</span>    }</div>
-<div class="line"><span class="lineno">  460</span>    <span class="keywordflow">if</span> ((pref2 &gt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().max_value) ||</div>
-<div class="line"><span class="lineno">  461</span>        (pref2 &lt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().min_value)) {</div>
-<div class="line"><span class="lineno">  462</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Bad product-to-saddle prefactor: {}&quot;</span>, pref2);</div>
-<div class="line"><span class="lineno">  463</span>      <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960adb85c2a6c895cdeb6df2f29040dd088f">MinModeSaddleSearch::STATUS_BAD_PREFACTOR</a>;</div>
-<div class="line"><span class="lineno">  464</span>    }</div>
-<div class="line"><span class="lineno">  465</span>    <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[0] = pref1;</div>
-<div class="line"><span class="lineno">  466</span>    <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[1] = pref2;</div>
-<div class="line"><span class="lineno">  467</span> </div>
-<div class="line"><span class="lineno">  468</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  469</span>    <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[0] = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().default_value;</div>
-<div class="line"><span class="lineno">  470</span>    <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[1] = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().default_value;</div>
-<div class="line"><span class="lineno">  471</span>  }</div>
-<div class="line"><span class="lineno">  472</span>  <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">MinModeSaddleSearch::STATUS_GOOD</a>;</div>
-<div class="line"><span class="lineno">  473</span>}</div>
+<div class="line"><span class="lineno">  444</span>    <span class="comment">// With [Main] parallel the min2 Hessian runs on min2&#39;s own instance,</span></div>
+<div class="line"><span class="lineno">  445</span>    <span class="comment">// so only the registry sees every prefactor call.</span></div>
+<div class="line"><span class="lineno">  446</span>    fctmp = <a class="code hl_function" href="classeonc_1_1Job.html#a38797bdd6ab6331a21e1ebbdd4cc7e4a">potRegistryForceCalls</a>();</div>
+<div class="line"><span class="lineno">  447</span>    <span class="keywordtype">int</span> prefStatus;</div>
+<div class="line"><span class="lineno">  448</span>    <span class="keywordtype">double</span> pref1, pref2;</div>
+<div class="line"><span class="lineno">  449</span>    prefStatus = <a class="code hl_function" href="namespaceeonc_1_1Prefactor.html#a9139ed08e86e1089d6bf90d5d9d75d71">eonc::Prefactor::getPrefactors</a>(</div>
+<div class="line"><span class="lineno">  450</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>.get(), <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>.get(), <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>.get(), pref1, pref2);</div>
+<div class="line"><span class="lineno">  451</span>    <a class="code hl_variable" href="#a22973a4354dddb54a2c021f59b3f157e">fCallsPrefactors</a> += <a class="code hl_function" href="classeonc_1_1Job.html#a38797bdd6ab6331a21e1ebbdd4cc7e4a">potRegistryForceCalls</a>() - fctmp;</div>
+<div class="line"><span class="lineno">  452</span>    <span class="keywordflow">if</span> (prefStatus == -1) {</div>
+<div class="line"><span class="lineno">  453</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Prefactor: bad calculation&quot;</span>);</div>
+<div class="line"><span class="lineno">  454</span>      <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960ac9d5cc3e0ddc359ccd44b84d8f0adf7b">MinModeSaddleSearch::STATUS_FAILED_PREFACTOR</a>;</div>
+<div class="line"><span class="lineno">  455</span>    }</div>
+<div class="line"><span class="lineno">  456</span> </div>
+<div class="line"><span class="lineno">  457</span>    <span class="keywordflow">if</span> ((pref1 &gt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().max_value) ||</div>
+<div class="line"><span class="lineno">  458</span>        (pref1 &lt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().min_value)) {</div>
+<div class="line"><span class="lineno">  459</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Bad reactant-to-saddle prefactor: {}&quot;</span>, pref1);</div>
+<div class="line"><span class="lineno">  460</span>      <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960adb85c2a6c895cdeb6df2f29040dd088f">MinModeSaddleSearch::STATUS_BAD_PREFACTOR</a>;</div>
+<div class="line"><span class="lineno">  461</span>    }</div>
+<div class="line"><span class="lineno">  462</span>    <span class="keywordflow">if</span> ((pref2 &gt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().max_value) ||</div>
+<div class="line"><span class="lineno">  463</span>        (pref2 &lt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().min_value)) {</div>
+<div class="line"><span class="lineno">  464</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Bad product-to-saddle prefactor: {}&quot;</span>, pref2);</div>
+<div class="line"><span class="lineno">  465</span>      <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960adb85c2a6c895cdeb6df2f29040dd088f">MinModeSaddleSearch::STATUS_BAD_PREFACTOR</a>;</div>
+<div class="line"><span class="lineno">  466</span>    }</div>
+<div class="line"><span class="lineno">  467</span>    <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[0] = pref1;</div>
+<div class="line"><span class="lineno">  468</span>    <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[1] = pref2;</div>
+<div class="line"><span class="lineno">  469</span> </div>
+<div class="line"><span class="lineno">  470</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  471</span>    <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[0] = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().default_value;</div>
+<div class="line"><span class="lineno">  472</span>    <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[1] = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().default_value;</div>
+<div class="line"><span class="lineno">  473</span>  }</div>
+<div class="line"><span class="lineno">  474</span>  <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">MinModeSaddleSearch::STATUS_GOOD</a>;</div>
+<div class="line"><span class="lineno">  475</span>}</div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
 <div class="ttc" id="aEonLogger_8h_html_a3985f57d817b8b5bac1a2f71f12ea439"><div class="ttname"><a href="EonLogger_8h.html#a3985f57d817b8b5bac1a2f71f12ea439">EONC_LOG_DEBUG</a></div><div class="ttdeci">#define EONC_LOG_DEBUG(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00310">EonLogger.h:310</a></div></div>
 <div class="ttc" id="aEonLogger_8h_html_a4cf9b473cf6a1d850b3725fca6805f86"><div class="ttname"><a href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a></div><div class="ttdeci">#define EONC_LOG_ERROR(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00328">EonLogger.h:328</a></div></div>
@@ -947,15 +949,15 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Logs the run status and makes sure the run was successful. </p>
 
-<p class="definition">Definition at line <a class="el" href="ProcessSearchJob_8cpp_source.html#l00526">526</a> of file <a class="el" href="ProcessSearchJob_8cpp_source.html">ProcessSearchJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  526</span>                                               {</div>
-<div class="line"><span class="lineno">  527</span>  <span class="keyword">auto</span> msg = <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;describeStatus(status);</div>
-<div class="line"><span class="lineno">  528</span>  <span class="keywordflow">if</span> (status == <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">MinModeSaddleSearch::STATUS_GOOD</a>) {</div>
-<div class="line"><span class="lineno">  529</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;[Saddle Search] {}&quot;</span>, msg);</div>
-<div class="line"><span class="lineno">  530</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  531</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;[Saddle Search] {}&quot;</span>, msg);</div>
-<div class="line"><span class="lineno">  532</span>  }</div>
-<div class="line"><span class="lineno">  533</span>}</div>
+<p class="definition">Definition at line <a class="el" href="ProcessSearchJob_8cpp_source.html#l00528">528</a> of file <a class="el" href="ProcessSearchJob_8cpp_source.html">ProcessSearchJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  528</span>                                               {</div>
+<div class="line"><span class="lineno">  529</span>  <span class="keyword">auto</span> msg = <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;describeStatus(status);</div>
+<div class="line"><span class="lineno">  530</span>  <span class="keywordflow">if</span> (status == <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">MinModeSaddleSearch::STATUS_GOOD</a>) {</div>
+<div class="line"><span class="lineno">  531</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;[Saddle Search] {}&quot;</span>, msg);</div>
+<div class="line"><span class="lineno">  532</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  533</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;[Saddle Search] {}&quot;</span>, msg);</div>
+<div class="line"><span class="lineno">  534</span>  }</div>
+<div class="line"><span class="lineno">  535</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1241,8 +1243,8 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  279</span> </div>
 <div class="line"><span class="lineno">  280</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> ? <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> : <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>;</div>
 <div class="line"><span class="lineno">  281</span>}</div>
-<div class="ttc" id="aclasseonc_1_1ProcessSearchJob_html_a774f6d5248f1e1ee2c4451250557c66d"><div class="ttname"><a href="#a774f6d5248f1e1ee2c4451250557c66d">eonc::ProcessSearchJob::printEndState</a></div><div class="ttdeci">void printEndState(int status)</div><div class="ttdoc">Logs the run status and makes sure the run was successful.</div><div class="ttdef"><b>Definition</b> <a href="ProcessSearchJob_8cpp_source.html#l00526">ProcessSearchJob.cpp:526</a></div></div>
-<div class="ttc" id="aclasseonc_1_1ProcessSearchJob_html_ab91cd17a9d64053d264055fc0011ad1c"><div class="ttname"><a href="#ab91cd17a9d64053d264055fc0011ad1c">eonc::ProcessSearchJob::saveData</a></div><div class="ttdeci">void saveData(int status)</div><div class="ttdoc">Writes the results from the run to file.</div><div class="ttdef"><b>Definition</b> <a href="ProcessSearchJob_8cpp_source.html#l00475">ProcessSearchJob.cpp:475</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ProcessSearchJob_html_a774f6d5248f1e1ee2c4451250557c66d"><div class="ttname"><a href="#a774f6d5248f1e1ee2c4451250557c66d">eonc::ProcessSearchJob::printEndState</a></div><div class="ttdeci">void printEndState(int status)</div><div class="ttdoc">Logs the run status and makes sure the run was successful.</div><div class="ttdef"><b>Definition</b> <a href="ProcessSearchJob_8cpp_source.html#l00528">ProcessSearchJob.cpp:528</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ProcessSearchJob_html_ab91cd17a9d64053d264055fc0011ad1c"><div class="ttname"><a href="#ab91cd17a9d64053d264055fc0011ad1c">eonc::ProcessSearchJob::saveData</a></div><div class="ttdeci">void saveData(int status)</div><div class="ttdoc">Writes the results from the run to file.</div><div class="ttdef"><b>Definition</b> <a href="ProcessSearchJob_8cpp_source.html#l00477">ProcessSearchJob.cpp:477</a></div></div>
 <div class="ttc" id="aclasseonc_1_1ProcessSearchJob_html_aecac3f3d3d7154454afd7104a7f16258"><div class="ttname"><a href="#aecac3f3d3d7154454afd7104a7f16258">eonc::ProcessSearchJob::doProcessSearch</a></div><div class="ttdeci">int doProcessSearch(void)</div><div class="ttdoc">Runs the correct saddle search; also checks if the run was successful.</div><div class="ttdef"><b>Definition</b> <a href="ProcessSearchJob_8cpp_source.html#l00283">ProcessSearchJob.cpp:283</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -1272,57 +1274,57 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Writes the results from the run to file. </p>
 
-<p class="definition">Definition at line <a class="el" href="ProcessSearchJob_8cpp_source.html#l00475">475</a> of file <a class="el" href="ProcessSearchJob_8cpp_source.html">ProcessSearchJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  475</span>                                          {</div>
-<div class="line"><span class="lineno">  476</span>  std::string resultsFilename(<span class="stringliteral">&quot;results.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">  477</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(resultsFilename);</div>
-<div class="line"><span class="lineno">  478</span> </div>
-<div class="line"><span class="lineno">  479</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> dynamics = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;dynamics&quot;</span>;</div>
-<div class="line"><span class="lineno">  480</span>  <span class="keywordtype">double</span> simTime = 0.0;</div>
-<div class="line"><span class="lineno">  481</span>  <span class="keywordtype">double</span> mdTemp = 0.0;</div>
-<div class="line"><span class="lineno">  482</span>  <span class="keywordflow">if</span> (dynamics) {</div>
-<div class="line"><span class="lineno">  483</span>    <span class="keyword">auto</span> ds = <span class="keyword">dynamic_cast&lt;</span>DynamicsSaddleSearch &amp;<span class="keyword">&gt;</span>(*saddleSearch);</div>
-<div class="line"><span class="lineno">  484</span>    simTime = ds.time * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().timeUnit;</div>
-<div class="line"><span class="lineno">  485</span>    mdTemp = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().dynamics.temperature;</div>
-<div class="line"><span class="lineno">  486</span>  }</div>
-<div class="line"><span class="lineno">  487</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> disp = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span></div>
-<div class="line"><span class="lineno">  488</span>                          ? <a class="code hl_variable" href="#a0256d15cfd589d72b98bf244a4f0278b">displacement</a>-&gt;perAtomNorm(*<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>)</div>
-<div class="line"><span class="lineno">  489</span>                          : 0.0;</div>
-<div class="line"><span class="lineno">  490</span>  <span class="keyword">auto</span> env = <a class="code hl_function" href="structeonc_1_1JobResultEnvelope.html#a94c3830e447fa0fd214a9e2e6811a54a">JobResultEnvelope::fromProcessSearch</a>(</div>
-<div class="line"><span class="lineno">  491</span>      status, std::string(<a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;describeStatus(status)),</div>
-<div class="line"><span class="lineno">  492</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options().potential, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().randomSeed,</div>
-<div class="line"><span class="lineno">  493</span>      <a class="code hl_variable" href="#a2a9fa27e530909e51e734a76df57f7e4">fCallsMin</a>, <a class="code hl_variable" href="#ab61cafe595a8a21499b497398eb16c0a">fCallsSaddle</a>, <a class="code hl_variable" href="#a22973a4354dddb54a2c021f59b3f157e">fCallsPrefactors</a>, <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>-&gt;getPotentialEnergy(),</div>
-<div class="line"><span class="lineno">  494</span>      <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialEnergy(), <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;getPotentialEnergy(), <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[0],</div>
-<div class="line"><span class="lineno">  495</span>      <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[1], disp, <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[0], <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[1],</div>
-<div class="line"><span class="lineno">  496</span>      dynamics, simTime, mdTemp);</div>
-<div class="line"><span class="lineno">  497</span>  env.provenance = <a class="code hl_function" href="namespaceeonc.html#aa67d050aa179f681c8792139d0b2fed8">provenanceForJob</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  498</span>  env.reactant_frame = <a class="code hl_function" href="namespaceeonc_1_1io.html#ad199f826cc24bd9826a30c68005ddd45">eonc::io::matterToConFrame</a>(*<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>);</div>
-<div class="line"><span class="lineno">  499</span>  env.saddle_frame = <a class="code hl_function" href="namespaceeonc_1_1io.html#ad199f826cc24bd9826a30c68005ddd45">eonc::io::matterToConFrame</a>(*<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>);</div>
-<div class="line"><span class="lineno">  500</span>  env.product_frame = <a class="code hl_function" href="namespaceeonc_1_1io.html#ad199f826cc24bd9826a30c68005ddd45">eonc::io::matterToConFrame</a>(*<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>);</div>
-<div class="line"><span class="lineno">  501</span>  env.writeResultsDat(resultsFilename);</div>
-<div class="line"><span class="lineno">  502</span> </div>
-<div class="line"><span class="lineno">  503</span>  std::string reactantFilename(<span class="stringliteral">&quot;reactant.con&quot;</span>);</div>
-<div class="line"><span class="lineno">  504</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(reactantFilename);</div>
-<div class="line"><span class="lineno">  505</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;matter2con(reactantFilename))) {</div>
-<div class="line"><span class="lineno">  506</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, reactantFilename);</div>
-<div class="line"><span class="lineno">  507</span>  }</div>
-<div class="line"><span class="lineno">  508</span> </div>
-<div class="line"><span class="lineno">  509</span>  std::string modeFilename(<span class="stringliteral">&quot;mode.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">  510</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(modeFilename);</div>
-<div class="line"><span class="lineno">  511</span>  <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a92f5969aa3d8873415b628ea22b735fa">eonc::helpers::saveMode</a>(modeFilename, <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;getEigenvector());</div>
-<div class="line"><span class="lineno">  512</span> </div>
-<div class="line"><span class="lineno">  513</span>  std::string saddleFilename(<span class="stringliteral">&quot;saddle.con&quot;</span>);</div>
-<div class="line"><span class="lineno">  514</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(saddleFilename);</div>
-<div class="line"><span class="lineno">  515</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>-&gt;matter2con(saddleFilename))) {</div>
-<div class="line"><span class="lineno">  516</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, saddleFilename);</div>
-<div class="line"><span class="lineno">  517</span>  }</div>
-<div class="line"><span class="lineno">  518</span> </div>
-<div class="line"><span class="lineno">  519</span>  std::string productFilename(<span class="stringliteral">&quot;product.con&quot;</span>);</div>
-<div class="line"><span class="lineno">  520</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(productFilename);</div>
-<div class="line"><span class="lineno">  521</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;matter2con(productFilename))) {</div>
-<div class="line"><span class="lineno">  522</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, productFilename);</div>
-<div class="line"><span class="lineno">  523</span>  }</div>
-<div class="line"><span class="lineno">  524</span>}</div>
+<p class="definition">Definition at line <a class="el" href="ProcessSearchJob_8cpp_source.html#l00477">477</a> of file <a class="el" href="ProcessSearchJob_8cpp_source.html">ProcessSearchJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  477</span>                                          {</div>
+<div class="line"><span class="lineno">  478</span>  std::string resultsFilename(<span class="stringliteral">&quot;results.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  479</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(resultsFilename);</div>
+<div class="line"><span class="lineno">  480</span> </div>
+<div class="line"><span class="lineno">  481</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> dynamics = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;dynamics&quot;</span>;</div>
+<div class="line"><span class="lineno">  482</span>  <span class="keywordtype">double</span> simTime = 0.0;</div>
+<div class="line"><span class="lineno">  483</span>  <span class="keywordtype">double</span> mdTemp = 0.0;</div>
+<div class="line"><span class="lineno">  484</span>  <span class="keywordflow">if</span> (dynamics) {</div>
+<div class="line"><span class="lineno">  485</span>    <span class="keyword">auto</span> ds = <span class="keyword">dynamic_cast&lt;</span>DynamicsSaddleSearch &amp;<span class="keyword">&gt;</span>(*saddleSearch);</div>
+<div class="line"><span class="lineno">  486</span>    simTime = ds.time * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().timeUnit;</div>
+<div class="line"><span class="lineno">  487</span>    mdTemp = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().dynamics.temperature;</div>
+<div class="line"><span class="lineno">  488</span>  }</div>
+<div class="line"><span class="lineno">  489</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> disp = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span></div>
+<div class="line"><span class="lineno">  490</span>                          ? <a class="code hl_variable" href="#a0256d15cfd589d72b98bf244a4f0278b">displacement</a>-&gt;perAtomNorm(*<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>)</div>
+<div class="line"><span class="lineno">  491</span>                          : 0.0;</div>
+<div class="line"><span class="lineno">  492</span>  <span class="keyword">auto</span> env = <a class="code hl_function" href="structeonc_1_1JobResultEnvelope.html#a94c3830e447fa0fd214a9e2e6811a54a">JobResultEnvelope::fromProcessSearch</a>(</div>
+<div class="line"><span class="lineno">  493</span>      status, std::string(<a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;describeStatus(status)),</div>
+<div class="line"><span class="lineno">  494</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options().potential, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().randomSeed,</div>
+<div class="line"><span class="lineno">  495</span>      <a class="code hl_variable" href="#a2a9fa27e530909e51e734a76df57f7e4">fCallsMin</a>, <a class="code hl_variable" href="#ab61cafe595a8a21499b497398eb16c0a">fCallsSaddle</a>, <a class="code hl_variable" href="#a22973a4354dddb54a2c021f59b3f157e">fCallsPrefactors</a>, <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>-&gt;getPotentialEnergy(),</div>
+<div class="line"><span class="lineno">  496</span>      <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialEnergy(), <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;getPotentialEnergy(), <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[0],</div>
+<div class="line"><span class="lineno">  497</span>      <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[1], disp, <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[0], <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[1],</div>
+<div class="line"><span class="lineno">  498</span>      dynamics, simTime, mdTemp);</div>
+<div class="line"><span class="lineno">  499</span>  env.provenance = <a class="code hl_function" href="namespaceeonc.html#aa67d050aa179f681c8792139d0b2fed8">provenanceForJob</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  500</span>  env.reactant_frame = <a class="code hl_function" href="namespaceeonc_1_1io.html#ad199f826cc24bd9826a30c68005ddd45">eonc::io::matterToConFrame</a>(*<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>);</div>
+<div class="line"><span class="lineno">  501</span>  env.saddle_frame = <a class="code hl_function" href="namespaceeonc_1_1io.html#ad199f826cc24bd9826a30c68005ddd45">eonc::io::matterToConFrame</a>(*<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>);</div>
+<div class="line"><span class="lineno">  502</span>  env.product_frame = <a class="code hl_function" href="namespaceeonc_1_1io.html#ad199f826cc24bd9826a30c68005ddd45">eonc::io::matterToConFrame</a>(*<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>);</div>
+<div class="line"><span class="lineno">  503</span>  env.writeResultsDat(resultsFilename);</div>
+<div class="line"><span class="lineno">  504</span> </div>
+<div class="line"><span class="lineno">  505</span>  std::string reactantFilename(<span class="stringliteral">&quot;reactant.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  506</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(reactantFilename);</div>
+<div class="line"><span class="lineno">  507</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;matter2con(reactantFilename))) {</div>
+<div class="line"><span class="lineno">  508</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, reactantFilename);</div>
+<div class="line"><span class="lineno">  509</span>  }</div>
+<div class="line"><span class="lineno">  510</span> </div>
+<div class="line"><span class="lineno">  511</span>  std::string modeFilename(<span class="stringliteral">&quot;mode.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  512</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(modeFilename);</div>
+<div class="line"><span class="lineno">  513</span>  <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a92f5969aa3d8873415b628ea22b735fa">eonc::helpers::saveMode</a>(modeFilename, <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;getEigenvector());</div>
+<div class="line"><span class="lineno">  514</span> </div>
+<div class="line"><span class="lineno">  515</span>  std::string saddleFilename(<span class="stringliteral">&quot;saddle.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  516</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(saddleFilename);</div>
+<div class="line"><span class="lineno">  517</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>-&gt;matter2con(saddleFilename))) {</div>
+<div class="line"><span class="lineno">  518</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, saddleFilename);</div>
+<div class="line"><span class="lineno">  519</span>  }</div>
+<div class="line"><span class="lineno">  520</span> </div>
+<div class="line"><span class="lineno">  521</span>  std::string productFilename(<span class="stringliteral">&quot;product.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  522</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(productFilename);</div>
+<div class="line"><span class="lineno">  523</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;matter2con(productFilename))) {</div>
+<div class="line"><span class="lineno">  524</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, productFilename);</div>
+<div class="line"><span class="lineno">  525</span>  }</div>
+<div class="line"><span class="lineno">  526</span>}</div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_html_a92f5969aa3d8873415b628ea22b735fa"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a92f5969aa3d8873415b628ea22b735fa">eonc::helpers::saveMode</a></div><div class="ttdeci">void saveMode(FILE *modeFile, std::shared_ptr&lt; Matter &gt; matter, AtomMatrix mode)</div><div class="ttdoc">Write a mode; constrained axes are emitted as 0.</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00306">HelperFunctions.cpp:306</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_ad199f826cc24bd9826a30c68005ddd45"><div class="ttname"><a href="namespaceeonc_1_1io.html#ad199f826cc24bd9826a30c68005ddd45">eonc::io::matterToConFrame</a></div><div class="ttdeci">readcon::ConFrame matterToConFrame(Matter &amp;m, const ConFrameMetadata *metadata)</div><div class="ttdoc">Build a single stamped ConFrame from Matter (same builder as matter2con).</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8cpp_source.html#l00521">ConFileIO.cpp:521</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_aa67d050aa179f681c8792139d0b2fed8"><div class="ttname"><a href="namespaceeonc.html#aa67d050aa179f681c8792139d0b2fed8">eonc::provenanceForJob</a></div><div class="ttdeci">JobResultProvenance provenanceForJob(const Parameters &amp;params)</div><div class="ttdoc">Optimizer backend, engine identity, rgpot pin, and xts ABI from a job.</div><div class="ttdef"><b>Definition</b> <a href="JobResultProvenance_8cpp_source.html#l00038">JobResultProvenance.cpp:38</a></div></div>
