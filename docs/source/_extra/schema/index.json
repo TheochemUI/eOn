@@ -359,7 +359,7 @@
         "adjust_period",
         "target_ratio",
         "displacement_distribution",
-        "max_displacement_algorithm",
+        "displacement_algorithm",
         "quenching_steps",
         "swap_probability",
         "single_atom_displace",
