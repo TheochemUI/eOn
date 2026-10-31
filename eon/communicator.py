@@ -648,17 +648,15 @@ class Script(Communicator):
 
         # read in job ids
         try:
-            f = open(self.job_id_path, "rb")
-            self.jobids = pickle.load(f)
-            f.close()
-        except IOError:
+            with open(self.job_id_path, "rb") as f:
+                self.jobids = pickle.load(f)
+        except (OSError, pickle.UnpicklingError, EOFError):
             self.jobids = {}
-            pass
 
     def save_jobids(self):
-        f = open(self.job_id_path, "wb")
-        pickle.dump(self.jobids, f)
-        f.close()
+        from eon import fileio as io
+        with io.atomic_write(self.job_id_path, mode="wb") as f:
+            pickle.dump(self.jobids, f, pickle.HIGHEST_PROTOCOL)
 
     def get_results(self, resultspath, keep_result):
         '''Moves work from scratchpath to results path.'''
