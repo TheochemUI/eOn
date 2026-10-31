@@ -441,16 +441,18 @@ int ProcessSearchJob::doProcessSearch() {
   }
 
   if (!params.prefactor_options().default_value) {
-    fctmp = min1->getPotentialCalls();
+    // With [Main] parallel the min2 Hessian runs on min2's own instance,
+    // so only the registry sees every prefactor call.
+    fctmp = potRegistryForceCalls();
     int prefStatus;
     double pref1, pref2;
     prefStatus = eonc::Prefactor::getPrefactors(
         params, min1.get(), saddle.get(), min2.get(), pref1, pref2);
+    fCallsPrefactors += potRegistryForceCalls() - fctmp;
     if (prefStatus == -1) {
       EONC_LOG_ERROR("Prefactor: bad calculation");
       return MinModeSaddleSearch::STATUS_FAILED_PREFACTOR;
     }
-    fCallsPrefactors += min1->getPotentialCalls() - fctmp;
 
     if ((pref1 > params.prefactor_options().max_value) ||
         (pref1 < params.prefactor_options().min_value)) {
