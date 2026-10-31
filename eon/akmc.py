@@ -349,6 +349,9 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
                         break
                 else:
                     logger.warning("Warning: Failed to select rate; p = " + str(p))
+                    # The counter moved before the draw. No row was taken,
+                    # so this attempt is not a step.
+                    steps -= 1
                     break
 
             next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
