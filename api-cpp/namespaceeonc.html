@@ -2192,9 +2192,9 @@ Variables</h2></td></tr>
 <div class="ttc" id="astructeonc_1_1optimizer__options__t_html_acab93a4b6bb247ebe449e4d509e82378"><div class="ttname"><a href="structeonc_1_1optimizer__options__t.html#acab93a4b6bb247ebe449e4d509e82378">eonc::optimizer_options_t::method</a></div><div class="ttdeci">OptType method</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00257">ParametersOptions.h:257</a></div></div>
 <div class="ttc" id="astructeonc_1_1optimizer__options__t_html_adf9632713ea430156d4e50dceb70a3c4"><div class="ttname"><a href="structeonc_1_1optimizer__options__t.html#adf9632713ea430156d4e50dceb70a3c4">eonc::optimizer_options_t::converged_force</a></div><div class="ttdeci">double converged_force</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00275">ParametersOptions.h:275</a></div></div>
 <div class="ttc" id="astructeonc_1_1potential__options__t_html_a9cdc33bdbae47475f3a71c8e39c0ee78"><div class="ttname"><a href="structeonc_1_1potential__options__t.html#a9cdc33bdbae47475f3a71c8e39c0ee78">eonc::potential_options_t::potential</a></div><div class="ttdeci">PotType potential</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00062">ParametersOptions.h:62</a></div></div>
-<div class="ttc" id="astructeonc_1_1serve__options__t_html_a1095a3c2db9c1d512ed3a3438c8fe64f"><div class="ttname"><a href="structeonc_1_1serve__options__t.html#a1095a3c2db9c1d512ed3a3438c8fe64f">eonc::serve_options_t::replicas</a></div><div class="ttdeci">size_t replicas</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00793">ParametersOptions.h:793</a></div></div>
-<div class="ttc" id="astructeonc_1_1serve__options__t_html_a3c9f205b9627720a8d2379f80186ef69"><div class="ttname"><a href="structeonc_1_1serve__options__t.html#a3c9f205b9627720a8d2379f80186ef69">eonc::serve_options_t::endpoints</a></div><div class="ttdeci">std::string endpoints</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00795">ParametersOptions.h:795</a></div></div>
-<div class="ttc" id="astructeonc_1_1serve__options__t_html_a8d3486622ae336da57c8d7bb7ea5ef23"><div class="ttname"><a href="structeonc_1_1serve__options__t.html#a8d3486622ae336da57c8d7bb7ea5ef23">eonc::serve_options_t::gateway_port</a></div><div class="ttdeci">uint16_t gateway_port</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00794">ParametersOptions.h:794</a></div></div>
+<div class="ttc" id="astructeonc_1_1serve__options__t_html_a1095a3c2db9c1d512ed3a3438c8fe64f"><div class="ttname"><a href="structeonc_1_1serve__options__t.html#a1095a3c2db9c1d512ed3a3438c8fe64f">eonc::serve_options_t::replicas</a></div><div class="ttdeci">size_t replicas</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00803">ParametersOptions.h:803</a></div></div>
+<div class="ttc" id="astructeonc_1_1serve__options__t_html_a3c9f205b9627720a8d2379f80186ef69"><div class="ttname"><a href="structeonc_1_1serve__options__t.html#a3c9f205b9627720a8d2379f80186ef69">eonc::serve_options_t::endpoints</a></div><div class="ttdeci">std::string endpoints</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00805">ParametersOptions.h:805</a></div></div>
+<div class="ttc" id="astructeonc_1_1serve__options__t_html_a8d3486622ae336da57c8d7bb7ea5ef23"><div class="ttname"><a href="structeonc_1_1serve__options__t.html#a8d3486622ae336da57c8d7bb7ea5ef23">eonc::serve_options_t::gateway_port</a></div><div class="ttdeci">uint16_t gateway_port</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00804">ParametersOptions.h:804</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -5827,105 +5827,121 @@ requires ThreadSafeQueryable&lt;P&gt;</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="XtsciBand_8cpp_source.html#l00135">135</a> of file <a class="el" href="XtsciBand_8cpp_source.html">XtsciBand.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  135</span>                                                {</div>
-<div class="line"><span class="lineno">  136</span>  <span class="keyword">auto</span> *self = <span class="keyword">static_cast&lt;</span><a class="code hl_class" href="classeonc_1_1XtsciBand.html">XtsciBand</a> *<span class="keyword">&gt;</span>(user);</div>
-<div class="line"><span class="lineno">  137</span>  <span class="keyword">auto</span> *req = <span class="keyword">static_cast&lt;</span>rgsaddle_surface_request_t *<span class="keyword">&gt;</span>(request);</div>
-<div class="line"><span class="lineno">  138</span>  <span class="keywordflow">if</span> (self == <span class="keyword">nullptr</span> || req == <span class="keyword">nullptr</span> || req-&gt;positions == <span class="keyword">nullptr</span> ||</div>
-<div class="line"><span class="lineno">  139</span>      req-&gt;energies == <span class="keyword">nullptr</span> || req-&gt;gradients == <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">  140</span>    <span class="keywordflow">return</span> RGSADDLE_SURFACE_FAILED;</div>
-<div class="line"><span class="lineno">  141</span>  }</div>
-<div class="line"><span class="lineno">  142</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  143</span>    <span class="keyword">auto</span> *neb = self-&gt;m_neb;</div>
-<div class="line"><span class="lineno">  144</span>    <span class="keyword">const</span> <span class="keyword">auto</span> band = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(neb-&gt;numImages + 2);</div>
-<div class="line"><span class="lineno">  145</span>    <span class="keyword">const</span> <span class="keyword">auto</span> nAtoms = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(neb-&gt;atoms);</div>
-<div class="line"><span class="lineno">  146</span>    <span class="keywordflow">if</span> (req-&gt;version.major != RGSADDLE_ABI_MAJOR) {</div>
-<div class="line"><span class="lineno">  147</span>      <span class="keywordflow">return</span> RGSADDLE_ABI_MISMATCH;</div>
-<div class="line"><span class="lineno">  148</span>    }</div>
-<div class="line"><span class="lineno">  149</span>    <span class="keywordflow">if</span> (req-&gt;n_atoms != nAtoms) {</div>
-<div class="line"><span class="lineno">  150</span>      <span class="keywordflow">return</span> RGSADDLE_SHAPE;</div>
-<div class="line"><span class="lineno">  151</span>    }</div>
-<div class="line"><span class="lineno">  152</span>    <span class="comment">// Rows carried by this request and the band image of row 0. The</span></div>
-<div class="line"><span class="lineno">  153</span>    <span class="comment">// session sends the whole band on its first evaluation, the interior</span></div>
-<div class="line"><span class="lineno">  154</span>    <span class="comment">// images 1 .. band - 2 afterwards, or one image with</span></div>
-<div class="line"><span class="lineno">  155</span>    <span class="comment">// RGSADDLE_REQ_ONE_IMAGE.</span></div>
-<div class="line"><span class="lineno">  156</span>    int64_t rows = 0;</div>
-<div class="line"><span class="lineno">  157</span>    int64_t first = 0;</div>
-<div class="line"><span class="lineno">  158</span>    <span class="keywordflow">if</span> ((req-&gt;flags &amp; RGSADDLE_REQ_ONE_IMAGE) != 0) {</div>
-<div class="line"><span class="lineno">  159</span>      <span class="keywordflow">if</span> (req-&gt;n_images != band || req-&gt;image &lt; 0 || req-&gt;image &gt;= band) {</div>
-<div class="line"><span class="lineno">  160</span>        <span class="keywordflow">return</span> RGSADDLE_SHAPE;</div>
-<div class="line"><span class="lineno">  161</span>      }</div>
-<div class="line"><span class="lineno">  162</span>      rows = 1;</div>
-<div class="line"><span class="lineno">  163</span>      first = req-&gt;image;</div>
-<div class="line"><span class="lineno">  164</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (req-&gt;n_images == band) {</div>
-<div class="line"><span class="lineno">  165</span>      rows = band;</div>
-<div class="line"><span class="lineno">  166</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (req-&gt;n_images == band - 2) {</div>
-<div class="line"><span class="lineno">  167</span>      rows = band - 2;</div>
-<div class="line"><span class="lineno">  168</span>      first = 1;</div>
-<div class="line"><span class="lineno">  169</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  170</span>      <span class="keywordflow">return</span> RGSADDLE_SHAPE;</div>
-<div class="line"><span class="lineno">  171</span>    }</div>
-<div class="line"><span class="lineno">  172</span>    <span class="keyword">const</span> <span class="keyword">auto</span> dof = <span class="keyword">static_cast&lt;</span>Eigen::Index<span class="keyword">&gt;</span>(3 * nAtoms);</div>
-<div class="line"><span class="lineno">  173</span>    std::vector&lt;Matter *&gt; carried;</div>
-<div class="line"><span class="lineno">  174</span>    std::vector&lt;long&gt; owners;</div>
-<div class="line"><span class="lineno">  175</span>    carried.reserve(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(rows));</div>
-<div class="line"><span class="lineno">  176</span>    owners.reserve(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(rows));</div>
-<div class="line"><span class="lineno">  177</span>    <span class="keywordflow">for</span> (int64_t r = 0; r &lt; rows; ++r) {</div>
-<div class="line"><span class="lineno">  178</span>      <span class="keyword">const</span> <span class="keyword">auto</span> i = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(first + r);</div>
-<div class="line"><span class="lineno">  179</span>      carried.push_back(<a class="code hl_namespace" href="namespaceeonc_1_1neb.html">neb</a>-&gt;path[i].get());</div>
-<div class="line"><span class="lineno">  180</span>      owners.push_back(<a class="code hl_namespace" href="namespaceeonc_1_1neb.html">neb</a>-&gt;imageOwner(i));</div>
-<div class="line"><span class="lineno">  181</span>    }</div>
-<div class="line"><span class="lineno">  182</span>    <span class="comment">// Row r: the session&#39;s coordinates onto its image. The fixed endpoints</span></div>
-<div class="line"><span class="lineno">  183</span>    <span class="comment">// and a start point the band already evaluated come back from the</span></div>
-<div class="line"><span class="lineno">  184</span>    <span class="comment">// image&#39;s own cache.</span></div>
-<div class="line"><span class="lineno">  185</span>    <span class="keyword">auto</span> place = [&amp;](int64_t r) {</div>
-<div class="line"><span class="lineno">  186</span>      <span class="keyword">const</span> <span class="keyword">auto</span> i = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(first + r);</div>
-<div class="line"><span class="lineno">  187</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = AtomMatrix::Map(req-&gt;positions + r * dof, nAtoms, 3);</div>
-<div class="line"><span class="lineno">  188</span>      <span class="keywordflow">if</span> (i &lt; self-&gt;m_fixed.size()) {</div>
-<div class="line"><span class="lineno">  189</span>        pinRows(self-&gt;m_fixed[i], *<a class="code hl_namespace" href="namespaceeonc_1_1neb.html">neb</a>-&gt;path[i], &amp;pos);</div>
-<div class="line"><span class="lineno">  190</span>      }</div>
-<div class="line"><span class="lineno">  191</span>      moveTo(*<a class="code hl_namespace" href="namespaceeonc_1_1neb.html">neb</a>-&gt;path[i], pos);</div>
-<div class="line"><span class="lineno">  192</span>    };</div>
-<div class="line"><span class="lineno">  193</span>    <span class="keyword">auto</span> report = [&amp;](int64_t r) {</div>
-<div class="line"><span class="lineno">  194</span>      <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;image = *carried[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(r)];</div>
-<div class="line"><span class="lineno">  195</span>      req-&gt;energies[r] = image.<a class="code hl_function" href="classMatter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>();</div>
-<div class="line"><span class="lineno">  196</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> *src = image.<a class="code hl_function" href="classMatter.html#ae062745fc2cd388a6d4bd4ad1e76b615">getForces</a>().data();</div>
-<div class="line"><span class="lineno">  197</span>      <span class="keywordtype">double</span> *grad = req-&gt;gradients + r * dof;</div>
-<div class="line"><span class="lineno">  198</span>      <span class="keywordflow">for</span> (Eigen::Index k = 0; k &lt; dof; ++k) {</div>
-<div class="line"><span class="lineno">  199</span>        grad[k] = -src[k];</div>
-<div class="line"><span class="lineno">  200</span>      }</div>
-<div class="line"><span class="lineno">  201</span>    };</div>
-<div class="line"><span class="lineno">  202</span>    <a class="code hl_class" href="classeonc_1_1Potential.html">Potential</a> &amp;<a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a> = *carried.front()-&gt;getPotential();</div>
-<div class="line"><span class="lineno">  203</span>    <span class="keywordflow">if</span> (self-&gt;m_threads &amp;&amp; rows &gt; 1 &amp;&amp; !<a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>.supportsBatchEvaluation() &amp;&amp;</div>
-<div class="line"><span class="lineno">  204</span>        <a class="code hl_function" href="#afa25d65889a01852246fe4d2033b3e44">eonc::canComputeConcurrently</a>(carried)) {</div>
-<div class="line"><span class="lineno">  205</span>      <span class="comment">// One pass on the image pool: each row is placed, evaluated and</span></div>
-<div class="line"><span class="lineno">  206</span>      <span class="comment">// read back on the thread that took it.</span></div>
-<div class="line"><span class="lineno">  207</span>      <a class="code hl_function" href="#ab3bf7e08fbd5f88088ee9d8f84d60927">eonc::forEachImage</a>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(rows), [&amp;](<span class="keywordtype">long</span> k) {</div>
-<div class="line"><span class="lineno">  208</span>        <span class="keyword">const</span> <span class="keyword">auto</span> r = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(k - 1);</div>
-<div class="line"><span class="lineno">  209</span>        place(r);</div>
-<div class="line"><span class="lineno">  210</span>        <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;image = *carried[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(r)];</div>
-<div class="line"><span class="lineno">  211</span>        <span class="keywordflow">if</span> (image.<a class="code hl_function" href="classMatter.html#aa093532bd3da96f1e556173582439ba8">needsForceUpdate</a>()) {</div>
-<div class="line"><span class="lineno">  212</span>          image.<a class="code hl_function" href="classMatter.html#a745e4751aa4e6822a3931e8e9e3c9f0f">getForcesRaw</a>();</div>
-<div class="line"><span class="lineno">  213</span>        }</div>
-<div class="line"><span class="lineno">  214</span>        report(r);</div>
-<div class="line"><span class="lineno">  215</span>      });</div>
-<div class="line"><span class="lineno">  216</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  217</span>      <span class="keywordflow">for</span> (int64_t r = 0; r &lt; rows; ++r) {</div>
-<div class="line"><span class="lineno">  218</span>        place(r);</div>
-<div class="line"><span class="lineno">  219</span>      }</div>
-<div class="line"><span class="lineno">  220</span>      <span class="comment">// One batch for every carried image, so calculator groups or a</span></div>
-<div class="line"><span class="lineno">  221</span>      <span class="comment">// batched model take them together; otherwise in turn. Each image</span></div>
-<div class="line"><span class="lineno">  222</span>      <span class="comment">// carries its band identity, as in the classic update.</span></div>
-<div class="line"><span class="lineno">  223</span>      <a class="code hl_function" href="#abcb215950a62dd0c90c82213b53be033">eonc::evaluateTogether</a>(<a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>, carried, <span class="keyword">false</span>, owners);</div>
-<div class="line"><span class="lineno">  224</span>      <span class="keywordflow">for</span> (int64_t r = 0; r &lt; rows; ++r) {</div>
-<div class="line"><span class="lineno">  225</span>        report(r);</div>
-<div class="line"><span class="lineno">  226</span>      }</div>
-<div class="line"><span class="lineno">  227</span>    }</div>
-<div class="line"><span class="lineno">  228</span>    <span class="keywordflow">return</span> RGSADDLE_OK;</div>
-<div class="line"><span class="lineno">  229</span>  } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">  230</span>    <span class="keywordflow">return</span> RGSADDLE_SURFACE_FAILED;</div>
-<div class="line"><span class="lineno">  231</span>  }</div>
-<div class="line"><span class="lineno">  232</span>}</div>
+<p class="definition">Definition at line <a class="el" href="XtsciBand_8cpp_source.html#l00208">208</a> of file <a class="el" href="XtsciBand_8cpp_source.html">XtsciBand.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  208</span>                                                {</div>
+<div class="line"><span class="lineno">  209</span>  <span class="keyword">auto</span> *self = <span class="keyword">static_cast&lt;</span><a class="code hl_class" href="classeonc_1_1XtsciBand.html">XtsciBand</a> *<span class="keyword">&gt;</span>(user);</div>
+<div class="line"><span class="lineno">  210</span>  <span class="keyword">auto</span> *req = <span class="keyword">static_cast&lt;</span>rgsaddle_surface_request_t *<span class="keyword">&gt;</span>(request);</div>
+<div class="line"><span class="lineno">  211</span>  <span class="keywordflow">if</span> (self == <span class="keyword">nullptr</span> || req == <span class="keyword">nullptr</span> || req-&gt;positions == <span class="keyword">nullptr</span> ||</div>
+<div class="line"><span class="lineno">  212</span>      req-&gt;energies == <span class="keyword">nullptr</span> || req-&gt;gradients == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  213</span>    <span class="keywordflow">return</span> RGSADDLE_SURFACE_FAILED;</div>
+<div class="line"><span class="lineno">  214</span>  }</div>
+<div class="line"><span class="lineno">  215</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  216</span>    <span class="keyword">auto</span> *neb = self-&gt;m_neb;</div>
+<div class="line"><span class="lineno">  217</span>    <span class="keyword">const</span> <span class="keyword">auto</span> band = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(neb-&gt;numImages + 2);</div>
+<div class="line"><span class="lineno">  218</span>    <span class="keyword">const</span> <span class="keyword">auto</span> nAtoms = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(neb-&gt;atoms);</div>
+<div class="line"><span class="lineno">  219</span>    <span class="keywordflow">if</span> (req-&gt;version.major != RGSADDLE_ABI_MAJOR) {</div>
+<div class="line"><span class="lineno">  220</span>      <span class="keywordflow">return</span> RGSADDLE_ABI_MISMATCH;</div>
+<div class="line"><span class="lineno">  221</span>    }</div>
+<div class="line"><span class="lineno">  222</span>    <span class="keywordflow">if</span> (req-&gt;n_atoms != nAtoms) {</div>
+<div class="line"><span class="lineno">  223</span>      <span class="keywordflow">return</span> RGSADDLE_SHAPE;</div>
+<div class="line"><span class="lineno">  224</span>    }</div>
+<div class="line"><span class="lineno">  225</span>    <span class="comment">// Rows carried by this request and the band image of row 0. The</span></div>
+<div class="line"><span class="lineno">  226</span>    <span class="comment">// session sends the whole band on its first evaluation, the interior</span></div>
+<div class="line"><span class="lineno">  227</span>    <span class="comment">// images 1 .. band - 2 afterwards, or one image with</span></div>
+<div class="line"><span class="lineno">  228</span>    <span class="comment">// RGSADDLE_REQ_ONE_IMAGE.</span></div>
+<div class="line"><span class="lineno">  229</span>    int64_t rows = 0;</div>
+<div class="line"><span class="lineno">  230</span>    int64_t first = 0;</div>
+<div class="line"><span class="lineno">  231</span>    <span class="keywordflow">if</span> ((req-&gt;flags &amp; RGSADDLE_REQ_ONE_IMAGE) != 0) {</div>
+<div class="line"><span class="lineno">  232</span>      <span class="keywordflow">if</span> (req-&gt;n_images != band || req-&gt;image &lt; 0 || req-&gt;image &gt;= band) {</div>
+<div class="line"><span class="lineno">  233</span>        <span class="keywordflow">return</span> RGSADDLE_SHAPE;</div>
+<div class="line"><span class="lineno">  234</span>      }</div>
+<div class="line"><span class="lineno">  235</span>      rows = 1;</div>
+<div class="line"><span class="lineno">  236</span>      first = req-&gt;image;</div>
+<div class="line"><span class="lineno">  237</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (req-&gt;n_images == band) {</div>
+<div class="line"><span class="lineno">  238</span>      rows = band;</div>
+<div class="line"><span class="lineno">  239</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (req-&gt;n_images == band - 2) {</div>
+<div class="line"><span class="lineno">  240</span>      rows = band - 2;</div>
+<div class="line"><span class="lineno">  241</span>      first = 1;</div>
+<div class="line"><span class="lineno">  242</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (req-&gt;n_images == 1) {</div>
+<div class="line"><span class="lineno">  243</span>      <span class="comment">// With RGSADDLE_BAND_NO_MIN_MODE set, only the estimate of the band</span></div>
+<div class="line"><span class="lineno">  244</span>      <span class="comment">// metric&#39;s energy scale sends one row: a point off the band near</span></div>
+<div class="line"><span class="lineno">  245</span>      <span class="comment">// image 1. A copy of image 1 takes it, so no band image moves. That</span></div>
+<div class="line"><span class="lineno">  246</span>      <span class="comment">// row comes batched, with image -1 and no flags.</span></div>
+<div class="line"><span class="lineno">  247</span>      <span class="keywordflow">if</span> (req-&gt;image &gt;= 0 || req-&gt;flags != 0) {</div>
+<div class="line"><span class="lineno">  248</span>        <span class="keywordflow">return</span> RGSADDLE_SHAPE;</div>
+<div class="line"><span class="lineno">  249</span>      }</div>
+<div class="line"><span class="lineno">  250</span>      <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> probe(*<a class="code hl_namespace" href="namespaceeonc_1_1neb.html">neb</a>-&gt;path[1]);</div>
+<div class="line"><span class="lineno">  251</span>      moveTo(probe, AtomMatrix::Map(req-&gt;positions, nAtoms, 3));</div>
+<div class="line"><span class="lineno">  252</span>      req-&gt;energies[0] = probe.getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  253</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> *src = probe.getForces().data();</div>
+<div class="line"><span class="lineno">  254</span>      <span class="keywordflow">for</span> (int64_t k = 0; k &lt; 3 * nAtoms; ++k) {</div>
+<div class="line"><span class="lineno">  255</span>        req-&gt;gradients[k] = -src[k];</div>
+<div class="line"><span class="lineno">  256</span>      }</div>
+<div class="line"><span class="lineno">  257</span>      <span class="keywordflow">return</span> RGSADDLE_OK;</div>
+<div class="line"><span class="lineno">  258</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  259</span>      <span class="keywordflow">return</span> RGSADDLE_SHAPE;</div>
+<div class="line"><span class="lineno">  260</span>    }</div>
+<div class="line"><span class="lineno">  261</span>    <span class="keyword">const</span> <span class="keyword">auto</span> dof = <span class="keyword">static_cast&lt;</span>Eigen::Index<span class="keyword">&gt;</span>(3 * nAtoms);</div>
+<div class="line"><span class="lineno">  262</span>    std::vector&lt;Matter *&gt; carried;</div>
+<div class="line"><span class="lineno">  263</span>    std::vector&lt;long&gt; owners;</div>
+<div class="line"><span class="lineno">  264</span>    carried.reserve(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(rows));</div>
+<div class="line"><span class="lineno">  265</span>    owners.reserve(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(rows));</div>
+<div class="line"><span class="lineno">  266</span>    <span class="keywordflow">for</span> (int64_t r = 0; r &lt; rows; ++r) {</div>
+<div class="line"><span class="lineno">  267</span>      <span class="keyword">const</span> <span class="keyword">auto</span> i = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(first + r);</div>
+<div class="line"><span class="lineno">  268</span>      carried.push_back(<a class="code hl_namespace" href="namespaceeonc_1_1neb.html">neb</a>-&gt;path[i].get());</div>
+<div class="line"><span class="lineno">  269</span>      owners.push_back(<a class="code hl_namespace" href="namespaceeonc_1_1neb.html">neb</a>-&gt;imageOwner(i));</div>
+<div class="line"><span class="lineno">  270</span>    }</div>
+<div class="line"><span class="lineno">  271</span>    <span class="comment">// Row r: the session&#39;s coordinates onto its image. The fixed endpoints</span></div>
+<div class="line"><span class="lineno">  272</span>    <span class="comment">// and a start point the band already evaluated come back from the</span></div>
+<div class="line"><span class="lineno">  273</span>    <span class="comment">// image&#39;s own cache.</span></div>
+<div class="line"><span class="lineno">  274</span>    <span class="keyword">auto</span> place = [&amp;](int64_t r) {</div>
+<div class="line"><span class="lineno">  275</span>      <span class="keyword">const</span> <span class="keyword">auto</span> i = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(first + r);</div>
+<div class="line"><span class="lineno">  276</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = AtomMatrix::Map(req-&gt;positions + r * dof, nAtoms, 3);</div>
+<div class="line"><span class="lineno">  277</span>      <span class="keywordflow">if</span> (i &lt; self-&gt;m_fixed.size()) {</div>
+<div class="line"><span class="lineno">  278</span>        pinRows(self-&gt;m_fixed[i], *<a class="code hl_namespace" href="namespaceeonc_1_1neb.html">neb</a>-&gt;path[i], &amp;pos);</div>
+<div class="line"><span class="lineno">  279</span>      }</div>
+<div class="line"><span class="lineno">  280</span>      moveTo(*<a class="code hl_namespace" href="namespaceeonc_1_1neb.html">neb</a>-&gt;path[i], pos);</div>
+<div class="line"><span class="lineno">  281</span>    };</div>
+<div class="line"><span class="lineno">  282</span>    <span class="keyword">auto</span> report = [&amp;](int64_t r) {</div>
+<div class="line"><span class="lineno">  283</span>      <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;image = *carried[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(r)];</div>
+<div class="line"><span class="lineno">  284</span>      req-&gt;energies[r] = image.<a class="code hl_function" href="classMatter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>();</div>
+<div class="line"><span class="lineno">  285</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> *src = image.<a class="code hl_function" href="classMatter.html#ae062745fc2cd388a6d4bd4ad1e76b615">getForces</a>().data();</div>
+<div class="line"><span class="lineno">  286</span>      <span class="keywordtype">double</span> *grad = req-&gt;gradients + r * dof;</div>
+<div class="line"><span class="lineno">  287</span>      <span class="keywordflow">for</span> (Eigen::Index k = 0; k &lt; dof; ++k) {</div>
+<div class="line"><span class="lineno">  288</span>        grad[k] = -src[k];</div>
+<div class="line"><span class="lineno">  289</span>      }</div>
+<div class="line"><span class="lineno">  290</span>    };</div>
+<div class="line"><span class="lineno">  291</span>    <a class="code hl_class" href="classeonc_1_1Potential.html">Potential</a> &amp;<a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a> = *carried.front()-&gt;getPotential();</div>
+<div class="line"><span class="lineno">  292</span>    <span class="keywordflow">if</span> (self-&gt;m_threads &amp;&amp; rows &gt; 1 &amp;&amp; !<a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>.supportsBatchEvaluation() &amp;&amp;</div>
+<div class="line"><span class="lineno">  293</span>        <a class="code hl_function" href="#afa25d65889a01852246fe4d2033b3e44">eonc::canComputeConcurrently</a>(carried)) {</div>
+<div class="line"><span class="lineno">  294</span>      <span class="comment">// One pass on the image pool: each row is placed, evaluated and</span></div>
+<div class="line"><span class="lineno">  295</span>      <span class="comment">// read back on the thread that took it.</span></div>
+<div class="line"><span class="lineno">  296</span>      <a class="code hl_function" href="#ab3bf7e08fbd5f88088ee9d8f84d60927">eonc::forEachImage</a>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(rows), [&amp;](<span class="keywordtype">long</span> k) {</div>
+<div class="line"><span class="lineno">  297</span>        <span class="keyword">const</span> <span class="keyword">auto</span> r = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(k - 1);</div>
+<div class="line"><span class="lineno">  298</span>        place(r);</div>
+<div class="line"><span class="lineno">  299</span>        <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;image = *carried[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(r)];</div>
+<div class="line"><span class="lineno">  300</span>        <span class="keywordflow">if</span> (image.<a class="code hl_function" href="classMatter.html#aa093532bd3da96f1e556173582439ba8">needsForceUpdate</a>()) {</div>
+<div class="line"><span class="lineno">  301</span>          image.<a class="code hl_function" href="classMatter.html#a745e4751aa4e6822a3931e8e9e3c9f0f">getForcesRaw</a>();</div>
+<div class="line"><span class="lineno">  302</span>        }</div>
+<div class="line"><span class="lineno">  303</span>        report(r);</div>
+<div class="line"><span class="lineno">  304</span>      });</div>
+<div class="line"><span class="lineno">  305</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  306</span>      <span class="keywordflow">for</span> (int64_t r = 0; r &lt; rows; ++r) {</div>
+<div class="line"><span class="lineno">  307</span>        place(r);</div>
+<div class="line"><span class="lineno">  308</span>      }</div>
+<div class="line"><span class="lineno">  309</span>      <span class="comment">// One batch for every carried image, so calculator groups or a</span></div>
+<div class="line"><span class="lineno">  310</span>      <span class="comment">// batched model take them together; otherwise in turn. Each image</span></div>
+<div class="line"><span class="lineno">  311</span>      <span class="comment">// carries its band identity, as in the classic update.</span></div>
+<div class="line"><span class="lineno">  312</span>      <a class="code hl_function" href="#abcb215950a62dd0c90c82213b53be033">eonc::evaluateTogether</a>(<a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>, carried, <span class="keyword">false</span>, owners);</div>
+<div class="line"><span class="lineno">  313</span>      <span class="keywordflow">for</span> (int64_t r = 0; r &lt; rows; ++r) {</div>
+<div class="line"><span class="lineno">  314</span>        report(r);</div>
+<div class="line"><span class="lineno">  315</span>      }</div>
+<div class="line"><span class="lineno">  316</span>    }</div>
+<div class="line"><span class="lineno">  317</span>    <span class="keywordflow">return</span> RGSADDLE_OK;</div>
+<div class="line"><span class="lineno">  318</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  319</span>    <span class="keywordflow">return</span> RGSADDLE_SURFACE_FAILED;</div>
+<div class="line"><span class="lineno">  320</span>  }</div>
+<div class="line"><span class="lineno">  321</span>}</div>
 <div class="ttc" id="aclassMatter_html_a745e4751aa4e6822a3931e8e9e3c9f0f"><div class="ttname"><a href="classMatter.html#a745e4751aa4e6822a3931e8e9e3c9f0f">Matter::getForcesRaw</a></div><div class="ttdeci">const AtomMatrix &amp; getForcesRaw() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00490">Matter.cpp:490</a></div></div>
 <div class="ttc" id="aclassMatter_html_aa093532bd3da96f1e556173582439ba8"><div class="ttname"><a href="classMatter.html#aa093532bd3da96f1e556173582439ba8">Matter::needsForceUpdate</a></div><div class="ttdeci">bool needsForceUpdate() const</div><div class="ttdoc">Whether forces need recomputation (positions or surface epoch changed).</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00220">Matter.h:220</a></div></div>
 <div class="ttc" id="aclassMatter_html_ae062745fc2cd388a6d4bd4ad1e76b615"><div class="ttname"><a href="classMatter.html#ae062745fc2cd388a6d4bd4ad1e76b615">Matter::getForces</a></div><div class="ttdeci">const AtomMatrix &amp; getForces() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00479">Matter.cpp:479</a></div></div>
@@ -5954,74 +5970,74 @@ requires ThreadSafeQueryable&lt;P&gt;</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="XtsciBand_8cpp_source.html#l00234">234</a> of file <a class="el" href="XtsciBand_8cpp_source.html">XtsciBand.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  235</span>                                                          {</div>
-<div class="line"><span class="lineno">  236</span><span class="preprocessor">#if RGSADDLE_ABI_MINOR &gt;= 17</span></div>
-<div class="line"><span class="lineno">  237</span>  <span class="keyword">auto</span> *self = <span class="keyword">static_cast&lt;</span><a class="code hl_class" href="classeonc_1_1XtsciBand.html">XtsciBand</a> *<span class="keyword">&gt;</span>(user);</div>
-<div class="line"><span class="lineno">  238</span>  <span class="keyword">auto</span> *req = <span class="keyword">static_cast&lt;</span>rgsaddle_solid_surface_request_t *<span class="keyword">&gt;</span>(request);</div>
-<div class="line"><span class="lineno">  239</span>  <span class="keywordflow">if</span> (self == <span class="keyword">nullptr</span> || req == <span class="keyword">nullptr</span> || req-&gt;positions == <span class="keyword">nullptr</span> ||</div>
-<div class="line"><span class="lineno">  240</span>      req-&gt;cells == <span class="keyword">nullptr</span> || req-&gt;energies == <span class="keyword">nullptr</span> ||</div>
-<div class="line"><span class="lineno">  241</span>      req-&gt;gradients == <span class="keyword">nullptr</span> || req-&gt;stresses == <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">  242</span>    <span class="keywordflow">return</span> RGSADDLE_SURFACE_FAILED;</div>
-<div class="line"><span class="lineno">  243</span>  }</div>
-<div class="line"><span class="lineno">  244</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  245</span>    <span class="keyword">auto</span> *neb = self-&gt;m_neb;</div>
-<div class="line"><span class="lineno">  246</span>    <span class="keyword">const</span> <span class="keyword">auto</span> band = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(neb-&gt;numImages + 2);</div>
-<div class="line"><span class="lineno">  247</span>    <span class="keyword">const</span> <span class="keyword">auto</span> nAtoms = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(neb-&gt;atoms);</div>
-<div class="line"><span class="lineno">  248</span>    <span class="keywordflow">if</span> (req-&gt;version.major != RGSADDLE_ABI_MAJOR) {</div>
-<div class="line"><span class="lineno">  249</span>      <span class="keywordflow">return</span> RGSADDLE_ABI_MISMATCH;</div>
-<div class="line"><span class="lineno">  250</span>    }</div>
-<div class="line"><span class="lineno">  251</span>    <span class="keywordflow">if</span> (req-&gt;n_atoms != nAtoms) {</div>
-<div class="line"><span class="lineno">  252</span>      <span class="keywordflow">return</span> RGSADDLE_SHAPE;</div>
-<div class="line"><span class="lineno">  253</span>    }</div>
-<div class="line"><span class="lineno">  254</span>    int64_t rows = 0;</div>
-<div class="line"><span class="lineno">  255</span>    int64_t first = 0;</div>
-<div class="line"><span class="lineno">  256</span>    <span class="keywordflow">if</span> ((req-&gt;flags &amp; RGSADDLE_REQ_ONE_IMAGE) != 0) {</div>
-<div class="line"><span class="lineno">  257</span>      <span class="keywordflow">if</span> (req-&gt;n_images != band || req-&gt;image &lt; 0 || req-&gt;image &gt;= band) {</div>
-<div class="line"><span class="lineno">  258</span>        <span class="keywordflow">return</span> RGSADDLE_SHAPE;</div>
-<div class="line"><span class="lineno">  259</span>      }</div>
-<div class="line"><span class="lineno">  260</span>      rows = 1;</div>
-<div class="line"><span class="lineno">  261</span>      first = req-&gt;image;</div>
-<div class="line"><span class="lineno">  262</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (req-&gt;n_images == band) {</div>
-<div class="line"><span class="lineno">  263</span>      rows = band;</div>
-<div class="line"><span class="lineno">  264</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (req-&gt;n_images == band - 2) {</div>
-<div class="line"><span class="lineno">  265</span>      rows = band - 2;</div>
-<div class="line"><span class="lineno">  266</span>      first = 1;</div>
-<div class="line"><span class="lineno">  267</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  268</span>      <span class="keywordflow">return</span> RGSADDLE_SHAPE;</div>
-<div class="line"><span class="lineno">  269</span>    }</div>
-<div class="line"><span class="lineno">  270</span>    <span class="keyword">const</span> <span class="keyword">auto</span> dof = <span class="keyword">static_cast&lt;</span>Eigen::Index<span class="keyword">&gt;</span>(3 * nAtoms);</div>
-<div class="line"><span class="lineno">  271</span>    <span class="keywordflow">for</span> (int64_t r = 0; r &lt; rows; ++r) {</div>
-<div class="line"><span class="lineno">  272</span>      <span class="keyword">const</span> <span class="keyword">auto</span> i = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(first + r);</div>
-<div class="line"><span class="lineno">  273</span>      <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;image = *<a class="code hl_namespace" href="namespaceeonc_1_1neb.html">neb</a>-&gt;path[i];</div>
-<div class="line"><span class="lineno">  274</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell = cellFromRowMajor(req-&gt;cells + 9 * r);</div>
-<div class="line"><span class="lineno">  275</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = AtomMatrix::Map(req-&gt;positions + r * dof, nAtoms, 3);</div>
-<div class="line"><span class="lineno">  276</span>      <span class="keywordflow">if</span> (i &lt; self-&gt;m_fixed.size()) {</div>
-<div class="line"><span class="lineno">  277</span>        pinRows(self-&gt;m_fixed[i], image, &amp;pos);</div>
-<div class="line"><span class="lineno">  278</span>      }</div>
-<div class="line"><span class="lineno">  279</span>      <span class="keywordflow">if</span> (image.<a class="code hl_function" href="classMatter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>() != cell) {</div>
-<div class="line"><span class="lineno">  280</span>        image.<a class="code hl_function" href="classMatter.html#a3c4002006e09f4e4b7fa2ffbf191db26">setCell</a>(cell);</div>
-<div class="line"><span class="lineno">  281</span>      }</div>
-<div class="line"><span class="lineno">  282</span>      moveTo(image, pos);</div>
-<div class="line"><span class="lineno">  283</span>      <span class="comment">// One image at a time: Matter keeps the stress that came with its</span></div>
-<div class="line"><span class="lineno">  284</span>      <span class="comment">// own force call, so the stress read below costs no second call.</span></div>
-<div class="line"><span class="lineno">  285</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;force = image.<a class="code hl_function" href="classMatter.html#ae062745fc2cd388a6d4bd4ad1e76b615">getForces</a>();</div>
-<div class="line"><span class="lineno">  286</span>      req-&gt;energies[r] = image.<a class="code hl_function" href="classMatter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>();</div>
-<div class="line"><span class="lineno">  287</span>      <span class="keywordtype">double</span> *grad = req-&gt;gradients + r * dof;</div>
-<div class="line"><span class="lineno">  288</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> *src = force.data();</div>
-<div class="line"><span class="lineno">  289</span>      <span class="keywordflow">for</span> (Eigen::Index k = 0; k &lt; dof; ++k) {</div>
-<div class="line"><span class="lineno">  290</span>        grad[k] = -src[k];</div>
-<div class="line"><span class="lineno">  291</span>      }</div>
-<div class="line"><span class="lineno">  292</span>      cellToRowMajor(image.<a class="code hl_function" href="classMatter.html#a5d503321498352c73a7fc921921db1d2">cauchyStress</a>(), req-&gt;stresses + 9 * r);</div>
-<div class="line"><span class="lineno">  293</span>    }</div>
-<div class="line"><span class="lineno">  294</span>    <span class="keywordflow">return</span> RGSADDLE_OK;</div>
-<div class="line"><span class="lineno">  295</span>  } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">  296</span>    <span class="keywordflow">return</span> RGSADDLE_SURFACE_FAILED;</div>
-<div class="line"><span class="lineno">  297</span>  }</div>
-<div class="line"><span class="lineno">  298</span><span class="preprocessor">#else</span></div>
-<div class="line"><span class="lineno">  299</span>  <span class="keywordflow">return</span> RGSADDLE_SURFACE_FAILED;</div>
-<div class="line"><span class="lineno">  300</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  301</span>}</div>
+<p class="definition">Definition at line <a class="el" href="XtsciBand_8cpp_source.html#l00323">323</a> of file <a class="el" href="XtsciBand_8cpp_source.html">XtsciBand.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  324</span>                                                          {</div>
+<div class="line"><span class="lineno">  325</span><span class="preprocessor">#if RGSADDLE_ABI_MINOR &gt;= 17</span></div>
+<div class="line"><span class="lineno">  326</span>  <span class="keyword">auto</span> *self = <span class="keyword">static_cast&lt;</span><a class="code hl_class" href="classeonc_1_1XtsciBand.html">XtsciBand</a> *<span class="keyword">&gt;</span>(user);</div>
+<div class="line"><span class="lineno">  327</span>  <span class="keyword">auto</span> *req = <span class="keyword">static_cast&lt;</span>rgsaddle_solid_surface_request_t *<span class="keyword">&gt;</span>(request);</div>
+<div class="line"><span class="lineno">  328</span>  <span class="keywordflow">if</span> (self == <span class="keyword">nullptr</span> || req == <span class="keyword">nullptr</span> || req-&gt;positions == <span class="keyword">nullptr</span> ||</div>
+<div class="line"><span class="lineno">  329</span>      req-&gt;cells == <span class="keyword">nullptr</span> || req-&gt;energies == <span class="keyword">nullptr</span> ||</div>
+<div class="line"><span class="lineno">  330</span>      req-&gt;gradients == <span class="keyword">nullptr</span> || req-&gt;stresses == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  331</span>    <span class="keywordflow">return</span> RGSADDLE_SURFACE_FAILED;</div>
+<div class="line"><span class="lineno">  332</span>  }</div>
+<div class="line"><span class="lineno">  333</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  334</span>    <span class="keyword">auto</span> *neb = self-&gt;m_neb;</div>
+<div class="line"><span class="lineno">  335</span>    <span class="keyword">const</span> <span class="keyword">auto</span> band = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(neb-&gt;numImages + 2);</div>
+<div class="line"><span class="lineno">  336</span>    <span class="keyword">const</span> <span class="keyword">auto</span> nAtoms = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(neb-&gt;atoms);</div>
+<div class="line"><span class="lineno">  337</span>    <span class="keywordflow">if</span> (req-&gt;version.major != RGSADDLE_ABI_MAJOR) {</div>
+<div class="line"><span class="lineno">  338</span>      <span class="keywordflow">return</span> RGSADDLE_ABI_MISMATCH;</div>
+<div class="line"><span class="lineno">  339</span>    }</div>
+<div class="line"><span class="lineno">  340</span>    <span class="keywordflow">if</span> (req-&gt;n_atoms != nAtoms) {</div>
+<div class="line"><span class="lineno">  341</span>      <span class="keywordflow">return</span> RGSADDLE_SHAPE;</div>
+<div class="line"><span class="lineno">  342</span>    }</div>
+<div class="line"><span class="lineno">  343</span>    int64_t rows = 0;</div>
+<div class="line"><span class="lineno">  344</span>    int64_t first = 0;</div>
+<div class="line"><span class="lineno">  345</span>    <span class="keywordflow">if</span> ((req-&gt;flags &amp; RGSADDLE_REQ_ONE_IMAGE) != 0) {</div>
+<div class="line"><span class="lineno">  346</span>      <span class="keywordflow">if</span> (req-&gt;n_images != band || req-&gt;image &lt; 0 || req-&gt;image &gt;= band) {</div>
+<div class="line"><span class="lineno">  347</span>        <span class="keywordflow">return</span> RGSADDLE_SHAPE;</div>
+<div class="line"><span class="lineno">  348</span>      }</div>
+<div class="line"><span class="lineno">  349</span>      rows = 1;</div>
+<div class="line"><span class="lineno">  350</span>      first = req-&gt;image;</div>
+<div class="line"><span class="lineno">  351</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (req-&gt;n_images == band) {</div>
+<div class="line"><span class="lineno">  352</span>      rows = band;</div>
+<div class="line"><span class="lineno">  353</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (req-&gt;n_images == band - 2) {</div>
+<div class="line"><span class="lineno">  354</span>      rows = band - 2;</div>
+<div class="line"><span class="lineno">  355</span>      first = 1;</div>
+<div class="line"><span class="lineno">  356</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  357</span>      <span class="keywordflow">return</span> RGSADDLE_SHAPE;</div>
+<div class="line"><span class="lineno">  358</span>    }</div>
+<div class="line"><span class="lineno">  359</span>    <span class="keyword">const</span> <span class="keyword">auto</span> dof = <span class="keyword">static_cast&lt;</span>Eigen::Index<span class="keyword">&gt;</span>(3 * nAtoms);</div>
+<div class="line"><span class="lineno">  360</span>    <span class="keywordflow">for</span> (int64_t r = 0; r &lt; rows; ++r) {</div>
+<div class="line"><span class="lineno">  361</span>      <span class="keyword">const</span> <span class="keyword">auto</span> i = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(first + r);</div>
+<div class="line"><span class="lineno">  362</span>      <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;image = *<a class="code hl_namespace" href="namespaceeonc_1_1neb.html">neb</a>-&gt;path[i];</div>
+<div class="line"><span class="lineno">  363</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell = cellFromRowMajor(req-&gt;cells + 9 * r);</div>
+<div class="line"><span class="lineno">  364</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = AtomMatrix::Map(req-&gt;positions + r * dof, nAtoms, 3);</div>
+<div class="line"><span class="lineno">  365</span>      <span class="keywordflow">if</span> (i &lt; self-&gt;m_fixed.size()) {</div>
+<div class="line"><span class="lineno">  366</span>        pinRows(self-&gt;m_fixed[i], image, &amp;pos);</div>
+<div class="line"><span class="lineno">  367</span>      }</div>
+<div class="line"><span class="lineno">  368</span>      <span class="keywordflow">if</span> (image.<a class="code hl_function" href="classMatter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>() != cell) {</div>
+<div class="line"><span class="lineno">  369</span>        image.<a class="code hl_function" href="classMatter.html#a3c4002006e09f4e4b7fa2ffbf191db26">setCell</a>(cell);</div>
+<div class="line"><span class="lineno">  370</span>      }</div>
+<div class="line"><span class="lineno">  371</span>      moveTo(image, pos);</div>
+<div class="line"><span class="lineno">  372</span>      <span class="comment">// One image at a time: Matter keeps the stress that came with its</span></div>
+<div class="line"><span class="lineno">  373</span>      <span class="comment">// own force call, so the stress read below costs no second call.</span></div>
+<div class="line"><span class="lineno">  374</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;force = image.<a class="code hl_function" href="classMatter.html#ae062745fc2cd388a6d4bd4ad1e76b615">getForces</a>();</div>
+<div class="line"><span class="lineno">  375</span>      req-&gt;energies[r] = image.<a class="code hl_function" href="classMatter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>();</div>
+<div class="line"><span class="lineno">  376</span>      <span class="keywordtype">double</span> *grad = req-&gt;gradients + r * dof;</div>
+<div class="line"><span class="lineno">  377</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> *src = force.data();</div>
+<div class="line"><span class="lineno">  378</span>      <span class="keywordflow">for</span> (Eigen::Index k = 0; k &lt; dof; ++k) {</div>
+<div class="line"><span class="lineno">  379</span>        grad[k] = -src[k];</div>
+<div class="line"><span class="lineno">  380</span>      }</div>
+<div class="line"><span class="lineno">  381</span>      cellToRowMajor(image.<a class="code hl_function" href="classMatter.html#a5d503321498352c73a7fc921921db1d2">cauchyStress</a>(), req-&gt;stresses + 9 * r);</div>
+<div class="line"><span class="lineno">  382</span>    }</div>
+<div class="line"><span class="lineno">  383</span>    <span class="keywordflow">return</span> RGSADDLE_OK;</div>
+<div class="line"><span class="lineno">  384</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  385</span>    <span class="keywordflow">return</span> RGSADDLE_SURFACE_FAILED;</div>
+<div class="line"><span class="lineno">  386</span>  }</div>
+<div class="line"><span class="lineno">  387</span><span class="preprocessor">#else</span></div>
+<div class="line"><span class="lineno">  388</span>  <span class="keywordflow">return</span> RGSADDLE_SURFACE_FAILED;</div>
+<div class="line"><span class="lineno">  389</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  390</span>}</div>
 <div class="ttc" id="aEigen_8h_html_a5a21583e98df78e5b867b370291714d0"><div class="ttname"><a href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 3, 3, eOnStorageOrder &gt; Matrix3d</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00035">Eigen.h:35</a></div></div>
 <div class="ttc" id="aclassMatter_html_a3c4002006e09f4e4b7fa2ffbf191db26"><div class="ttname"><a href="classMatter.html#a3c4002006e09f4e4b7fa2ffbf191db26">Matter::setCell</a></div><div class="ttdeci">void setCell(const Matrix3d &amp;newCell)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00344">Matter.cpp:344</a></div></div>
 <div class="ttc" id="aclassMatter_html_a5d503321498352c73a7fc921921db1d2"><div class="ttname"><a href="classMatter.html#a5d503321498352c73a7fc921921db1d2">Matter::cauchyStress</a></div><div class="ttdeci">Matrix3d cauchyStress()</div><div class="ttdoc">Cauchy stress in eV/Angstrom^3.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00917">Matter.cpp:917</a></div></div>

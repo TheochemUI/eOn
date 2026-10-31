@@ -50,6 +50,7 @@ var ParametersOptions_8h =
     [ "eonc::neb_options_t::path_initialization_t", "structeonc_1_1neb__options__t_1_1path__initialization__t.html", "structeonc_1_1neb__options__t_1_1path__initialization__t" ],
     [ "eonc::neb_options_t::endpoint_options_t", "structeonc_1_1neb__options__t_1_1endpoint__options__t.html", "structeonc_1_1neb__options__t_1_1endpoint__options__t" ],
     [ "eonc::neb_options_t::solid_state_options_t", "structeonc_1_1neb__options__t_1_1solid__state__options__t.html", "structeonc_1_1neb__options__t_1_1solid__state__options__t" ],
+    [ "eonc::neb_options_t::band_options_t", "structeonc_1_1neb__options__t_1_1band__options__t.html", "structeonc_1_1neb__options__t_1_1band__options__t" ],
     [ "eonc::dynamics_options_t", "structeonc_1_1dynamics__options__t.html", "structeonc_1_1dynamics__options__t" ],
     [ "eonc::parallel_replica_options_t", "structeonc_1_1parallel__replica__options__t.html", "structeonc_1_1parallel__replica__options__t" ],
     [ "eonc::tad_options_t", "structeonc_1_1tad__options__t.html", "structeonc_1_1tad__options__t" ],

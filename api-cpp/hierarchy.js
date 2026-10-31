@@ -5,6 +5,7 @@ var hierarchy =
     [ "eonc::ase_nwchem_options_t", "structeonc_1_1ase__nwchem__options__t.html", null ],
     [ "eonc::ase_orca_options_t", "structeonc_1_1ase__orca__options__t.html", null ],
     [ "eonc::geometry::atom", "structeonc_1_1geometry_1_1atom.html", null ],
+    [ "eonc::neb_options_t::band_options_t", "structeonc_1_1neb__options__t_1_1band__options__t.html", null ],
     [ "eonc::tunneling::BandWall", "structeonc_1_1tunneling_1_1BandWall.html", null ],
     [ "eonc::tunneling::BandWalls", "structeonc_1_1tunneling_1_1BandWalls.html", null ],
     [ "eonc::basin_hopping_options_t", "structeonc_1_1basin__hopping__options__t.html", null ],

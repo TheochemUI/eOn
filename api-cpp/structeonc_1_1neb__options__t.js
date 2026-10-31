@@ -7,6 +7,8 @@ var structeonc_1_1neb__options__t =
     [ "path_initialization_t", "structeonc_1_1neb__options__t_1_1path__initialization__t.html", "structeonc_1_1neb__options__t_1_1path__initialization__t" ],
     [ "endpoint_options_t", "structeonc_1_1neb__options__t_1_1endpoint__options__t.html", "structeonc_1_1neb__options__t_1_1endpoint__options__t" ],
     [ "solid_state_options_t", "structeonc_1_1neb__options__t_1_1solid__state__options__t.html", "structeonc_1_1neb__options__t_1_1solid__state__options__t" ],
+    [ "band_options_t", "structeonc_1_1neb__options__t_1_1band__options__t.html", "structeonc_1_1neb__options__t_1_1band__options__t" ],
+    [ "band", "structeonc_1_1neb__options__t.html#a5a86495864072c57aeb6cda0cd75f6e8", null ],
     [ "climbing_image", "structeonc_1_1neb__options__t.html#a20679cefe27a467bc74193b3f856886f", null ],
     [ "endpoints", "structeonc_1_1neb__options__t.html#a60aea66f89cb4a4790dcf50973f5768d", null ],
     [ "force_tolerance", "structeonc_1_1neb__options__t.html#a340ef010876a5a4868fac0235defc98e", null ],
