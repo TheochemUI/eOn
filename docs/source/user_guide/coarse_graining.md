@@ -122,6 +122,10 @@ FPTA. A rejected basin falls through to the MCAMC superbasin step.
 `split_required` on that MCAMC object keeps the entry state and writes the
 reduced member list.
 
+The superbasin exit draw uses the same strict cumulative test as a
+single-state kinetic Monte Carlo step. A column whose probability is zero
+is not selected when the draw is zero.
+
 ## Configuration
 
 ```{code-block} ini

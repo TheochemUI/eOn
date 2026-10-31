@@ -137,7 +137,7 @@ class Superbasin:
         u = np.random.sample()
         for i in range(len(b)):
             p += b[i]
-            if p >= u:
+            if p > u:
                 exit_state_number, exit_proc_id = col2st[i]
                 break
         else:
