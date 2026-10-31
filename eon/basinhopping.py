@@ -102,7 +102,7 @@ def basinhopping(config: ConfigClass = None):
     # load metadata
     bhstates = BHStates(config)
 
-    wuid_path = Path("wuid.dat")
+    wuid_path = Path(config.path_results) / "wuid.dat"
     if wuid_path.is_file():
         wuid = int(wuid_path.read_text().strip())
     else:
@@ -117,7 +117,11 @@ def basinhopping(config: ConfigClass = None):
 
     wuid = make_searches(comm, wuid, bhstates, config)
 
-    Path("wuid.dat").write_text("%i\n" % wuid)
+    wuid_path.parent.mkdir(parents=True, exist_ok=True)
+    # Replace the id in one step. A killed write_text would leave an
+    # empty file, and the next start would not parse it.
+    with io.atomic_write(wuid_path) as wuid_file:
+        wuid_file.write("%i\n" % wuid)
 
     io.save_prng_state(io.prng_state_path(config))
 
