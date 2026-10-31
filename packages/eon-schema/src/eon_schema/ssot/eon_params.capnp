@@ -147,7 +147,8 @@ struct OptimizerXtsciOptions {
   qnStep @1 :Text = "lbfgs";
   # Host pair / model Hessian. none, pair, pair_abs, pair_full,
   # exp, c1, lindh, lindh_full, fischer, schlegel, swart.
-  # Built in eOn; xtsci only applies it.
+  # Built in eOn; xtsci only applies it. rgmin_exp is the
+  # Packwood Exp metric that rgmin assembles and solves.
   precon @2 :Text = "none";
   # How the session takes a proposed step. xts_accept_t: none, energy,
   # nonmonotone. none is one oracle at the new point.

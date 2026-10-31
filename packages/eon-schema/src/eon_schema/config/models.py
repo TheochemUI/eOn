@@ -2036,15 +2036,20 @@ class XtsciConfig(BaseModel):
         "fischer",
         "schlegel",
         "swart",
+        "rgmin_exp",
     ] = Field(
         default="none",
-        description="Host pair / model Hessian kind. Built in eOn, not in xtsci.",
+        description="Host pair / model Hessian kind, built in eOn. rgmin_exp is the sparse Packwood Exp metric built in rgmin.",
     )
     """
     ``pair`` is the Mones PSD clip. ``pair_full`` keeps signed
     curvature. ``lindh_full`` / ``fischer`` / ``schlegel`` / ``swart``
     are Cartesian model Hessians (B^T k B). The matrix is assembled
     in eOn and passed through ``rgmin_solver_step_hess``.
+    ``rgmin_exp`` sends rgmin the minimum-image pairs within
+    ``2 r_nn`` (or ``lbfgs_precon_rcut``). rgmin assembles the sparse
+    Exp matrix, estimates ``mu`` with one force call, and solves it
+    by conjugate gradients.
     """
 
     accept: Literal["none", "energy", "nonmonotone"] = Field(

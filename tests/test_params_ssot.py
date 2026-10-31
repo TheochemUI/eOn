@@ -628,6 +628,7 @@ def test_xtsci_engine_method_catalog():
         "fischer",
         "schlegel",
         "swart",
+        "rgmin_exp",
     ):
         assert XtsciConfig(precon=token).precon == token
     for token in ("none", "energy", "nonmonotone"):
@@ -687,6 +688,7 @@ def test_xtsci_engine_method_catalog():
         "fischer",
         "schlegel",
         "swart",
+        "rgmin_exp",
     }
     assert set(full["Optimizer"]["options"]["xtsci_qn_step"]["values"]) == {
         "lbfgs",
@@ -705,6 +707,7 @@ def test_xtsci_engine_method_catalog():
         "fischer",
         "schlegel",
         "swart",
+        "rgmin_exp",
     }
     assert set(full["Xtsci"]["options"]["accept"]["values"]) == {
         "none",
