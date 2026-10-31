@@ -361,12 +361,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="XtsciMinMode_8cpp_source.html#l00236">236</a> of file <a class="el" href="XtsciMinMode_8cpp_source.html">XtsciMinMode.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  236</span>                            {</div>
-<div class="line"><span class="lineno">  237</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a> != <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">  238</span>    rgsaddle_minmode_free(<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a>);</div>
-<div class="line"><span class="lineno">  239</span>  }</div>
-<div class="line"><span class="lineno">  240</span>}</div>
+<p class="definition">Definition at line <a class="el" href="XtsciMinMode_8cpp_source.html#l00247">247</a> of file <a class="el" href="XtsciMinMode_8cpp_source.html">XtsciMinMode.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  247</span>                            {</div>
+<div class="line"><span class="lineno">  248</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a> != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  249</span>    rgsaddle_minmode_free(<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a>);</div>
+<div class="line"><span class="lineno">  250</span>  }</div>
+<div class="line"><span class="lineno">  251</span>}</div>
 <div class="ttc" id="aclasseonc_1_1XtsciMinMode_html_acc1d19dd589000a3bc287e48194aac58"><div class="ttname"><a href="#acc1d19dd589000a3bc287e48194aac58">eonc::XtsciMinMode::m_session</a></div><div class="ttdeci">RgsaddleMinMode * m_session</div><div class="ttdef"><b>Definition</b> <a href="XtsciMinMode_8h_source.html#l00041">XtsciMinMode.h:41</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -526,45 +526,56 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  193</span>  <span class="comment">// From minor 22 a Lanczos estimate is one Hessian action and the host</span></div>
 <div class="line"><span class="lineno">  194</span>  <span class="comment">// repeats it. The loop stops as eOn&#39;s Lanczos does: the curvature</span></div>
 <div class="line"><span class="lineno">  195</span>  <span class="comment">// changes by less than [Lanczos] tolerance, or max_iterations actions.</span></div>
-<div class="line"><span class="lineno">  196</span>  <span class="keywordflow">if</span> (lanczos) {</div>
-<div class="line"><span class="lineno">  197</span>    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;lz = <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options();</div>
-<div class="line"><span class="lineno">  198</span>    int32_t rotations = report.rotations;</div>
-<div class="line"><span class="lineno">  199</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 1; k &lt; std::max(1L, lz.max_iterations); ++k) {</div>
-<div class="line"><span class="lineno">  200</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> previous = report.curvature;</div>
-<div class="line"><span class="lineno">  201</span>      checkStatus(</div>
-<div class="line"><span class="lineno">  202</span>          xts_minmode_estimate(<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a>, surfaceCallback, &amp;ctx, &amp;report),</div>
-<div class="line"><span class="lineno">  203</span>          <span class="stringliteral">&quot;rgsaddle_minmode_estimate&quot;</span>);</div>
-<div class="line"><span class="lineno">  204</span>      rotations += report.rotations;</div>
-<div class="line"><span class="lineno">  205</span>      <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(std::fabs(report.curvature - previous),</div>
-<div class="line"><span class="lineno">  206</span>                                   std::fabs(previous), 1.0) &lt; lz.tolerance) {</div>
-<div class="line"><span class="lineno">  207</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  208</span>      }</div>
-<div class="line"><span class="lineno">  209</span>    }</div>
-<div class="line"><span class="lineno">  210</span>    report.rotations = rotations;</div>
-<div class="line"><span class="lineno">  211</span>  }</div>
-<div class="line"><span class="lineno">  212</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  213</span>  checkStatus(rgsaddle_minmode_mode(<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a>, mode.data()),</div>
-<div class="line"><span class="lineno">  214</span>              <span class="stringliteral">&quot;rgsaddle_minmode_mode&quot;</span>);</div>
-<div class="line"><span class="lineno">  215</span><span class="preprocessor">#else</span></div>
-<div class="line"><span class="lineno">  216</span>  RgsaddleMinMode *session = rgsaddle_minmode_create(</div>
-<div class="line"><span class="lineno">  217</span>      &amp;config, nAtoms, saved.data(), initialDirection.data());</div>
-<div class="line"><span class="lineno">  218</span>  <span class="keywordflow">if</span> (session == <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">  219</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;rgsaddle_minmode_create failed&quot;</span>);</div>
-<div class="line"><span class="lineno">  220</span>  }</div>
-<div class="line"><span class="lineno">  221</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> rc = rgsaddle_minmode_step(session, surfaceCallback, &amp;ctx, &amp;report);</div>
-<div class="line"><span class="lineno">  222</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> modeRc = rgsaddle_minmode_mode(session, mode.data());</div>
-<div class="line"><span class="lineno">  223</span>  rgsaddle_minmode_free(session);</div>
-<div class="line"><span class="lineno">  224</span>  checkStatus(rc, <span class="stringliteral">&quot;rgsaddle_minmode_step&quot;</span>);</div>
-<div class="line"><span class="lineno">  225</span>  checkStatus(modeRc, <span class="stringliteral">&quot;rgsaddle_minmode_mode&quot;</span>);</div>
-<div class="line"><span class="lineno">  226</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  227</span>  <a class="code hl_variable" href="#a81ba342cea76f96ccaa1aa8081c38925">m_eigenvector</a> = AtomMatrix::Map(mode.data(), nAtoms, 3);</div>
-<div class="line"><span class="lineno">  228</span>  <a class="code hl_variable" href="#a7c5cec927269d8ad603a64ef48f284ff">m_eigenvalue</a> = report.curvature;</div>
-<div class="line"><span class="lineno">  229</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#ae4a178406585da7f462cade19451eba3">statsCurvature</a> = report.curvature;</div>
-<div class="line"><span class="lineno">  230</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> = report.rotations;</div>
-<div class="line"><span class="lineno">  231</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#aaddd4f58289e430dcb327c814d9b1874">totalIterations</a> += 1;</div>
-<div class="line"><span class="lineno">  232</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a724f93c18ebe10e59fb24d29cf0703c1">totalForceCalls</a> +=</div>
-<div class="line"><span class="lineno">  233</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(matter-&gt;getPotentialCalls() - callsBefore);</div>
-<div class="line"><span class="lineno">  234</span>}</div>
+<div class="line"><span class="lineno">  196</span>  <span class="comment">// With quit_early, a first curvature within tolerance of the previous</span></div>
+<div class="line"><span class="lineno">  197</span>  <span class="comment">// estimate keeps the incoming mode after one action, as eOn&#39;s Lanczos</span></div>
+<div class="line"><span class="lineno">  198</span>  <span class="comment">// does.</span></div>
+<div class="line"><span class="lineno">  199</span>  <span class="keywordflow">if</span> (lanczos) {</div>
+<div class="line"><span class="lineno">  200</span>    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;lz = <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options();</div>
+<div class="line"><span class="lineno">  201</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> early =</div>
+<div class="line"><span class="lineno">  202</span>        lz.quit_early &amp;&amp; <a class="code hl_variable" href="#a7c5cec927269d8ad603a64ef48f284ff">m_eigenvalue</a> != 0.0 &amp;&amp;</div>
+<div class="line"><span class="lineno">  203</span>        <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(std::fabs(report.curvature - <a class="code hl_variable" href="#a7c5cec927269d8ad603a64ef48f284ff">m_eigenvalue</a>),</div>
+<div class="line"><span class="lineno">  204</span>                                 std::fabs(<a class="code hl_variable" href="#a7c5cec927269d8ad603a64ef48f284ff">m_eigenvalue</a>), 1.0) &lt;= lz.tolerance;</div>
+<div class="line"><span class="lineno">  205</span>    <span class="keywordflow">if</span> (early) {</div>
+<div class="line"><span class="lineno">  206</span>      checkStatus(rgsaddle_minmode_set_mode(<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a>, initialDirection.data()),</div>
+<div class="line"><span class="lineno">  207</span>                  <span class="stringliteral">&quot;rgsaddle_minmode_set_mode&quot;</span>);</div>
+<div class="line"><span class="lineno">  208</span>    }</div>
+<div class="line"><span class="lineno">  209</span>    int32_t rotations = report.rotations;</div>
+<div class="line"><span class="lineno">  210</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 1; !early &amp;&amp; k &lt; std::max(1L, lz.max_iterations); ++k) {</div>
+<div class="line"><span class="lineno">  211</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> previous = report.curvature;</div>
+<div class="line"><span class="lineno">  212</span>      checkStatus(</div>
+<div class="line"><span class="lineno">  213</span>          xts_minmode_estimate(<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a>, surfaceCallback, &amp;ctx, &amp;report),</div>
+<div class="line"><span class="lineno">  214</span>          <span class="stringliteral">&quot;rgsaddle_minmode_estimate&quot;</span>);</div>
+<div class="line"><span class="lineno">  215</span>      rotations += report.rotations;</div>
+<div class="line"><span class="lineno">  216</span>      <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(std::fabs(report.curvature - previous),</div>
+<div class="line"><span class="lineno">  217</span>                                   std::fabs(previous), 1.0) &lt; lz.tolerance) {</div>
+<div class="line"><span class="lineno">  218</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  219</span>      }</div>
+<div class="line"><span class="lineno">  220</span>    }</div>
+<div class="line"><span class="lineno">  221</span>    report.rotations = rotations;</div>
+<div class="line"><span class="lineno">  222</span>  }</div>
+<div class="line"><span class="lineno">  223</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  224</span>  checkStatus(rgsaddle_minmode_mode(<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a>, mode.data()),</div>
+<div class="line"><span class="lineno">  225</span>              <span class="stringliteral">&quot;rgsaddle_minmode_mode&quot;</span>);</div>
+<div class="line"><span class="lineno">  226</span><span class="preprocessor">#else</span></div>
+<div class="line"><span class="lineno">  227</span>  RgsaddleMinMode *session = rgsaddle_minmode_create(</div>
+<div class="line"><span class="lineno">  228</span>      &amp;config, nAtoms, saved.data(), initialDirection.data());</div>
+<div class="line"><span class="lineno">  229</span>  <span class="keywordflow">if</span> (session == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  230</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;rgsaddle_minmode_create failed&quot;</span>);</div>
+<div class="line"><span class="lineno">  231</span>  }</div>
+<div class="line"><span class="lineno">  232</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> rc = rgsaddle_minmode_step(session, surfaceCallback, &amp;ctx, &amp;report);</div>
+<div class="line"><span class="lineno">  233</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> modeRc = rgsaddle_minmode_mode(session, mode.data());</div>
+<div class="line"><span class="lineno">  234</span>  rgsaddle_minmode_free(session);</div>
+<div class="line"><span class="lineno">  235</span>  checkStatus(rc, <span class="stringliteral">&quot;rgsaddle_minmode_step&quot;</span>);</div>
+<div class="line"><span class="lineno">  236</span>  checkStatus(modeRc, <span class="stringliteral">&quot;rgsaddle_minmode_mode&quot;</span>);</div>
+<div class="line"><span class="lineno">  237</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  238</span>  <a class="code hl_variable" href="#a81ba342cea76f96ccaa1aa8081c38925">m_eigenvector</a> = AtomMatrix::Map(mode.data(), nAtoms, 3);</div>
+<div class="line"><span class="lineno">  239</span>  <a class="code hl_variable" href="#a7c5cec927269d8ad603a64ef48f284ff">m_eigenvalue</a> = report.curvature;</div>
+<div class="line"><span class="lineno">  240</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#ae4a178406585da7f462cade19451eba3">statsCurvature</a> = report.curvature;</div>
+<div class="line"><span class="lineno">  241</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> = report.rotations;</div>
+<div class="line"><span class="lineno">  242</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#aaddd4f58289e430dcb327c814d9b1874">totalIterations</a> += 1;</div>
+<div class="line"><span class="lineno">  243</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a724f93c18ebe10e59fb24d29cf0703c1">totalForceCalls</a> +=</div>
+<div class="line"><span class="lineno">  244</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(matter-&gt;getPotentialCalls() - callsBefore);</div>
+<div class="line"><span class="lineno">  245</span>}</div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a545a60db6d74011ce08833f1935f1ea0"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#a545a60db6d74011ce08833f1935f1ea0">eonc::LowestEigenmode::MINMODE_LANCZOS</a></div><div class="ttdeci">static const char MINMODE_LANCZOS[]</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00037">LowestEigenmode.h:37</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a724f93c18ebe10e59fb24d29cf0703c1"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#a724f93c18ebe10e59fb24d29cf0703c1">eonc::LowestEigenmode::totalForceCalls</a></div><div class="ttdeci">long totalForceCalls</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00029">LowestEigenmode.h:29</a></div></div>
@@ -606,8 +617,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1LowestEigenmode.html#a6fffec92e8e345dc32dd8a46e689b4ab">eonc::LowestEigenmode</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="XtsciMinMode_8cpp_source.html#l00242">242</a> of file <a class="el" href="XtsciMinMode_8cpp_source.html">XtsciMinMode.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  242</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a7c5cec927269d8ad603a64ef48f284ff">m_eigenvalue</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="XtsciMinMode_8cpp_source.html#l00253">253</a> of file <a class="el" href="XtsciMinMode_8cpp_source.html">XtsciMinMode.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  253</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a7c5cec927269d8ad603a64ef48f284ff">m_eigenvalue</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -636,8 +647,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1LowestEigenmode.html#af3f08bac4c99061f6fe82c75edd6417d">eonc::LowestEigenmode</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="XtsciMinMode_8cpp_source.html#l00244">244</a> of file <a class="el" href="XtsciMinMode_8cpp_source.html">XtsciMinMode.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  244</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a81ba342cea76f96ccaa1aa8081c38925">m_eigenvector</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="XtsciMinMode_8cpp_source.html#l00255">255</a> of file <a class="el" href="XtsciMinMode_8cpp_source.html">XtsciMinMode.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  255</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a81ba342cea76f96ccaa1aa8081c38925">m_eigenvector</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
