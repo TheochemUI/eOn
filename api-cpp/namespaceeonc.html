@@ -430,6 +430,7 @@ Classes</h2></td></tr>
 <tr class="memitem:PotRegistry" id="r_PotRegistry"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1PotRegistry.html">PotRegistry</a></td></tr>
 <tr class="memitem:prefactor_5Foptions_5Ft" id="r_prefactor_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1prefactor__options__t.html">prefactor_options_t</a></td></tr>
 <tr class="memitem:PrefactorJob" id="r_PrefactorJob"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1PrefactorJob.html">PrefactorJob</a></td></tr>
+<tr class="memitem:PrfoRefineResult" id="r_PrfoRefineResult"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1PrfoRefineResult.html">PrfoRefineResult</a></td></tr>
 <tr class="memitem:process_5Fsearch_5Foptions_5Ft" id="r_process_5Fsearch_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1process__search__options__t.html">process_search_options_t</a></td></tr>
 <tr class="memitem:ProcessSearchJob" id="r_ProcessSearchJob"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ProcessSearchJob.html">ProcessSearchJob</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declaration of the Process Search job.  <a href="classeonc_1_1ProcessSearchJob.html#details">More...</a><br /></td></tr>
@@ -677,6 +678,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a2b2dd3bb93935dc5ca7b997104a4bb14" id="r_a2b2dd3bb93935dc5ca7b997104a4bb14"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="#a2b2dd3bb93935dc5ca7b997104a4bb14">minImageRemoveRigidDrift</a> (const <a class="el" href="classMatter.html">Matter</a> &amp;reference, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff, Eigen::RowVector3d *totalDrift)</td></tr>
 <tr class="memdesc:a2b2dd3bb93935dc5ca7b997104a4bb14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum-image a free-atom difference and remove rigid translation.  <br /></td></tr>
 <tr class="memitem:a6652d0e25201d6a2881deb81f6f86998" id="r_a6652d0e25201d6a2881deb81f6f86998"><td class="memItemLeft">static <a class="el" href="structEonMtaConfig.html">EonMtaConfig</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6652d0e25201d6a2881deb81f6f86998">config_from_params</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
+<tr class="memitem:af8e9dea889a11e878af5636eac4485c4" id="r_af8e9dea889a11e878af5636eac4485c4"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#af8e9dea889a11e878af5636eac4485c4">modeCurvature</a> (const <a class="el" href="classMatter.html">Matter</a> &amp;matter, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;mode, double dr)</td></tr>
+<tr class="memdesc:af8e9dea889a11e878af5636eac4485c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Curvature along <span class="tt">mode</span> from one forward difference of the forces over <span class="tt">dr</span> Angstrom.  <br /></td></tr>
+<tr class="memitem:a445089b0ba9136b4754a51a7938d5b06" id="r_a445089b0ba9136b4754a51a7938d5b06"><td class="memItemLeft"><a class="el" href="structeonc_1_1PrfoRefineResult.html">PrfoRefineResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#a445089b0ba9136b4754a51a7938d5b06">prfoRefineSaddle</a> (<a class="el" href="classMatter.html">Matter</a> &amp;matter, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;mode, double curvature, const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
+<tr class="memdesc:a445089b0ba9136b4754a51a7938d5b06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Partitioned rational function optimization (P-RFO) of a first-order saddle in the rgsaddle Sella order-1 session, configured by [Saddle Search] prfo_refine_*.  <br /></td></tr>
 <tr class="memitem:adafa5e51b56cd1a0c5361023b2ccc6cb" id="r_adafa5e51b56cd1a0c5361023b2ccc6cb"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#adafa5e51b56cd1a0c5361023b2ccc6cb">harmonicModeFreeEnergy</a> (double hbarOmegaEv, double temperature)</td></tr>
 <tr class="memdesc:adafa5e51b56cd1a0c5361023b2ccc6cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">kT ln(2 sinh(beta hbar omega / 2)) in eV.  <br /></td></tr>
 <tr class="memitem:ae04f3f63b0711057b71f16472e0bbb88" id="r_ae04f3f63b0711057b71f16472e0bbb88"><td class="memItemLeft">Eigen::VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#ae04f3f63b0711057b71f16472e0bbb88">complementEigenvalues</a> (const Eigen::MatrixXd &amp;hessian, const Eigen::MatrixXd &amp;removed)</td></tr>
@@ -1657,7 +1662,7 @@ Variables</h2></td></tr>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_a3011ad675a1fe4503d905337050b1e2b"><div class="ttname"><a href="classeonc_1_1Parameters.html#a3011ad675a1fe4503d905337050b1e2b">eonc::Parameters::dimer_options</a></div><div class="ttdeci">const dimer_options_t &amp; dimer_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00135">ParametersAccess.cpp:135</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_a6c24e085597f8e0d137e0a850af3a4db"><div class="ttname"><a href="classeonc_1_1Parameters.html#a6c24e085597f8e0d137e0a850af3a4db">eonc::Parameters::saddle_search_options</a></div><div class="ttdeci">const saddle_search_options_t &amp; saddle_search_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00127">ParametersAccess.cpp:127</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1pot_html"><div class="ttname"><a href="namespaceeonc_1_1pot.html">eonc::pot</a></div><div class="ttdef"><b>Definition</b> <a href="ExternalCommand_8h_source.html#l00022">ExternalCommand.h:22</a></div></div>
-<div class="ttc" id="astructeonc_1_1dimer__options__t_html_ac7d1f257a7247d0a5f06c3a84732989d"><div class="ttname"><a href="structeonc_1_1dimer__options__t.html#ac7d1f257a7247d0a5f06c3a84732989d">eonc::dimer_options_t::improved</a></div><div class="ttdeci">bool improved</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00329">ParametersOptions.h:329</a></div></div>
+<div class="ttc" id="astructeonc_1_1dimer__options__t_html_ac7d1f257a7247d0a5f06c3a84732989d"><div class="ttname"><a href="structeonc_1_1dimer__options__t.html#ac7d1f257a7247d0a5f06c3a84732989d">eonc::dimer_options_t::improved</a></div><div class="ttdeci">bool improved</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00338">ParametersOptions.h:338</a></div></div>
 <div class="ttc" id="astructeonc_1_1saddle__search__options__t_html_a974675e2852265ebc10cea51346fff47"><div class="ttname"><a href="structeonc_1_1saddle__search__options__t.html#a974675e2852265ebc10cea51346fff47">eonc::saddle_search_options_t::minmode_method</a></div><div class="ttdeci">std::string minmode_method</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00218">ParametersOptions.h:218</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -2189,12 +2194,12 @@ Variables</h2></td></tr>
 <div class="ttc" id="astructeonc_1_1ParametersLoadAccess_html_ae8e06ef73a4c38f90ef029f06c32d8ab"><div class="ttname"><a href="structeonc_1_1ParametersLoadAccess.html#ae8e06ef73a4c38f90ef029f06c32d8ab">eonc::ParametersLoadAccess::potential_options</a></div><div class="ttdeci">static potential_options_t &amp; potential_options(Parameters &amp;p)</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00282">ParametersAccess.cpp:282</a></div></div>
 <div class="ttc" id="astructeonc_1_1StructureComparisonOptions_html_a15e319718c77c3535800f76bc9538af0"><div class="ttname"><a href="structeonc_1_1StructureComparisonOptions.html#a15e319718c77c3535800f76bc9538af0">eonc::StructureComparisonOptions::check_rotation</a></div><div class="ttdeci">bool check_rotation</div><div class="ttdef"><b>Definition</b> <a href="StructureComparisonOptions_8h_source.html#l00021">StructureComparisonOptions.h:21</a></div></div>
 <div class="ttc" id="astructeonc_1_1StructureComparisonOptions_html_ae7f586021125fb4d25ea0802a9664309"><div class="ttname"><a href="structeonc_1_1StructureComparisonOptions.html#ae7f586021125fb4d25ea0802a9664309">eonc::StructureComparisonOptions::distance_difference</a></div><div class="ttdeci">double distance_difference</div><div class="ttdef"><b>Definition</b> <a href="StructureComparisonOptions_8h_source.html#l00019">StructureComparisonOptions.h:19</a></div></div>
-<div class="ttc" id="astructeonc_1_1optimizer__options__t_html_acab93a4b6bb247ebe449e4d509e82378"><div class="ttname"><a href="structeonc_1_1optimizer__options__t.html#acab93a4b6bb247ebe449e4d509e82378">eonc::optimizer_options_t::method</a></div><div class="ttdeci">OptType method</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00257">ParametersOptions.h:257</a></div></div>
-<div class="ttc" id="astructeonc_1_1optimizer__options__t_html_adf9632713ea430156d4e50dceb70a3c4"><div class="ttname"><a href="structeonc_1_1optimizer__options__t.html#adf9632713ea430156d4e50dceb70a3c4">eonc::optimizer_options_t::converged_force</a></div><div class="ttdeci">double converged_force</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00275">ParametersOptions.h:275</a></div></div>
+<div class="ttc" id="astructeonc_1_1optimizer__options__t_html_acab93a4b6bb247ebe449e4d509e82378"><div class="ttname"><a href="structeonc_1_1optimizer__options__t.html#acab93a4b6bb247ebe449e4d509e82378">eonc::optimizer_options_t::method</a></div><div class="ttdeci">OptType method</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00266">ParametersOptions.h:266</a></div></div>
+<div class="ttc" id="astructeonc_1_1optimizer__options__t_html_adf9632713ea430156d4e50dceb70a3c4"><div class="ttname"><a href="structeonc_1_1optimizer__options__t.html#adf9632713ea430156d4e50dceb70a3c4">eonc::optimizer_options_t::converged_force</a></div><div class="ttdeci">double converged_force</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00284">ParametersOptions.h:284</a></div></div>
 <div class="ttc" id="astructeonc_1_1potential__options__t_html_a9cdc33bdbae47475f3a71c8e39c0ee78"><div class="ttname"><a href="structeonc_1_1potential__options__t.html#a9cdc33bdbae47475f3a71c8e39c0ee78">eonc::potential_options_t::potential</a></div><div class="ttdeci">PotType potential</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00062">ParametersOptions.h:62</a></div></div>
-<div class="ttc" id="astructeonc_1_1serve__options__t_html_a1095a3c2db9c1d512ed3a3438c8fe64f"><div class="ttname"><a href="structeonc_1_1serve__options__t.html#a1095a3c2db9c1d512ed3a3438c8fe64f">eonc::serve_options_t::replicas</a></div><div class="ttdeci">size_t replicas</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00803">ParametersOptions.h:803</a></div></div>
-<div class="ttc" id="astructeonc_1_1serve__options__t_html_a3c9f205b9627720a8d2379f80186ef69"><div class="ttname"><a href="structeonc_1_1serve__options__t.html#a3c9f205b9627720a8d2379f80186ef69">eonc::serve_options_t::endpoints</a></div><div class="ttdeci">std::string endpoints</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00805">ParametersOptions.h:805</a></div></div>
-<div class="ttc" id="astructeonc_1_1serve__options__t_html_a8d3486622ae336da57c8d7bb7ea5ef23"><div class="ttname"><a href="structeonc_1_1serve__options__t.html#a8d3486622ae336da57c8d7bb7ea5ef23">eonc::serve_options_t::gateway_port</a></div><div class="ttdeci">uint16_t gateway_port</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00804">ParametersOptions.h:804</a></div></div>
+<div class="ttc" id="astructeonc_1_1serve__options__t_html_a1095a3c2db9c1d512ed3a3438c8fe64f"><div class="ttname"><a href="structeonc_1_1serve__options__t.html#a1095a3c2db9c1d512ed3a3438c8fe64f">eonc::serve_options_t::replicas</a></div><div class="ttdeci">size_t replicas</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00812">ParametersOptions.h:812</a></div></div>
+<div class="ttc" id="astructeonc_1_1serve__options__t_html_a3c9f205b9627720a8d2379f80186ef69"><div class="ttname"><a href="structeonc_1_1serve__options__t.html#a3c9f205b9627720a8d2379f80186ef69">eonc::serve_options_t::endpoints</a></div><div class="ttdeci">std::string endpoints</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00814">ParametersOptions.h:814</a></div></div>
+<div class="ttc" id="astructeonc_1_1serve__options__t_html_a8d3486622ae336da57c8d7bb7ea5ef23"><div class="ttname"><a href="structeonc_1_1serve__options__t.html#a8d3486622ae336da57c8d7bb7ea5ef23">eonc::serve_options_t::gateway_port</a></div><div class="ttdeci">uint16_t gateway_port</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00813">ParametersOptions.h:813</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -4154,6 +4159,53 @@ template&lt;typename Work&gt; </div>
 </div><!-- fragment -->
 </div>
 </div>
+<a id="af8e9dea889a11e878af5636eac4485c4" name="af8e9dea889a11e878af5636eac4485c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8e9dea889a11e878af5636eac4485c4">&#9670;&#160;</a></span>modeCurvature()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::modeCurvature </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>matter</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>mode</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>dr</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Curvature along <span class="tt">mode</span> from one forward difference of the forces over <span class="tt">dr</span> Angstrom. </p>
+<p>Costs one force call on a copy of <span class="tt">matter</span>. </p>
+
+<p class="definition">Definition at line <a class="el" href="PrfoRefine_8cpp_source.html#l00026">26</a> of file <a class="el" href="PrfoRefine_8cpp_source.html">PrfoRefine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   26</span>                                                                              {</div>
+<div class="line"><span class="lineno">   27</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> free = matter.<a class="code hl_function" href="classeonc_1_1Matter.html#a42635ded559e09b1e18239bf49d7ca43">getFree</a>();</div>
+<div class="line"><span class="lineno">   28</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> t = mode.cwiseProduct(free);</div>
+<div class="line"><span class="lineno">   29</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> norm = t.norm();</div>
+<div class="line"><span class="lineno">   30</span>  <span class="keywordflow">if</span> (!(norm &gt; 0.0) || !(dr &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">   31</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;modeCurvature: zero mode or step&quot;</span>);</div>
+<div class="line"><span class="lineno">   32</span>  }</div>
+<div class="line"><span class="lineno">   33</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> unit = t / norm;</div>
+<div class="line"><span class="lineno">   34</span>  <a class="code hl_class" href="classMatter.html">Matter</a> probe(matter);</div>
+<div class="line"><span class="lineno">   35</span>  probe.setPositions(matter.<a class="code hl_function" href="classeonc_1_1Matter.html#a2472b3c954d101c0810da69ed442b244">getPositions</a>() + dr * unit);</div>
+<div class="line"><span class="lineno">   36</span>  <span class="keywordflow">return</span> -(probe.getForces() - matter.<a class="code hl_function" href="classeonc_1_1Matter.html#ae062745fc2cd388a6d4bd4ad1e76b615">getForces</a>()).cwiseProduct(unit).sum() /</div>
+<div class="line"><span class="lineno">   37</span>         dr;</div>
+<div class="line"><span class="lineno">   38</span>}</div>
+<div class="ttc" id="aclassMatter_html"><div class="ttname"><a href="classMatter.html">Matter</a></div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00094">Matter.h:94</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a2472b3c954d101c0810da69ed442b244"><div class="ttname"><a href="classeonc_1_1Matter.html#a2472b3c954d101c0810da69ed442b244">eonc::Matter::getPositions</a></div><div class="ttdeci">const AtomMatrix &amp; getPositions() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00375">Matter.cpp:375</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a42635ded559e09b1e18239bf49d7ca43"><div class="ttname"><a href="classeonc_1_1Matter.html#a42635ded559e09b1e18239bf49d7ca43">eonc::Matter::getFree</a></div><div class="ttdeci">AtomMatrix getFree() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00796">Matter.cpp:796</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="a6baeaa9ee75d8ba1f598e80639fa79ab" name="a6baeaa9ee75d8ba1f598e80639fa79ab"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6baeaa9ee75d8ba1f598e80639fa79ab">&#9670;&#160;</a></span>packMobileRows()</h2>
 
@@ -4561,6 +4613,47 @@ requires ThreadSafeQueryable&lt;P&gt;</div>
 <div class="fragment"><div class="line"><span class="lineno">   30</span>                                                        {</div>
 <div class="line"><span class="lineno">   31</span>  <span class="keywordflow">return</span> p.isThreadSafe();</div>
 <div class="line"><span class="lineno">   32</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a445089b0ba9136b4754a51a7938d5b06" name="a445089b0ba9136b4754a51a7938d5b06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a445089b0ba9136b4754a51a7938d5b06">&#9670;&#160;</a></span>prfoRefineSaddle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1PrfoRefineResult.html">PrfoRefineResult</a> eonc::prfoRefineSaddle </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>matter</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>mode</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>curvature</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Partitioned rational function optimization (P-RFO) of a first-order saddle in the rgsaddle Sella order-1 session, configured by [Saddle Search] prfo_refine_*. </p>
+<p>The session's <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> model is the identity with <span class="tt">mode</span> seeded at <span class="tt">curvature</span>. Only free atoms move, with no rigid-body projection. <span class="tt">matter</span> ends at the last P-RFO point, or at its starting point when that has the smaller max-atom force. A build without rgsaddle, or against an application binary interface (ABI) older than 1.15, throws std::runtime_error. </p>
+
+<p class="definition">Definition at line <a class="el" href="PrfoRefine_8cpp_source.html#l00207">207</a> of file <a class="el" href="PrfoRefine_8cpp_source.html">PrfoRefine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  208</span>                                                      {</div>
+<div class="line"><span class="lineno">  209</span>  <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;[Saddle Search] prfo_refine needs eOn built with &quot;</span></div>
+<div class="line"><span class="lineno">  210</span>                           <span class="stringliteral">&quot;-Dwith_rgsaddle=true against rgsaddle ABI 1.15 or &quot;</span></div>
+<div class="line"><span class="lineno">  211</span>                           <span class="stringliteral">&quot;newer&quot;</span>);</div>
+<div class="line"><span class="lineno">  212</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

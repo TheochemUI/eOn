@@ -106,6 +106,7 @@ var dir_2527c5cc2e6dc8ce970a4d420439d1d9 =
     [ "PotRegistry.h", "PotRegistry_8h.html", "PotRegistry_8h" ],
     [ "Prefactor.h", "Prefactor_8h.html", "Prefactor_8h" ],
     [ "PrefactorJob.h", "PrefactorJob_8h.html", "PrefactorJob_8h" ],
+    [ "PrfoRefine.h", "PrfoRefine_8h.html", "PrfoRefine_8h" ],
     [ "ProcessSearchJob.h", "ProcessSearchJob_8h.html", "ProcessSearchJob_8h" ],
     [ "PyGuard.h", "PyGuard_8h.html", "PyGuard_8h" ],
     [ "QuadraticBath.h", "QuadraticBath_8h.html", "QuadraticBath_8h" ],

@@ -278,11 +278,14 @@ Public Member Functions</h2></td></tr>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:a9f329134f13562855b8d9cf8cfa43c83" id="r_a9f329134f13562855b8d9cf8cfa43c83"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a9f329134f13562855b8d9cf8cfa43c83">printEndState</a> (<a class="el" href="classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016">NudgedElasticBand::NEBStatus</a> status)</td></tr>
 <tr class="memitem:ae7401dcac7138eb2a13e9a48453113cb" id="r_ae7401dcac7138eb2a13e9a48453113cb"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae7401dcac7138eb2a13e9a48453113cb">saveData</a> (<a class="el" href="classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016">NudgedElasticBand::NEBStatus</a> status, <a class="el" href="classNudgedElasticBand.html">NudgedElasticBand</a> *neb)</td></tr>
+<tr class="memitem:afb48198b43df06dc3b1891c000848e4e" id="r_afb48198b43df06dc3b1891c000848e4e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#afb48198b43df06dc3b1891c000848e4e">refineClimbingImage</a> (<a class="el" href="classNudgedElasticBand.html">NudgedElasticBand</a> &amp;neb)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:abbd630b788b4c94c9ff3609a5fa5c386" id="r_abbd630b788b4c94c9ff3609a5fa5c386"><td class="memItemLeft">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="#abbd630b788b4c94c9ff3609a5fa5c386">returnFiles</a></td></tr>
 <tr class="memitem:ad7f878493c7d3356078fe5027b44440d" id="r_ad7f878493c7d3356078fe5027b44440d"><td class="memItemLeft">size_t&#160;</td><td class="memItemRight"><a class="el" href="#ad7f878493c7d3356078fe5027b44440d">fCallsNEB</a></td></tr>
+<tr class="memitem:aea9bb9f3ebeb2b48fa05dd3a42d6b69c" id="r_aea9bb9f3ebeb2b48fa05dd3a42d6b69c"><td class="memItemLeft">std::optional&lt; <a class="el" href="structeonc_1_1PrfoRefineResult.html">PrfoRefineResult</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aea9bb9f3ebeb2b48fa05dd3a42d6b69c">refined_</a></td></tr>
+<tr class="memitem:a538d7991d9a00ba553c0fa289911e8de" id="r_a538d7991d9a00ba553c0fa289911e8de"><td class="memItemLeft">size_t&#160;</td><td class="memItemRight"><a class="el" href="#a538d7991d9a00ba553c0fa289911e8de">fCallsRefine_</a> {0}</td></tr>
 <tr class="memitem:aa822ba747dbba6acb66605c6d0089170" id="r_aa822ba747dbba6acb66605c6d0089170"><td class="memItemLeft"><a class="el" href="structeonc_1_1log_1_1Scoped.html">eonc::log::Scoped</a>&#160;</td><td class="memItemRight"><a class="el" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
@@ -303,7 +306,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="NudgedElasticBandJob_8h_source.html#l00022">22</a> of file <a class="el" href="NudgedElasticBandJob_8h_source.html">NudgedElasticBandJob.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBandJob_8h_source.html#l00025">25</a> of file <a class="el" href="NudgedElasticBandJob_8h_source.html">NudgedElasticBandJob.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a40b310f84231d7e3bd4c58b44381ccec" name="a40b310f84231d7e3bd4c58b44381ccec"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a40b310f84231d7e3bd4c58b44381ccec">&#9670;&#160;</a></span>NudgedElasticBandJob()</h2>
@@ -332,10 +335,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NudgedElasticBandJob_8h_source.html#l00025">25</a> of file <a class="el" href="NudgedElasticBandJob_8h_source.html">NudgedElasticBandJob.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   26</span>      : <a class="code hl_function" href="classeonc_1_1Job.html#a40423b75b9614f0fc81797a5d817948d">Job</a>(std::move(parameters), rt), <a class="code hl_variable" href="#ad7f878493c7d3356078fe5027b44440d">fCallsNEB</a>{0} {}</div>
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBandJob_8h_source.html#l00028">28</a> of file <a class="el" href="NudgedElasticBandJob_8h_source.html">NudgedElasticBandJob.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   29</span>      : <a class="code hl_function" href="classeonc_1_1Job.html#a40423b75b9614f0fc81797a5d817948d">Job</a>(std::move(parameters), rt), <a class="code hl_variable" href="#ad7f878493c7d3356078fe5027b44440d">fCallsNEB</a>{0} {}</div>
 <div class="ttc" id="aclasseonc_1_1Job_html_a40423b75b9614f0fc81797a5d817948d"><div class="ttname"><a href="classeonc_1_1Job.html#a40423b75b9614f0fc81797a5d817948d">eonc::Job::Job</a></div><div class="ttdeci">Job(std::unique_ptr&lt; Parameters &gt; parameters, Runtime &amp;rt, ExclusivePotential)</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00071">Job.h:71</a></div></div>
-<div class="ttc" id="aclasseonc_1_1NudgedElasticBandJob_html_ad7f878493c7d3356078fe5027b44440d"><div class="ttname"><a href="#ad7f878493c7d3356078fe5027b44440d">eonc::NudgedElasticBandJob::fCallsNEB</a></div><div class="ttdeci">size_t fCallsNEB</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBandJob_8h_source.html#l00037">NudgedElasticBandJob.h:37</a></div></div>
+<div class="ttc" id="aclasseonc_1_1NudgedElasticBandJob_html_ad7f878493c7d3356078fe5027b44440d"><div class="ttname"><a href="#ad7f878493c7d3356078fe5027b44440d">eonc::NudgedElasticBandJob::fCallsNEB</a></div><div class="ttdeci">size_t fCallsNEB</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBandJob_8h_source.html#l00041">NudgedElasticBandJob.h:41</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -388,20 +391,88 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NudgedElasticBandJob_8cpp_source.html#l00342">342</a> of file <a class="el" href="NudgedElasticBandJob_8cpp_source.html">NudgedElasticBandJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  342</span>                                                                          {</div>
-<div class="line"><span class="lineno">  343</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;Final state: &quot;</span>);</div>
-<div class="line"><span class="lineno">  344</span>  <span class="keywordflow">if</span> (status == <a class="code hl_enumvalue" href="classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016a45802158e78dd9584161629098018fe8">NudgedElasticBand::NEBStatus::GOOD</a>)</div>
-<div class="line"><span class="lineno">  345</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;Nudged elastic band, successful.&quot;</span>);</div>
-<div class="line"><span class="lineno">  346</span>  <span class="keywordflow">else</span> <span class="keywordflow">if</span> (status == <a class="code hl_enumvalue" href="classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016ae402cfb6fad976d41678a209947ff3eb">NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS</a>)</div>
-<div class="line"><span class="lineno">  347</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;Nudged elastic band, too many iterations.&quot;</span>);</div>
-<div class="line"><span class="lineno">  348</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  349</span>    QUILL_LOG_WARNING(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;Unknown status: {}!&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(status));</div>
-<div class="line"><span class="lineno">  350</span>  <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  351</span>}</div>
-<div class="ttc" id="aclasseonc_1_1NudgedElasticBandJob_html_aa822ba747dbba6acb66605c6d0089170"><div class="ttname"><a href="#aa822ba747dbba6acb66605c6d0089170">eonc::NudgedElasticBandJob::m_log</a></div><div class="ttdeci">eonc::log::Scoped m_log</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBandJob_8h_source.html#l00038">NudgedElasticBandJob.h:38</a></div></div>
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBandJob_8cpp_source.html#l00385">385</a> of file <a class="el" href="NudgedElasticBandJob_8cpp_source.html">NudgedElasticBandJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  385</span>                                                                          {</div>
+<div class="line"><span class="lineno">  386</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;Final state: &quot;</span>);</div>
+<div class="line"><span class="lineno">  387</span>  <span class="keywordflow">if</span> (status == <a class="code hl_enumvalue" href="classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016a45802158e78dd9584161629098018fe8">NudgedElasticBand::NEBStatus::GOOD</a>)</div>
+<div class="line"><span class="lineno">  388</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;Nudged elastic band, successful.&quot;</span>);</div>
+<div class="line"><span class="lineno">  389</span>  <span class="keywordflow">else</span> <span class="keywordflow">if</span> (status == <a class="code hl_enumvalue" href="classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016ae402cfb6fad976d41678a209947ff3eb">NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS</a>)</div>
+<div class="line"><span class="lineno">  390</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;Nudged elastic band, too many iterations.&quot;</span>);</div>
+<div class="line"><span class="lineno">  391</span>  <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  392</span>    QUILL_LOG_WARNING(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;Unknown status: {}!&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(status));</div>
+<div class="line"><span class="lineno">  393</span>  <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  394</span>}</div>
+<div class="ttc" id="aclasseonc_1_1NudgedElasticBandJob_html_aa822ba747dbba6acb66605c6d0089170"><div class="ttname"><a href="#aa822ba747dbba6acb66605c6d0089170">eonc::NudgedElasticBandJob::m_log</a></div><div class="ttdeci">eonc::log::Scoped m_log</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBandJob_8h_source.html#l00044">NudgedElasticBandJob.h:44</a></div></div>
 <div class="ttc" id="aclasseonc_1_1NudgedElasticBand_html_ae4aa0062944f9d1fb091b3c4f5bd1016a45802158e78dd9584161629098018fe8"><div class="ttname"><a href="classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016a45802158e78dd9584161629098018fe8">eonc::NudgedElasticBand::NEBStatus::GOOD</a></div><div class="ttdeci">@ GOOD</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00043">NudgedElasticBand.h:43</a></div></div>
 <div class="ttc" id="aclasseonc_1_1NudgedElasticBand_html_ae4aa0062944f9d1fb091b3c4f5bd1016ae402cfb6fad976d41678a209947ff3eb"><div class="ttname"><a href="classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016ae402cfb6fad976d41678a209947ff3eb">eonc::NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS</a></div><div class="ttdeci">@ BAD_MAX_ITERATIONS</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00045">NudgedElasticBand.h:45</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="afb48198b43df06dc3b1891c000848e4e" name="afb48198b43df06dc3b1891c000848e4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb48198b43df06dc3b1891c000848e4e">&#9670;&#160;</a></span>refineClimbingImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::NudgedElasticBandJob::refineClimbingImage </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNudgedElasticBand.html">NudgedElasticBand</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>neb</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBandJob_8cpp_source.html#l00197">197</a> of file <a class="el" href="NudgedElasticBandJob_8cpp_source.html">NudgedElasticBandJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  197</span>                                                                     {</div>
+<div class="line"><span class="lineno">  198</span>  <span class="keywordflow">if</span> (neb.<a class="code hl_variable" href="classNudgedElasticBand.html#af3aab21133a069b95ce79c1770342455">climbingImage</a> &lt;= 0) {</div>
+<div class="line"><span class="lineno">  199</span>    QUILL_LOG_WARNING(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;prfo_refine: the band has no climbing image&quot;</span>);</div>
+<div class="line"><span class="lineno">  200</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  201</span>  }</div>
+<div class="line"><span class="lineno">  202</span>  <span class="keyword">const</span> <span class="keywordtype">size_t</span> before = <a class="code hl_function" href="classeonc_1_1Job.html#a03a40b0e3f078b9e284220c71567e644">pots</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a6ffd8adea58bf8682dc74e73ad97c17b">total_force_calls</a>();</div>
+<div class="line"><span class="lineno">  203</span>  <span class="keyword">const</span> <span class="keyword">auto</span> ci = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(neb.<a class="code hl_variable" href="classNudgedElasticBand.html#af3aab21133a069b95ce79c1770342455">climbingImage</a>);</div>
+<div class="line"><span class="lineno">  204</span>  Matter <a class="code hl_variable" href="namespaceeonc_1_1potential__owner.html#a5287a8a01d88e24d2b9750714f90b939">saddle</a>(*neb.<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>[ci]);</div>
+<div class="line"><span class="lineno">  205</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;tangent = *neb.<a class="code hl_variable" href="classNudgedElasticBand.html#a189895e2c19c739127a2e83fcb049a07">tangent</a>[ci];</div>
+<div class="line"><span class="lineno">  206</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> curvature = <a class="code hl_function" href="namespaceeonc.html#af8e9dea889a11e878af5636eac4485c4">eonc::modeCurvature</a>(</div>
+<div class="line"><span class="lineno">  207</span>      saddle, tangent, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().finiteDifference);</div>
+<div class="line"><span class="lineno">  208</span>  <span class="keywordflow">if</span> (curvature &lt; 0.0) {</div>
+<div class="line"><span class="lineno">  209</span>    <a class="code hl_variable" href="#aea9bb9f3ebeb2b48fa05dd3a42d6b69c">refined_</a> = <a class="code hl_function" href="namespaceeonc.html#a445089b0ba9136b4754a51a7938d5b06">eonc::prfoRefineSaddle</a>(saddle, tangent, curvature, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  210</span>    <span class="keyword">const</span> std::string refinedFilename(<span class="stringliteral">&quot;sp_refined.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  211</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="namespaceeonc_1_1potential__owner.html#a5287a8a01d88e24d2b9750714f90b939">saddle</a>.matter2con(refinedFilename))) {</div>
+<div class="line"><span class="lineno">  212</span>      <a class="code hl_variable" href="#abbd630b788b4c94c9ff3609a5fa5c386">returnFiles</a>.push_back(refinedFilename);</div>
+<div class="line"><span class="lineno">  213</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  214</span>      QUILL_LOG_ERROR(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, refinedFilename);</div>
+<div class="line"><span class="lineno">  215</span>    }</div>
+<div class="line"><span class="lineno">  216</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  217</span>    QUILL_LOG_WARNING(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>,</div>
+<div class="line"><span class="lineno">  218</span>                      <span class="stringliteral">&quot;prfo_refine: curvature {:.4f} along the climbing &quot;</span></div>
+<div class="line"><span class="lineno">  219</span>                      <span class="stringliteral">&quot;image tangent is not negative, no refinement&quot;</span>,</div>
+<div class="line"><span class="lineno">  220</span>                      curvature);</div>
+<div class="line"><span class="lineno">  221</span>  }</div>
+<div class="line"><span class="lineno">  222</span>  <a class="code hl_variable" href="#a538d7991d9a00ba553c0fa289911e8de">fCallsRefine_</a> = <a class="code hl_function" href="classeonc_1_1Job.html#a03a40b0e3f078b9e284220c71567e644">pots</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a6ffd8adea58bf8682dc74e73ad97c17b">total_force_calls</a>() - before;</div>
+<div class="line"><span class="lineno">  223</span>}</div>
+<div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
+<div class="ttc" id="aclassNudgedElasticBand_html_a189895e2c19c739127a2e83fcb049a07"><div class="ttname"><a href="classNudgedElasticBand.html#a189895e2c19c739127a2e83fcb049a07">NudgedElasticBand::tangent</a></div><div class="ttdeci">std::vector&lt; std::shared_ptr&lt; AtomMatrix &gt; &gt; tangent</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00110">NudgedElasticBand.h:110</a></div></div>
+<div class="ttc" id="aclassNudgedElasticBand_html_a439335bce7cd4472ee77291be8e0dafa"><div class="ttname"><a href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">NudgedElasticBand::path</a></div><div class="ttdeci">std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; path</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00109">NudgedElasticBand.h:109</a></div></div>
+<div class="ttc" id="aclassNudgedElasticBand_html_af3aab21133a069b95ce79c1770342455"><div class="ttname"><a href="classNudgedElasticBand.html#af3aab21133a069b95ce79c1770342455">NudgedElasticBand::climbingImage</a></div><div class="ttdeci">long climbingImage</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00105">NudgedElasticBand.h:105</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Job_html_a03a40b0e3f078b9e284220c71567e644"><div class="ttname"><a href="classeonc_1_1Job.html#a03a40b0e3f078b9e284220c71567e644">eonc::Job::pots</a></div><div class="ttdeci">PotRegistry &amp; pots() noexcept</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00109">Job.h:109</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Job_html_a9f0bfab75a98f383ba58f1c592fd2500"><div class="ttname"><a href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">eonc::Job::params</a></div><div class="ttdeci">Parameters params</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00058">Job.h:58</a></div></div>
+<div class="ttc" id="aclasseonc_1_1NudgedElasticBandJob_html_a538d7991d9a00ba553c0fa289911e8de"><div class="ttname"><a href="#a538d7991d9a00ba553c0fa289911e8de">eonc::NudgedElasticBandJob::fCallsRefine_</a></div><div class="ttdeci">size_t fCallsRefine_</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBandJob_8h_source.html#l00043">NudgedElasticBandJob.h:43</a></div></div>
+<div class="ttc" id="aclasseonc_1_1NudgedElasticBandJob_html_abbd630b788b4c94c9ff3609a5fa5c386"><div class="ttname"><a href="#abbd630b788b4c94c9ff3609a5fa5c386">eonc::NudgedElasticBandJob::returnFiles</a></div><div class="ttdeci">std::vector&lt; std::string &gt; returnFiles</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBandJob_8h_source.html#l00040">NudgedElasticBandJob.h:40</a></div></div>
+<div class="ttc" id="aclasseonc_1_1NudgedElasticBandJob_html_aea9bb9f3ebeb2b48fa05dd3a42d6b69c"><div class="ttname"><a href="#aea9bb9f3ebeb2b48fa05dd3a42d6b69c">eonc::NudgedElasticBandJob::refined_</a></div><div class="ttdeci">std::optional&lt; PrfoRefineResult &gt; refined_</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBandJob_8h_source.html#l00042">NudgedElasticBandJob.h:42</a></div></div>
+<div class="ttc" id="aclasseonc_1_1PotRegistry_html_a6ffd8adea58bf8682dc74e73ad97c17b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a6ffd8adea58bf8682dc74e73ad97c17b">eonc::PotRegistry::total_force_calls</a></div><div class="ttdeci">size_t total_force_calls() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00099">PotRegistry.cpp:99</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_af66b2723d892a4095754f9b0354b4f78"><div class="ttname"><a href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a></div><div class="ttdeci">constexpr bool io_ok(IoStatus s) noexcept</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00038">ConFileIO.h:38</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1potential__owner_html_a5287a8a01d88e24d2b9750714f90b939"><div class="ttname"><a href="namespaceeonc_1_1potential__owner.html#a5287a8a01d88e24d2b9750714f90b939">eonc::potential_owner::saddle</a></div><div class="ttdeci">constexpr long saddle</div><div class="ttdef"><b>Definition</b> <a href="PotentialOwner_8h_source.html#l00012">PotentialOwner.h:12</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a445089b0ba9136b4754a51a7938d5b06"><div class="ttname"><a href="namespaceeonc.html#a445089b0ba9136b4754a51a7938d5b06">eonc::prfoRefineSaddle</a></div><div class="ttdeci">PrfoRefineResult prfoRefineSaddle(Matter &amp;, const AtomMatrix &amp;, double, const Parameters &amp;)</div><div class="ttdoc">Partitioned rational function optimization (P-RFO) of a first-order saddle in the rgsaddle Sella orde...</div><div class="ttdef"><b>Definition</b> <a href="PrfoRefine_8cpp_source.html#l00207">PrfoRefine.cpp:207</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_af8e9dea889a11e878af5636eac4485c4"><div class="ttname"><a href="namespaceeonc.html#af8e9dea889a11e878af5636eac4485c4">eonc::modeCurvature</a></div><div class="ttdeci">double modeCurvature(const Matter &amp;matter, const AtomMatrix &amp;mode, double dr)</div><div class="ttdoc">Curvature along mode from one forward difference of the forces over dr Angstrom.</div><div class="ttdef"><b>Definition</b> <a href="PrfoRefine_8cpp_source.html#l00026">PrfoRefine.cpp:26</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -587,27 +658,25 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  182</span>  <span class="keywordflow">if</span> (status == <a class="code hl_enumvalue" href="classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016a45802158e78dd9584161629098018fe8">NudgedElasticBand::NEBStatus::GOOD</a>) {</div>
 <div class="line"><span class="lineno">  183</span>    neb-&gt;printImageData();</div>
 <div class="line"><span class="lineno">  184</span>    neb-&gt;findExtrema();</div>
-<div class="line"><span class="lineno">  185</span>  }</div>
-<div class="line"><span class="lineno">  186</span> </div>
-<div class="line"><span class="lineno">  187</span>  <a class="code hl_function" href="#a9f329134f13562855b8d9cf8cfa43c83">printEndState</a>(status);</div>
-<div class="line"><span class="lineno">  188</span>  <a class="code hl_function" href="#ae7401dcac7138eb2a13e9a48453113cb">saveData</a>(status, neb.get());</div>
+<div class="line"><span class="lineno">  185</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().prfo_refine.enabled) {</div>
+<div class="line"><span class="lineno">  186</span>      <a class="code hl_function" href="#afb48198b43df06dc3b1891c000848e4e">refineClimbingImage</a>(*neb);</div>
+<div class="line"><span class="lineno">  187</span>    }</div>
+<div class="line"><span class="lineno">  188</span>  }</div>
 <div class="line"><span class="lineno">  189</span> </div>
-<div class="line"><span class="lineno">  190</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#abbd630b788b4c94c9ff3609a5fa5c386">returnFiles</a>;</div>
-<div class="line"><span class="lineno">  191</span>}</div>
-<div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
+<div class="line"><span class="lineno">  190</span>  <a class="code hl_function" href="#a9f329134f13562855b8d9cf8cfa43c83">printEndState</a>(status);</div>
+<div class="line"><span class="lineno">  191</span>  <a class="code hl_function" href="#ae7401dcac7138eb2a13e9a48453113cb">saveData</a>(status, neb.get());</div>
+<div class="line"><span class="lineno">  192</span> </div>
+<div class="line"><span class="lineno">  193</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#abbd630b788b4c94c9ff3609a5fa5c386">returnFiles</a>;</div>
+<div class="line"><span class="lineno">  194</span>}</div>
 <div class="ttc" id="aEonLogger_8h_html_afe4077bbe89c5bc6e818b057a692e64a"><div class="ttname"><a href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a></div><div class="ttdeci">#define EONC_LOG_CRITICAL(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00334">EonLogger.h:334</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Job_html_a03a40b0e3f078b9e284220c71567e644"><div class="ttname"><a href="classeonc_1_1Job.html#a03a40b0e3f078b9e284220c71567e644">eonc::Job::pots</a></div><div class="ttdeci">PotRegistry &amp; pots() noexcept</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00109">Job.h:109</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Job_html_a948da0de6ec2575bd6ac975fedaad0c9"><div class="ttname"><a href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">eonc::Job::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdoc">Set when one Potential is shared across Matters, images, or a caller.</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00066">Job.h:66</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Job_html_a9f0bfab75a98f383ba58f1c592fd2500"><div class="ttname"><a href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">eonc::Job::params</a></div><div class="ttdeci">Parameters params</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00058">Job.h:58</a></div></div>
-<div class="ttc" id="aclasseonc_1_1NudgedElasticBandJob_html_a9f329134f13562855b8d9cf8cfa43c83"><div class="ttname"><a href="#a9f329134f13562855b8d9cf8cfa43c83">eonc::NudgedElasticBandJob::printEndState</a></div><div class="ttdeci">void printEndState(NudgedElasticBand::NEBStatus status)</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBandJob_8cpp_source.html#l00342">NudgedElasticBandJob.cpp:342</a></div></div>
-<div class="ttc" id="aclasseonc_1_1NudgedElasticBandJob_html_abbd630b788b4c94c9ff3609a5fa5c386"><div class="ttname"><a href="#abbd630b788b4c94c9ff3609a5fa5c386">eonc::NudgedElasticBandJob::returnFiles</a></div><div class="ttdeci">std::vector&lt; std::string &gt; returnFiles</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBandJob_8h_source.html#l00036">NudgedElasticBandJob.h:36</a></div></div>
-<div class="ttc" id="aclasseonc_1_1NudgedElasticBandJob_html_ae7401dcac7138eb2a13e9a48453113cb"><div class="ttname"><a href="#ae7401dcac7138eb2a13e9a48453113cb">eonc::NudgedElasticBandJob::saveData</a></div><div class="ttdeci">void saveData(NudgedElasticBand::NEBStatus status, NudgedElasticBand *neb)</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBandJob_8cpp_source.html#l00193">NudgedElasticBandJob.cpp:193</a></div></div>
+<div class="ttc" id="aclasseonc_1_1NudgedElasticBandJob_html_a9f329134f13562855b8d9cf8cfa43c83"><div class="ttname"><a href="#a9f329134f13562855b8d9cf8cfa43c83">eonc::NudgedElasticBandJob::printEndState</a></div><div class="ttdeci">void printEndState(NudgedElasticBand::NEBStatus status)</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBandJob_8cpp_source.html#l00385">NudgedElasticBandJob.cpp:385</a></div></div>
+<div class="ttc" id="aclasseonc_1_1NudgedElasticBandJob_html_ae7401dcac7138eb2a13e9a48453113cb"><div class="ttname"><a href="#ae7401dcac7138eb2a13e9a48453113cb">eonc::NudgedElasticBandJob::saveData</a></div><div class="ttdeci">void saveData(NudgedElasticBand::NEBStatus status, NudgedElasticBand *neb)</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBandJob_8cpp_source.html#l00225">NudgedElasticBandJob.cpp:225</a></div></div>
+<div class="ttc" id="aclasseonc_1_1NudgedElasticBandJob_html_afb48198b43df06dc3b1891c000848e4e"><div class="ttname"><a href="#afb48198b43df06dc3b1891c000848e4e">eonc::NudgedElasticBandJob::refineClimbingImage</a></div><div class="ttdeci">void refineClimbingImage(NudgedElasticBand &amp;neb)</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBandJob_8cpp_source.html#l00197">NudgedElasticBandJob.cpp:197</a></div></div>
 <div class="ttc" id="aclasseonc_1_1NudgedElasticBand_html_ae4aa0062944f9d1fb091b3c4f5bd1016"><div class="ttname"><a href="classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016">eonc::NudgedElasticBand::NEBStatus</a></div><div class="ttdeci">NEBStatus</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00042">NudgedElasticBand.h:42</a></div></div>
-<div class="ttc" id="aclasseonc_1_1PotRegistry_html_a6ffd8adea58bf8682dc74e73ad97c17b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a6ffd8adea58bf8682dc74e73ad97c17b">eonc::PotRegistry::total_force_calls</a></div><div class="ttdeci">size_t total_force_calls() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00099">PotRegistry.cpp:99</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_1_1neb__paths_html_ac95a1b0557b17ab2935486b645d51ea5"><div class="ttname"><a href="namespaceeonc_1_1helpers_1_1neb__paths.html#ac95a1b0557b17ab2935486b645d51ea5">eonc::helpers::neb_paths::requireSameAtomCount</a></div><div class="ttdeci">void requireSameAtomCount(const Matter &amp;a, const Matter &amp;b, std::string_view what)</div><div class="ttdoc">Abort before Eigen subtracts two position matrices of different size.</div><div class="ttdef"><b>Definition</b> <a href="NEBInitialPaths_8hpp_source.html#l00016">NEBInitialPaths.hpp:16</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_1_1neb__paths_html_afa0f135479f27bb6864ae1aeb4de05eb"><div class="ttname"><a href="namespaceeonc_1_1helpers_1_1neb__paths.html#afa0f135479f27bb6864ae1aeb4de05eb">eonc::helpers::neb_paths::readFilePaths</a></div><div class="ttdeci">std::vector&lt; fs::path &gt; readFilePaths(const std::string &amp;listFilePath)</div><div class="ttdoc">Reads a file where each line contains a path to another file.</div><div class="ttdef"><b>Definition</b> <a href="NEBInitialPaths_8cpp_source.html#l00075">NEBInitialPaths.cpp:75</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_html_a561b68f975ecb734266063b428d6f2f2"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a561b68f975ecb734266063b428d6f2f2">eonc::helpers::getRelevantFile</a></div><div class="ttdeci">std::string getRelevantFile(std::string filename)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00123">HelperFunctions.cpp:123</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1io_html_af66b2723d892a4095754f9b0354b4f78"><div class="ttname"><a href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a></div><div class="ttdeci">constexpr bool io_ok(IoStatus s) noexcept</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00038">ConFileIO.h:38</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a323be6616e43feab55a65202288b9459a9fc5887c030f7a3e19821ebec457e719"><div class="ttname"><a href="namespaceeonc.html#a323be6616e43feab55a65202288b9459a9fc5887c030f7a3e19821ebec457e719">eonc::NEBInit::FILE</a></div><div class="ttdeci">@ FILE</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00115">BaseStructures.h:115</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -639,160 +708,169 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NudgedElasticBandJob_8cpp_source.html#l00193">193</a> of file <a class="el" href="NudgedElasticBandJob_8cpp_source.html">NudgedElasticBandJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  194</span>                                                            {</div>
-<div class="line"><span class="lineno">  195</span>  std::string resultsFilename(<span class="stringliteral">&quot;results.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">  196</span>  <a class="code hl_variable" href="#abbd630b788b4c94c9ff3609a5fa5c386">returnFiles</a>.push_back(resultsFilename);</div>
-<div class="line"><span class="lineno">  197</span>  <span class="comment">// The outer walls of both wells, for the one-dimensional tunnelling</span></div>
-<div class="line"><span class="lineno">  198</span>  <span class="comment">// levels written beside the band; sampled first, so the force calls they</span></div>
-<div class="line"><span class="lineno">  199</span>  <span class="comment">// take are in results.dat.</span></div>
-<div class="line"><span class="lineno">  200</span>  std::optional&lt;eonc::tunneling::BandWalls&gt; walls;</div>
-<div class="line"><span class="lineno">  201</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">long</span> points = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.neb_options().tunnel_wall_points;</div>
-<div class="line"><span class="lineno">  202</span>      points &gt; 0 &amp;&amp; status == <a class="code hl_enumvalue" href="classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016a45802158e78dd9584161629098018fe8">NudgedElasticBand::NEBStatus::GOOD</a>) {</div>
-<div class="line"><span class="lineno">  203</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  204</span>      <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; band(</div>
-<div class="line"><span class="lineno">  205</span>          neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>.begin(),</div>
-<div class="line"><span class="lineno">  206</span>          neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>.begin() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a6cf868fd45b0fe9709dbe1ef19d5a7a9">numImages</a> + 2));</div>
-<div class="line"><span class="lineno">  207</span>      walls = <a class="code hl_function" href="namespaceeonc_1_1tunneling.html#a3847ecad99497fda1f08ed26cda2722a">eonc::tunneling::bandWalls</a>(band, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a62e8e01ecd0aa36766be602dc8c4da25">reactantEnergy</a>, points);</div>
-<div class="line"><span class="lineno">  208</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::invalid_argument &amp;ex) {</div>
-<div class="line"><span class="lineno">  209</span>      QUILL_LOG_WARNING(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;No tunnelling walls for this band: {}&quot;</span>,</div>
-<div class="line"><span class="lineno">  210</span>                        ex.what());</div>
-<div class="line"><span class="lineno">  211</span>    }</div>
-<div class="line"><span class="lineno">  212</span>  }</div>
-<div class="line"><span class="lineno">  213</span> </div>
-<div class="line"><span class="lineno">  214</span>  {</div>
-<div class="line"><span class="lineno">  215</span>    <span class="keyword">auto</span> env = <a class="code hl_function" href="structeonc_1_1JobResultEnvelope.html#adcc250879257d0fb4823bb0c799a3510">JobResultEnvelope::fromMinimization</a>(</div>
-<div class="line"><span class="lineno">  216</span>        status == <a class="code hl_enumvalue" href="classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016a45802158e78dd9584161629098018fe8">NudgedElasticBand::NEBStatus::GOOD</a></div>
-<div class="line"><span class="lineno">  217</span>            ? <a class="code hl_enumvalue" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a45802158e78dd9584161629098018fe8">RunStatus::GOOD</a></div>
-<div class="line"><span class="lineno">  218</span>            : <a class="code hl_enumvalue" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a9d50412b69404284d20de2af7e4206dc">RunStatus::FAIL_MAX_ITERATIONS</a>,</div>
-<div class="line"><span class="lineno">  219</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options().potential, <a class="code hl_function" href="classeonc_1_1Job.html#a03a40b0e3f078b9e284220c71567e644">pots</a>().total_force_calls(), <span class="keyword">true</span>,</div>
-<div class="line"><span class="lineno">  220</span>        neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a62e8e01ecd0aa36766be602dc8c4da25">reactantEnergy</a>);</div>
-<div class="line"><span class="lineno">  221</span>    env.provenance = <a class="code hl_function" href="namespaceeonc.html#aa67d050aa179f681c8792139d0b2fed8">provenanceForJob</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  222</span>    env.job_type = <span class="stringliteral">&quot;neb&quot;</span>;</div>
-<div class="line"><span class="lineno">  223</span>    env.extras.emplace_back(<span class="stringliteral">&quot;force_calls_neb&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ad7f878493c7d3356078fe5027b44440d">fCallsNEB</a>));</div>
-<div class="line"><span class="lineno">  224</span>    env.extras.emplace_back(<span class="stringliteral">&quot;energy_reference&quot;</span>, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a62e8e01ecd0aa36766be602dc8c4da25">reactantEnergy</a>);</div>
-<div class="line"><span class="lineno">  225</span>    env.extras.emplace_back(<span class="stringliteral">&quot;number_of_images&quot;</span>,</div>
-<div class="line"><span class="lineno">  226</span>                            <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a6cf868fd45b0fe9709dbe1ef19d5a7a9">numImages</a>));</div>
-<div class="line"><span class="lineno">  227</span>    env.writeResultsDat(resultsFilename);</div>
-<div class="line"><span class="lineno">  228</span>    std::ofstream out(resultsFilename, std::ios::binary | std::ios::app);</div>
-<div class="line"><span class="lineno">  229</span>    <span class="keywordflow">if</span> (!out) {</div>
-<div class="line"><span class="lineno">  230</span>      QUILL_LOG_ERROR(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;Failed to reopen {} for image keys&quot;</span>,</div>
-<div class="line"><span class="lineno">  231</span>                      resultsFilename);</div>
-<div class="line"><span class="lineno">  232</span>      <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  233</span>    }</div>
-<div class="line"><span class="lineno">  234</span> </div>
-<div class="line"><span class="lineno">  235</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt;= neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a6cf868fd45b0fe9709dbe1ef19d5a7a9">numImages</a> + 1; i++) {</div>
-<div class="line"><span class="lineno">  236</span>      out &lt;&lt; std::format(</div>
-<div class="line"><span class="lineno">  237</span>          <span class="stringliteral">&quot;{:f} image{}_energy\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  238</span>          neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>[i]-&gt;getPotentialEnergy() - neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a62e8e01ecd0aa36766be602dc8c4da25">reactantEnergy</a>, i);</div>
-<div class="line"><span class="lineno">  239</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} image{}_force\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  240</span>                         neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>[i]-&gt;getForces().norm(), i);</div>
-<div class="line"><span class="lineno">  241</span>      <span class="keywordtype">double</span> proj_norm = (i &gt;= 1 &amp;&amp; i &lt;= neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a6cf868fd45b0fe9709dbe1ef19d5a7a9">numImages</a>)</div>
-<div class="line"><span class="lineno">  242</span>                             ? neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a993690c7a8194ab389bf601a63e8317a">projectedForce</a>[i]-&gt;norm()</div>
-<div class="line"><span class="lineno">  243</span>                             : 0.0;</div>
-<div class="line"><span class="lineno">  244</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} image{}_projected_force\n&quot;</span>, proj_norm, i);</div>
-<div class="line"><span class="lineno">  245</span>    }</div>
-<div class="line"><span class="lineno">  246</span> </div>
-<div class="line"><span class="lineno">  247</span>    <span class="keywordtype">long</span> safeNumExtrema = std::min(</div>
-<div class="line"><span class="lineno">  248</span>        neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#ac60b5c49f134535819d7b80ef25c6c09">numExtrema</a>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a651a86e4054397fc81dee86c971a262b">extremumPosition</a>.size()));</div>
-<div class="line"><span class="lineno">  249</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} number_of_extrema\n&quot;</span>, safeNumExtrema);</div>
-<div class="line"><span class="lineno">  250</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; safeNumExtrema; i++) {</div>
-<div class="line"><span class="lineno">  251</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} extremum{}_position\n&quot;</span>, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a651a86e4054397fc81dee86c971a262b">extremumPosition</a>[i],</div>
-<div class="line"><span class="lineno">  252</span>                         i);</div>
-<div class="line"><span class="lineno">  253</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} extremum{}_energy\n&quot;</span>, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a0e3281e065ecfb43668d5f49e2fa1a25">extremumEnergy</a>[i], i);</div>
-<div class="line"><span class="lineno">  254</span>    }</div>
-<div class="line"><span class="lineno">  255</span>  }</div>
-<div class="line"><span class="lineno">  256</span> </div>
-<div class="line"><span class="lineno">  257</span>  <span class="comment">// Save the Full NEB Path</span></div>
-<div class="line"><span class="lineno">  258</span>  std::string nebFilename(<span class="stringliteral">&quot;neb.con&quot;</span>);</div>
-<div class="line"><span class="lineno">  259</span>  <a class="code hl_variable" href="#abbd630b788b4c94c9ff3609a5fa5c386">returnFiles</a>.push_back(nebFilename);</div>
-<div class="line"><span class="lineno">  260</span>  std::vector&lt;double&gt; quantumFreeEnergy;</div>
-<div class="line"><span class="lineno">  261</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> quantumTemperature = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.neb_options().quantum_temperature;</div>
-<div class="line"><span class="lineno">  262</span>  <span class="keyword">const</span> std::vector&lt;double&gt; *quantumPtr = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">  263</span>  <span class="keywordflow">if</span> (quantumTemperature &gt; 0.0) {</div>
-<div class="line"><span class="lineno">  264</span>    quantumFreeEnergy = <a class="code hl_function" href="namespaceeonc.html#ac39276e0968b53c5fa4d689cde2707a5">eonc::quantumFreeEnergies</a>(neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a189895e2c19c739127a2e83fcb049a07">tangent</a>,</div>
-<div class="line"><span class="lineno">  265</span>                                                  quantumTemperature, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  266</span>    quantumPtr = &amp;quantumFreeEnergy;</div>
-<div class="line"><span class="lineno">  267</span>  }</div>
-<div class="line"><span class="lineno">  268</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_function" href="namespaceeonc_1_1neb.html#a89b1f9f8437fc241385cc924270ab8b8">eonc::neb::writePathCon</a>(</div>
-<div class="line"><span class="lineno">  269</span>          neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a189895e2c19c739127a2e83fcb049a07">tangent</a>, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a67c7df70e9c88caf886962deaeaf17a0">eigenmode_solvers</a>, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a6cf868fd45b0fe9709dbe1ef19d5a7a9">numImages</a>,</div>
-<div class="line"><span class="lineno">  270</span>          <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.debug_options().estimate_neb_eigenvalues, nebFilename,</div>
-<div class="line"><span class="lineno">  271</span>          std::nullopt, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a62e8e01ecd0aa36766be602dc8c4da25">reactantEnergy</a>, quantumPtr,</div>
-<div class="line"><span class="lineno">  272</span>          walls ? &amp;*walls : <span class="keyword">nullptr</span>))) {</div>
-<div class="line"><span class="lineno">  273</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, nebFilename);</div>
-<div class="line"><span class="lineno">  274</span>  }</div>
-<div class="line"><span class="lineno">  275</span> </div>
-<div class="line"><span class="lineno">  276</span>  <span class="comment">// Save Discrete Saddle Point (Highest Energy Image)</span></div>
-<div class="line"><span class="lineno">  277</span>  std::string spFilename(<span class="stringliteral">&quot;sp.con&quot;</span>);</div>
-<div class="line"><span class="lineno">  278</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(</div>
-<div class="line"><span class="lineno">  279</span>          neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>[neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a1824aa745041ad4d854ed882a50c2736">maxEnergyImage</a>]-&gt;matter2con(spFilename))) {</div>
-<div class="line"><span class="lineno">  280</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, spFilename);</div>
-<div class="line"><span class="lineno">  281</span>  }</div>
-<div class="line"><span class="lineno">  282</span>  <a class="code hl_variable" href="#abbd630b788b4c94c9ff3609a5fa5c386">returnFiles</a>.push_back(spFilename);</div>
-<div class="line"><span class="lineno">  283</span> </div>
-<div class="line"><span class="lineno">  284</span>  <span class="comment">// Setup Dimer Configurations for Each Spline Peak</span></div>
-<div class="line"><span class="lineno">  285</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.neb_options().mmf_peaks.enabled &amp;&amp; neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#ac60b5c49f134535819d7b80ef25c6c09">numExtrema</a> &gt; 0) {</div>
-<div class="line"><span class="lineno">  286</span>    <span class="keywordtype">int</span> peakCount = 0;</div>
-<div class="line"><span class="lineno">  287</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#ac60b5c49f134535819d7b80ef25c6c09">numExtrema</a>; i++) {</div>
-<div class="line"><span class="lineno">  288</span>      <span class="comment">// Filter 1: Only look at maxima (negative curvature)</span></div>
-<div class="line"><span class="lineno">  289</span>      <span class="comment">// Filter 2: Energy threshold (e.g., peak must be &gt; 0.05 eV above</span></div>
-<div class="line"><span class="lineno">  290</span>      <span class="comment">// reactant)</span></div>
-<div class="line"><span class="lineno">  291</span>      <span class="keywordtype">double</span> relativeEnergy = neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a0e3281e065ecfb43668d5f49e2fa1a25">extremumEnergy</a>[i] - neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a62e8e01ecd0aa36766be602dc8c4da25">reactantEnergy</a>;</div>
-<div class="line"><span class="lineno">  292</span> </div>
-<div class="line"><span class="lineno">  293</span>      <span class="keywordflow">if</span> (neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#abfb7e05f06af446c15176981f78312fa">extremumCurvature</a>[i] &lt; 0 &amp;&amp;</div>
-<div class="line"><span class="lineno">  294</span>          relativeEnergy &gt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.neb_options().mmf_peaks.tolerance) {</div>
-<div class="line"><span class="lineno">  295</span>        <span class="keywordtype">double</span> posFraction = neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a651a86e4054397fc81dee86c971a262b">extremumPosition</a>[i];</div>
-<div class="line"><span class="lineno">  296</span>        <span class="keywordtype">int</span> leftIdx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::floor(posFraction));</div>
-<div class="line"><span class="lineno">  297</span>        <span class="keywordtype">double</span> f = posFraction - leftIdx;</div>
-<div class="line"><span class="lineno">  298</span> </div>
-<div class="line"><span class="lineno">  299</span>        <span class="keywordflow">if</span> (leftIdx &lt; 0 || leftIdx &gt;= neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a6cf868fd45b0fe9709dbe1ef19d5a7a9">numImages</a> + 1)</div>
-<div class="line"><span class="lineno">  300</span>          <span class="keywordflow">continue</span>;</div>
-<div class="line"><span class="lineno">  301</span> </div>
-<div class="line"><span class="lineno">  302</span>        <span class="comment">// 1. Write Interpolated Position (.con)</span></div>
-<div class="line"><span class="lineno">  303</span>        Matter peakPos = <a class="code hl_function" href="namespaceeonc_1_1helpers_1_1neb__paths.html#a2a6dea80431322a416c54ae728b401ee">eonc::helpers::neb_paths::interpolateImage</a>(</div>
-<div class="line"><span class="lineno">  304</span>            *neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>[leftIdx], *neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>[leftIdx + 1], f);</div>
-<div class="line"><span class="lineno">  305</span>        std::string peakPosFile = std::format(<span class="stringliteral">&quot;peak{:02d}_pos.con&quot;</span>, peakCount);</div>
-<div class="line"><span class="lineno">  306</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(peakPos.<a class="code hl_function" href="classMatter.html#ae8ecf570ce353f150952bc8038371222">matter2con</a>(peakPosFile))) {</div>
-<div class="line"><span class="lineno">  307</span>          QUILL_LOG_ERROR(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, peakPosFile);</div>
-<div class="line"><span class="lineno">  308</span>        }</div>
-<div class="line"><span class="lineno">  309</span>        <a class="code hl_variable" href="#abbd630b788b4c94c9ff3609a5fa5c386">returnFiles</a>.push_back(peakPosFile);</div>
-<div class="line"><span class="lineno">  310</span> </div>
-<div class="line"><span class="lineno">  311</span>        <span class="comment">// 2. Write Interpolated Tangent as standard mode.dat</span></div>
-<div class="line"><span class="lineno">  312</span>        <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> peakMode = <a class="code hl_function" href="namespaceeonc_1_1neb.html#a7ce2fa2921058fefa4c8580e5d23a6e1">eonc::neb::interpolatedPeakMode</a>(</div>
-<div class="line"><span class="lineno">  313</span>            neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a189895e2c19c739127a2e83fcb049a07">tangent</a>, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a6cf868fd45b0fe9709dbe1ef19d5a7a9">numImages</a>, posFraction);</div>
-<div class="line"><span class="lineno">  314</span> </div>
-<div class="line"><span class="lineno">  315</span>        std::string peakModeFile =</div>
-<div class="line"><span class="lineno">  316</span>            std::format(<span class="stringliteral">&quot;peak{:02d}_mode.dat&quot;</span>, peakCount);</div>
-<div class="line"><span class="lineno">  317</span>        {</div>
-<div class="line"><span class="lineno">  318</span>          std::ofstream modeOut(peakModeFile);</div>
-<div class="line"><span class="lineno">  319</span>          <span class="keywordflow">if</span> (modeOut) {</div>
-<div class="line"><span class="lineno">  320</span>            <span class="keywordflow">for</span> (<span class="keywordtype">long</span> row = 0; row &lt; peakMode.rows(); ++row) {</div>
-<div class="line"><span class="lineno">  321</span>              modeOut &lt;&lt; std::format(<span class="stringliteral">&quot;{:.17g} {:.17g} {:.17g}\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  322</span>                                     peakMode(row, 0), peakMode(row, 1),</div>
-<div class="line"><span class="lineno">  323</span>                                     peakMode(row, 2));</div>
-<div class="line"><span class="lineno">  324</span>            }</div>
-<div class="line"><span class="lineno">  325</span>            <a class="code hl_variable" href="#abbd630b788b4c94c9ff3609a5fa5c386">returnFiles</a>.push_back(peakModeFile);</div>
-<div class="line"><span class="lineno">  326</span>          }</div>
-<div class="line"><span class="lineno">  327</span>        }</div>
-<div class="line"><span class="lineno">  328</span> </div>
-<div class="line"><span class="lineno">  329</span>        QUILL_LOG_INFO(</div>
-<div class="line"><span class="lineno">  330</span>            <a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>,</div>
-<div class="line"><span class="lineno">  331</span>            <span class="stringliteral">&quot;Generated MMF peak {:02d} at position {:.3f} (Energy: {:.3f} eV)&quot;</span>,</div>
-<div class="line"><span class="lineno">  332</span>            peakCount, posFraction, relativeEnergy);</div>
-<div class="line"><span class="lineno">  333</span>        peakCount++;</div>
-<div class="line"><span class="lineno">  334</span>      }</div>
-<div class="line"><span class="lineno">  335</span>    }</div>
-<div class="line"><span class="lineno">  336</span>  }</div>
-<div class="line"><span class="lineno">  337</span> </div>
-<div class="line"><span class="lineno">  338</span>  <a class="code hl_variable" href="#abbd630b788b4c94c9ff3609a5fa5c386">returnFiles</a>.push_back(<span class="stringliteral">&quot;neb.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">  339</span>  neb-&gt;<a class="code hl_function" href="classNudgedElasticBand.html#a3466df8c7dc1f807890321c52eafc06b">printImageData</a>(<span class="keyword">true</span>, std::numeric_limits&lt;size_t&gt;::max());</div>
-<div class="line"><span class="lineno">  340</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBandJob_8cpp_source.html#l00225">225</a> of file <a class="el" href="NudgedElasticBandJob_8cpp_source.html">NudgedElasticBandJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  226</span>                                                            {</div>
+<div class="line"><span class="lineno">  227</span>  std::string resultsFilename(<span class="stringliteral">&quot;results.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  228</span>  <a class="code hl_variable" href="#abbd630b788b4c94c9ff3609a5fa5c386">returnFiles</a>.push_back(resultsFilename);</div>
+<div class="line"><span class="lineno">  229</span>  <span class="comment">// The outer walls of both wells, for the one-dimensional tunnelling</span></div>
+<div class="line"><span class="lineno">  230</span>  <span class="comment">// levels written beside the band; sampled first, so the force calls they</span></div>
+<div class="line"><span class="lineno">  231</span>  <span class="comment">// take are in results.dat.</span></div>
+<div class="line"><span class="lineno">  232</span>  std::optional&lt;eonc::tunneling::BandWalls&gt; walls;</div>
+<div class="line"><span class="lineno">  233</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">long</span> points = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.neb_options().tunnel_wall_points;</div>
+<div class="line"><span class="lineno">  234</span>      points &gt; 0 &amp;&amp; status == <a class="code hl_enumvalue" href="classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016a45802158e78dd9584161629098018fe8">NudgedElasticBand::NEBStatus::GOOD</a>) {</div>
+<div class="line"><span class="lineno">  235</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  236</span>      <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; band(</div>
+<div class="line"><span class="lineno">  237</span>          neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>.begin(),</div>
+<div class="line"><span class="lineno">  238</span>          neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>.begin() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a6cf868fd45b0fe9709dbe1ef19d5a7a9">numImages</a> + 2));</div>
+<div class="line"><span class="lineno">  239</span>      walls = <a class="code hl_function" href="namespaceeonc_1_1tunneling.html#a3847ecad99497fda1f08ed26cda2722a">eonc::tunneling::bandWalls</a>(band, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a62e8e01ecd0aa36766be602dc8c4da25">reactantEnergy</a>, points);</div>
+<div class="line"><span class="lineno">  240</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::invalid_argument &amp;ex) {</div>
+<div class="line"><span class="lineno">  241</span>      QUILL_LOG_WARNING(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;No tunnelling walls for this band: {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  242</span>                        ex.what());</div>
+<div class="line"><span class="lineno">  243</span>    }</div>
+<div class="line"><span class="lineno">  244</span>  }</div>
+<div class="line"><span class="lineno">  245</span> </div>
+<div class="line"><span class="lineno">  246</span>  {</div>
+<div class="line"><span class="lineno">  247</span>    <span class="keyword">auto</span> env = <a class="code hl_function" href="structeonc_1_1JobResultEnvelope.html#adcc250879257d0fb4823bb0c799a3510">JobResultEnvelope::fromMinimization</a>(</div>
+<div class="line"><span class="lineno">  248</span>        status == <a class="code hl_enumvalue" href="classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016a45802158e78dd9584161629098018fe8">NudgedElasticBand::NEBStatus::GOOD</a></div>
+<div class="line"><span class="lineno">  249</span>            ? <a class="code hl_enumvalue" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a45802158e78dd9584161629098018fe8">RunStatus::GOOD</a></div>
+<div class="line"><span class="lineno">  250</span>            : <a class="code hl_enumvalue" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a9d50412b69404284d20de2af7e4206dc">RunStatus::FAIL_MAX_ITERATIONS</a>,</div>
+<div class="line"><span class="lineno">  251</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options().potential, <a class="code hl_function" href="classeonc_1_1Job.html#a03a40b0e3f078b9e284220c71567e644">pots</a>().total_force_calls(), <span class="keyword">true</span>,</div>
+<div class="line"><span class="lineno">  252</span>        neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a62e8e01ecd0aa36766be602dc8c4da25">reactantEnergy</a>);</div>
+<div class="line"><span class="lineno">  253</span>    env.provenance = <a class="code hl_function" href="namespaceeonc.html#aa67d050aa179f681c8792139d0b2fed8">provenanceForJob</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  254</span>    env.job_type = <span class="stringliteral">&quot;neb&quot;</span>;</div>
+<div class="line"><span class="lineno">  255</span>    env.extras.emplace_back(<span class="stringliteral">&quot;force_calls_neb&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ad7f878493c7d3356078fe5027b44440d">fCallsNEB</a>));</div>
+<div class="line"><span class="lineno">  256</span>    env.extras.emplace_back(<span class="stringliteral">&quot;energy_reference&quot;</span>, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a62e8e01ecd0aa36766be602dc8c4da25">reactantEnergy</a>);</div>
+<div class="line"><span class="lineno">  257</span>    env.extras.emplace_back(<span class="stringliteral">&quot;number_of_images&quot;</span>,</div>
+<div class="line"><span class="lineno">  258</span>                            <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a6cf868fd45b0fe9709dbe1ef19d5a7a9">numImages</a>));</div>
+<div class="line"><span class="lineno">  259</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().prfo_refine.enabled) {</div>
+<div class="line"><span class="lineno">  260</span>      env.extras.emplace_back(<span class="stringliteral">&quot;force_calls_prfo_refine&quot;</span>,</div>
+<div class="line"><span class="lineno">  261</span>                              <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a538d7991d9a00ba553c0fa289911e8de">fCallsRefine_</a>));</div>
+<div class="line"><span class="lineno">  262</span>    }</div>
+<div class="line"><span class="lineno">  263</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aea9bb9f3ebeb2b48fa05dd3a42d6b69c">refined_</a>) {</div>
+<div class="line"><span class="lineno">  264</span>      env.extras.emplace_back(<span class="stringliteral">&quot;prfo_refine_converged&quot;</span>,</div>
+<div class="line"><span class="lineno">  265</span>                              <a class="code hl_variable" href="#aea9bb9f3ebeb2b48fa05dd3a42d6b69c">refined_</a>-&gt;converged ? 1.0 : 0.0);</div>
+<div class="line"><span class="lineno">  266</span>      env.extras.emplace_back(<span class="stringliteral">&quot;prfo_refine_max_force&quot;</span>, <a class="code hl_variable" href="#aea9bb9f3ebeb2b48fa05dd3a42d6b69c">refined_</a>-&gt;maxForce);</div>
+<div class="line"><span class="lineno">  267</span>      env.extras.emplace_back(<span class="stringliteral">&quot;prfo_refine_energy&quot;</span>,</div>
+<div class="line"><span class="lineno">  268</span>                              <a class="code hl_variable" href="#aea9bb9f3ebeb2b48fa05dd3a42d6b69c">refined_</a>-&gt;energy - neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a62e8e01ecd0aa36766be602dc8c4da25">reactantEnergy</a>);</div>
+<div class="line"><span class="lineno">  269</span>    }</div>
+<div class="line"><span class="lineno">  270</span>    env.writeResultsDat(resultsFilename);</div>
+<div class="line"><span class="lineno">  271</span>    std::ofstream out(resultsFilename, std::ios::binary | std::ios::app);</div>
+<div class="line"><span class="lineno">  272</span>    <span class="keywordflow">if</span> (!out) {</div>
+<div class="line"><span class="lineno">  273</span>      QUILL_LOG_ERROR(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;Failed to reopen {} for image keys&quot;</span>,</div>
+<div class="line"><span class="lineno">  274</span>                      resultsFilename);</div>
+<div class="line"><span class="lineno">  275</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  276</span>    }</div>
+<div class="line"><span class="lineno">  277</span> </div>
+<div class="line"><span class="lineno">  278</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt;= neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a6cf868fd45b0fe9709dbe1ef19d5a7a9">numImages</a> + 1; i++) {</div>
+<div class="line"><span class="lineno">  279</span>      out &lt;&lt; std::format(</div>
+<div class="line"><span class="lineno">  280</span>          <span class="stringliteral">&quot;{:f} image{}_energy\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  281</span>          neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>[i]-&gt;getPotentialEnergy() - neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a62e8e01ecd0aa36766be602dc8c4da25">reactantEnergy</a>, i);</div>
+<div class="line"><span class="lineno">  282</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} image{}_force\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  283</span>                         neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>[i]-&gt;getForces().norm(), i);</div>
+<div class="line"><span class="lineno">  284</span>      <span class="keywordtype">double</span> proj_norm = (i &gt;= 1 &amp;&amp; i &lt;= neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a6cf868fd45b0fe9709dbe1ef19d5a7a9">numImages</a>)</div>
+<div class="line"><span class="lineno">  285</span>                             ? neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a993690c7a8194ab389bf601a63e8317a">projectedForce</a>[i]-&gt;norm()</div>
+<div class="line"><span class="lineno">  286</span>                             : 0.0;</div>
+<div class="line"><span class="lineno">  287</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} image{}_projected_force\n&quot;</span>, proj_norm, i);</div>
+<div class="line"><span class="lineno">  288</span>    }</div>
+<div class="line"><span class="lineno">  289</span> </div>
+<div class="line"><span class="lineno">  290</span>    <span class="keywordtype">long</span> safeNumExtrema = std::min(</div>
+<div class="line"><span class="lineno">  291</span>        neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#ac60b5c49f134535819d7b80ef25c6c09">numExtrema</a>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a651a86e4054397fc81dee86c971a262b">extremumPosition</a>.size()));</div>
+<div class="line"><span class="lineno">  292</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} number_of_extrema\n&quot;</span>, safeNumExtrema);</div>
+<div class="line"><span class="lineno">  293</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; safeNumExtrema; i++) {</div>
+<div class="line"><span class="lineno">  294</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} extremum{}_position\n&quot;</span>, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a651a86e4054397fc81dee86c971a262b">extremumPosition</a>[i],</div>
+<div class="line"><span class="lineno">  295</span>                         i);</div>
+<div class="line"><span class="lineno">  296</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} extremum{}_energy\n&quot;</span>, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a0e3281e065ecfb43668d5f49e2fa1a25">extremumEnergy</a>[i], i);</div>
+<div class="line"><span class="lineno">  297</span>    }</div>
+<div class="line"><span class="lineno">  298</span>  }</div>
+<div class="line"><span class="lineno">  299</span> </div>
+<div class="line"><span class="lineno">  300</span>  <span class="comment">// Save the Full NEB Path</span></div>
+<div class="line"><span class="lineno">  301</span>  std::string nebFilename(<span class="stringliteral">&quot;neb.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  302</span>  <a class="code hl_variable" href="#abbd630b788b4c94c9ff3609a5fa5c386">returnFiles</a>.push_back(nebFilename);</div>
+<div class="line"><span class="lineno">  303</span>  std::vector&lt;double&gt; quantumFreeEnergy;</div>
+<div class="line"><span class="lineno">  304</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> quantumTemperature = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.neb_options().quantum_temperature;</div>
+<div class="line"><span class="lineno">  305</span>  <span class="keyword">const</span> std::vector&lt;double&gt; *quantumPtr = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  306</span>  <span class="keywordflow">if</span> (quantumTemperature &gt; 0.0) {</div>
+<div class="line"><span class="lineno">  307</span>    quantumFreeEnergy = <a class="code hl_function" href="namespaceeonc.html#ac39276e0968b53c5fa4d689cde2707a5">eonc::quantumFreeEnergies</a>(neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a189895e2c19c739127a2e83fcb049a07">tangent</a>,</div>
+<div class="line"><span class="lineno">  308</span>                                                  quantumTemperature, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  309</span>    quantumPtr = &amp;quantumFreeEnergy;</div>
+<div class="line"><span class="lineno">  310</span>  }</div>
+<div class="line"><span class="lineno">  311</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_function" href="namespaceeonc_1_1neb.html#a89b1f9f8437fc241385cc924270ab8b8">eonc::neb::writePathCon</a>(</div>
+<div class="line"><span class="lineno">  312</span>          neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a189895e2c19c739127a2e83fcb049a07">tangent</a>, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a67c7df70e9c88caf886962deaeaf17a0">eigenmode_solvers</a>, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a6cf868fd45b0fe9709dbe1ef19d5a7a9">numImages</a>,</div>
+<div class="line"><span class="lineno">  313</span>          <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.debug_options().estimate_neb_eigenvalues, nebFilename,</div>
+<div class="line"><span class="lineno">  314</span>          std::nullopt, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a62e8e01ecd0aa36766be602dc8c4da25">reactantEnergy</a>, quantumPtr,</div>
+<div class="line"><span class="lineno">  315</span>          walls ? &amp;*walls : <span class="keyword">nullptr</span>))) {</div>
+<div class="line"><span class="lineno">  316</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, nebFilename);</div>
+<div class="line"><span class="lineno">  317</span>  }</div>
+<div class="line"><span class="lineno">  318</span> </div>
+<div class="line"><span class="lineno">  319</span>  <span class="comment">// Save Discrete Saddle Point (Highest Energy Image)</span></div>
+<div class="line"><span class="lineno">  320</span>  std::string spFilename(<span class="stringliteral">&quot;sp.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  321</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(</div>
+<div class="line"><span class="lineno">  322</span>          neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>[neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a1824aa745041ad4d854ed882a50c2736">maxEnergyImage</a>]-&gt;matter2con(spFilename))) {</div>
+<div class="line"><span class="lineno">  323</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, spFilename);</div>
+<div class="line"><span class="lineno">  324</span>  }</div>
+<div class="line"><span class="lineno">  325</span>  <a class="code hl_variable" href="#abbd630b788b4c94c9ff3609a5fa5c386">returnFiles</a>.push_back(spFilename);</div>
+<div class="line"><span class="lineno">  326</span> </div>
+<div class="line"><span class="lineno">  327</span>  <span class="comment">// Setup Dimer Configurations for Each Spline Peak</span></div>
+<div class="line"><span class="lineno">  328</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.neb_options().mmf_peaks.enabled &amp;&amp; neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#ac60b5c49f134535819d7b80ef25c6c09">numExtrema</a> &gt; 0) {</div>
+<div class="line"><span class="lineno">  329</span>    <span class="keywordtype">int</span> peakCount = 0;</div>
+<div class="line"><span class="lineno">  330</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#ac60b5c49f134535819d7b80ef25c6c09">numExtrema</a>; i++) {</div>
+<div class="line"><span class="lineno">  331</span>      <span class="comment">// Filter 1: Only look at maxima (negative curvature)</span></div>
+<div class="line"><span class="lineno">  332</span>      <span class="comment">// Filter 2: Energy threshold (e.g., peak must be &gt; 0.05 eV above</span></div>
+<div class="line"><span class="lineno">  333</span>      <span class="comment">// reactant)</span></div>
+<div class="line"><span class="lineno">  334</span>      <span class="keywordtype">double</span> relativeEnergy = neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a0e3281e065ecfb43668d5f49e2fa1a25">extremumEnergy</a>[i] - neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a62e8e01ecd0aa36766be602dc8c4da25">reactantEnergy</a>;</div>
+<div class="line"><span class="lineno">  335</span> </div>
+<div class="line"><span class="lineno">  336</span>      <span class="keywordflow">if</span> (neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#abfb7e05f06af446c15176981f78312fa">extremumCurvature</a>[i] &lt; 0 &amp;&amp;</div>
+<div class="line"><span class="lineno">  337</span>          relativeEnergy &gt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.neb_options().mmf_peaks.tolerance) {</div>
+<div class="line"><span class="lineno">  338</span>        <span class="keywordtype">double</span> posFraction = neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a651a86e4054397fc81dee86c971a262b">extremumPosition</a>[i];</div>
+<div class="line"><span class="lineno">  339</span>        <span class="keywordtype">int</span> leftIdx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::floor(posFraction));</div>
+<div class="line"><span class="lineno">  340</span>        <span class="keywordtype">double</span> f = posFraction - leftIdx;</div>
+<div class="line"><span class="lineno">  341</span> </div>
+<div class="line"><span class="lineno">  342</span>        <span class="keywordflow">if</span> (leftIdx &lt; 0 || leftIdx &gt;= neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a6cf868fd45b0fe9709dbe1ef19d5a7a9">numImages</a> + 1)</div>
+<div class="line"><span class="lineno">  343</span>          <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  344</span> </div>
+<div class="line"><span class="lineno">  345</span>        <span class="comment">// 1. Write Interpolated Position (.con)</span></div>
+<div class="line"><span class="lineno">  346</span>        Matter peakPos = <a class="code hl_function" href="namespaceeonc_1_1helpers_1_1neb__paths.html#a2a6dea80431322a416c54ae728b401ee">eonc::helpers::neb_paths::interpolateImage</a>(</div>
+<div class="line"><span class="lineno">  347</span>            *neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>[leftIdx], *neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>[leftIdx + 1], f);</div>
+<div class="line"><span class="lineno">  348</span>        std::string peakPosFile = std::format(<span class="stringliteral">&quot;peak{:02d}_pos.con&quot;</span>, peakCount);</div>
+<div class="line"><span class="lineno">  349</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(peakPos.<a class="code hl_function" href="classMatter.html#ae8ecf570ce353f150952bc8038371222">matter2con</a>(peakPosFile))) {</div>
+<div class="line"><span class="lineno">  350</span>          QUILL_LOG_ERROR(<a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, peakPosFile);</div>
+<div class="line"><span class="lineno">  351</span>        }</div>
+<div class="line"><span class="lineno">  352</span>        <a class="code hl_variable" href="#abbd630b788b4c94c9ff3609a5fa5c386">returnFiles</a>.push_back(peakPosFile);</div>
+<div class="line"><span class="lineno">  353</span> </div>
+<div class="line"><span class="lineno">  354</span>        <span class="comment">// 2. Write Interpolated Tangent as standard mode.dat</span></div>
+<div class="line"><span class="lineno">  355</span>        <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> peakMode = <a class="code hl_function" href="namespaceeonc_1_1neb.html#a7ce2fa2921058fefa4c8580e5d23a6e1">eonc::neb::interpolatedPeakMode</a>(</div>
+<div class="line"><span class="lineno">  356</span>            neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a189895e2c19c739127a2e83fcb049a07">tangent</a>, neb-&gt;<a class="code hl_variable" href="classNudgedElasticBand.html#a6cf868fd45b0fe9709dbe1ef19d5a7a9">numImages</a>, posFraction);</div>
+<div class="line"><span class="lineno">  357</span> </div>
+<div class="line"><span class="lineno">  358</span>        std::string peakModeFile =</div>
+<div class="line"><span class="lineno">  359</span>            std::format(<span class="stringliteral">&quot;peak{:02d}_mode.dat&quot;</span>, peakCount);</div>
+<div class="line"><span class="lineno">  360</span>        {</div>
+<div class="line"><span class="lineno">  361</span>          std::ofstream modeOut(peakModeFile);</div>
+<div class="line"><span class="lineno">  362</span>          <span class="keywordflow">if</span> (modeOut) {</div>
+<div class="line"><span class="lineno">  363</span>            <span class="keywordflow">for</span> (<span class="keywordtype">long</span> row = 0; row &lt; peakMode.rows(); ++row) {</div>
+<div class="line"><span class="lineno">  364</span>              modeOut &lt;&lt; std::format(<span class="stringliteral">&quot;{:.17g} {:.17g} {:.17g}\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  365</span>                                     peakMode(row, 0), peakMode(row, 1),</div>
+<div class="line"><span class="lineno">  366</span>                                     peakMode(row, 2));</div>
+<div class="line"><span class="lineno">  367</span>            }</div>
+<div class="line"><span class="lineno">  368</span>            <a class="code hl_variable" href="#abbd630b788b4c94c9ff3609a5fa5c386">returnFiles</a>.push_back(peakModeFile);</div>
+<div class="line"><span class="lineno">  369</span>          }</div>
+<div class="line"><span class="lineno">  370</span>        }</div>
+<div class="line"><span class="lineno">  371</span> </div>
+<div class="line"><span class="lineno">  372</span>        QUILL_LOG_INFO(</div>
+<div class="line"><span class="lineno">  373</span>            <a class="code hl_variable" href="#aa822ba747dbba6acb66605c6d0089170">m_log</a>,</div>
+<div class="line"><span class="lineno">  374</span>            <span class="stringliteral">&quot;Generated MMF peak {:02d} at position {:.3f} (Energy: {:.3f} eV)&quot;</span>,</div>
+<div class="line"><span class="lineno">  375</span>            peakCount, posFraction, relativeEnergy);</div>
+<div class="line"><span class="lineno">  376</span>        peakCount++;</div>
+<div class="line"><span class="lineno">  377</span>      }</div>
+<div class="line"><span class="lineno">  378</span>    }</div>
+<div class="line"><span class="lineno">  379</span>  }</div>
+<div class="line"><span class="lineno">  380</span> </div>
+<div class="line"><span class="lineno">  381</span>  <a class="code hl_variable" href="#abbd630b788b4c94c9ff3609a5fa5c386">returnFiles</a>.push_back(<span class="stringliteral">&quot;neb.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  382</span>  neb-&gt;<a class="code hl_function" href="classNudgedElasticBand.html#a3466df8c7dc1f807890321c52eafc06b">printImageData</a>(<span class="keyword">true</span>, std::numeric_limits&lt;size_t&gt;::max());</div>
+<div class="line"><span class="lineno">  383</span>}</div>
 <div class="ttc" id="aclassMatter_html_ae8ecf570ce353f150952bc8038371222"><div class="ttname"><a href="classMatter.html#ae8ecf570ce353f150952bc8038371222">Matter::matter2con</a></div><div class="ttdeci">io::IoStatus matter2con(std::string filename, bool append=false, const io::ConFrameMetadata *metadata=nullptr)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00291">Matter.h:291</a></div></div>
 <div class="ttc" id="aclassNudgedElasticBand_html_a0e3281e065ecfb43668d5f49e2fa1a25"><div class="ttname"><a href="classNudgedElasticBand.html#a0e3281e065ecfb43668d5f49e2fa1a25">NudgedElasticBand::extremumEnergy</a></div><div class="ttdeci">std::vector&lt; double &gt; extremumEnergy</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00112">NudgedElasticBand.h:112</a></div></div>
 <div class="ttc" id="aclassNudgedElasticBand_html_a1824aa745041ad4d854ed882a50c2736"><div class="ttname"><a href="classNudgedElasticBand.html#a1824aa745041ad4d854ed882a50c2736">NudgedElasticBand::maxEnergyImage</a></div><div class="ttdeci">std::size_t maxEnergyImage</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00116">NudgedElasticBand.h:116</a></div></div>
-<div class="ttc" id="aclassNudgedElasticBand_html_a189895e2c19c739127a2e83fcb049a07"><div class="ttname"><a href="classNudgedElasticBand.html#a189895e2c19c739127a2e83fcb049a07">NudgedElasticBand::tangent</a></div><div class="ttdeci">std::vector&lt; std::shared_ptr&lt; AtomMatrix &gt; &gt; tangent</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00110">NudgedElasticBand.h:110</a></div></div>
 <div class="ttc" id="aclassNudgedElasticBand_html_a3466df8c7dc1f807890321c52eafc06b"><div class="ttname"><a href="classNudgedElasticBand.html#a3466df8c7dc1f807890321c52eafc06b">NudgedElasticBand::printImageData</a></div><div class="ttdeci">void printImageData(bool writeToFile=false, size_t idx=0)</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8cpp_source.html#l01000">NudgedElasticBand.cpp:1000</a></div></div>
-<div class="ttc" id="aclassNudgedElasticBand_html_a439335bce7cd4472ee77291be8e0dafa"><div class="ttname"><a href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">NudgedElasticBand::path</a></div><div class="ttdeci">std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; path</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00109">NudgedElasticBand.h:109</a></div></div>
 <div class="ttc" id="aclassNudgedElasticBand_html_a62e8e01ecd0aa36766be602dc8c4da25"><div class="ttname"><a href="classNudgedElasticBand.html#a62e8e01ecd0aa36766be602dc8c4da25">NudgedElasticBand::reactantEnergy</a></div><div class="ttdeci">double reactantEnergy</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00108">NudgedElasticBand.h:108</a></div></div>
 <div class="ttc" id="aclassNudgedElasticBand_html_a651a86e4054397fc81dee86c971a262b"><div class="ttname"><a href="classNudgedElasticBand.html#a651a86e4054397fc81dee86c971a262b">NudgedElasticBand::extremumPosition</a></div><div class="ttdeci">std::vector&lt; double &gt; extremumPosition</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00113">NudgedElasticBand.h:113</a></div></div>
 <div class="ttc" id="aclassNudgedElasticBand_html_a67c7df70e9c88caf886962deaeaf17a0"><div class="ttname"><a href="classNudgedElasticBand.html#a67c7df70e9c88caf886962deaeaf17a0">NudgedElasticBand::eigenmode_solvers</a></div><div class="ttdeci">std::vector&lt; std::shared_ptr&lt; EigenmodeStrategy &gt; &gt; eigenmode_solvers</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00092">NudgedElasticBand.h:92</a></div></div>
@@ -833,8 +911,33 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NudgedElasticBandJob_8h_source.html#l00037">37</a> of file <a class="el" href="NudgedElasticBandJob_8h_source.html">NudgedElasticBandJob.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBandJob_8h_source.html#l00041">41</a> of file <a class="el" href="NudgedElasticBandJob_8h_source.html">NudgedElasticBandJob.h</a>.</p>
 
+</div>
+</div>
+<a id="a538d7991d9a00ba553c0fa289911e8de" name="a538d7991d9a00ba553c0fa289911e8de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a538d7991d9a00ba553c0fa289911e8de">&#9670;&#160;</a></span>fCallsRefine_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eonc::NudgedElasticBandJob::fCallsRefine_ {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBandJob_8h_source.html#l00043">43</a> of file <a class="el" href="NudgedElasticBandJob_8h_source.html">NudgedElasticBandJob.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   43</span>{0};</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="aa822ba747dbba6acb66605c6d0089170" name="aa822ba747dbba6acb66605c6d0089170"></a>
@@ -857,7 +960,31 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NudgedElasticBandJob_8h_source.html#l00038">38</a> of file <a class="el" href="NudgedElasticBandJob_8h_source.html">NudgedElasticBandJob.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBandJob_8h_source.html#l00044">44</a> of file <a class="el" href="NudgedElasticBandJob_8h_source.html">NudgedElasticBandJob.h</a>.</p>
+
+</div>
+</div>
+<a id="aea9bb9f3ebeb2b48fa05dd3a42d6b69c" name="aea9bb9f3ebeb2b48fa05dd3a42d6b69c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea9bb9f3ebeb2b48fa05dd3a42d6b69c">&#9670;&#160;</a></span>refined_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="structeonc_1_1PrfoRefineResult.html">PrfoRefineResult</a>&gt; eonc::NudgedElasticBandJob::refined_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBandJob_8h_source.html#l00042">42</a> of file <a class="el" href="NudgedElasticBandJob_8h_source.html">NudgedElasticBandJob.h</a>.</p>
 
 </div>
 </div>
@@ -881,7 +1008,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NudgedElasticBandJob_8h_source.html#l00036">36</a> of file <a class="el" href="NudgedElasticBandJob_8h_source.html">NudgedElasticBandJob.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBandJob_8h_source.html#l00040">40</a> of file <a class="el" href="NudgedElasticBandJob_8h_source.html">NudgedElasticBandJob.h</a>.</p>
 
 </div>
 </div>

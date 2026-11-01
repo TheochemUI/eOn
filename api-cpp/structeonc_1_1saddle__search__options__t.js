@@ -2,6 +2,7 @@ var structeonc_1_1saddle__search__options__t =
 [
     [ "dynamics_t", "structeonc_1_1saddle__search__options__t_1_1dynamics__t.html", "structeonc_1_1saddle__search__options__t_1_1dynamics__t" ],
     [ "confine_positive_t", "structeonc_1_1saddle__search__options__t_1_1confine__positive__t.html", "structeonc_1_1saddle__search__options__t_1_1confine__positive__t" ],
+    [ "prfo_refine_t", "structeonc_1_1saddle__search__options__t_1_1prfo__refine__t.html", "structeonc_1_1saddle__search__options__t_1_1prfo__refine__t" ],
     [ "confine_positive", "structeonc_1_1saddle__search__options__t.html#aae25252b0af32e79cb6528f6d108af18", null ],
     [ "converged_force", "structeonc_1_1saddle__search__options__t.html#a5d8f2683d4de4ea31842efc3d1fd9f35", null ],
     [ "displace_atom_list", "structeonc_1_1saddle__search__options__t.html#aaca6487a9b33badba345bc55e96ecbff", null ],
@@ -19,6 +20,7 @@ var structeonc_1_1saddle__search__options__t =
     [ "nonlocal_distance_abort", "structeonc_1_1saddle__search__options__t.html#ac28a1aae1d9df7d695163e10ba2819bf", null ],
     [ "nonnegative_displacement_abort", "structeonc_1_1saddle__search__options__t.html#a465b1f8bdd3f34fff28ce5c853679f83", null ],
     [ "perp_force_ratio", "structeonc_1_1saddle__search__options__t.html#a47de0fb588317f3cea6a3b5e55520277", null ],
+    [ "prfo_refine", "structeonc_1_1saddle__search__options__t.html#ab7824651efd0c8db828b74b888c35184", null ],
     [ "remove_rotation", "structeonc_1_1saddle__search__options__t.html#a81c786e66475c901256b3cd045af5728", null ],
     [ "zero_mode_abort_curvature", "structeonc_1_1saddle__search__options__t.html#afee90030d184b96dd270f05982e4d394", null ]
 ];

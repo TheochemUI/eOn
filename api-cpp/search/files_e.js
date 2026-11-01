@@ -40,7 +40,9 @@ var searchData=
   ['prefactor_2eh_37',['Prefactor.h',['../Prefactor_8h.html',1,'']]],
   ['prefactorjob_2ecpp_38',['PrefactorJob.cpp',['../PrefactorJob_8cpp.html',1,'']]],
   ['prefactorjob_2eh_39',['PrefactorJob.h',['../PrefactorJob_8h.html',1,'']]],
-  ['processsearchjob_2ecpp_40',['ProcessSearchJob.cpp',['../ProcessSearchJob_8cpp.html',1,'']]],
-  ['processsearchjob_2eh_41',['ProcessSearchJob.h',['../ProcessSearchJob_8h.html',1,'']]],
-  ['pyguard_2eh_42',['PyGuard.h',['../PyGuard_8h.html',1,'']]]
+  ['prforefine_2ecpp_40',['PrfoRefine.cpp',['../PrfoRefine_8cpp.html',1,'']]],
+  ['prforefine_2eh_41',['PrfoRefine.h',['../PrfoRefine_8h.html',1,'']]],
+  ['processsearchjob_2ecpp_42',['ProcessSearchJob.cpp',['../ProcessSearchJob_8cpp.html',1,'']]],
+  ['processsearchjob_2eh_43',['ProcessSearchJob.h',['../ProcessSearchJob_8h.html',1,'']]],
+  ['pyguard_2eh_44',['PyGuard.h',['../PyGuard_8h.html',1,'']]]
 ];

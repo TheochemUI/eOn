@@ -136,7 +136,10 @@
         "confine_positive_min_force",
         "confine_positive_scale_ratio",
         "confine_positive_boost",
-        "confine_positive_min_active"
+        "confine_positive_min_active",
+        "prfo_refine",
+        "prfo_refine_force",
+        "prfo_refine_max_iterations"
       ]
     },
     "Dimer": {

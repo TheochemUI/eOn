@@ -19,8 +19,10 @@ var searchData=
   ['prdclock_16',['PrdClock',['../structeonc_1_1ReplicaDynamicsJob_1_1PrdClock.html',1,'eonc::ReplicaDynamicsJob']]],
   ['prefactor_5foptions_5ft_17',['prefactor_options_t',['../structeonc_1_1prefactor__options__t.html',1,'eonc']]],
   ['prefactorjob_18',['PrefactorJob',['../classeonc_1_1PrefactorJob.html',1,'eonc']]],
-  ['process_5fsearch_5foptions_5ft_19',['process_search_options_t',['../structeonc_1_1process__search__options__t.html',1,'eonc']]],
-  ['processsearchjob_20',['ProcessSearchJob',['../classeonc_1_1ProcessSearchJob.html',1,'eonc']]],
-  ['profile_21',['Profile',['../classeonc_1_1tunneling_1_1Profile.html',1,'eonc::tunneling']]],
-  ['prune_5fparams_5ft_22',['prune_params_t',['../structeonc_1_1gpr__dimer__options__t_1_1prune__params__t.html',1,'eonc::gpr_dimer_options_t']]]
+  ['prfo_5frefine_5ft_19',['prfo_refine_t',['../structeonc_1_1saddle__search__options__t_1_1prfo__refine__t.html',1,'eonc::saddle_search_options_t']]],
+  ['prforefineresult_20',['PrfoRefineResult',['../structeonc_1_1PrfoRefineResult.html',1,'eonc']]],
+  ['process_5fsearch_5foptions_5ft_21',['process_search_options_t',['../structeonc_1_1process__search__options__t.html',1,'eonc']]],
+  ['processsearchjob_22',['ProcessSearchJob',['../classeonc_1_1ProcessSearchJob.html',1,'eonc']]],
+  ['profile_23',['Profile',['../classeonc_1_1tunneling_1_1Profile.html',1,'eonc::tunneling']]],
+  ['prune_5fparams_5ft_24',['prune_params_t',['../structeonc_1_1gpr__dimer__options__t_1_1prune__params__t.html',1,'eonc::gpr_dimer_options_t']]]
 ];

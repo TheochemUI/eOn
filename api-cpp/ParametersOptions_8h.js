@@ -16,6 +16,7 @@ var ParametersOptions_8h =
     [ "eonc::saddle_search_options_t", "structeonc_1_1saddle__search__options__t.html", "structeonc_1_1saddle__search__options__t" ],
     [ "eonc::saddle_search_options_t::dynamics_t", "structeonc_1_1saddle__search__options__t_1_1dynamics__t.html", "structeonc_1_1saddle__search__options__t_1_1dynamics__t" ],
     [ "eonc::saddle_search_options_t::confine_positive_t", "structeonc_1_1saddle__search__options__t_1_1confine__positive__t.html", "structeonc_1_1saddle__search__options__t_1_1confine__positive__t" ],
+    [ "eonc::saddle_search_options_t::prfo_refine_t", "structeonc_1_1saddle__search__options__t_1_1prfo__refine__t.html", "structeonc_1_1saddle__search__options__t_1_1prfo__refine__t" ],
     [ "eonc::optimizer_options_t", "structeonc_1_1optimizer__options__t.html", "structeonc_1_1optimizer__options__t" ],
     [ "eonc::optimizer_options_t::xtsci_t", "structeonc_1_1optimizer__options__t_1_1xtsci__t.html", "structeonc_1_1optimizer__options__t_1_1xtsci__t" ],
     [ "eonc::optimizer_options_t::refine_t", "structeonc_1_1optimizer__options__t_1_1refine__t.html", "structeonc_1_1optimizer__options__t_1_1refine__t" ],

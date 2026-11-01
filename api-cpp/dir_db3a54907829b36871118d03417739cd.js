@@ -86,6 +86,7 @@ var dir_db3a54907829b36871118d03417739cd =
     [ "PotRegistry.cpp", "PotRegistry_8cpp.html", null ],
     [ "Prefactor.cpp", "Prefactor_8cpp.html", null ],
     [ "PrefactorJob.cpp", "PrefactorJob_8cpp.html", null ],
+    [ "PrfoRefine.cpp", "PrfoRefine_8cpp.html", "PrfoRefine_8cpp" ],
     [ "ProcessSearchJob.cpp", "ProcessSearchJob_8cpp.html", null ],
     [ "QuantumFreeEnergy.cpp", "QuantumFreeEnergy_8cpp.html", "QuantumFreeEnergy_8cpp" ],
     [ "Quickmin.cpp", "Quickmin_8cpp.html", null ],

@@ -356,6 +356,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#spring-law">Spring law</a></li>
 <li><a class="reference internal" href="#onsager-machlup-neb">Onsager-Machlup NEB</a></li>
 <li><a class="reference internal" href="#ocineb-hybrid-dimer-refinement">OCINEB (hybrid dimer refinement)</a></li>
+<li><a class="reference internal" href="#refining-the-climbing-image">Refining the climbing image</a></li>
 <li><a class="reference internal" href="#zoom-neb">Zoom-NEB</a></li>
 <li><a class="reference internal" href="#solid-state-band">Solid-state band</a><ul>
 <li><a class="reference internal" href="#a-reference-case-and-why-its-cell-has-two-atoms">A reference case, and why its cell has two atoms</a></li>
@@ -708,6 +709,52 @@ One test requires the band force to be under the initial force times <code class
 The other requires it to be under <code class="docutils literal notranslate"><span class="pre">ci_after</span></code>.
 <code class="docutils literal notranslate"><span class="pre">ci_after</span></code> is a server option.
 <code class="docutils literal notranslate"><span class="pre">ci_after_rel</span></code> is not in <code class="docutils literal notranslate"><span class="pre">eon/config.yaml</span></code>, so the server rejects a file that sets it.</p>
+</section>
+<section id="refining-the-climbing-image">
+<span id="neb-prfo-refine"></span><h3>Refining the climbing image<a class="headerlink" href="#refining-the-climbing-image" title="Link to this heading">¶</a></h3>
+<p>This section covers the refinement of a climbing image.
+A converged band can hand that image to a partitioned rational function optimization (P-RFO) refinement.
+The keys are the <code class="docutils literal notranslate"><span class="pre">[Saddle</span> <span class="pre">Search]</span></code> keys <code class="docutils literal notranslate"><span class="pre">prfo_refine</span></code>, <code class="docutils literal notranslate"><span class="pre">prfo_refine_force</span></code> and <code class="docutils literal notranslate"><span class="pre">prfo_refine_max_iterations</span></code>, and the refinement needs a client built with <code class="docutils literal notranslate"><span class="pre">-Dwith_rgsaddle=true</span></code>.
+The saddle search page describes the method, its rules and its measured cost.
+Two bands were measured with rgsaddle 0.3.2 and its proposed P-RFO eigensolve series.
+On both, converging the band itself to the refinement target was far cheaper than refining its climbing image.
+It took 3.2 s against 1207 s for 175 free atoms, and 0.90 s against more than 3600 s for 401.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Nudged Elastic Band]</span>
+</span><span data-line="2"><span class="na">climbing_image_method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">[Saddle Search]</span>
+</span><span data-line="5"><span class="na">prfo_refine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
+</span><span data-line="6"><span class="na">prfo_refine_force</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1e-5</span>
+</span></pre></div>
+</div>
+<p>The refinement starts from a copy of the climbing image, with the band tangent as its mode.
+One more force call measures the curvature along the tangent.
+If the band has no climbing image, or that curvature is not negative, the job warns and skips the refinement.
+The band, <code class="docutils literal notranslate"><span class="pre">neb.con</span></code> and <code class="docutils literal notranslate"><span class="pre">sp.con</span></code> stay as the band left them.
+The refined saddle goes to <code class="docutils literal notranslate"><span class="pre">sp_refined.con</span></code>, and <code class="docutils literal notranslate"><span class="pre">results.dat</span></code> gains these keys.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">force_calls_prfo_refine</span></code></p></td>
+<td><p>Force calls of the curvature probe and the refinement, also counted in <code class="docutils literal notranslate"><span class="pre">total_force_calls</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">prfo_refine_converged</span></code></p></td>
+<td><p>1 when the max-atom force reached <code class="docutils literal notranslate"><span class="pre">prfo_refine_force</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">prfo_refine_max_force</span></code></p></td>
+<td><p>Max-atom force of <code class="docutils literal notranslate"><span class="pre">sp_refined.con</span></code>, in eV/Å</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">prfo_refine_energy</span></code></p></td>
+<td><p>Energy of <code class="docutils literal notranslate"><span class="pre">sp_refined.con</span></code> above the reactant, in eV</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section id="zoom-neb">
 <h3>Zoom-NEB<a class="headerlink" href="#zoom-neb" title="Link to this heading">¶</a></h3>

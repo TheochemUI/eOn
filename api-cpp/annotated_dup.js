@@ -207,6 +207,7 @@ var annotated_dup =
       [ "PotRegistry", "classeonc_1_1PotRegistry.html", "classeonc_1_1PotRegistry" ],
       [ "prefactor_options_t", "structeonc_1_1prefactor__options__t.html", "structeonc_1_1prefactor__options__t" ],
       [ "PrefactorJob", "classeonc_1_1PrefactorJob.html", "classeonc_1_1PrefactorJob" ],
+      [ "PrfoRefineResult", "structeonc_1_1PrfoRefineResult.html", "structeonc_1_1PrfoRefineResult" ],
       [ "process_search_options_t", "structeonc_1_1process__search__options__t.html", "structeonc_1_1process__search__options__t" ],
       [ "ProcessSearchJob", "classeonc_1_1ProcessSearchJob.html", "classeonc_1_1ProcessSearchJob" ],
       [ "Quickmin", "classeonc_1_1Quickmin.html", "classeonc_1_1Quickmin" ],

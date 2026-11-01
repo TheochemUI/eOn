@@ -1,5 +1,9 @@
 var NAVTREEINDEX11 =
 {
+"classeonc_1_1ImprovedDimer.html":[3,0,1,97],
+"classeonc_1_1ImprovedDimer.html":[5,0,0,84],
+"classeonc_1_1ImprovedDimer.html#a0eca4b3f4e032945f78ec63573153183":[3,0,1,97,16],
+"classeonc_1_1ImprovedDimer.html#a0eca4b3f4e032945f78ec63573153183":[5,0,0,84,16],
 "classeonc_1_1ImprovedDimer.html#a10975b7956b55044d621a398ae042b65":[3,0,1,97,0],
 "classeonc_1_1ImprovedDimer.html#a10975b7956b55044d621a398ae042b65":[5,0,0,84,0],
 "classeonc_1_1ImprovedDimer.html#a1416b81b1891137ff578fd1e1bc5c7a2":[3,0,1,97,12],
@@ -245,9 +249,5 @@ var NAVTREEINDEX11 =
 "classeonc_1_1Lanczos.html#ac7da6e7accdb1d35f166e7efa02e0445":[3,0,1,110,2],
 "classeonc_1_1Lanczos.html#ac7da6e7accdb1d35f166e7efa02e0445":[5,0,0,97,2],
 "classeonc_1_1Lanczos.html#aebf952539874ee9b72a2f0697d8ded0e":[3,0,1,110,10],
-"classeonc_1_1Lanczos.html#aebf952539874ee9b72a2f0697d8ded0e":[5,0,0,97,10],
-"classeonc_1_1Lanczos.html#af94afbd31daf3a735bf72389396ff157":[3,0,1,110,7],
-"classeonc_1_1Lanczos.html#af94afbd31daf3a735bf72389396ff157":[5,0,0,97,7],
-"classeonc_1_1LowestEigenmode.html":[3,0,1,114],
-"classeonc_1_1LowestEigenmode.html":[5,0,0,101]
+"classeonc_1_1Lanczos.html#aebf952539874ee9b72a2f0697d8ded0e":[5,0,0,97,10]
 };

@@ -412,12 +412,21 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive_scale_ratio"><code class="docutils literal notranslate">confine_positive_scale_ratio</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive_boost"><code class="docutils literal notranslate">confine_positive_boost</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive_min_active"><code class="docutils literal notranslate">confine_positive_min_active</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.prfo_refine"><code class="docutils literal notranslate">prfo_refine</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.prfo_refine_force"><code class="docutils literal notranslate">prfo_refine_force</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.prfo_refine_max_iterations"><code class="docutils literal notranslate">prfo_refine_max_iterations</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><a class="reference internal" href="#gaussian-process-dimer">Gaussian process dimer</a></li>
 <li><a class="reference internal" href="#output">Output</a></li>
+<li><a class="reference internal" href="#refining-a-converged-saddle">Refining a converged saddle</a><ul>
+<li><a class="reference internal" href="#how-to-refine-a-dimer-saddle">How to refine a dimer saddle</a></li>
+<li><a class="reference internal" href="#reference">Reference</a></li>
+<li><a class="reference internal" href="#when-refinement-pays-off">When refinement pays off</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#see-also">See also</a></li>
 <li><a class="reference internal" href="#references">References</a></li>
 </ul>
@@ -685,6 +694,9 @@ scale still follows <code class="docutils literal notranslate"><span class="pre"
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">confine_positive_scale_ratio</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">confine_positive_boost</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">confine_positive_min_active</span> <span class="pre">(int)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prfo_refine</span> <span class="pre">(bool)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prfo_refine_force</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prfo_refine_max_iterations</span> <span class="pre">(int)</span></code></p></li>
 </ul>
 </dd>
 </dl>
@@ -718,8 +730,8 @@ the initial push when present.</p></li>
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">min_mode_method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.15)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'dimer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lanczos'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'davidson'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gprdimer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'artn'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'xtsci'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dimer'</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.min_mode_method" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Options:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">dimer</span></code>: Use the dimer min-mode method from <span id="id1">Henkelman and Jónsson [<a class="reference internal" href="#id30" title="Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. The Journal of Chemical Physics, 111(15):7010–7022, October 1999. doi:10.1063/1.480097.">SS_HJonsson99</a>]</span></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">lanczos</span></code>: Use the Lanczos min-mode method from <span id="id2">Malek and Mousseau [<a class="reference internal" href="#id56" title="Rachid Malek and Normand Mousseau. Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique. Physical Review E, 62(6):7723–7728, December 2000. doi:10.1103/PhysRevE.62.7723.">SS_MM00</a>]</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dimer</span></code>: Use the dimer min-mode method from <span id="id1">Henkelman and Jónsson [<a class="reference internal" href="#id35" title="Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. The Journal of Chemical Physics, 111(15):7010–7022, October 1999. doi:10.1063/1.480097.">SS_HJonsson99</a>]</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lanczos</span></code>: Use the Lanczos min-mode method from <span id="id2">Malek and Mousseau [<a class="reference internal" href="#id61" title="Rachid Malek and Normand Mousseau. Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique. Physical Review E, 62(6):7723–7728, December 2000. doi:10.1103/PhysRevE.62.7723.">SS_MM00</a>]</span></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">davidson</span></code>: Davidson Ritz subspace with FD Hessian-vector products (alternative to dimer rotation).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">gprdimer</span></code>: GP dimer. The Linux default is <code class="docutils literal notranslate"><span class="pre">-Dwith_gprd=auto</span></code>, which links <code class="docutils literal notranslate"><span class="pre">subprojects/gpr_optim</span></code> when that subproject configures. A failed fetch leaves the dimer off.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">artn</span></code>: Use ARTn as a drop-in for min-mode search. eOn’s displacement
@@ -935,7 +947,7 @@ seeds the initial mode; ARTn takes over from the displaced structure.</p></li>
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">bowl_breakout</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.bowl_breakout" title="Link to this definition">¶</a></dt>
 <dd><p>Determines <a class="reference internal" href="#eon.schema.SaddleSearchConfig.bowl_active_atoms" title="eon.schema.SaddleSearchConfig.bowl_active_atoms"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">bowl_active_atoms</span></code></a> that are subject to the largest forces.
 To activate, <a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive" title="eon.schema.SaddleSearchConfig.confine_positive"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">confine_positive</span></code></a> must also be true. Method of
-<span id="id3">Pedersen and Luiser [<a class="reference internal" href="#id67" title="Andreas Pedersen and Mathieu Luiser. Bowl breakout: Escaping the positive region when searching for saddle points. The Journal of Chemical Physics, 141(2):024109, July 2014. doi:10.1063/1.4885852.">SS_PL14</a>]</span>.</p>
+<span id="id3">Pedersen and Luiser [<a class="reference internal" href="#id72" title="Andreas Pedersen and Mathieu Luiser. Bowl breakout: Escaping the positive region when searching for saddle points. The Journal of Chemical Physics, 141(2):024109, July 2014. doi:10.1063/1.4885852.">SS_PL14</a>]</span>.</p>
 <p>When activated, the search within positive regions of PES is confined to a subset of atoms.</p>
 </dd></dl>
 
@@ -1042,6 +1054,42 @@ minimizes to the final state.</p></li>
 <dd><p>The minimum number of active atoms for confining the positive region of the PES, undocumented.</p>
 </dd></dl>
 
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.prfo_refine">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prfo_refine</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.prfo_refine" title="Link to this definition">¶</a></dt>
+<dd><p>Off by default.
+It continues the dimer and climbing image searches of eOn
+(<span id="id4">Goswami <em>et al.</em> [<a class="reference internal" href="#id103" title="Rohit Goswami, Sam Chill, Rye Terrell, Graeme Henkelman, Matthew Welborn, Liang Zhang, Andreas Pedersen, t-brink, Erik Edelmann, Jean Claude, Alejandro, Sung Hoon Jung, Seyed Alireza Ghasemi, chemist29, satishskamath, Maxim, Tobias Dijkhuis, and via9a. TheochemUI/eOn: v3.6.0. October 2026. doi:10.5281/zenodo.23166734.">SS_GCT+26</a>]</span>,
+<span id="id5">Goswami <em>et al.</em> [<a class="reference internal" href="#id29" title="Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Pena-Torres, and Hannes Jónsson. Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions. Journal of Chemical Theory and Computation, July 2025. doi:10.1021/acs.jctc.5c00866.">SS_GMK+25</a>]</span>,
+<span id="id6">Goswami <em>et al.</em> [<a class="reference internal" href="#id31" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">SS_GGJonsson26</a>]</span>).
+After a min-mode search ends with status good and a negative
+curvature, the saddle geometry, the lowest mode and its curvature go
+to the rgsaddle Sella order-1 session.
+That session runs partitioned rational function optimization (P-RFO)
+in a trust region (<span id="id7">Baker [<a class="reference internal" href="#id104" title="Jon Baker. An algorithm for the location of transition states. Journal of Computational Chemistry, 7(4):385–395, August 1986. doi:10.1002/jcc.540070402.">SS_Bak86</a>]</span>,
+<span id="id8">Hermes <em>et al.</em> [<a class="reference internal" href="#id105" title="Eric D. Hermes, Khachik Sargsyan, Habib N. Najm, and Judit Zádor. Sella, an open-source automation-friendly molecular saddle point optimizer. Journal of Chemical Theory and Computation, 18(11):6974–6988, 2022. doi:10.1021/acs.jctc.2c00395.">SS_HSNZador22</a>]</span>) until the
+max-atom force is below <a class="reference internal" href="#eon.schema.SaddleSearchConfig.prfo_refine_force" title="eon.schema.SaddleSearchConfig.prfo_refine_force"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">prfo_refine_force</span></code></a>.
+The min mode is then estimated once more at the refined point.
+A nudged elastic band (NEB) job with a climbing image reads the same
+keys.
+It refines a copy of the climbing image along its tangent and writes
+<code class="docutils literal notranslate"><span class="pre">sp_refined.con</span></code>.
+Needs eOn built with <code class="docutils literal notranslate"><span class="pre">-Dwith_rgsaddle=true</span></code>.</p>
+<p>Refine a converged saddle with partitioned rational function optimization (P-RFO).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.prfo_refine_force">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prfo_refine_force</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0001</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.prfo_refine_force" title="Link to this definition">¶</a></dt>
+<dd><p>Max-atom force, in eV/Å, at which the partitioned rational function optimization (P-RFO) refinement stops.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.prfo_refine_max_iterations">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prfo_refine_max_iterations</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">500</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.prfo_refine_max_iterations" title="Link to this definition">¶</a></dt>
+<dd><p>Most partitioned rational function optimization (P-RFO) steps in one refinement.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -1071,6 +1119,187 @@ structured JSON metadata in the second CON header line via <code class="docutils
 <p>Set <code class="docutils literal notranslate"><span class="pre">write_deprecated_outs</span> <span class="pre">=</span> <span class="pre">true</span></code> in <code class="docutils literal notranslate"><span class="pre">[Debug]</span></code> to also emit the legacy
 <code class="docutils literal notranslate"><span class="pre">climb.dat</span></code> sidecar during the compatibility window.</p>
 </section>
+<section id="refining-a-converged-saddle">
+<h2>Refining a converged saddle<a class="headerlink" href="#refining-a-converged-saddle" title="Link to this heading">¶</a></h2>
+<p>This section covers partitioned rational function optimization (P-RFO) refinement.
+It takes a saddle from a dimer or Lanczos search in eOn and lowers its max-atom force further.
+The searches it continues are those of <span id="id1">Goswami <em>et al.</em> [<a class="reference internal" href="#id103" title="Rohit Goswami, Sam Chill, Rye Terrell, Graeme Henkelman, Matthew Welborn, Liang Zhang, Andreas Pedersen, t-brink, Erik Edelmann, Jean Claude, Alejandro, Sung Hoon Jung, Seyed Alireza Ghasemi, chemist29, satishskamath, Maxim, Tobias Dijkhuis, and via9a. TheochemUI/eOn: v3.6.0. October 2026. doi:10.5281/zenodo.23166734.">SS_GCT+26</a>]</span> and <span id="id2">Goswami <em>et al.</em> [<a class="reference internal" href="#id29" title="Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Pena-Torres, and Hannes Jónsson. Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions. Journal of Chemical Theory and Computation, July 2025. doi:10.1021/acs.jctc.5c00866.">SS_GMK+25</a>]</span>, and for a band, the climbing image of <span id="id3">Goswami <em>et al.</em> [<a class="reference internal" href="#id31" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">SS_GGJonsson26</a>]</span>.
+The step is the P-RFO step of <span id="id4">Baker [<a class="reference internal" href="#id104" title="Jon Baker. An algorithm for the location of transition states. Journal of Computational Chemistry, 7(4):385–395, August 1986. doi:10.1002/jcc.540070402.">SS_Bak86</a>]</span> in the trust region of the Sella optimizer of <span id="id5">Hermes <em>et al.</em> [<a class="reference internal" href="#id105" title="Eric D. Hermes, Khachik Sargsyan, Habib N. Najm, and Judit Zádor. Sella, an open-source automation-friendly molecular saddle point optimizer. Journal of Chemical Theory and Computation, 18(11):6974–6988, 2022. doi:10.1021/acs.jctc.2c00395.">SS_HSNZador22</a>]</span>, as rgsaddle implements it.
+The refinement is off by default.</p>
+<section id="how-to-refine-a-dimer-saddle">
+<h3>How to refine a dimer saddle<a class="headerlink" href="#how-to-refine-a-dimer-saddle" title="Link to this heading">¶</a></h3>
+<p>This recipe takes a dimer search that converges at 1e-3 eV/Å and refines its saddle to 1e-5 eV/Å.</p>
+<ol class="arabic">
+<li><p>Build the client against rgsaddle with <code class="docutils literal notranslate"><span class="pre">meson</span> <span class="pre">setup</span> <span class="pre">bbdir</span> <span class="pre">-Dwith_rgsaddle=true</span></code>.
+The refinement needs rgsaddle C application binary interface (ABI) 1.15 or newer, which the pinned rgsaddle 0.2.2 provides.
+A client built without it stops with an error once the search converges.
+On a band or another large free set the refinement is faster with rgsaddle 0.3.2, as the measurements below show, but eOn’s continuous integration (CI) tests only the pinned rgsaddle.</p></li>
+<li><p>Add the refinement keys to <code class="docutils literal notranslate"><span class="pre">[Saddle</span> <span class="pre">Search]</span></code>, next to the search’s own settings.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Saddle Search]</span>
+</span><span data-line="2"><span class="na">min_mode_method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">dimer</span>
+</span><span data-line="3"><span class="na">converged_force</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.001</span>
+</span><span data-line="4"><span class="na">prfo_refine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
+</span><span data-line="5"><span class="na">prfo_refine_force</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1e-5</span>
+</span></pre></div>
+</div>
+</li>
+<li><p>Run the job as usual.
+After the search converges, the log reports the refinement in one line.
+For <code class="docutils literal notranslate"><span class="pre">benchmarks/data/one_pt_saddle_search</span></code> at the pinned rgsaddle it reads as follows.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span data-line="1">[P-RFO] 7 steps, 7 force calls, max atom force 2.434e-04 -&gt; 1.093e-08 eV/A
+</span></pre></div>
+</div>
+</li>
+<li><p>Read the outputs.
+<code class="docutils literal notranslate"><span class="pre">saddle.con</span></code> is the refined geometry.
+<code class="docutils literal notranslate"><span class="pre">mode.dat</span></code> and <code class="docutils literal notranslate"><span class="pre">final_eigenvalue</span></code> in <code class="docutils literal notranslate"><span class="pre">results.dat</span></code> come from one more min-mode estimate at the refined point.
+<code class="docutils literal notranslate"><span class="pre">force_calls_saddle</span></code> and <code class="docutils literal notranslate"><span class="pre">total_force_calls</span></code> include the refinement and that estimate.</p></li>
+</ol>
+<p>If the log line ends with <code class="docutils literal notranslate"><span class="pre">kept</span> <span class="pre">the</span> <span class="pre">starting</span> <span class="pre">point</span></code>, the refinement did not reach a smaller force and the search’s own saddle is written unchanged.
+A nudged elastic band (NEB) job reads the same keys.
+It refines its climbing image, as <a class="reference internal" href="neb.html#neb-prfo-refine"><span class="std std-ref">Refining the climbing image</span></a> describes.</p>
+</section>
+<section id="reference">
+<h3>Reference<a class="headerlink" href="#reference" title="Link to this heading">¶</a></h3>
+<p>The keys are <code class="docutils literal notranslate"><span class="pre">prfo_refine</span></code>, <code class="docutils literal notranslate"><span class="pre">prfo_refine_force</span></code> and <code class="docutils literal notranslate"><span class="pre">prfo_refine_max_iterations</span></code>, listed in the configuration model above.
+The refinement follows these rules.</p>
+<ul class="simple">
+<li><p>It runs only after a search ends with status good and a negative eigenvalue.
+The Gaussian process dimer (<code class="docutils literal notranslate"><span class="pre">gprdimer</span></code>) is not refined.
+Process searches in adaptive kinetic Monte Carlo (AKMC) use the same search, so the keys apply there too.</p></li>
+<li><p>The search hands over its geometry, its lowest mode and that mode’s curvature.
+The session starts from an identity Hessian model with that one mode set to that curvature.
+It updates the model with the TS-BFGS update (a Broyden-Fletcher-Goldfarb-Shanno variant for transition states).</p></li>
+<li><p>Only free atoms move.
+A fixed coordinate of a partly fixed atom keeps its starting value.
+There is no projection of rigid-body motion, because a periodic cell or a slab with fixed atoms has none to remove.</p></li>
+<li><p>The refinement stops when the max-atom force is at most <code class="docutils literal notranslate"><span class="pre">prfo_refine_force</span></code>, or after <code class="docutils literal notranslate"><span class="pre">prfo_refine_max_iterations</span></code> steps.
+At the pinned rgsaddle each step costs one force call.
+rgsaddle 0.3.2 also spends force calls on Hessian-vector products when it refreshes its curvature estimate, so some steps cost three.</p></li>
+<li><p>If the last point has a larger max-atom force than the starting saddle, the starting saddle is kept.</p></li>
+<li><p>Each step diagonalizes dense matrices with one row per free coordinate.
+At the pinned rgsaddle all of them use Jacobi rotations, so the time per step grows quickly on larger free sets.
+rgsaddle 0.3.2 moves the curvature estimate to a faster dense solver above 128 free coordinates.
+Its proposed P-RFO eigensolve series does the same for the P-RFO step above 32.
+The TS-BFGS update still diagonalizes the whole model with a cyclic Jacobi solver after every force call, and on a band of hundreds of free atoms this sets the time per step.</p></li>
+<li><p>The log can show the floating-point exception notice <code class="docutils literal notranslate"><span class="pre">FPE</span> <span class="pre">(continuing,</span> <span class="pre">masking</span> <span class="pre">further):</span> <span class="pre">overflow</span></code> once during the refinement.
+With rgsaddle 0.3.2 the faster dense solver raises it.
+That solver forms a scaled sum of squares that can overflow, then discards the sum.
+At the pinned rgsaddle it can appear late in a long refinement, from a rotation angle in the Jacobi solver that is too large to square, where the masked result is a zero rotation.
+The client masks the trap and continues.
+With the eigensolve series, runs with the trap turned off wrote the same outputs.</p></li>
+</ul>
+</section>
+<section id="when-refinement-pays-off">
+<h3>When refinement pays off<a class="headerlink" href="#when-refinement-pays-off" title="Link to this heading">¶</a></h3>
+<p>Refinement starts from a converged saddle, so it is not a cold start.
+It reuses the mode of the search.
+Its benefit depends on how cheaply the search itself would continue.
+The tables compare one run of each case on one machine, one thread per run.
+“Search” is the repository input at 1e-3 eV/Å, “refined” adds <code class="docutils literal notranslate"><span class="pre">prfo_refine_force</span> <span class="pre">=</span> <span class="pre">1e-5</span></code>, and “tightened” sets the search’s own tolerance to 1e-5 eV/Å.
+Each cell gives force calls, the max-atom force in eV/Å of the written geometry, evaluated again with a <code class="docutils literal notranslate"><span class="pre">point</span></code> job, and the wall time of the whole client run.</p>
+<p>The first table gives the search, refined and tightened runs with rgsaddle 0.3.2 and its proposed P-RFO eigensolve series.
+That series builds on the main branch at 276a984 and is not in a release yet.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Case</p></th>
+<th class="head"><p>Free atoms</p></th>
+<th class="head"><p>Search</p></th>
+<th class="head"><p>Refined</p></th>
+<th class="head"><p>Tightened</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Dimer, <code class="docutils literal notranslate"><span class="pre">benchmarks/data/one_pt_saddle_search</span></code></p></td>
+<td><p>1</p></td>
+<td><p>39, 2.4e-4, 0.06 s</p></td>
+<td><p>43, 1.1e-7, 0.06 s</p></td>
+<td><p>54, 8.9e-6, 0.06 s</p></td>
+</tr>
+<tr class="row-odd"><td><p>Dimer, Pt heptamer test system</p></td>
+<td><p>7</p></td>
+<td><p>130, 2.9e-4, 0.11 s</p></td>
+<td><p>163, 2.4e-6, 0.16 s</p></td>
+<td><p>136, 4.0e-6, 0.11 s</p></td>
+</tr>
+<tr class="row-even"><td><p>Dimer, 13-atom Lennard-Jones (LJ13) test cluster</p></td>
+<td><p>13</p></td>
+<td><p>158, 3.5e-4, 0.02 s</p></td>
+<td><p>201, 9.9e-6, 0.27 s</p></td>
+<td><p>176, 4.3e-6, 0.02 s</p></td>
+</tr>
+<tr class="row-odd"><td><p>NEB, <code class="docutils literal notranslate"><span class="pre">benchmarks/data/neb_morse_pt</span></code></p></td>
+<td><p>175</p></td>
+<td><p>277, 1.7e-4, 3.1 s</p></td>
+<td><p>465, 7.4e-6, 1207 s</p></td>
+<td><p>427, 1.8e-6, 3.2 s</p></td>
+</tr>
+<tr class="row-even"><td><p>NEB, <code class="docutils literal notranslate"><span class="pre">examples/neb-al</span></code></p></td>
+<td><p>401</p></td>
+<td><p>240, 2.2e-4, 0.87 s</p></td>
+<td><p>not finished after 3600 s</p></td>
+<td><p>373, 3.4e-6, 0.90 s</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>With the pinned rgsaddle 0.2.2:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Case</p></th>
+<th class="head"><p>Free atoms</p></th>
+<th class="head"><p>Search</p></th>
+<th class="head"><p>Refined</p></th>
+<th class="head"><p>Tightened</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Dimer, <code class="docutils literal notranslate"><span class="pre">benchmarks/data/one_pt_saddle_search</span></code></p></td>
+<td><p>1</p></td>
+<td><p>39, 2.4e-4, 0.07 s</p></td>
+<td><p>47, 1.1e-8, 0.06 s</p></td>
+<td><p>54, 8.9e-6, 0.06 s</p></td>
+</tr>
+<tr class="row-odd"><td><p>Dimer, Pt heptamer test system</p></td>
+<td><p>7</p></td>
+<td><p>180, 4.5e-4, 0.17 s</p></td>
+<td><p>213, 1.6e-6, 0.21 s</p></td>
+<td><p>192, 3.9e-6, 0.21 s</p></td>
+</tr>
+<tr class="row-even"><td><p>Dimer, 13-atom Lennard-Jones (LJ13) test cluster</p></td>
+<td><p>13</p></td>
+<td><p>836, 3.4e-4, 0.02 s</p></td>
+<td><p>891, 6.2e-6, 0.61 s</p></td>
+<td><p>854, 2.0e-6, 0.02 s</p></td>
+</tr>
+<tr class="row-odd"><td><p>NEB, <code class="docutils literal notranslate"><span class="pre">benchmarks/data/neb_morse_pt</span></code></p></td>
+<td><p>175</p></td>
+<td><p>277, 1.7e-4, 3.1 s</p></td>
+<td><p>not finished; a run capped at 3 steps took 41 s</p></td>
+<td><p>427, 1.8e-6, 3.0 s</p></td>
+</tr>
+<tr class="row-even"><td><p>NEB, <code class="docutils literal notranslate"><span class="pre">examples/neb-al</span></code></p></td>
+<td><p>401</p></td>
+<td><p>240, 2.2e-4, 0.86 s</p></td>
+<td><p>not finished; a run capped at 3 steps took 1583 s</p></td>
+<td><p>373, 3.4e-6, 0.97 s</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>With one free atom, refinement reached 1.1e-7 eV/Å in 43 calls, against 54 calls for the tightened dimer.
+With 7 and 13 free atoms it reached the target, but the tightened dimer needed fewer calls, 136 against 163 and 176 against 201.
+On the 175-atom band the refinement converged in 181 steps, but it took 465 calls and 1207 s, against 427 calls and 3.2 s for the tightened band.
+On the 401-atom band it did not finish within 3600 s, and a run capped at 3 steps took 1140 s.
+rgsaddle 0.3.2 without the series took the same steps and calls on the four refinements that finished, and 1295 s on the 175-atom band.
+The dimer searches also run through rgsaddle, so their calls depend on its version, and at 0.3.2 the heptamer and LJ13 searches need fewer calls than at the pin.
+At the pinned rgsaddle a run capped at 3 steps took 41 s on the 175-atom band and 1583 s on the 401-atom band.
+The uncapped 175-atom refinement at the pin had not finished after 8074 s of wall time.
+Use the refinement on small free sets, after a converged search, and compare it with tightening the search itself.</p>
+</section>
+</section>
 <section id="see-also">
 <h2>See also<a class="headerlink" href="#see-also" title="Link to this heading">¶</a></h2>
 <ul class="simple">
@@ -1083,17 +1312,42 @@ implementation (dimer, improved dimer, Lanczos, GPR dimer)</p></li>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
-<div class="docutils container" id="id1">
+<div class="docutils container" id="id6">
 <div role="list" class="citation-list">
-<div class="citation" id="id30" role="doc-biblioentry">
+<div class="citation" id="id104" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>SS_Bak86<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id7">1</a>,<a role="doc-backlink" href="#id4">2</a>)</span>
+<p>Jon Baker. An algorithm for the location of transition states. <em>Journal of Computational Chemistry</em>, 7(4):385–395, August 1986. <a class="reference external" href="https://doi.org/10.1002/jcc.540070402">doi:10.1002/jcc.540070402</a>.</p>
+</div>
+<div class="citation" id="id103" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>SS_GCT+26<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id1">2</a>)</span>
+<p>Rohit Goswami, Sam Chill, Rye Terrell, Graeme Henkelman, Matthew Welborn, Liang Zhang, Andreas Pedersen, t-brink, Erik Edelmann, Jean Claude, Alejandro, Sung Hoon Jung, Seyed Alireza Ghasemi, chemist29, satishskamath, Maxim, Tobias Dijkhuis, and via9a. TheochemUI/eOn: v3.6.0. October 2026. <a class="reference external" href="https://doi.org/10.5281/zenodo.23166734">doi:10.5281/zenodo.23166734</a>.</p>
+</div>
+<div class="citation" id="id31" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>SS_GGJonsson26<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id6">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
+<p>Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. <em>Frontiers in Chemistry</em>, 2026. <a class="reference external" href="https://arxiv.org/abs/2601.12630">arXiv:2601.12630</a>, <a class="reference external" href="https://doi.org/10.3389/fchem.2026.1807063">doi:10.3389/fchem.2026.1807063</a>.</p>
+</div>
+<div class="citation" id="id29" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>SS_GMK+25<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id5">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
+<p>Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Pena-Torres, and Hannes Jónsson. Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions. <em>Journal of Chemical Theory and Computation</em>, July 2025. <a class="reference external" href="https://doi.org/10.1021/acs.jctc.5c00866">doi:10.1021/acs.jctc.5c00866</a>.</p>
+</div>
+<div class="citation" id="id35" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">SS_HJonsson99</a><span class="fn-bracket">]</span></span>
 <p>Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. <em>The Journal of Chemical Physics</em>, 111(15):7010–7022, October 1999. <a class="reference external" href="https://doi.org/10.1063/1.480097">doi:10.1063/1.480097</a>.</p>
 </div>
-<div class="citation" id="id56" role="doc-biblioentry">
+<div class="citation" id="id105" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>SS_HSNZador22<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id8">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
+<p>Eric D. Hermes, Khachik Sargsyan, Habib N. Najm, and Judit Zádor. Sella, an open-source automation-friendly molecular saddle point optimizer. <em>Journal of Chemical Theory and Computation</em>, 18(11):6974–6988, 2022. <a class="reference external" href="https://doi.org/10.1021/acs.jctc.2c00395">doi:10.1021/acs.jctc.2c00395</a>.</p>
+</div>
+<div class="citation" id="id61" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">SS_MM00</a><span class="fn-bracket">]</span></span>
 <p>Rachid Malek and Normand Mousseau. Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique. <em>Physical Review E</em>, 62(6):7723–7728, December 2000. <a class="reference external" href="https://doi.org/10.1103/PhysRevE.62.7723">doi:10.1103/PhysRevE.62.7723</a>.</p>
 </div>
-<div class="citation" id="id67" role="doc-biblioentry">
+<div class="citation" id="id72" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">SS_PL14</a><span class="fn-bracket">]</span></span>
 <p>Andreas Pedersen and Mathieu Luiser. Bowl breakout: Escaping the positive region when searching for saddle points. <em>The Journal of Chemical Physics</em>, 141(2):024109, July 2014. <a class="reference external" href="https://doi.org/10.1063/1.4885852">doi:10.1063/1.4885852</a>.</p>
 </div>

@@ -263,6 +263,8 @@ var hierarchy =
     [ "eonc::PotentialConstructionScope", "classeonc_1_1PotentialConstructionScope.html", null ],
     [ "eonc::ReplicaDynamicsJob::PrdClock", "structeonc_1_1ReplicaDynamicsJob_1_1PrdClock.html", null ],
     [ "eonc::prefactor_options_t", "structeonc_1_1prefactor__options__t.html", null ],
+    [ "eonc::saddle_search_options_t::prfo_refine_t", "structeonc_1_1saddle__search__options__t_1_1prfo__refine__t.html", null ],
+    [ "eonc::PrfoRefineResult", "structeonc_1_1PrfoRefineResult.html", null ],
     [ "eonc::process_search_options_t", "structeonc_1_1process__search__options__t.html", null ],
     [ "eonc::tunneling::Profile", "classeonc_1_1tunneling_1_1Profile.html", null ],
     [ "eonc::gpr_dimer_options_t::prune_params_t", "structeonc_1_1gpr__dimer__options__t_1_1prune__params__t.html", null ],
