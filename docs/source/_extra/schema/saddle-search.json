@@ -301,6 +301,21 @@
       "default": 30,
       "description": "The minimum number of active atoms for confining the positive region of the PES, undocumented.",
       "type": "integer"
+    },
+    "prfo_refine": {
+      "default": false,
+      "description": "Refine a converged saddle with partitioned rational function optimization (P-RFO).\n\nOff by default.\nIt continues the dimer and climbing image searches of eOn\n(:cite:t:`ss-goswamiEOnV3602026`,\n:cite:t:`ss-goswamiEfficientImplementationGaussian2025`,\n:cite:t:`ss-goswamiEnhancedClimbingImage2026`).\nAfter a min-mode search ends with status good and a negative\ncurvature, the saddle geometry, the lowest mode and its curvature go\nto the rgsaddle Sella order-1 session.\nThat session runs partitioned rational function optimization (P-RFO)\nin a trust region (:cite:t:`ss-bakerAlgorithmLocationTransition1986`,\n:cite:t:`ss-hermesSellaOpenSourceAutomationFriendly2022`) until the\nmax-atom force is below :any:`prfo_refine_force`.\nThe min mode is then estimated once more at the refined point.\nA nudged elastic band (NEB) job with a climbing image reads the same\nkeys.\nIt refines a copy of the climbing image along its tangent and writes\n``sp_refined.con``.\nNeeds eOn built with ``-Dwith_rgsaddle=true``.",
+      "type": "boolean"
+    },
+    "prfo_refine_force": {
+      "default": 0.0001,
+      "description": "Max-atom force, in eV/Å, at which the partitioned rational function optimization (P-RFO) refinement stops.",
+      "type": "number"
+    },
+    "prfo_refine_max_iterations": {
+      "default": 500,
+      "description": "Most partitioned rational function optimization (P-RFO) steps in one refinement.",
+      "type": "integer"
     }
   }
 }

@@ -1348,6 +1348,8 @@ eonclib_sources = [
     # Runtime loader always compiled; saddle path stubs without WITH_ARTN.
     'ARTnSaddleSearch.cpp',
     'libs/ARTn/ARTnResource.cpp',
+    # Refuses prfo_refine without WITH_RGSADDLE.
+    'PrfoRefine.cpp',
 ]
 
 eonclib_sources += ['XtsciEindir.cpp']
