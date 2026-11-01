@@ -2349,7 +2349,8 @@ class DimerConfig(BaseModel):
         default=0.1,
         description=(
             "Minimum torque for the dimer. [not improved] min_mode_method ="
-            " xtsci passes it to rgsaddle as rotation_tol."
+            " xtsci passes it to rgsaddle as rotation_tol, except under the"
+            " improved dimer, which passes 0."
         ),
     )
     dimer_torque_max: float = Field(

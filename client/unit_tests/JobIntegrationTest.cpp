@@ -632,7 +632,13 @@ max_energy = 10.0
   REQUIRE(energy == Catch::Approx(-1462.008706).epsilon(1e-4));
 
   // Force calls must be <= SVN (39)
+#ifdef WITH_RGSADDLE
+  // The improved dimer in rgsaddle has no torque stop and rotates to
+  // converged_angle or rotations_max, which costs 8 more calls here.
+  REQUIRE(forceCalls_ <= 47);
+#else
   REQUIRE(forceCalls_ <= 39);
+#endif
 
   // Eigenvalue must be negative (true saddle point).
   // final_eigenvalue is the pre-final estimate: the min-mode curvature at
@@ -643,12 +649,10 @@ max_energy = 10.0
   double eigenvalue = std::stod(results["final_eigenvalue"]);
   REQUIRE(eigenvalue < 0.0);
 #ifdef WITH_RGSADDLE
-  // The rgsaddle dimer rotates to a slightly different mode from frame 6
-  // on, so the climb reaches the same saddle (6.2e-5 A apart) through a
-  // different pre-final geometry, where the curvature is -1.013461 by
-  // either estimator. At the returned saddle both measure about -1.0103,
-  // and the central-difference Hessian gives -1.0102.
-  REQUIRE(eigenvalue == Catch::Approx(-1.013461).epsilon(1e-3));
+  // The rgsaddle dimer rotates to a slightly different mode, so the climb
+  // reaches the same saddle (7.8e-5 A apart) through a different pre-final
+  // geometry.
+  REQUIRE(eigenvalue == Catch::Approx(-1.010819).epsilon(1e-3));
 #else
   REQUIRE(eigenvalue == Catch::Approx(-1.014995).epsilon(1e-3));
 #endif
@@ -2123,7 +2127,12 @@ max_energy = 10.0
 
   // SVN printed 67 force calls. The corrected dimer rotate
   // takes two extra evaluations on this fixture; energies still match.
+  // Without a torque stop the rgsaddle improved dimer takes 75.
+#ifdef WITH_RGSADDLE
+  REQUIRE(forceCalls_ <= 75);
+#else
   REQUIRE(forceCalls_ <= 69);
+#endif
 
   // Energies must match SVN exactly
   double saddleE = std::stod(results["potential_energy_saddle"]);

@@ -136,7 +136,11 @@ void XtsciMinMode::compute(std::shared_ptr<Matter> matter,
   // in radians and does not belong here.
   const double fd = params.main_options().finiteDifference;
   config.dr = fd > 0.0 ? fd : 1.0e-3;
-  config.rotation_tol = dim.torque_min;
+  // The improved dimer has no torque stop: the angle test or rotations_max
+  // ends its rotation. rgsaddle ends a rotation once the rotational force
+  // is at or below rotation_tol, and from 0.3.0 it also reads a
+  // rotation_tol of 1e-4 or more as the classic torque window.
+  config.rotation_tol = lanczos || !dim.improved ? dim.torque_min : 0.0;
   config.max_rotations = std::max<long>(1, dim.rotations_max);
   config.krylov_dim = 12;
   config.force_tol = 0.0;
