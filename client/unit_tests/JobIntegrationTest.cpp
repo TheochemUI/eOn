@@ -34,6 +34,7 @@
 #include "eon/PotentialOwner.h"
 #include "eon/RandomNumbers.h"
 #include "eon/Tunneling.h"
+#include "eon/XtsciIrc.h"
 #include "eon/fpe_handler.h"
 #ifdef WITH_ARTN
 #include "eon/ARTnSaddleSearch.h"
@@ -688,6 +689,139 @@ max_energy = 10.0
   auto results = runJob();
   REQUIRE(results.count("termination_reason") > 0);
   REQUIRE(std::filesystem::exists(workdir / "saddle.con"));
+}
+
+namespace {
+constexpr const char *kMorsePtSaddleConfig = R"(
+[Main]
+job = saddle_search
+temperature = 300
+random_seed = 706253457
+
+[Potential]
+potential = morse_pt
+
+[Optimizer]
+converged_force = 0.001
+max_iterations = 1000
+
+[Saddle Search]
+displace_least_coordinated_weight = 1.0
+displace_radius = 3.3
+displace_magnitude = 0.01
+min_mode_method = dimer
+max_energy = 10.0
+)";
+
+std::map<std::string, std::string>
+readFiles(const std::filesystem::path &dir,
+          const std::vector<std::string> &names) {
+  std::map<std::string, std::string> out;
+  for (const auto &name : names) {
+    std::ifstream in(dir / name, std::ios::binary);
+    out[name] = std::string(std::istreambuf_iterator<char>(in), {});
+  }
+  return out;
+}
+} // namespace
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "SaddleSearchJob irc keys with irc_after off change no output",
+                 "[job][saddle_search][irc][integration]") {
+  EON_REQUIRE_TEST_DATA("../saddle_search");
+  writeConfig(kMorsePtSaddleConfig);
+  runJob();
+  const auto files = returnFiles_;
+  const auto plain = readFiles(workdir, files);
+  REQUIRE(plain.size() == 3);
+
+  writeConfig(std::string(kMorsePtSaddleConfig) + R"(irc_after = false
+irc_step_size = 0.7
+irc_converged_force = 0.2
+irc_max_steps = 3
+)");
+  runJob();
+  REQUIRE(returnFiles_ == files);
+  REQUIRE(readFiles(workdir, files) == plain);
+  for (const char *name :
+       {"irc.con", "irc.dat", "irc_min1.con", "irc_min2.con"}) {
+    REQUIRE_FALSE(std::filesystem::exists(workdir / name));
+  }
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "SaddleSearchJob irc_after refuses a build without the IRC",
+                 "[job][saddle_search][irc][integration]") {
+  if (eonc::ircAvailable()) {
+    SKIP("this build links the rgsaddle IRC");
+  }
+  EON_REQUIRE_TEST_DATA("../saddle_search");
+  writeConfig(std::string(kMorsePtSaddleConfig) + "irc_after = true\n");
+  REQUIRE_THROWS_AS(runJob(), std::runtime_error);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "SaddleSearchJob irc_after relaxes both ends of the Morse Pt "
+                 "saddle",
+                 "[job][saddle_search][irc][rgsaddle][integration]") {
+  if (!eonc::ircAvailable()) {
+    SKIP("rgsaddle older than C ABI minor 14 has no IRC");
+  }
+  EON_REQUIRE_TEST_DATA("../saddle_search");
+  writeConfig(kMorsePtSaddleConfig);
+  auto plainResults = runJob();
+  const auto plain = readFiles(workdir, {"saddle.con", "mode.dat"});
+
+  writeConfig(std::string(kMorsePtSaddleConfig) + R"(irc_after = true
+irc_step_size = 0.5
+)");
+  auto results = runJob();
+  REQUIRE(results["termination_reason"] == "0");
+  REQUIRE(readFiles(workdir, {"saddle.con", "mode.dat"}) == plain);
+  REQUIRE(results["potential_energy_saddle"] ==
+          plainResults["potential_energy_saddle"]);
+  REQUIRE(results["force_calls_saddle"] == plainResults["force_calls_saddle"]);
+  CHECK(results["irc_branches_at_minimum"] == "2");
+  REQUIRE(results["irc_ends_relaxed"] == "1");
+  REQUIRE(results["irc_connects_reactant"] == "1");
+  REQUIRE(std::stol(results["force_calls_irc"]) > 0);
+  REQUIRE(std::stol(results["total_force_calls"]) ==
+          std::stol(plainResults["total_force_calls"]) +
+              std::stol(results["force_calls_irc"]) +
+              std::stol(results["force_calls_irc_minimization"]));
+  const double saddleEnergy = std::stod(results["potential_energy_saddle"]);
+  REQUIRE(std::stod(results["potential_energy_irc_min1"]) < saddleEnergy);
+  REQUIRE(std::stod(results["potential_energy_irc_min2"]) < saddleEnergy);
+
+  // irc.dat: one row per irc.con frame, energy 0 only at the saddle row.
+  std::ifstream dat(workdir / "irc.dat");
+  std::string line;
+  std::getline(dat, line);
+  long rows = 0;
+  long saddleRows = 0;
+  long img = 0;
+  double coord = 0.0;
+  double energy = 0.0;
+  double force = 0.0;
+  double previous = -1e300;
+  while (dat >> img >> coord >> energy >> force) {
+    REQUIRE(img == rows);
+    REQUIRE(coord > previous);
+    previous = coord;
+    if (coord == 0.0) {
+      ++saddleRows;
+      REQUIRE(energy == 0.0);
+    } else {
+      REQUIRE(energy < 0.0);
+    }
+    ++rows;
+  }
+  REQUIRE(saddleRows == 1);
+  REQUIRE(rows > 2);
+  REQUIRE(static_cast<long>(
+              readcon::read_all_frames(workdir / "irc.con").size()) == rows);
+  REQUIRE(std::filesystem::exists(workdir / "irc_min1.con"));
+  REQUIRE(std::filesystem::exists(workdir / "irc_min2.con"));
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
