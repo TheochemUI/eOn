@@ -222,6 +222,26 @@
       "description": "The saddle search will abort when the magnitude of the minmode curvature is less than this value.",
       "type": "number"
     },
+    "irc_after": {
+      "default": false,
+      "description": "Follow the intrinsic reaction coordinate (IRC) from a converged saddle.\n\nThe saddle search job follows both branches of the IRC from the\nconverged saddle along its lowest mode. The rgsaddle IRC session takes\nGonzalez-Schlegel steps in mass-weighted coordinates of the free atoms.\nThe ``[Optimizer]`` relaxes both ends. The job writes ``irc.con``,\n``irc.dat``, ``irc_min1.con`` and ``irc_min2.con``. ``irc_min1`` is on\nthe side against the mode and ``irc_min2`` along it, as in process search.\n``results.dat`` gains the IRC force calls and the two end energies. It\nalso records whether either end is the reactant. Needs\n``-Dwith_rgsaddle=true`` against rgsaddle C application binary\ninterface (ABI) minor 14 or newer; other builds refuse the key.\nOff, the job writes exactly what it wrote before.",
+      "type": "boolean"
+    },
+    "irc_step_size": {
+      "default": 0.1,
+      "description": "Mass-weighted arc length of one IRC step, in amu^(1/2) Angstroms.\n\namu is the atomic mass unit.\nThe first step leaves the saddle along the mode by this length. Heavy\natoms move less per step: 0.1 moves a lone Pt atom about 0.007 Angstroms.",
+      "type": "number"
+    },
+    "irc_converged_force": {
+      "default": 0.05,
+      "description": "Largest per-atom force (eV/Angstrom) at which an IRC branch may stop at a minimum.\n\n0.05 is the path stop of Sella's IRC. It is separate from the\n``[Optimizer]`` tolerance that relaxes the ends. A branch ends at a\nminimum when rgsaddle reports one, which it does only after the first\nstep and at a largest atomic force at or below this threshold. Near a\nwell converged saddle the forces are already small. The rgsaddle that\ncontinuous integration pins can stop a branch beside the saddle, as\nthe IRC how-to shows on the Morse Pt saddle.",
+      "type": "number"
+    },
+    "irc_max_steps": {
+      "default": 1000,
+      "description": "Most IRC steps per branch; the optimizer relaxes the last point either way.",
+      "type": "integer"
+    },
     "confine_positive": {
       "default": false,
       "description": "Activates a confinement scheme when the search is within a positive region of the PES.",

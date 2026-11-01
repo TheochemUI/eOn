@@ -1429,6 +1429,49 @@ class SaddleSearchConfig(BaseModel):
         default=0.0,
         description="The saddle search will abort when the magnitude of the minmode curvature is less than this value.",
     )
+    irc_after: bool = Field(
+        default=False,
+        description="Follow the intrinsic reaction coordinate (IRC) from a converged saddle.",
+    )
+    """
+    The saddle search job follows both branches of the IRC from the
+    converged saddle along its lowest mode. The rgsaddle IRC session takes
+    Gonzalez-Schlegel steps in mass-weighted coordinates of the free atoms.
+    The ``[Optimizer]`` relaxes both ends. The job writes ``irc.con``,
+    ``irc.dat``, ``irc_min1.con`` and ``irc_min2.con``. ``irc_min1`` is on
+    the side against the mode and ``irc_min2`` along it, as in process search.
+    ``results.dat`` gains the IRC force calls and the two end energies. It
+    also records whether either end is the reactant. Needs
+    ``-Dwith_rgsaddle=true`` against rgsaddle C application binary
+    interface (ABI) minor 14 or newer; other builds refuse the key.
+    Off, the job writes exactly what it wrote before.
+    """
+    irc_step_size: float = Field(
+        default=0.1,
+        description="Mass-weighted arc length of one IRC step, in amu^(1/2) Angstroms.",
+    )
+    """
+    amu is the atomic mass unit.
+    The first step leaves the saddle along the mode by this length. Heavy
+    atoms move less per step: 0.1 moves a lone Pt atom about 0.007 Angstroms.
+    """
+    irc_converged_force: float = Field(
+        default=0.05,
+        description="Largest per-atom force (eV/Angstrom) at which an IRC branch may stop at a minimum.",
+    )
+    """
+    0.05 is the path stop of Sella's IRC. It is separate from the
+    ``[Optimizer]`` tolerance that relaxes the ends. A branch ends at a
+    minimum when rgsaddle reports one, which it does only after the first
+    step and at a largest atomic force at or below this threshold. Near a
+    well converged saddle the forces are already small. The rgsaddle that
+    continuous integration pins can stop a branch beside the saddle, as
+    the IRC how-to shows on the Morse Pt saddle.
+    """
+    irc_max_steps: int = Field(
+        default=1000,
+        description="Most IRC steps per branch; the optimizer relaxes the last point either way.",
+    )
     confine_positive: bool = Field(
         default=False,
         description="Activates a confinement scheme when the search is within a positive region of the PES.",
