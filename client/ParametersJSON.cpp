@@ -286,6 +286,13 @@ json to_json(const Parameters &p) {
       {"prfo_refine_max_iterations",
        ParametersLoadAccess::saddle_search_options(p)
            .prfo_refine.max_iterations},
+      {"irc_after", ParametersLoadAccess::saddle_search_options(p).irc.after},
+      {"irc_step_size",
+       ParametersLoadAccess::saddle_search_options(p).irc.step_size},
+      {"irc_converged_force",
+       ParametersLoadAccess::saddle_search_options(p).irc.converged_force},
+      {"irc_max_steps",
+       ParametersLoadAccess::saddle_search_options(p).irc.max_steps},
   };
 
   // [Prefactor]
@@ -793,6 +800,15 @@ void from_json(const json &j, Parameters &p) {
     JSON_OPT(s, "prfo_refine", prfo.enabled);
     JSON_OPT(s, "prfo_refine_force", prfo.force);
     JSON_OPT(s, "prfo_refine_max_iterations", prfo.max_iterations);
+    JSON_OPT(s, "irc_after",
+             ParametersLoadAccess::saddle_search_options(p).irc.after);
+    JSON_OPT(s, "irc_step_size",
+             ParametersLoadAccess::saddle_search_options(p).irc.step_size);
+    JSON_OPT(
+        s, "irc_converged_force",
+        ParametersLoadAccess::saddle_search_options(p).irc.converged_force);
+    JSON_OPT(s, "irc_max_steps",
+             ParametersLoadAccess::saddle_search_options(p).irc.max_steps);
   }
 
   // [Serve]

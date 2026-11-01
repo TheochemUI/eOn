@@ -1340,6 +1340,8 @@ eonclib_sources = [
     'FIRE.cpp',
     'EpiCenters.cpp',
     'SaddleSearchJob.cpp',
+    # Refuses irc_after without WITH_RGSADDLE at C ABI minor 14.
+    'XtsciIrc.cpp',
     'BasinHoppingSaddleSearch.cpp',
     # Stubs when -Dwith_ira=false; NudgedElasticBand always calls IRACompare.
     'IRACompare.cpp',
