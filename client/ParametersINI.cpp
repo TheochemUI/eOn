@@ -1639,6 +1639,11 @@ int load_ini(const INIReader &ini, Parameters &params) {
       ini.GetReal("Saddle Search", "zero_mode_abort_curvature",
                   ParametersLoadAccess::saddle_search_options(params)
                       .zero_mode_abort_curvature);
+  auto &prfo = ParametersLoadAccess::saddle_search_options(params).prfo_refine;
+  prfo.enabled = ini.GetBoolean("Saddle Search", "prfo_refine", prfo.enabled);
+  prfo.force = ini.GetReal("Saddle Search", "prfo_refine_force", prfo.force);
+  prfo.max_iterations = ini.GetInteger(
+      "Saddle Search", "prfo_refine_max_iterations", prfo.max_iterations);
 
   // [Basin Hopping] //
 

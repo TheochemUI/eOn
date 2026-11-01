@@ -17,6 +17,7 @@
 #include "eon/GeometryAnalysis.h"
 #include "eon/HelperFunctions.h"
 #include "eon/ObjectiveFunction.h"
+#include "eon/PrfoRefine.h"
 #include "eon/SaddleSearchJob.h"
 #include "eon/SafeMath.h"
 #include "eon/eonExceptions.hpp"
@@ -740,12 +741,25 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
                              "refusing STATUS_GOOD");
     }
 
+    long refineForceCalls = 0;
+    if (params.saddle_search_options().prfo_refine.enabled &&
+        status == STATUS_GOOD && getEigenvalue() < 0.0) {
+      const auto refined = eonc::prfoRefineSaddle(*matter, getEigenvector(),
+                                                  getEigenvalue(), params);
+      refineForceCalls = refined.forceCalls;
+      if (!refined.restored) {
+        // The mode at the refined point, for mode.dat and the sign test.
+        eonc::eigenmodeCompute(*minModeMethod, matter, getEigenvector());
+      }
+    }
+
     if (getEigenvalue() > 0.0 && status == STATUS_GOOD) {
       QUILL_LOG_DEBUG(log, "[MinModeSaddleSearch] eigenvalue not negative");
       status = STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
     }
-    forcecalls = static_cast<int>(
-        eonc::eigenmodeTotalForceCalls(*minModeMethod) + probeForceCalls);
+    forcecalls =
+        static_cast<int>(eonc::eigenmodeTotalForceCalls(*minModeMethod) +
+                         probeForceCalls + refineForceCalls);
   }
 
   return status;

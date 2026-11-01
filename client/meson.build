@@ -1348,6 +1348,8 @@ eonclib_sources = [
     # Runtime loader always compiled; saddle path stubs without WITH_ARTN.
     'ARTnSaddleSearch.cpp',
     'libs/ARTn/ARTnResource.cpp',
+    # Refuses prfo_refine without WITH_RGSADDLE.
+    'PrfoRefine.cpp',
 ]
 
 eonclib_sources += ['XtsciEindir.cpp']
@@ -2426,6 +2428,7 @@ if get_option('with_tests')
     if get_option('with_rgsaddle')
         test_array += [['test_rgsaddle_band', 'RgsaddleBandTest.cpp', 'neb_morse']]
         test_array += [['test_rgsaddle_neb', 'RgsaddleNEBTest.cpp', 'neb_lj13']]
+        test_array += [['test_prfo_refine', 'PrfoRefineTest.cpp', 'neb_lj13']]
     endif
     if get_option('with_ira')
         test_array += [['test_ira', 'IRATest.cpp', 'saddle_search']]

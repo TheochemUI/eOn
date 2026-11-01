@@ -250,6 +250,15 @@ struct saddle_search_options_t {
     double boost{10.0};
     long min_active{30};
   } confine_positive;
+  /// Off by default. After a converged min-mode search, or a converged
+  /// climbing-image band, step the saddle with partitioned rational
+  /// function optimization (P-RFO) in the rgsaddle Sella session until the
+  /// max-atom force is below `force` (eV/Angstrom). Needs rgsaddle.
+  struct prfo_refine_t {
+    bool enabled{false};
+    double force{1.0e-4};
+    long max_iterations{500};
+  } prfo_refine;
 };
 
 // [Optimizer] //

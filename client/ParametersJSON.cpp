@@ -279,6 +279,13 @@ json to_json(const Parameters &p) {
        ParametersLoadAccess::saddle_search_options(p).displace_magnitude},
       {"displace_radius",
        ParametersLoadAccess::saddle_search_options(p).displace_radius},
+      {"prfo_refine",
+       ParametersLoadAccess::saddle_search_options(p).prfo_refine.enabled},
+      {"prfo_refine_force",
+       ParametersLoadAccess::saddle_search_options(p).prfo_refine.force},
+      {"prfo_refine_max_iterations",
+       ParametersLoadAccess::saddle_search_options(p)
+           .prfo_refine.max_iterations},
   };
 
   // [Prefactor]
@@ -782,6 +789,10 @@ void from_json(const json &j, Parameters &p) {
              ParametersLoadAccess::saddle_search_options(p).displace_magnitude);
     JSON_OPT(s, "displace_radius",
              ParametersLoadAccess::saddle_search_options(p).displace_radius);
+    auto &prfo = ParametersLoadAccess::saddle_search_options(p).prfo_refine;
+    JSON_OPT(s, "prfo_refine", prfo.enabled);
+    JSON_OPT(s, "prfo_refine_force", prfo.force);
+    JSON_OPT(s, "prfo_refine_max_iterations", prfo.max_iterations);
   }
 
   // [Serve]

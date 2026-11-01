@@ -1953,6 +1953,18 @@ Saddle Search:
             kind: float
             default: 0.
 
+        prfo_refine:
+            kind: boolean
+            default: False
+
+        prfo_refine_force:
+            kind: float
+            default: 0.0001
+
+        prfo_refine_max_iterations:
+            kind: int
+            default: 500
+
 ################################################################################
 
 Coarse Graining:

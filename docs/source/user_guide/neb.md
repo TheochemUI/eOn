@@ -213,6 +213,39 @@ The other requires it to be under `ci_after`.
 `ci_after` is a server option.
 `ci_after_rel` is not in `eon/config.yaml`, so the server rejects a file that sets it.
 
+(neb-prfo-refine)=
+### Refining the climbing image
+
+This section covers the refinement of a climbing image.
+A converged band can hand that image to a partitioned rational function optimization (P-RFO) refinement.
+The keys are the `[Saddle Search]` keys `prfo_refine`, `prfo_refine_force` and `prfo_refine_max_iterations`, and the refinement needs a client built with `-Dwith_rgsaddle=true`.
+The saddle search page describes the method, its rules and its measured cost.
+Two bands were measured with rgsaddle 0.3.2 and its proposed P-RFO eigensolve series.
+On both, converging the band itself to the refinement target was far cheaper than refining its climbing image.
+It took 3.2 s against 1207 s for 175 free atoms, and 0.90 s against more than 3600 s for 401.
+
+```{code-block} ini
+[Nudged Elastic Band]
+climbing_image_method = true
+
+[Saddle Search]
+prfo_refine = true
+prfo_refine_force = 1e-5
+```
+
+The refinement starts from a copy of the climbing image, with the band tangent as its mode.
+One more force call measures the curvature along the tangent.
+If the band has no climbing image, or that curvature is not negative, the job warns and skips the refinement.
+The band, `neb.con` and `sp.con` stay as the band left them.
+The refined saddle goes to `sp_refined.con`, and `results.dat` gains these keys.
+
+| Key | Meaning |
+| --- | --- |
+| `force_calls_prfo_refine` | Force calls of the curvature probe and the refinement, also counted in `total_force_calls` |
+| `prfo_refine_converged` | 1 when the max-atom force reached `prfo_refine_force` |
+| `prfo_refine_max_force` | Max-atom force of `sp_refined.con`, in eV/Å |
+| `prfo_refine_energy` | Energy of `sp_refined.con` above the reactant, in eV |
+
 ### Zoom-NEB
 
 Zoom-NEB packs the images onto a window around the climbing image once
