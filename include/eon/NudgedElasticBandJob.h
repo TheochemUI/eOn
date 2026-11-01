@@ -16,6 +16,9 @@
 #include "Matter.h"
 #include "NudgedElasticBand.h"
 #include "Parameters.h"
+#include "PrfoRefine.h"
+
+#include <optional>
 
 namespace eonc {
 
@@ -31,10 +34,13 @@ private:
   // functions
   void printEndState(NudgedElasticBand::NEBStatus status);
   void saveData(NudgedElasticBand::NEBStatus status, NudgedElasticBand *neb);
+  void refineClimbingImage(NudgedElasticBand &neb);
 
   // variables
   std::vector<std::string> returnFiles;
   size_t fCallsNEB;
+  std::optional<PrfoRefineResult> refined_;
+  size_t fCallsRefine_{0};
   eonc::log::Scoped m_log;
 };
 

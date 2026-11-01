@@ -182,12 +182,44 @@ std::vector<std::string> NudgedElasticBandJob::run() {
   if (status == NudgedElasticBand::NEBStatus::GOOD) {
     neb->printImageData();
     neb->findExtrema();
+    if (params.saddle_search_options().prfo_refine.enabled) {
+      refineClimbingImage(*neb);
+    }
   }
 
   printEndState(status);
   saveData(status, neb.get());
 
   return returnFiles;
+}
+
+// The band is left as it converged; the refined saddle is a separate file.
+void NudgedElasticBandJob::refineClimbingImage(NudgedElasticBand &neb) {
+  if (neb.climbingImage <= 0) {
+    QUILL_LOG_WARNING(m_log, "prfo_refine: the band has no climbing image");
+    return;
+  }
+  const size_t before = pots().total_force_calls();
+  const auto ci = static_cast<size_t>(neb.climbingImage);
+  Matter saddle(*neb.path[ci]);
+  const AtomMatrix &tangent = *neb.tangent[ci];
+  const double curvature = eonc::modeCurvature(
+      saddle, tangent, params.main_options().finiteDifference);
+  if (curvature < 0.0) {
+    refined_ = eonc::prfoRefineSaddle(saddle, tangent, curvature, params);
+    const std::string refinedFilename("sp_refined.con");
+    if (eonc::io::io_ok(saddle.matter2con(refinedFilename))) {
+      returnFiles.push_back(refinedFilename);
+    } else {
+      QUILL_LOG_ERROR(m_log, "Failed to write {}", refinedFilename);
+    }
+  } else {
+    QUILL_LOG_WARNING(m_log,
+                      "prfo_refine: curvature {:.4f} along the climbing "
+                      "image tangent is not negative, no refinement",
+                      curvature);
+  }
+  fCallsRefine_ = pots().total_force_calls() - before;
 }
 
 void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
@@ -224,6 +256,17 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
     env.extras.emplace_back("energy_reference", neb->reactantEnergy);
     env.extras.emplace_back("number_of_images",
                             static_cast<double>(neb->numImages));
+    if (params.saddle_search_options().prfo_refine.enabled) {
+      env.extras.emplace_back("force_calls_prfo_refine",
+                              static_cast<double>(fCallsRefine_));
+    }
+    if (refined_) {
+      env.extras.emplace_back("prfo_refine_converged",
+                              refined_->converged ? 1.0 : 0.0);
+      env.extras.emplace_back("prfo_refine_max_force", refined_->maxForce);
+      env.extras.emplace_back("prfo_refine_energy",
+                              refined_->energy - neb->reactantEnergy);
+    }
     env.writeResultsDat(resultsFilename);
     std::ofstream out(resultsFilename, std::ios::binary | std::ios::app);
     if (!out) {
