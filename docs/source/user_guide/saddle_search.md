@@ -142,7 +142,7 @@ Set `write_deprecated_outs = true` in `[Debug]` to also emit the legacy
 This section covers partitioned rational function optimization (P-RFO) refinement.
 It takes a saddle from a dimer or Lanczos search in eOn and lowers its max-atom force further.
 The searches it continues are those of {cite:t}`ss-goswamiEOnV3602026` and {cite:t}`ss-goswamiEfficientImplementationGaussian2025`, and for a band, the climbing image of {cite:t}`ss-goswamiEnhancedClimbingImage2026`.
-The step is the P-RFO step of {cite:t}`ss-bakerAlgorithmLocationTransition1986` in the trust region of the Sella optimizer of {cite:t}`ss-hermesSellaOpenSourceAutomationFriendly2022`, as rgsaddle implements it.
+The step is the P-RFO step of {cite:t}`ss-banerjeeSearchStationaryPoints1985` and {cite:t}`ss-bakerAlgorithmLocationTransition1986` in the trust region of the Sella optimizer of {cite:t}`ss-hermesSellaOpenSourceAutomationFriendly2022`, as rgsaddle implements it.
 The refinement is off by default.
 
 ### How to refine a dimer saddle
@@ -151,7 +151,7 @@ This recipe takes a dimer search that converges at 1e-3 eV/Å and refines its sa
 
 1. Build the client against rgsaddle with `meson setup bbdir -Dwith_rgsaddle=true`.
    The refinement needs rgsaddle C application binary interface (ABI) 1.15 or newer, which the pinned rgsaddle 0.2.2 provides.
-   A client built without it stops with an error once the search converges.
+   Without it, or with an older rgsaddle library loaded, the client stops the job at its start.
    On a band or another large free set the refinement is faster with rgsaddle 0.3.2, as the measurements below show, but eOn's continuous integration (CI) tests only the pinned rgsaddle.
 2. Add the refinement keys to `[Saddle Search]`, next to the search's own settings.
 
@@ -185,6 +185,8 @@ It refines its climbing image, as {ref}`neb-prfo-refine` describes.
 The keys are `prfo_refine`, `prfo_refine_force` and `prfo_refine_max_iterations`, listed in the configuration model above.
 The refinement follows these rules.
 
+- A saddle search or process search with `method = min_mode`, or a nudged elastic band job, refuses `prfo_refine = true` before its first force call when the client cannot refine.
+  That covers a client built without rgsaddle, a loaded rgsaddle library older than ABI 1.15, a `prfo_refine_force` that is not positive, and a `prfo_refine_max_iterations` below 1.
 - It runs only after a search ends with status good and a negative eigenvalue.
   The Gaussian process dimer (`gprdimer`) is not refined.
   Process searches in adaptive kinetic Monte Carlo (AKMC) use the same search, so the keys apply there too.
