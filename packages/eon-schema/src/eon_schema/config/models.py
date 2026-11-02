@@ -1526,7 +1526,8 @@ class SaddleSearchConfig(BaseModel):
     curvature, the saddle geometry, the lowest mode and its curvature go
     to the rgsaddle Sella order-1 session.
     That session runs partitioned rational function optimization (P-RFO)
-    in a trust region (:cite:t:`ss-bakerAlgorithmLocationTransition1986`,
+    in a trust region (:cite:t:`ss-banerjeeSearchStationaryPoints1985`,
+    :cite:t:`ss-bakerAlgorithmLocationTransition1986`,
     :cite:t:`ss-hermesSellaOpenSourceAutomationFriendly2022`) until the
     max-atom force is below :any:`prfo_refine_force`.
     The min mode is then estimated once more at the refined point.
@@ -1535,6 +1536,8 @@ class SaddleSearchConfig(BaseModel):
     It refines a copy of the climbing image along its tangent and writes
     ``sp_refined.con``.
     Needs eOn built with ``-Dwith_rgsaddle=true``.
+    A client that cannot refine refuses the job before its first force
+    call.
     """
     prfo_refine_force: float = Field(
         default=0.0001,

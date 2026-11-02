@@ -17,6 +17,7 @@
 #include "eon/EpiCenters.h"
 #include "eon/HelperFunctions.h"
 #include "eon/Potential.h"
+#include "eon/PrfoRefine.h"
 
 #include <filesystem>
 #include <format>
@@ -27,6 +28,9 @@
 namespace eonc {
 
 std::vector<std::string> SaddleSearchJob::run() {
+  if (params.saddle_search_options().method == "min_mode") {
+    eonc::requirePrfoRefine(params);
+  }
   std::string reactantFilename = eonc::helpers::getRelevantFile("pos.con");
   std::string displacementFilename("displacement.con");
   std::string modeFilename("direction.dat");

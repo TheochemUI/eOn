@@ -37,6 +37,12 @@ struct PrfoRefineResult {
 PrfoRefineResult prfoRefineSaddle(Matter &matter, const AtomMatrix &mode,
                                   double curvature, const Parameters &params);
 
+/// Does nothing unless [Saddle Search] prfo_refine is on. Then it throws,
+/// before any force call, what prfoRefineSaddle would throw once the
+/// search converged: std::invalid_argument for the prfo_refine_* values,
+/// std::runtime_error for a build or loaded library without the session.
+void requirePrfoRefine(const Parameters &params);
+
 /// Curvature along `mode` from one forward difference of the forces over
 /// `dr` Angstrom. Costs one force call on a copy of `matter`.
 double modeCurvature(const Matter &matter, const AtomMatrix &mode, double dr);

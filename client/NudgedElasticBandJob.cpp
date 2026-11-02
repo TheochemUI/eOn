@@ -31,6 +31,7 @@ namespace eonc {
 std::vector<std::string> NudgedElasticBandJob::run() {
   NudgedElasticBand::NEBStatus status;
   size_t f1;
+  eonc::requirePrfoRefine(params);
 
   std::string reactantFilename = eonc::helpers::getRelevantFile("reactant.con");
   std::string productFilename = eonc::helpers::getRelevantFile("product.con");

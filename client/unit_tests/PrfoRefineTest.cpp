@@ -15,6 +15,7 @@
 #include "eon/Job.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
+#include "eon/PotRegistry.h"
 #include "eon/Runtime.h"
 
 #include <cstdlib>
@@ -22,6 +23,7 @@
 #include <fstream>
 #include <map>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 
 namespace tests {
@@ -39,25 +41,52 @@ std::string slurp(const fs::path &p) {
   return s.str();
 }
 
+// A fresh copy of a systems/ directory with `config` as its config.ini.
+fs::path stage(const std::string &system, const std::string &config) {
+  static int counter = 0;
+  const fs::path dir = fs::temp_directory_path() /
+                       ("eon_prfo_refine_" + std::to_string(counter++));
+  fs::remove_all(dir);
+  fs::create_directories(dir);
+  const char *root = std::getenv("EON_TEST_SYSTEMS_DIR");
+  const fs::path src = root ? fs::path(root) / system
+                            : fs::current_path().parent_path() / system;
+  REQUIRE(fs::is_directory(src));
+  for (const auto &entry : fs::directory_iterator(src)) {
+    fs::copy_file(entry.path(), dir / entry.path().filename());
+  }
+  std::ofstream(dir / "config.ini") << config;
+  return dir;
+}
+
+// Runs a job that must throw E, and returns the force calls it made.
+template <class E>
+size_t refusedForceCalls(const std::string &system, const std::string &config) {
+  const fs::path dir = stage(system, config);
+  const fs::path back = fs::current_path();
+  fs::current_path(dir);
+  auto params = std::make_unique<Parameters>();
+  params->load("config.ini");
+  eonc::Runtime rt;
+  auto job = eonc::helpers::makeJob(std::move(params), rt);
+  bool refused = false;
+  try {
+    job->run();
+  } catch (const E &) {
+    refused = true;
+  }
+  fs::current_path(back);
+  REQUIRE(refused);
+  return rt.pots().total_force_calls();
+}
+
 // Runs one job in a copy of a systems/ directory and keeps the outputs.
 struct JobDir {
   fs::path dir;
   std::map<std::string, std::string> results;
 
   JobDir(const std::string &system, const std::string &config) {
-    static int counter = 0;
-    dir = fs::temp_directory_path() /
-          ("eon_prfo_refine_" + std::to_string(counter++));
-    fs::remove_all(dir);
-    fs::create_directories(dir);
-    const char *root = std::getenv("EON_TEST_SYSTEMS_DIR");
-    const fs::path src = root ? fs::path(root) / system
-                              : fs::current_path().parent_path() / system;
-    REQUIRE(fs::is_directory(src));
-    for (const auto &entry : fs::directory_iterator(src)) {
-      fs::copy_file(entry.path(), dir / entry.path().filename());
-    }
-    std::ofstream(dir / "config.ini") << config;
+    dir = stage(system, config);
     const fs::path back = fs::current_path();
     fs::current_path(dir);
     auto params = std::make_unique<Parameters>();
@@ -111,10 +140,36 @@ std::string nebConfig(const std::string &extra) {
          extra;
 }
 
+std::string processConfig(const std::string &extra) {
+  std::string config = dimerConfig(extra);
+  const std::string job = "job = saddle_search";
+  return config.replace(config.find(job), job.size(), "job = process_search");
+}
+
 const std::string kRefine = "prfo_refine = true\nprfo_refine_force = 1e-5\n";
 
 } // namespace
 
+#ifdef WITH_RGSADDLE
+TEST_CASE("an invalid prfo_refine_force is refused before the search",
+          "[saddle][neb][rgsaddle][prfo_refine]") {
+  const std::string bad = "prfo_refine = true\nprfo_refine_force = 0\n";
+  using E = std::invalid_argument;
+  REQUIRE(refusedForceCalls<E>("lj13_saddle", dimerConfig(bad)) == 0);
+  REQUIRE(refusedForceCalls<E>("lj13_saddle", processConfig(bad)) == 0);
+  REQUIRE(refusedForceCalls<E>("neb_lj13", nebConfig(bad)) == 0);
+}
+#else
+TEST_CASE("prfo_refine is refused before the search without rgsaddle",
+          "[saddle][neb][prfo_refine]") {
+  using E = std::runtime_error;
+  REQUIRE(refusedForceCalls<E>("lj13_saddle", dimerConfig(kRefine)) == 0);
+  REQUIRE(refusedForceCalls<E>("lj13_saddle", processConfig(kRefine)) == 0);
+  REQUIRE(refusedForceCalls<E>("neb_lj13", nebConfig(kRefine)) == 0);
+}
+#endif
+
+#ifdef WITH_RGSADDLE
 TEST_CASE("prfo_refine tightens the LJ13 dimer saddle",
           "[saddle][rgsaddle][prfo_refine]") {
   const JobDir plain("lj13_saddle", dimerConfig(""));
@@ -153,6 +208,7 @@ TEST_CASE("prfo_refine refines the LJ13 climbing image",
           std::stod(plain.results.at("total_force_calls")) +
               std::stod(refined.results.at("force_calls_prfo_refine")));
 }
+#endif
 
 TEST_CASE("prfo_refine = false leaves the default search unchanged",
           "[saddle][neb][prfo_refine]") {
