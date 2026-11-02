@@ -14,6 +14,8 @@
 #include "eon/XtsciEindir.h"
 
 #include <algorithm>
+#include <cmath>
+#include <limits>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -25,6 +27,56 @@
 #endif
 
 namespace {
+
+// Packwood et al., J. Chem. Phys. 144, 164109 (2016), assembled and
+// solved inside rgmin.
+constexpr const char *kRgminExp = "rgmin_exp";
+
+// rgmin keeps the pair list it is given and measures a missing distance
+// without periodic images, so the host sends minimum-image distances.
+struct ExpPairs {
+  std::vector<size_t> i;
+  std::vector<size_t> j;
+  std::vector<double> r;
+  double r_nn{0.0};
+};
+
+ExpPairs exp_pairs(const eonc::ObjectiveFunction &objf,
+                   const Eigen::VectorXd &x, double rcut) {
+  const auto nat = static_cast<size_t>(x.size() / 3);
+  auto dist = [&](size_t a, size_t b) {
+    Eigen::Vector3d d = x.segment<3>(3 * a) - x.segment<3>(3 * b);
+    objf.minimumImage(d);
+    return d.norm();
+  };
+  std::vector<double> nn(nat, std::numeric_limits<double>::infinity());
+  for (size_t a = 0; a < nat; ++a) {
+    for (size_t b = a + 1; b < nat; ++b) {
+      const double r = dist(a, b);
+      nn[a] = std::min(nn[a], r);
+      nn[b] = std::min(nn[b], r);
+    }
+  }
+  ExpPairs out;
+  for (const double v : nn) {
+    if (std::isfinite(v)) {
+      out.r_nn = std::max(out.r_nn, v);
+    }
+  }
+  // ASE and Packwood et al. keep pairs within 2 r_nn.
+  const double cut = rcut > 0.0 ? rcut : 2.0 * out.r_nn;
+  for (size_t a = 0; a < nat; ++a) {
+    for (size_t b = a + 1; b < nat; ++b) {
+      const double r = dist(a, b);
+      if (r > 0.0 && r < cut) {
+        out.i.push_back(a);
+        out.j.push_back(b);
+        out.r.push_back(r);
+      }
+    }
+  }
+  return out;
+}
 
 struct XtsObjectiveContext {
   eonc::ObjectiveFunction *objective;
@@ -373,9 +425,55 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
       mani == "eckart" || mani == "irc") {
     rgmin_solver_set_periodic(m_solver, m_objf->getPeriodic() ? 1 : 0);
   }
+  if (resolved_precon(m_optConfig.opts) == kRgminExp &&
+      (method == RGMIN_NEWTON || method == RGMIN_RFO ||
+       method == RGMIN_DOGLEG || step != "lbfgs")) {
+    throw std::invalid_argument(
+        "Xtsci.precon = rgmin_exp is a first-order metric. Newton, RFO "
+        "and dogleg steps read a host Hessian (pair, exp, lindh, ...)");
+  }
   if (m_eindir == nullptr) {
     m_eindir = xtsci_eindir::bind(m_objf.get(), &m_cached_x);
   }
+}
+
+// A new pair list on the first step and whenever an atom has moved half
+// of r_nn since the last one, the rebuild rule of Packwood et al. The
+// estimated mu is carried over, so a rebuild costs no force call.
+void XtsciOptimizer::refreshExpPrecon() {
+#if RGMIN_ABI_VERSION_MINOR >= 32
+  if (m_preconRnn > 0.0) {
+    const Eigen::VectorXd d = m_objf->difference(m_x, m_preconAt);
+    double moved = 0.0;
+    for (Eigen::Index a = 0; a + 2 < d.size(); a += 3) {
+      moved = std::max(moved, d.segment<3>(a).norm());
+    }
+    if (moved <= 0.5 * m_preconRnn) {
+      return;
+    }
+  }
+  const auto &lbfgs = m_optConfig.opts.lbfgs;
+  const ExpPairs pairs = exp_pairs(*m_objf, m_x, lbfgs.precon_rcut);
+  if (pairs.i.empty()) {
+    return;
+  }
+  rgmin_precon_t p;
+  rgmin_precon_init(&p, RGMIN_PRECON_EXP);
+  p.exp_a = lbfgs.precon_A;
+  p.mu = rgmin_solver_precon_scale(m_solver);
+  p.nbr_i = pairs.i.data();
+  p.nbr_j = pairs.j.data();
+  p.nbr_r = pairs.r.data();
+  p.npairs = pairs.i.size();
+  if (rgmin_solver_set_precon(m_solver, &p) != RGMIN_SUCCESS) {
+    throw std::runtime_error(rgmin_last_error());
+  }
+  m_preconAt = m_x;
+  m_preconRnn = pairs.r_nn;
+#else
+  throw std::runtime_error(
+      "Xtsci.precon = rgmin_exp needs rgmin ABI minor 32 or newer");
+#endif
 }
 
 int XtsciOptimizer::step(double a_maxMove) {
@@ -395,6 +493,9 @@ int XtsciOptimizer::step(double a_maxMove) {
   }
   if (m_x.size() != m_objf->degreesOfFreedom()) {
     throw std::runtime_error("rgmin objective position dimension mismatch");
+  }
+  if (resolved_precon(m_optConfig.opts) == kRgminExp) {
+    refreshExpPrecon();
   }
   auto *tensor =
       rgmin_tensor_borrow_cpu_f64(m_x.data(), static_cast<size_t>(m_x.size()));
@@ -444,7 +545,7 @@ int XtsciOptimizer::run(size_t a_maxIterations, double a_maxMove) {
                          method == RGMIN_DOGLEG || is_host_precon(precon);
   // A full minimize without a host Hessian goes through the eindir entry.
   // step() stays one session iteration so the host loop keeps its memory.
-  if (m_eindir != nullptr && !want_hess) {
+  if (m_eindir != nullptr && !want_hess && precon != kRgminExp) {
     if (m_x.size() == 0) {
       m_x = m_objf->getPositions();
     }
