@@ -212,6 +212,31 @@ rgmin_method_t method_from_name(const std::string &name) {
       "dogleg, fire2, quickmin)");
 }
 
+bool is_dynamics(rgmin_method_t method) {
+  bool dynamics = method == RGMIN_FIRE || method == RGMIN_FIRE2;
+#if RGMIN_ABI_VERSION_MINOR >= 29
+  dynamics = dynamics || method == RGMIN_QUICKMIN;
+#endif
+  return dynamics;
+}
+
+// rgmin_control_t::istep. FIRE and quick-min read it as the time step,
+// the other methods as the first step length.
+double initial_step(rgmin_method_t method,
+                    const eonc::Parameters::optimizer_options_t &opts,
+                    double a_maxMove) {
+  if (!is_dynamics(method)) {
+    return std::max(a_maxMove, 1.0e-12);
+  }
+  if (opts.time_step > 0.0) {
+    return opts.time_step;
+  }
+  if (opts.time_step_input > 0.0) {
+    return opts.time_step_input;
+  }
+  return 0.1;
+}
+
 bool is_host_precon(const std::string &name) {
   return name == "pair" || name == "pair_abs" || name == "pair_full" ||
          name == "exp" || name == "c1" || name == "lindh" ||
@@ -274,24 +299,10 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
   }
   const auto &lbfgs = m_optConfig.opts.lbfgs;
   const rgmin_method_t method = method_from_name(m_method);
-  double istep = std::max(a_maxMove, 1.0e-12);
-  bool dynamics = method == RGMIN_FIRE || method == RGMIN_FIRE2;
-#if RGMIN_ABI_VERSION_MINOR >= 29
-  dynamics = dynamics || method == RGMIN_QUICKMIN;
-#endif
-  if (dynamics) {
-    istep = m_optConfig.opts.time_step;
-    if (istep <= 0.0) {
-      istep = m_optConfig.opts.time_step_input;
-    }
-    if (istep <= 0.0) {
-      istep = 0.1;
-    }
-  }
   rgmin_control_t control{
       static_cast<size_t>(std::max<long>(1, m_optConfig.opts.max_iterations)),
       m_optConfig.opts.converged_force,
-      istep,
+      initial_step(method, m_optConfig.opts, a_maxMove),
       static_cast<size_t>(std::max<long>(0, lbfgs.memory)),
       0.0,
   };
@@ -451,7 +462,8 @@ int XtsciOptimizer::run(size_t a_maxIterations, double a_maxMove) {
     double value = 0.0;
     const int status = xtsci_eindir::minimize(
         m_eindir, m_x.data(), static_cast<size_t>(m_x.size()), a_maxIterations,
-        m_optConfig.opts.converged_force, std::max(a_maxMove, 1.0e-12),
+        m_optConfig.opts.converged_force,
+        initial_step(method, m_optConfig.opts, a_maxMove),
         static_cast<size_t>(std::max<long>(0, lbfgs.memory)),
         static_cast<int>(method), &value);
     if (status != RGMIN_SUCCESS) {

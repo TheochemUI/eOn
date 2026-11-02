@@ -166,6 +166,9 @@ checks the eindir ABI stamp, the gradient feature bit, and the semantic
 descriptor (eV, angstrom, analytic forces) before dispatch.
 ``Optimizer::run`` then calls ``rgmin_minimize_eindir`` unless the step
 needs a host Hessian. ``step()`` stays one ``rgmin_solver_t`` iteration.
+Both paths give ``fire``, ``fire2`` and ``quickmin`` the ``time_step``
+as their time step, and give the other methods ``max_move`` as their
+first step.
 
 ``[Xtsci] qn_step``, ``precon``, and ``accept`` are the first-class
 knobs for an L-BFGS session. They map onto
