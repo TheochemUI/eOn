@@ -2078,7 +2078,12 @@ class XtsciConfig(BaseModel):
       - ``adam``: Kingma-Ba Adam with a line search
       - ``pso``: particle swarm
       - ``fire``: Bitzek FIRE (one fused force per geometry)
-      - ``fire2``: Guénolé FIRE 2.0
+      - ``fire2``: FIRE 2.0 as algorithm 2 of Guenole et al. 2020
+        (semi-implicit Euler) with the parameters of its Table 1:
+        ``alpha_start = 0.25``, ``N_delay = 20``, ``dt_max = 10 dt0``,
+        ``dt_min = 0.02 dt0`` and half a step back on an uphill step.
+        ``dt0`` is ``[Optimizer] time_step``. Needs rgmin ABI minor 27
+        (``rgmin_solver_set_fire_variant``)
       - ``bb``: Barzilai-Borwein spectral step
       - ``quickmin``: quick-min, the velocity projected on the force
         (rgmin ABI minor 29)

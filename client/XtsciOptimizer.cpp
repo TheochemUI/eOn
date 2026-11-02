@@ -299,6 +299,13 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
   }
   const auto &lbfgs = m_optConfig.opts.lbfgs;
   const rgmin_method_t method = method_from_name(m_method);
+#if RGMIN_ABI_VERSION_MINOR < 27
+  if (method == RGMIN_FIRE2) {
+    throw std::runtime_error(
+        "Xtsci.method = fire2 needs rgmin ABI minor 27 or newer for "
+        "rgmin_solver_set_fire_variant");
+  }
+#endif
   rgmin_control_t control{
       static_cast<size_t>(std::max<long>(1, m_optConfig.opts.max_iterations)),
       m_optConfig.opts.converged_force,
@@ -310,6 +317,13 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
   if (m_solver == nullptr) {
     throw std::runtime_error(rgmin_last_error());
   }
+#if RGMIN_ABI_VERSION_MINOR >= 27
+  // The default RGMIN_FIRE2 schedule keeps the FIRE 1.0 parameters.
+  // The variant reads dt0 from control.istep, so it follows create.
+  if (method == RGMIN_FIRE2) {
+    rgmin_solver_set_fire_variant(m_solver, RGMIN_FIRE_GUENOLE2020);
+  }
+#endif
   const auto step = resolved_qn_step(m_optConfig.opts);
   if (step == "newton") {
     rgmin_solver_set_qn_step(m_solver, RGMIN_QN_NEWTON);
@@ -455,7 +469,9 @@ int XtsciOptimizer::run(size_t a_maxIterations, double a_maxMove) {
                          method == RGMIN_DOGLEG || is_host_precon(precon);
   // A full minimize without a host Hessian goes through the eindir entry.
   // step() stays one session iteration so the host loop keeps its memory.
-  if (m_eindir != nullptr && !want_hess) {
+  // rgmin_minimize_eindir takes no FIRE variant, so fire2 stays on the
+  // session.
+  if (m_eindir != nullptr && !want_hess && method != RGMIN_FIRE2) {
     if (m_x.size() == 0) {
       m_x = m_objf->getPositions();
     }
