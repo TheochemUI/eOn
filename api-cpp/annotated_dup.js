@@ -163,6 +163,8 @@ var annotated_dup =
       [ "ira_options_t", "structeonc_1_1ira__options__t.html", "structeonc_1_1ira__options__t" ],
       [ "IRACompare", "classeonc_1_1IRACompare.html", "classeonc_1_1IRACompare" ],
       [ "IRAResource", "classeonc_1_1IRAResource.html", "classeonc_1_1IRAResource" ],
+      [ "IrcBranch", "structeonc_1_1IrcBranch.html", "structeonc_1_1IrcBranch" ],
+      [ "IrcPath", "structeonc_1_1IrcPath.html", "structeonc_1_1IrcPath" ],
       [ "Job", "classeonc_1_1Job.html", "classeonc_1_1Job" ],
       [ "JobCancelled", "classeonc_1_1JobCancelled.html", "classeonc_1_1JobCancelled" ],
       [ "JobResultEnvelope", "structeonc_1_1JobResultEnvelope.html", "structeonc_1_1JobResultEnvelope" ],

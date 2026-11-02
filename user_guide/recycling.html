@@ -97,6 +97,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/morse_pt_neb.html">Morse Pt NEB (built-in potential)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/lj_minimization.html">LJ cluster minimization (built-in potential)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/pt_saddle.html">Morse Pt saddle search (built-in potential)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/irc_after_saddle.html">Follow the intrinsic reaction coordinate from a saddle</a></li>
 </ul>
 </li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/akmc.html">AKMC Tutorial</a></li>
@@ -459,7 +460,7 @@ data-aria-dark="Switch to auto color mode">
 </div><article class="yue dark-code" role="main">
           <section id="recycling">
 <h1>Recycling<a class="headerlink" href="#recycling" title="Link to this heading">¶</a></h1>
-<p>As reported in <span id="id1">Xu and Henkelman [<a class="reference internal" href="#id94" title="Lijun Xu and Graeme Henkelman. Adaptive kinetic Monte Carlo for first-principles accelerated dynamics. The Journal of Chemical Physics, 129(11):114104, September 2008. doi:10.1063/1.2976010.">RECYC_XH08</a>]</span>, <code class="docutils literal notranslate"><span class="pre">eOn</span></code> implements a
+<p>As reported in <span id="id1">Xu and Henkelman [<a class="reference internal" href="#id96" title="Lijun Xu and Graeme Henkelman. Adaptive kinetic Monte Carlo for first-principles accelerated dynamics. The Journal of Chemical Physics, 129(11):114104, September 2008. doi:10.1063/1.2976010.">RECYC_XH08</a>]</span>, <code class="docutils literal notranslate"><span class="pre">eOn</span></code> implements a
 method of saddle point recycling that can significantly reduce the computational
 cost of the aKMC algorithm.</p>
 <p>Suppose we are in reactant state <span class="math notranslate nohighlight">\(R_0\)</span>, and we have discovered a series of
@@ -555,7 +556,7 @@ atoms will be selected for displacements. Represents a multiple of
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
 <div class="docutils container" id="id2">
 <div role="list" class="citation-list">
-<div class="citation" id="id94" role="doc-biblioentry">
+<div class="citation" id="id96" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">RECYC_XH08</a><span class="fn-bracket">]</span></span>
 <p>Lijun Xu and Graeme Henkelman. Adaptive kinetic Monte Carlo for first-principles accelerated dynamics. <em>The Journal of Chemical Physics</em>, 129(11):114104, September 2008. <a class="reference external" href="https://doi.org/10.1063/1.2976010">doi:10.1063/1.2976010</a>.</p>
 </div>

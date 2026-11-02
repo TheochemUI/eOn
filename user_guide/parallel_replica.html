@@ -97,6 +97,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/morse_pt_neb.html">Morse Pt NEB (built-in potential)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/lj_minimization.html">LJ cluster minimization (built-in potential)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/pt_saddle.html">Morse Pt saddle search (built-in potential)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/irc_after_saddle.html">Follow the intrinsic reaction coordinate from a saddle</a></li>
 </ul>
 </li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/akmc.html">AKMC Tutorial</a></li>
@@ -462,8 +463,8 @@ data-aria-dark="Switch to auto color mode">
 <h1>Parallel replica<a class="headerlink" href="#parallel-replica" title="Link to this heading">¶</a></h1>
 <p>Parallel Replica dynamics (PRD) is the simplest and the accurate way to
 accelerate a molecular dynamics simulation as discussed by
-<span id="id1">Voter [<a class="reference internal" href="#id91" title="Arthur F. Voter. Parallel replica method for dynamics of infrequent events. Physical Review B, 57(22):R13985-R13988, June 1998. doi:10.1103/PhysRevB.57.R13985.">PRD_Vot98</a>]</span> and more recently reviewed by
-<span id="id2">Perez <em>et al.</em> [<a class="reference internal" href="#id72" title="Danny Perez, Blas P. Uberuaga, and Arthur F. Voter. The parallel replica dynamics method – Coming of age. Computational Materials Science, 100:90–103, April 2015. doi:10.1016/j.commatsci.2014.12.011.">PRD_PUV15</a>]</span>. The only assumption made in this
+<span id="id1">Voter [<a class="reference internal" href="#id93" title="Arthur F. Voter. Parallel replica method for dynamics of infrequent events. Physical Review B, 57(22):R13985-R13988, June 1998. doi:10.1103/PhysRevB.57.R13985.">PRD_Vot98</a>]</span> and more recently reviewed by
+<span id="id2">Perez <em>et al.</em> [<a class="reference internal" href="#id74" title="Danny Perez, Blas P. Uberuaga, and Arthur F. Voter. The parallel replica dynamics method – Coming of age. Computational Materials Science, 100:90–103, April 2015. doi:10.1016/j.commatsci.2014.12.011.">PRD_PUV15</a>]</span>. The only assumption made in this
 method is that the reactions satisfy first order kinetics.</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
@@ -599,11 +600,11 @@ states. A value similar to
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
 <div class="docutils container" id="id3">
 <div role="list" class="citation-list">
-<div class="citation" id="id72" role="doc-biblioentry">
+<div class="citation" id="id74" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">PRD_PUV15</a><span class="fn-bracket">]</span></span>
 <p>Danny Perez, Blas P. Uberuaga, and Arthur F. Voter. The parallel replica dynamics method – Coming of age. <em>Computational Materials Science</em>, 100:90–103, April 2015. <a class="reference external" href="https://doi.org/10.1016/j.commatsci.2014.12.011">doi:10.1016/j.commatsci.2014.12.011</a>.</p>
 </div>
-<div class="citation" id="id91" role="doc-biblioentry">
+<div class="citation" id="id93" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">PRD_Vot98</a><span class="fn-bracket">]</span></span>
 <p>Arthur F. Voter. Parallel replica method for dynamics of infrequent events. <em>Physical Review B</em>, 57(22):R13985–R13988, June 1998. <a class="reference external" href="https://doi.org/10.1103/PhysRevB.57.R13985">doi:10.1103/PhysRevB.57.R13985</a>.</p>
 </div>

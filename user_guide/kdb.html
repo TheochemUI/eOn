@@ -97,6 +97,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/morse_pt_neb.html">Morse Pt NEB (built-in potential)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/lj_minimization.html">LJ cluster minimization (built-in potential)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/pt_saddle.html">Morse Pt saddle search (built-in potential)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/irc_after_saddle.html">Follow the intrinsic reaction coordinate from a saddle</a></li>
 </ul>
 </li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/akmc.html">AKMC Tutorial</a></li>
@@ -463,7 +464,7 @@ data-aria-dark="Switch to auto color mode">
 <h1>Kinetic database<a class="headerlink" href="#kinetic-database" title="Link to this heading">¶</a></h1>
 <p>One of the bottlenecks in an aKMC simulation is performing the saddle point
 searches. The kinetic database of
-<span id="id1">Terrell <em>et al.</em> [<a class="reference internal" href="#id83" title="Rye Terrell, Matthew Welborn, Samuel T. Chill, and Graeme Henkelman. Database of atomistic reaction mechanisms with application to kinetic Monte Carlo. The Journal of Chemical Physics, 137(1):014105, July 2012. doi:10.1063/1.4730746.">KDB_TWCH12</a>]</span> stores each good process
+<span id="id1">Terrell <em>et al.</em> [<a class="reference internal" href="#id85" title="Rye Terrell, Matthew Welborn, Samuel T. Chill, and Graeme Henkelman. Database of atomistic reaction mechanisms with application to kinetic Monte Carlo. The Journal of Chemical Physics, 137(1):014105, July 2012. doi:10.1063/1.4730746.">KDB_TWCH12</a>]</span> stores each good process
 as it is registered and uses it to start the next search of a matching state.</p>
 <p>In the following figure, the hydrogen of a carboxyl group on an Au(111) surface
 transfers to the other oxygen (a). In this process, the hydrogen is determined
@@ -474,10 +475,10 @@ with a local configuration closely resembling either minimum of (b), the kinetic
 database will suggest a saddle to converge with a dimer search. The dimer starts
 with this suggested configuration and mode, and if it is a good suggestion,
 converges very rapidly to the saddle.</p>
-<figure class="align-center" id="id118">
+<figure class="align-center" id="id120">
 <img alt="Carboxyl group on an Au(111)" class="full-width" src="../_images/akmc-1.png" />
 <figcaption>
-<p><span class="caption-text">Snapshots of Carboxyl group on an Au(111). (a) Hydrogen of carboxyl transfers to another oxygen. (b) Other atoms are stripped and stored.</span><a class="headerlink" href="#id118" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Snapshots of Carboxyl group on an Au(111). (a) Hydrogen of carboxyl transfers to another oxygen. (b) Other atoms are stripped and stored.</span><a class="headerlink" href="#id120" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <section id="where-a-process-is-stored">
@@ -592,7 +593,7 @@ references. Delete it as well to start from an empty database.</p>
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
 <div class="docutils container" id="id2">
 <div role="list" class="citation-list">
-<div class="citation" id="id83" role="doc-biblioentry">
+<div class="citation" id="id85" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">KDB_TWCH12</a><span class="fn-bracket">]</span></span>
 <p>Rye Terrell, Matthew Welborn, Samuel T. Chill, and Graeme Henkelman. Database of atomistic reaction mechanisms with application to kinetic Monte Carlo. <em>The Journal of Chemical Physics</em>, 137(1):014105, July 2012. <a class="reference external" href="https://doi.org/10.1063/1.4730746">doi:10.1063/1.4730746</a>.</p>
 </div>

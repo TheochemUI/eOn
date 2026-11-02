@@ -132,6 +132,10 @@ var hierarchy =
     ] ],
     [ "eonc::ira_options_t", "structeonc_1_1ira__options__t.html", null ],
     [ "eonc::IRACompare", "classeonc_1_1IRACompare.html", null ],
+    [ "eonc::saddle_search_options_t::irc_t", "structeonc_1_1saddle__search__options__t_1_1irc__t.html", null ],
+    [ "eonc::IrcBranch", "structeonc_1_1IrcBranch.html", null ],
+    [ "eonc::IrcPath", "structeonc_1_1IrcPath.html", null ],
+    [ "eonc::SaddleSearchJob::IrcSummary", "structeonc_1_1SaddleSearchJob_1_1IrcSummary.html", null ],
     [ "eonc::Job", "classeonc_1_1Job.html", [
       [ "eonc::BasinHoppingJob", "classeonc_1_1BasinHoppingJob.html", null ],
       [ "eonc::DynamicsJob", "classeonc_1_1DynamicsJob.html", null ],

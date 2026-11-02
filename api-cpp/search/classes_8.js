@@ -19,5 +19,9 @@ var searchData=
   ['ipotregistry_16',['IPotRegistry',['../classeonc_1_1IPotRegistry.html',1,'eonc']]],
   ['ira_5foptions_5ft_17',['ira_options_t',['../structeonc_1_1ira__options__t.html',1,'eonc']]],
   ['iracompare_18',['IRACompare',['../classeonc_1_1IRACompare.html',1,'eonc']]],
-  ['iraresource_19',['IRAResource',['../classeonc_1_1IRAResource.html',1,'eonc']]]
+  ['iraresource_19',['IRAResource',['../classeonc_1_1IRAResource.html',1,'eonc']]],
+  ['irc_5ft_20',['irc_t',['../structeonc_1_1saddle__search__options__t_1_1irc__t.html',1,'eonc::saddle_search_options_t']]],
+  ['ircbranch_21',['IrcBranch',['../structeonc_1_1IrcBranch.html',1,'eonc']]],
+  ['ircpath_22',['IrcPath',['../structeonc_1_1IrcPath.html',1,'eonc']]],
+  ['ircsummary_23',['IrcSummary',['../structeonc_1_1SaddleSearchJob_1_1IrcSummary.html',1,'eonc::SaddleSearchJob']]]
 ];

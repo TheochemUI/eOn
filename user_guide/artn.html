@@ -97,6 +97,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/morse_pt_neb.html">Morse Pt NEB (built-in potential)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/lj_minimization.html">LJ cluster minimization (built-in potential)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/pt_saddle.html">Morse Pt saddle search (built-in potential)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/irc_after_saddle.html">Follow the intrinsic reaction coordinate from a saddle</a></li>
 </ul>
 </li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/akmc.html">AKMC Tutorial</a></li>
@@ -458,7 +459,7 @@ data-aria-dark="Switch to auto color mode">
 <p><span class="versionmodified added">Added in version 2.13.</span></p>
 </div>
 <p>The Activation-Relaxation Technique nouveau (ARTn)
-<span id="id1">Barkema and Mousseau [<a class="reference internal" href="#id96" title="G. T. Barkema and Normand Mousseau. Event-based relaxation of continuous disordered systems. Physical Review Letters, 77(21):4358–4361, 1996. doi:10.1103/PhysRevLett.77.4358.">ARTN_BM96</a>], Mousseau <em>et al.</em> [<a class="reference internal" href="#id97" title="Normand Mousseau, Laurent Karim Béland, Peter Brommer, Jean-François Joly, Fedwa El-Mellouhi, Eduardo Machado-Charry, Mihai-Cosmin Marinica, and Pascal Pochet. The activation-relaxation technique: ART nouveau and kinetic ART. Journal of Atomic, Molecular, and Optical Physics, 2012:925278, 2012. doi:10.1155/2012/925278.">ARTN_MBelandB+12</a>]</span> is
+<span id="id1">Barkema and Mousseau [<a class="reference internal" href="#id98" title="G. T. Barkema and Normand Mousseau. Event-based relaxation of continuous disordered systems. Physical Review Letters, 77(21):4358–4361, 1996. doi:10.1103/PhysRevLett.77.4358.">ARTN_BM96</a>], Mousseau <em>et al.</em> [<a class="reference internal" href="#id99" title="Normand Mousseau, Laurent Karim Béland, Peter Brommer, Jean-François Joly, Fedwa El-Mellouhi, Eduardo Machado-Charry, Mihai-Cosmin Marinica, and Pascal Pochet. The activation-relaxation technique: ART nouveau and kinetic ART. Journal of Atomic, Molecular, and Optical Physics, 2012:925278, 2012. doi:10.1155/2012/925278.">ARTN_MBelandB+12</a>]</span> is
 a saddle point search method that uses an explicit push phase followed by
 Lanczos eigenvalue computation and perpendicular relaxation. It is implemented
 via the <a class="reference external" href="https://gitlab.com/mammasmias/artn-plugin">pARTn</a> Fortran library.</p>
@@ -615,11 +616,11 @@ backend (LJ, EAM, LAMMPS, XTB, metatomic, etc.) without modification.</p>
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
 <div class="docutils container" id="id2">
 <div role="list" class="citation-list">
-<div class="citation" id="id96" role="doc-biblioentry">
+<div class="citation" id="id98" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">ARTN_BM96</a><span class="fn-bracket">]</span></span>
 <p>G. T. Barkema and Normand Mousseau. Event-based relaxation of continuous disordered systems. <em>Physical Review Letters</em>, 77(21):4358–4361, 1996. <a class="reference external" href="https://doi.org/10.1103/PhysRevLett.77.4358">doi:10.1103/PhysRevLett.77.4358</a>.</p>
 </div>
-<div class="citation" id="id97" role="doc-biblioentry">
+<div class="citation" id="id99" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">ARTN_MBelandB+12</a><span class="fn-bracket">]</span></span>
 <p>Normand Mousseau, Laurent Karim Béland, Peter Brommer, Jean-François Joly, Fedwa El-Mellouhi, Eduardo Machado-Charry, Mihai-Cosmin Marinica, and Pascal Pochet. The activation-relaxation technique: ART nouveau and kinetic ART. <em>Journal of Atomic, Molecular, and Optical Physics</em>, 2012:925278, 2012. <a class="reference external" href="https://doi.org/10.1155/2012/925278">doi:10.1155/2012/925278</a>.</p>
 </div>

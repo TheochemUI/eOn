@@ -1,5 +1,6 @@
 var structeonc_1_1saddle__search__options__t =
 [
+    [ "irc_t", "structeonc_1_1saddle__search__options__t_1_1irc__t.html", "structeonc_1_1saddle__search__options__t_1_1irc__t" ],
     [ "dynamics_t", "structeonc_1_1saddle__search__options__t_1_1dynamics__t.html", "structeonc_1_1saddle__search__options__t_1_1dynamics__t" ],
     [ "confine_positive_t", "structeonc_1_1saddle__search__options__t_1_1confine__positive__t.html", "structeonc_1_1saddle__search__options__t_1_1confine__positive__t" ],
     [ "prfo_refine_t", "structeonc_1_1saddle__search__options__t_1_1prfo__refine__t.html", "structeonc_1_1saddle__search__options__t_1_1prfo__refine__t" ],
@@ -10,6 +11,7 @@ var structeonc_1_1saddle__search__options__t =
     [ "displace_radius", "structeonc_1_1saddle__search__options__t.html#aa3726bca0edcef372ab1ae3ed3e99b46", null ],
     [ "displace_type", "structeonc_1_1saddle__search__options__t.html#a5c4159669b0dcc8ed5c822aee9e76bbd", null ],
     [ "dynamics", "structeonc_1_1saddle__search__options__t.html#a5697a07379a14b8ab9f3a111c4e9f4f9", null ],
+    [ "irc", "structeonc_1_1saddle__search__options__t.html#aca18322a19779f996027d3e6642f2725", null ],
     [ "max_energy", "structeonc_1_1saddle__search__options__t.html#a9030071025c2a7491e92e968b0d94c06", null ],
     [ "max_iterations", "structeonc_1_1saddle__search__options__t.html#ad1a1f8c639fb1c6dec71a79eecd51493", null ],
     [ "max_jump_attempts", "structeonc_1_1saddle__search__options__t.html#ae160b75259af099de8d79ef9319c8fdc", null ],

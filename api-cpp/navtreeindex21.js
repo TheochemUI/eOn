@@ -1,5 +1,13 @@
 var NAVTREEINDEX21 =
 {
+"classeonc_1_1tunneling_1_1QuadraticBath.html#aed597a68c4c6bfa82141054064ba8407":[3,0,1,21,12,5],
+"classeonc_1_1tunneling_1_1QuadraticBath.html#aed597a68c4c6bfa82141054064ba8407":[5,0,0,8,12,5],
+"classeonc_1_1tunneling_1_1QuadraticBath.html#af5918332c7b4b5f1620467dff4d4ea3e":[3,0,1,21,12,11],
+"classeonc_1_1tunneling_1_1QuadraticBath.html#af5918332c7b4b5f1620467dff4d4ea3e":[5,0,0,8,12,11],
+"classeonc_1_1tunneling_1_1QuadraticBath.html#afaa31ed65b16a1747261fd3d54d4807a":[3,0,1,21,12,15],
+"classeonc_1_1tunneling_1_1QuadraticBath.html#afaa31ed65b16a1747261fd3d54d4807a":[5,0,0,8,12,15],
+"classeonc_1_1tunneling_1_1QuadraticBath.html#afe5f1018eb2e5e92241da0a63756f33f":[3,0,1,21,12,7],
+"classeonc_1_1tunneling_1_1QuadraticBath.html#afe5f1018eb2e5e92241da0a63756f33f":[5,0,0,8,12,7],
 "classeonc_1_1tunneling_1_1RingPolymerPotential.html":[3,0,1,21,17],
 "classeonc_1_1tunneling_1_1RingPolymerPotential.html":[5,0,0,8,17],
 "classeonc_1_1tunneling_1_1RingPolymerPotential.html#a00502dd1608e81f44aafbfb58d7c4429":[3,0,1,21,17,28],
@@ -61,7 +69,7 @@ var NAVTREEINDEX21 =
 "classeonc_1_1tunneling_1_1RingPolymerPotential.html#aed42b48272bd267e1c5a6441c747d7bb":[3,0,1,21,17,26],
 "classeonc_1_1tunneling_1_1RingPolymerPotential.html#aed42b48272bd267e1c5a6441c747d7bb":[5,0,0,8,17,26],
 "classes.html":[5,1],
-"concepteonc_1_1ThreadSafeQueryable.html":[3,0,1,185],
+"concepteonc_1_1ThreadSafeQueryable.html":[3,0,1,187],
 "concepteonc_1_1ThreadSafeQueryable.html":[4,0,0],
 "concepts.html":[4],
 "dir_048c41c2660e30dc880defa6dce491b8.html":[6,0,1,0,3,15],
@@ -241,13 +249,5 @@ var NAVTREEINDEX21 =
 "functions_p.html":[5,3,0,17],
 "functions_q.html":[5,3,0,18],
 "functions_r.html":[5,3,0,19],
-"functions_rela.html":[5,3,6],
-"functions_s.html":[5,3,0,20],
-"functions_t.html":[5,3,0,21],
-"functions_type.html":[5,3,3],
-"functions_u.html":[5,3,0,22],
-"functions_v.html":[5,3,0,23],
-"functions_vars.html":[5,3,2],
-"functions_vars.html":[5,3,2,0],
-"functions_vars_a.html":[5,3,2,1]
+"functions_rela.html":[5,3,6]
 };

@@ -97,6 +97,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/morse_pt_neb.html">Morse Pt NEB (built-in potential)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/lj_minimization.html">LJ cluster minimization (built-in potential)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/pt_saddle.html">Morse Pt saddle search (built-in potential)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/irc_after_saddle.html">Follow the intrinsic reaction coordinate from a saddle</a></li>
 </ul>
 </li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/akmc.html">AKMC Tutorial</a></li>
@@ -461,12 +462,12 @@ data-aria-dark="Switch to auto color mode">
 <h1>Hyperdynamics<a class="headerlink" href="#hyperdynamics" title="Link to this heading">¶</a></h1>
 <p>The hyperdynamics method uses a bias potential which should be zero at
 transition states and positive in minima to accelerate the rate of
-transitions as noted by <span id="id1">Voter [<a class="reference internal" href="#id90" title="Arthur F. Voter. Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events. Physical Review Letters, 78(20):3908–3911, May 1997. doi:10.1103/PhysRevLett.78.3908.">HD_Vot97</a>]</span>.</p>
+transitions as noted by <span id="id1">Voter [<a class="reference internal" href="#id92" title="Arthur F. Voter. Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events. Physical Review Letters, 78(20):3908–3911, May 1997. doi:10.1103/PhysRevLett.78.3908.">HD_Vot97</a>]</span>.</p>
 <p>The hyperdynamics time step <span class="math notranslate nohighlight">\(\delta t\)</span> can be obtained from the molecular
 dynamics simulation time step <span class="math notranslate nohighlight">\(\delta t^b\)</span> multiplied by a boost factor
 <span class="math notranslate nohighlight">\(e^{\beta \Delta V}\)</span>, where <span class="math notranslate nohighlight">\({\Delta V}\)</span> is the bias potential.</p>
 <p>There are several possible forms of bias potential. In eOn, we have implemented
-the bond-boost method of <span id="id2">Miron and Fichthorn [<a class="reference internal" href="#id65" title="Radu A. Miron and Kristen A. Fichthorn. Accelerated molecular dynamics with the bond-boost method. The Journal of Chemical Physics, 119(12):6210–6216, September 2003. doi:10.1063/1.1603722.">HD_MF03</a>]</span>
+the bond-boost method of <span id="id2">Miron and Fichthorn [<a class="reference internal" href="#id67" title="Radu A. Miron and Kristen A. Fichthorn. Accelerated molecular dynamics with the bond-boost method. The Journal of Chemical Physics, 119(12):6210–6216, September 2003. doi:10.1063/1.1603722.">HD_MF03</a>]</span>
 where the bias potential is controlled by the maximal (fractional) change in any
 bond length in the system. This is a good bias potential for systems in which
 the dynamics is governed by bond breaking and forming events.</p>
@@ -552,11 +553,11 @@ client job.</p>
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
 <div class="docutils container" id="id3">
 <div role="list" class="citation-list">
-<div class="citation" id="id65" role="doc-biblioentry">
+<div class="citation" id="id67" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">HD_MF03</a><span class="fn-bracket">]</span></span>
 <p>Radu A. Miron and Kristen A. Fichthorn. Accelerated molecular dynamics with the bond-boost method. <em>The Journal of Chemical Physics</em>, 119(12):6210–6216, September 2003. <a class="reference external" href="https://doi.org/10.1063/1.1603722">doi:10.1063/1.1603722</a>.</p>
 </div>
-<div class="citation" id="id90" role="doc-biblioentry">
+<div class="citation" id="id92" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">HD_Vot97</a><span class="fn-bracket">]</span></span>
 <p>Arthur F. Voter. Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events. <em>Physical Review Letters</em>, 78(20):3908–3911, May 1997. <a class="reference external" href="https://doi.org/10.1103/PhysRevLett.78.3908">doi:10.1103/PhysRevLett.78.3908</a>.</p>
 </div>

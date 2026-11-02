@@ -137,6 +137,7 @@ var dir_2527c5cc2e6dc8ce970a4d420439d1d9 =
     [ "VesinNeighbors.h", "VesinNeighbors_8h.html", "VesinNeighbors_8h" ],
     [ "XtsciBand.h", "XtsciBand_8h.html", "XtsciBand_8h" ],
     [ "XtsciEindir.h", "XtsciEindir_8h.html", "XtsciEindir_8h" ],
+    [ "XtsciIrc.h", "XtsciIrc_8h.html", "XtsciIrc_8h" ],
     [ "XtsciMinMode.h", "XtsciMinMode_8h.html", "XtsciMinMode_8h" ],
     [ "XtsciOptimizer.h", "XtsciOptimizer_8h.html", "XtsciOptimizer_8h" ]
 ];

@@ -68,13 +68,14 @@ var searchData=
   ['box_65',['box',['../structeonc_1_1piqtst_1_1Coordinate.html#ab2b6c61adf338a074dcc7f8dd4699f6c',1,'eonc::piqtst::Coordinate']]],
   ['boxes_66',['boxes',['../structeon__relax__band__t.html#a5a1fd10c7e2a7e99c1c4e3d78be79439',1,'eon_relax_band_t::boxes'],['../structeon__relax__surface__request__t.html#a47fb67a1d23faa8b8e92a2fc2e274cdb',1,'eon_relax_surface_request_t::boxes']]],
   ['boxptr_5f_67',['boxPtr_',['../classeonc_1_1pathintegral_1_1RingPolymer.html#ae57abbd1e8d7495c2d508562effcded8',1,'eonc::pathintegral::RingPolymer']]],
-  ['bridgeabimajor_68',['bridgeAbiMajor',['../structeonc_1_1RpcCapabilitiesView.html#aa46142d8c6ece340c453f687a36bb45c',1,'eonc::RpcCapabilitiesView']]],
-  ['bridgeabiminor_69',['bridgeAbiMinor',['../structeonc_1_1RpcCapabilitiesView.html#a1e2064f5d6e18f8a517c7220ec9cf7d6',1,'eonc::RpcCapabilitiesView']]],
-  ['bridgefeatures_70',['bridgeFeatures',['../structeonc_1_1RpcCapabilitiesView.html#acf0789d9568a486a751c93f2ee58fb84',1,'eonc::RpcCapabilitiesView']]],
-  ['bridgelayout_71',['bridgeLayout',['../structeonc_1_1RpcCapabilitiesView.html#a66de6b6bcd639359a3ae32085117fb77',1,'eonc::RpcCapabilitiesView']]],
-  ['buffer_72',['buffer',['../structeonc_1_1ReplicaDynamicsJob_1_1PrdClock.html#ae43443cda59cf8fc5a915b4c7547fbb2',1,'eonc::ReplicaDynamicsJob::PrdClock']]],
-  ['buildrevision_73',['buildRevision',['../structeonc_1_1RpcCapabilitiesView.html#a4f158b49e19f296d6b62dd24fa067807',1,'eonc::RpcCapabilitiesView']]],
-  ['buildversion_74',['buildVersion',['../structeonc_1_1RpcCapabilitiesView.html#a9e844f7042248814d704dee1d041e6dd',1,'eonc::RpcCapabilitiesView']]],
-  ['busy_75',['busy',['../structeonc_1_1CalculatorGroupUse.html#a8bcf46c9592939069a03972ccc47aa3a',1,'eonc::CalculatorGroupUse']]],
-  ['busy_5f_76',['busy_',['../classRgpotPot.html#a67b32eeeed8ee2f090b5cb0112628c0a',1,'RgpotPot']]]
+  ['branchesatminimum_68',['branchesAtMinimum',['../structeonc_1_1SaddleSearchJob_1_1IrcSummary.html#af8ed831f72504e70e6f5eda408af1c3b',1,'eonc::SaddleSearchJob::IrcSummary']]],
+  ['bridgeabimajor_69',['bridgeAbiMajor',['../structeonc_1_1RpcCapabilitiesView.html#aa46142d8c6ece340c453f687a36bb45c',1,'eonc::RpcCapabilitiesView']]],
+  ['bridgeabiminor_70',['bridgeAbiMinor',['../structeonc_1_1RpcCapabilitiesView.html#a1e2064f5d6e18f8a517c7220ec9cf7d6',1,'eonc::RpcCapabilitiesView']]],
+  ['bridgefeatures_71',['bridgeFeatures',['../structeonc_1_1RpcCapabilitiesView.html#acf0789d9568a486a751c93f2ee58fb84',1,'eonc::RpcCapabilitiesView']]],
+  ['bridgelayout_72',['bridgeLayout',['../structeonc_1_1RpcCapabilitiesView.html#a66de6b6bcd639359a3ae32085117fb77',1,'eonc::RpcCapabilitiesView']]],
+  ['buffer_73',['buffer',['../structeonc_1_1ReplicaDynamicsJob_1_1PrdClock.html#ae43443cda59cf8fc5a915b4c7547fbb2',1,'eonc::ReplicaDynamicsJob::PrdClock']]],
+  ['buildrevision_74',['buildRevision',['../structeonc_1_1RpcCapabilitiesView.html#a4f158b49e19f296d6b62dd24fa067807',1,'eonc::RpcCapabilitiesView']]],
+  ['buildversion_75',['buildVersion',['../structeonc_1_1RpcCapabilitiesView.html#a9e844f7042248814d704dee1d041e6dd',1,'eonc::RpcCapabilitiesView']]],
+  ['busy_76',['busy',['../structeonc_1_1CalculatorGroupUse.html#a8bcf46c9592939069a03972ccc47aa3a',1,'eonc::CalculatorGroupUse']]],
+  ['busy_5f_77',['busy_',['../classRgpotPot.html#a67b32eeeed8ee2f090b5cb0112628c0a',1,'RgpotPot']]]
 ];

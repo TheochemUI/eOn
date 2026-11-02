@@ -97,6 +97,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/morse_pt_neb.html">Morse Pt NEB (built-in potential)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/lj_minimization.html">LJ cluster minimization (built-in potential)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/pt_saddle.html">Morse Pt saddle search (built-in potential)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/irc_after_saddle.html">Follow the intrinsic reaction coordinate from a saddle</a></li>
 </ul>
 </li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/akmc.html">AKMC Tutorial</a></li>
@@ -464,7 +465,7 @@ data-aria-dark="Switch to auto color mode">
 <h1>Adaptive kinetic Monte Carlo<a class="headerlink" href="#adaptive-kinetic-monte-carlo" title="Link to this heading">¶</a></h1>
 <p>The adaptive kinetic Monte Carlo (aKMC) method is a method to coarse grain
 molecular dynamics for rare event systems as described in
-<span id="id1">Henkelman and Jónsson [<a class="reference internal" href="#id35" title="Graeme Henkelman and Hannes Jónsson. Long time scale kinetic Monte Carlo simulations without lattice approximation and predefined event table. The Journal of Chemical Physics, 115(21):9657–9666, November 2001. doi:10.1063/1.1415500.">AK_HJonsson01</a>], Xu and Henkelman [<a class="reference internal" href="#id96" title="Lijun Xu and Graeme Henkelman. Adaptive kinetic Monte Carlo for first-principles accelerated dynamics. The Journal of Chemical Physics, 129(11):114104, September 2008. doi:10.1063/1.2976010.">AK_XH08</a>]</span>.  A rare
+<span id="id1">Henkelman and Jónsson [<a class="reference internal" href="#id37" title="Graeme Henkelman and Hannes Jónsson. Long time scale kinetic Monte Carlo simulations without lattice approximation and predefined event table. The Journal of Chemical Physics, 115(21):9657–9666, November 2001. doi:10.1063/1.1415500.">AK_HJonsson01</a>], Xu and Henkelman [<a class="reference internal" href="#id98" title="Lijun Xu and Graeme Henkelman. Adaptive kinetic Monte Carlo for first-principles accelerated dynamics. The Journal of Chemical Physics, 129(11):114104, September 2008. doi:10.1063/1.2976010.">AK_XH08</a>]</span>.  A rare
 event system is one in which the interesting dynamics is governed by short
 transitions between stable states. The fast vibrational motion within a stable
 state is considered to be in equilibrium and described statisitcally. A
@@ -489,7 +490,7 @@ same order as the fastest processes found.</p>
 Each client does a minimum mode (minmode) following search from the miminum of
 the current state and searches for a saddle point which connects from the
 minimum in the current state to an adjacent state
-<span id="id2">[<a class="reference internal" href="#id33" title="Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. The Journal of Chemical Physics, 111(15):7010–7022, October 1999. doi:10.1063/1.480097.">AK_HJonsson99</a>]</span>. A saddle point is connected to a
+<span id="id2">[<a class="reference internal" href="#id35" title="Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. The Journal of Chemical Physics, 111(15):7010–7022, October 1999. doi:10.1063/1.480097.">AK_HJonsson99</a>]</span>. A saddle point is connected to a
 state if a minimization initiated along the negative mode at the saddle
 converges to the minimum of that state.</p>
 <p>Each client is tasked with one or more such searches. It climbs from the minimum
@@ -497,7 +498,7 @@ to a saddle, and if successful, it minimizes on either side of the saddle to
 determine the connecting states. The prefactor for the transition is also
 calculated by finite difference and the hTST rate is calculated. These data are
 reported back to the server.</p>
-<p>Adaptive (a), or off-lattice KMC <span id="id3">[<a class="reference internal" href="#id89" title="Mickaël Trochet, Normand Mousseau, Laurent Karim Béland, and Graeme Henkelman. Off-Lattice Kinetic Monte Carlo Methods. In Wanda Andreoni and Sidney Yip, editors, Handbook of Materials Modeling: Methods: Theory and Modeling, pages 715–743. Springer International Publishing, Cham, 2020. doi:10.1007/978-3-319-44677-6_29.">AK_TMBelandH20</a>]</span>
+<p>Adaptive (a), or off-lattice KMC <span id="id3">[<a class="reference internal" href="#id91" title="Mickaël Trochet, Normand Mousseau, Laurent Karim Béland, and Graeme Henkelman. Off-Lattice Kinetic Monte Carlo Methods. In Wanda Andreoni and Sidney Yip, editors, Handbook of Materials Modeling: Methods: Theory and Modeling, pages 715–743. Springer International Publishing, Cham, 2020. doi:10.1007/978-3-319-44677-6_29.">AK_TMBelandH20</a>]</span>
 works in continuous configuration space. The method builds a rate table from
 local atomic movements and energy barriers, so atoms can sit off a grid. The
 confidence scheme and thermal accessibility settings restrict accepted
@@ -619,19 +620,19 @@ The schema class below defaults <code class="docutils literal notranslate"><span
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
 <div class="docutils container" id="id4">
 <div role="list" class="citation-list">
-<div class="citation" id="id33" role="doc-biblioentry">
+<div class="citation" id="id35" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">AK_HJonsson99</a><span class="fn-bracket">]</span></span>
 <p>Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. <em>The Journal of Chemical Physics</em>, 111(15):7010–7022, October 1999. <a class="reference external" href="https://doi.org/10.1063/1.480097">doi:10.1063/1.480097</a>.</p>
 </div>
-<div class="citation" id="id35" role="doc-biblioentry">
+<div class="citation" id="id37" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">AK_HJonsson01</a><span class="fn-bracket">]</span></span>
 <p>Graeme Henkelman and Hannes Jónsson. Long time scale kinetic Monte Carlo simulations without lattice approximation and predefined event table. <em>The Journal of Chemical Physics</em>, 115(21):9657–9666, November 2001. <a class="reference external" href="https://doi.org/10.1063/1.1415500">doi:10.1063/1.1415500</a>.</p>
 </div>
-<div class="citation" id="id89" role="doc-biblioentry">
+<div class="citation" id="id91" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">AK_TMBelandH20</a><span class="fn-bracket">]</span></span>
 <p>Mickaël Trochet, Normand Mousseau, Laurent Karim Béland, and Graeme Henkelman. Off-Lattice Kinetic Monte Carlo Methods. In Wanda Andreoni and Sidney Yip, editors, <em>Handbook of Materials Modeling: Methods: Theory and Modeling</em>, pages 715–743. Springer International Publishing, Cham, 2020. <a class="reference external" href="https://doi.org/10.1007/978-3-319-44677-6_29">doi:10.1007/978-3-319-44677-6_29</a>.</p>
 </div>
-<div class="citation" id="id96" role="doc-biblioentry">
+<div class="citation" id="id98" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">AK_XH08</a><span class="fn-bracket">]</span></span>
 <p>Lijun Xu and Graeme Henkelman. Adaptive kinetic Monte Carlo for first-principles accelerated dynamics. <em>The Journal of Chemical Physics</em>, 129(11):114104, September 2008. <a class="reference external" href="https://doi.org/10.1063/1.2976010">doi:10.1063/1.2976010</a>.</p>
 </div>

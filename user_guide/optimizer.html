@@ -97,6 +97,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/morse_pt_neb.html">Morse Pt NEB (built-in potential)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/lj_minimization.html">LJ cluster minimization (built-in potential)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/pt_saddle.html">Morse Pt saddle search (built-in potential)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/irc_after_saddle.html">Follow the intrinsic reaction coordinate from a saddle</a></li>
 </ul>
 </li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/akmc.html">AKMC Tutorial</a></li>
@@ -539,12 +540,12 @@ data-aria-dark="Switch to auto color mode">
 <p>The eOn optimizers skip a line search when taking the steepest-descent step.</p>
 </div>
 <p>There are several other ways in which the <code class="docutils literal notranslate"><span class="pre">eOn</span></code> implementations differ from a
-standard optimizer software suite<a class="footnote-reference brackets" href="#id119" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> . Some prominent reasons are:</p>
+standard optimizer software suite<a class="footnote-reference brackets" href="#id121" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> . Some prominent reasons are:</p>
 <ul class="simple">
 <li><p>They are written for the <a class="reference internal" href="neb.html"><span class="std std-doc">Nudged elastic band</span></a>, whose energy surface has no
 closed form</p>
 <ul>
-<li><p>Especially in the global band optimization approach <span id="id2">[<a class="reference internal" href="#id78" title="Daniel Sheppard, Rye Terrell, and Graeme Henkelman. Optimization methods for finding minimum energy paths. The Journal of Chemical Physics, 128(13):134106, April 2008. doi:10.1063/1.2841941.">OPT_STH08</a>]</span>.</p></li>
+<li><p>Especially in the global band optimization approach <span id="id2">[<a class="reference internal" href="#id80" title="Daniel Sheppard, Rye Terrell, and Graeme Henkelman. Optimization methods for finding minimum energy paths. The Journal of Chemical Physics, 128(13):134106, April 2008. doi:10.1063/1.2841941.">OPT_STH08</a>]</span>.</p></li>
 </ul>
 </li>
 <li><p>They are specialized for atomic systems</p></li>
@@ -1265,7 +1266,7 @@ previous mode seeds the next rotation.</p>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rotation_tol</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">[Dimer]</span> <span class="pre">torque_min</span></code></p></td>
-<td><p>none</p></td>
+<td><p>0 when <code class="docutils literal notranslate"><span class="pre">[Dimer]</span> <span class="pre">improved</span></code> is true, except for Lanczos</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rotation_angle_tol</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">[Dimer]</span> <span class="pre">converged_angle</span></code></p></td>
@@ -1290,6 +1291,10 @@ previous mode seeds the next rotation.</p>
 </tbody>
 </table>
 </div>
+<p>The conversion gives <code class="docutils literal notranslate"><span class="pre">rotation_tol</span> <span class="pre">=</span> <span class="pre">0</span></code> under the improved dimer, because that dimer has no torque stop.
+Its rotation ends on <code class="docutils literal notranslate"><span class="pre">converged_angle</span></code> or <code class="docutils literal notranslate"><span class="pre">rotations_max</span></code>.
+rgsaddle 0.3.0 and newer also read a <code class="docutils literal notranslate"><span class="pre">rotation_tol</span></code> of 1e-4 or more as the classic torque window.
+Once the rotational force is below 1, that window stops a rotation after its first step.</p>
 <p>rgsaddle has no fourth-order stencil, so <code class="docutils literal notranslate"><span class="pre">fd_scheme</span> <span class="pre">=</span> <span class="pre">fourth</span></code> gives
 central differences here. <code class="docutils literal notranslate"><span class="pre">[Dimer]</span> <span class="pre">rotation_angle</span></code> is a trial angle
 of the host dimer and does not reach the session.</p>
@@ -1299,7 +1304,7 @@ of the host dimer and does not reach the session.</p>
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
 <div class="docutils container" id="id3">
 <div role="list" class="citation-list">
-<div class="citation" id="id78" role="doc-biblioentry">
+<div class="citation" id="id80" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">OPT_STH08</a><span class="fn-bracket">]</span></span>
 <p>Daniel Sheppard, Rye Terrell, and Graeme Henkelman. Optimization methods for finding minimum energy paths. <em>The Journal of Chemical Physics</em>, 128(13):134106, April 2008. <a class="reference external" href="https://doi.org/10.1063/1.2841941">doi:10.1063/1.2841941</a>.</p>
 </div>
@@ -1309,7 +1314,7 @@ of the host dimer and does not reach the session.</p>
 </section>
 <hr class="footnotes docutils" />
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id119" role="doc-footnote">
+<aside class="footnote brackets" id="id121" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>e.g. as may be found in <code class="docutils literal notranslate"><span class="pre">scipy</span></code> or <code class="docutils literal notranslate"><span class="pre">ceres</span></code> for instance</p>
 </aside>

@@ -97,6 +97,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/morse_pt_neb.html">Morse Pt NEB (built-in potential)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/lj_minimization.html">LJ cluster minimization (built-in potential)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/pt_saddle.html">Morse Pt saddle search (built-in potential)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/irc_after_saddle.html">Follow the intrinsic reaction coordinate from a saddle</a></li>
 </ul>
 </li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/akmc.html">AKMC Tutorial</a></li>
@@ -467,7 +468,7 @@ data-aria-dark="Switch to auto color mode">
 </div>
 <p>The Lanczos method determines the lowest curvature mode of the potential energy
 surface using the iterative Lanczos algorithm
-<span id="id1">Malek and Mousseau [<a class="reference internal" href="#id57" title="Rachid Malek and Normand Mousseau. Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique. Physical Review E, 62(6):7723–7728, December 2000. doi:10.1103/PhysRevE.62.7723.">LCZ_MM00</a>]</span>. It is an alternative to
+<span id="id1">Malek and Mousseau [<a class="reference internal" href="#id59" title="Rachid Malek and Normand Mousseau. Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique. Physical Review E, 62(6):7723–7728, December 2000. doi:10.1103/PhysRevE.62.7723.">LCZ_MM00</a>]</span>. It is an alternative to
 the <a class="reference internal" href="dimer.html"><span class="std std-doc">dimer method</span></a> for min-mode following saddle searches.</p>
 <section id="force-call-costs-per-eigenmode-computation">
 <h2>Force call costs per eigenmode computation<a class="headerlink" href="#force-call-costs-per-eigenmode-computation" title="Link to this heading">¶</a></h2>
@@ -632,7 +633,7 @@ evaluation. Dimer rotation uses <code class="docutils literal notranslate"><span
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
 <div class="docutils container" id="id2">
 <div role="list" class="citation-list">
-<div class="citation" id="id57" role="doc-biblioentry">
+<div class="citation" id="id59" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">LCZ_MM00</a><span class="fn-bracket">]</span></span>
 <p>Rachid Malek and Normand Mousseau. Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique. <em>Physical Review E</em>, 62(6):7723–7728, December 2000. <a class="reference external" href="https://doi.org/10.1103/PhysRevE.62.7723">doi:10.1103/PhysRevE.62.7723</a>.</p>
 </div>
