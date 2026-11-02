@@ -31,6 +31,12 @@
       "description": "Temperature in kelvin for the harmonic quantum free energy along the band. Zero leaves the profile on the potential energy.",
       "type": "number"
     },
+    "tunnel_wall_points": {
+      "default": 0,
+      "description": "Force calls past each end minimum of the converged band, along its end segment continued outward, for the outer walls of the one-dimensional tunnelling levels. 0 continues each well by its fit.",
+      "minimum": 0,
+      "type": "integer"
+    },
     "solid_state_pressure": {
       "default": 0.0,
       "description": "External hydrostatic pressure in eV/Angstrom^3 on the solid-state band. Positive pressure favors a smaller cell. 0 keeps the potential-energy band.",
