@@ -22,6 +22,7 @@
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/Optimizer.h"
 #include "eon/Prefactor.h"
+#include "eon/PrfoRefine.h"
 #include <exception>
 #include <filesystem>
 #include <thread>
@@ -82,6 +83,9 @@ void loadKnownSaddles(const std::string &path, const Matter &reference,
 } // namespace
 
 std::vector<std::string> ProcessSearchJob::run() {
+  if (params.saddle_search_options().method == "min_mode") {
+    eonc::requirePrfoRefine(params);
+  }
   std::string reactantFilename = eonc::helpers::getRelevantFile("pos.con");
   std::string displacementFilename("displacement.con");
   std::string modeFilename("direction.dat");

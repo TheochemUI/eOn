@@ -89,6 +89,25 @@ void check(int rc, const char *what) {
   }
 }
 
+void checkPrfoKeys(const Parameters &params) {
+  const auto &opt = params.saddle_search_options().prfo_refine;
+  if (!(opt.force > 0.0) || opt.max_iterations < 1) {
+    throw std::invalid_argument("prfo_refine_force must be positive and "
+                                "prfo_refine_max_iterations at least 1");
+  }
+}
+
+// The header can be newer than the library loaded at run time.
+void checkPrfoLibrary() {
+  rgsaddle_version_t stamp{};
+  check(rgsaddle_abi_stamp(&stamp), "rgsaddle_abi_stamp");
+  if (stamp.major != RGSADDLE_ABI_MAJOR || stamp.minor < 15) {
+    throw std::runtime_error(
+        "prfo_refine needs rgsaddle ABI 1.15 or newer at run time (loaded " +
+        std::to_string(stamp.major) + "." + std::to_string(stamp.minor) + ")");
+  }
+}
+
 // The rows getPositionsFree() returns, in its order.
 std::vector<long> freeAtoms(const Matter &matter) {
   const AtomMatrix free = matter.getFree();
@@ -103,20 +122,18 @@ std::vector<long> freeAtoms(const Matter &matter) {
 
 } // namespace
 
+void requirePrfoRefine(const Parameters &params) {
+  if (params.saddle_search_options().prfo_refine.enabled) {
+    checkPrfoKeys(params);
+    checkPrfoLibrary();
+  }
+}
+
 PrfoRefineResult prfoRefineSaddle(Matter &matter, const AtomMatrix &mode,
                                   double curvature, const Parameters &params) {
   const auto &opt = params.saddle_search_options().prfo_refine;
-  if (!(opt.force > 0.0) || opt.max_iterations < 1) {
-    throw std::invalid_argument("prfo_refine_force must be positive and "
-                                "prfo_refine_max_iterations at least 1");
-  }
-  rgsaddle_version_t stamp{};
-  check(rgsaddle_abi_stamp(&stamp), "rgsaddle_abi_stamp");
-  if (stamp.major != RGSADDLE_ABI_MAJOR || stamp.minor < 15) {
-    throw std::runtime_error(
-        "prfo_refine needs rgsaddle ABI 1.15 or newer at run time (loaded " +
-        std::to_string(stamp.major) + "." + std::to_string(stamp.minor) + ")");
-  }
+  checkPrfoKeys(params);
+  checkPrfoLibrary();
   const std::vector<long> rows = freeAtoms(matter);
   const auto nFree = static_cast<long>(rows.size());
   const long callsBefore = matter.getForceCalls();
@@ -204,11 +221,25 @@ PrfoRefineResult prfoRefineSaddle(Matter &matter, const AtomMatrix &mode,
 
 #else
 
-PrfoRefineResult prfoRefineSaddle(Matter &, const AtomMatrix &, double,
-                                  const Parameters &) {
+namespace {
+
+[[noreturn]] void missingSession() {
   throw std::runtime_error("[Saddle Search] prfo_refine needs eOn built with "
                            "-Dwith_rgsaddle=true against rgsaddle ABI 1.15 or "
                            "newer");
+}
+
+} // namespace
+
+void requirePrfoRefine(const Parameters &params) {
+  if (params.saddle_search_options().prfo_refine.enabled) {
+    missingSession();
+  }
+}
+
+PrfoRefineResult prfoRefineSaddle(Matter &, const AtomMatrix &, double,
+                                  const Parameters &) {
+  missingSession();
 }
 
 #endif

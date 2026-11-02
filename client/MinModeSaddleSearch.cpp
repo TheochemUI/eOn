@@ -331,6 +331,7 @@ MinModeSaddleSearch::MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
       matter{matterPassed} {
   eonc::helpers::requireKnownConvergenceMetric(
       params.optimizer_options().convergence_metric, "[MinModeSaddleSearch]");
+  eonc::requirePrfoRefine(params);
   reactantEnergy = reactantEnergyPassed;
   mode = modePassed;
   initialTangent_ = modePassed;
