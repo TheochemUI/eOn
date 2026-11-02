@@ -458,39 +458,39 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Runs the correct saddle search; also checks if the run was successful. </p>
 
-<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8cpp_source.html#l00139">139</a> of file <a class="el" href="SaddleSearchJob_8cpp_source.html">SaddleSearchJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  139</span>                                    {</div>
-<div class="line"><span class="lineno">  140</span>  <span class="keywordtype">long</span> status;</div>
-<div class="line"><span class="lineno">  141</span>  <span class="keyword">const</span> <span class="keywordtype">size_t</span> registryBefore = <a class="code hl_function" href="classeonc_1_1Job.html#a38797bdd6ab6331a21e1ebbdd4cc7e4a">potRegistryForceCalls</a>();</div>
-<div class="line"><span class="lineno">  142</span>  <span class="keyword">const</span> <span class="keywordtype">size_t</span> potBefore = this-&gt;<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;forceCallCounter;</div>
-<div class="line"><span class="lineno">  143</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  144</span>    status = <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a>-&gt;run();</div>
-<div class="line"><span class="lineno">  145</span>  } <span class="keywordflow">catch</span> (<span class="keywordtype">int</span> e) {</div>
-<div class="line"><span class="lineno">  146</span>    <span class="keywordflow">if</span> (e == 100) {</div>
-<div class="line"><span class="lineno">  147</span>      status = <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a2a928bdf6876c8070daddb67f01b0cf7">MinModeSaddleSearch::STATUS_POTENTIAL_FAILED</a>;</div>
-<div class="line"><span class="lineno">  148</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  149</span>      QUILL_LOG_ERROR(<a class="code hl_variable" href="#a5a2729f713e551950ed663702834a2d0">log</a>, <span class="stringliteral">&quot;unknown exception: {}&quot;</span>, e);</div>
-<div class="line"><span class="lineno">  150</span>      <span class="keywordflow">throw</span> e;</div>
-<div class="line"><span class="lineno">  151</span>    }</div>
-<div class="line"><span class="lineno">  152</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
-<div class="line"><span class="lineno">  153</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a5a2729f713e551950ed663702834a2d0">log</a>, <span class="stringliteral">&quot;Saddle search potential failed: {}&quot;</span>, e.what());</div>
-<div class="line"><span class="lineno">  154</span>    status = <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a2a928bdf6876c8070daddb67f01b0cf7">MinModeSaddleSearch::STATUS_POTENTIAL_FAILED</a>;</div>
-<div class="line"><span class="lineno">  155</span>  }</div>
-<div class="line"><span class="lineno">  156</span> </div>
-<div class="line"><span class="lineno">  157</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span> &amp;&amp;</div>
-<div class="line"><span class="lineno">  158</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().minmode_method ==</div>
-<div class="line"><span class="lineno">  159</span>          <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a14617f4b0ae6355cdbd54882065b0534">LowestEigenmode::MINMODE_GPRDIMER</a>) {</div>
-<div class="line"><span class="lineno">  160</span>    <a class="code hl_variable" href="#a75179d05d423a1054898e8029a92ea43">fCallsSaddle</a> = <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a>-&gt;getForceCalls();</div>
-<div class="line"><span class="lineno">  161</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;artn&quot;</span>) {</div>
-<div class="line"><span class="lineno">  162</span>    <a class="code hl_variable" href="#a75179d05d423a1054898e8029a92ea43">fCallsSaddle</a> = <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a>-&gt;getForceCalls();</div>
-<div class="line"><span class="lineno">  163</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  164</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> calls = <a class="code hl_function" href="classeonc_1_1Job.html#a38797bdd6ab6331a21e1ebbdd4cc7e4a">potRegistryForceCalls</a>() - registryBefore;</div>
-<div class="line"><span class="lineno">  165</span>    <a class="code hl_variable" href="#a2d3d31f04564d831a35c668f746add24">fCallsImages</a> = calls - (this-&gt;<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;forceCallCounter - potBefore);</div>
-<div class="line"><span class="lineno">  166</span>    <a class="code hl_variable" href="#a75179d05d423a1054898e8029a92ea43">fCallsSaddle</a> += <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(calls);</div>
-<div class="line"><span class="lineno">  167</span>  }</div>
-<div class="line"><span class="lineno">  168</span> </div>
-<div class="line"><span class="lineno">  169</span>  <span class="keywordflow">return</span> status;</div>
-<div class="line"><span class="lineno">  170</span>}</div>
+<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8cpp_source.html#l00143">143</a> of file <a class="el" href="SaddleSearchJob_8cpp_source.html">SaddleSearchJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  143</span>                                    {</div>
+<div class="line"><span class="lineno">  144</span>  <span class="keywordtype">long</span> status;</div>
+<div class="line"><span class="lineno">  145</span>  <span class="keyword">const</span> <span class="keywordtype">size_t</span> registryBefore = <a class="code hl_function" href="classeonc_1_1Job.html#a38797bdd6ab6331a21e1ebbdd4cc7e4a">potRegistryForceCalls</a>();</div>
+<div class="line"><span class="lineno">  146</span>  <span class="keyword">const</span> <span class="keywordtype">size_t</span> potBefore = this-&gt;<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;forceCallCounter;</div>
+<div class="line"><span class="lineno">  147</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  148</span>    status = <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a>-&gt;run();</div>
+<div class="line"><span class="lineno">  149</span>  } <span class="keywordflow">catch</span> (<span class="keywordtype">int</span> e) {</div>
+<div class="line"><span class="lineno">  150</span>    <span class="keywordflow">if</span> (e == 100) {</div>
+<div class="line"><span class="lineno">  151</span>      status = <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a2a928bdf6876c8070daddb67f01b0cf7">MinModeSaddleSearch::STATUS_POTENTIAL_FAILED</a>;</div>
+<div class="line"><span class="lineno">  152</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  153</span>      QUILL_LOG_ERROR(<a class="code hl_variable" href="#a5a2729f713e551950ed663702834a2d0">log</a>, <span class="stringliteral">&quot;unknown exception: {}&quot;</span>, e);</div>
+<div class="line"><span class="lineno">  154</span>      <span class="keywordflow">throw</span> e;</div>
+<div class="line"><span class="lineno">  155</span>    }</div>
+<div class="line"><span class="lineno">  156</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><span class="lineno">  157</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a5a2729f713e551950ed663702834a2d0">log</a>, <span class="stringliteral">&quot;Saddle search potential failed: {}&quot;</span>, e.what());</div>
+<div class="line"><span class="lineno">  158</span>    status = <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a2a928bdf6876c8070daddb67f01b0cf7">MinModeSaddleSearch::STATUS_POTENTIAL_FAILED</a>;</div>
+<div class="line"><span class="lineno">  159</span>  }</div>
+<div class="line"><span class="lineno">  160</span> </div>
+<div class="line"><span class="lineno">  161</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span> &amp;&amp;</div>
+<div class="line"><span class="lineno">  162</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().minmode_method ==</div>
+<div class="line"><span class="lineno">  163</span>          <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a14617f4b0ae6355cdbd54882065b0534">LowestEigenmode::MINMODE_GPRDIMER</a>) {</div>
+<div class="line"><span class="lineno">  164</span>    <a class="code hl_variable" href="#a75179d05d423a1054898e8029a92ea43">fCallsSaddle</a> = <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a>-&gt;getForceCalls();</div>
+<div class="line"><span class="lineno">  165</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;artn&quot;</span>) {</div>
+<div class="line"><span class="lineno">  166</span>    <a class="code hl_variable" href="#a75179d05d423a1054898e8029a92ea43">fCallsSaddle</a> = <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a>-&gt;getForceCalls();</div>
+<div class="line"><span class="lineno">  167</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  168</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> calls = <a class="code hl_function" href="classeonc_1_1Job.html#a38797bdd6ab6331a21e1ebbdd4cc7e4a">potRegistryForceCalls</a>() - registryBefore;</div>
+<div class="line"><span class="lineno">  169</span>    <a class="code hl_variable" href="#a2d3d31f04564d831a35c668f746add24">fCallsImages</a> = calls - (this-&gt;<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;forceCallCounter - potBefore);</div>
+<div class="line"><span class="lineno">  170</span>    <a class="code hl_variable" href="#a75179d05d423a1054898e8029a92ea43">fCallsSaddle</a> += <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(calls);</div>
+<div class="line"><span class="lineno">  171</span>  }</div>
+<div class="line"><span class="lineno">  172</span> </div>
+<div class="line"><span class="lineno">  173</span>  <span class="keywordflow">return</span> status;</div>
+<div class="line"><span class="lineno">  174</span>}</div>
 <div class="ttc" id="aclasseonc_1_1Job_html_a38797bdd6ab6331a21e1ebbdd4cc7e4a"><div class="ttname"><a href="classeonc_1_1Job.html#a38797bdd6ab6331a21e1ebbdd4cc7e4a">eonc::Job::potRegistryForceCalls</a></div><div class="ttdeci">size_t potRegistryForceCalls() const noexcept</div><div class="ttdoc">Force calls charged to pot&#39;s registry.</div><div class="ttdef"><b>Definition</b> <a href="Job_8cpp_source.html#l00044">Job.cpp:44</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Job_html_a948da0de6ec2575bd6ac975fedaad0c9"><div class="ttname"><a href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">eonc::Job::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdoc">Set when one Potential is shared across Matters, images, or a caller.</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00066">Job.h:66</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Job_html_a9f0bfab75a98f383ba58f1c592fd2500"><div class="ttname"><a href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">eonc::Job::params</a></div><div class="ttdeci">Parameters params</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00058">Job.h:58</a></div></div>
@@ -527,15 +527,15 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Logs the run status and makes sure the run was successful. </p>
 
-<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8cpp_source.html#l00211">211</a> of file <a class="el" href="SaddleSearchJob_8cpp_source.html">SaddleSearchJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  211</span>                                              {</div>
-<div class="line"><span class="lineno">  212</span>  <span class="keyword">auto</span> msg = <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a>-&gt;describeStatus(status);</div>
-<div class="line"><span class="lineno">  213</span>  <span class="keywordflow">if</span> (status == <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">MinModeSaddleSearch::STATUS_GOOD</a>) {</div>
-<div class="line"><span class="lineno">  214</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a5a2729f713e551950ed663702834a2d0">log</a>, <span class="stringliteral">&quot;[Saddle Search] {}&quot;</span>, msg);</div>
-<div class="line"><span class="lineno">  215</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  216</span>    QUILL_LOG_WARNING(<a class="code hl_variable" href="#a5a2729f713e551950ed663702834a2d0">log</a>, <span class="stringliteral">&quot;[Saddle Search] {}&quot;</span>, msg);</div>
-<div class="line"><span class="lineno">  217</span>  }</div>
-<div class="line"><span class="lineno">  218</span>}</div>
+<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8cpp_source.html#l00215">215</a> of file <a class="el" href="SaddleSearchJob_8cpp_source.html">SaddleSearchJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  215</span>                                              {</div>
+<div class="line"><span class="lineno">  216</span>  <span class="keyword">auto</span> msg = <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a>-&gt;describeStatus(status);</div>
+<div class="line"><span class="lineno">  217</span>  <span class="keywordflow">if</span> (status == <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">MinModeSaddleSearch::STATUS_GOOD</a>) {</div>
+<div class="line"><span class="lineno">  218</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a5a2729f713e551950ed663702834a2d0">log</a>, <span class="stringliteral">&quot;[Saddle Search] {}&quot;</span>, msg);</div>
+<div class="line"><span class="lineno">  219</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  220</span>    QUILL_LOG_WARNING(<a class="code hl_variable" href="#a5a2729f713e551950ed663702834a2d0">log</a>, <span class="stringliteral">&quot;[Saddle Search] {}&quot;</span>, msg);</div>
+<div class="line"><span class="lineno">  221</span>  }</div>
+<div class="line"><span class="lineno">  222</span>}</div>
 <div class="ttc" id="aclasseonc_1_1MinModeSaddleSearch_html_a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796"><div class="ttname"><a href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">eonc::MinModeSaddleSearch::STATUS_GOOD</a></div><div class="ttdeci">@ STATUS_GOOD</div><div class="ttdef"><b>Definition</b> <a href="MinModeSaddleSearch_8h_source.html#l00031">MinModeSaddleSearch.h:31</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -567,75 +567,79 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1Job.html#ac23db10c6a90d5c6cc8a3a49d7b0dace">eonc::Job</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8cpp_source.html#l00029">29</a> of file <a class="el" href="SaddleSearchJob_8cpp_source.html">SaddleSearchJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   29</span>                                          {</div>
-<div class="line"><span class="lineno">   30</span>  std::string reactantFilename = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a561b68f975ecb734266063b428d6f2f2">eonc::helpers::getRelevantFile</a>(<span class="stringliteral">&quot;pos.con&quot;</span>);</div>
-<div class="line"><span class="lineno">   31</span>  std::string displacementFilename(<span class="stringliteral">&quot;displacement.con&quot;</span>);</div>
-<div class="line"><span class="lineno">   32</span>  std::string modeFilename(<span class="stringliteral">&quot;direction.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">   33</span> </div>
-<div class="line"><span class="lineno">   34</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().checkpoint) {</div>
-<div class="line"><span class="lineno">   35</span>    <span class="keywordflow">if</span> (std::filesystem::exists(<span class="stringliteral">&quot;displacement_cp.con&quot;</span>) &amp;&amp;</div>
-<div class="line"><span class="lineno">   36</span>        std::filesystem::exists(<span class="stringliteral">&quot;mode_cp.dat&quot;</span>)) {</div>
-<div class="line"><span class="lineno">   37</span>      displacementFilename = <span class="stringliteral">&quot;displacement_cp.con&quot;</span>;</div>
-<div class="line"><span class="lineno">   38</span>      modeFilename = <span class="stringliteral">&quot;mode_cp.dat&quot;</span>;</div>
-<div class="line"><span class="lineno">   39</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a5a2729f713e551950ed663702834a2d0">log</a>, <span class="stringliteral">&quot;Resuming from checkpoint&quot;</span>);</div>
-<div class="line"><span class="lineno">   40</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">   41</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a5a2729f713e551950ed663702834a2d0">log</a>, <span class="stringliteral">&quot;No checkpoint files found&quot;</span>);</div>
-<div class="line"><span class="lineno">   42</span>    }</div>
-<div class="line"><span class="lineno">   43</span>  }</div>
-<div class="line"><span class="lineno">   44</span> </div>
-<div class="line"><span class="lineno">   45</span>  <a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">   46</span>  <a class="code hl_variable" href="#aa77a99e2be44f56adde9b39b18c93f67">displacement</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">   47</span>  <a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8cpp_source.html#l00030">30</a> of file <a class="el" href="SaddleSearchJob_8cpp_source.html">SaddleSearchJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   30</span>                                          {</div>
+<div class="line"><span class="lineno">   31</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span>) {</div>
+<div class="line"><span class="lineno">   32</span>    <a class="code hl_function" href="namespaceeonc.html#af67078bb2eaad1ea16ddac096eb049a6">eonc::requirePrfoRefine</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   33</span>  }</div>
+<div class="line"><span class="lineno">   34</span>  std::string reactantFilename = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a561b68f975ecb734266063b428d6f2f2">eonc::helpers::getRelevantFile</a>(<span class="stringliteral">&quot;pos.con&quot;</span>);</div>
+<div class="line"><span class="lineno">   35</span>  std::string displacementFilename(<span class="stringliteral">&quot;displacement.con&quot;</span>);</div>
+<div class="line"><span class="lineno">   36</span>  std::string modeFilename(<span class="stringliteral">&quot;direction.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">   37</span> </div>
+<div class="line"><span class="lineno">   38</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().checkpoint) {</div>
+<div class="line"><span class="lineno">   39</span>    <span class="keywordflow">if</span> (std::filesystem::exists(<span class="stringliteral">&quot;displacement_cp.con&quot;</span>) &amp;&amp;</div>
+<div class="line"><span class="lineno">   40</span>        std::filesystem::exists(<span class="stringliteral">&quot;mode_cp.dat&quot;</span>)) {</div>
+<div class="line"><span class="lineno">   41</span>      displacementFilename = <span class="stringliteral">&quot;displacement_cp.con&quot;</span>;</div>
+<div class="line"><span class="lineno">   42</span>      modeFilename = <span class="stringliteral">&quot;mode_cp.dat&quot;</span>;</div>
+<div class="line"><span class="lineno">   43</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a5a2729f713e551950ed663702834a2d0">log</a>, <span class="stringliteral">&quot;Resuming from checkpoint&quot;</span>);</div>
+<div class="line"><span class="lineno">   44</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   45</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a5a2729f713e551950ed663702834a2d0">log</a>, <span class="stringliteral">&quot;No checkpoint files found&quot;</span>);</div>
+<div class="line"><span class="lineno">   46</span>    }</div>
+<div class="line"><span class="lineno">   47</span>  }</div>
 <div class="line"><span class="lineno">   48</span> </div>
-<div class="line"><span class="lineno">   49</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>-&gt;con2matter(reactantFilename))) {</div>
-<div class="line"><span class="lineno">   50</span>    <a class="code hl_define" href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a>(<span class="stringliteral">&quot;Failed to load {}&quot;</span>, reactantFilename);</div>
-<div class="line"><span class="lineno">   51</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed to load &quot;</span> + reactantFilename);</div>
-<div class="line"><span class="lineno">   52</span>  }</div>
-<div class="line"><span class="lineno">   53</span> </div>
-<div class="line"><span class="lineno">   54</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> standaloneARTn = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;artn&quot;</span>;</div>
-<div class="line"><span class="lineno">   55</span> </div>
-<div class="line"><span class="lineno">   56</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> mode = AtomMatrix::Zero(<a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>-&gt;numberOfAtoms(), 3);</div>
-<div class="line"><span class="lineno">   57</span>  <span class="keywordflow">if</span> (!standaloneARTn &amp;&amp; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().displace_type ==</div>
-<div class="line"><span class="lineno">   58</span>                             <a class="code hl_variable" href="namespaceeonc_1_1EpiCenters.html#a3daeffdce455426b6819b083964fa53a">eonc::EpiCenters::DISP_LOAD</a>) {</div>
-<div class="line"><span class="lineno">   59</span>    <span class="comment">// Load displacement.con, or synthesize from pos.con + direction.dat (#79).</span></div>
-<div class="line"><span class="lineno">   60</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a5cdfb8c4450eaa8a9d66d6d2e5e9d67e">eonc::helpers::loadOrSynthesizeDisplacement</a>(</div>
-<div class="line"><span class="lineno">   61</span>            *<a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>, *<a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>, displacementFilename, modeFilename,</div>
-<div class="line"><span class="lineno">   62</span>            <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().displace_magnitude)) {</div>
-<div class="line"><span class="lineno">   63</span>      <a class="code hl_define" href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a>(<span class="stringliteral">&quot;Failed to load {} (and no usable {})&quot;</span>,</div>
-<div class="line"><span class="lineno">   64</span>                        displacementFilename, modeFilename);</div>
-<div class="line"><span class="lineno">   65</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;missing displacement.con and direction.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">   66</span>    }</div>
-<div class="line"><span class="lineno">   67</span>    <span class="keywordflow">if</span> (std::filesystem::exists(modeFilename)) {</div>
-<div class="line"><span class="lineno">   68</span>      mode = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a7e0f14f155e21cdf88411cef6a98c90f">eonc::helpers::loadMode</a>(modeFilename, <a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>-&gt;numberOfAtoms());</div>
-<div class="line"><span class="lineno">   69</span>    }</div>
-<div class="line"><span class="lineno">   70</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!standaloneARTn &amp;&amp; <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a2a110b853a8d95856f9e66dc9ef65dc1">eonc::helpers::applyClientDisplacement</a>(</div>
-<div class="line"><span class="lineno">   71</span>                                    *<a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>, *<a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, &amp;mode)) {</div>
-<div class="line"><span class="lineno">   72</span>    <span class="comment">// listed_atoms / random / last_atom / least_coordinated / not_fcc_hcp</span></div>
-<div class="line"><span class="lineno">   73</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">   74</span>    *<a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a> = *<a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>;</div>
-<div class="line"><span class="lineno">   75</span>  }</div>
-<div class="line"><span class="lineno">   76</span> </div>
-<div class="line"><span class="lineno">   77</span>  <span class="keywordflow">if</span> (standaloneARTn &amp;&amp; std::filesystem::exists(modeFilename)) {</div>
-<div class="line"><span class="lineno">   78</span>    mode = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a7e0f14f155e21cdf88411cef6a98c90f">eonc::helpers::loadMode</a>(modeFilename, <a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>-&gt;numberOfAtoms());</div>
+<div class="line"><span class="lineno">   49</span>  <a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   50</span>  <a class="code hl_variable" href="#aa77a99e2be44f56adde9b39b18c93f67">displacement</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   51</span>  <a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   52</span> </div>
+<div class="line"><span class="lineno">   53</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>-&gt;con2matter(reactantFilename))) {</div>
+<div class="line"><span class="lineno">   54</span>    <a class="code hl_define" href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a>(<span class="stringliteral">&quot;Failed to load {}&quot;</span>, reactantFilename);</div>
+<div class="line"><span class="lineno">   55</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed to load &quot;</span> + reactantFilename);</div>
+<div class="line"><span class="lineno">   56</span>  }</div>
+<div class="line"><span class="lineno">   57</span> </div>
+<div class="line"><span class="lineno">   58</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> standaloneARTn = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;artn&quot;</span>;</div>
+<div class="line"><span class="lineno">   59</span> </div>
+<div class="line"><span class="lineno">   60</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> mode = AtomMatrix::Zero(<a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>-&gt;numberOfAtoms(), 3);</div>
+<div class="line"><span class="lineno">   61</span>  <span class="keywordflow">if</span> (!standaloneARTn &amp;&amp; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().displace_type ==</div>
+<div class="line"><span class="lineno">   62</span>                             <a class="code hl_variable" href="namespaceeonc_1_1EpiCenters.html#a3daeffdce455426b6819b083964fa53a">eonc::EpiCenters::DISP_LOAD</a>) {</div>
+<div class="line"><span class="lineno">   63</span>    <span class="comment">// Load displacement.con, or synthesize from pos.con + direction.dat (#79).</span></div>
+<div class="line"><span class="lineno">   64</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a5cdfb8c4450eaa8a9d66d6d2e5e9d67e">eonc::helpers::loadOrSynthesizeDisplacement</a>(</div>
+<div class="line"><span class="lineno">   65</span>            *<a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>, *<a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>, displacementFilename, modeFilename,</div>
+<div class="line"><span class="lineno">   66</span>            <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().displace_magnitude)) {</div>
+<div class="line"><span class="lineno">   67</span>      <a class="code hl_define" href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a>(<span class="stringliteral">&quot;Failed to load {} (and no usable {})&quot;</span>,</div>
+<div class="line"><span class="lineno">   68</span>                        displacementFilename, modeFilename);</div>
+<div class="line"><span class="lineno">   69</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;missing displacement.con and direction.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">   70</span>    }</div>
+<div class="line"><span class="lineno">   71</span>    <span class="keywordflow">if</span> (std::filesystem::exists(modeFilename)) {</div>
+<div class="line"><span class="lineno">   72</span>      mode = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a7e0f14f155e21cdf88411cef6a98c90f">eonc::helpers::loadMode</a>(modeFilename, <a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>-&gt;numberOfAtoms());</div>
+<div class="line"><span class="lineno">   73</span>    }</div>
+<div class="line"><span class="lineno">   74</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!standaloneARTn &amp;&amp; <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a2a110b853a8d95856f9e66dc9ef65dc1">eonc::helpers::applyClientDisplacement</a>(</div>
+<div class="line"><span class="lineno">   75</span>                                    *<a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>, *<a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, &amp;mode)) {</div>
+<div class="line"><span class="lineno">   76</span>    <span class="comment">// listed_atoms / random / last_atom / least_coordinated / not_fcc_hcp</span></div>
+<div class="line"><span class="lineno">   77</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   78</span>    *<a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a> = *<a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>;</div>
 <div class="line"><span class="lineno">   79</span>  }</div>
 <div class="line"><span class="lineno">   80</span> </div>
-<div class="line"><span class="lineno">   81</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(<a class="code hl_function" href="#aff605973139028c49bae405543c56dec">runPrepared</a>(mode));</div>
-<div class="line"><span class="lineno">   82</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a1734aa63a9af7868ef4c05b33a9e00f7">returnFiles</a>;</div>
-<div class="line"><span class="lineno">   83</span>}</div>
+<div class="line"><span class="lineno">   81</span>  <span class="keywordflow">if</span> (standaloneARTn &amp;&amp; std::filesystem::exists(modeFilename)) {</div>
+<div class="line"><span class="lineno">   82</span>    mode = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a7e0f14f155e21cdf88411cef6a98c90f">eonc::helpers::loadMode</a>(modeFilename, <a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>-&gt;numberOfAtoms());</div>
+<div class="line"><span class="lineno">   83</span>  }</div>
+<div class="line"><span class="lineno">   84</span> </div>
+<div class="line"><span class="lineno">   85</span>  <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(<a class="code hl_function" href="#aff605973139028c49bae405543c56dec">runPrepared</a>(mode));</div>
+<div class="line"><span class="lineno">   86</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a1734aa63a9af7868ef4c05b33a9e00f7">returnFiles</a>;</div>
+<div class="line"><span class="lineno">   87</span>}</div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
 <div class="ttc" id="aEonLogger_8h_html_afe4077bbe89c5bc6e818b057a692e64a"><div class="ttname"><a href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a></div><div class="ttdeci">#define EONC_LOG_CRITICAL(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00334">EonLogger.h:334</a></div></div>
 <div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_a1734aa63a9af7868ef4c05b33a9e00f7"><div class="ttname"><a href="#a1734aa63a9af7868ef4c05b33a9e00f7">eonc::SaddleSearchJob::returnFiles</a></div><div class="ttdeci">std::vector&lt; std::string &gt; returnFiles</div><div class="ttdoc">Container for the results of the run.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8h_source.html#l00074">SaddleSearchJob.h:74</a></div></div>
 <div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_a3a33a90398d82ea43bfd9441a5f8a1da"><div class="ttname"><a href="#a3a33a90398d82ea43bfd9441a5f8a1da">eonc::SaddleSearchJob::saddle</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; saddle</div><div class="ttdoc">Configuration used during the saddle point search.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8h_source.html#l00081">SaddleSearchJob.h:81</a></div></div>
 <div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_aa77a99e2be44f56adde9b39b18c93f67"><div class="ttname"><a href="#aa77a99e2be44f56adde9b39b18c93f67">eonc::SaddleSearchJob::displacement</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; displacement</div><div class="ttdoc">Configuration used during the saddle point search.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8h_source.html#l00083">SaddleSearchJob.h:83</a></div></div>
 <div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_af6514fdabcf77def780bba06003258d6"><div class="ttname"><a href="#af6514fdabcf77def780bba06003258d6">eonc::SaddleSearchJob::initial</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; initial</div><div class="ttdoc">Initial configuration.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8h_source.html#l00079">SaddleSearchJob.h:79</a></div></div>
-<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_aff605973139028c49bae405543c56dec"><div class="ttname"><a href="#aff605973139028c49bae405543c56dec">eonc::SaddleSearchJob::runPrepared</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; runPrepared(const AtomMatrix &amp;mode)</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8cpp_source.html#l00103">SaddleSearchJob.cpp:103</a></div></div>
+<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_aff605973139028c49bae405543c56dec"><div class="ttname"><a href="#aff605973139028c49bae405543c56dec">eonc::SaddleSearchJob::runPrepared</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; runPrepared(const AtomMatrix &amp;mode)</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8cpp_source.html#l00107">SaddleSearchJob.cpp:107</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1EpiCenters_html_a3daeffdce455426b6819b083964fa53a"><div class="ttname"><a href="namespaceeonc_1_1EpiCenters.html#a3daeffdce455426b6819b083964fa53a">eonc::EpiCenters::DISP_LOAD</a></div><div class="ttdeci">const char DISP_LOAD[]</div><div class="ttdef"><b>Definition</b> <a href="EpiCenters_8h_source.html#l00020">EpiCenters.h:20</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_html_a2a110b853a8d95856f9e66dc9ef65dc1"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a2a110b853a8d95856f9e66dc9ef65dc1">eonc::helpers::applyClientDisplacement</a></div><div class="ttdeci">bool applyClientDisplacement(Matter &amp;target, const Matter &amp;initial, const Parameters &amp;params, AtomMatrix *modeOut)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00247">HelperFunctions.cpp:247</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_html_a561b68f975ecb734266063b428d6f2f2"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a561b68f975ecb734266063b428d6f2f2">eonc::helpers::getRelevantFile</a></div><div class="ttdeci">std::string getRelevantFile(std::string filename)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00123">HelperFunctions.cpp:123</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_html_a5cdfb8c4450eaa8a9d66d6d2e5e9d67e"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a5cdfb8c4450eaa8a9d66d6d2e5e9d67e">eonc::helpers::loadOrSynthesizeDisplacement</a></div><div class="ttdeci">bool loadOrSynthesizeDisplacement(Matter &amp;target, const Matter &amp;initial, const std::string &amp;displacementPath, const std::string &amp;modePath, double scale)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00193">HelperFunctions.cpp:193</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_html_a7e0f14f155e21cdf88411cef6a98c90f"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a7e0f14f155e21cdf88411cef6a98c90f">eonc::helpers::loadMode</a></div><div class="ttdeci">AtomMatrix loadMode(FILE *modeFile, int nAtoms)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00163">HelperFunctions.cpp:163</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_af66b2723d892a4095754f9b0354b4f78"><div class="ttname"><a href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a></div><div class="ttdeci">constexpr bool io_ok(IoStatus s) noexcept</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00038">ConFileIO.h:38</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_af67078bb2eaad1ea16ddac096eb049a6"><div class="ttname"><a href="namespaceeonc.html#af67078bb2eaad1ea16ddac096eb049a6">eonc::requirePrfoRefine</a></div><div class="ttdeci">void requirePrfoRefine(const Parameters &amp;params)</div><div class="ttdoc">Does nothing unless [Saddle Search] prfo_refine is on.</div><div class="ttdef"><b>Definition</b> <a href="PrfoRefine_8cpp_source.html#l00234">PrfoRefine.cpp:234</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -656,23 +660,23 @@ Additional Inherited Members</h2></td></tr>
 
 <p>In-process entry: seed reactant <a class="el" href="classeonc_1_1Matter.html">Matter</a>, no pos.con. </p>
 
-<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8cpp_source.html#l00086">86</a> of file <a class="el" href="SaddleSearchJob_8cpp_source.html">SaddleSearchJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   86</span>                                                         {</div>
-<div class="line"><span class="lineno">   87</span>  <span class="keywordflow">if</span> (!seed) {</div>
-<div class="line"><span class="lineno">   88</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;SaddleSearchJob::runFromMatter: null Matter&quot;</span>);</div>
-<div class="line"><span class="lineno">   89</span>  }</div>
-<div class="line"><span class="lineno">   90</span>  <a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a> = seed;</div>
-<div class="line"><span class="lineno">   91</span>  <a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>-&gt;setPotential(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>);</div>
-<div class="line"><span class="lineno">   92</span>  <a class="code hl_variable" href="#aa77a99e2be44f56adde9b39b18c93f67">displacement</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">   93</span>  <a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">   94</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> mode = AtomMatrix::Zero(<a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>-&gt;numberOfAtoms(), 3);</div>
-<div class="line"><span class="lineno">   95</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a2a110b853a8d95856f9e66dc9ef65dc1">eonc::helpers::applyClientDisplacement</a>(*<a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>, *<a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>,</div>
-<div class="line"><span class="lineno">   96</span>                                              &amp;mode)) {</div>
-<div class="line"><span class="lineno">   97</span>    *<a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a> = *<a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>;</div>
-<div class="line"><span class="lineno">   98</span>  }</div>
-<div class="line"><span class="lineno">   99</span>  *<a class="code hl_variable" href="#aa77a99e2be44f56adde9b39b18c93f67">displacement</a> = *<a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>;</div>
-<div class="line"><span class="lineno">  100</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#aff605973139028c49bae405543c56dec">runPrepared</a>(mode);</div>
-<div class="line"><span class="lineno">  101</span>}</div>
+<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8cpp_source.html#l00090">90</a> of file <a class="el" href="SaddleSearchJob_8cpp_source.html">SaddleSearchJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   90</span>                                                         {</div>
+<div class="line"><span class="lineno">   91</span>  <span class="keywordflow">if</span> (!seed) {</div>
+<div class="line"><span class="lineno">   92</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;SaddleSearchJob::runFromMatter: null Matter&quot;</span>);</div>
+<div class="line"><span class="lineno">   93</span>  }</div>
+<div class="line"><span class="lineno">   94</span>  <a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a> = seed;</div>
+<div class="line"><span class="lineno">   95</span>  <a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>-&gt;setPotential(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>);</div>
+<div class="line"><span class="lineno">   96</span>  <a class="code hl_variable" href="#aa77a99e2be44f56adde9b39b18c93f67">displacement</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   97</span>  <a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   98</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> mode = AtomMatrix::Zero(<a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>-&gt;numberOfAtoms(), 3);</div>
+<div class="line"><span class="lineno">   99</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a2a110b853a8d95856f9e66dc9ef65dc1">eonc::helpers::applyClientDisplacement</a>(*<a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>, *<a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>,</div>
+<div class="line"><span class="lineno">  100</span>                                              &amp;mode)) {</div>
+<div class="line"><span class="lineno">  101</span>    *<a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a> = *<a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>;</div>
+<div class="line"><span class="lineno">  102</span>  }</div>
+<div class="line"><span class="lineno">  103</span>  *<a class="code hl_variable" href="#aa77a99e2be44f56adde9b39b18c93f67">displacement</a> = *<a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>;</div>
+<div class="line"><span class="lineno">  104</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#aff605973139028c49bae405543c56dec">runPrepared</a>(mode);</div>
+<div class="line"><span class="lineno">  105</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -699,45 +703,45 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8cpp_source.html#l00103">103</a> of file <a class="el" href="SaddleSearchJob_8cpp_source.html">SaddleSearchJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  103</span>                                                                         {</div>
-<div class="line"><span class="lineno">  104</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> useStandaloneARTn =</div>
-<div class="line"><span class="lineno">  105</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;artn&quot;</span>;</div>
-<div class="line"><span class="lineno">  106</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> useARTnAsMinMode =</div>
-<div class="line"><span class="lineno">  107</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span> &amp;&amp;</div>
-<div class="line"><span class="lineno">  108</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().minmode_method == <span class="stringliteral">&quot;artn&quot;</span>;</div>
-<div class="line"><span class="lineno">  109</span> </div>
-<div class="line"><span class="lineno">  110</span><span class="preprocessor">#ifdef WITH_ARTN</span></div>
-<div class="line"><span class="lineno">  111</span>  <span class="keywordflow">if</span> (useStandaloneARTn || useARTnAsMinMode) {</div>
-<div class="line"><span class="lineno">  112</span>    <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a> =</div>
-<div class="line"><span class="lineno">  113</span>        std::make_unique&lt;ARTnSaddleSearch&gt;(<a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, mode, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  114</span>  } <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  115</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  116</span>  {</div>
-<div class="line"><span class="lineno">  117</span><span class="preprocessor">#ifndef WITH_ARTN</span></div>
-<div class="line"><span class="lineno">  118</span>    <span class="keywordflow">if</span> (useStandaloneARTn) {</div>
-<div class="line"><span class="lineno">  119</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  120</span>          <span class="stringliteral">&quot;saddle_search.method=artn requires a build with ARTn support&quot;</span>);</div>
-<div class="line"><span class="lineno">  121</span>    }</div>
-<div class="line"><span class="lineno">  122</span>    <span class="keywordflow">if</span> (useARTnAsMinMode) {</div>
+<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8cpp_source.html#l00107">107</a> of file <a class="el" href="SaddleSearchJob_8cpp_source.html">SaddleSearchJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  107</span>                                                                         {</div>
+<div class="line"><span class="lineno">  108</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> useStandaloneARTn =</div>
+<div class="line"><span class="lineno">  109</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;artn&quot;</span>;</div>
+<div class="line"><span class="lineno">  110</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> useARTnAsMinMode =</div>
+<div class="line"><span class="lineno">  111</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span> &amp;&amp;</div>
+<div class="line"><span class="lineno">  112</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().minmode_method == <span class="stringliteral">&quot;artn&quot;</span>;</div>
+<div class="line"><span class="lineno">  113</span> </div>
+<div class="line"><span class="lineno">  114</span><span class="preprocessor">#ifdef WITH_ARTN</span></div>
+<div class="line"><span class="lineno">  115</span>  <span class="keywordflow">if</span> (useStandaloneARTn || useARTnAsMinMode) {</div>
+<div class="line"><span class="lineno">  116</span>    <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a> =</div>
+<div class="line"><span class="lineno">  117</span>        std::make_unique&lt;ARTnSaddleSearch&gt;(<a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, mode, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  118</span>  } <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  119</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  120</span>  {</div>
+<div class="line"><span class="lineno">  121</span><span class="preprocessor">#ifndef WITH_ARTN</span></div>
+<div class="line"><span class="lineno">  122</span>    <span class="keywordflow">if</span> (useStandaloneARTn) {</div>
 <div class="line"><span class="lineno">  123</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  124</span>          <span class="stringliteral">&quot;saddle_search.minmode_method=artn requires a build with ARTn &quot;</span></div>
-<div class="line"><span class="lineno">  125</span>          <span class="stringliteral">&quot;support&quot;</span>);</div>
-<div class="line"><span class="lineno">  126</span>    }</div>
-<div class="line"><span class="lineno">  127</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  128</span>    <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a> = std::make_unique&lt;MinModeSaddleSearch&gt;(</div>
-<div class="line"><span class="lineno">  129</span>        <a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>, mode, <a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>-&gt;getPotentialEnergy(), <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>);</div>
-<div class="line"><span class="lineno">  130</span>  }</div>
-<div class="line"><span class="lineno">  131</span> </div>
-<div class="line"><span class="lineno">  132</span>  <span class="keywordtype">int</span> status = <a class="code hl_function" href="#a65cce06de72f1bcc9f029abffb9d0f78">doSaddleSearch</a>();</div>
-<div class="line"><span class="lineno">  133</span>  <a class="code hl_function" href="#aec3bca3d7a1bce93299b81b690f4fe55">printEndState</a>(status);</div>
-<div class="line"><span class="lineno">  134</span>  <a class="code hl_function" href="#aaf0ab39637ebfb3bfa33e45d002eabd1">saveData</a>(status);</div>
+<div class="line"><span class="lineno">  124</span>          <span class="stringliteral">&quot;saddle_search.method=artn requires a build with ARTn support&quot;</span>);</div>
+<div class="line"><span class="lineno">  125</span>    }</div>
+<div class="line"><span class="lineno">  126</span>    <span class="keywordflow">if</span> (useARTnAsMinMode) {</div>
+<div class="line"><span class="lineno">  127</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  128</span>          <span class="stringliteral">&quot;saddle_search.minmode_method=artn requires a build with ARTn &quot;</span></div>
+<div class="line"><span class="lineno">  129</span>          <span class="stringliteral">&quot;support&quot;</span>);</div>
+<div class="line"><span class="lineno">  130</span>    }</div>
+<div class="line"><span class="lineno">  131</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  132</span>    <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a> = std::make_unique&lt;MinModeSaddleSearch&gt;(</div>
+<div class="line"><span class="lineno">  133</span>        <a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>, mode, <a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>-&gt;getPotentialEnergy(), <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>);</div>
+<div class="line"><span class="lineno">  134</span>  }</div>
 <div class="line"><span class="lineno">  135</span> </div>
-<div class="line"><span class="lineno">  136</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>;</div>
-<div class="line"><span class="lineno">  137</span>}</div>
-<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_a65cce06de72f1bcc9f029abffb9d0f78"><div class="ttname"><a href="#a65cce06de72f1bcc9f029abffb9d0f78">eonc::SaddleSearchJob::doSaddleSearch</a></div><div class="ttdeci">int doSaddleSearch()</div><div class="ttdoc">Runs the correct saddle search; also checks if the run was successful.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8cpp_source.html#l00139">SaddleSearchJob.cpp:139</a></div></div>
-<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_aaf0ab39637ebfb3bfa33e45d002eabd1"><div class="ttname"><a href="#aaf0ab39637ebfb3bfa33e45d002eabd1">eonc::SaddleSearchJob::saveData</a></div><div class="ttdeci">void saveData(int status)</div><div class="ttdoc">Writes the results from the run to file.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8cpp_source.html#l00172">SaddleSearchJob.cpp:172</a></div></div>
-<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_aec3bca3d7a1bce93299b81b690f4fe55"><div class="ttname"><a href="#aec3bca3d7a1bce93299b81b690f4fe55">eonc::SaddleSearchJob::printEndState</a></div><div class="ttdeci">void printEndState(int status)</div><div class="ttdoc">Logs the run status and makes sure the run was successful.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8cpp_source.html#l00211">SaddleSearchJob.cpp:211</a></div></div>
+<div class="line"><span class="lineno">  136</span>  <span class="keywordtype">int</span> status = <a class="code hl_function" href="#a65cce06de72f1bcc9f029abffb9d0f78">doSaddleSearch</a>();</div>
+<div class="line"><span class="lineno">  137</span>  <a class="code hl_function" href="#aec3bca3d7a1bce93299b81b690f4fe55">printEndState</a>(status);</div>
+<div class="line"><span class="lineno">  138</span>  <a class="code hl_function" href="#aaf0ab39637ebfb3bfa33e45d002eabd1">saveData</a>(status);</div>
+<div class="line"><span class="lineno">  139</span> </div>
+<div class="line"><span class="lineno">  140</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>;</div>
+<div class="line"><span class="lineno">  141</span>}</div>
+<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_a65cce06de72f1bcc9f029abffb9d0f78"><div class="ttname"><a href="#a65cce06de72f1bcc9f029abffb9d0f78">eonc::SaddleSearchJob::doSaddleSearch</a></div><div class="ttdeci">int doSaddleSearch()</div><div class="ttdoc">Runs the correct saddle search; also checks if the run was successful.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8cpp_source.html#l00143">SaddleSearchJob.cpp:143</a></div></div>
+<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_aaf0ab39637ebfb3bfa33e45d002eabd1"><div class="ttname"><a href="#aaf0ab39637ebfb3bfa33e45d002eabd1">eonc::SaddleSearchJob::saveData</a></div><div class="ttdeci">void saveData(int status)</div><div class="ttdoc">Writes the results from the run to file.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8cpp_source.html#l00176">SaddleSearchJob.cpp:176</a></div></div>
+<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_aec3bca3d7a1bce93299b81b690f4fe55"><div class="ttname"><a href="#aec3bca3d7a1bce93299b81b690f4fe55">eonc::SaddleSearchJob::printEndState</a></div><div class="ttdeci">void printEndState(int status)</div><div class="ttdoc">Logs the run status and makes sure the run was successful.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8cpp_source.html#l00215">SaddleSearchJob.cpp:215</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -766,45 +770,45 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Writes the results from the run to file. </p>
 
-<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8cpp_source.html#l00172">172</a> of file <a class="el" href="SaddleSearchJob_8cpp_source.html">SaddleSearchJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  172</span>                                         {</div>
-<div class="line"><span class="lineno">  173</span>  std::string resultsFilename(<span class="stringliteral">&quot;results.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">  174</span>  <a class="code hl_variable" href="#a1734aa63a9af7868ef4c05b33a9e00f7">returnFiles</a>.push_back(resultsFilename);</div>
-<div class="line"><span class="lineno">  175</span> </div>
-<div class="line"><span class="lineno">  176</span>  std::ofstream out(resultsFilename, std::ios::binary);</div>
-<div class="line"><span class="lineno">  177</span>  <span class="keywordflow">if</span> (out) {</div>
-<div class="line"><span class="lineno">  178</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} termination_reason\n&quot;</span>, status);</div>
-<div class="line"><span class="lineno">  179</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} termination_reason_text\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  180</span>                       <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a>-&gt;describeStatus(status));</div>
-<div class="line"><span class="lineno">  181</span>    out &lt;&lt; <span class="stringliteral">&quot;saddle_search job_type\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  182</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} random_seed\n&quot;</span>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().randomSeed);</div>
-<div class="line"><span class="lineno">  183</span>    out &lt;&lt; std::format(</div>
-<div class="line"><span class="lineno">  184</span>        <span class="stringliteral">&quot;{} potential_type\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  185</span>        magic_enum::enum_name&lt;PotType&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options().potential));</div>
-<div class="line"><span class="lineno">  186</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} total_force_calls\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  187</span>                       this-&gt;<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;forceCallCounter.load() + <a class="code hl_variable" href="#a2d3d31f04564d831a35c668f746add24">fCallsImages</a>);</div>
-<div class="line"><span class="lineno">  188</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} force_calls_saddle\n&quot;</span>, <a class="code hl_variable" href="#a75179d05d423a1054898e8029a92ea43">fCallsSaddle</a>);</div>
-<div class="line"><span class="lineno">  189</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} iterations\n&quot;</span>, <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a>-&gt;getIterationCount());</div>
-<div class="line"><span class="lineno">  190</span>    <span class="keywordflow">if</span> (status != <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a2a928bdf6876c8070daddb67f01b0cf7">MinModeSaddleSearch::STATUS_POTENTIAL_FAILED</a>) {</div>
-<div class="line"><span class="lineno">  191</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} potential_energy_saddle\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  192</span>                         <a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>-&gt;getPotentialEnergy());</div>
-<div class="line"><span class="lineno">  193</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} final_eigenvalue\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  194</span>                         <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a>-&gt;getEigenvalue());</div>
-<div class="line"><span class="lineno">  195</span>    }</div>
-<div class="line"><span class="lineno">  196</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} potential_energy_reactant\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  197</span>                       <a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>-&gt;getPotentialEnergy());</div>
-<div class="line"><span class="lineno">  198</span>  }</div>
-<div class="line"><span class="lineno">  199</span> </div>
-<div class="line"><span class="lineno">  200</span>  std::string modeFilename(<span class="stringliteral">&quot;mode.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">  201</span>  <a class="code hl_variable" href="#a1734aa63a9af7868ef4c05b33a9e00f7">returnFiles</a>.push_back(modeFilename);</div>
-<div class="line"><span class="lineno">  202</span>  <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a92f5969aa3d8873415b628ea22b735fa">eonc::helpers::saveMode</a>(modeFilename, <a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>, <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a>-&gt;getEigenvector());</div>
+<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8cpp_source.html#l00176">176</a> of file <a class="el" href="SaddleSearchJob_8cpp_source.html">SaddleSearchJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  176</span>                                         {</div>
+<div class="line"><span class="lineno">  177</span>  std::string resultsFilename(<span class="stringliteral">&quot;results.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  178</span>  <a class="code hl_variable" href="#a1734aa63a9af7868ef4c05b33a9e00f7">returnFiles</a>.push_back(resultsFilename);</div>
+<div class="line"><span class="lineno">  179</span> </div>
+<div class="line"><span class="lineno">  180</span>  std::ofstream out(resultsFilename, std::ios::binary);</div>
+<div class="line"><span class="lineno">  181</span>  <span class="keywordflow">if</span> (out) {</div>
+<div class="line"><span class="lineno">  182</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} termination_reason\n&quot;</span>, status);</div>
+<div class="line"><span class="lineno">  183</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} termination_reason_text\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  184</span>                       <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a>-&gt;describeStatus(status));</div>
+<div class="line"><span class="lineno">  185</span>    out &lt;&lt; <span class="stringliteral">&quot;saddle_search job_type\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  186</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} random_seed\n&quot;</span>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().randomSeed);</div>
+<div class="line"><span class="lineno">  187</span>    out &lt;&lt; std::format(</div>
+<div class="line"><span class="lineno">  188</span>        <span class="stringliteral">&quot;{} potential_type\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  189</span>        magic_enum::enum_name&lt;PotType&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options().potential));</div>
+<div class="line"><span class="lineno">  190</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} total_force_calls\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  191</span>                       this-&gt;<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;forceCallCounter.load() + <a class="code hl_variable" href="#a2d3d31f04564d831a35c668f746add24">fCallsImages</a>);</div>
+<div class="line"><span class="lineno">  192</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} force_calls_saddle\n&quot;</span>, <a class="code hl_variable" href="#a75179d05d423a1054898e8029a92ea43">fCallsSaddle</a>);</div>
+<div class="line"><span class="lineno">  193</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} iterations\n&quot;</span>, <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a>-&gt;getIterationCount());</div>
+<div class="line"><span class="lineno">  194</span>    <span class="keywordflow">if</span> (status != <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a2a928bdf6876c8070daddb67f01b0cf7">MinModeSaddleSearch::STATUS_POTENTIAL_FAILED</a>) {</div>
+<div class="line"><span class="lineno">  195</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} potential_energy_saddle\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  196</span>                         <a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>-&gt;getPotentialEnergy());</div>
+<div class="line"><span class="lineno">  197</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} final_eigenvalue\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  198</span>                         <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a>-&gt;getEigenvalue());</div>
+<div class="line"><span class="lineno">  199</span>    }</div>
+<div class="line"><span class="lineno">  200</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} potential_energy_reactant\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  201</span>                       <a class="code hl_variable" href="#af6514fdabcf77def780bba06003258d6">initial</a>-&gt;getPotentialEnergy());</div>
+<div class="line"><span class="lineno">  202</span>  }</div>
 <div class="line"><span class="lineno">  203</span> </div>
-<div class="line"><span class="lineno">  204</span>  std::string saddleFilename(<span class="stringliteral">&quot;saddle.con&quot;</span>);</div>
-<div class="line"><span class="lineno">  205</span>  <a class="code hl_variable" href="#a1734aa63a9af7868ef4c05b33a9e00f7">returnFiles</a>.push_back(saddleFilename);</div>
-<div class="line"><span class="lineno">  206</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>-&gt;matter2con(saddleFilename))) {</div>
-<div class="line"><span class="lineno">  207</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a5a2729f713e551950ed663702834a2d0">log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, saddleFilename);</div>
-<div class="line"><span class="lineno">  208</span>  }</div>
-<div class="line"><span class="lineno">  209</span>}</div>
+<div class="line"><span class="lineno">  204</span>  std::string modeFilename(<span class="stringliteral">&quot;mode.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  205</span>  <a class="code hl_variable" href="#a1734aa63a9af7868ef4c05b33a9e00f7">returnFiles</a>.push_back(modeFilename);</div>
+<div class="line"><span class="lineno">  206</span>  <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a92f5969aa3d8873415b628ea22b735fa">eonc::helpers::saveMode</a>(modeFilename, <a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>, <a class="code hl_variable" href="#a161f26542b381ae7cf03302dedfaa84f">saddleSearch</a>-&gt;getEigenvector());</div>
+<div class="line"><span class="lineno">  207</span> </div>
+<div class="line"><span class="lineno">  208</span>  std::string saddleFilename(<span class="stringliteral">&quot;saddle.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  209</span>  <a class="code hl_variable" href="#a1734aa63a9af7868ef4c05b33a9e00f7">returnFiles</a>.push_back(saddleFilename);</div>
+<div class="line"><span class="lineno">  210</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a3a33a90398d82ea43bfd9441a5f8a1da">saddle</a>-&gt;matter2con(saddleFilename))) {</div>
+<div class="line"><span class="lineno">  211</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a5a2729f713e551950ed663702834a2d0">log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, saddleFilename);</div>
+<div class="line"><span class="lineno">  212</span>  }</div>
+<div class="line"><span class="lineno">  213</span>}</div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_html_a92f5969aa3d8873415b628ea22b735fa"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a92f5969aa3d8873415b628ea22b735fa">eonc::helpers::saveMode</a></div><div class="ttdeci">void saveMode(FILE *modeFile, std::shared_ptr&lt; Matter &gt; matter, AtomMatrix mode)</div><div class="ttdoc">Write a mode; constrained axes are emitted as 0.</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00306">HelperFunctions.cpp:306</a></div></div>
 </div><!-- fragment -->
 </div>

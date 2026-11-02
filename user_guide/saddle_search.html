@@ -730,8 +730,8 @@ the initial push when present.</p></li>
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">min_mode_method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.15)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'dimer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lanczos'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'davidson'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gprdimer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'artn'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'xtsci'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dimer'</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.min_mode_method" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Options:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">dimer</span></code>: Use the dimer min-mode method from <span id="id1">Henkelman and Jónsson [<a class="reference internal" href="#id35" title="Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. The Journal of Chemical Physics, 111(15):7010–7022, October 1999. doi:10.1063/1.480097.">SS_HJonsson99</a>]</span></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">lanczos</span></code>: Use the Lanczos min-mode method from <span id="id2">Malek and Mousseau [<a class="reference internal" href="#id61" title="Rachid Malek and Normand Mousseau. Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique. Physical Review E, 62(6):7723–7728, December 2000. doi:10.1103/PhysRevE.62.7723.">SS_MM00</a>]</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dimer</span></code>: Use the dimer min-mode method from <span id="id1">Henkelman and Jónsson [<a class="reference internal" href="#id36" title="Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. The Journal of Chemical Physics, 111(15):7010–7022, October 1999. doi:10.1063/1.480097.">SS_HJonsson99</a>]</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lanczos</span></code>: Use the Lanczos min-mode method from <span id="id2">Malek and Mousseau [<a class="reference internal" href="#id62" title="Rachid Malek and Normand Mousseau. Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique. Physical Review E, 62(6):7723–7728, December 2000. doi:10.1103/PhysRevE.62.7723.">SS_MM00</a>]</span></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">davidson</span></code>: Davidson Ritz subspace with FD Hessian-vector products (alternative to dimer rotation).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">gprdimer</span></code>: GP dimer. The Linux default is <code class="docutils literal notranslate"><span class="pre">-Dwith_gprd=auto</span></code>, which links <code class="docutils literal notranslate"><span class="pre">subprojects/gpr_optim</span></code> when that subproject configures. A failed fetch leaves the dimer off.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">artn</span></code>: Use ARTn as a drop-in for min-mode search. eOn’s displacement
@@ -947,7 +947,7 @@ seeds the initial mode; ARTn takes over from the displaced structure.</p></li>
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">bowl_breakout</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.bowl_breakout" title="Link to this definition">¶</a></dt>
 <dd><p>Determines <a class="reference internal" href="#eon.schema.SaddleSearchConfig.bowl_active_atoms" title="eon.schema.SaddleSearchConfig.bowl_active_atoms"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">bowl_active_atoms</span></code></a> that are subject to the largest forces.
 To activate, <a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive" title="eon.schema.SaddleSearchConfig.confine_positive"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">confine_positive</span></code></a> must also be true. Method of
-<span id="id3">Pedersen and Luiser [<a class="reference internal" href="#id72" title="Andreas Pedersen and Mathieu Luiser. Bowl breakout: Escaping the positive region when searching for saddle points. The Journal of Chemical Physics, 141(2):024109, July 2014. doi:10.1063/1.4885852.">SS_PL14</a>]</span>.</p>
+<span id="id3">Pedersen and Luiser [<a class="reference internal" href="#id73" title="Andreas Pedersen and Mathieu Luiser. Bowl breakout: Escaping the positive region when searching for saddle points. The Journal of Chemical Physics, 141(2):024109, July 2014. doi:10.1063/1.4885852.">SS_PL14</a>]</span>.</p>
 <p>When activated, the search within positive regions of PES is confined to a subset of atoms.</p>
 </dd></dl>
 
@@ -1059,22 +1059,25 @@ minimizes to the final state.</p></li>
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prfo_refine</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.prfo_refine" title="Link to this definition">¶</a></dt>
 <dd><p>Off by default.
 It continues the dimer and climbing image searches of eOn
-(<span id="id4">Goswami <em>et al.</em> [<a class="reference internal" href="#id103" title="Rohit Goswami, Sam Chill, Rye Terrell, Graeme Henkelman, Matthew Welborn, Liang Zhang, Andreas Pedersen, t-brink, Erik Edelmann, Jean Claude, Alejandro, Sung Hoon Jung, Seyed Alireza Ghasemi, chemist29, satishskamath, Maxim, Tobias Dijkhuis, and via9a. TheochemUI/eOn: v3.6.0. October 2026. doi:10.5281/zenodo.23166734.">SS_GCT+26</a>]</span>,
-<span id="id5">Goswami <em>et al.</em> [<a class="reference internal" href="#id29" title="Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Pena-Torres, and Hannes Jónsson. Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions. Journal of Chemical Theory and Computation, July 2025. doi:10.1021/acs.jctc.5c00866.">SS_GMK+25</a>]</span>,
-<span id="id6">Goswami <em>et al.</em> [<a class="reference internal" href="#id31" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">SS_GGJonsson26</a>]</span>).
+(<span id="id4">Goswami <em>et al.</em> [<a class="reference internal" href="#id104" title="Rohit Goswami, Sam Chill, Rye Terrell, Graeme Henkelman, Matthew Welborn, Liang Zhang, Andreas Pedersen, t-brink, Erik Edelmann, Jean Claude, Alejandro, Sung Hoon Jung, Seyed Alireza Ghasemi, chemist29, satishskamath, Maxim, Tobias Dijkhuis, and via9a. TheochemUI/eOn: v3.6.0. October 2026. doi:10.5281/zenodo.23166734.">SS_GCT+26</a>]</span>,
+<span id="id5">Goswami <em>et al.</em> [<a class="reference internal" href="#id30" title="Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Pena-Torres, and Hannes Jónsson. Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions. Journal of Chemical Theory and Computation, 21(16):7935–7943, July 2025. doi:10.1021/acs.jctc.5c00866.">SS_GMK+25</a>]</span>,
+<span id="id6">Goswami <em>et al.</em> [<a class="reference internal" href="#id32" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">SS_GGJonsson26</a>]</span>).
 After a min-mode search ends with status good and a negative
 curvature, the saddle geometry, the lowest mode and its curvature go
 to the rgsaddle Sella order-1 session.
 That session runs partitioned rational function optimization (P-RFO)
-in a trust region (<span id="id7">Baker [<a class="reference internal" href="#id104" title="Jon Baker. An algorithm for the location of transition states. Journal of Computational Chemistry, 7(4):385–395, August 1986. doi:10.1002/jcc.540070402.">SS_Bak86</a>]</span>,
-<span id="id8">Hermes <em>et al.</em> [<a class="reference internal" href="#id105" title="Eric D. Hermes, Khachik Sargsyan, Habib N. Najm, and Judit Zádor. Sella, an open-source automation-friendly molecular saddle point optimizer. Journal of Chemical Theory and Computation, 18(11):6974–6988, 2022. doi:10.1021/acs.jctc.2c00395.">SS_HSNZador22</a>]</span>) until the
+in a trust region (<span id="id7">Banerjee <em>et al.</em> [<a class="reference internal" href="#id107" title="Ajit Banerjee, Noah Adams, Jack Simons, and Ron Shepard. Search for stationary points on surfaces. The Journal of Physical Chemistry, 89(1):52–57, January 1985. doi:10.1021/j100247a015.">SS_BASS85</a>]</span>,
+<span id="id8">Baker [<a class="reference internal" href="#id105" title="Jon Baker. An algorithm for the location of transition states. Journal of Computational Chemistry, 7(4):385–395, August 1986. doi:10.1002/jcc.540070402.">SS_Bak86</a>]</span>,
+<span id="id9">Hermes <em>et al.</em> [<a class="reference internal" href="#id106" title="Eric D. Hermes, Khachik Sargsyan, Habib N. Najm, and Judit Zádor. Sella, an open-source automation-friendly molecular saddle point optimizer. Journal of Chemical Theory and Computation, 18(11):6974–6988, 2022. doi:10.1021/acs.jctc.2c00395.">SS_HSNZador22</a>]</span>) until the
 max-atom force is below <a class="reference internal" href="#eon.schema.SaddleSearchConfig.prfo_refine_force" title="eon.schema.SaddleSearchConfig.prfo_refine_force"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">prfo_refine_force</span></code></a>.
 The min mode is then estimated once more at the refined point.
 A nudged elastic band (NEB) job with a climbing image reads the same
 keys.
 It refines a copy of the climbing image along its tangent and writes
 <code class="docutils literal notranslate"><span class="pre">sp_refined.con</span></code>.
-Needs eOn built with <code class="docutils literal notranslate"><span class="pre">-Dwith_rgsaddle=true</span></code>.</p>
+Needs eOn built with <code class="docutils literal notranslate"><span class="pre">-Dwith_rgsaddle=true</span></code>.
+A client that cannot refine refuses the job before its first force
+call.</p>
 <p>Refine a converged saddle with partitioned rational function optimization (P-RFO).</p>
 </dd></dl>
 
@@ -1123,8 +1126,8 @@ structured JSON metadata in the second CON header line via <code class="docutils
 <h2>Refining a converged saddle<a class="headerlink" href="#refining-a-converged-saddle" title="Link to this heading">¶</a></h2>
 <p>This section covers partitioned rational function optimization (P-RFO) refinement.
 It takes a saddle from a dimer or Lanczos search in eOn and lowers its max-atom force further.
-The searches it continues are those of <span id="id1">Goswami <em>et al.</em> [<a class="reference internal" href="#id103" title="Rohit Goswami, Sam Chill, Rye Terrell, Graeme Henkelman, Matthew Welborn, Liang Zhang, Andreas Pedersen, t-brink, Erik Edelmann, Jean Claude, Alejandro, Sung Hoon Jung, Seyed Alireza Ghasemi, chemist29, satishskamath, Maxim, Tobias Dijkhuis, and via9a. TheochemUI/eOn: v3.6.0. October 2026. doi:10.5281/zenodo.23166734.">SS_GCT+26</a>]</span> and <span id="id2">Goswami <em>et al.</em> [<a class="reference internal" href="#id29" title="Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Pena-Torres, and Hannes Jónsson. Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions. Journal of Chemical Theory and Computation, July 2025. doi:10.1021/acs.jctc.5c00866.">SS_GMK+25</a>]</span>, and for a band, the climbing image of <span id="id3">Goswami <em>et al.</em> [<a class="reference internal" href="#id31" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">SS_GGJonsson26</a>]</span>.
-The step is the P-RFO step of <span id="id4">Baker [<a class="reference internal" href="#id104" title="Jon Baker. An algorithm for the location of transition states. Journal of Computational Chemistry, 7(4):385–395, August 1986. doi:10.1002/jcc.540070402.">SS_Bak86</a>]</span> in the trust region of the Sella optimizer of <span id="id5">Hermes <em>et al.</em> [<a class="reference internal" href="#id105" title="Eric D. Hermes, Khachik Sargsyan, Habib N. Najm, and Judit Zádor. Sella, an open-source automation-friendly molecular saddle point optimizer. Journal of Chemical Theory and Computation, 18(11):6974–6988, 2022. doi:10.1021/acs.jctc.2c00395.">SS_HSNZador22</a>]</span>, as rgsaddle implements it.
+The searches it continues are those of <span id="id1">Goswami <em>et al.</em> [<a class="reference internal" href="#id104" title="Rohit Goswami, Sam Chill, Rye Terrell, Graeme Henkelman, Matthew Welborn, Liang Zhang, Andreas Pedersen, t-brink, Erik Edelmann, Jean Claude, Alejandro, Sung Hoon Jung, Seyed Alireza Ghasemi, chemist29, satishskamath, Maxim, Tobias Dijkhuis, and via9a. TheochemUI/eOn: v3.6.0. October 2026. doi:10.5281/zenodo.23166734.">SS_GCT+26</a>]</span> and <span id="id2">Goswami <em>et al.</em> [<a class="reference internal" href="#id30" title="Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Pena-Torres, and Hannes Jónsson. Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions. Journal of Chemical Theory and Computation, 21(16):7935–7943, July 2025. doi:10.1021/acs.jctc.5c00866.">SS_GMK+25</a>]</span>, and for a band, the climbing image of <span id="id3">Goswami <em>et al.</em> [<a class="reference internal" href="#id32" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">SS_GGJonsson26</a>]</span>.
+The step is the P-RFO step of <span id="id4">Banerjee <em>et al.</em> [<a class="reference internal" href="#id107" title="Ajit Banerjee, Noah Adams, Jack Simons, and Ron Shepard. Search for stationary points on surfaces. The Journal of Physical Chemistry, 89(1):52–57, January 1985. doi:10.1021/j100247a015.">SS_BASS85</a>]</span> and <span id="id5">Baker [<a class="reference internal" href="#id105" title="Jon Baker. An algorithm for the location of transition states. Journal of Computational Chemistry, 7(4):385–395, August 1986. doi:10.1002/jcc.540070402.">SS_Bak86</a>]</span> in the trust region of the Sella optimizer of <span id="id6">Hermes <em>et al.</em> [<a class="reference internal" href="#id106" title="Eric D. Hermes, Khachik Sargsyan, Habib N. Najm, and Judit Zádor. Sella, an open-source automation-friendly molecular saddle point optimizer. Journal of Chemical Theory and Computation, 18(11):6974–6988, 2022. doi:10.1021/acs.jctc.2c00395.">SS_HSNZador22</a>]</span>, as rgsaddle implements it.
 The refinement is off by default.</p>
 <section id="how-to-refine-a-dimer-saddle">
 <h3>How to refine a dimer saddle<a class="headerlink" href="#how-to-refine-a-dimer-saddle" title="Link to this heading">¶</a></h3>
@@ -1132,7 +1135,7 @@ The refinement is off by default.</p>
 <ol class="arabic">
 <li><p>Build the client against rgsaddle with <code class="docutils literal notranslate"><span class="pre">meson</span> <span class="pre">setup</span> <span class="pre">bbdir</span> <span class="pre">-Dwith_rgsaddle=true</span></code>.
 The refinement needs rgsaddle C application binary interface (ABI) 1.15 or newer, which the pinned rgsaddle 0.2.2 provides.
-A client built without it stops with an error once the search converges.
+Without it, or with an older rgsaddle library loaded, the client stops the job at its start.
 On a band or another large free set the refinement is faster with rgsaddle 0.3.2, as the measurements below show, but eOn’s continuous integration (CI) tests only the pinned rgsaddle.</p></li>
 <li><p>Add the refinement keys to <code class="docutils literal notranslate"><span class="pre">[Saddle</span> <span class="pre">Search]</span></code>, next to the search’s own settings.</p>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Saddle Search]</span>
@@ -1164,6 +1167,8 @@ It refines its climbing image, as <a class="reference internal" href="neb.html#n
 <p>The keys are <code class="docutils literal notranslate"><span class="pre">prfo_refine</span></code>, <code class="docutils literal notranslate"><span class="pre">prfo_refine_force</span></code> and <code class="docutils literal notranslate"><span class="pre">prfo_refine_max_iterations</span></code>, listed in the configuration model above.
 The refinement follows these rules.</p>
 <ul class="simple">
+<li><p>A saddle search or process search with <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">min_mode</span></code>, or a nudged elastic band job, refuses <code class="docutils literal notranslate"><span class="pre">prfo_refine</span> <span class="pre">=</span> <span class="pre">true</span></code> before its first force call when the client cannot refine.
+That covers a client built without rgsaddle, a loaded rgsaddle library older than ABI 1.15, a <code class="docutils literal notranslate"><span class="pre">prfo_refine_force</span></code> that is not positive, and a <code class="docutils literal notranslate"><span class="pre">prfo_refine_max_iterations</span></code> below 1.</p></li>
 <li><p>It runs only after a search ends with status good and a negative eigenvalue.
 The Gaussian process dimer (<code class="docutils literal notranslate"><span class="pre">gprdimer</span></code>) is not refined.
 Process searches in adaptive kinetic Monte Carlo (AKMC) use the same search, so the keys apply there too.</p></li>
@@ -1312,42 +1317,47 @@ implementation (dimer, improved dimer, Lanczos, GPR dimer)</p></li>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
-<div class="docutils container" id="id6">
+<div class="docutils container" id="id7">
 <div role="list" class="citation-list">
-<div class="citation" id="id104" role="doc-biblioentry">
+<div class="citation" id="id105" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>SS_Bak86<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id7">1</a>,<a role="doc-backlink" href="#id4">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id8">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
 <p>Jon Baker. An algorithm for the location of transition states. <em>Journal of Computational Chemistry</em>, 7(4):385–395, August 1986. <a class="reference external" href="https://doi.org/10.1002/jcc.540070402">doi:10.1002/jcc.540070402</a>.</p>
 </div>
-<div class="citation" id="id103" role="doc-biblioentry">
+<div class="citation" id="id107" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>SS_BASS85<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id7">1</a>,<a role="doc-backlink" href="#id4">2</a>)</span>
+<p>Ajit Banerjee, Noah Adams, Jack Simons, and Ron Shepard. Search for stationary points on surfaces. <em>The Journal of Physical Chemistry</em>, 89(1):52–57, January 1985. <a class="reference external" href="https://doi.org/10.1021/j100247a015">doi:10.1021/j100247a015</a>.</p>
+</div>
+<div class="citation" id="id104" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>SS_GCT+26<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id1">2</a>)</span>
 <p>Rohit Goswami, Sam Chill, Rye Terrell, Graeme Henkelman, Matthew Welborn, Liang Zhang, Andreas Pedersen, t-brink, Erik Edelmann, Jean Claude, Alejandro, Sung Hoon Jung, Seyed Alireza Ghasemi, chemist29, satishskamath, Maxim, Tobias Dijkhuis, and via9a. TheochemUI/eOn: v3.6.0. October 2026. <a class="reference external" href="https://doi.org/10.5281/zenodo.23166734">doi:10.5281/zenodo.23166734</a>.</p>
 </div>
-<div class="citation" id="id31" role="doc-biblioentry">
+<div class="citation" id="id32" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>SS_GGJonsson26<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id6">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
 <p>Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. <em>Frontiers in Chemistry</em>, 2026. <a class="reference external" href="https://arxiv.org/abs/2601.12630">arXiv:2601.12630</a>, <a class="reference external" href="https://doi.org/10.3389/fchem.2026.1807063">doi:10.3389/fchem.2026.1807063</a>.</p>
 </div>
-<div class="citation" id="id29" role="doc-biblioentry">
+<div class="citation" id="id30" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>SS_GMK+25<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id5">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
-<p>Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Pena-Torres, and Hannes Jónsson. Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions. <em>Journal of Chemical Theory and Computation</em>, July 2025. <a class="reference external" href="https://doi.org/10.1021/acs.jctc.5c00866">doi:10.1021/acs.jctc.5c00866</a>.</p>
+<p>Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Pena-Torres, and Hannes Jónsson. Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions. <em>Journal of Chemical Theory and Computation</em>, 21(16):7935–7943, July 2025. <a class="reference external" href="https://doi.org/10.1021/acs.jctc.5c00866">doi:10.1021/acs.jctc.5c00866</a>.</p>
 </div>
-<div class="citation" id="id35" role="doc-biblioentry">
+<div class="citation" id="id36" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">SS_HJonsson99</a><span class="fn-bracket">]</span></span>
 <p>Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. <em>The Journal of Chemical Physics</em>, 111(15):7010–7022, October 1999. <a class="reference external" href="https://doi.org/10.1063/1.480097">doi:10.1063/1.480097</a>.</p>
 </div>
-<div class="citation" id="id105" role="doc-biblioentry">
+<div class="citation" id="id106" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>SS_HSNZador22<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id8">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id9">1</a>,<a role="doc-backlink" href="#id6">2</a>)</span>
 <p>Eric D. Hermes, Khachik Sargsyan, Habib N. Najm, and Judit Zádor. Sella, an open-source automation-friendly molecular saddle point optimizer. <em>Journal of Chemical Theory and Computation</em>, 18(11):6974–6988, 2022. <a class="reference external" href="https://doi.org/10.1021/acs.jctc.2c00395">doi:10.1021/acs.jctc.2c00395</a>.</p>
 </div>
-<div class="citation" id="id61" role="doc-biblioentry">
+<div class="citation" id="id62" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">SS_MM00</a><span class="fn-bracket">]</span></span>
 <p>Rachid Malek and Normand Mousseau. Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique. <em>Physical Review E</em>, 62(6):7723–7728, December 2000. <a class="reference external" href="https://doi.org/10.1103/PhysRevE.62.7723">doi:10.1103/PhysRevE.62.7723</a>.</p>
 </div>
-<div class="citation" id="id72" role="doc-biblioentry">
+<div class="citation" id="id73" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">SS_PL14</a><span class="fn-bracket">]</span></span>
 <p>Andreas Pedersen and Mathieu Luiser. Bowl breakout: Escaping the positive region when searching for saddle points. <em>The Journal of Chemical Physics</em>, 141(2):024109, July 2014. <a class="reference external" href="https://doi.org/10.1063/1.4885852">doi:10.1063/1.4885852</a>.</p>
 </div>

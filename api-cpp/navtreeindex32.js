@@ -1,5 +1,6 @@
 var NAVTREEINDEX32 =
 {
+"structeonc_1_1instanton__options__t.html#a190145821ab3a139cea5878d3ea55500":[5,0,0,85,43],
 "structeonc_1_1instanton__options__t.html#a1a1fa97d5bc1aadf7a374976b2c80883":[3,0,1,98,47],
 "structeonc_1_1instanton__options__t.html#a1a1fa97d5bc1aadf7a374976b2c80883":[5,0,0,85,47],
 "structeonc_1_1instanton__options__t.html#a202591a87ba321cdc4b3f4b1cdef2c16":[3,0,1,98,30],
@@ -248,6 +249,5 @@ var NAVTREEINDEX32 =
 "structeonc_1_1monte__carlo__options__t.html#ad87a5285f7c6313288323323767a22a0":[5,0,0,110,1],
 "structeonc_1_1monte__carlo__options__t.html#af0419f864b8b5ef4d9430a87ec265281":[3,0,1,123,0],
 "structeonc_1_1monte__carlo__options__t.html#af0419f864b8b5ef4d9430a87ec265281":[5,0,0,110,0],
-"structeonc_1_1mopac__options__t.html":[3,0,1,126],
-"structeonc_1_1mopac__options__t.html":[5,0,0,113]
+"structeonc_1_1mopac__options__t.html":[3,0,1,126]
 };

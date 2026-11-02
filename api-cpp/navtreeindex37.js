@@ -1,5 +1,6 @@
 var NAVTREEINDEX37 =
 {
+"structeonc_1_1rgpot__options__t.html#a51f78a6317cb7767eeb6783322d40eb7":[5,0,0,144,4],
 "structeonc_1_1rgpot__options__t.html#a6597a35410ccc234d31e6800515ff8bf":[3,0,1,157,16],
 "structeonc_1_1rgpot__options__t.html#a6597a35410ccc234d31e6800515ff8bf":[5,0,0,144,16],
 "structeonc_1_1rgpot__options__t.html#a66410e04f0360f59ebed65432ee39f31":[3,0,1,157,17],
@@ -248,6 +249,5 @@ var NAVTREEINDEX37 =
 "structeonc_1_1tunneling_1_1InstantonOptions.html#a625ac6aa5d061114fa521eba181ef3ed":[5,0,0,8,7,4],
 "structeonc_1_1tunneling_1_1InstantonOptions.html#a8337dcd78e9034f5be9cdb5eb7c1d5e6":[3,0,1,21,7,1],
 "structeonc_1_1tunneling_1_1InstantonOptions.html#a8337dcd78e9034f5be9cdb5eb7c1d5e6":[5,0,0,8,7,1],
-"structeonc_1_1tunneling_1_1Levels.html":[3,0,1,21,8],
-"structeonc_1_1tunneling_1_1Levels.html":[5,0,0,8,8]
+"structeonc_1_1tunneling_1_1Levels.html":[3,0,1,21,8]
 };

@@ -1,5 +1,6 @@
 var NAVTREEINDEX38 =
 {
+"structeonc_1_1tunneling_1_1Levels.html":[5,0,0,8,8],
 "structeonc_1_1tunneling_1_1Levels.html#a4d798750c754f8dd98895a7f5fbb3fd9":[3,0,1,21,8,1],
 "structeonc_1_1tunneling_1_1Levels.html#a4d798750c754f8dd98895a7f5fbb3fd9":[5,0,0,8,8,1],
 "structeonc_1_1tunneling_1_1Levels.html#a823348340283c282267c0a749e846ee1":[3,0,1,21,8,0],
@@ -248,6 +249,5 @@ var NAVTREEINDEX38 =
 "structeonc_1_1tunneling_1_1RingSeed.html#a2a303aeb40e69dbcdc872cae41de7119":[5,0,0,8,19,0],
 "structeonc_1_1tunneling_1_1RingSeed.html#a688aeafbaa9f724275ef757968c9bd75":[3,0,1,21,19,1],
 "structeonc_1_1tunneling_1_1RingSeed.html#a688aeafbaa9f724275ef757968c9bd75":[5,0,0,8,19,1],
-"structeonc_1_1tunneling_1_1RingSeed.html#a93eaad0ca3c0a4bd2b464318bbf86723":[3,0,1,21,19,2],
-"structeonc_1_1tunneling_1_1RingSeed.html#a93eaad0ca3c0a4bd2b464318bbf86723":[5,0,0,8,19,2]
+"structeonc_1_1tunneling_1_1RingSeed.html#a93eaad0ca3c0a4bd2b464318bbf86723":[3,0,1,21,19,2]
 };

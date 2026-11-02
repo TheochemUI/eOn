@@ -481,6 +481,7 @@ var namespaceeonc =
     [ "quantumFreeEnergies", "namespaceeonc.html#ac39276e0968b53c5fa4d689cde2707a5", null ],
     [ "readRpcServerCapabilities", "namespaceeonc.html#a9d2c9aa9f4cb1ca8c164eca33fc162e0", null ],
     [ "registerJob", "namespaceeonc.html#af345f5025d61b3d5368a765ff9c5d5e1", null ],
+    [ "requirePrfoRefine", "namespaceeonc.html#af67078bb2eaad1ea16ddac096eb049a6", null ],
     [ "resolveMobileAtoms", "namespaceeonc.html#a0925dba4103d133a844dfad8162f7c8a", null ],
     [ "resolveMobileAtoms", "namespaceeonc.html#a5235fa84c1d3d61a3eff53de3109e62f", null ],
     [ "reversibleWorkPastRidge", "namespaceeonc.html#ae65d03846cadf954742ecb2244b9bcab", null ],

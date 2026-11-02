@@ -1,5 +1,6 @@
 var NAVTREEINDEX39 =
 {
+"structeonc_1_1tunneling_1_1RingSeed.html#a93eaad0ca3c0a4bd2b464318bbf86723":[5,0,0,8,19,2],
 "structeonc_1_1tunneling_1_1RingSeed.html#ac91364745094460137400db07e0866b7":[3,0,1,21,19,3],
 "structeonc_1_1tunneling_1_1RingSeed.html#ac91364745094460137400db07e0866b7":[5,0,0,8,19,3],
 "structeonc_1_1tunneling_1_1RingSpectrum.html":[3,0,1,21,20],
