@@ -69,6 +69,20 @@ private:
   void printEndState(int status);
   //! Writes the results from the run to file
   void saveData(int status);
+  //! [Saddle Search] irc_after. runIrc follows the intrinsic reaction
+  //! coordinate from the converged saddle and relaxes both ends. It writes
+  //! irc.con, irc.dat, irc_min1.con and irc_min2.con.
+  void runIrc();
+
+  struct IrcSummary {
+    bool ran{false};
+    int branchesAtMinimum{0};
+    bool endsRelaxed{false};
+    bool connectsReactant{false};
+    size_t forceCalls{0};
+    size_t forceCallsMin{0};
+    double energies[2]{0.0, 0.0};
+  } irc;
 
   //! Container for the results of the run
   std::vector<std::string> returnFiles;

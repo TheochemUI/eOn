@@ -1644,6 +1644,16 @@ int load_ini(const INIReader &ini, Parameters &params) {
   prfo.force = ini.GetReal("Saddle Search", "prfo_refine_force", prfo.force);
   prfo.max_iterations = ini.GetInteger(
       "Saddle Search", "prfo_refine_max_iterations", prfo.max_iterations);
+  {
+    auto &irc = ParametersLoadAccess::saddle_search_options(params).irc;
+    irc.after = ini.GetBoolean("Saddle Search", "irc_after", irc.after);
+    irc.step_size =
+        ini.GetReal("Saddle Search", "irc_step_size", irc.step_size);
+    irc.converged_force = ini.GetReal("Saddle Search", "irc_converged_force",
+                                      irc.converged_force);
+    irc.max_steps =
+        ini.GetInteger("Saddle Search", "irc_max_steps", irc.max_steps);
+  }
 
   // [Basin Hopping] //
 

@@ -1340,6 +1340,8 @@ eonclib_sources = [
     'FIRE.cpp',
     'EpiCenters.cpp',
     'SaddleSearchJob.cpp',
+    # Refuses irc_after without WITH_RGSADDLE at C ABI minor 14.
+    'XtsciIrc.cpp',
     'BasinHoppingSaddleSearch.cpp',
     # Stubs when -Dwith_ira=false; NudgedElasticBand always calls IRACompare.
     'IRACompare.cpp',
@@ -2428,6 +2430,7 @@ if get_option('with_tests')
     if get_option('with_rgsaddle')
         test_array += [['test_rgsaddle_band', 'RgsaddleBandTest.cpp', 'neb_morse']]
         test_array += [['test_rgsaddle_neb', 'RgsaddleNEBTest.cpp', 'neb_lj13']]
+        test_array += [['test_rgsaddle_irc', 'RgsaddleIrcTest.cpp', 'neb_lj13']]
     endif
     # Without rgsaddle it checks that prfo_refine is refused before a search.
     test_array += [['test_prfo_refine', 'PrfoRefineTest.cpp', 'neb_lj13']]

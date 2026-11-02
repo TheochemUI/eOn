@@ -232,6 +232,14 @@ struct saddle_search_options_t {
   double nonlocal_distance_abort{0.0};
   bool remove_rotation{false};
   double zero_mode_abort_curvature{0.0};
+  // Intrinsic reaction coordinate from a converged saddle through rgsaddle.
+  // step_size is the mass-weighted arc per step in amu^(1/2) Angstroms.
+  struct irc_t {
+    bool after{false};
+    double step_size{0.1};
+    double converged_force{0.05};
+    long max_steps{1000};
+  } irc;
   struct dynamics_t {
     double temperature{0.0};
     double state_check_interval_input{100.0};

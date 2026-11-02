@@ -121,6 +121,40 @@ the dimer off when it is not. `-Dwith_gprd=enabled` stops configuration
 instead. `-Dwith_gprd=disabled` omits the method. The install page has the same `rsync` next to the
 default `meson setup`.
 
+## Intrinsic reaction coordinate after the saddle
+
+`irc_after = true` follows the intrinsic reaction coordinate (IRC) {cite:p}`ss-fukuiPathChemicalReactions1981` from a converged saddle.
+The path goes downhill in both directions.
+eOn relaxes both ends with the `[Optimizer]` settings and reports whether one end matches the reactant.
+It runs only when the search ends with `Success` and a negative eigenvalue.
+Each step is the constrained second-order step of Gonzalez and Schlegel {cite:p}`ss-gonzalezImprovedAlgorithmReaction1989`.
+The quasi-Newton step on that sphere is Sella's `QuasiNewtonIRC` (https://github.com/zadorlab/sella).
+rgsaddle takes each step in mass-weighted Cartesian coordinates, with a quasi-Newton model built from gradients.
+Fixed atoms stay out of the path.
+
+`irc_step_size` is the arc of one step in amu{sup}`1/2` Angstroms (default 0.1), where amu is the atomic mass unit.
+The first step leaves the saddle along the mode by this length.
+`irc_converged_force` is the largest atomic force in electronvolts/Angstrom (eV/Angstrom) at which a branch stops (default 0.05).
+That default is the path stop of Sella's IRC.
+It is separate from the `[Optimizer]` tolerance that relaxes the ends.
+eOn stops a branch at a minimum when rgsaddle reports one.
+rgsaddle reports a minimum only after the first step and where the largest atomic force is at or below this threshold.
+`irc_max_steps` caps the steps per branch (default 1000).
+The option needs `-Dwith_rgsaddle=true` and rgsaddle C application binary interface (ABI) minor 14 or newer.
+eOn refuses it before the search starts otherwise.
+With the option off, the other irc keys change no output.
+
+A run with the option on adds `irc.con` and `irc.dat` for the path.
+The relaxed ends go to `irc_min1.con` and `irc_min2.con`.
+min1 lies against the saddle mode and min2 along it, as in a process search.
+`results.dat` gains seven entries:
+
+- `irc_branches_at_minimum`, `irc_ends_relaxed` and `irc_connects_reactant`
+- `force_calls_irc` and `force_calls_irc_minimization`
+- `potential_energy_irc_min1` and `potential_energy_irc_min2`
+
+{doc}`/tutorials/systems/irc_after_saddle` walks through a run.
+
 ## Output
 
 The saddle search writes:

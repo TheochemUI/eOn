@@ -242,12 +242,17 @@ The session takes its settings from the dimer and Hessian keys:
 | rgsaddle setting | eOn key | Conversion |
 |---|---|---|
 | ``dr`` | ``[Main] finite_difference`` | Angstrom; 0.001 when not positive |
-| ``rotation_tol`` | ``[Dimer] torque_min`` | none |
+| ``rotation_tol`` | ``[Dimer] torque_min`` | 0 when ``[Dimer] improved`` is true, except for Lanczos |
 | ``rotation_angle_tol`` | ``[Dimer] converged_angle`` | degrees to radians (ABI minor 5) |
 | ``max_rotations`` | ``[Dimer] rotations_max`` | at least 1 |
 | ``difference`` | ``[Hessian] fd_scheme`` | ``one_sided`` is forward; ``central`` and ``fourth`` are central (ABI minor 5) |
 | ``method`` | ``[Xtsci] method`` | ``lbfgs`` gives L-BFGS; any other gives FIRE, the fast inertial relaxation engine |
 | ``krylov_dim`` | none | 12 |
+
+The conversion gives ``rotation_tol = 0`` under the improved dimer, because that dimer has no torque stop.
+Its rotation ends on ``converged_angle`` or ``rotations_max``.
+rgsaddle 0.3.0 and newer also read a ``rotation_tol`` of 1e-4 or more as the classic torque window.
+Once the rotational force is below 1, that window stops a rotation after its first step.
 
 rgsaddle has no fourth-order stencil, so ``fd_scheme = fourth`` gives
 central differences here. ``[Dimer] rotation_angle`` is a trial angle

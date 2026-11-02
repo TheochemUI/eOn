@@ -1953,6 +1953,31 @@ Saddle Search:
             kind: float
             default: 0.
 
+        irc_after:
+            kind: boolean
+            default: false
+            # Follow the intrinsic reaction coordinate (IRC) from a
+            # converged saddle. Needs -Dwith_rgsaddle=true against
+            # rgsaddle C ABI minor 14 or newer.
+
+        irc_step_size:
+            kind: float
+            default: 0.1
+            # Mass-weighted arc length of one IRC step, in amu^(1/2)
+            # Angstroms.
+
+        irc_converged_force:
+            kind: float
+            default: 0.05
+            # Largest per-atom force (eV/Angstrom) at which an IRC branch
+            # may stop at a minimum.
+
+        irc_max_steps:
+            kind: int
+            default: 1000
+            # Most IRC steps per branch; the optimizer relaxes the last
+            # point either way.
+
         prfo_refine:
             kind: boolean
             default: False

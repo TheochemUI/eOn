@@ -28,6 +28,7 @@ recipe and the in-tree {doc}`../visualization` tutorial.
 | Pt adatom / surface hop (few-atom Morse) | `morse_pt` | NEB | {doc}`morse_pt_neb` | `morse_pt_neb/` |
 | Lennard-Jones cluster | `ljcluster` | minimization | {doc}`lj_minimization` | `lj_min/` |
 | Pt saddle (dimer) | `morse_pt` | saddle search | {doc}`pt_saddle` | `pt_saddle/` |
+| Pt saddle, intrinsic reaction coordinate to both minima | `morse_pt` | saddle search with `irc_after` | {doc}`irc_after_saddle` | `irc_pt/` |
 
 Geometries are copied from the in-repo `benchmarks/data/` and `examples/` trees
 so the same inputs power unit/ASV benchmarks and the docs.
@@ -64,4 +65,5 @@ These conventions match the production `rgpycrumbs` / `chemparseplot` tools:
 morse_pt_neb
 lj_minimization
 pt_saddle
+irc_after_saddle
 ```
