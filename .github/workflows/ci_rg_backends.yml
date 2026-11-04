@@ -6,9 +6,10 @@ on: [push, pull_request]
 permissions:
   contents: read
 env:
-  # rgsaddle 06c55c5 pins rgmin d76539d; build the C ABI of both from there.
-  RGMIN_REV: d76539dbe40695c0032e0d96a56e7932f2cc49ab
-  RGSADDLE_REV: 06c55c5c9e8308daac2c1d5860d828ecc9fa7be9
+  # rgsaddle main 371dac5 (ABI minor 25, after the climbing-endpoint fix
+  # fd62139) depends on rgmin 0.5.2; build the C ABI of both from there.
+  RGMIN_REV: 6b5b222a2c9b4a70a92de9a46c3a41e3c2b00d16 # v0.5.2
+  RGSADDLE_REV: 371dac57a768a81960f728753c90cafdd1701a62
   CARGO_C_VERSION: 0.10.23
 jobs:
   rg_backends:
@@ -63,6 +64,7 @@ jobs:
           echo "$features"
           grep -q "rgmin minimizers" <<<"$features"
           grep -q "rgsaddle band and min-mode" <<<"$features"
+          grep -q "rgsaddle band exp metric and ODE12r" <<<"$features"
 
       - name: Run Catch2 unit tests
         shell: pixi run bash -e {0}
