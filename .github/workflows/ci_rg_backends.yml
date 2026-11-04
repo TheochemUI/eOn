@@ -62,9 +62,12 @@ jobs:
           export LD_LIBRARY_PATH="$RG_PREFIX/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           features=$(bbdir/client/eonclient --features)
           echo "$features"
-          grep -q "rgmin minimizers" <<<"$features"
-          grep -q "rgsaddle band and min-mode" <<<"$features"
-          grep -q "rgsaddle band exp metric and ODE12r" <<<"$features"
+          # Every feature name is printed, with a colored enabled or disabled
+          # status; strip the color codes and match the status too.
+          plain=$(sed 's/\x1b\[[0-9;]*m//g' <<<"$features")
+          grep -q "rgmin minimizers: enabled" <<<"$plain"
+          grep -q "rgsaddle band and min-mode: enabled" <<<"$plain"
+          grep -q "rgsaddle band exp metric and ODE12r: enabled" <<<"$plain"
 
       - name: Run Catch2 unit tests
         shell: pixi run bash -e {0}
