@@ -2434,6 +2434,9 @@ if get_option('with_tests')
     endif
     # Without rgsaddle it checks that prfo_refine is refused before a search.
     test_array += [['test_prfo_refine', 'PrfoRefineTest.cpp', 'neb_lj13']]
+    if with_rgmin
+        test_array += [['test_xtsci_fire', 'XtsciFireTest.cpp', 'neb_morse']]
+    endif
     if get_option('with_ira')
         test_array += [['test_ira', 'IRATest.cpp', 'saddle_search']]
     endif
