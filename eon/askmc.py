@@ -1,6 +1,7 @@
 import copy
 import logging
 import math
+import os
 from pathlib import Path
 
 import numpy as np
@@ -8,6 +9,119 @@ import numpy as np
 from eon import fileio as io
 
 logger = logging.getLogger('askmc')
+
+
+def _intact_prefix(data, header_lines, min_fields, exact):
+    """Bytes to keep, and whether the final line was torn.
+
+    A final line past the header is torn when it has no trailing newline
+    or the wrong number of fields. ``exact`` requires that count;
+    otherwise the line needs at least ``min_fields``.
+    """
+    if not data:
+        return data, False
+    if data.endswith(b"\n"):
+        end = len(data) - 1
+        prev = data.rfind(b"\n", 0, end)
+        start = 0 if prev < 0 else prev + 1
+        if data[:start].count(b"\n") < header_lines:
+            return data, False
+        count = len(data[start:end].split())
+        ok = count == min_fields if exact else count >= min_fields
+        if ok:
+            return data, False
+        return data[:start], True
+    prev = data.rfind(b"\n")
+    start = 0 if prev < 0 else prev + 1
+    if data[:start].count(b"\n") < header_lines:
+        return data, False
+    return data[:start], True
+
+
+def _last_line_start(handle, size, ends_nl):
+    """Byte offset of the final line. ``ends_nl`` skips a trailing newline."""
+    skip = 1 if ends_nl else 0
+    found = 0
+    pos = size
+    while pos > 0:
+        step = min(4096, pos)
+        pos -= step
+        handle.seek(pos)
+        chunk = handle.read(step)
+        idx = len(chunk)
+        while True:
+            idx = chunk.rfind(b"\n", 0, idx)
+            if idx < 0:
+                break
+            found += 1
+            if found > skip:
+                return pos + idx + 1
+    return 0
+
+
+def _preceding_newlines(handle, start, need):
+    if need <= 0 or start <= 0:
+        return 0
+    handle.seek(0)
+    remaining = start
+    count = 0
+    while remaining > 0 and count < need:
+        chunk = handle.read(min(4096, remaining))
+        if not chunk:
+            break
+        remaining -= len(chunk)
+        count += chunk.count(b"\n")
+    return count
+
+
+def _torn_keep(path, header_lines, min_fields, exact):
+    """Cut off a torn tail. Return the length to restore if the append fails.
+
+    Only the tail, and enough of the front to see the header, is read.
+    """
+    path = Path(path)
+    if not path.is_file():
+        return 0
+    size = path.stat().st_size
+    if size == 0:
+        return 0
+    with open(path, "rb") as handle:
+        handle.seek(size - 1)
+        ends_nl = handle.read(1) == b"\n"
+        start = _last_line_start(handle, size, ends_nl)
+        if _preceding_newlines(handle, start, header_lines) < header_lines:
+            return size
+        if not ends_nl:
+            keep = start
+        else:
+            handle.seek(start)
+            fields = len(handle.read(size - 1 - start).split())
+            bad = fields != min_fields if exact else fields < min_fields
+            keep = start if bad else size
+    if keep != size:
+        os.truncate(path, keep)
+    return keep
+
+
+def _append_line(path, line, header_lines, min_fields, exact):
+    """Append one full line, after cutting off a torn tail.
+
+    The line is a single write, followed by a flush and an fsync. If
+    that raises, the file is truncated back to the length it had once
+    the torn tail was gone.
+    """
+    restore = _torn_keep(path, header_lines, min_fields, exact)
+    try:
+        with open(path, "a") as handle:
+            handle.write(line)
+            handle.flush()
+            os.fsync(handle.fileno())
+    except BaseException:
+        try:
+            os.truncate(path, restore)
+        except OSError:
+            pass
+        raise
 
 ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = list(range(9))
 processtable_head_fmt = "%7s %16s %11s %9s %16s %17s %8s %12s %7s\n"
@@ -146,7 +260,14 @@ class ASKMC:
         mod_proctable_path = Path(current_state.path) / "askmc_processtable"
         if not mod_proctable_path.is_file():
             return {}
-        lines = mod_proctable_path.read_text().splitlines()
+        data = mod_proctable_path.read_bytes()
+        kept, torn = _intact_prefix(data, 1, 9, True)
+        if torn:
+            logger.warning(
+                "modified process table %s has a torn final line; dropping it",
+                mod_proctable_path,
+            )
+        lines = kept.decode().splitlines()
         procs = {}
         for l in lines[1:]:
             l = l.strip().split()
@@ -182,8 +303,11 @@ class ASKMC:
         mod_proctable_path = Path(current_state.path) / "askmc_processtable"
         if not mod_proctable_path.is_file():
             self.save_modified_process_table(current_state, {})
-        with mod_proctable_path.open("a") as fo:
-            fo.write(processtable_line % (process_id, saddle_energy, prefactor, product, product_energy, product_prefactor, barrier, rate, view_count))
+        line = processtable_line % (
+            process_id, saddle_energy, prefactor, product, product_energy,
+            product_prefactor, barrier, rate, view_count,
+        )
+        _append_line(mod_proctable_path, line, 1, 9, True)
 
     def get_process_id(self, current_state_procs, next_state_num, flag):
         """ Return the process id of the process going from the current state
