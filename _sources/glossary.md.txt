@@ -57,8 +57,10 @@ EAM
   See {doc}`user_guide/potential`.
 
 FIRE
-  Fast inertial relaxation engine. `opt_method = fire` selects it, and
-  the schema also offers a FIRE 2.0 variant.
+  Fast inertial relaxation engine. `opt_method = fire` selects it.
+  `opt_method = xtsci` with `[Xtsci] method = fire2` runs version 2.0
+  of the fast inertial relaxation engine (FIRE) in rgmin, as algorithm 2
+  of Guenole et al. (2020) with the parameters of Table 1 in that paper.
   See {doc}`user_guide/optimizer`.
 
 FPE

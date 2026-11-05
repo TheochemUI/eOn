@@ -367,12 +367,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8cpp_source.html#l00257">257</a> of file <a class="el" href="XtsciOptimizer_8cpp_source.html">XtsciOptimizer.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  257</span>                                {</div>
-<div class="line"><span class="lineno">  258</span>  rgmin_solver_free(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>);</div>
-<div class="line"><span class="lineno">  259</span>  <a class="code hl_function" href="namespaceeonc_1_1xtsci__eindir.html#a19a2906b96833a412285205fcf022471">xtsci_eindir::release</a>(<a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a>);</div>
-<div class="line"><span class="lineno">  260</span>  <a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">  261</span>}</div>
+<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8cpp_source.html#l00282">282</a> of file <a class="el" href="XtsciOptimizer_8cpp_source.html">XtsciOptimizer.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  282</span>                                {</div>
+<div class="line"><span class="lineno">  283</span>  rgmin_solver_free(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>);</div>
+<div class="line"><span class="lineno">  284</span>  <a class="code hl_function" href="namespaceeonc_1_1xtsci__eindir.html#a19a2906b96833a412285205fcf022471">xtsci_eindir::release</a>(<a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a>);</div>
+<div class="line"><span class="lineno">  285</span>  <a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  286</span>}</div>
 <div class="ttc" id="aclasseonc_1_1XtsciOptimizer_html_a9121e4b8075aaf0f60912967a7ef633c"><div class="ttname"><a href="#a9121e4b8075aaf0f60912967a7ef633c">eonc::XtsciOptimizer::m_solver</a></div><div class="ttdeci">rgmin_solver_t * m_solver</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8h_source.html#l00048">XtsciOptimizer.h:48</a></div></div>
 <div class="ttc" id="aclasseonc_1_1XtsciOptimizer_html_ad94bf9c63f6f403b0f1456124a4eef2c"><div class="ttname"><a href="#ad94bf9c63f6f403b0f1456124a4eef2c">eonc::XtsciOptimizer::m_eindir</a></div><div class="ttdeci">xtsci_eindir::State * m_eindir</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8h_source.html#l00050">XtsciOptimizer.h:50</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1xtsci__eindir_html_a19a2906b96833a412285205fcf022471"><div class="ttname"><a href="namespaceeonc_1_1xtsci__eindir.html#a19a2906b96833a412285205fcf022471">eonc::xtsci_eindir::release</a></div><div class="ttdeci">void release(State *state)</div><div class="ttdef"><b>Definition</b> <a href="XtsciEindir_8cpp_source.html#l00262">XtsciEindir.cpp:262</a></div></div>
@@ -428,127 +428,127 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8cpp_source.html#l00263">263</a> of file <a class="el" href="XtsciOptimizer_8cpp_source.html">XtsciOptimizer.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  263</span>                                                  {</div>
-<div class="line"><span class="lineno">  264</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a> != <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">  265</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  266</span>  }</div>
-<div class="line"><span class="lineno">  267</span>  <span class="keyword">const</span> <span class="keyword">auto</span> dim = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;degreesOfFreedom());</div>
-<div class="line"><span class="lineno">  268</span>  <span class="keywordflow">if</span> (dim == 0) {</div>
-<div class="line"><span class="lineno">  269</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  270</span>  }</div>
-<div class="line"><span class="lineno">  271</span>  <span class="keyword">const</span> <span class="keyword">auto</span> stamp = rgmin_abi_stamp();</div>
-<div class="line"><span class="lineno">  272</span>  <span class="keywordflow">if</span> (rgmin_abi_compatible(&amp;stamp) == 0) {</div>
-<div class="line"><span class="lineno">  273</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;incompatible rgmin ABI&quot;</span>);</div>
-<div class="line"><span class="lineno">  274</span>  }</div>
-<div class="line"><span class="lineno">  275</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;lbfgs = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs;</div>
-<div class="line"><span class="lineno">  276</span>  <span class="keyword">const</span> rgmin_method_t <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> = method_from_name(<a class="code hl_variable" href="#a4c71e33562837319e9d56f592003d7e9">m_method</a>);</div>
-<div class="line"><span class="lineno">  277</span>  <span class="keywordtype">double</span> istep = std::max(a_maxMove, 1.0e-12);</div>
-<div class="line"><span class="lineno">  278</span>  <span class="keywordtype">bool</span> dynamics = <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_FIRE || <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_FIRE2;</div>
-<div class="line"><span class="lineno">  279</span><span class="preprocessor">#if RGMIN_ABI_VERSION_MINOR &gt;= 29</span></div>
-<div class="line"><span class="lineno">  280</span>  dynamics = dynamics || <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_QUICKMIN;</div>
-<div class="line"><span class="lineno">  281</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  282</span>  <span class="keywordflow">if</span> (dynamics) {</div>
-<div class="line"><span class="lineno">  283</span>    istep = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.time_step;</div>
-<div class="line"><span class="lineno">  284</span>    <span class="keywordflow">if</span> (istep &lt;= 0.0) {</div>
-<div class="line"><span class="lineno">  285</span>      istep = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.time_step_input;</div>
-<div class="line"><span class="lineno">  286</span>    }</div>
-<div class="line"><span class="lineno">  287</span>    <span class="keywordflow">if</span> (istep &lt;= 0.0) {</div>
-<div class="line"><span class="lineno">  288</span>      istep = 0.1;</div>
-<div class="line"><span class="lineno">  289</span>    }</div>
-<div class="line"><span class="lineno">  290</span>  }</div>
-<div class="line"><span class="lineno">  291</span>  rgmin_control_t control{</div>
-<div class="line"><span class="lineno">  292</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(std::max&lt;long&gt;(1, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.max_iterations)),</div>
-<div class="line"><span class="lineno">  293</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.converged_force,</div>
-<div class="line"><span class="lineno">  294</span>      istep,</div>
-<div class="line"><span class="lineno">  295</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(std::max&lt;long&gt;(0, lbfgs.memory)),</div>
-<div class="line"><span class="lineno">  296</span>      0.0,</div>
-<div class="line"><span class="lineno">  297</span>  };</div>
-<div class="line"><span class="lineno">  298</span>  <a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a> = rgmin_solver_create(<a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a>, &amp;control, dim);</div>
-<div class="line"><span class="lineno">  299</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a> == <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">  300</span>    <span class="keywordflow">throw</span> std::runtime_error(rgmin_last_error());</div>
-<div class="line"><span class="lineno">  301</span>  }</div>
-<div class="line"><span class="lineno">  302</span>  <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_function" href="#ac8fa0e20cc86e1240da7e50af7ccd249">step</a> = resolved_qn_step(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts);</div>
-<div class="line"><span class="lineno">  303</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="#ac8fa0e20cc86e1240da7e50af7ccd249">step</a> == <span class="stringliteral">&quot;newton&quot;</span>) {</div>
-<div class="line"><span class="lineno">  304</span>    rgmin_solver_set_qn_step(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_QN_NEWTON);</div>
-<div class="line"><span class="lineno">  305</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_function" href="#ac8fa0e20cc86e1240da7e50af7ccd249">step</a> == <span class="stringliteral">&quot;rfo&quot;</span>) {</div>
-<div class="line"><span class="lineno">  306</span>    rgmin_solver_set_qn_step(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_QN_RFO);</div>
-<div class="line"><span class="lineno">  307</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  308</span>    rgmin_solver_set_qn_step(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_QN_LBFGS);</div>
-<div class="line"><span class="lineno">  309</span>  }</div>
-<div class="line"><span class="lineno">  310</span>  <span class="keyword">const</span> <span class="keyword">auto</span> accept = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;gradientMatchesEnergy()</div>
-<div class="line"><span class="lineno">  311</span>                          ? resolved_accept(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts)</div>
-<div class="line"><span class="lineno">  312</span>                          : std::string(<span class="stringliteral">&quot;none&quot;</span>);</div>
-<div class="line"><span class="lineno">  313</span>  <span class="keywordflow">if</span> (accept == <span class="stringliteral">&quot;energy&quot;</span>) {</div>
-<div class="line"><span class="lineno">  314</span>    rgmin_solver_set_accept(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_ACCEPT_ENERGY);</div>
-<div class="line"><span class="lineno">  315</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (accept == <span class="stringliteral">&quot;nonmonotone&quot;</span>) {</div>
-<div class="line"><span class="lineno">  316</span>    rgmin_solver_set_accept(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_ACCEPT_NONMONOTONE);</div>
-<div class="line"><span class="lineno">  317</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  318</span>    rgmin_solver_set_accept(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_ACCEPT_NONE);</div>
+<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8cpp_source.html#l00288">288</a> of file <a class="el" href="XtsciOptimizer_8cpp_source.html">XtsciOptimizer.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  288</span>                                                  {</div>
+<div class="line"><span class="lineno">  289</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a> != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  290</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  291</span>  }</div>
+<div class="line"><span class="lineno">  292</span>  <span class="keyword">const</span> <span class="keyword">auto</span> dim = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;degreesOfFreedom());</div>
+<div class="line"><span class="lineno">  293</span>  <span class="keywordflow">if</span> (dim == 0) {</div>
+<div class="line"><span class="lineno">  294</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  295</span>  }</div>
+<div class="line"><span class="lineno">  296</span>  <span class="keyword">const</span> <span class="keyword">auto</span> stamp = rgmin_abi_stamp();</div>
+<div class="line"><span class="lineno">  297</span>  <span class="keywordflow">if</span> (rgmin_abi_compatible(&amp;stamp) == 0) {</div>
+<div class="line"><span class="lineno">  298</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;incompatible rgmin ABI&quot;</span>);</div>
+<div class="line"><span class="lineno">  299</span>  }</div>
+<div class="line"><span class="lineno">  300</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;lbfgs = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs;</div>
+<div class="line"><span class="lineno">  301</span>  <span class="keyword">const</span> rgmin_method_t <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> = method_from_name(<a class="code hl_variable" href="#a4c71e33562837319e9d56f592003d7e9">m_method</a>);</div>
+<div class="line"><span class="lineno">  302</span><span class="preprocessor">#if RGMIN_ABI_VERSION_MINOR &lt; 27</span></div>
+<div class="line"><span class="lineno">  303</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_FIRE2) {</div>
+<div class="line"><span class="lineno">  304</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  305</span>        <span class="stringliteral">&quot;Xtsci.method = fire2 needs rgmin ABI minor 27 or newer for &quot;</span></div>
+<div class="line"><span class="lineno">  306</span>        <span class="stringliteral">&quot;rgmin_solver_set_fire_variant&quot;</span>);</div>
+<div class="line"><span class="lineno">  307</span>  }</div>
+<div class="line"><span class="lineno">  308</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  309</span>  rgmin_control_t control{</div>
+<div class="line"><span class="lineno">  310</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(std::max&lt;long&gt;(1, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.max_iterations)),</div>
+<div class="line"><span class="lineno">  311</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.converged_force,</div>
+<div class="line"><span class="lineno">  312</span>      initial_step(<a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a>, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts, a_maxMove),</div>
+<div class="line"><span class="lineno">  313</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(std::max&lt;long&gt;(0, lbfgs.memory)),</div>
+<div class="line"><span class="lineno">  314</span>      0.0,</div>
+<div class="line"><span class="lineno">  315</span>  };</div>
+<div class="line"><span class="lineno">  316</span>  <a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a> = rgmin_solver_create(<a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a>, &amp;control, dim);</div>
+<div class="line"><span class="lineno">  317</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a> == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  318</span>    <span class="keywordflow">throw</span> std::runtime_error(rgmin_last_error());</div>
 <div class="line"><span class="lineno">  319</span>  }</div>
-<div class="line"><span class="lineno">  320</span>  rgmin_solver_set_project_rigid(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, lbfgs.project_rigid ? 1 : 0);</div>
-<div class="line"><span class="lineno">  321</span>  rgmin_solver_set_extra_updates(</div>
-<div class="line"><span class="lineno">  322</span>      <a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(std::max&lt;long&gt;(0, lbfgs.extra_updates)));</div>
-<div class="line"><span class="lineno">  323</span>  <span class="keywordflow">if</span> (lbfgs.curvature == <span class="stringliteral">&quot;cautious&quot;</span>) {</div>
-<div class="line"><span class="lineno">  324</span>    rgmin_solver_set_cautious(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, lbfgs.cautious_eps,</div>
-<div class="line"><span class="lineno">  325</span>                              lbfgs.cautious_alpha);</div>
-<div class="line"><span class="lineno">  326</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  327</span>    rgmin_solver_set_cautious(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, 0.0, lbfgs.cautious_alpha);</div>
-<div class="line"><span class="lineno">  328</span>  }</div>
-<div class="line"><span class="lineno">  329</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.xtsci.highs) {</div>
-<div class="line"><span class="lineno">  330</span>    <span class="keywordflow">if</span> (rgmin_solver_set_highs(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, 1) != 0) {</div>
-<div class="line"><span class="lineno">  331</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  332</span>          <span class="stringliteral">&quot;Xtsci.highs needs rgmin built with --features highs&quot;</span>);</div>
-<div class="line"><span class="lineno">  333</span>    }</div>
+<div class="line"><span class="lineno">  320</span><span class="preprocessor">#if RGMIN_ABI_VERSION_MINOR &gt;= 27</span></div>
+<div class="line"><span class="lineno">  321</span>  <span class="comment">// The default RGMIN_FIRE2 schedule keeps the FIRE 1.0 parameters.</span></div>
+<div class="line"><span class="lineno">  322</span>  <span class="comment">// The variant reads dt0 from control.istep, so it follows create.</span></div>
+<div class="line"><span class="lineno">  323</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_FIRE2) {</div>
+<div class="line"><span class="lineno">  324</span>    rgmin_solver_set_fire_variant(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_FIRE_GUENOLE2020);</div>
+<div class="line"><span class="lineno">  325</span>  }</div>
+<div class="line"><span class="lineno">  326</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  327</span>  <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_function" href="#ac8fa0e20cc86e1240da7e50af7ccd249">step</a> = resolved_qn_step(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts);</div>
+<div class="line"><span class="lineno">  328</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="#ac8fa0e20cc86e1240da7e50af7ccd249">step</a> == <span class="stringliteral">&quot;newton&quot;</span>) {</div>
+<div class="line"><span class="lineno">  329</span>    rgmin_solver_set_qn_step(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_QN_NEWTON);</div>
+<div class="line"><span class="lineno">  330</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_function" href="#ac8fa0e20cc86e1240da7e50af7ccd249">step</a> == <span class="stringliteral">&quot;rfo&quot;</span>) {</div>
+<div class="line"><span class="lineno">  331</span>    rgmin_solver_set_qn_step(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_QN_RFO);</div>
+<div class="line"><span class="lineno">  332</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  333</span>    rgmin_solver_set_qn_step(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_QN_LBFGS);</div>
 <div class="line"><span class="lineno">  334</span>  }</div>
-<div class="line"><span class="lineno">  335</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;mani = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.xtsci.manifold;</div>
-<div class="line"><span class="lineno">  336</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;so3&quot;</span> &amp;&amp; dim != 9) {</div>
-<div class="line"><span class="lineno">  337</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  338</span>        <span class="stringliteral">&quot;Xtsci.manifold=so3 needs length 9; a 3N cluster is &quot;</span></div>
-<div class="line"><span class="lineno">  339</span>        <span class="stringliteral">&quot;rigid_quotient (Sella R^{3N}/SE(3)), not a packed rotation&quot;</span>);</div>
-<div class="line"><span class="lineno">  340</span>  }</div>
-<div class="line"><span class="lineno">  341</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;se3&quot;</span> &amp;&amp; dim != 12) {</div>
-<div class="line"><span class="lineno">  342</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  343</span>        <span class="stringliteral">&quot;Xtsci.manifold=se3 needs length 12; a 3N cluster is &quot;</span></div>
-<div class="line"><span class="lineno">  344</span>        <span class="stringliteral">&quot;rigid_quotient (Sella R^{3N}/SE(3)), not an SE(3) prefix&quot;</span>);</div>
-<div class="line"><span class="lineno">  345</span>  }</div>
-<div class="line"><span class="lineno">  346</span>  <span class="keywordflow">if</span> ((mani == <span class="stringliteral">&quot;rigid_quotient&quot;</span> || mani == <span class="stringliteral">&quot;mw_rigid&quot;</span> || mani == <span class="stringliteral">&quot;sella&quot;</span> ||</div>
-<div class="line"><span class="lineno">  347</span>       mani == <span class="stringliteral">&quot;eckart&quot;</span> || mani == <span class="stringliteral">&quot;irc&quot;</span>) &amp;&amp;</div>
-<div class="line"><span class="lineno">  348</span>      (dim &lt; 6 || dim % 3 != 0)) {</div>
-<div class="line"><span class="lineno">  349</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Xtsci.manifold=&quot;</span> + mani +</div>
-<div class="line"><span class="lineno">  350</span>                             <span class="stringliteral">&quot; needs 3N Cartesians with N &gt;= 2&quot;</span>);</div>
-<div class="line"><span class="lineno">  351</span>  }</div>
-<div class="line"><span class="lineno">  352</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;sphere&quot;</span>) {</div>
-<div class="line"><span class="lineno">  353</span>    rgmin_solver_set_manifold(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_MANIFOLD_SPHERE);</div>
-<div class="line"><span class="lineno">  354</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;so3&quot;</span>) {</div>
-<div class="line"><span class="lineno">  355</span>    rgmin_solver_set_manifold(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_MANIFOLD_SO3);</div>
-<div class="line"><span class="lineno">  356</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;stiefel&quot;</span>) {</div>
-<div class="line"><span class="lineno">  357</span>    rgmin_solver_set_manifold(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_MANIFOLD_STIEFEL);</div>
-<div class="line"><span class="lineno">  358</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;se3&quot;</span>) {</div>
-<div class="line"><span class="lineno">  359</span>    rgmin_solver_set_manifold(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_MANIFOLD_SE3);</div>
-<div class="line"><span class="lineno">  360</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;rigid_quotient&quot;</span> || mani == <span class="stringliteral">&quot;sella&quot;</span>) {</div>
-<div class="line"><span class="lineno">  361</span>    rgmin_solver_set_manifold(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_MANIFOLD_RIGID_QUOTIENT);</div>
-<div class="line"><span class="lineno">  362</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;mw_rigid&quot;</span> || mani == <span class="stringliteral">&quot;eckart&quot;</span> || mani == <span class="stringliteral">&quot;irc&quot;</span>) {</div>
-<div class="line"><span class="lineno">  363</span>    rgmin_solver_set_manifold(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_MANIFOLD_MW_RIGID);</div>
-<div class="line"><span class="lineno">  364</span>    <span class="keyword">const</span> <span class="keyword">auto</span> masses = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getMasses();</div>
-<div class="line"><span class="lineno">  365</span>    <span class="keywordflow">if</span> (masses.size() &gt; 0) {</div>
-<div class="line"><span class="lineno">  366</span>      rgmin_solver_set_masses(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, masses.data(),</div>
-<div class="line"><span class="lineno">  367</span>                              <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(masses.size()));</div>
-<div class="line"><span class="lineno">  368</span>    }</div>
-<div class="line"><span class="lineno">  369</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  370</span>    rgmin_solver_set_manifold(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_MANIFOLD_EUCLIDEAN);</div>
-<div class="line"><span class="lineno">  371</span>  }</div>
-<div class="line"><span class="lineno">  372</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;rigid_quotient&quot;</span> || mani == <span class="stringliteral">&quot;mw_rigid&quot;</span> || mani == <span class="stringliteral">&quot;sella&quot;</span> ||</div>
-<div class="line"><span class="lineno">  373</span>      mani == <span class="stringliteral">&quot;eckart&quot;</span> || mani == <span class="stringliteral">&quot;irc&quot;</span>) {</div>
-<div class="line"><span class="lineno">  374</span>    rgmin_solver_set_periodic(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPeriodic() ? 1 : 0);</div>
-<div class="line"><span class="lineno">  375</span>  }</div>
-<div class="line"><span class="lineno">  376</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a> == <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">  377</span>    <a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a> = <a class="code hl_function" href="namespaceeonc_1_1xtsci__eindir.html#a241058e21f4b3a9c480452b40d1234bf">xtsci_eindir::bind</a>(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>.get(), &amp;<a class="code hl_variable" href="#a5854cdd11934a6f03d601c140b38563f">m_cached_x</a>);</div>
-<div class="line"><span class="lineno">  378</span>  }</div>
-<div class="line"><span class="lineno">  379</span>}</div>
+<div class="line"><span class="lineno">  335</span>  <span class="keyword">const</span> <span class="keyword">auto</span> accept = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;gradientMatchesEnergy()</div>
+<div class="line"><span class="lineno">  336</span>                          ? resolved_accept(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts)</div>
+<div class="line"><span class="lineno">  337</span>                          : std::string(<span class="stringliteral">&quot;none&quot;</span>);</div>
+<div class="line"><span class="lineno">  338</span>  <span class="keywordflow">if</span> (accept == <span class="stringliteral">&quot;energy&quot;</span>) {</div>
+<div class="line"><span class="lineno">  339</span>    rgmin_solver_set_accept(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_ACCEPT_ENERGY);</div>
+<div class="line"><span class="lineno">  340</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (accept == <span class="stringliteral">&quot;nonmonotone&quot;</span>) {</div>
+<div class="line"><span class="lineno">  341</span>    rgmin_solver_set_accept(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_ACCEPT_NONMONOTONE);</div>
+<div class="line"><span class="lineno">  342</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  343</span>    rgmin_solver_set_accept(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_ACCEPT_NONE);</div>
+<div class="line"><span class="lineno">  344</span>  }</div>
+<div class="line"><span class="lineno">  345</span>  rgmin_solver_set_project_rigid(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, lbfgs.project_rigid ? 1 : 0);</div>
+<div class="line"><span class="lineno">  346</span>  rgmin_solver_set_extra_updates(</div>
+<div class="line"><span class="lineno">  347</span>      <a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(std::max&lt;long&gt;(0, lbfgs.extra_updates)));</div>
+<div class="line"><span class="lineno">  348</span>  <span class="keywordflow">if</span> (lbfgs.curvature == <span class="stringliteral">&quot;cautious&quot;</span>) {</div>
+<div class="line"><span class="lineno">  349</span>    rgmin_solver_set_cautious(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, lbfgs.cautious_eps,</div>
+<div class="line"><span class="lineno">  350</span>                              lbfgs.cautious_alpha);</div>
+<div class="line"><span class="lineno">  351</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  352</span>    rgmin_solver_set_cautious(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, 0.0, lbfgs.cautious_alpha);</div>
+<div class="line"><span class="lineno">  353</span>  }</div>
+<div class="line"><span class="lineno">  354</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.xtsci.highs) {</div>
+<div class="line"><span class="lineno">  355</span>    <span class="keywordflow">if</span> (rgmin_solver_set_highs(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, 1) != 0) {</div>
+<div class="line"><span class="lineno">  356</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  357</span>          <span class="stringliteral">&quot;Xtsci.highs needs rgmin built with --features highs&quot;</span>);</div>
+<div class="line"><span class="lineno">  358</span>    }</div>
+<div class="line"><span class="lineno">  359</span>  }</div>
+<div class="line"><span class="lineno">  360</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;mani = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.xtsci.manifold;</div>
+<div class="line"><span class="lineno">  361</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;so3&quot;</span> &amp;&amp; dim != 9) {</div>
+<div class="line"><span class="lineno">  362</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  363</span>        <span class="stringliteral">&quot;Xtsci.manifold=so3 needs length 9; a 3N cluster is &quot;</span></div>
+<div class="line"><span class="lineno">  364</span>        <span class="stringliteral">&quot;rigid_quotient (Sella R^{3N}/SE(3)), not a packed rotation&quot;</span>);</div>
+<div class="line"><span class="lineno">  365</span>  }</div>
+<div class="line"><span class="lineno">  366</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;se3&quot;</span> &amp;&amp; dim != 12) {</div>
+<div class="line"><span class="lineno">  367</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  368</span>        <span class="stringliteral">&quot;Xtsci.manifold=se3 needs length 12; a 3N cluster is &quot;</span></div>
+<div class="line"><span class="lineno">  369</span>        <span class="stringliteral">&quot;rigid_quotient (Sella R^{3N}/SE(3)), not an SE(3) prefix&quot;</span>);</div>
+<div class="line"><span class="lineno">  370</span>  }</div>
+<div class="line"><span class="lineno">  371</span>  <span class="keywordflow">if</span> ((mani == <span class="stringliteral">&quot;rigid_quotient&quot;</span> || mani == <span class="stringliteral">&quot;mw_rigid&quot;</span> || mani == <span class="stringliteral">&quot;sella&quot;</span> ||</div>
+<div class="line"><span class="lineno">  372</span>       mani == <span class="stringliteral">&quot;eckart&quot;</span> || mani == <span class="stringliteral">&quot;irc&quot;</span>) &amp;&amp;</div>
+<div class="line"><span class="lineno">  373</span>      (dim &lt; 6 || dim % 3 != 0)) {</div>
+<div class="line"><span class="lineno">  374</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Xtsci.manifold=&quot;</span> + mani +</div>
+<div class="line"><span class="lineno">  375</span>                             <span class="stringliteral">&quot; needs 3N Cartesians with N &gt;= 2&quot;</span>);</div>
+<div class="line"><span class="lineno">  376</span>  }</div>
+<div class="line"><span class="lineno">  377</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;sphere&quot;</span>) {</div>
+<div class="line"><span class="lineno">  378</span>    rgmin_solver_set_manifold(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_MANIFOLD_SPHERE);</div>
+<div class="line"><span class="lineno">  379</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;so3&quot;</span>) {</div>
+<div class="line"><span class="lineno">  380</span>    rgmin_solver_set_manifold(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_MANIFOLD_SO3);</div>
+<div class="line"><span class="lineno">  381</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;stiefel&quot;</span>) {</div>
+<div class="line"><span class="lineno">  382</span>    rgmin_solver_set_manifold(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_MANIFOLD_STIEFEL);</div>
+<div class="line"><span class="lineno">  383</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;se3&quot;</span>) {</div>
+<div class="line"><span class="lineno">  384</span>    rgmin_solver_set_manifold(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_MANIFOLD_SE3);</div>
+<div class="line"><span class="lineno">  385</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;rigid_quotient&quot;</span> || mani == <span class="stringliteral">&quot;sella&quot;</span>) {</div>
+<div class="line"><span class="lineno">  386</span>    rgmin_solver_set_manifold(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_MANIFOLD_RIGID_QUOTIENT);</div>
+<div class="line"><span class="lineno">  387</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;mw_rigid&quot;</span> || mani == <span class="stringliteral">&quot;eckart&quot;</span> || mani == <span class="stringliteral">&quot;irc&quot;</span>) {</div>
+<div class="line"><span class="lineno">  388</span>    rgmin_solver_set_manifold(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_MANIFOLD_MW_RIGID);</div>
+<div class="line"><span class="lineno">  389</span>    <span class="keyword">const</span> <span class="keyword">auto</span> masses = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getMasses();</div>
+<div class="line"><span class="lineno">  390</span>    <span class="keywordflow">if</span> (masses.size() &gt; 0) {</div>
+<div class="line"><span class="lineno">  391</span>      rgmin_solver_set_masses(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, masses.data(),</div>
+<div class="line"><span class="lineno">  392</span>                              <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(masses.size()));</div>
+<div class="line"><span class="lineno">  393</span>    }</div>
+<div class="line"><span class="lineno">  394</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  395</span>    rgmin_solver_set_manifold(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, RGMIN_MANIFOLD_EUCLIDEAN);</div>
+<div class="line"><span class="lineno">  396</span>  }</div>
+<div class="line"><span class="lineno">  397</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;rigid_quotient&quot;</span> || mani == <span class="stringliteral">&quot;mw_rigid&quot;</span> || mani == <span class="stringliteral">&quot;sella&quot;</span> ||</div>
+<div class="line"><span class="lineno">  398</span>      mani == <span class="stringliteral">&quot;eckart&quot;</span> || mani == <span class="stringliteral">&quot;irc&quot;</span>) {</div>
+<div class="line"><span class="lineno">  399</span>    rgmin_solver_set_periodic(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPeriodic() ? 1 : 0);</div>
+<div class="line"><span class="lineno">  400</span>  }</div>
+<div class="line"><span class="lineno">  401</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a> == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  402</span>    <a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a> = <a class="code hl_function" href="namespaceeonc_1_1xtsci__eindir.html#a241058e21f4b3a9c480452b40d1234bf">xtsci_eindir::bind</a>(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>.get(), &amp;<a class="code hl_variable" href="#a5854cdd11934a6f03d601c140b38563f">m_cached_x</a>);</div>
+<div class="line"><span class="lineno">  403</span>  }</div>
+<div class="line"><span class="lineno">  404</span>}</div>
 <div class="ttc" id="aclasseonc_1_1Optimizer_html_ac396cbda1caadf57ff9df7eda4db1822"><div class="ttname"><a href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">eonc::Optimizer::m_objf</a></div><div class="ttdeci">std::shared_ptr&lt; ObjectiveFunction &gt; m_objf</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00074">Optimizer.h:74</a></div></div>
 <div class="ttc" id="aclasseonc_1_1XtsciOptimizer_html_a5854cdd11934a6f03d601c140b38563f"><div class="ttname"><a href="#a5854cdd11934a6f03d601c140b38563f">eonc::XtsciOptimizer::m_cached_x</a></div><div class="ttdeci">Eigen::VectorXd m_cached_x</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8h_source.html#l00053">XtsciOptimizer.h:53</a></div></div>
-<div class="ttc" id="aclasseonc_1_1XtsciOptimizer_html_ac8fa0e20cc86e1240da7e50af7ccd249"><div class="ttname"><a href="#ac8fa0e20cc86e1240da7e50af7ccd249">eonc::XtsciOptimizer::step</a></div><div class="ttdeci">int step(double a_maxMove) override</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8cpp_source.html#l00381">XtsciOptimizer.cpp:381</a></div></div>
+<div class="ttc" id="aclasseonc_1_1XtsciOptimizer_html_ac8fa0e20cc86e1240da7e50af7ccd249"><div class="ttname"><a href="#ac8fa0e20cc86e1240da7e50af7ccd249">eonc::XtsciOptimizer::step</a></div><div class="ttdeci">int step(double a_maxMove) override</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8cpp_source.html#l00406">XtsciOptimizer.cpp:406</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1xtsci__eindir_html_a241058e21f4b3a9c480452b40d1234bf"><div class="ttname"><a href="namespaceeonc_1_1xtsci__eindir.html#a241058e21f4b3a9c480452b40d1234bf">eonc::xtsci_eindir::bind</a></div><div class="ttdeci">State * bind(ObjectiveFunction *objective, Eigen::VectorXd *cached)</div><div class="ttdoc">Borrow an ObjectiveFunction as an eindir objective.</div><div class="ttdef"><b>Definition</b> <a href="XtsciEindir_8cpp_source.html#l00189">XtsciEindir.cpp:189</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -635,48 +635,51 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1Optimizer.html#a94dd8b89c732857574c03586efa25273">eonc::Optimizer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8cpp_source.html#l00432">432</a> of file <a class="el" href="XtsciOptimizer_8cpp_source.html">XtsciOptimizer.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  432</span>                                                                {</div>
-<div class="line"><span class="lineno">  433</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;degreesOfFreedom() &lt;= 0 || a_maxIterations == 0) {</div>
-<div class="line"><span class="lineno">  434</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
-<div class="line"><span class="lineno">  435</span>  }</div>
-<div class="line"><span class="lineno">  436</span>  <a class="code hl_function" href="#a4c35607672825155d0cda735ae84e118">ensureSolver</a>(a_maxMove);</div>
-<div class="line"><span class="lineno">  437</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;lbfgs = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs;</div>
-<div class="line"><span class="lineno">  438</span>  std::string precon = resolved_precon(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts);</div>
-<div class="line"><span class="lineno">  439</span>  <span class="keyword">const</span> rgmin_method_t <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> = method_from_name(<a class="code hl_variable" href="#a4c71e33562837319e9d56f592003d7e9">m_method</a>);</div>
-<div class="line"><span class="lineno">  440</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_DOGLEG &amp;&amp; !is_host_precon(precon)) {</div>
-<div class="line"><span class="lineno">  441</span>    precon = <span class="stringliteral">&quot;pair&quot;</span>;</div>
-<div class="line"><span class="lineno">  442</span>  }</div>
-<div class="line"><span class="lineno">  443</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> want_hess = <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_NEWTON || <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_RFO ||</div>
-<div class="line"><span class="lineno">  444</span>                         <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_DOGLEG || is_host_precon(precon);</div>
-<div class="line"><span class="lineno">  445</span>  <span class="comment">// A full minimize without a host Hessian goes through the eindir entry.</span></div>
-<div class="line"><span class="lineno">  446</span>  <span class="comment">// step() stays one session iteration so the host loop keeps its memory.</span></div>
-<div class="line"><span class="lineno">  447</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a> != <span class="keyword">nullptr</span> &amp;&amp; !want_hess) {</div>
-<div class="line"><span class="lineno">  448</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size() == 0) {</div>
-<div class="line"><span class="lineno">  449</span>      <a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a> = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPositions();</div>
-<div class="line"><span class="lineno">  450</span>    }</div>
-<div class="line"><span class="lineno">  451</span>    <span class="keywordtype">double</span> value = 0.0;</div>
-<div class="line"><span class="lineno">  452</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> status = <a class="code hl_function" href="namespaceeonc_1_1xtsci__eindir.html#a0d7100dd1f75bdc61523a7d2f8827a14">xtsci_eindir::minimize</a>(</div>
-<div class="line"><span class="lineno">  453</span>        <a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a>, <a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.data(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size()), a_maxIterations,</div>
-<div class="line"><span class="lineno">  454</span>        <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.converged_force, std::max(a_maxMove, 1.0e-12),</div>
-<div class="line"><span class="lineno">  455</span>        <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(std::max&lt;long&gt;(0, lbfgs.memory)),</div>
-<div class="line"><span class="lineno">  456</span>        <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a>), &amp;value);</div>
-<div class="line"><span class="lineno">  457</span>    <span class="keywordflow">if</span> (status != RGMIN_SUCCESS) {</div>
-<div class="line"><span class="lineno">  458</span>      <span class="keywordflow">throw</span> std::runtime_error(rgmin_last_error());</div>
-<div class="line"><span class="lineno">  459</span>    }</div>
-<div class="line"><span class="lineno">  460</span>    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>);</div>
-<div class="line"><span class="lineno">  461</span>    <a class="code hl_variable" href="#a5854cdd11934a6f03d601c140b38563f">m_cached_x</a> = <a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>;</div>
-<div class="line"><span class="lineno">  462</span>    <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(value);</div>
-<div class="line"><span class="lineno">  463</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
-<div class="line"><span class="lineno">  464</span>  }</div>
-<div class="line"><span class="lineno">  465</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; a_maxIterations; ++i) {</div>
-<div class="line"><span class="lineno">  466</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="#ac8fa0e20cc86e1240da7e50af7ccd249">step</a>(a_maxMove) != 0) {</div>
-<div class="line"><span class="lineno">  467</span>      <span class="keywordflow">return</span> 1;</div>
-<div class="line"><span class="lineno">  468</span>    }</div>
-<div class="line"><span class="lineno">  469</span>  }</div>
-<div class="line"><span class="lineno">  470</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
-<div class="line"><span class="lineno">  471</span>}</div>
-<div class="ttc" id="aclasseonc_1_1XtsciOptimizer_html_a4c35607672825155d0cda735ae84e118"><div class="ttname"><a href="#a4c35607672825155d0cda735ae84e118">eonc::XtsciOptimizer::ensureSolver</a></div><div class="ttdeci">void ensureSolver(double a_maxMove)</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8cpp_source.html#l00263">XtsciOptimizer.cpp:263</a></div></div>
+<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8cpp_source.html#l00457">457</a> of file <a class="el" href="XtsciOptimizer_8cpp_source.html">XtsciOptimizer.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  457</span>                                                                {</div>
+<div class="line"><span class="lineno">  458</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;degreesOfFreedom() &lt;= 0 || a_maxIterations == 0) {</div>
+<div class="line"><span class="lineno">  459</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  460</span>  }</div>
+<div class="line"><span class="lineno">  461</span>  <a class="code hl_function" href="#a4c35607672825155d0cda735ae84e118">ensureSolver</a>(a_maxMove);</div>
+<div class="line"><span class="lineno">  462</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;lbfgs = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs;</div>
+<div class="line"><span class="lineno">  463</span>  std::string precon = resolved_precon(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts);</div>
+<div class="line"><span class="lineno">  464</span>  <span class="keyword">const</span> rgmin_method_t <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> = method_from_name(<a class="code hl_variable" href="#a4c71e33562837319e9d56f592003d7e9">m_method</a>);</div>
+<div class="line"><span class="lineno">  465</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_DOGLEG &amp;&amp; !is_host_precon(precon)) {</div>
+<div class="line"><span class="lineno">  466</span>    precon = <span class="stringliteral">&quot;pair&quot;</span>;</div>
+<div class="line"><span class="lineno">  467</span>  }</div>
+<div class="line"><span class="lineno">  468</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> want_hess = <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_NEWTON || <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_RFO ||</div>
+<div class="line"><span class="lineno">  469</span>                         <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_DOGLEG || is_host_precon(precon);</div>
+<div class="line"><span class="lineno">  470</span>  <span class="comment">// A full minimize without a host Hessian goes through the eindir entry.</span></div>
+<div class="line"><span class="lineno">  471</span>  <span class="comment">// step() stays one session iteration so the host loop keeps its memory.</span></div>
+<div class="line"><span class="lineno">  472</span>  <span class="comment">// rgmin_minimize_eindir takes no FIRE variant, so fire2 stays on the</span></div>
+<div class="line"><span class="lineno">  473</span>  <span class="comment">// session.</span></div>
+<div class="line"><span class="lineno">  474</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a> != <span class="keyword">nullptr</span> &amp;&amp; !want_hess &amp;&amp; <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> != RGMIN_FIRE2) {</div>
+<div class="line"><span class="lineno">  475</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size() == 0) {</div>
+<div class="line"><span class="lineno">  476</span>      <a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a> = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  477</span>    }</div>
+<div class="line"><span class="lineno">  478</span>    <span class="keywordtype">double</span> value = 0.0;</div>
+<div class="line"><span class="lineno">  479</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> status = <a class="code hl_function" href="namespaceeonc_1_1xtsci__eindir.html#a0d7100dd1f75bdc61523a7d2f8827a14">xtsci_eindir::minimize</a>(</div>
+<div class="line"><span class="lineno">  480</span>        <a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a>, <a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.data(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size()), a_maxIterations,</div>
+<div class="line"><span class="lineno">  481</span>        <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.converged_force,</div>
+<div class="line"><span class="lineno">  482</span>        initial_step(<a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a>, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts, a_maxMove),</div>
+<div class="line"><span class="lineno">  483</span>        <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(std::max&lt;long&gt;(0, lbfgs.memory)),</div>
+<div class="line"><span class="lineno">  484</span>        <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a>), &amp;value);</div>
+<div class="line"><span class="lineno">  485</span>    <span class="keywordflow">if</span> (status != RGMIN_SUCCESS) {</div>
+<div class="line"><span class="lineno">  486</span>      <span class="keywordflow">throw</span> std::runtime_error(rgmin_last_error());</div>
+<div class="line"><span class="lineno">  487</span>    }</div>
+<div class="line"><span class="lineno">  488</span>    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>);</div>
+<div class="line"><span class="lineno">  489</span>    <a class="code hl_variable" href="#a5854cdd11934a6f03d601c140b38563f">m_cached_x</a> = <a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>;</div>
+<div class="line"><span class="lineno">  490</span>    <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span><span class="keyword">&gt;</span>(value);</div>
+<div class="line"><span class="lineno">  491</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  492</span>  }</div>
+<div class="line"><span class="lineno">  493</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; a_maxIterations; ++i) {</div>
+<div class="line"><span class="lineno">  494</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="#ac8fa0e20cc86e1240da7e50af7ccd249">step</a>(a_maxMove) != 0) {</div>
+<div class="line"><span class="lineno">  495</span>      <span class="keywordflow">return</span> 1;</div>
+<div class="line"><span class="lineno">  496</span>    }</div>
+<div class="line"><span class="lineno">  497</span>  }</div>
+<div class="line"><span class="lineno">  498</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  499</span>}</div>
+<div class="ttc" id="aclasseonc_1_1XtsciOptimizer_html_a4c35607672825155d0cda735ae84e118"><div class="ttname"><a href="#a4c35607672825155d0cda735ae84e118">eonc::XtsciOptimizer::ensureSolver</a></div><div class="ttdeci">void ensureSolver(double a_maxMove)</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8cpp_source.html#l00288">XtsciOptimizer.cpp:288</a></div></div>
 <div class="ttc" id="aclasseonc_1_1XtsciOptimizer_html_a92eeff22e2007615935c6de6fb9983b7"><div class="ttname"><a href="#a92eeff22e2007615935c6de6fb9983b7">eonc::XtsciOptimizer::m_x</a></div><div class="ttdeci">Eigen::VectorXd m_x</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8h_source.html#l00056">XtsciOptimizer.h:56</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1xtsci__eindir_html_a0d7100dd1f75bdc61523a7d2f8827a14"><div class="ttname"><a href="namespaceeonc_1_1xtsci__eindir.html#a0d7100dd1f75bdc61523a7d2f8827a14">eonc::xtsci_eindir::minimize</a></div><div class="ttdeci">int minimize(State *state, double *x, std::size_t n, std::size_t maxiter, double gtol, double istep, std::size_t memory, int method, double *value_out)</div><div class="ttdoc">xts_minimize_eindir on a caller-owned buffer. The caller keeps State.</div><div class="ttdef"><b>Definition</b> <a href="XtsciEindir_8cpp_source.html#l00290">XtsciEindir.cpp:290</a></div></div>
 </div><!-- fragment -->
@@ -707,57 +710,57 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1Optimizer.html#aa66365f3f15e6d4b9829e555cfc9f2b5">eonc::Optimizer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8cpp_source.html#l00381">381</a> of file <a class="el" href="XtsciOptimizer_8cpp_source.html">XtsciOptimizer.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  381</span>                                         {</div>
-<div class="line"><span class="lineno">  382</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;degreesOfFreedom() &lt;= 0) {</div>
-<div class="line"><span class="lineno">  383</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
-<div class="line"><span class="lineno">  384</span>  }</div>
-<div class="line"><span class="lineno">  385</span>  <a class="code hl_function" href="#a4c35607672825155d0cda735ae84e118">ensureSolver</a>(a_maxMove);</div>
-<div class="line"><span class="lineno">  386</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a> == <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">  387</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
-<div class="line"><span class="lineno">  388</span>  }</div>
-<div class="line"><span class="lineno">  389</span>  <span class="comment">// Native LBFGS clips by the largest per-atom move, not ||d||_2.</span></div>
-<div class="line"><span class="lineno">  390</span>  rgmin_solver_set_maxmove(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, 0.0);</div>
-<div class="line"><span class="lineno">  391</span>  rgmin_solver_set_atom_maxmove(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, std::max(a_maxMove, 0.0));</div>
-<div class="line"><span class="lineno">  392</span> </div>
-<div class="line"><span class="lineno">  393</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size() == 0) {</div>
-<div class="line"><span class="lineno">  394</span>    <a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a> = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPositions();</div>
-<div class="line"><span class="lineno">  395</span>  }</div>
-<div class="line"><span class="lineno">  396</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size() != <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;degreesOfFreedom()) {</div>
-<div class="line"><span class="lineno">  397</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;rgmin objective position dimension mismatch&quot;</span>);</div>
-<div class="line"><span class="lineno">  398</span>  }</div>
-<div class="line"><span class="lineno">  399</span>  <span class="keyword">auto</span> *tensor =</div>
-<div class="line"><span class="lineno">  400</span>      rgmin_tensor_borrow_cpu_f64(<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.data(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size()));</div>
-<div class="line"><span class="lineno">  401</span>  <span class="keywordflow">if</span> (tensor == <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">  402</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;could not allocate rgmin objective tensor&quot;</span>);</div>
-<div class="line"><span class="lineno">  403</span>  }</div>
-<div class="line"><span class="lineno">  404</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;lbfgs = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs;</div>
-<div class="line"><span class="lineno">  405</span>  std::string precon = resolved_precon(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts);</div>
-<div class="line"><span class="lineno">  406</span>  <span class="keyword">const</span> rgmin_method_t <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> = method_from_name(<a class="code hl_variable" href="#a4c71e33562837319e9d56f592003d7e9">m_method</a>);</div>
-<div class="line"><span class="lineno">  407</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_DOGLEG &amp;&amp; !is_host_precon(precon)) {</div>
-<div class="line"><span class="lineno">  408</span>    precon = <span class="stringliteral">&quot;pair&quot;</span>;</div>
+<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8cpp_source.html#l00406">406</a> of file <a class="el" href="XtsciOptimizer_8cpp_source.html">XtsciOptimizer.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  406</span>                                         {</div>
+<div class="line"><span class="lineno">  407</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;degreesOfFreedom() &lt;= 0) {</div>
+<div class="line"><span class="lineno">  408</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
 <div class="line"><span class="lineno">  409</span>  }</div>
-<div class="line"><span class="lineno">  410</span>  XtsObjectiveContext context{</div>
-<div class="line"><span class="lineno">  411</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>.get(),    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.potential, precon,      lbfgs.precon_A,</div>
-<div class="line"><span class="lineno">  412</span>      lbfgs.precon_mu, lbfgs.precon_rcut,     &amp;<a class="code hl_variable" href="#a5854cdd11934a6f03d601c140b38563f">m_cached_x</a>, <a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a>,</div>
-<div class="line"><span class="lineno">  413</span>  };</div>
-<div class="line"><span class="lineno">  414</span>  rgmin_report_t report{};</div>
-<div class="line"><span class="lineno">  415</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> want_hess = <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_NEWTON || <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_RFO ||</div>
-<div class="line"><span class="lineno">  416</span>                         <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_DOGLEG || is_host_precon(precon);</div>
-<div class="line"><span class="lineno">  417</span>  rgmin_status_t status;</div>
-<div class="line"><span class="lineno">  418</span>  <span class="keywordflow">if</span> (want_hess) {</div>
-<div class="line"><span class="lineno">  419</span>    status = rgmin_solver_step_hess_fg(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, evaluate_gradient, hessian,</div>
-<div class="line"><span class="lineno">  420</span>                                       &amp;context, tensor, &amp;report);</div>
-<div class="line"><span class="lineno">  421</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  422</span>    status = rgmin_solver_step_fg(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, evaluate_gradient, &amp;context, tensor,</div>
-<div class="line"><span class="lineno">  423</span>                                  &amp;report);</div>
-<div class="line"><span class="lineno">  424</span>  }</div>
-<div class="line"><span class="lineno">  425</span>  rgmin_tensor_free(tensor);</div>
-<div class="line"><span class="lineno">  426</span>  <span class="keywordflow">if</span> (status != RGMIN_SUCCESS) {</div>
-<div class="line"><span class="lineno">  427</span>    <span class="keywordflow">throw</span> std::runtime_error(rgmin_last_error());</div>
+<div class="line"><span class="lineno">  410</span>  <a class="code hl_function" href="#a4c35607672825155d0cda735ae84e118">ensureSolver</a>(a_maxMove);</div>
+<div class="line"><span class="lineno">  411</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a> == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  412</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  413</span>  }</div>
+<div class="line"><span class="lineno">  414</span>  <span class="comment">// Native LBFGS clips by the largest per-atom move, not ||d||_2.</span></div>
+<div class="line"><span class="lineno">  415</span>  rgmin_solver_set_maxmove(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, 0.0);</div>
+<div class="line"><span class="lineno">  416</span>  rgmin_solver_set_atom_maxmove(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, std::max(a_maxMove, 0.0));</div>
+<div class="line"><span class="lineno">  417</span> </div>
+<div class="line"><span class="lineno">  418</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size() == 0) {</div>
+<div class="line"><span class="lineno">  419</span>    <a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a> = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  420</span>  }</div>
+<div class="line"><span class="lineno">  421</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size() != <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;degreesOfFreedom()) {</div>
+<div class="line"><span class="lineno">  422</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;rgmin objective position dimension mismatch&quot;</span>);</div>
+<div class="line"><span class="lineno">  423</span>  }</div>
+<div class="line"><span class="lineno">  424</span>  <span class="keyword">auto</span> *tensor =</div>
+<div class="line"><span class="lineno">  425</span>      rgmin_tensor_borrow_cpu_f64(<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.data(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size()));</div>
+<div class="line"><span class="lineno">  426</span>  <span class="keywordflow">if</span> (tensor == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  427</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;could not allocate rgmin objective tensor&quot;</span>);</div>
 <div class="line"><span class="lineno">  428</span>  }</div>
-<div class="line"><span class="lineno">  429</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
-<div class="line"><span class="lineno">  430</span>}</div>
+<div class="line"><span class="lineno">  429</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;lbfgs = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs;</div>
+<div class="line"><span class="lineno">  430</span>  std::string precon = resolved_precon(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts);</div>
+<div class="line"><span class="lineno">  431</span>  <span class="keyword">const</span> rgmin_method_t <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> = method_from_name(<a class="code hl_variable" href="#a4c71e33562837319e9d56f592003d7e9">m_method</a>);</div>
+<div class="line"><span class="lineno">  432</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_DOGLEG &amp;&amp; !is_host_precon(precon)) {</div>
+<div class="line"><span class="lineno">  433</span>    precon = <span class="stringliteral">&quot;pair&quot;</span>;</div>
+<div class="line"><span class="lineno">  434</span>  }</div>
+<div class="line"><span class="lineno">  435</span>  XtsObjectiveContext context{</div>
+<div class="line"><span class="lineno">  436</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>.get(),    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.potential, precon,      lbfgs.precon_A,</div>
+<div class="line"><span class="lineno">  437</span>      lbfgs.precon_mu, lbfgs.precon_rcut,     &amp;<a class="code hl_variable" href="#a5854cdd11934a6f03d601c140b38563f">m_cached_x</a>, <a class="code hl_variable" href="#ad94bf9c63f6f403b0f1456124a4eef2c">m_eindir</a>,</div>
+<div class="line"><span class="lineno">  438</span>  };</div>
+<div class="line"><span class="lineno">  439</span>  rgmin_report_t report{};</div>
+<div class="line"><span class="lineno">  440</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> want_hess = <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_NEWTON || <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_RFO ||</div>
+<div class="line"><span class="lineno">  441</span>                         <a class="code hl_function" href="#a60d0585e92e6f5a78cf817d8400f2111">method</a> == RGMIN_DOGLEG || is_host_precon(precon);</div>
+<div class="line"><span class="lineno">  442</span>  rgmin_status_t status;</div>
+<div class="line"><span class="lineno">  443</span>  <span class="keywordflow">if</span> (want_hess) {</div>
+<div class="line"><span class="lineno">  444</span>    status = rgmin_solver_step_hess_fg(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, evaluate_gradient, hessian,</div>
+<div class="line"><span class="lineno">  445</span>                                       &amp;context, tensor, &amp;report);</div>
+<div class="line"><span class="lineno">  446</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  447</span>    status = rgmin_solver_step_fg(<a class="code hl_variable" href="#a9121e4b8075aaf0f60912967a7ef633c">m_solver</a>, evaluate_gradient, &amp;context, tensor,</div>
+<div class="line"><span class="lineno">  448</span>                                  &amp;report);</div>
+<div class="line"><span class="lineno">  449</span>  }</div>
+<div class="line"><span class="lineno">  450</span>  rgmin_tensor_free(tensor);</div>
+<div class="line"><span class="lineno">  451</span>  <span class="keywordflow">if</span> (status != RGMIN_SUCCESS) {</div>
+<div class="line"><span class="lineno">  452</span>    <span class="keywordflow">throw</span> std::runtime_error(rgmin_last_error());</div>
+<div class="line"><span class="lineno">  453</span>  }</div>
+<div class="line"><span class="lineno">  454</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  455</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

@@ -476,8 +476,10 @@ See <a class="reference internal" href="index.html"><span class="doc">eOn: long 
 <dt id="term-EAM">EAM<a class="headerlink" href="#term-EAM" title="Link to this term">¶</a></dt><dd><p>Embedded atom method. The vendored aluminum potential is <code class="docutils literal notranslate"><span class="pre">EAM_Al</span></code>.
 See <a class="reference internal" href="user_guide/potential.html"><span class="doc">Potential</span></a>.</p>
 </dd>
-<dt id="term-FIRE">FIRE<a class="headerlink" href="#term-FIRE" title="Link to this term">¶</a></dt><dd><p>Fast inertial relaxation engine. <code class="docutils literal notranslate"><span class="pre">opt_method</span> <span class="pre">=</span> <span class="pre">fire</span></code> selects it, and
-the schema also offers a FIRE 2.0 variant.
+<dt id="term-FIRE">FIRE<a class="headerlink" href="#term-FIRE" title="Link to this term">¶</a></dt><dd><p>Fast inertial relaxation engine. <code class="docutils literal notranslate"><span class="pre">opt_method</span> <span class="pre">=</span> <span class="pre">fire</span></code> selects it.
+<code class="docutils literal notranslate"><span class="pre">opt_method</span> <span class="pre">=</span> <span class="pre">xtsci</span></code> with <code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">method</span> <span class="pre">=</span> <span class="pre">fire2</span></code> runs version 2.0
+of the fast inertial relaxation engine (FIRE) in rgmin, as algorithm 2
+of Guenole et al. (2020) with the parameters of Table 1 in that paper.
 See <a class="reference internal" href="user_guide/optimizer.html"><span class="doc">Optimizer</span></a>.</p>
 </dd>
 <dt id="term-FPE">FPE<a class="headerlink" href="#term-FPE" title="Link to this term">¶</a></dt><dd><p>Floating-point exception. v2.12 hardens the signal handler and

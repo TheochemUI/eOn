@@ -165,7 +165,23 @@ an ``eindir_objective_t`` around the ``ObjectiveFunction``. The adapter
 checks the eindir ABI stamp, the gradient feature bit, and the semantic
 descriptor (eV, angstrom, analytic forces) before dispatch.
 ``Optimizer::run`` then calls ``rgmin_minimize_eindir`` unless the step
-needs a host Hessian. ``step()`` stays one ``rgmin_solver_t`` iteration.
+needs a host Hessian or the method is ``fire2``. ``step()`` stays one
+``rgmin_solver_t`` iteration. Both paths give ``fire``, ``fire2`` and
+``quickmin`` the ``time_step`` as their time step, and give the other
+methods ``max_move`` as their first step.
+
+``method = fire2`` is version 2.0 of the
+fast inertial relaxation engine (FIRE) as algorithm 2 of Guenole et al.
+(2020) gives it, with
+semi-implicit Euler and the parameters of Table 1 in that paper
+(``alpha_start = 0.25``, ``N_delay = 20``, ``dt_max = 10 dt0``,
+``dt_min = 0.02 dt0``), where ``dt0`` is ``time_step``. On an uphill
+step it moves half a step back and zeroes the velocity. Inside the first
+``N_delay`` steps an uphill step leaves ``dt`` and ``alpha`` alone. The
+adapter selects it with ``rgmin_solver_set_fire_variant``, which needs
+rgmin ABI minor 27. ``rgmin_minimize_eindir`` takes no variant, so
+``fire2`` always runs on the session. ``method = fire`` keeps the FIRE
+1.0 schedule of Bitzek et al. (2006).
 
 ``[Xtsci] qn_step``, ``precon``, and ``accept`` are the first-class
 knobs for an L-BFGS session. They map onto

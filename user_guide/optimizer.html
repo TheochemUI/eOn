@@ -1059,7 +1059,22 @@ an <code class="docutils literal notranslate"><span class="pre">eindir_objective
 checks the eindir ABI stamp, the gradient feature bit, and the semantic
 descriptor (eV, angstrom, analytic forces) before dispatch.
 <code class="docutils literal notranslate"><span class="pre">Optimizer::run</span></code> then calls <code class="docutils literal notranslate"><span class="pre">rgmin_minimize_eindir</span></code> unless the step
-needs a host Hessian. <code class="docutils literal notranslate"><span class="pre">step()</span></code> stays one <code class="docutils literal notranslate"><span class="pre">rgmin_solver_t</span></code> iteration.</p>
+needs a host Hessian or the method is <code class="docutils literal notranslate"><span class="pre">fire2</span></code>. <code class="docutils literal notranslate"><span class="pre">step()</span></code> stays one
+<code class="docutils literal notranslate"><span class="pre">rgmin_solver_t</span></code> iteration. Both paths give <code class="docutils literal notranslate"><span class="pre">fire</span></code>, <code class="docutils literal notranslate"><span class="pre">fire2</span></code> and
+<code class="docutils literal notranslate"><span class="pre">quickmin</span></code> the <code class="docutils literal notranslate"><span class="pre">time_step</span></code> as their time step, and give the other
+methods <code class="docutils literal notranslate"><span class="pre">max_move</span></code> as their first step.</p>
+<p><code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">fire2</span></code> is version 2.0 of the
+fast inertial relaxation engine (FIRE) as algorithm 2 of Guenole et al.
+(2020) gives it, with
+semi-implicit Euler and the parameters of Table 1 in that paper
+(<code class="docutils literal notranslate"><span class="pre">alpha_start</span> <span class="pre">=</span> <span class="pre">0.25</span></code>, <code class="docutils literal notranslate"><span class="pre">N_delay</span> <span class="pre">=</span> <span class="pre">20</span></code>, <code class="docutils literal notranslate"><span class="pre">dt_max</span> <span class="pre">=</span> <span class="pre">10</span> <span class="pre">dt0</span></code>,
+<code class="docutils literal notranslate"><span class="pre">dt_min</span> <span class="pre">=</span> <span class="pre">0.02</span> <span class="pre">dt0</span></code>), where <code class="docutils literal notranslate"><span class="pre">dt0</span></code> is <code class="docutils literal notranslate"><span class="pre">time_step</span></code>. On an uphill
+step it moves half a step back and zeroes the velocity. Inside the first
+<code class="docutils literal notranslate"><span class="pre">N_delay</span></code> steps an uphill step leaves <code class="docutils literal notranslate"><span class="pre">dt</span></code> and <code class="docutils literal notranslate"><span class="pre">alpha</span></code> alone. The
+adapter selects it with <code class="docutils literal notranslate"><span class="pre">rgmin_solver_set_fire_variant</span></code>, which needs
+rgmin ABI minor 27. <code class="docutils literal notranslate"><span class="pre">rgmin_minimize_eindir</span></code> takes no variant, so
+<code class="docutils literal notranslate"><span class="pre">fire2</span></code> always runs on the session. <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">fire</span></code> keeps the FIRE
+1.0 schedule of Bitzek et al. (2006).</p>
 <p><code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">qn_step</span></code>, <code class="docutils literal notranslate"><span class="pre">precon</span></code>, and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are the first-class
 knobs for an L-BFGS session. They map onto
 <code class="docutils literal notranslate"><span class="pre">rgmin_solver_set_qn_step</span></code>, <code class="docutils literal notranslate"><span class="pre">rgmin_solver_step_hess_fg</span></code>, and
@@ -1122,7 +1137,12 @@ method the engine runs. Tokens match <code class="docutils literal notranslate">
 <li><p><code class="docutils literal notranslate"><span class="pre">adam</span></code>: Kingma-Ba Adam with a line search</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">pso</span></code>: particle swarm</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">fire</span></code>: Bitzek FIRE (one fused force per geometry)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">fire2</span></code>: Guénolé FIRE 2.0</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fire2</span></code>: FIRE 2.0 as algorithm 2 of Guenole et al. 2020
+(semi-implicit Euler) with the parameters of its Table 1:
+<code class="docutils literal notranslate"><span class="pre">alpha_start</span> <span class="pre">=</span> <span class="pre">0.25</span></code>, <code class="docutils literal notranslate"><span class="pre">N_delay</span> <span class="pre">=</span> <span class="pre">20</span></code>, <code class="docutils literal notranslate"><span class="pre">dt_max</span> <span class="pre">=</span> <span class="pre">10</span> <span class="pre">dt0</span></code>,
+<code class="docutils literal notranslate"><span class="pre">dt_min</span> <span class="pre">=</span> <span class="pre">0.02</span> <span class="pre">dt0</span></code> and half a step back on an uphill step.
+<code class="docutils literal notranslate"><span class="pre">dt0</span></code> is <code class="docutils literal notranslate"><span class="pre">[Optimizer]</span> <span class="pre">time_step</span></code>. Needs rgmin ABI minor 27
+(<code class="docutils literal notranslate"><span class="pre">rgmin_solver_set_fire_variant</span></code>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">bb</span></code>: Barzilai-Borwein spectral step</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">quickmin</span></code>: quick-min, the velocity projected on the force
 (rgmin ABI minor 29)</p></li>
