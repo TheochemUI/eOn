@@ -101,6 +101,15 @@ frame = readcon.read_first_frame(filename)  # single frame
 readcon.write_con(filename, [frame])     # write
 ```
 
+`DurableTable` in the same module appends one text line to a table or a
+log. The line is a single write, followed by a flush and an fsync. A
+final data line with no newline, or with the wrong number of fields, is
+dropped on read and a warning is logged. The next append cuts that tail
+off before it writes. A write that raises is truncated back to the
+length the file had once the torn tail was gone. `header_lines` keeps a
+short header, `min_fields` is the field count, and `exact` requires that
+count rather than a minimum.
+
 At the time of writing, the Python orchestration layer is still primarily a
 consumer of `.con` data; the richer frame metadata is currently produced in
 the C++ client for trajectory outputs and downstream visualization tooling.
