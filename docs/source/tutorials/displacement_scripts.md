@@ -21,7 +21,8 @@ eOn has two ways to target displacements at the reactive atoms:
    **file-order** rows (the order atoms appear in the `.con`). After
    load, `Structure` sorts unique `atom_id`s; `ListedAtoms` always
    remaps the file-order list through that sort, then keeps free
-   atoms. Prefer this over guessing Structure rows.
+   atoms. Prefer this over guessing Structure rows. Appending an atom
+   extends that file-order map, so the new atom is its last row.
 
 2. **Dynamic script** (`displace_atom_kmc_state_script`): a Python script
    that is executed once per new AKMC state. The script receives a temp
