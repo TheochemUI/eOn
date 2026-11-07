@@ -47,6 +47,9 @@ To run Parallel Replica jobs:
 of thermostat can be set in the **[Dynamics]** section.
 - The {any}`temperature <eon.schema.MainConfig.temperature>` for the dynamics
   run is set in the **[Main]** section.
+- A product whose geometry cannot be read is not a transition. The time
+  already stored for the state is kept, and searches from that state are
+  not cancelled. The escape-rate register follows the same rule.
 
 ## Configuration
 
