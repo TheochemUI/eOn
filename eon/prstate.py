@@ -111,13 +111,12 @@ class PRState(state.State):
     def save_process_table(self):
         """ If the processtable is present in memory, writes it to disk. """
         if self.procs != None:
-            f = open(self.proctable_path, 'w')
-            f.write(self.processtable_header)
-            for id in list(self.procs.keys()):
-                proc = self.procs[id]
-                f.write(self.processtable_line % (id, proc['product'], proc['product_energy'],
-                                                  proc['time']))
-            f.close()
+            with io.atomic_write(self.proctable_path) as f:
+                f.write(self.processtable_header)
+                for id in list(self.procs.keys()):
+                    proc = self.procs[id]
+                    f.write(self.processtable_line % (id, proc['product'], proc['product_energy'],
+                                                      proc['time']))
 
     def append_process_table(self, id, product, product_energy, time):
         """ Append to the process table.  Append a single line to the process table file.  If we
