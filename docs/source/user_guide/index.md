@@ -44,7 +44,8 @@ aiida
 
 Each of the sections and methods may still be included in a configuration file
 with the appropriate section header (used by the `eonclient` binary, the AKMC
-server, and optional workdir helpers).
+server, and optional workdir helpers). A missing configuration file is
+reported on standard error and the process exits with status 2.
 
 ## Overview
 

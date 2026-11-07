@@ -75,14 +75,14 @@ class ConfigClass:
                 parser.read(str(config_path))
                 self.config_path = str(config_path.resolve())
             else:
-                print("Specified configuration file %s does not exist" % config_file, sys.stderr)
+                print("Specified configuration file %s does not exist" % config_file, file=sys.stderr)
                 sys.exit(2)
         elif Path("config.ini").is_file():
             parser.read("config.ini")
             self.config_path = str(Path("config.ini").resolve())
             gave_config = False
         else:
-            print("You must provide a configuration file either by providing its name as a command line argument or by placing a config.ini in the current directory", sys.stderr)
+            print("You must provide a configuration file either by providing its name as a command line argument or by placing a config.ini in the current directory", file=sys.stderr)
             sys.exit(2)
         sections = False
         options = False
