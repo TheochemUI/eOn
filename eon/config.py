@@ -287,9 +287,12 @@ class ConfigClass:
         # when injecting displace_atom_kmc_state_script Structure-row output.
         self.disp_listed_from_script = False
         if self.displace_listed_atom_weight != 0.0:
-            self.disp_listed_atoms = [ int(c.lstrip()) for c in parser.get('Saddle Search', 'displace_atom_list').split(',') ]
-            if self.disp_listed_atoms == ['None']:
+            raw_atoms = parser.get('Saddle Search', 'displace_atom_list')
+            tokens = [c.strip() for c in raw_atoms.split(',') if c.strip()]
+            if tokens == ['None'] or not tokens:
                 self.disp_listed_atoms = []
+            else:
+                self.disp_listed_atoms = [int(c) for c in tokens]
         if self.displace_listed_type_weight != 0.0:
             self.disp_listed_types = [ (c.lstrip()) for c in parser.get('Saddle Search', 'displace_type_list').split(',') ]
             if self.disp_listed_types == ['None']:
