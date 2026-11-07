@@ -283,6 +283,37 @@ def save_known_saddles(fileout, saddles, reactant):
             fileout.write("%.6f %.6f %.6f\n" % (x, y, z))
 
 
+def _replace_con(path, frames):
+    """Write frames to path by replacing the file in one step.
+
+    readcon.write_con truncates its path. A failure after that leaves a
+    partial .con, so the bytes go to a temporary file in the same
+    directory and replace the destination only after the write returns.
+    The suffix is kept so a .con.gz or .con.zst target stays compressed.
+    """
+    dest = Path(path)
+    suffix = "".join(dest.suffixes) or ".con"
+    fd, temp_path = tempfile.mkstemp(
+        dir=str(dest.parent),
+        prefix="." + dest.name + ".",
+        suffix=suffix,
+    )
+    os.close(fd)
+    try:
+        readcon.write_con(temp_path, frames)
+        try:
+            os.chmod(temp_path, stat.S_IMODE(dest.stat().st_mode))
+        except OSError:
+            os.chmod(temp_path, DEFAULT_FILE_MODE)
+        os.replace(temp_path, dest)
+    except BaseException:
+        try:
+            os.unlink(temp_path)
+        except OSError:
+            pass
+        raise
+
+
 def savecon(fileout, p, w = 'w'):
     '''
     Save a con file via readcon.
@@ -302,14 +333,14 @@ def savecon(fileout, p, w = 'w'):
         if _path_is_compressed_con(fileout):
             existing = readcon.read_con(fileout)
             existing.append(frame)
-            readcon.write_con(fileout, existing)
+            _replace_con(fileout, existing)
         else:
             with open(fileout, 'a') as fh:
                 if not _file_ends_with_newline(fileout):
                     fh.write('\n')
                 fh.write(frame_text)
     else:
-        readcon.write_con(fileout, [frame])
+        _replace_con(fileout, [frame])
     if not hasattr(fileout, 'write'):
         if w == 'a':
             _mirror_con_text(fileout, frame_text)
