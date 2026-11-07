@@ -232,6 +232,10 @@ class ASKMC:
             barrier = procs["barrier"]
             rate = procs["rate"]
             self.append_modified_process_table(current_state, next_state_process_id, saddle_energy, prefactor, product, product_energy, product_prefactor, barrier, rate, 1)
+            # The first sighting is a view. When Nf is 1 this visit
+            # already meets the superbasin check.
+            if 1 >= (2 ** sb_check_count) * self.Nf:
+                self.raiseup(current_state, next_state, sb_check_count, num_rate_changes)
         # Otherwise it's been seen before, and one simply needs to be added to the view_count
         else:
             current_state_mod_procs[next_state_process_id]["view_count"] += 1

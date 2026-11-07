@@ -38,6 +38,9 @@ more likely. The method is designed to raise all the barriers in the superbasin
 simultaneously. Once a particular barrier has been crossed a certain number of
 times, {math}`N_f` (more on determining {math}`N_f` shortly), a check is
 performed to determine whether or not the current state is part of a superbasin.
+The first time a process is followed, that sighting counts toward {math}`N_f`.
+When the count already meets {math}`N_f`, the Superbasin Criterion runs on
+that visit.
 This is called the Superbasin Criterion.
 
 In the Superbasin Criterion, a search is performed, originating at the current
