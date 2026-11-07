@@ -202,7 +202,7 @@ class ClientMinModeExplorer(MinModeExplorer):
             "local_lib",
         )
         if not inprocess:
-            file_permission = os.stat("pos.con").st_mode
+            file_permission = os.stat(Path(self.config.path_root) / "pos.con").st_mode
         else:
             file_permission = 0o644
         invariants['pos.con'] = (reactIO, file_permission)
@@ -407,7 +407,7 @@ class ServerMinModeExplorer(MinModeExplorer):
         self.process_searches = {}
         self.job_info = {}
 
-        pickle_path = Path("explorer.pickle")
+        pickle_path = Path(config.path_root) / "explorer.pickle"
         if pickle_path.is_file():
             with pickle_path.open("rb") as f:
                 tmp_dict = pickle.load(f)
@@ -416,16 +416,17 @@ class ServerMinModeExplorer(MinModeExplorer):
         MinModeExplorer.__init__(self, states, previous_state, state, superbasin, config=config)
 
     def save(self):
-        f = open("explorer.pickle", "wb")
+        pickle_path = Path(self.config.path_root) / "explorer.pickle"
         d = self.__dict__.copy()
         del d['states']
         del d['previous_state']
         del d['state']
         del d['comm']
-        pickle.dump(d, f, pickle.HIGHEST_PROTOCOL)
-        f.close()
+        with pickle_path.open("wb") as f:
+            pickle.dump(d, f, pickle.HIGHEST_PROTOCOL)
 
-        f = open("searches.log", 'w')
+        log_path = Path(self.config.path_results) / "searches.log"
+        f = open(log_path, "w")
         f.write("%9s %13s %11s %10s\n" % ("search_id", "job_type", "status", "job_name"))
         for search_id in self.job_info:
             fmt = "%9i %13s %11s %10s\n"

@@ -35,6 +35,9 @@ climbed to the same saddle would have ended the same way.
 The key is read by both the server and the client; with `false` the server
 sends no list and the client ignores one.
 
+The server reads `pos.con` and `explorer.pickle` from the run directory, and
+writes `searches.log` in the results directory.
+
 ## Configuration
 
 ```{code-block} ini

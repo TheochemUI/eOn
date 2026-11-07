@@ -25,6 +25,8 @@ def test_inprocess_register_skips_the_client_workdir():
     assert guard != -1 and mkdir_at != -1 and guard < mkdir_at
     assert "tot_searches = num_registered" in register
     make = _slice(text, "def make_jobs(self):", "def register_results(self):")
-    stat_at = make.find('os.stat("pos.con")')
+    stat_at = make.find("os.stat(")
+    pos_at = make.find("pos.con")
     make_guard = make.find("if not inprocess:")
-    assert make_guard != -1 and stat_at != -1 and make_guard < stat_at
+    assert make_guard != -1 and stat_at != -1 and pos_at != -1
+    assert make_guard < stat_at
