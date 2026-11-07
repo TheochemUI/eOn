@@ -12,7 +12,8 @@ and calculate prefactors all within the context of this job.
 
 Those connecting minima each use a separate `ext_pot` when `[Main] parallel`
 stays at its default. The exchange directories are described in
-<project:ext_pot.md>.
+<project:ext_pot.md>. The explorer pickle and the search log are replaced
+in one step, so a killed save leaves the previous files in place.
 
 ## Known saddles
 
