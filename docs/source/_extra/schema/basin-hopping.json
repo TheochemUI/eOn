@@ -86,8 +86,8 @@
       "type": "boolean"
     },
     "jump_max": {
-      "default": 0,
-      "description": "Number of consecutive rejected steps after which jump steps should be taken.\n\nThis provides a more global search when the structure is stuck in a certain\nbasin. The number of jump steps is assigned in\n:any:`eon.schema.BasinHoppingConfig.jump_steps`. See\n:cite:t:`bh-iwamatsuBasinHoppingOccasional2004` for more details.",
+      "default": 10,
+      "description": "Number of consecutive rejected steps after which jump steps should be taken. The default is 10, the same count the client uses when the key is omitted.\n\nThis provides a more global search when the structure is stuck in a certain\nbasin. The number of jump steps is assigned in\n:any:`eon.schema.BasinHoppingConfig.jump_steps`. See\n:cite:t:`bh-iwamatsuBasinHoppingOccasional2004` for more details.",
       "type": "integer"
     },
     "significant_structure": {
