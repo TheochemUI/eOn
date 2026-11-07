@@ -35,6 +35,9 @@ climbed to the same saddle would have ended the same way.
 The key is read by both the server and the client; with `false` the server
 sends no list and the client ignores one.
 
+Saving a finished result into a directory that already exists replaces
+the files in that directory.
+
 ## Configuration
 
 ```{code-block} ini
