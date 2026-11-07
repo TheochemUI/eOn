@@ -196,4 +196,6 @@ A potential that needs several MPI ranks, such as CPMD behind `ext_pot`,
 starts them from its wrapper inside the job (`srun -n 48 cpmd.x ...`); the
 client itself stays one process. When a state reaches its confidence the
 server cancels only the jobs still queued. Jobs that already finished are
-harvested on the next pass and filtered by state.
+harvested on the next pass and filtered by state. Queue ids are stored in
+`script_job_ids` under the scratch directory. That file is replaced in one
+step, and a truncated file starts the run with an empty id map.
