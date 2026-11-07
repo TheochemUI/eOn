@@ -101,7 +101,7 @@ def test_nonfinite_and_unchanged_odd_default():
     assert neb["properties"]["images"]["default"] == 5
     assert neb["properties"]["spring"]["default"] == 5.0
     hop = section_json_schema(BasinHoppingConfig, "Basin Hopping")
-    assert hop["properties"]["max_displacement_algorithm"]["default"] == 0
+    assert hop["properties"]["displacement_algorithm"]["default"] == "standard"
     assert hop["properties"]["displacement_distribution"]["enum"] == [
         "gaussian",
         "uniform",
