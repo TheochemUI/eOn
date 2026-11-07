@@ -78,7 +78,7 @@ class SB_Recycling:
                     for state in self.sb_states:
                         state.load_process_table()
                         pid = self.get_process_id(state.procs, self.current_state.number)
-                        if pid and state.procs[pid]["rate"] > fastest:
+                        if pid is not None and state.procs[pid]["rate"] > fastest:
                             self.previous_state = state
                             prev_state_index = self.sb_states.index(state)
                     # Reorganize the states so that the 'corresponding' state is not defined.
