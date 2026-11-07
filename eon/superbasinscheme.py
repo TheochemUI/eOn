@@ -26,8 +26,8 @@ class SuperbasinScheme:
         root = Path(self.path)
         if not root.is_dir():
             logger.warning('Superbasin path does not exist, creating %s' % self.path)
-            root.mkdir(parents=True)
-            Path(self.path_storage).mkdir()
+        root.mkdir(parents=True, exist_ok=True)
+        Path(self.path_storage).mkdir(exist_ok=True)
 
         self.superbasins = []
         self.next_sb_num = 0
