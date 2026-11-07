@@ -24,6 +24,9 @@ by fast rates into "superbasins". Information about transitions between states
 in a superbasin is lost, but the rates for transitions across a superbasin are
 correct.
 
+Transition counts and energy levels are replaced in one step. A write that
+stops partway leaves the previous file.
+
 ## Accelerated Superbasin Kinetic Monte Carlo (AS-KMC)
 
 The second method, accelerated superbasin kinetic Monte Carlo (AS-KMC) of
