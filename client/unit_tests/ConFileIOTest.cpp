@@ -1288,4 +1288,33 @@ TEST_CASE("writeConForces set after Matter construction is still written",
   std::filesystem::remove(tmpfile);
 }
 
+// Spec minor 1 rejects a velocities section with no units.time. The
+// convel writer records that unit, and the minor-1 reader accepts it.
+TEST_CASE("convel write is accepted by the spec minor 1 reader",
+          "[confileio][convel][units]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto m = std::make_shared<Matter>(pot, params);
+  m->con2matter(std::string("reactant.con"));
+  auto vel = m->getVelocities();
+  vel.setConstant(0.01);
+  m->setVelocities(vel);
+
+  const std::string path =
+      (std::filesystem::temp_directory_path() / "_test_convel_units.convel")
+          .string();
+  std::filesystem::remove(path);
+  REQUIRE(eonc::io::io_ok(eonc::io::matter2convel(*m, path)));
+
+  const auto frame = readcon::read_first_frame(path);
+  REQUIRE(frame.has_velocities());
+  REQUIRE(frame.atoms().size() == static_cast<size_t>(m->numberOfAtoms()));
+  const auto json = frame.metadata_json();
+  const bool has_time = json.find("\"time\"") != std::string::npos;
+  REQUIRE(has_time);
+  std::filesystem::remove(path);
+}
+
 } /* namespace tests */

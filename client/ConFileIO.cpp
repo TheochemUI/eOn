@@ -483,6 +483,12 @@ readcon::ConFrame frame_from_matter(Matter &m,
       meta_ptr = &auto_meta;
     }
   }
+  if (with_velocities) {
+    // Spec minor 1 rejects a velocities section that has no units.time.
+    // set_metadata_json replaces the map, so this runs before the other keys.
+    builder.set_metadata_json(
+        R"({"units":{"energy":"eV","length":"angstrom","mass":"amu","time":"(amu*angstrom^2/eV)^0.5"}})");
+  }
   apply_frame_metadata(builder, meta_ptr);
   apply_geometry(builder, m, with_velocities, meta_ptr);
   return builder.build();
