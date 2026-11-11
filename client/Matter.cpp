@@ -81,6 +81,7 @@ Matter::Matter(std::shared_ptr<Potential> pot, const Parameters &params)
       forceCalls{0},
       removeNetForce{params.main_options().removeNetForce},
       structComp{params.structure_comparison_options()},
+      writeConForces_{params.main_options().writeConForces.share()},
       parameters{&params},
       nAtoms{0},
       impl_{std::make_unique<Impl>()},
@@ -114,7 +115,7 @@ bool Matter::holdsExclusivePotential() const {
 }
 
 bool Matter::getWriteConForces() const noexcept {
-  return parameters != nullptr && parameters->main_options().writeConForces;
+  return writeConForces_ && *writeConForces_;
 }
 
 namespace {
@@ -157,6 +158,7 @@ const Matter &Matter::operator=(const Matter &matter) {
 
   removeNetForce = matter.removeNetForce;
   structComp = matter.structComp;
+  writeConForces_ = matter.writeConForces_;
   parameters = matter.parameters;
 
   usePeriodicBoundaries = matter.usePeriodicBoundaries;
@@ -211,6 +213,7 @@ Matter &Matter::operator=(Matter &&other) noexcept {
   headerCon = std::move(other.headerCon);
   removeNetForce = other.removeNetForce;
   structComp = other.structComp;
+  writeConForces_ = other.writeConForces_;
   parameters = other.parameters;
   nAtoms = other.nAtoms;
   impl_->positions = std::move(other.impl_->positions);

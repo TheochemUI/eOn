@@ -15,10 +15,61 @@
 #include "StructureComparisonOptions.h"
 #include <cstdint>
 #include <limits>
+#include <memory>
 #include <string>
 #include <vector>
 
 namespace eonc {
+
+/// Bool storage shared with Matter.
+///
+/// Assignment updates the same cell, so a Matter built from this Parameters
+/// sees a later write. Copying the flag makes a new cell. Destroying the
+/// Parameters leaves the cell with its last value for any Matter that still
+/// holds it. The cell is not the Parameters address, so a new Parameters
+/// allocated in the same place does not alias an older Matter.
+struct shared_flag {
+  std::shared_ptr<bool> bit{std::make_shared<bool>(false)};
+
+  shared_flag() = default;
+  explicit shared_flag(bool value) : bit(std::make_shared<bool>(value)) {}
+  shared_flag(const shared_flag &other)
+      : bit(std::make_shared<bool>(static_cast<bool>(other))) {}
+  shared_flag(shared_flag &&other) noexcept : bit(std::move(other.bit)) {}
+
+  shared_flag &operator=(const shared_flag &other) {
+    if (this != &other) {
+      *ensure() = static_cast<bool>(other);
+    }
+    return *this;
+  }
+  shared_flag &operator=(shared_flag &&other) noexcept {
+    if (this != &other) {
+      if (bit && other.bit) {
+        *bit = *other.bit;
+      } else {
+        bit = std::move(other.bit);
+      }
+    }
+    return *this;
+  }
+  shared_flag &operator=(bool value) {
+    *ensure() = value;
+    return *this;
+  }
+
+  operator bool() const { return bit && *bit; }
+
+  [[nodiscard]] std::shared_ptr<bool> share() const { return bit; }
+
+private:
+  std::shared_ptr<bool> &ensure() {
+    if (!bit) {
+      bit = std::make_shared<bool>(false);
+    }
+    return bit;
+  }
+};
 
 // Physical Constants
 struct constants_t {
@@ -43,7 +94,7 @@ struct main_options_t {
   /// Opt-in "Forces of Component" sections in written .con frames
   /// (enables force+energy co-load on restart); classic readers such as
   /// ASE's eon parser reject frames that carry them.
-  bool writeConForces{false};
+  shared_flag writeConForces{false};
   /// Chemfiles format substituted for a `.con` request. Empty or `con`
   /// keeps readcon. Output stays `.con`.
   std::string inputFormat;

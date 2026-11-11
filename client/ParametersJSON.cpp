@@ -70,7 +70,8 @@ json to_json(const Parameters &p) {
       {"remove_net_force",
        ParametersLoadAccess::main_options(p).removeNetForce},
       {"write_con_forces",
-       ParametersLoadAccess::main_options(p).writeConForces},
+       static_cast<bool>(
+           ParametersLoadAccess::main_options(p).writeConForces)},
       {"input_format", ParametersLoadAccess::main_options(p).inputFormat},
       {"cell", ParametersLoadAccess::main_options(p).cell},
       {"pbc", ParametersLoadAccess::main_options(p).pbc},
@@ -514,8 +515,12 @@ void from_json(const json &j, Parameters &p) {
              ParametersLoadAccess::main_options(p).maxForceCalls);
     JSON_OPT(m, "remove_net_force",
              ParametersLoadAccess::main_options(p).removeNetForce);
-    JSON_OPT(m, "write_con_forces",
-             ParametersLoadAccess::main_options(p).writeConForces);
+    {
+      bool writeConForces =
+          ParametersLoadAccess::main_options(p).writeConForces;
+      JSON_OPT(m, "write_con_forces", writeConForces);
+      ParametersLoadAccess::main_options(p).writeConForces = writeConForces;
+    }
     auto &main = ParametersLoadAccess::main_options(p);
     auto inputFormat = main.inputFormat;
     auto cell = main.cell;

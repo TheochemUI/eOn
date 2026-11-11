@@ -265,7 +265,9 @@ public:
   /// ignored. `rows` must have one row per atom.
   [[nodiscard]] double maxFreeAtomForce(const AtomMatrix &rows) const;
 
-  /// Parameters.main_options().writeConForces for this Matter, if bound.
+  /// Parameters.main_options().writeConForces for this Matter.
+  /// Follows later writes to that same Parameters. After it is destroyed,
+  /// the last value remains. The read does not use the Parameters address.
   [[nodiscard]] bool getWriteConForces() const noexcept;
 
   // I/O delegates to eonc::io free functions (IoStatus for bindings).
@@ -389,8 +391,11 @@ private:
   // Narrowed from Parameters: only fields Matter actually reads
   bool removeNetForce{true};
   StructureComparisonOptions structComp;
-  // Full Parameters pointer retained solely for relax() delegation
-  const Parameters *parameters;
+  // Same cell as Parameters::main_options().writeConForces. relax() and
+  // captureStress() still borrow `parameters`; a write does not.
+  std::shared_ptr<bool> writeConForces_;
+  // Full Parameters pointer retained for relax() and the parallel flag.
+  const Parameters *parameters{nullptr};
   long nAtoms;
   /// Eigen matrices (positions, forces, cell, masks, masses). Incomplete
   /// here so this header does not embed their layout in Matter.

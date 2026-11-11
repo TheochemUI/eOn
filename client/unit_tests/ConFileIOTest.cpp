@@ -23,6 +23,7 @@
 #include <format>
 #include <fstream>
 #include <iterator>
+#include <new>
 #include <sstream>
 #include <string>
 
@@ -1201,6 +1202,90 @@ TEST_CASE("ConFileIO append leaves no scratch files behind",
   REQUIRE(entries == 1);
 
   std::filesystem::remove_all(dir);
+}
+
+// A helper that returns Matter and drops the Parameters it borrowed used
+// to crash in matter2con and matter2convel. The write reads the force
+// flag's own cell, not the Parameters address.
+TEST_CASE("matter2con survives after Parameters ends",
+          "[confileio][matter2con]") {
+  std::shared_ptr<Matter> held;
+  {
+    Parameters params;
+    ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+    auto pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
+    held = std::make_shared<Matter>(pot, params);
+    constexpr long n = 32;
+    held->resize(n);
+    held->setCell(12.0 * Matrix3d::Identity());
+    for (long i = 0; i < n; ++i) {
+      held->setAtomicNr(i, 29);
+      held->setMass(i, 63.546);
+      held->setPosition(i, 0, 0.2 * static_cast<double>(i));
+      held->setPosition(i, 1, 0.1 * static_cast<double>(i % 8));
+      held->setPosition(i, 2, 0.05 * static_cast<double>(i % 4));
+      held->setVelocity(i, 0, 1.0e-4 * static_cast<double>(i));
+    }
+    held->setFixedMask(0, {true, true, false});
+    held->setAtomIndex(0, 41);
+  }
+
+  const auto dir = std::filesystem::temp_directory_path();
+  const std::string traj = (dir / "_test_params_ended.con").string();
+  std::filesystem::remove(traj);
+
+  eonc::io::ConFrameMetadata meta;
+  meta.frame_index = 0;
+  REQUIRE(eonc::io::io_ok(held->matter2con(traj, false, &meta)));
+  meta.frame_index = 1;
+  REQUIRE(eonc::io::io_ok(held->matter2con(traj, true, &meta)));
+
+  // A new Parameters in the same storage must not be read as the old one.
+  {
+    alignas(Parameters) unsigned char storage[sizeof(Parameters)];
+    auto *first = new (storage) Parameters();
+    auto pot2 = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, *first));
+    Matter reused(pot2, *first);
+    first->~Parameters();
+    auto *second = new (storage) Parameters();
+    ParametersLoadAccess::main_options(*second).writeConForces = true;
+    REQUIRE_FALSE(reused.getWriteConForces());
+    second->~Parameters();
+  }
+
+  const auto frames = readcon::read_all_frames(traj);
+  REQUIRE(frames.size() == 2);
+  REQUIRE(frames.front().atoms().size() == 32);
+  REQUIRE_FALSE(frames.front().has_forces());
+
+  std::filesystem::remove(traj);
+}
+
+// tests/test_pyeonclient_matter.py sets params.write_con_forces after the
+// Matter exists and then writes. The flag cell is shared, so that write
+// still emits forces.
+TEST_CASE("writeConForces set after Matter construction is still written",
+          "[confileio][forces]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto m = std::make_shared<Matter>(pot, params);
+  m->con2matter(std::string("reactant.con"));
+  ParametersLoadAccess::main_options(params).writeConForces = true;
+  static_cast<void>(m->getPotentialEnergy());
+  REQUIRE_FALSE(eonc::io::write_con_forces());
+
+  const std::string tmpfile =
+      (std::filesystem::temp_directory_path() / "_test_forces_after.con")
+          .string();
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmpfile, false)));
+  const auto frames = readcon::read_all_frames(tmpfile);
+  REQUIRE(frames.size() == 1);
+  REQUIRE(frames[0].has_forces());
+  std::filesystem::remove(tmpfile);
 }
 
 } /* namespace tests */

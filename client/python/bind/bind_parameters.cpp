@@ -195,7 +195,8 @@ void bind_parameters(nb::module_ &m) {
       .def_prop_rw(
           "write_con_forces",
           [](const eonc::Parameters &s) {
-            return eonc::ParametersLoadAccess::main_options(s).writeConForces;
+            return static_cast<bool>(
+                eonc::ParametersLoadAccess::main_options(s).writeConForces);
           },
           [](eonc::Parameters &s, bool v) {
             eonc::ParametersLoadAccess::main_options(s).writeConForces = v;
