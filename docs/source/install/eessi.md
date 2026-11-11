@@ -1,7 +1,7 @@
 ---
 myst:
   html_meta:
-    "description": "Build an eOn develop checkout on EESSI 2026.06 with EESSI-extend, CapnProto 1.4.0, a run-path list, and calculator groups."
+    "description": "Build an eOn develop checkout on EESSI 2026.06 with EESSI-extend, CapnProto 1.4.0, the buildenv run-path wrappers, and calculator groups."
     "keywords": "eOn, EESSI, EasyBuild, Meson, develop, CapnProto"
 ---
 
@@ -30,6 +30,8 @@ mkdir -p "${EESSI_USER_INSTALL:-$HOME/eessi}"
 module load EESSI-extend
 ```
 
+Some sites set `LMOD_EXACT_MATCH=yes`; Snellius is one. A short name then fails with "These module(s) or extension(s) exist but cannot be loaded". Use full names, such as `EESSI-extend/2026.06-easybuild`, or run `export LMOD_EXACT_MATCH=no` before the loads on this page.
+
 A user prefix sets `EASYBUILD_UMASK` to `077`. Lmod, running as root, then reports the new module as unknown, because the module directory is not searchable by others. Pass `--umask=022` on every `eb` command.
 
 A shell with nounset (`set -u`) aborts during this load. `EESSI-extend` reads `LD_LIBRARY_PATH`, and the stack leaves that variable unset. Load the module with nounset off.
@@ -42,13 +44,15 @@ The direct in-process rgpot arm builds rgpot's remote procedure call stack. That
 
 ## Configure and build
 
-Open a new shell. Load the bundle. That load pulls `foss/2026.1` and puts Cap'n Proto on `PATH`. No second `module load` is required.
+Open a new shell. Load the bundle, then `buildenv/default-foss-2026.1`. The bundle pulls `foss/2026.1` and puts Cap'n Proto on `PATH`. `buildenv` comes last, for the run paths below.
 
 ```{code-block} bash
 source /cvmfs/software.eessi.io/versions/2026.06/init/bash
 module load EESSI-extend
 module load eOn-devel/2026.06-GCCcore-15.2.0
+module load buildenv/default-foss-2026.1
 hash -r
+command -v gcc
 command -v mpicc
 command -v capnp
 pkg-config --exists capnp-rpc
@@ -58,23 +62,15 @@ pkg-config --exists capnp-rpc
 
 `foss/2026.1` provides `mpicc`, `mpicxx`, and `mpif90`. Export those three as `CC`, `CXX`, and `FC`. Meson then stores the Message Passing Interface (MPI) compiler wrappers.
 
-Loaded modules do not set `LD_LIBRARY_PATH`. Leave it unset. An empty value is not a search path. The bundle writes one run path into `LDFLAGS`, the GCCcore 15.2.0 `lib64` directory. `buildenv/default-foss-2026.1` is part of this release, and its `LDFLAGS` are `-L` link-search directories. Loading the bundle after that module replaces `LDFLAGS` with the single GCCcore run path. The loader still needs one `-Wl,-rpath` for every loaded module library.
+`command -v gcc` should print a path ending in `buildenv/default-foss-2026.1/bin/rpath_wrappers/gcc_wrapper/gcc`.
 
-Walk each `EBROOT` variable. Append `lib` and `lib64` when the directory exists.
+Loaded modules do not set `LD_LIBRARY_PATH`. Leave it unset. `buildenv` puts EasyBuild's run-path wrappers for `gcc`, `g++`, `gfortran` and `ld` first on `PATH`. At link time they add a `-Wl,-rpath` for every `-L` directory and every `LIBRARY_PATH` entry, and every loaded module sets `LIBRARY_PATH`. So `eonclient` finds Cap'n Proto, OpenMPI and FFTW at run time, before and after `meson install`. `mpicc` calls `gcc` from `PATH`, so it goes through the same wrapper. Keep the `LDFLAGS` that `buildenv` sets; replacing it drops the toolchain's `-L` directories.
 
 ```{code-block} bash
-EON_LDFLAGS=""
-for v in $(env | grep -o '^EBROOT[A-Z0-9_]*'); do
-  for l in lib lib64; do
-    if [ -d "${!v}/$l" ]; then
-      EON_LDFLAGS="$EON_LDFLAGS -Wl,-rpath,${!v}/$l"
-    fi
-  done
-done
-export LDFLAGS="$EON_LDFLAGS"
 export CC=mpicc CXX=mpicxx FC=mpif90
-export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=gcc
 ```
+
+`readelf -d build-eessi/client/eonclient | grep RPATH` lists the module library directories after the build.
 
 Point `CARGO_HOME` at an empty directory outside the checkout. Cargo then skips a host cargo configuration in its home. Cargo also reads `.cargo/config.toml` from the checkout and from every parent directory. A tree under `$HOME` still reads `$HOME/.cargo/config.toml`. Move the checkout in that case.
 
@@ -125,3 +121,5 @@ meson test -C build-eessi --suite eon
 ```
 
 Those ranks, on 2026-10-02, for `develop` commit `6f0199ee4`, gave 57 tests: 54 passed, 3 skipped and 0 failed, in 84 s on 8 cores. The three skips are `test_rgpot_mpi_fault`, `test_rgpot_mpi_abort` and `test_rgpot_mpi_params`. Each exits 77 when the CPMD engine library `libcpmdc` is not installed. Later commits on `develop` add tests, so a newer checkout can report a higher pass count.
+
+On 2026-11-11 the `buildenv` route above ran on an AMD Rome node of Snellius with 16 cores, for `develop` commit `0bb29da9e`. The suite ran 80 tests: 74 passed, 5 skipped, and `test_bench_parity` hit the 30 s default timeout. Alone, that test takes 22 s to 27 s on the same node. A parallel run on a loaded node pushes it past 30 s, so it now has a 120 s timeout. With that timeout the same run gave 75 passed, 5 skipped and 0 failed, in 5 min 26 s. A normal account leaves the two `OMPI_ALLOW_RUN_AS_ROOT` variables unset.
