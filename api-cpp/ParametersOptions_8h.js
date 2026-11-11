@@ -1,5 +1,6 @@
 var ParametersOptions_8h =
 [
+    [ "eonc::shared_flag", "structeonc_1_1shared__flag.html", "structeonc_1_1shared__flag" ],
     [ "eonc::constants_t", "structeonc_1_1constants__t.html", "structeonc_1_1constants__t" ],
     [ "eonc::main_options_t", "structeonc_1_1main__options__t.html", "structeonc_1_1main__options__t" ],
     [ "eonc::potential_options_t", "structeonc_1_1potential__options__t.html", "structeonc_1_1potential__options__t" ],

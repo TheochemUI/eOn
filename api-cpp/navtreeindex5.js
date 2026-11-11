@@ -1,5 +1,6 @@
 var NAVTREEINDEX5 =
 {
+"classParameters.html#a2bbe0a1457405761938b27193a002c47":[5,0,29,82],
 "classParameters.html#a2c87b36bb74725fae0c27fac01a03b7b":[5,0,29,16],
 "classParameters.html#a3011ad675a1fe4503d905337050b1e2b":[5,0,29,59],
 "classParameters.html#a30580f564a20e0ddaa54990c279df0de":[5,0,29,103],
@@ -248,6 +249,5 @@ var NAVTREEINDEX5 =
 "classXtsciOptimizer.html#a5854cdd11934a6f03d601c140b38563f":[5,0,45,8],
 "classXtsciOptimizer.html#a60d0585e92e6f5a78cf817d8400f2111":[5,0,45,4],
 "classXtsciOptimizer.html#a87d98e09bd1a2d61a62892b4b08b0602":[5,0,45,5],
-"classXtsciOptimizer.html#a9121e4b8075aaf0f60912967a7ef633c":[5,0,45,11],
-"classXtsciOptimizer.html#a92eeff22e2007615935c6de6fb9983b7":[5,0,45,12]
+"classXtsciOptimizer.html#a9121e4b8075aaf0f60912967a7ef633c":[5,0,45,11]
 };

@@ -290,6 +290,7 @@ var namespaceeonc =
     [ "SafeHyperJob", "classeonc_1_1SafeHyperJob.html", "classeonc_1_1SafeHyperJob" ],
     [ "serve_options_t", "structeonc_1_1serve__options__t.html", "structeonc_1_1serve__options__t" ],
     [ "ServeEndpoint", "structeonc_1_1ServeEndpoint.html", "structeonc_1_1ServeEndpoint" ],
+    [ "shared_flag", "structeonc_1_1shared__flag.html", "structeonc_1_1shared__flag" ],
     [ "socket_nwchem_options_t", "structeonc_1_1socket__nwchem__options__t.html", "structeonc_1_1socket__nwchem__options__t" ],
     [ "SteepestDescent", "classeonc_1_1SteepestDescent.html", "classeonc_1_1SteepestDescent" ],
     [ "StructureComparisonJob", "classeonc_1_1StructureComparisonJob.html", "classeonc_1_1StructureComparisonJob" ],

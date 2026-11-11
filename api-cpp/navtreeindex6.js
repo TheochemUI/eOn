@@ -1,5 +1,6 @@
 var NAVTREEINDEX6 =
 {
+"classXtsciOptimizer.html#a92eeff22e2007615935c6de6fb9983b7":[5,0,45,12],
 "classXtsciOptimizer.html#ac8fa0e20cc86e1240da7e50af7ccd249":[5,0,45,7],
 "classXtsciOptimizer.html#ace475c05a05056ee374e9f93762f1ba3":[5,0,45,1],
 "classXtsciOptimizer.html#ad94bf9c63f6f403b0f1456124a4eef2c":[5,0,45,9],
@@ -248,6 +249,5 @@ var NAVTREEINDEX6 =
 "classeonc_1_1BasinHoppingJob.html#ae6c747778a927bbce63a5a062008c3a9":[5,0,0,18,7],
 "classeonc_1_1BasinHoppingSaddleSearch.html":[3,0,1,32],
 "classeonc_1_1BasinHoppingSaddleSearch.html":[5,0,0,19],
-"classeonc_1_1BasinHoppingSaddleSearch.html#a011a30b22bf7f41c29881531fef5cfb1":[3,0,1,32,0],
-"classeonc_1_1BasinHoppingSaddleSearch.html#a011a30b22bf7f41c29881531fef5cfb1":[5,0,0,19,0]
+"classeonc_1_1BasinHoppingSaddleSearch.html#a011a30b22bf7f41c29881531fef5cfb1":[3,0,1,32,0]
 };

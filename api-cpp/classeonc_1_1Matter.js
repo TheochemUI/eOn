@@ -148,5 +148,6 @@ var classeonc_1_1Matter =
     [ "removeNetForce", "classeonc_1_1Matter.html#a58f5e1f746e363570a818161de3e140f", null ],
     [ "structComp", "classeonc_1_1Matter.html#aaeeb6df8af376ec4dc71179745e7cf46", null ],
     [ "surfaceEpoch_", "classeonc_1_1Matter.html#a97e69f1e835002ed8cb8f0b293aecaee", null ],
-    [ "usePeriodicBoundaries", "classeonc_1_1Matter.html#aaf6a7b6df1641c0e351abefb3bf5f6bd", null ]
+    [ "usePeriodicBoundaries", "classeonc_1_1Matter.html#aaf6a7b6df1641c0e351abefb3bf5f6bd", null ],
+    [ "writeConForces_", "classeonc_1_1Matter.html#a8c0e5c02fcd5c19a7ce7354a1841ee62", null ]
 ];

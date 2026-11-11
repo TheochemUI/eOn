@@ -315,6 +315,7 @@ var hierarchy =
     [ "eonc::optimizer_options_t::sd_t", "structeonc_1_1optimizer__options__t_1_1sd__t.html", null ],
     [ "eonc::serve_options_t", "structeonc_1_1serve__options__t.html", null ],
     [ "eonc::ServeEndpoint", "structeonc_1_1ServeEndpoint.html", null ],
+    [ "eonc::shared_flag", "structeonc_1_1shared__flag.html", null ],
     [ "eonc::neb::SimpleTangent", "structeonc_1_1neb_1_1SimpleTangent.html", null ],
     [ "eonc::socket_nwchem_options_t", "structeonc_1_1socket__nwchem__options__t.html", null ],
     [ "eonc::neb_options_t::solid_state_options_t", "structeonc_1_1neb__options__t_1_1solid__state__options__t.html", null ],
