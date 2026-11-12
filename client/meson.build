@@ -1964,6 +1964,7 @@ if get_option('with_tests')
         ['test_metatomic_loader', 'MetatomicLoaderTest.cpp', ''],
         ['test_neb_lj', 'NEBMorseTest.cpp', 'neb_morse'],
         ['test_relax_engine', 'RelaxEngineAbiTest.cpp', 'neb_morse'],
+        ['test_instanton_external', 'InstantonExternalTest.cpp', ''],
         ['test_solid_state_neb', 'SolidStateNEBTest.cpp', ''],
         ['test_neb_regression', 'NEBRegressionTest.cpp', 'neb_lj13'],
         ['test_dimer', 'DimerTest.cpp', 'neb_morse'],

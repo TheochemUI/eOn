@@ -661,6 +661,26 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       continue;
     }
 
+    if (const ExternalInstanton hook = external_instanton();
+        hook.evaluate != nullptr) {
+      const auto pos = saddle.getPositionsV();
+      const auto mass = saddle.getMasses();
+      double action = 0.0;
+      const int rc = hook.evaluate(
+          pos.data(), static_cast<int>(pos.size()), mass.data(),
+          static_cast<int>(saddle.numberOfAtoms()), temperature, &action,
+          hook.user);
+      if (rc == 0) {
+        table << temperature << ' ' << tc << ' ' << o.beads
+              << " 1 0 nan 0 nan nan nan nan " << wkbLog << ' ' << action
+              << " nan\n";
+        extras.emplace_back("instanton_temperature_K", temperature);
+        extras.emplace_back("external_action", action);
+        continue;
+      }
+      EONC_LOG_WARNING("[Instanton] external evaluator returned {}", rc);
+    }
+
     tunneling::RateInstantonOptions ro;
     ro.beads = o.beads;
     ro.maxIterations = o.max_iterations;
@@ -1199,5 +1219,13 @@ std::vector<std::string> InstantonJob::run(void) {
   env.writeResultsDat(resultsFile);
   return returnFiles;
 }
+
+namespace {
+ExternalInstanton g_external{};
+}
+
+void set_external_instanton(ExternalInstanton hook) { g_external = hook; }
+
+ExternalInstanton external_instanton() { return g_external; }
 
 } // namespace eonc
