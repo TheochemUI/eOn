@@ -75,6 +75,7 @@ def test_neb_path_frames_in_memory_no_neb_con(tmp_path, monkeypatch):
 
     before = set(tmp_path.iterdir())
     frames = neb.path_frames()
+    assert isinstance(frames, list)
     after = set(tmp_path.iterdir())
     # path_frames must not create durable neb.con (temp handoff is process-private)
     durable_con = {p.name for p in after - before if p.suffix == ".con"}
@@ -149,6 +150,7 @@ def test_matter_movie_frames_without_write_movie(tmp_path, monkeypatch):
     )
 
     frames = m.movie_frames()
+    assert isinstance(frames, list)
     assert len(frames) >= 1
     for i, fr in enumerate(frames):
         assert fr.frame_index == i
@@ -205,6 +207,7 @@ def test_saddle_climb_frames_without_write_movies(tmp_path, monkeypatch):
     assert "climb" not in durable and "climb.con" not in durable
 
     frames = ss.climb_frames()
+    assert isinstance(frames, list)
     assert len(frames) >= 1, f"expected climb frames; status={status} msg={ss.status_message}"
     for i, fr in enumerate(frames):
         assert fr.frame_index == i

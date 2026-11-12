@@ -77,6 +77,8 @@ inline nb::list matter_path_to_python(std::vector<eonc::Matter> path,
 /// Write C++ ConFrames to a short-lived temp .con and load as Python
 /// readcon.ConFrame list (same stamps as disk). Caller never sees the path.
 /// Takes const ref: readcon::ConFrame is move-only (copy deleted).
+/// read_con returns a ConFrameList as of readcon 0.20. Build a real list
+/// before unlinking, then drop that object so the temp file can go.
 inline nb::list
 con_frames_to_python(const std::vector<readcon::ConFrame> &frames) {
   if (frames.empty()) {
@@ -114,8 +116,11 @@ con_frames_to_python(const std::vector<readcon::ConFrame> &frames) {
   try {
     nb::object readcon = nb::module_::import_("readcon");
     nb::object py_frames = readcon.attr("read_con")(tmp.string());
+    nb::object as_list =
+        nb::module_::import_("builtins").attr("list")(py_frames);
+    py_frames.reset();
     fs::remove(tmp);
-    return nb::cast<nb::list>(py_frames);
+    return nb::cast<nb::list>(as_list);
   } catch (...) {
     std::error_code ec;
     fs::remove(tmp, ec);
