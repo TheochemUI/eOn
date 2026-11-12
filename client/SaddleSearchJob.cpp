@@ -17,6 +17,7 @@
 #include "eon/EpiCenters.h"
 #include "eon/HelperFunctions.h"
 #include "eon/Potential.h"
+#include "eon/SolidState.h"
 #include "eon/PrfoRefine.h"
 #include "eon/XtsciIrc.h"
 
@@ -224,6 +225,10 @@ void SaddleSearchJob::saveData(int status) {
     }
     out << std::format("{:f} potential_energy_reactant\n",
                        initial->getPotentialEnergy());
+    if (eonc::solid::movesCell(params)) {
+      eonc::solid::writeElasticDipole(out, *saddle, "saddle_");
+      eonc::solid::writeElasticDipole(out, *initial, "reactant_");
+    }
     if (irc.ran) {
       out << std::format("{} irc_branches_at_minimum\n", irc.branchesAtMinimum);
       out << std::format("{} irc_ends_relaxed\n", int{irc.endsRelaxed});

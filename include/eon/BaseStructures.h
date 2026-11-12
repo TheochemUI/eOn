@@ -71,7 +71,9 @@ enum class PotType {
   DFTD3,
   DFTD4,
   EXPR,
-  MOPAC
+  MOPAC,
+  // Mishin Cu setfl (and any other eam/alloy file) with a Cauchy stress.
+  EAM_CU
 };
 
 enum class JobType {

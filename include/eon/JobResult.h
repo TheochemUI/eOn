@@ -189,6 +189,9 @@ struct JobResultEnvelope {
                        prefactor_reactant_to_product);
     out << std::format("{:.12e} prefactor_product_to_reactant\n",
                        prefactor_product_to_reactant);
+    for (const auto &kv : extras) {
+      out << std::format("{:.12e} {}\n", kv.second, kv.first);
+    }
     out << provenance.text();
     return out.str();
   }

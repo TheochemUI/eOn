@@ -11,6 +11,7 @@
 */
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/ConjugateGradients.h"
+#include "eon/SolidState.h"
 #include "eon/EigenmodeStrategy.h"
 #include "eon/EonLogger.h"
 #include "eon/EpiCenters.h"
@@ -363,7 +364,26 @@ int MinModeSaddleSearch::runRetainFrames(long max_iterations_override) {
   return st;
 }
 
+int MinModeSaddleSearch::runSolidState(long maxIterations) {
+  solid_ = eonc::solid::runMinMode(*matter, mode, reactantEnergy, params,
+                                   maxIterations);
+  status = solid_->status;
+  iteration = solid_->iteration;
+  forcecalls = solid_->forceCalls;
+  return status;
+}
+
+void MinModeSaddleSearch::placeAlongMode(Matter &image, double scale) const {
+  if (!solid_) {
+    return;
+  }
+  eonc::solid::placeAlongMode(*solid_, image, scale);
+}
+
 int MinModeSaddleSearch::run(long max_iterations_override) {
+  if (eonc::solid::movesCell(params)) {
+    return runSolidState(max_iterations_override);
+  }
   long effectiveMaxIter = max_iterations_override;
   QUILL_LOG_DEBUG(
       log, "Saddle point search started from reactant with energy {} eV.",
@@ -797,10 +817,16 @@ bool MinModeSaddleSearch::atKnownSaddle() const {
 }
 
 double MinModeSaddleSearch::getEigenvalue() {
+  if (solid_) {
+    return solid_->curvature;
+  }
   return eonc::eigenmodeGetEigenvalue(*minModeMethod);
 }
 
 AtomMatrix MinModeSaddleSearch::getEigenvector() {
+  if (solid_) {
+    return solid_->chart.unpackAtoms(solid_->mode);
+  }
   return eonc::eigenmodeGetEigenvector(*minModeMethod);
 }
 

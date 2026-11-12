@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/HelperFunctions.h"
+#include "eon/SolidState.h"
 #include "eon/EonLogger.h"
 #include "eon/EpiCenters.h"
 #include "eon/ExactReduction.h"
@@ -452,7 +453,12 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
                                 std::string prefixCheckpoint,
                                 std::vector<readcon::ConFrame> *outFrames) {
   eonc::log::Scoped m_log;
-  auto objf = std::make_shared<MatterObjectiveFunction>(matter, params);
+  std::shared_ptr<eonc::ObjectiveFunction> objf;
+  if (eonc::solid::movesCell(params)) {
+    objf = eonc::solid::makeVariableCellObjective(matter, params);
+  } else {
+    objf = std::make_shared<MatterObjectiveFunction>(matter, params);
+  }
   auto optim = eonc::helpers::create::mkOptim(
       objf, params.optimizer_options().method, params);
 

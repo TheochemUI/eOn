@@ -147,6 +147,7 @@ optimizer
 minimization
 neb
 dimer
+solid_state
 lanczos
 artn
 hessian

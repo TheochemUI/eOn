@@ -227,6 +227,17 @@ There are several specific ASE potentials supported,
 .. autopydantic_model:: eon.schema.ASE_ORCA
 ```
 
+### Mishin copper
+
+`potential = eam_cu` reads a one-element eam/alloy setfl file and reports
+the Cauchy stress with the forces. `[EAM] file` is the path. The Mishin
+copper file (Phys. Rev. B 63, 224106) is the tabulated potential used for a
+<100> interstitial whose barrier depends on shear.
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.EamConfig
+```
+
 ### AMS potentials
 
 Both a direct server model and a file based integration exist.

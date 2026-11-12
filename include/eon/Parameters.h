@@ -80,6 +80,7 @@ public:
   using prefactor_options_t = eonc::prefactor_options_t;
   using hessian_options_t = eonc::hessian_options_t;
   using neb_options_t = eonc::neb_options_t;
+  using solid_state_options_t = eonc::solid_state_options_t;
   using dynamics_options_t = eonc::dynamics_options_t;
   using parallel_replica_options_t = eonc::parallel_replica_options_t;
   using tad_options_t = eonc::tad_options_t;
@@ -128,6 +129,7 @@ public:
   const prefactor_options_t &prefactor_options() const;
   const hessian_options_t &hessian_options() const;
   const neb_options_t &neb_options() const;
+  const solid_state_options_t &solid_state_options() const;
   const dynamics_options_t &dynamics_options() const;
   const parallel_replica_options_t &parallel_replica_options() const;
   const tad_options_t &tad_options() const;
@@ -221,6 +223,8 @@ struct ParametersLoadAccess {
   static const hessian_options_t &hessian_options(const Parameters &p);
   static neb_options_t &neb_options(Parameters &p);
   static const neb_options_t &neb_options(const Parameters &p);
+  static solid_state_options_t &solid_state_options(Parameters &p);
+  static const solid_state_options_t &solid_state_options(const Parameters &p);
   static dynamics_options_t &dynamics_options(Parameters &p);
   static const dynamics_options_t &dynamics_options(const Parameters &p);
   static parallel_replica_options_t &parallel_replica_options(Parameters &p);

@@ -1072,6 +1072,38 @@ int load_ini(const INIReader &ini, Parameters &params) {
   ParametersLoadAccess::neb_options(params).solid_state.pressure = ini.GetReal(
       neb_section, "solid_state_pressure",
       ParametersLoadAccess::neb_options(params).solid_state.pressure);
+
+  // [Solid State] variable-cell minimizer and solid-state dimer.
+  {
+    auto &cell = ParametersLoadAccess::solid_state_options(params);
+    cell.enabled = ini.GetBoolean("Solid State", "enabled", cell.enabled);
+    cell.weight = ini.GetReal("Solid State", "weight", cell.weight);
+    cell.pressure = ini.GetReal("Solid State", "pressure", cell.pressure);
+    const std::string stress =
+        ini.Get("Solid State", "stress", std::string{});
+    if (!stress.empty()) {
+      std::istringstream in(stress);
+      for (double &value : cell.stress) {
+        if (!(in >> value)) {
+          throw std::invalid_argument(
+              "[Solid State] stress needs nine row-major numbers");
+        }
+      }
+    }
+    const std::string mask = ini.Get("Solid State", "mask", std::string{});
+    if (!mask.empty()) {
+      std::istringstream in(mask);
+      for (int &value : cell.mask) {
+        if (!(in >> value)) {
+          throw std::invalid_argument(
+              "[Solid State] mask needs six flags: xx yx yy zx zy zz");
+        }
+      }
+    }
+  }
+  ParametersLoadAccess::potential_options(params).eamFile =
+      ini.Get("EAM", "file",
+              ParametersLoadAccess::potential_options(params).eamFile);
   ParametersLoadAccess::neb_options(params).quantum_temperature = ini.GetReal(
       neb_section, "temperature",
       ParametersLoadAccess::neb_options(params).quantum_temperature);

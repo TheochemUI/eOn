@@ -13,6 +13,7 @@
 
 #include "BaseStructures.h"
 #include "StructureComparisonOptions.h"
+#include <array>
 #include <cstdint>
 #include <limits>
 #include <memory>
@@ -132,6 +133,8 @@ struct potential_options_t {
   int MPIPotentialRank{-1};
   /// Opaque MPI_Comm bits. Read/write with ParametersMpi.h in MPI TUs.
   std::uintptr_t MPIClientComm{0};
+  /// Path of an eam/alloy setfl file for potential = eam_cu.
+  std::string eamFile;
 };
 
 // [AMS] and [AMS_IO] //
@@ -737,6 +740,21 @@ struct neb_options_t {
   /// segment continued outward, for the outer walls of the one-dimensional
   /// tunnelling levels. Zero continues each well by its fit.
   long tunnel_wall_points{0};
+};
+
+// [Solid State] //
+// Variable-cell minimizer and the solid-state dimer. Off keeps the cell
+// frozen, which is the historical fixed-cell search.
+struct solid_state_options_t {
+  bool enabled{false};
+  /// Multiplier on J = V^(1/3) N^(1/6). 1 weights a strain like an atom.
+  double weight{1.0};
+  /// Hydrostatic pressure in eV/Angstrom^3, added to the external stress.
+  double pressure{0.0};
+  /// Extra Cauchy stress, row-major, eV/Angstrom^3.
+  std::array<double, 9> stress{};
+  /// xx yx yy zx zy zz. Nonzero means that component can move.
+  std::array<int, 6> mask{{1, 1, 1, 1, 1, 1}};
 };
 
 // [Molecular Dynamics] //

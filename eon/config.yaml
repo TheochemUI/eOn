@@ -108,6 +108,7 @@ Potential:
                 - ase_orca
                 - cuh2
                 - eam_al
+                - eam_cu
                 - edip
                 - emt
                 - ext_pot
@@ -2957,5 +2958,41 @@ Serve:
             default: 0
 
         endpoints:
+            kind: string
+            default: ""
+
+################################################################################
+
+Solid State:
+
+    options:
+
+        enabled:
+            kind: boolean
+            default: false
+
+        weight:
+            kind: float
+            default: 1.0
+
+        pressure:
+            kind: float
+            default: 0.0
+
+        stress:
+            kind: string
+            default: "0 0 0 0 0 0 0 0 0"
+
+        mask:
+            kind: string
+            default: "1 1 1 1 1 1"
+
+################################################################################
+
+EAM:
+
+    options:
+
+        file:
             kind: string
             default: ""

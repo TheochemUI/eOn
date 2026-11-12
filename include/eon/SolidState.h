@@ -1,0 +1,142 @@
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
+#pragma once
+
+#include "Eigen.h"
+#include "Matter.h"
+#include "ObjectiveFunction.h"
+#include "Parameters.h"
+
+#include <array>
+#include <iosfwd>
+#include <memory>
+#include <string_view>
+
+namespace eonc {
+class JobResultEnvelope;
+}
+
+namespace eonc::solid {
+
+/// Lower-triangular strain components, in order xx, yx, yy, zx, zy, zz.
+inline constexpr int kStrainRows[6] = {0, 1, 1, 2, 2, 2};
+inline constexpr int kStrainCols[6] = {0, 0, 1, 0, 1, 2};
+
+struct Options {
+  bool enabled{false};
+  double weight{1.0};
+  /// Cauchy stress added to the potential stress before the cell force,
+  /// in eV/Angstrom^3. Hydrostatic pressure is already on the diagonal.
+  Matrix3d external{Matrix3d::Zero()};
+  /// True when that strain component is a degree of freedom.
+  std::array<bool, 6> mask{{true, true, true, true, true, true}};
+};
+
+[[nodiscard]] Options optionsFrom(const Parameters &params);
+
+/// True when the cell has at least one free strain component.
+/// The frozen cell (enabled off, or a mask of all zeros) is not this.
+[[nodiscard]] bool movesCell(const Parameters &params);
+
+/// Reference chart for one minimization or saddle search.
+///
+/// The cell is h = h0 (I + ε) with ε lower triangular. The atomic
+/// coordinates are the Cartesian positions in the reference cell, so a
+/// pure cell step keeps fractional coordinates fixed. The scaled strain
+/// is q = J ε with J = V0^(1/3) N^(1/6) weight, held at the reference
+/// volume. doi:10.1063/1.3684549
+class Chart {
+public:
+  Chart(Matter &matter, const Options &options, AtomMatrix *mode = nullptr);
+
+  [[nodiscard]] int degreesOfFreedom() const {
+    return 3 * static_cast<int>(free_.size()) +
+           static_cast<int>(active_.size());
+  }
+  [[nodiscard]] double jacobian() const { return jacobian_; }
+  [[nodiscard]] const Matrix3d &referenceCell() const { return h0_; }
+  [[nodiscard]] const std::vector<long> &freeAtoms() const { return free_; }
+  [[nodiscard]] const std::vector<int> &activeStrain() const { return active_; }
+
+  [[nodiscard]] VectorXd coordinates(const Matter &matter) const;
+  void setCoordinates(Matter &matter, const VectorXd &x) const;
+
+  /// dE/dq in the chart. One force evaluation when the geometry is dirty.
+  [[nodiscard]] VectorXd energyGradient(Matter &matter) const;
+
+  [[nodiscard]] VectorXd generalizedForce(Matter &matter) const {
+    return -energyGradient(matter);
+  }
+
+  /// Minimum-image difference of two coordinate vectors. The cell block
+  /// is not periodic.
+  [[nodiscard]] VectorXd difference(const VectorXd &a, const VectorXd &b) const;
+
+  /// Atomic rows of a joint vector. Fixed atoms are zero.
+  [[nodiscard]] AtomMatrix unpackAtoms(const VectorXd &joint) const;
+  /// Lower-triangular strain direction, not scaled by J.
+  [[nodiscard]] Matrix3d unpackStrain(const VectorXd &joint) const;
+  [[nodiscard]] VectorXd packAtoms(const AtomMatrix &mode) const;
+
+private:
+  Options options_;
+  Matrix3d h0_{Matrix3d::Identity()};
+  AtomMatrix r0_;
+  double jacobian_{1.0};
+  double referenceVolume_{1.0};
+  std::vector<long> free_;
+  std::vector<int> active_;
+
+  [[nodiscard]] Matrix3d deformation(const Matter &matter) const;
+  void readStrain(const Matrix3d &deformation, Matrix3d &eps) const;
+};
+
+[[nodiscard]] std::shared_ptr<ObjectiveFunction>
+makeVariableCellObjective(Matter &matter, const Parameters &params);
+
+struct ModeEstimate {
+  VectorXd mode;
+  double curvature{0.0};
+};
+
+[[nodiscard]] ModeEstimate
+lowestMode(Matter &matter, const Chart &chart, VectorXd direction,
+           const Parameters &params);
+
+/// One finished solid-state min-mode search. The chart stays valid so a
+/// caller can step off the saddle along the joint mode.
+struct SearchState {
+  Chart chart;
+  VectorXd mode;
+  double curvature{0.0};
+  int status{0};
+  int iteration{0};
+  int forceCalls{0};
+
+  explicit SearchState(Chart chartIn) : chart(std::move(chartIn)) {}
+};
+
+[[nodiscard]] std::unique_ptr<SearchState>
+runMinMode(Matter &matter, AtomMatrix mode, double reactantEnergy,
+           const Parameters &params, long maxIterations);
+
+/// `image` starts at the saddle. `scale` is a step in the joint chart.
+void placeAlongMode(const SearchState &state, Matter &image, double scale);
+
+/// Cauchy stress, cell volume, and the elastic dipole P = V σ.
+/// Nothing is written when the potential does not report a stress.
+void appendElasticDipole(JobResultEnvelope &env, Matter &matter,
+                         std::string_view prefix);
+void writeElasticDipole(std::ostream &out, Matter &matter,
+                        std::string_view prefix);
+
+} // namespace eonc::solid

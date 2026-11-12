@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/eam.json",
+  "title": "EAM",
+  "description": "config.ini [EAM] section (EamConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "file": {
+      "default": "",
+      "description": "Path of a one-element eam/alloy setfl file for potential = eam_cu.",
+      "type": "string"
+    }
+  }
+}

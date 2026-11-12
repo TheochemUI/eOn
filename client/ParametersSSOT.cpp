@@ -68,6 +68,8 @@ PotType pot_from_ssot(std::string_view pot) {
     return PotType::LJ;
   if (pot == "eam_al")
     return PotType::EAM_AL;
+  if (pot == "eam_cu")
+    return PotType::EAM_CU;
   if (pot == "emt")
     return PotType::EMT;
   if (pot == "lammps")

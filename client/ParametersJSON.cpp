@@ -204,6 +204,27 @@ json to_json(const Parameters &p) {
       {"path_seed", ParametersLoadAccess::thermostat_options(p).path_seed},
   };
 
+  // [Solid State]
+  {
+    json stress = json::array();
+    json mask = json::array();
+    const auto &cell = ParametersLoadAccess::solid_state_options(p);
+    for (double value : cell.stress) {
+      stress.push_back(value);
+    }
+    for (int value : cell.mask) {
+      mask.push_back(value);
+    }
+    j["Solid State"] = {
+        {"enabled", cell.enabled},
+        {"weight", cell.weight},
+        {"pressure", cell.pressure},
+        {"stress", std::move(stress)},
+        {"mask", std::move(mask)},
+    };
+  }
+  j["EAM"] = {{"file", ParametersLoadAccess::potential_options(p).eamFile}};
+
   // [Nudged Elastic Band]
   j["Nudged Elastic Band"] = {
       {"images", ParametersLoadAccess::neb_options(p).image_count},
@@ -761,6 +782,38 @@ void from_json(const json &j, Parameters &p) {
       JSON_OPT(z, "stability_count", zoom.stability_count);
       JSON_OPT(z, "max_iterations", zoom.max_iterations);
     }
+  }
+
+  if (j.contains("Solid State")) {
+    auto &s = j.at("Solid State");
+    auto &cell = ParametersLoadAccess::solid_state_options(p);
+    JSON_OPT(s, "enabled", cell.enabled);
+    JSON_OPT(s, "weight", cell.weight);
+    JSON_OPT(s, "pressure", cell.pressure);
+    if (s.contains("stress")) {
+      const auto &values = s.at("stress");
+      if (!values.is_array() || values.size() != cell.stress.size()) {
+        throw std::invalid_argument(
+            "[Solid State] stress needs nine row-major numbers");
+      }
+      for (size_t i = 0; i < cell.stress.size(); ++i) {
+        cell.stress[i] = values.at(i).get<double>();
+      }
+    }
+    if (s.contains("mask")) {
+      const auto &values = s.at("mask");
+      if (!values.is_array() || values.size() != cell.mask.size()) {
+        throw std::invalid_argument(
+            "[Solid State] mask needs six flags: xx yx yy zx zy zz");
+      }
+      for (size_t i = 0; i < cell.mask.size(); ++i) {
+        cell.mask[i] = values.at(i).get<int>();
+      }
+    }
+  }
+  if (j.contains("EAM")) {
+    JSON_OPT(j.at("EAM"), "file",
+             ParametersLoadAccess::potential_options(p).eamFile);
   }
 
   // [Dimer]

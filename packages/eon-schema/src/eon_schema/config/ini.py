@@ -43,6 +43,8 @@ MODEL_INI_SECTION: dict[str, str] = {
     "SaddleSearchConfig": "Saddle Search",
     "DimerConfig": "Dimer",
     "NudgedElasticBandConfig": "Nudged Elastic Band",
+    "SolidStateConfig": "Solid State",
+    "EamConfig": "EAM",
     "LanczosConfig": "Lanczos",
     "DavidsonConfig": "Davidson",
     "ARTnConfig": "ARTn",

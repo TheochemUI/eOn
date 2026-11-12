@@ -49,6 +49,7 @@ struct Parameters::Impl {
   prefactor_options_t prefactor_options_{};
   hessian_options_t hessian_options_{};
   neb_options_t neb_options_{};
+  solid_state_options_t solid_state_options_{};
   dynamics_options_t dynamics_options_{};
   parallel_replica_options_t parallel_replica_options_{};
   tad_options_t tad_options_{};

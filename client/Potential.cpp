@@ -34,6 +34,7 @@
 #include "eon/potentials/GPRPotential/GPRPotential.h"
 #endif
 
+#include "eon/SetflEam.h"
 #include "eon/potentials/ExtPot/ExtPot.h"
 #include "eon/potentials/PluginLoader.h"
 #include "eon/potentials/RgpotAdapter/RgpotAdapter.h"
@@ -537,6 +538,13 @@ std::unique_ptr<Potential> makePotential(PotType ptype,
     break;
   }
 #endif
+  case PotType::EAM_CU: {
+    if (params.potential_options().eamFile.empty()) {
+      throw std::runtime_error(
+          "potential eam_cu needs [EAM] file set to an eam/alloy setfl path");
+    }
+    return std::make_unique<SetflEam>(params, params.potential_options().eamFile);
+  }
   default:
     EONC_LOG_ERROR("No known potential could be constructed from {}",
                    magic_enum::enum_name(ptype));

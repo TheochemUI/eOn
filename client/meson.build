@@ -1309,6 +1309,8 @@ eonclib_sources = [
     'QuantumFreeEnergy.cpp',
     'NEBSpringForce.cpp',
     'SolidStateNEB.cpp',
+    'SolidState.cpp',
+    'SetflEam.cpp',
     'NEBTangent.cpp',
     'NEBZoom.cpp',
     'NudgedElasticBand.cpp',
@@ -2357,6 +2359,7 @@ if get_option('with_tests')
         ['test_relax_engine', 'RelaxEngineAbiTest.cpp', 'neb_morse'],
         ['test_solid_state_neb', 'SolidStateNEBTest.cpp', ''],
         ['test_solid_state_bain', 'SolidStateBainTest.cpp', ''],
+        ['test_solid_state_dimer', 'SolidStateDimerTest.cpp', '', 300],
         ['test_neb_regression', 'NEBRegressionTest.cpp', 'neb_lj13'],
         # Alone 22 s to 27 s on a Rome core; a parallel suite run exceeds 30 s.
         ['test_bench_parity', 'BenchParityTest.cpp', 'neb_lj13', 120],

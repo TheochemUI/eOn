@@ -192,7 +192,9 @@ Set `write_deprecated_outs = true` in `[Debug]` to also emit the legacy
 
 ## Configuration
 
-The minimization job reads `[Optimizer]`.
+The minimization job reads `[Optimizer]`. With `[Solid State] enabled` the
+same optimizer relaxes the cell strain with the atoms. The cell is frozen
+when that flag is false. See {doc}`solid_state`.
 Its `opt_method` defaults to `cg`.
 An optional `[Refine]` block is client-only: the client reads it when the section is present, and the server exits on the unknown section before the client runs.
 

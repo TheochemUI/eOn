@@ -29,7 +29,10 @@ double solidStateJacobian(double meanVolume, int nAtoms, double weight);
 /// vector lies on x and the second lies in the xy plane. Fractional
 /// coordinates and the sign of the volume are unchanged. Returns false when
 /// the cell is singular or two lattice vectors are parallel.
-bool orientCellLowerTriangular(Matrix3d &cell, AtomMatrix &positions);
+/// `rotationOut`, when set, receives the proper rotation applied to rows
+/// of the cell and of the positions (new = old * R).
+bool orientCellLowerTriangular(Matrix3d &cell, AtomMatrix &positions,
+                               Matrix3d *rotationOut = nullptr);
 
 void orientSolidStateMatter(Matter &image);
 

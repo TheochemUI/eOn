@@ -46,7 +46,8 @@ double solidStateJacobian(double meanVolume, int nAtoms, double weight) {
   return std::cbrt(meanVolume / n) * std::sqrt(n) * weight;
 }
 
-bool orientCellLowerTriangular(Matrix3d &cell, AtomMatrix &positions) {
+bool orientCellLowerTriangular(Matrix3d &cell, AtomMatrix &positions,
+                               Matrix3d *rotationOut) {
   const Vector3d a = cell.row(0);
   const Vector3d b = cell.row(1);
   const double na = a.norm();
@@ -74,6 +75,9 @@ bool orientCellLowerTriangular(Matrix3d &cell, AtomMatrix &positions) {
     return false;
   }
   cell = oriented;
+  if (rotationOut != nullptr) {
+    *rotationOut = rotation;
+  }
   return true;
 }
 

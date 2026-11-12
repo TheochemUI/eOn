@@ -181,6 +181,10 @@ const Parameters::neb_options_t &Parameters::neb_options() const {
   return impl_->neb_options_;
 }
 
+const Parameters::solid_state_options_t &Parameters::solid_state_options() const {
+  return impl_->solid_state_options_;
+}
+
 const Parameters::dynamics_options_t &Parameters::dynamics_options() const {
   return impl_->dynamics_options_;
 }
@@ -501,6 +505,15 @@ neb_options_t &ParametersLoadAccess::neb_options(Parameters &p) {
 
 const neb_options_t &ParametersLoadAccess::neb_options(const Parameters &p) {
   return p.impl_->neb_options_;
+}
+
+solid_state_options_t &ParametersLoadAccess::solid_state_options(Parameters &p) {
+  return p.ensure_impl().solid_state_options_;
+}
+
+const solid_state_options_t &
+ParametersLoadAccess::solid_state_options(const Parameters &p) {
+  return p.impl_->solid_state_options_;
 }
 
 dynamics_options_t &ParametersLoadAccess::dynamics_options(Parameters &p) {

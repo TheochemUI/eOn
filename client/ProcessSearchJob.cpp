@@ -20,6 +20,7 @@
 #include "eon/EpiCenters.h"
 #include "eon/HelperFunctions.h"
 #include "eon/MinModeSaddleSearch.h"
+#include "eon/SolidState.h"
 #include "eon/Optimizer.h"
 #include "eon/Prefactor.h"
 #include "eon/PrfoRefine.h"
@@ -317,17 +318,23 @@ int ProcessSearchJob::doProcessSearch() {
   *min1 = *saddle;
   min1->setPotential(min1Pot);
 
-  displacedPos =
-      posSaddle - saddleSearch->getEigenvector() *
-                      params.process_search_options().minimization_offset;
-  min1->setPositions(displacedPos);
-
   *min2 = *saddle;
   min2->setPotential(min2Pot);
-  displacedPos =
-      posSaddle + saddleSearch->getEigenvector() *
-                      params.process_search_options().minimization_offset;
-  min2->setPositions(displacedPos);
+  auto *minMode = dynamic_cast<MinModeSaddleSearch *>(saddleSearch.get());
+  if (minMode != nullptr && minMode->variableCell()) {
+    const double offset = params.process_search_options().minimization_offset;
+    minMode->placeAlongMode(*min1, -offset);
+    minMode->placeAlongMode(*min2, offset);
+  } else {
+    displacedPos =
+        posSaddle - saddleSearch->getEigenvector() *
+                        params.process_search_options().minimization_offset;
+    min1->setPositions(displacedPos);
+    displacedPos =
+        posSaddle + saddleSearch->getEigenvector() *
+                        params.process_search_options().minimization_offset;
+    min2->setPositions(displacedPos);
+  }
 
   // Minimize both endpoints concurrently when the shared potential instance is
   // safe to call from multiple threads, or when each endpoint owns a separate
@@ -501,6 +508,11 @@ void ProcessSearchJob::saveData(int status) {
       barriersValues[1], disp, prefactorsValues[0], prefactorsValues[1],
       dynamics, simTime, mdTemp);
   env.provenance = provenanceForJob(params);
+  if (eonc::solid::movesCell(params)) {
+    eonc::solid::appendElasticDipole(env, *min1, "reactant_");
+    eonc::solid::appendElasticDipole(env, *saddle, "saddle_");
+    eonc::solid::appendElasticDipole(env, *min2, "product_");
+  }
   env.reactant_frame = eonc::io::matterToConFrame(*min1);
   env.saddle_frame = eonc::io::matterToConFrame(*saddle);
   env.product_frame = eonc::io::matterToConFrame(*min2);

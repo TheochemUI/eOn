@@ -224,6 +224,26 @@
         "zoom_max_iterations"
       ]
     },
+    "Solid State": {
+      "model": "SolidStateConfig",
+      "file": "solid-state.json",
+      "id": "https://eondocs.org/schema/solid-state.json",
+      "keys": [
+        "enabled",
+        "weight",
+        "pressure",
+        "stress",
+        "mask"
+      ]
+    },
+    "EAM": {
+      "model": "EamConfig",
+      "file": "eam.json",
+      "id": "https://eondocs.org/schema/eam.json",
+      "keys": [
+        "file"
+      ]
+    },
     "Lanczos": {
       "model": "LanczosConfig",
       "file": "lanczos.json",

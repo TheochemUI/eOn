@@ -15,6 +15,7 @@
 #include "eon/JobResult.h"
 #include "eon/Matter.h"
 #include "eon/Optimizer.h"
+#include "eon/SolidState.h"
 #include "eon/XtsciEindir.h"
 
 #include <filesystem>
@@ -103,6 +104,9 @@ std::vector<std::string> MinimizationJob::run() {
   }
   if (!xtsci_eindir::provenance().empty()) {
     env.tags.emplace_back("eindir_abi", xtsci_eindir::provenance());
+  }
+  if (hasE && eonc::solid::movesCell(params)) {
+    eonc::solid::appendElasticDipole(env, *pos, "");
   }
   env.writeResultsDat(resultsFilename.string());
 

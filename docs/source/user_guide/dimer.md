@@ -14,6 +14,10 @@ Eigenmode using only first derivatives.
 
 An overview may be found in {cite:t}`dm-olsenComparisonMethodsFinding2004`.
 
+`[Solid State] enabled` runs this rotation in the joint space of the atoms
+and the cell strain. The cell is frozen when that flag is false. See
+{doc}`solid_state`.
+
 The dimer separation is set in the **[Main]** section with the
 `finiteDifference` parameter. With `[Main] parallel` left on, an `ext_pot`
 dimer keeps a separate potential, and a separate exchange directory, on

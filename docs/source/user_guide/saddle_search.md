@@ -289,6 +289,7 @@ Use the refinement on small free sets, after a converged search, and compare it 
 ## See also
 
 - <project:dimer.md> for the eigenmode method used during the saddle search
+- <project:solid_state.md> for the same search on atoms and cell strain
 - <project:process_search.md> for automated saddle search + minimization
 - <project:neb.md> for finding paths when both endpoints are known
 - {doc}`/devdocs/design/client/neb-modularization` for the eigenmode variant

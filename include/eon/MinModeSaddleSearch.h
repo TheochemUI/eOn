@@ -16,7 +16,9 @@
 #include "Matter.h"
 #include "Optimizer.h"
 #include "SaddleSearchMethod.h"
+#include "SolidState.h"
 
+#include <memory>
 #include <readcon-core.hpp>
 #include <string>
 #include <vector>
@@ -111,6 +113,12 @@ public:
   MinModeSaddleSearch &operator=(MinModeSaddleSearch &&) noexcept = default;
   AtomMatrix getEigenvector(); // lowest eigenmode
   double getEigenvalue();      // estimate for the lowest eigenvalue
+  /// True after a variable-cell min-mode search. The cell stayed frozen
+  /// when this is false, including a mask that freezes every strain.
+  [[nodiscard]] bool variableCell() const { return static_cast<bool>(solid_); }
+  /// Step `image` off the saddle along the joint mode. A frozen-cell
+  /// search leaves the image where it is.
+  void placeAlongMode(Matter &image, double scale) const;
   std::string_view describeStatus(int status) const override {
     return statusMessage(status);
   }
@@ -153,7 +161,9 @@ private:
   double reactantEnergy;
   std::vector<AtomMatrix> knownSaddlePositions_;
   std::vector<double> knownSaddleEnergies_;
+  std::unique_ptr<solid::SearchState> solid_;
   [[nodiscard]] bool atKnownSaddle() const;
+  int runSolidState(long maxIterations);
   eonc::log::Scoped log;
 };
 

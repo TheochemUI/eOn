@@ -627,6 +627,7 @@ class PotentialConfig(BaseModel):
         "dftd3",
         "dftd4",
         "eam_al",
+        "eam_cu",
         "edip",
         "emt",
         "expr",
@@ -669,6 +670,7 @@ class PotentialConfig(BaseModel):
      - ``ase_orca``: ASE interface for ORCA quantum chemistry package.
      - ``cuh2``: Potential for copper hydride systems.
      - ``eam_al``: Embedded atom method parameterized for aluminum.
+     - ``eam_cu``: Tabulated eam/alloy file, including Mishin copper, with the Cauchy stress. Set ``[EAM] file``.
      - ``dftd3``: Grimme DFT-D3 via rgpot 3.1 s-dftd3 (``[D3Pot]``).
      - ``dftd4``: Grimme DFT-D4 via rgpot 3.1 dftd4 (``[D4Pot]``).
      - ``edip``: Environment-Dependent Interatomic Potential, for carbon.
@@ -3395,6 +3397,57 @@ class DistributedReplicaConfig(BaseModel):
     balance_steps: int = Field(default=500)
 
 
+class SolidStateConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    enabled: bool = Field(
+        default=False,
+        description=(
+            "Relax the cell with the atoms in minimization and in min-mode "
+            "saddle search. False keeps the cell frozen."
+        ),
+    )
+    weight: float = Field(
+        default=1.0,
+        description=(
+            "Multiplier on the Jacobian J = V^(1/3) N^(1/6). 1 weights a "
+            "cell strain like an atomic displacement."
+        ),
+    )
+    pressure: float = Field(
+        default=0.0,
+        description=(
+            "Hydrostatic pressure in eV/Angstrom^3 added to the external "
+            "stress. Positive pressure favors a smaller cell."
+        ),
+    )
+    stress: str = Field(
+        default="0 0 0 0 0 0 0 0 0",
+        description=(
+            "External Cauchy stress in eV/Angstrom^3, nine row-major "
+            "numbers. Added to pressure on the diagonal."
+        ),
+    )
+    mask: str = Field(
+        default="1 1 1 1 1 1",
+        description=(
+            "Six flags for the lower-triangular strain, xx yx yy zx zy zz. "
+            "0 freezes that component. All zeros keeps the cell frozen."
+        ),
+    )
+
+
+class EamConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    file: str = Field(
+        default="",
+        description=(
+            "Path of a one-element eam/alloy setfl file for potential = eam_cu."
+        ),
+    )
+
+
 class Config(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
@@ -3423,6 +3476,8 @@ class Config(BaseModel):
     coarse_graining: CoarseGrainingConfig
     amsel: AmselConfig = Field(default_factory=AmselConfig)
     optimizer: OptimizerConfig
+    solid_state: SolidStateConfig = Field(default_factory=SolidStateConfig)
+    eam: EamConfig = Field(default_factory=EamConfig)
     distributed_replica: DistributedReplicaConfig
     gprdimer: GPRDimerConfig
     bgsd: BGSDConfig
