@@ -743,9 +743,9 @@ reactant: the state’s reactant; only its free atoms are written</p>
 fileout: can be either a file name or a file-like object
 p:       Structure (or Structure-like) to save
 w:       write/append flag</p>
-<p>Append of an uncompressed file concatenates one serialized frame. A
-gzip or zstd target cannot be extended in place, so those still
-read the existing frames and rewrite the file.</p>
+<p>Append of an uncompressed file uses readcon’s append writer. A gzip
+or zstd target cannot be extended in place, so those still read the
+existing frames and rewrite the file.</p>
 </dd></dl>
 
 <dl class="py function">

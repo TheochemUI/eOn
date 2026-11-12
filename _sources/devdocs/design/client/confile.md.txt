@@ -57,15 +57,12 @@ if (!path[i]->matter2con(filename, /*append=*/i > 0, &metadata)) {
 }
 ```
 
-The new frame is serialized on its own and its bytes are concatenated onto the
-target, so an N-frame trajectory costs N frame writes rather than N(N+1)/2.
-`ConFrameWriter` emits self-contained frames with no file-level preamble, which
-makes the concatenated result identical to the same frames written in one call.
-Serialization goes through a scratch file next to the target because
-readcon-core exposes neither a writer over a caller-owned stream nor a flush on
-an open writer; the target itself is opened in append mode and flushed before
-the call returns, so every intermediate state on disk is a complete multi-frame
-`.con` that a reader or a `tail` can parse.
+The new frame is written by `ConFrameWriter` opened with `OpenMode::Append`,
+so an N-frame trajectory costs N frame writes rather than N(N+1)/2.
+`flush()` returns only after the new frames are a complete multi-frame `.con`
+that a reader or a `tail` can parse. A non-empty file that does not end in a
+newline receives one before the next frame. Gzip and zstd are refused by that
+mode.
 
 If the target file exists but cannot be parsed, the append fails rather than
 truncating the history. That check runs when eOn did not write the file, or
@@ -112,10 +109,9 @@ the C++ client for trajectory outputs and downstream visualization tooling.
 - **Meson** >= 1.8.0
 
 The `readcon-core` library is fetched as a Meson subproject via
-`subprojects/readcon-core.wrap` and linked statically. The wrap pins release
-the 0.14 line (spec 3, x-only decode from readcon-core #25), and
-`client/meson.build` asks for `>=0.14.2` on both resolution paths.
-`eon/fileio.py` needs the companion `readcon` package at `>=0.14.5`.
+`subprojects/readcon-core.wrap` and linked statically. The wrap pins v0.20.0,
+and `client/meson.build` asks for `>=0.20.0` on both resolution paths.
+`eon/fileio.py` needs the companion `readcon` package at `>=0.20.0`.
 
 ## Updating the subproject
 

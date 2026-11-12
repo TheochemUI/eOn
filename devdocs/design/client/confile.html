@@ -508,15 +508,12 @@ metadata, and an escape hatch for raw JSON.</p>
 </span><span data-line="3"><span class="p">}</span>
 </span></pre></div>
 </div>
-<p>The new frame is serialized on its own and its bytes are concatenated onto the
-target, so an N-frame trajectory costs N frame writes rather than N(N+1)/2.
-<code class="docutils literal notranslate"><span class="pre">ConFrameWriter</span></code> emits self-contained frames with no file-level preamble, which
-makes the concatenated result identical to the same frames written in one call.
-Serialization goes through a scratch file next to the target because
-readcon-core exposes neither a writer over a caller-owned stream nor a flush on
-an open writer; the target itself is opened in append mode and flushed before
-the call returns, so every intermediate state on disk is a complete multi-frame
-<code class="docutils literal notranslate"><span class="pre">.con</span></code> that a reader or a <code class="docutils literal notranslate"><span class="pre">tail</span></code> can parse.</p>
+<p>The new frame is written by <code class="docutils literal notranslate"><span class="pre">ConFrameWriter</span></code> opened with <code class="docutils literal notranslate"><span class="pre">OpenMode::Append</span></code>,
+so an N-frame trajectory costs N frame writes rather than N(N+1)/2.
+<code class="docutils literal notranslate"><span class="pre">flush()</span></code> returns only after the new frames are a complete multi-frame <code class="docutils literal notranslate"><span class="pre">.con</span></code>
+that a reader or a <code class="docutils literal notranslate"><span class="pre">tail</span></code> can parse. A non-empty file that does not end in a
+newline receives one before the next frame. Gzip and zstd are refused by that
+mode.</p>
 <p>If the target file exists but cannot be parsed, the append fails rather than
 truncating the history. That check runs when eOn did not write the file, or
 when its size or modification time moved since eOn wrote it; frames this
@@ -558,10 +555,9 @@ the C++ client for trajectory outputs and downstream visualization tooling.</p>
 <li><p><strong>Meson</strong> &gt;= 1.8.0</p></li>
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">readcon-core</span></code> library is fetched as a Meson subproject via
-<code class="docutils literal notranslate"><span class="pre">subprojects/readcon-core.wrap</span></code> and linked statically. The wrap pins release
-the 0.14 line (spec 3, x-only decode from readcon-core #25), and
-<code class="docutils literal notranslate"><span class="pre">client/meson.build</span></code> asks for <code class="docutils literal notranslate"><span class="pre">&gt;=0.14.2</span></code> on both resolution paths.
-<code class="docutils literal notranslate"><span class="pre">eon/fileio.py</span></code> needs the companion <code class="docutils literal notranslate"><span class="pre">readcon</span></code> package at <code class="docutils literal notranslate"><span class="pre">&gt;=0.14.5</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">subprojects/readcon-core.wrap</span></code> and linked statically. The wrap pins v0.20.0,
+and <code class="docutils literal notranslate"><span class="pre">client/meson.build</span></code> asks for <code class="docutils literal notranslate"><span class="pre">&gt;=0.20.0</span></code> on both resolution paths.
+<code class="docutils literal notranslate"><span class="pre">eon/fileio.py</span></code> needs the companion <code class="docutils literal notranslate"><span class="pre">readcon</span></code> package at <code class="docutils literal notranslate"><span class="pre">&gt;=0.20.0</span></code>.</p>
 </section>
 <section id="updating-the-subproject">
 <h2>Updating the subproject<a class="headerlink" href="#updating-the-subproject" title="Link to this heading">¶</a></h2>
