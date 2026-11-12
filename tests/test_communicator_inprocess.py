@@ -68,6 +68,33 @@ def _need_client():
     pytest.importorskip("readcon")
 
 
+def test_force_call_total_includes_the_second_potential():
+    from eon.communicator_inprocess import force_calls_from_counters
+
+    # The product Matter saw 4 calls. The dimer image's own potential saw
+    # the rest, and only the registry has both.
+    assert (
+        force_calls_from_counters(
+            matter_calls=4, registry_before=10, registry_after=19
+        )
+        == 9
+    )
+    # One potential: the registry delta is that Matter's count.
+    assert (
+        force_calls_from_counters(
+            matter_calls=4, registry_before=10, registry_after=14
+        )
+        == 4
+    )
+    # A registry that was not charged cannot replace the Matter count.
+    assert (
+        force_calls_from_counters(
+            matter_calls=4, registry_before=10, registry_after=10
+        )
+        == 4
+    )
+
+
 def test_geometry_structure_conframe_or_con_text():
     pytest.importorskip("readcon")
     from eon.communicator import CommunicatorError

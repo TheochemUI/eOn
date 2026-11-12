@@ -98,9 +98,13 @@ private:
 
   //! Force calls to find the saddle
   int fCallsSaddle;
-  //! Calls made through per-image clones of pot (Main.parallel), which
-  //! pot->forceCallCounter does not see
-  size_t fCallsImages{0};
+  //! Registry and primary-counter baselines, taken before the first
+  //! evaluation. Clones charge the registry; a counter write that skips
+  //! recordForceCall stays on the primary counter. The reported total is
+  //! the larger of the two deltas.
+  size_t registryAtStart_{0};
+  size_t potAtStart_{0};
+  bool countedBaseline_{false};
 
   eonc::log::Scoped log;
 };

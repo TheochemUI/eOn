@@ -23,6 +23,7 @@
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 #include "eon/api.h"
+#include <atomic>
 #include <chrono>
 #include <cmath>
 #include <condition_variable>
@@ -1252,6 +1253,58 @@ TEST_CASE_METHOD(NEBLJFixture,
   }
   REQUIRE(serialThreads->ids.size() == 1);
   REQUIRE(poolThreads->ids.size() > 1);
+}
+
+TEST_CASE("reported force calls include every image potential",
+          "[neb][parallel][force_calls]") {
+  // Default [Main] parallel is true. The other case forces the serial
+  // walk. Both build one potential per interior image.
+  const bool leaveDefault = GENERATE(true, false);
+  CAPTURE(leaveDefault);
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  if (leaveDefault) {
+    REQUIRE(params.main_options().parallel);
+  } else {
+    ParametersLoadAccess::main_options(params).parallel = false;
+  }
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 3;
+  ParametersLoadAccess::optimizer_options(params).method = OptType::LBFGS;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
+  ParametersLoadAccess::neb_options(params).image_count = 4;
+  ParametersLoadAccess::neb_options(params).max_iterations = 3;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 1e-12;
+  ParametersLoadAccess::neb_options(params).initialization.method =
+      NEBInit::LINEAR;
+  ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = false;
+
+  PotRegistry local;
+  std::atomic<long> calls{0};
+  auto threads = std::make_shared<eonc::helpers::test::PerImageLJ::Threads>();
+  auto pot = std::make_shared<eonc::helpers::test::PerImageLJ>(
+      threads, local, [&calls] { ++calls; });
+  auto reactant = std::make_shared<Matter>(pot, params);
+  auto product = std::make_shared<Matter>(pot, params);
+  reactant->con2matter(std::string("reactant.con"));
+  product->con2matter(std::string("reactant.con"));
+  AtomMatrix shifted = product->getPositions();
+  shifted(0, 0) += 0.4;
+  product->setPositions(shifted);
+
+  const size_t before = eonc::chargedForceCalls(*pot);
+  const size_t primaryBefore = pot->forceCallCounter.load();
+  NudgedElasticBand neb(reactant, product, params, pot);
+  neb.updateForces();
+  const size_t reported = eonc::chargedForceCalls(*pot) - before;
+  const long made = calls.load();
+  const size_t primaryDelta = pot->forceCallCounter.load() - primaryBefore;
+  CAPTURE(reported, made, primaryDelta);
+  REQUIRE(made > 0);
+  REQUIRE(reported == static_cast<size_t>(made));
+  REQUIRE(local.total_force_calls() - before == reported);
+  // Interior images ran on their own instances.
+  REQUIRE(pot->forceCallCounter.load() - primaryBefore < reported);
 }
 
 } /* namespace tests */

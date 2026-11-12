@@ -20,6 +20,7 @@
 #include "eon/PrfoRefine.h"
 #include "eon/XtsciIrc.h"
 
+#include <algorithm>
 #include <filesystem>
 #include <format>
 #include <fstream>
@@ -29,6 +30,11 @@
 namespace eonc {
 
 std::vector<std::string> SaddleSearchJob::run() {
+  if (!countedBaseline_) {
+    registryAtStart_ = pot ? eonc::chargedForceCalls(*pot) : 0;
+    potAtStart_ = pot ? pot->forceCallCounter.load() : 0;
+    countedBaseline_ = true;
+  }
   if (params.saddle_search_options().method == "min_mode") {
     eonc::requirePrfoRefine(params);
   }
@@ -91,6 +97,11 @@ std::shared_ptr<Matter>
 SaddleSearchJob::runFromMatter(std::shared_ptr<Matter> seed) {
   if (!seed) {
     throw std::runtime_error("SaddleSearchJob::runFromMatter: null Matter");
+  }
+  if (!countedBaseline_) {
+    registryAtStart_ = pot ? eonc::chargedForceCalls(*pot) : 0;
+    potAtStart_ = pot ? pot->forceCallCounter.load() : 0;
+    countedBaseline_ = true;
   }
   initial = seed;
   initial->setPotential(pot);
@@ -168,7 +179,6 @@ std::shared_ptr<Matter> SaddleSearchJob::runPrepared(const AtomMatrix &mode) {
 int SaddleSearchJob::doSaddleSearch() {
   long status;
   const size_t registryBefore = potRegistryForceCalls();
-  const size_t potBefore = this->pot->forceCallCounter;
   try {
     status = saddleSearch->run();
   } catch (int e) {
@@ -191,7 +201,6 @@ int SaddleSearchJob::doSaddleSearch() {
     fCallsSaddle = saddleSearch->getForceCalls();
   } else {
     const size_t calls = potRegistryForceCalls() - registryBefore;
-    fCallsImages = calls - (this->pot->forceCallCounter - potBefore);
     fCallsSaddle += static_cast<int>(calls);
   }
 
@@ -212,8 +221,14 @@ void SaddleSearchJob::saveData(int status) {
     out << std::format(
         "{} potential_type\n",
         magic_enum::enum_name<PotType>(params.potential_options().potential));
-    out << std::format("{} total_force_calls\n",
-                       this->pot->forceCallCounter.load() + fCallsImages);
+    const size_t charged = pot ? eonc::chargedForceCalls(*pot) : 0;
+    const size_t potNow = pot ? pot->forceCallCounter.load() : 0;
+    const size_t fromRegistry =
+        charged >= registryAtStart_ ? charged - registryAtStart_ : 0;
+    const size_t fromPot =
+        potNow >= potAtStart_ ? potNow - potAtStart_ : potNow;
+    const size_t total = std::max(fromRegistry, fromPot);
+    out << std::format("{} total_force_calls\n", total);
     out << std::format("{} force_calls_saddle\n", fCallsSaddle);
     out << std::format("{} iterations\n", saddleSearch->getIterationCount());
     if (status != MinModeSaddleSearch::STATUS_POTENTIAL_FAILED) {

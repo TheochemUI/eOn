@@ -18,6 +18,7 @@
 #include "eon/Matter.h"
 #include <stdexcept>
 
+#include <algorithm>
 #include <cmath>
 #include <format>
 #include <fstream>
@@ -46,6 +47,8 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
   }
   reactant = initial;
   reactant->setPotential(pot);
+  const size_t registryBefore = pot ? eonc::chargedForceCalls(*pot) : 0;
+  const size_t potBefore = pot ? pot->forceCallCounter.load() : 0;
 
   QUILL_LOG_DEBUG(log, "[ParallelReplica] Minimizing initial position");
   reactant->relax();
@@ -253,8 +256,13 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
       out << std::format("{:f} potential_energy_reactant\n",
                          reactant->getPotentialEnergy());
       out << std::format("{} force_calls_refine\n", refineForceCalls);
+      const size_t registryNow = pot ? eonc::chargedForceCalls(*pot) : 0;
+      const size_t potNow = pot ? pot->forceCallCounter.load() : 0;
+      const size_t fromRegistry =
+          registryNow >= registryBefore ? registryNow - registryBefore : 0;
+      const size_t fromPot = potNow >= potBefore ? potNow - potBefore : potNow;
       out << std::format("{} total_force_calls\n",
-                         pot->forceCallCounter.load());
+                         std::max(fromRegistry, fromPot));
 
       if (transitionTime == 0) {
         out << "0 transition_found\n";

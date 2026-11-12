@@ -17,6 +17,7 @@
 #include "eon/Optimizer.h"
 #include "eon/XtsciEindir.h"
 
+#include <algorithm>
 #include <filesystem>
 #include <format>
 #include <fstream>
@@ -43,6 +44,9 @@ std::vector<std::string> MinimizationJob::run() {
   returnFiles.push_back(posOutFilename);
 
   auto pos = std::make_shared<Matter>(std::move(ownedPot), params);
+  const Potential *live = pos->getPotential().get();
+  const size_t registryBefore = live ? eonc::chargedForceCalls(*live) : 0;
+  const size_t potBefore = live ? live->forceCallCounter.load() : 0;
   if (!eonc::io::io_ok(pos->inp2matter(posInFilename))) {
     QUILL_LOG_CRITICAL(log, "Failed to load {}", posInFilename);
     throw std::runtime_error("failed to load " + posInFilename);
@@ -87,9 +91,15 @@ std::vector<std::string> MinimizationJob::run() {
 
   const bool hasE = status != RunStatus::FAIL_POTENTIAL_FAILED;
   const double energy = hasE ? pos->getPotentialEnergy() : 0.0;
+  live = pos->getPotential().get();
+  const size_t registryNow = live ? eonc::chargedForceCalls(*live) : 0;
+  const size_t potNow = live ? live->forceCallCounter.load() : 0;
+  const size_t fromRegistry =
+      registryNow >= registryBefore ? registryNow - registryBefore : 0;
+  const size_t fromPot = potNow >= potBefore ? potNow - potBefore : potNow;
   auto env = JobResultEnvelope::fromMinimization(
       status, params.potential_options().potential,
-      pos->getPotential()->forceCallCounter.load(), hasE, energy);
+      std::max(fromRegistry, fromPot), hasE, energy);
   env.provenance = provenanceForJob(params);
   env.tags.emplace_back("optimizer", std::string(magic_enum::enum_name(
                                          params.optimizer_options().method)));

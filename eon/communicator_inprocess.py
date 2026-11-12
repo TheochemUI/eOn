@@ -323,6 +323,31 @@ def _run_inprocess_job(pc, job_kind, matter, pot, params, job: dict, token=None)
     )
 
 
+def _registry_force_calls(pc) -> int | None:
+    counter = getattr(pc, "pot_registry_total_force_calls", None)
+    if not callable(counter):
+        return None
+    return int(counter())
+
+
+def force_calls_from_counters(
+    matter_calls: int, registry_before: int, registry_after: int
+) -> int:
+    """Calls charged to every potential instance.
+
+    ``matter_calls`` is one Matter. A second potential (the dimer image or
+    the product minimization, created when ``Main.parallel`` is at its
+    default) is only on the registry. A registry that did not move is not
+    the one that was charged, so the Matter count is kept.
+    """
+    if registry_after < registry_before:
+        return matter_calls
+    delta = registry_after - registry_before
+    if delta == 0:
+        return matter_calls
+    return delta
+
+
 def _job_result(
     status: int,
     energy: float,
@@ -438,6 +463,7 @@ class LocalInProcess(Communicator):
                 logger.exception("inprocess: failed to read geometry for %s", jid)
                 raise CommunicatorError(str(e)) from e
 
+            registry_before = _registry_force_calls(pc)
             matter = structure_to_matter(structure, pot, params)
             if hasattr(pc, "CancelToken") and hasattr(matter, "set_cancel_token"):
                 self._cpp_token = pc.CancelToken()
@@ -467,7 +493,15 @@ class LocalInProcess(Communicator):
             out = matter_to_structure(matter)
 
             energy = float(payload["energy"])
-            fcalls = int(payload["force_calls"])
+            registry_after = _registry_force_calls(pc)
+            if registry_before is None or registry_after is None:
+                fcalls = int(payload["force_calls"])
+            else:
+                fcalls = force_calls_from_counters(
+                    int(payload["force_calls"]),
+                    registry_before,
+                    registry_after,
+                )
             status = int(payload["status"])
             jname = str(payload["job_type"])
             cancelled = bool(payload.get("cancelled"))

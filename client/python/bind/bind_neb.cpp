@@ -569,8 +569,15 @@ void bind_neb(nb::module_ &m) {
           out << std::format(
               "{} potential_type\n",
               magic_enum::enum_name(params.potential_options().potential));
-          out << std::format("{} total_force_calls\n",
-                             PotRegistry::get().total_force_calls());
+          const Potential *bandPot = nullptr;
+          if (!neb.path.empty() && neb.path.front()) {
+            bandPot = neb.path.front()->getPotential().get();
+          }
+          // Image clones charge this potential's registry, including when
+          // [Main] parallel is left at its default and the image pool runs.
+          const size_t total = bandPot ? eonc::chargedForceCalls(*bandPot)
+                                       : PotRegistry::get().total_force_calls();
+          out << std::format("{} total_force_calls\n", total);
           out << std::format("{} force_calls_neb\n", force_calls_neb);
           out << std::format("{:f} energy_reference\n", neb.reactantEnergy);
           out << std::format("{} number_of_images\n", neb.numImages);

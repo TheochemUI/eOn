@@ -130,8 +130,11 @@ public:
   /// Deprecated. Override hessianRange() instead. The default
   /// hessianRange() returns this value, so an existing override still
   /// colors the finite-difference Hessian. 0 means the range is unknown.
-  [[deprecated("Override hessianRange() instead.")]]
-  [[nodiscard]] virtual double finiteCutoff() const noexcept { return 0.0; }
+  [[deprecated(
+      "Override hessianRange() instead.")]] [[nodiscard]] virtual double
+  finiteCutoff() const noexcept {
+    return 0.0;
+  }
 
   /// Whether this is a surrogate (GP) potential. Override in
   /// SurrogatePotential.
@@ -275,6 +278,17 @@ public:
     return range;
   }
 };
+
+/// Force calls charged to ``pot`` and every other instance on its registry.
+/// One evaluation increments that total once, whichever instance ran it.
+[[nodiscard]] inline std::size_t
+chargedForceCalls(const Potential &pot) noexcept {
+  if (const auto *registry =
+          dynamic_cast<const PotRegistry *>(&pot.registry())) {
+    return registry->total_force_calls();
+  }
+  return pot.forceCallCounter.load(std::memory_order_relaxed);
+}
 
 namespace helpers {
 /// Exclusive ownership. Share only at a multi-owner boundary via

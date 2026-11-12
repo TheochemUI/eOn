@@ -256,7 +256,7 @@ def neb_workdir(
         make_potential
         load endpoint Matter (or path-list endpoints when init=FILE)
         NudgedElasticBand(initial, final, params, pot)
-        pot_registry_total_force_calls  # baseline
+        pot.charged_force_calls()  # baseline on the session registry
         neb.compute()
         find_extrema if GOOD
         neb_write_results
@@ -268,7 +268,6 @@ def neb_workdir(
         NudgedElasticBand,
         NEBStatus,
         neb_write_results,
-        pot_registry_total_force_calls,
     )
 
     work = Path(workdir).resolve()
@@ -321,9 +320,11 @@ def neb_workdir(
             )
 
         neb = NudgedElasticBand(initial, final, params, pot)
-        f0 = pot_registry_total_force_calls()
+        # The session registry, not the process singleton: per-image
+        # potentials created for the default [Main] parallel pool charge it.
+        f0 = int(pot.charged_force_calls())
         status = neb.compute()
-        f_neb = pot_registry_total_force_calls() - f0
+        f_neb = int(pot.charged_force_calls()) - f0
         if status == NEBStatus.GOOD:
             neb.find_extrema()
         files.extend(neb_write_results(neb, params, f_neb))

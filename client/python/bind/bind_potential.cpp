@@ -389,6 +389,13 @@ void bind_potential(nb::module_ &m) {
                    [](const eonc::Potential &self) {
                      return self.forceCallCounter.load();
                    })
+      .def(
+          "charged_force_calls",
+          [](const eonc::Potential &self) {
+            return eonc::chargedForceCalls(self);
+          },
+          "Force calls on this potential and every other instance that "
+          "charges the same registry.")
       .def("is_surrogate", &eonc::Potential::isSurrogate)
       .def("requires_isolated_molecule_layout",
            &eonc::Potential::requiresIsolatedMoleculeLayout)

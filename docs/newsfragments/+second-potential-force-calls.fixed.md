@@ -1,0 +1,1 @@
+`total_force_calls` counts every force evaluation on every potential instance. With `Main.parallel` left at its default, a dimer image, a process-search product minimization, and a NEB image pool each build a second potential; those calls were left out of the reported total. The same total is used when parallel evaluation is turned off.

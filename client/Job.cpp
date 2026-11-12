@@ -42,11 +42,10 @@ namespace eonc {
 void forceJobRegistration() {}
 
 size_t Job::potRegistryForceCalls() const noexcept {
-  if (const auto *registry =
-          dynamic_cast<const PotRegistry *>(&pot->registry())) {
-    return registry->total_force_calls();
+  if (!pot) {
+    return 0;
   }
-  return pot->forceCallCounter;
+  return chargedForceCalls(*pot);
 }
 } // namespace eonc
 
