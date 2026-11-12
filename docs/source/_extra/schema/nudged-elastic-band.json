@@ -119,21 +119,36 @@
     },
     "band_precon": {
       "default": "none",
-      "description": "Metric inside the band projection of the rgsaddle band.\n\n``exp`` installs the per-image exponential metric (Packwood et al.\n2016) in the band projection, as Makri, Ortner and Kermode (2019)\nwrite it. The spring constant is then the dimensionless\n``kappa = spring / mu``. Needs the rgsaddle band (``opt_method`` lbfgs,\nfire or xtsci on a build linked to rgsaddle 0.3.0 or newer). Refused with\n``solid_state``, with one atom per image, and with ``energy_weighted``\nor ``onsager_machlup``. Also refused when any atom is fixed, until\nrgsaddle offers a fixed-atom mask for the metric. Experimental: it does\nnot yet reproduce the 2019 method.",
+      "description": "Metric inside the band projection of the rgsaddle band.\n\n``exp`` calls ``rgsaddle_band_set_exp_precon``: the per-image Exp\nmetric of Packwood et al. (2016) inside the band projection, as\nMakri, Ortner and Kermode (2019), Eq. (9) and (10), write it\n(:cite:t:`neb-makriPreconditioningScheme2019`). The spring constant\nenters as the dimensionless ``kappa = spring / mu``. Needs the\nrgsaddle band (``opt_method`` lbfgs, fire or xtsci on a build linked\nto rgsaddle 0.3.0 or newer, C ABI minor 22). Refused with\n``solid_state``, with one atom per image, and with ``energy_weighted``\nor ``onsager_machlup``. Also refused when any atom is fixed: the C\nAPI has no fixed-atom mask. The function takes ``A``, ``c_stab``,\n``mu`` and ``r_cut_factor``. It has no absolute cutoff and no shift.",
       "enum": [
         "none",
         "exp"
       ],
       "type": "string"
     },
+    "band_precon_A": {
+      "default": 0.0,
+      "description": "Exp exponent A in exp(-A (r / r_nn - 1)). 0 selects 3.",
+      "type": "number"
+    },
     "band_precon_mu": {
       "default": 0.0,
-      "description": "Energy scale mu of the band metric; 0 lets rgsaddle estimate it.\n\nThe estimate takes two force calls on a copy of the first interior\nimage before the first step.",
+      "description": "Energy scale mu of the band metric; 0 lets rgsaddle estimate it.\n\nThe estimate is one force row on a copy of the first interior image\nbefore the first step.",
+      "type": "number"
+    },
+    "band_precon_r_cut_factor": {
+      "default": 0.0,
+      "description": "Cutoff as a multiple of the nearest-neighbour distance. 0 selects 2.\n\nPairs inside ``r_cut_factor * r_nn`` enter the metric. A value in\n(0, 1] is refused. The C API has no absolute ``r_cut``.",
+      "type": "number"
+    },
+    "band_precon_c_stab": {
+      "default": 0.0,
+      "description": "Diagonal stabilization C_stab of the Exp metric. 0 selects 0.1.\n\nThe diagonal carries ``mu * C_stab``. The C API has no shift argument.",
       "type": "number"
     },
     "band_stepper": {
       "default": "auto",
-      "description": "Stepper of the rgsaddle band.\n\n``auto`` follows ``opt_method``. ``ode12r`` is the adaptive ODE12r\nstepper (Makri, Ortner and Kermode 2019), ODE12r-Exp with\n``band_precon = exp``. Needs rgsaddle 0.3.0 or newer.",
+      "description": "Stepper of the rgsaddle band.\n\n``auto`` follows ``opt_method``. ``ode12r`` selects\n``RGSADDLE_METHOD_ODE12R``, the adaptive ODE12r stepper of Makri,\nOrtner and Kermode (2019). With ``band_precon = exp`` that is\nODE12r-Exp. The C API does not take ODE12r tolerances: the library\nfixes ``rtol`` at 0.1, ``c1`` at 0.01 and ``c2`` at 2, and there is\nno ``atol`` argument. Needs rgsaddle 0.3.0 or newer.",
       "enum": [
         "auto",
         "ode12r"

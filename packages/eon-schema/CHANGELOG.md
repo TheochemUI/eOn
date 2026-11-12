@@ -4,6 +4,9 @@
 
 ### Added
 
+- ``NudgedElasticBandConfig`` gains ``band_precon_A``,
+  ``band_precon_r_cut_factor`` and ``band_precon_c_stab`` for the
+  rgsaddle Exp band metric. Zero keeps the library default.
 - ``OptimizerConfig.opt_backend`` (``eon`` or ``rgmin``) picks who runs the
   ``lbfgs``, ``fire``, ``cg``, ``sd`` and ``qm`` optimizers.
 - ``XtsciConfig.method`` accepts ``quickmin``.

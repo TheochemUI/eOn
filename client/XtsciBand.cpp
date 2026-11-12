@@ -18,6 +18,7 @@
 #include <rgsaddle.h>
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <stdexcept>
 #include <string>
@@ -165,6 +166,26 @@ void checkBandOptions(const NudgedElasticBand &neb, const neb_options_t &opt,
         "band_precon = exp is refused with fixed atoms: the rgsaddle band "
         "metric has no fixed-atom mask, so the step would move fixed atoms "
         "that eOn pins back. Free every atom, or keep band_precon = none");
+  }
+  // rgsaddle_band_set_exp_precon(band, a, c_stab, mu, r_cut_factor).
+  // Values at or below zero select 3, 0.1, an estimated mu, and 2.
+  // There is no shift argument and no absolute cutoff.
+  const char *names[] = {"band_precon_A", "band_precon_mu",
+                         "band_precon_r_cut_factor", "band_precon_c_stab"};
+  const double values[] = {band.precon_A, band.precon_mu,
+                           band.precon_r_cut_factor, band.precon_c_stab};
+  for (int i = 0; i < 4; ++i) {
+    if (!std::isfinite(values[i])) {
+      throw std::invalid_argument(std::string(names[i]) +
+                                  " must be finite; 0 selects the rgsaddle "
+                                  "default");
+    }
+  }
+  if (band.precon_r_cut_factor > 0.0 && band.precon_r_cut_factor <= 1.0) {
+    throw std::invalid_argument(
+        "band_precon_r_cut_factor must be greater than 1, or 0 for "
+        "rgsaddle's default of 2; the C API takes a multiple of r_nn, "
+        "not an absolute cutoff");
   }
 #endif
 }
@@ -495,9 +516,10 @@ XtsciBand::XtsciBand(NudgedElasticBand &neb, const Parameters &params)
   }
 #ifdef WITH_RGSADDLE_BAND_PRECON
   if (nebOpt.band.precon == "exp") {
-    // a, c_stab and r_cut_factor at 0 take rgsaddle's 3, 0.1 and 2.
-    const int rc = rgsaddle_band_set_exp_precon(m_band, 0.0, 0.0,
-                                                nebOpt.band.precon_mu, 0.0);
+    // a, c_stab, mu, r_cut_factor. At or below zero: 3, 0.1, estimate, 2.
+    const int rc = rgsaddle_band_set_exp_precon(
+        m_band, nebOpt.band.precon_A, nebOpt.band.precon_c_stab,
+        nebOpt.band.precon_mu, nebOpt.band.precon_r_cut_factor);
     if (rc != RGSADDLE_OK) {
       rgsaddle_band_free(m_band);
       m_band = nullptr;

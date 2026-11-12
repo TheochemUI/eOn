@@ -719,13 +719,20 @@ struct neb_options_t {
     double pressure{0.0};
   } solid_state;
 
-  /// rgsaddle band only, rgsaddle 0.3.0 or newer. precon "exp" installs
-  /// the per-image exponential metric, and the spring constant is then
-  /// kappa = k / mu. precon_mu <= 0 lets rgsaddle estimate mu. stepper
-  /// "auto" follows opt_method; "ode12r" is the ODE12r band stepper.
+  /// rgsaddle band only, rgsaddle 0.3.0 or newer (C ABI minor 22).
+  /// precon "exp" calls rgsaddle_band_set_exp_precon. A, c_stab and
+  /// r_cut_factor at or below 0 take the library defaults 3, 0.1 and 2.
+  /// precon_mu <= 0 lets rgsaddle estimate mu. r_cut_factor is a multiple
+  /// of the nearest-neighbour distance, not an absolute cutoff. The C API
+  /// has no shift; c_stab is the diagonal stabilization mu * C_stab.
+  /// stepper "auto" follows opt_method; "ode12r" is RGSADDLE_METHOD_ODE12R.
+  /// The C API has no ODE12r tolerance arguments (rtol, atol, c1, c2).
   struct band_options_t {
     std::string precon{"none"};
+    double precon_A{0.0};
     double precon_mu{0.0};
+    double precon_r_cut_factor{0.0};
+    double precon_c_stab{0.0};
     std::string stepper{"auto"};
   } band;
 

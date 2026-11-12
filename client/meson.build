@@ -2429,8 +2429,8 @@ if get_option('with_tests')
         test_array += [['test_artn', 'ARTnTest.cpp', 'neb_morse']]
     endif
     if get_option('with_rgsaddle')
-        test_array += [['test_rgsaddle_band', 'RgsaddleBandTest.cpp', 'neb_morse']]
-        test_array += [['test_rgsaddle_neb', 'RgsaddleNEBTest.cpp', 'neb_lj13']]
+        test_array += [['test_rgsaddle_band', 'RgsaddleBandTest.cpp', 'neb_morse', 90]]
+        test_array += [['test_rgsaddle_neb', 'RgsaddleNEBTest.cpp', 'neb_lj13', 180]]
         test_array += [['test_rgsaddle_irc', 'RgsaddleIrcTest.cpp', 'neb_lj13']]
     endif
     # Without rgsaddle it checks that prfo_refine is refused before a search.

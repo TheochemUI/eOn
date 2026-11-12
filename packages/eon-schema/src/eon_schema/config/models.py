@@ -2512,32 +2512,56 @@ class NudgedElasticBandConfig(BaseModel):
         description="Metric inside the band projection of the rgsaddle band.",
     )
     """
-    ``exp`` installs the per-image exponential metric (Packwood et al.
-    2016) in the band projection, as Makri, Ortner and Kermode (2019)
-    write it. The spring constant is then the dimensionless
-    ``kappa = spring / mu``. Needs the rgsaddle band (``opt_method`` lbfgs,
-    fire or xtsci on a build linked to rgsaddle 0.3.0 or newer). Refused with
+    ``exp`` calls ``rgsaddle_band_set_exp_precon``: the per-image Exp
+    metric of Packwood et al. (2016) inside the band projection, as
+    Makri, Ortner and Kermode (2019), Eq. (9) and (10), write it
+    (:cite:t:`neb-makriPreconditioningScheme2019`). The spring constant
+    enters as the dimensionless ``kappa = spring / mu``. Needs the
+    rgsaddle band (``opt_method`` lbfgs, fire or xtsci on a build linked
+    to rgsaddle 0.3.0 or newer, C ABI minor 22). Refused with
     ``solid_state``, with one atom per image, and with ``energy_weighted``
-    or ``onsager_machlup``. Also refused when any atom is fixed, until
-    rgsaddle offers a fixed-atom mask for the metric. Experimental: it does
-    not yet reproduce the 2019 method.
+    or ``onsager_machlup``. Also refused when any atom is fixed: the C
+    API has no fixed-atom mask. The function takes ``A``, ``c_stab``,
+    ``mu`` and ``r_cut_factor``. It has no absolute cutoff and no shift.
     """
+    band_precon_A: float = Field(
+        default=0.0,
+        description="Exp exponent A in exp(-A (r / r_nn - 1)). 0 selects 3.",
+    )
     band_precon_mu: float = Field(
         default=0.0,
         description="Energy scale mu of the band metric; 0 lets rgsaddle estimate it.",
     )
     """
-    The estimate takes two force calls on a copy of the first interior
-    image before the first step.
+    The estimate is one force row on a copy of the first interior image
+    before the first step.
+    """
+    band_precon_r_cut_factor: float = Field(
+        default=0.0,
+        description="Cutoff as a multiple of the nearest-neighbour distance. 0 selects 2.",
+    )
+    """
+    Pairs inside ``r_cut_factor * r_nn`` enter the metric. A value in
+    (0, 1] is refused. The C API has no absolute ``r_cut``.
+    """
+    band_precon_c_stab: float = Field(
+        default=0.0,
+        description="Diagonal stabilization C_stab of the Exp metric. 0 selects 0.1.",
+    )
+    """
+    The diagonal carries ``mu * C_stab``. The C API has no shift argument.
     """
     band_stepper: Literal["auto", "ode12r"] = Field(
         default="auto",
         description="Stepper of the rgsaddle band.",
     )
     """
-    ``auto`` follows ``opt_method``. ``ode12r`` is the adaptive ODE12r
-    stepper (Makri, Ortner and Kermode 2019), ODE12r-Exp with
-    ``band_precon = exp``. Needs rgsaddle 0.3.0 or newer.
+    ``auto`` follows ``opt_method``. ``ode12r`` selects
+    ``RGSADDLE_METHOD_ODE12R``, the adaptive ODE12r stepper of Makri,
+    Ortner and Kermode (2019). With ``band_precon = exp`` that is
+    ODE12r-Exp. The C API does not take ODE12r tolerances: the library
+    fixes ``rtol`` at 0.1, ``c1`` at 0.01 and ``c2`` at 2, and there is
+    no ``atol`` argument. Needs rgsaddle 0.3.0 or newer.
     """
     energy_weighted: bool = Field(
         default=False, description="Indicates if the energy-weighted method is used."

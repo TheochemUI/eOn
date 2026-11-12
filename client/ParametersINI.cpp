@@ -1147,9 +1147,19 @@ int load_ini(const INIReader &ini, Parameters &params) {
   ParametersLoadAccess::neb_options(params).band.precon = toLowerCase(
       ini.Get(neb_section, "band_precon",
               ParametersLoadAccess::neb_options(params).band.precon));
+  ParametersLoadAccess::neb_options(params).band.precon_A =
+      ini.GetReal(neb_section, "band_precon_A",
+                  ParametersLoadAccess::neb_options(params).band.precon_A);
   ParametersLoadAccess::neb_options(params).band.precon_mu =
       ini.GetReal(neb_section, "band_precon_mu",
                   ParametersLoadAccess::neb_options(params).band.precon_mu);
+  ParametersLoadAccess::neb_options(params).band.precon_r_cut_factor =
+      ini.GetReal(
+          neb_section, "band_precon_r_cut_factor",
+          ParametersLoadAccess::neb_options(params).band.precon_r_cut_factor);
+  ParametersLoadAccess::neb_options(params).band.precon_c_stab =
+      ini.GetReal(neb_section, "band_precon_c_stab",
+                  ParametersLoadAccess::neb_options(params).band.precon_c_stab);
   ParametersLoadAccess::neb_options(params).band.stepper = toLowerCase(
       ini.Get(neb_section, "band_stepper",
               ParametersLoadAccess::neb_options(params).band.stepper));

@@ -327,6 +327,44 @@ Nudged Elastic Band:
             kind: float
             default: 100.0
 
+        # rgsaddle band only. none leaves the Euclidean metric.
+        # exp calls rgsaddle_band_set_exp_precon (Packwood 2016 metric,
+        # Makri, Ortner and Kermode, J. Chem. Phys. 150, 094109 (2019)).
+        band_precon:
+            kind: string
+            default: none
+            values:
+                - none
+                - exp
+
+        # 0 selects rgsaddle's default (A = 3, mu estimated, factor 2, C_stab 0.1).
+        band_precon_A:
+            kind: float
+            default: 0.0
+
+        band_precon_mu:
+            kind: float
+            default: 0.0
+
+        # Multiple of the nearest-neighbour distance, not an absolute cutoff.
+        band_precon_r_cut_factor:
+            kind: float
+            default: 0.0
+
+        # Diagonal stabilization. The C API has no shift parameter.
+        band_precon_c_stab:
+            kind: float
+            default: 0.0
+
+        # auto follows opt_method. ode12r is RGSADDLE_METHOD_ODE12R.
+        # The C API has no ODE12r tolerance arguments.
+        band_stepper:
+            kind: string
+            default: auto
+            values:
+                - auto
+                - ode12r
+
         energy_weighted:
             kind: boolean
             default: false

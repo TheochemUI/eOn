@@ -535,4 +535,59 @@ TEST_CASE("opt_backend reads, round-trips and rejects unknown backends",
   Parameters badJson;
   REQUIRE_THROWS_AS(eonc::config::from_json(j, badJson), std::invalid_argument);
 }
+
+TEST_CASE("NEB band precon keys default off and round-trip",
+          "[params][neb][band_precon]") {
+  Parameters defaults;
+  const auto &off = defaults.neb_options().band;
+  REQUIRE(off.precon == "none");
+  REQUIRE(off.stepper == "auto");
+  REQUIRE(off.precon_A == 0.0);
+  REQUIRE(off.precon_mu == 0.0);
+  REQUIRE(off.precon_r_cut_factor == 0.0);
+  REQUIRE(off.precon_c_stab == 0.0);
+
+  Parameters ini;
+  REQUIRE(ini.load_ini_text("[Nudged Elastic Band]\n"
+                            "band_precon = Exp\n"
+                            "band_precon_A = 2.5\n"
+                            "band_precon_mu = 4\n"
+                            "band_precon_r_cut_factor = 2.2\n"
+                            "band_precon_c_stab = 0.05\n"
+                            "band_stepper = ODE12r\n") == 0);
+  const auto &band = ini.neb_options().band;
+  REQUIRE(band.precon == "exp");
+  REQUIRE(band.precon_A == Catch::Approx(2.5));
+  REQUIRE(band.precon_mu == Catch::Approx(4.0));
+  REQUIRE(band.precon_r_cut_factor == Catch::Approx(2.2));
+  REQUIRE(band.precon_c_stab == Catch::Approx(0.05));
+  REQUIRE(band.stepper == "ode12r");
+
+  Parameters round;
+  eonc::config::from_json(eonc::config::to_json(ini), round);
+  const auto &again = round.neb_options().band;
+  REQUIRE(again.precon == "exp");
+  REQUIRE(again.precon_A == Catch::Approx(2.5));
+  REQUIRE(again.precon_mu == Catch::Approx(4.0));
+  REQUIRE(again.precon_r_cut_factor == Catch::Approx(2.2));
+  REQUIRE(again.precon_c_stab == Catch::Approx(0.05));
+  REQUIRE(again.stepper == "ode12r");
+
+  // Explicit defaults parse to the same sentinels as an omitted section.
+  Parameters named;
+  REQUIRE(named.load_ini_text("[Nudged Elastic Band]\n"
+                              "band_precon = none\n"
+                              "band_precon_A = 0\n"
+                              "band_precon_mu = 0\n"
+                              "band_precon_r_cut_factor = 0\n"
+                              "band_precon_c_stab = 0\n"
+                              "band_stepper = auto\n") == 0);
+  REQUIRE(named.neb_options().band.precon == off.precon);
+  REQUIRE(named.neb_options().band.stepper == off.stepper);
+  REQUIRE(named.neb_options().band.precon_A == off.precon_A);
+  REQUIRE(named.neb_options().band.precon_mu == off.precon_mu);
+  REQUIRE(named.neb_options().band.precon_r_cut_factor ==
+          off.precon_r_cut_factor);
+  REQUIRE(named.neb_options().band.precon_c_stab == off.precon_c_stab);
+}
 } // namespace tests

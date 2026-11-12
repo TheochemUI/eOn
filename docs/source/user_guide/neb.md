@@ -407,6 +407,45 @@ table in <project:optimizer.md> lists which input runs where.
 `[Optimizer] opt_backend = rgmin` does not move the band step; it moves
 the endpoint relaxations.
 
+### Preconditioned band
+
+`band_precon = exp` and `band_stepper = ode12r` are off by default
+(`none` and `auto`). With both set, the rgsaddle band is the
+ODE12r-Exp method of Makri, Ortner and Kermode
+{cite:t}`neb-makriPreconditioningScheme2019`: the Exp metric of
+Packwood et al. {cite:t}`neb-packwoodUniversalPreconditioner2016`
+inside the band projection, integrated by the adaptive ODE12r stepper.
+Energies and forces still come from eOn's potential, so the force-call
+counter is unchanged in meaning.
+
+```{code-block} ini
+[Nudged Elastic Band]
+opt_method = lbfgs
+band_precon = exp
+band_precon_A = 0
+band_precon_mu = 0
+band_precon_r_cut_factor = 0
+band_precon_c_stab = 0
+band_stepper = ode12r
+```
+
+`band_precon_A`, `band_precon_mu`, `band_precon_r_cut_factor` and
+`band_precon_c_stab` are the arguments of
+`rgsaddle_band_set_exp_precon`. Zero selects the library defaults:
+A = 3, an estimated mu, a cutoff of 2 times the nearest-neighbour
+distance, and diagonal stabilization C_stab = 0.1. The cutoff is that
+factor, not an absolute length. The C API has no shift parameter and
+no ODE12r tolerance arguments. The library fixes rtol at 0.1, c1 at
+0.01 and c2 at 2, and it has no atol. Leaving every key at its default
+does not call the preconditioner, and the band is the stock step.
+
+`exp` is refused when any atom is fixed, because the C API has no
+fixed-atom mask. It is also refused with `solid_state`, with one atom
+per image, and with `energy_weighted` or `onsager_machlup`. The keys
+need eOn built with `-Dwith_rgsaddle=true` against rgsaddle 0.3.0 or
+newer (C ABI minor 22). An older library refuses them before it
+creates the band.
+
 Or programmatically via [rgpycrumbs](https://rgpycrumbs.rgoswami.me):
 
 ```python

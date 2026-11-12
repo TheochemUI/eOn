@@ -69,4 +69,56 @@ TEST_CASE("rgsaddle CI-NEB reaches the LJ13 saddle and counts every call",
       Catch::Approx(saddleEnergy).margin(1e-2));
 }
 
+#ifdef WITH_RGSADDLE_BAND_PRECON
+TEST_CASE("ODE12r-Exp reaches the same LJ13 barrier as the stock band",
+          "[neb][rgsaddle][band_precon]") {
+  // The stock band is opt_method lbfgs with the precon keys left off.
+  // ODE12r-Exp is the same endpoints through rgsaddle_band_set_exp_precon
+  // and RGSADDLE_METHOD_ODE12R. Both must land on the known saddle.
+  auto climb = [](bool precon) {
+    Parameters params;
+    ParametersLoadAccess::main_options(params).parallel = false;
+    ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+    auto &nebOpt = ParametersLoadAccess::neb_options(params);
+    nebOpt.opt_method = OptType::LBFGS;
+    nebOpt.image_count = 7;
+    nebOpt.max_iterations = 1000;
+    nebOpt.force_tolerance = 0.01;
+    nebOpt.climbing_image.enabled = true;
+    nebOpt.climbing_image.ocineb.use_mmf = false;
+    nebOpt.initialization.method = NEBInit::LINEAR;
+    nebOpt.endpoints.minimize = false;
+    if (precon) {
+      nebOpt.band.precon = "exp";
+      nebOpt.band.stepper = "ode12r";
+    }
+    ParametersLoadAccess::optimizer_options(params).max_move = 0.1;
+    auto pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
+    auto reactant = std::make_shared<Matter>(pot, params);
+    auto product = std::make_shared<Matter>(pot, params);
+    reactant->con2matter(std::string("reactant.con"));
+    product->con2matter(std::string("product.con"));
+    NudgedElasticBand neb(reactant, product, params, pot);
+    const auto status = neb.compute();
+    REQUIRE(status == NudgedElasticBand::NEBStatus::GOOD);
+    REQUIRE(neb.climbingImage > 0);
+    return neb.path[static_cast<size_t>(neb.climbingImage)]
+        ->getPotentialEnergy();
+  };
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  Matter saddle(pot, params);
+  saddle.con2matter(std::string("saddle.con"));
+  const double reference = saddle.getPotentialEnergy();
+  const double stock = climb(false);
+  const double ode = climb(true);
+  CAPTURE(stock, ode, reference);
+  REQUIRE(stock == Catch::Approx(reference).margin(1e-2));
+  REQUIRE(ode == Catch::Approx(stock).margin(1e-2));
+}
+#endif
+
 } // namespace tests

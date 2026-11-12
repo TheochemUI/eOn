@@ -70,8 +70,7 @@ json to_json(const Parameters &p) {
       {"remove_net_force",
        ParametersLoadAccess::main_options(p).removeNetForce},
       {"write_con_forces",
-       static_cast<bool>(
-           ParametersLoadAccess::main_options(p).writeConForces)},
+       static_cast<bool>(ParametersLoadAccess::main_options(p).writeConForces)},
       {"input_format", ParametersLoadAccess::main_options(p).inputFormat},
       {"cell", ParametersLoadAccess::main_options(p).cell},
       {"pbc", ParametersLoadAccess::main_options(p).pbc},
@@ -218,7 +217,12 @@ json to_json(const Parameters &p) {
       {"solid_state_pressure",
        ParametersLoadAccess::neb_options(p).solid_state.pressure},
       {"band_precon", ParametersLoadAccess::neb_options(p).band.precon},
+      {"band_precon_A", ParametersLoadAccess::neb_options(p).band.precon_A},
       {"band_precon_mu", ParametersLoadAccess::neb_options(p).band.precon_mu},
+      {"band_precon_r_cut_factor",
+       ParametersLoadAccess::neb_options(p).band.precon_r_cut_factor},
+      {"band_precon_c_stab",
+       ParametersLoadAccess::neb_options(p).band.precon_c_stab},
       {"band_stepper", ParametersLoadAccess::neb_options(p).band.stepper},
       {"temperature", ParametersLoadAccess::neb_options(p).quantum_temperature},
       {"tunnel_wall_points",
@@ -716,8 +720,14 @@ void from_json(const json &j, Parameters &p) {
              ParametersLoadAccess::neb_options(p).solid_state.pressure);
     JSON_OPT(s, "band_precon",
              ParametersLoadAccess::neb_options(p).band.precon);
+    JSON_OPT(s, "band_precon_A",
+             ParametersLoadAccess::neb_options(p).band.precon_A);
     JSON_OPT(s, "band_precon_mu",
              ParametersLoadAccess::neb_options(p).band.precon_mu);
+    JSON_OPT(s, "band_precon_r_cut_factor",
+             ParametersLoadAccess::neb_options(p).band.precon_r_cut_factor);
+    JSON_OPT(s, "band_precon_c_stab",
+             ParametersLoadAccess::neb_options(p).band.precon_c_stab);
     JSON_OPT(s, "band_stepper",
              ParametersLoadAccess::neb_options(p).band.stepper);
     JSON_OPT(s, "temperature",

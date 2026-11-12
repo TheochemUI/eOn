@@ -18,6 +18,8 @@
 #include "eon/Potential.h"
 #include "eon/XtsciBand.h"
 #include <algorithm>
+#include <cstring>
+#include <limits>
 #include <memory>
 #include <rgsaddle.h>
 #include <tuple>
@@ -500,6 +502,65 @@ TEST_CASE("the exp metric refuses a non-uniform spring and one atom",
   REQUIRE_THROWS_WITH(eonc::XtsciBand(*neb, single.params),
                       ContainsSubstring("two atoms"));
 }
+
+TEST_CASE("default band options leave the path byte-identical",
+          "[neb][rgsaddle][band_precon]") {
+  auto positions = [](LJBand &fixture) {
+    ParametersLoadAccess::main_options(fixture.params).parallel = false;
+    auto band = fixture.neb();
+    static_cast<void>(band->compute());
+    std::vector<AtomMatrix> path;
+    path.reserve(band->path.size());
+    for (const auto &image : band->path) {
+      path.push_back(image->getPositions());
+    }
+    return path;
+  };
+  LJBand plain(OptType::LBFGS);
+  LJBand named(OptType::LBFGS);
+  auto &band = ParametersLoadAccess::neb_options(named.params).band;
+  band.precon = "none";
+  band.stepper = "auto";
+  band.precon_A = 0.0;
+  band.precon_mu = 0.0;
+  band.precon_r_cut_factor = 0.0;
+  band.precon_c_stab = 0.0;
+  const auto left = positions(plain);
+  const auto right = positions(named);
+  REQUIRE(left.size() == right.size());
+  for (size_t i = 0; i < left.size(); ++i) {
+    REQUIRE(left[i].rows() == right[i].rows());
+    REQUIRE(left[i].cols() == right[i].cols());
+    REQUIRE(std::memcmp(left[i].data(), right[i].data(),
+                        sizeof(double) * static_cast<size_t>(left[i].size())) ==
+            0);
+  }
+}
+
+#ifdef WITH_RGSADDLE_BAND_PRECON
+TEST_CASE("band_precon_A is passed to the exp metric",
+          "[neb][rgsaddle][band_precon]") {
+  // Fails while rgsaddle_band_set_exp_precon is called with a hard-coded 0
+  // (the library default A = 3) for every exp band. A = 1 must move the
+  // image off that default step.
+  LJBand library(OptType::LBFGS, "exp");
+  LJBand stiff(OptType::LBFGS, "exp");
+  ParametersLoadAccess::neb_options(stiff.params).band.precon_A = 1.0;
+  REQUIRE_FALSE(library.run().isApprox(stiff.run(), 1e-10));
+}
+
+TEST_CASE("a cutoff factor of one is refused", "[neb][rgsaddle][band_precon]") {
+  using Catch::Matchers::ContainsSubstring;
+  LJBand bad(OptType::LBFGS, "exp");
+  ParametersLoadAccess::neb_options(bad.params).band.precon_r_cut_factor = 1.0;
+  REQUIRE_THROWS_WITH(bad.neb()->compute(), ContainsSubstring("r_cut_factor"));
+  LJBand infinite(OptType::LBFGS, "exp");
+  ParametersLoadAccess::neb_options(infinite.params).band.precon_A =
+      std::numeric_limits<double>::infinity();
+  REQUIRE_THROWS_WITH(infinite.neb()->compute(),
+                      ContainsSubstring("band_precon_A"));
+}
+#endif
 
 TEST_CASE("the exp metric refuses fixed atoms",
           "[neb][rgsaddle][band_precon]") {
