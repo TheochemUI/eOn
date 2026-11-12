@@ -22,6 +22,7 @@
 #include <cmath>
 #include <filesystem>
 #include <fstream>
+#include <iomanip>
 #include <limits>
 #include <sstream>
 #include <string>
@@ -137,6 +138,198 @@ void placeShear(eonc::Matter &matter, double q, double hyx) {
   positions.row(0) = fractional * cell;
   matter.setPositions(positions);
 }
+
+// Analytic Mishin EAM1 (Phys. Rev. B 63, 224106, Table I). The setfl
+// file is a later tabulation; this is the form the reference saddle uses.
+class MishinEam1 final : public eonc::Potential {
+public:
+  MishinEam1() : Potential(eonc::PotType::LJ) {}
+
+  [[nodiscard]] bool computesStress() const noexcept override { return true; }
+  [[nodiscard]] Matrix3d cauchyStress() const override { return sigma_; }
+  [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+
+  void force(long N, const double *R, const int *, double *F, double *U,
+             double *, const double *box) override {
+    Matrix3d cell = Matrix3d::Zero();
+    for (int i = 0; i < 9; ++i) {
+      cell(i / 3, i % 3) = box[i];
+    }
+    const double rc = 5.50679;
+    const double hcut = 0.50037;
+    const double lengths[3] = {cell.row(0).norm(), cell.row(1).norm(),
+                               cell.row(2).norm()};
+    const double minLen = std::min(lengths[0], std::min(lengths[1], lengths[2]));
+    const int nimg = std::max(1, static_cast<int>(std::ceil(rc / minLen)));
+    const double rc2 = rc * rc;
+    struct Bond {
+      int i;
+      int j;
+      Eigen::Vector3d d;
+      double r;
+    };
+    std::vector<Bond> bonds;
+    auto positive = [](int sx, int sy, int sz) {
+      return sx > 0 || (sx == 0 && (sy > 0 || (sy == 0 && sz > 0)));
+    };
+    for (int i = 0; i < static_cast<int>(N); ++i) {
+      const Eigen::Vector3d ri(R[3 * i], R[3 * i + 1], R[3 * i + 2]);
+      for (int j = i; j < static_cast<int>(N); ++j) {
+        const Eigen::Vector3d rj(R[3 * j], R[3 * j + 1], R[3 * j + 2]);
+        for (int sx = -nimg; sx <= nimg; ++sx) {
+          for (int sy = -nimg; sy <= nimg; ++sy) {
+            for (int sz = -nimg; sz <= nimg; ++sz) {
+              if (i == j && !positive(sx, sy, sz)) {
+                continue;
+              }
+              const Eigen::Vector3d shift = sx * cell.row(0).transpose() +
+                                            sy * cell.row(1).transpose() +
+                                            sz * cell.row(2).transpose();
+              const Eigen::Vector3d d = rj + shift - ri;
+              const double r2 = d.squaredNorm();
+              if (r2 > 1e-16 && r2 < rc2) {
+                bonds.push_back(Bond{i, j, d, std::sqrt(r2)});
+              }
+            }
+          }
+        }
+      }
+    }
+    auto weight = [&](double r) {
+      const double x = (r - rc) / hcut;
+      if (x >= 0.0) {
+        return std::pair<double, double>{0.0, 0.0};
+      }
+      const double x2 = x * x;
+      const double x4 = x2 * x2;
+      const double den = 1.0 + x4;
+      return std::pair<double, double>{x4 / den,
+                                       4.0 * x * x2 / (den * den) / hcut};
+    };
+    auto morse = [](double r, double r0, double alpha) {
+      const double z = -alpha * (r - r0);
+      const double e1 = std::exp(z);
+      const double e2 = std::exp(2.0 * z);
+      return std::pair<double, double>{e2 - 2.0 * e1, 2.0 * alpha * (e1 - e2)};
+    };
+    auto pair = [&](double r) {
+      if (r >= rc) {
+        return std::pair<double, double>{0.0, 0.0};
+      }
+      const auto [m1, dm1] = morse(r, 0.83591, 2.97758);
+      const auto [m2, dm2] = morse(r, 4.46867, 1.54927);
+      const auto [psi, dpsi] = weight(r);
+      const double core = 2.01458e2 * m1 + 6.59288e-3 * m2 + 0.86225e-2;
+      double value = core * psi;
+      double slope = (2.01458e2 * dm1 + 6.59288e-3 * dm2) * psi + core * dpsi;
+      const double rs[3] = {2.24, 1.8, 1.2};
+      const double strength[3] = {4.0, 40.0, 1.15e3};
+      for (int k = 0; k < 3; ++k) {
+        if (r < rs[k]) {
+          const double gap = rs[k] - r;
+          const double gap3 = gap * gap * gap;
+          value -= strength[k] * gap * gap3;
+          slope += 4.0 * strength[k] * gap3;
+        }
+      }
+      return std::pair<double, double>{value, slope};
+    };
+    auto density = [&](double r) {
+      if (r >= rc) {
+        return std::pair<double, double>{0.0, 0.0};
+      }
+      const auto [psi, dpsi] = weight(r);
+      const double d3 = r - (-2.19885);
+      const double g1 = std::exp(-0.17394 * d3 * d3);
+      const double dg1 = g1 * (-2.0 * 0.17394 * d3);
+      const double arg = -5.35661e2 * (r - (-2.61984e2));
+      double g2 = 0.0;
+      double dg2 = 0.0;
+      if (arg >= -700.0) {
+        g2 = std::exp(arg);
+        dg2 = -5.35661e2 * g2;
+      }
+      const double inner = 3.80362 * g1 + g2;
+      const double dinner = 3.80362 * dg1 + dg2;
+      return std::pair<double, double>{inner * psi, dinner * psi + inner * dpsi};
+    };
+    auto embed = [](double rho) {
+      const double x = rho - 1.0;
+      const double x2 = x * x;
+      const double x3 = x2 * x;
+      if (rho < 1.0) {
+        const double value = -2.28235 + 0.5 * 1.35535 * x2 + (-1.27775) * x3 +
+                             (-0.86074) * x2 * x2 + 1.78804 * x2 * x3 +
+                             2.97571 * x3 * x3;
+        const double slope = 1.35535 * x + 3.0 * (-1.27775) * x2 +
+                             4.0 * (-0.86074) * x3 + 5.0 * 1.78804 * x2 * x2 +
+                             6.0 * 2.97571 * x2 * x3;
+        return std::pair<double, double>{value, slope};
+      }
+      const double num =
+          -2.28235 + 0.5 * 1.35535 * x2 + (-1.27775) * x3 + 0.4 * x2 * x2;
+      const double den = 1.0 + 0.3 * x3;
+      const double dnum = 1.35535 * x + 3.0 * (-1.27775) * x2 + 4.0 * 0.4 * x3;
+      const double dden = 3.0 * 0.3 * x2;
+      return std::pair<double, double>{
+          num / den, (dnum * den - num * dden) / (den * den)};
+    };
+    std::vector<double> rho(static_cast<size_t>(N), 0.0);
+    for (const Bond &bond : bonds) {
+      const double w = density(bond.r).first;
+      rho[static_cast<size_t>(bond.i)] += w;
+      if (bond.i != bond.j) {
+        rho[static_cast<size_t>(bond.j)] += w;
+      } else {
+        rho[static_cast<size_t>(bond.i)] += w;
+      }
+    }
+    double energy = 0.0;
+    std::vector<double> slope(static_cast<size_t>(N), 0.0);
+    for (int i = 0; i < static_cast<int>(N); ++i) {
+      const auto [value, derivative] = embed(rho[static_cast<size_t>(i)]);
+      energy += value;
+      slope[static_cast<size_t>(i)] = derivative;
+    }
+    for (int i = 0; i < static_cast<int>(N); ++i) {
+      F[3 * i] = 0.0;
+      F[3 * i + 1] = 0.0;
+      F[3 * i + 2] = 0.0;
+    }
+    Matrix3d virial = Matrix3d::Zero();
+    for (const Bond &bond : bonds) {
+      const auto [v, dv] = pair(bond.r);
+      const double drho = density(bond.r).second;
+      const double invR = 1.0 / bond.r;
+      if (bond.i != bond.j) {
+        energy += v;
+        const double deriv = dv + (slope[static_cast<size_t>(bond.i)] +
+                                    slope[static_cast<size_t>(bond.j)]) *
+                                       drho;
+        const Eigen::Vector3d f = deriv * bond.d * invR;
+        for (int c = 0; c < 3; ++c) {
+          F[3 * bond.i + c] += f[c];
+          F[3 * bond.j + c] -= f[c];
+        }
+        virial += deriv * (bond.d * bond.d.transpose()) * invR;
+      } else {
+        energy += v;
+        const double deriv =
+            dv + 2.0 * slope[static_cast<size_t>(bond.i)] * drho;
+        virial += deriv * (bond.d * bond.d.transpose()) * invR;
+      }
+    }
+    *U = energy;
+    const double volume = std::abs(cell.determinant());
+    sigma_.setZero();
+    if (volume > 0.0) {
+      sigma_ = virial / volume;
+    }
+  }
+
+private:
+  Matrix3d sigma_{Matrix3d::Zero()};
+};
 
 std::filesystem::path mishinFile() {
   const std::filesystem::path name =
@@ -395,368 +588,284 @@ TEST_CASE("a runaway cell strain is an error", "[solid_state]") {
   REQUIRE(threw);
 }
 
-TEST_CASE("copper dumbbell saddle under shear is first order",
-          "[solid_state][eam_cu][dimer]") {
-  const auto path = mishinFile();
-  REQUIRE(std::filesystem::exists(path));
+TEST_CASE("Mishin EAM1 crystal matches the analytic cohesive energy",
+          "[solid_state][eam_cu]") {
   auto params = baseParams();
-  ParametersLoadAccess::optimizer_options(params).method = eonc::OptType::LBFGS;
-  ParametersLoadAccess::optimizer_options(params).converged_force = 0.01;
-  ParametersLoadAccess::optimizer_options(params).max_iterations = 80;
-  ParametersLoadAccess::optimizer_options(params).max_move = 0.15;
-  ParametersLoadAccess::saddle_search_options(params).converged_force = 0.01;
-  ParametersLoadAccess::saddle_search_options(params).max_iterations = 60;
-  ParametersLoadAccess::saddle_search_options(params).max_energy = 5.0;
-  ParametersLoadAccess::dimer_options(params).torque_min = 0.1;
-  ParametersLoadAccess::dimer_options(params).rotations_max = 6;
-  ParametersLoadAccess::potential_options(params).potential =
-      eonc::PotType::EAM_CU;
-  ParametersLoadAccess::potential_options(params).eamFile = path.string();
-  auto pot = std::make_shared<eonc::SetflEam>(params, path.string());
-
-  constexpr double kPi = 3.14159265358979323846;
-  auto angleOf = [](const Eigen::Vector3d &a, const Eigen::Vector3d &b) {
-    const double c = std::clamp(std::abs(a.normalized().dot(b.normalized())),
-                                0.0, 1.0);
-    return std::acos(c) * 180.0 / kPi;
-  };
-  auto orientation = [&](const eonc::Matter &m, double &ang100, double &ang110,
-                         int &atomI, int &atomJ, int &axisId, double &bond) {
-    const AtomMatrix pos = m.getPositions();
-    const int nAtoms = static_cast<int>(pos.rows());
-    double best = 1e9;
-    Eigen::Vector3d axis = Eigen::Vector3d::Zero();
-    atomI = 0;
-    atomJ = 1;
-    for (int i = 0; i < nAtoms; ++i) {
-      for (int j = i + 1; j < nAtoms; ++j) {
-        AtomMatrix delta(1, 3);
-        delta.row(0) = pos.row(j) - pos.row(i);
-        const Eigen::Vector3d mic = m.pbc(delta).row(0).transpose();
-        if (mic.norm() < best) {
-          best = mic.norm();
-          axis = mic;
-          atomI = i;
-          atomJ = j;
-        }
-      }
-    }
-    const Eigen::Vector3d absAxis = axis.cwiseAbs();
-    bond = best;
-    axisId = 0;
-    absAxis.maxCoeff(&axisId);
-    Eigen::Vector3d along = Eigen::Vector3d::Zero();
-    along[axisId] = 1.0;
-    ang100 = angleOf(absAxis, along);
-    ang110 = 180.0;
-    const Eigen::Vector3d diagonals[3] = {
-        Eigen::Vector3d(1.0, 1.0, 0.0), Eigen::Vector3d(1.0, 0.0, 1.0),
-        Eigen::Vector3d(0.0, 1.0, 1.0)};
-    for (const auto &diagonal : diagonals) {
-      ang110 = std::min(ang110, angleOf(absAxis, diagonal));
-    }
-  };
-
-  auto latticeParams = params;
-  ParametersLoadAccess::solid_state_options(latticeParams).enabled = true;
-  auto diagonal = ParametersLoadAccess::solid_state_options(latticeParams).mask;
-  diagonal = std::array<int, 6>{1, 0, 1, 0, 0, 1};
-  ParametersLoadAccess::solid_state_options(latticeParams).mask = diagonal;
-  ParametersLoadAccess::optimizer_options(latticeParams).max_iterations = 40;
-  // The cutoff is 5.5 A, so a 4-atom cell misses images. The volume fit
-  // uses a 4x4x4 cell with the atoms fixed on the FCC sites.
-  constexpr int nFit = 4;
-  const int nFitAtoms = 4 * nFit * nFit * nFit;
-  eonc::Matter bulk(pot, latticeParams);
-  bulk.resize(nFitAtoms);
-  const double guess = 3.615;
-  const double basis[4][3] = {{0, 0, 0}, {0.5, 0.5, 0}, {0.5, 0, 0.5},
-                              {0, 0.5, 0.5}};
-  AtomMatrix cube(nFitAtoms, 3);
-  int fitted = 0;
-  for (int ix = 0; ix < nFit; ++ix) {
-    for (int iy = 0; iy < nFit; ++iy) {
-      for (int iz = 0; iz < nFit; ++iz) {
-        for (int b = 0; b < 4; ++b, ++fitted) {
-          bulk.setAtomicNr(fitted, 29);
-          bulk.setFixed(fitted, 1);
-          cube(fitted, 0) = (ix + basis[b][0]) * guess;
-          cube(fitted, 1) = (iy + basis[b][1]) * guess;
-          cube(fitted, 2) = (iz + basis[b][2]) * guess;
-        }
-      }
-    }
+  auto pot = std::make_shared<MishinEam1>();
+  eonc::Matter crystal(pot, params);
+  crystal.resize(4);
+  const double a = 3.615;
+  const double basis[4][3] = {{0, 0, 0}, {0, 0.5, 0.5}, {0.5, 0, 0.5},
+                              {0.5, 0.5, 0}};
+  AtomMatrix positions(4, 3);
+  for (int b = 0; b < 4; ++b) {
+    crystal.setAtomicNr(b, 29);
+    positions(b, 0) = basis[b][0] * a;
+    positions(b, 1) = basis[b][1] * a;
+    positions(b, 2) = basis[b][2] * a;
   }
-  bulk.setCell(Matrix3d::Identity() * (nFit * guess));
-  bulk.setPeriodic(true);
-  bulk.setPositions(cube);
-  REQUIRE(bulk.relax(true));
-  const double a =
-      std::cbrt(std::abs(bulk.getCell().determinant())) / static_cast<double>(nFit);
-  REQUIRE(a == Catch::Approx(3.615).margin(0.02));
-
-  constexpr int n = 4;
-  constexpr int nSites = 4 * n * n * n;
-  std::vector<Eigen::RowVector3d> sites;
-  sites.reserve(nSites);
-  for (int ix = 0; ix < n; ++ix) {
-    for (int iy = 0; iy < n; ++iy) {
-      for (int iz = 0; iz < n; ++iz) {
-        for (int b = 0; b < 4; ++b) {
-          sites.emplace_back((ix + basis[b][0]) * a, (iy + basis[b][1]) * a,
-                             (iz + basis[b][2]) * a);
-        }
-      }
-    }
-  }
-  const int vacancy = 0;
-  int dumbbellSite = 1;
-  double siteDistance = 1e9;
-  // One cubic cell left the dumbbell core on the vacancy and <100> was
-  // not a minimum. Two cells keeps the pair nearby and <100> intact.
-  const Eigen::RowVector3d wanted(0.0, 2.0 * a, 0.0);
-  for (int i = 1; i < nSites; ++i) {
-    const double distance = (sites[static_cast<size_t>(i)] - wanted).norm();
-    if (distance < siteDistance) {
-      siteDistance = distance;
-      dumbbellSite = i;
-    }
-  }
-  std::vector<Eigen::RowVector3d> atoms;
-  atoms.reserve(nSites);
-  for (int i = 0; i < nSites; ++i) {
-    if (i == vacancy) {
-      continue;
-    }
-    if (i == dumbbellSite) {
-      atoms.push_back(sites[static_cast<size_t>(i)] +
-                      Eigen::RowVector3d(0.75, 0.0, 0.0));
-      atoms.push_back(sites[static_cast<size_t>(i)] -
-                      Eigen::RowVector3d(0.75, 0.0, 0.0));
-    } else {
-      atoms.push_back(sites[static_cast<size_t>(i)]);
-    }
-  }
-  REQUIRE(atoms.size() == static_cast<size_t>(nSites));
-  const double length = static_cast<double>(n) * a;
-
-  std::ofstream table("/tmp/cu-saddle.txt");
-  table << "a0 " << a << "\n";
-  const double strains[] = {0.0, 0.02, 0.03, 0.04, 0.05};
-  for (double gamma : strains) {
-    for (int variable = 0; variable < 2; ++variable) {
-      auto local = params;
-      auto mask = ParametersLoadAccess::solid_state_options(local).mask;
-      if (variable) {
-        ParametersLoadAccess::solid_state_options(local).enabled = true;
-        mask.fill(1);
-        if (gamma > 0.0) {
-          mask[1] = 0;
-        }
-        ParametersLoadAccess::solid_state_options(local).mask = mask;
-      }
-      auto matter = std::make_shared<eonc::Matter>(pot, local);
-      matter->resize(static_cast<long>(atoms.size()));
-      AtomMatrix positions(static_cast<long>(atoms.size()), 3);
-      for (int i = 0; i < static_cast<int>(atoms.size()); ++i) {
-        matter->setAtomicNr(i, 29);
-        positions.row(i) = atoms[static_cast<size_t>(i)];
-      }
-      Matrix3d cell = Matrix3d::Identity() * length;
-      cell(1, 0) = gamma * length;
-      // The applied shear is in the reference cell. Positions were built
-      // in the cubic cell, so carry them with the same deformation.
-      positions = positions * ((Matrix3d::Identity() * length).inverse() * cell);
-      matter->setCell(cell);
-      matter->setPeriodic(true);
-      matter->setPositions(positions);
-      REQUIRE(matter->relax(true));
-      const double reactant = matter->getPotentialEnergy();
-      const Matrix3d sigmaMin = matter->cauchyStress();
-      const double volumeMin = std::abs(matter->getCell().determinant());
-      const double pMinYx = volumeMin * sigmaMin(1, 0);
-      double reactant100 = 0.0;
-      double reactant110 = 0.0;
-      double reactantBond = 0.0;
-      int reactantAxis = 0;
-      int atomI = 0;
-      int atomJ = 1;
-      orientation(*matter, reactant100, reactant110, atomI, atomJ,
-                  reactantAxis, reactantBond);
-      INFO("relaxed minimum angle " << reactant100 << " bond " << reactantBond
-                                  << " axis " << reactantAxis);
-      REQUIRE(reactantBond > 1.2);
-      REQUIRE(reactantBond < 2.4);
-      // Above about 3% shear the <100> basin is gone and the relaxed
-      // minimum is already the <110> dumbbell. The saddle is then the
-      // <100> orientation, so the guess rotates back to it.
-      const bool minimumIs110 = reactant100 > 25.0;
-      if (minimumIs110) {
-        // The <100> basin has disappeared. The relaxed defect is the
-        // <110> dumbbell, so this shear has no <100> rotation saddle.
-        table << variable << " " << gamma << " 0 0 " << sigmaMin(1, 0) << " "
-              << pMinYx << " " << pMinYx << " 0 -1 0 0 " << reactant100 << " "
-              << reactant110 << "\n";
-        table.flush();
-        REQUIRE(reactant110 < 20.0);
-        continue;
-      }
-      const AtomMatrix reactantPos = matter->getPositions();
-      Eigen::Vector3d axis =
-          (reactantPos.row(atomJ) - reactantPos.row(atomI)).transpose();
-      AtomMatrix wrapped(1, 3);
-      wrapped.row(0) = axis.transpose();
-      axis = matter->pbc(wrapped).row(0).transpose();
-      Eigen::Vector3d perp(0.0, 1.0, 0.0);
-      if (std::abs(axis.normalized().dot(perp)) > 0.8) {
-        perp = Eigen::Vector3d(0.0, 0.0, 1.0);
-      }
-      // Neighbors are held fixed while the dumbbell rotates, so the
-      // energy is the clash. Relaxing them at fixed dumbbell angle is
-      // the rotation path the saddle search has to climb.
-      const Eigen::RowVector3d center =
-          reactantPos.row(atomI) + 0.5 * axis.transpose();
-      auto placeAngle = [&](double theta, AtomMatrix &pos, AtomMatrix &mode) {
-        pos = reactantPos;
-        const double halfLen = 0.5 * axis.norm();
-        const Eigen::Vector3d offset =
-            halfLen * (std::cos(theta) * axis.normalized() +
-                       std::sin(theta) * perp);
-        const Eigen::RowVector3d mid = center;
-        pos.row(atomI) = mid - offset.transpose();
-        pos.row(atomJ) = mid + offset.transpose();
-        const Eigen::Vector3d tangent =
-            halfLen * (-std::sin(theta) * axis.normalized() +
-                       std::cos(theta) * perp);
-        mode = AtomMatrix::Zero(pos.rows(), 3);
-        mode.row(atomI) = -tangent.transpose();
-        mode.row(atomJ) = tangent.transpose();
-        const double norm = std::sqrt(mode.squaredNorm());
-        if (norm > 0.0) {
-          mode /= norm;
-        }
-      };
-      AtomMatrix kick = AtomMatrix::Zero(reactantPos.rows(), 3);
-      AtomMatrix started = reactantPos;
-      Matrix3d startedCell = matter->getCell();
-      double amp = 0.0;
-      bool found = false;
-      std::ofstream rotationLog("/tmp/cu-rot.txt", std::ios::app);
-      rotationLog << "case " << variable << " " << gamma << "\n";
-      const int savedIters =
-          ParametersLoadAccess::optimizer_options(local).max_iterations;
-      ParametersLoadAccess::optimizer_options(local).max_iterations = 40;
-      // The neighbor relax is at fixed cell. A free cell at 45 degrees
-      // falls into the <110> basin and the negative mode disappears.
-      // The variable-cell search starts from that fixed-cell saddle.
-      const bool savedEnabled =
-          ParametersLoadAccess::solid_state_options(local).enabled;
-      const auto savedMask =
-          ParametersLoadAccess::solid_state_options(local).mask;
-      ParametersLoadAccess::solid_state_options(local).enabled = false;
-      auto frozenMask = savedMask;
-      frozenMask.fill(0);
-      ParametersLoadAccess::solid_state_options(local).mask = frozenMask;
-      const int guesses[] = {
-          minimumIs110 ? -static_cast<int>(std::lround(reactant100)) : 45};
-      const int nGuesses = 1;
-      for (int guess = 0; guess < nGuesses && !found; ++guess) {
-      const double theta = guesses[guess] * kPi / 180.0;
-      AtomMatrix pos;
-      AtomMatrix mode;
-      placeAngle(theta, pos, mode);
-      matter->setPositions(pos);
-      matter->setFixed(atomI, 1);
-      matter->setFixed(atomJ, 1);
-      const bool relaxed = matter->relax(true);
-      matter->setFixed(atomI, 0);
-      matter->setFixed(atomJ, 0);
-      const double rise = matter->getPotentialEnergy() - reactant;
-      eonc::Matter probe = *matter;
-      int nShell = 0;
-      for (int i = 0; i < reactantPos.rows(); ++i) {
-        AtomMatrix delta(1, 3);
-        delta.row(0) = probe.getPositions().row(i) - center;
-        if (probe.pbc(delta).row(0).norm() > 5.0) {
-          probe.setFixed(i, 1);
-        } else {
-          ++nShell;
-        }
-      }
-      auto shellParams = local;
-      if (!variable) {
-        auto frozen =
-            ParametersLoadAccess::solid_state_options(shellParams).mask;
-        frozen.fill(0);
-        ParametersLoadAccess::solid_state_options(shellParams).mask = frozen;
-      }
-      ParametersLoadAccess::saddle_search_options(shellParams).minmode_method =
-          "lanczos";
-      ParametersLoadAccess::lanczos_options(shellParams).max_iterations = 24;
-      eonc::solid::Chart shellChart(probe, eonc::solid::optionsFrom(shellParams));
-      const auto soft = eonc::solid::lowestMode(
-          probe, shellChart, shellChart.packAtoms(mode), shellParams);
-      rotationLog << "45 " << relaxed << " " << rise << " shell " << nShell
-                  << " soft " << soft.curvature << "\n";
-      if (relaxed && rise > 0.0 && rise < 1.5) {
-        const VectorXd origin = shellChart.coordinates(probe);
-        auto curvatureAlong = [&](double distance) {
-          const double fd = 1e-3;
-          const VectorXd x = origin + distance * soft.mode;
-          shellChart.setCoordinates(probe, x);
-          const double energy = probe.getPotentialEnergy();
-          shellChart.setCoordinates(probe, x + fd * soft.mode);
-          const double plus = probe.getPotentialEnergy();
-          shellChart.setCoordinates(probe, x - fd * soft.mode);
-          const double minus = probe.getPotentialEnergy();
-          shellChart.setCoordinates(probe, x);
-          return std::pair<double, double>{
-              energy - reactant,
-              (plus + minus - 2.0 * energy) / (fd * fd)};
-        };
-        const double steps[] = {0.0, 0.08, -0.08, 0.16, -0.16, 0.28, -0.28};
-        for (double distance : steps) {
-          const auto [stepRise, stepCurv] =
-              distance == 0.0 ? std::pair<double, double>{rise, soft.curvature}
-                              : curvatureAlong(distance);
-          rotationLog << "step " << distance << " " << stepRise << " "
-                      << stepCurv << "\n";
-          if (stepCurv < 0.0 && stepRise > 0.0 && stepRise < 3.0) {
-            amp = guesses[guess] + distance;
-            started = probe.getPositions();
-            startedCell = probe.getCell();
-            kick = shellChart.unpackAtoms(soft.mode);
-            found = true;
-            break;
+  crystal.setCell(Matrix3d::Identity() * a);
+  crystal.setPeriodic(true);
+  crystal.setPositions(positions);
+  const double perAtom = crystal.getPotentialEnergy() / 4.0;
+  INFO("E/atom " << std::setprecision(17) << perAtom);
+  REQUIRE(perAtom == Catch::Approx(-3.5402183104868774).margin(1e-12));
+  REQUIRE(crystal.getForces().norm() < 1e-6);
+  REQUIRE(crystal.cauchyStress().cwiseAbs().maxCoeff() < 1e-4);
+  const auto path = mishinFile();
+  if (std::filesystem::exists(path)) {
+    auto tabulated = baseParams();
+    ParametersLoadAccess::potential_options(tabulated).eamFile = path.string();
+    auto setfl = std::make_shared<eonc::SetflEam>(tabulated, path.string());
+    constexpr int nFit = 4;
+    eonc::Matter fileCrystal(setfl, tabulated);
+    fileCrystal.resize(4 * nFit * nFit * nFit);
+    AtomMatrix big(4 * nFit * nFit * nFit, 3);
+    int placed = 0;
+    for (int ix = 0; ix < nFit; ++ix) {
+      for (int iy = 0; iy < nFit; ++iy) {
+        for (int iz = 0; iz < nFit; ++iz) {
+          for (int b = 0; b < 4; ++b, ++placed) {
+            fileCrystal.setAtomicNr(placed, 29);
+            big(placed, 0) = (ix + basis[b][0]) * a;
+            big(placed, 1) = (iy + basis[b][1]) * a;
+            big(placed, 2) = (iz + basis[b][2]) * a;
           }
         }
       }
-      rotationLog.flush();
+    }
+    fileCrystal.setCell(Matrix3d::Identity() * (nFit * a));
+    fileCrystal.setPeriodic(true);
+    fileCrystal.setPositions(big);
+    const double setflPerAtom = fileCrystal.getPotentialEnergy() / big.rows();
+    std::ofstream note("/tmp/cu-setfl.txt");
+    note << std::setprecision(17) << setflPerAtom << "\n";
+    INFO("setfl E/atom " << std::setprecision(17) << setflPerAtom);
+  }
+}
+
+TEST_CASE("copper dumbbell saddle follows the shear-aligned switch",
+          "[solid_state][eam_cu][dimer]") {
+  auto params = baseParams();
+  ParametersLoadAccess::optimizer_options(params).method = eonc::OptType::LBFGS;
+  ParametersLoadAccess::optimizer_options(params).converged_force = 2e-3;
+  ParametersLoadAccess::optimizer_options(params).convergence_metric = "max_component";
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 600;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.05;
+  ParametersLoadAccess::saddle_search_options(params).converged_force = 2e-3;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 1000;
+  ParametersLoadAccess::saddle_search_options(params).max_energy = 1.2;
+  ParametersLoadAccess::dimer_options(params).torque_min = 1e-3;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 8;
+  auto pot = std::make_shared<MishinEam1>();
+
+  constexpr double kA = 3.615;
+  constexpr int kN = 3;
+  constexpr double kPi = 3.14159265358979323846;
+  const double length = kN * kA;
+  const double basis[4][3] = {{0, 0, 0}, {0, 0.5, 0.5}, {0.5, 0, 0.5},
+                              {0.5, 0.5, 0}};
+  std::vector<Eigen::RowVector3d> perfect;
+  for (int ix = 0; ix < kN; ++ix) {
+    for (int iy = 0; iy < kN; ++iy) {
+      for (int iz = 0; iz < kN; ++iz) {
+        for (int b = 0; b < 4; ++b) {
+          perfect.emplace_back((ix + basis[b][0]) * kA, (iy + basis[b][1]) * kA,
+                               (iz + basis[b][2]) * kA);
+        }
       }
-      ParametersLoadAccess::optimizer_options(local).max_iterations = savedIters;
-      ParametersLoadAccess::solid_state_options(local).enabled = savedEnabled;
-      ParametersLoadAccess::solid_state_options(local).mask = savedMask;
-      INFO("neighbor-relaxed rotation " << found << " deg " << amp);
-      REQUIRE(found);
-      matter->setPositions(started);
-      matter->setCell(startedCell);
-      eonc::MinModeSaddleSearch search(matter, kick, reactant, local, pot);
+    }
+  }
+  REQUIRE(perfect.size() == 108);
+  auto build = [&](const Eigen::Vector3d &direction) {
+    std::vector<Eigen::RowVector3d> atoms(perfect.begin() + 1, perfect.end());
+    atoms.push_back(-0.5 * 2.05 * direction.transpose());
+    atoms.push_back(0.5 * 2.05 * direction.transpose());
+    return atoms;
+  };
+  const auto along100 = build(Eigen::Vector3d(1.0, 0.0, 0.0));
+  const auto along110 =
+      build(Eigen::Vector3d(1.0, 1.0, 0.0).normalized());
+  REQUIRE(along100.size() == 109);
+
+  auto shearOf = [&](const std::vector<Eigen::RowVector3d> &atoms, double gamma) {
+    Matrix3d deform = Matrix3d::Identity();
+    deform(1, 0) = gamma;
+    Matrix3d cell = (Matrix3d::Identity() * length) * deform;
+    AtomMatrix positions(static_cast<long>(atoms.size()), 3);
+    for (int i = 0; i < static_cast<int>(atoms.size()); ++i) {
+      positions.row(i) = atoms[static_cast<size_t>(i)] * deform;
+    }
+    return std::pair<AtomMatrix, Matrix3d>{positions, cell};
+  };
+  auto load = [&](const AtomMatrix &positions, const Matrix3d &cell,
+                  const eonc::Parameters &local) {
+    auto matter = std::make_shared<eonc::Matter>(pot, local);
+    matter->resize(positions.rows());
+    for (int i = 0; i < positions.rows(); ++i) {
+      matter->setAtomicNr(i, 29);
+    }
+    matter->setCell(cell);
+    matter->setPeriodic(true);
+    matter->setPositions(positions);
+    return matter;
+  };
+  auto mic = [](const Eigen::Vector3d &delta, const Matrix3d &cell) {
+    Eigen::RowVector3d frac = delta.transpose() * cell.inverse();
+    for (int c = 0; c < 3; ++c) {
+      frac[c] -= std::round(frac[c]);
+    }
+    return Eigen::Vector3d((frac * cell).transpose());
+  };
+  auto pairAxis = [&](const eonc::Matter &matter) {
+    const AtomMatrix pos = matter.getPositions();
+    const Matrix3d cell = matter.getCell();
+    double best = 1e9;
+    Eigen::Vector3d axis = Eigen::Vector3d::Zero();
+    for (int i = 0; i < pos.rows(); ++i) {
+      for (int j = i + 1; j < pos.rows(); ++j) {
+        const Eigen::Vector3d d = mic(
+            (pos.row(j) - pos.row(i)).transpose(), cell);
+        if (d.norm() < best) {
+          best = d.norm();
+          axis = d;
+        }
+      }
+    }
+    return axis;
+  };
+  auto family = [](const Eigen::Vector3d &u, std::initializer_list<Eigen::Vector3d> dirs) {
+    double best = 0.0;
+    for (const auto &dir : dirs) {
+      best = std::max(best, std::abs(u.normalized().dot(dir.normalized())));
+    }
+    return std::acos(std::clamp(best, 0.0, 1.0)) * 180.0 / kPi;
+  };
+  auto angles = [&](const Eigen::Vector3d &axis) {
+    const double to100 =
+        family(axis, {Eigen::Vector3d(1, 0, 0), Eigen::Vector3d(0, 1, 0),
+                      Eigen::Vector3d(0, 0, 1)});
+    const double to110 = family(axis, {{1, 1, 0}, {1, -1, 0}, {1, 0, 1},
+                                      {1, 0, -1}, {0, 1, 1}, {0, 1, -1}});
+    return std::pair<double, double>{to100, to110};
+  };
+  auto enthalpyOf = [](double energy, const Matrix3d &h0, const Matrix3d &h,
+                       const Matrix3d &external) {
+    Matrix3d eps = h0.inverse() * h - Matrix3d::Identity();
+    eps(0, 1) = 0.0;
+    eps(0, 2) = 0.0;
+    eps(1, 2) = 0.0;
+    double work = 0.0;
+    for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j <= i; ++j) {
+        work += external(i, j) * eps(i, j);
+      }
+    }
+    return energy + std::abs(h0.determinant()) * work;
+  };
+
+  const double fixedRef[] = {0.47417449726344785, 0.24356279471709286,
+                             0.14826689300639373, 0.0678422080142127,
+                             0.007348460091009201};
+  const double enthalpyRef[] = {0.34702642693292773, 0.16298514462960156,
+                                0.0875839431751615, 0.02701564574050508};
+  const double gammas[] = {0.0, 0.02, 0.03, 0.04, 0.05};
+  std::ofstream table("/tmp/cu-saddle.txt");
+  table << "shear cell calls barrier enthalpy stress_xy Pxy_min Pxy_sad n_neg switch status min100 sad100 sad110 curv0 curv1\n";
+  int fixedSlot = 0;
+  int variableSlot = 0;
+  for (double gamma : gammas) {
+    const auto [pos100, cell] = shearOf(along100, gamma);
+    const auto [pos110, unusedCell] = shearOf(along110, gamma);
+    auto minimum = load(pos100, cell, params);
+    auto other = load(pos110, cell, params);
+    const bool minOk = minimum->relax(true);
+    INFO("minimum max force " << minimum->getForces().cwiseAbs().maxCoeff()
+                              << " E " << minimum->getPotentialEnergy());
+    REQUIRE(minOk);
+    const bool otherOk = other->relax(true);
+    INFO("110 max force " << other->getForces().cwiseAbs().maxCoeff());
+    REQUIRE(otherOk);
+    const double eMin = minimum->getPotentialEnergy();
+    const Matrix3d sigmaMin = minimum->cauchyStress();
+    const double volumeMin = std::abs(minimum->getCell().determinant());
+    const double pMin = volumeMin * sigmaMin(1, 0);
+    const Eigen::Vector3d minAxis = pairAxis(*minimum);
+    const auto [min100, min110] = angles(minAxis);
+    INFO("shear " << gamma << " min100 " << min100 << " min110 " << min110
+                  << " E " << eMin << " stress_xy " << sigmaMin(1, 0));
+    if (min100 > 25.0) {
+      table << gamma << " fixed 0 0 0 " << sigmaMin(1, 0) << " " << pMin
+            << " " << pMin
+            << " 0 0 -1 " << min100
+            << " nan nan minimum_left_<100>\n";
+      table.flush();
+      FAIL("the <100> minimum did not survive relaxation at shear " << gamma
+           << " (angle from <100> is " << min100 << ")");
+    }
+    AtomMatrix connect(pos100.rows(), 3);
+    for (int i = 0; i < pos100.rows(); ++i) {
+      connect.row(i) = mic((other->getPositions().row(i) -
+                            minimum->getPositions().row(i))
+                               .transpose(),
+                           cell)
+                           .transpose();
+    }
+    const double norm = std::sqrt(connect.squaredNorm());
+    REQUIRE(norm > 0.1);
+    const AtomMatrix savedMin = minimum->getPositions();
+    auto directionCurvature = [&](double distance) {
+      const double fd = 1e-3;
+      minimum->setPositions(savedMin + (distance / norm) * connect);
+      const double energy = minimum->getPotentialEnergy();
+      minimum->setPositions(savedMin + ((distance + fd) / norm) * connect);
+      const double plus = minimum->getPotentialEnergy();
+      minimum->setPositions(savedMin + ((distance - fd) / norm) * connect);
+      const double minus = minimum->getPotentialEnergy();
+      return (plus + minus - 2.0 * energy) / (fd * fd);
+    };
+    double nudge = 0.02;
+    if (directionCurvature(nudge) > 0.0) {
+      for (double distance = 0.025; distance <= 0.06; distance += 0.005) {
+        if (directionCurvature(distance) < 0.0) {
+          nudge = distance;
+          break;
+        }
+      }
+    }
+    minimum->setPositions(savedMin);
+    AtomMatrix nudged = savedMin + (nudge / norm) * connect;
+    const Matrix3d h0 = minimum->getCell();
+
+    auto runSearch = [&](bool variable) {
+      auto local = params;
+      ParametersLoadAccess::optimizer_options(local).max_move = 0.005;
+      if (variable) {
+        ParametersLoadAccess::solid_state_options(local).enabled = true;
+        for (int i = 0; i < 9; ++i) {
+          ParametersLoadAccess::solid_state_options(local).stress[static_cast<size_t>(i)] =
+              -sigmaMin(i / 3, i % 3);
+        }
+      }
+      auto matter = load(nudged, h0, local);
+      eonc::MinModeSaddleSearch search(matter, connect, eMin, local, pot);
       const auto before = pot->forceCallCounter.load();
       const int status = search.run();
-      const int calls =
-          static_cast<int>(pot->forceCallCounter.load() - before);
-      const double barrier = matter->getPotentialEnergy() - reactant;
+      const int calls = static_cast<int>(pot->forceCallCounter.load() - before);
+      const double eSad = matter->getPotentialEnergy();
       const Matrix3d sigmaSad = matter->cauchyStress();
       const double volumeSad = std::abs(matter->getCell().determinant());
-      const double pSadYx = volumeSad * sigmaSad(1, 0);
-      double saddle100 = 0.0;
-      double saddle110 = 0.0;
-      double saddleBond = 0.0;
-      int saddleAxis = 0;
-      int saddleI = 0;
-      int saddleJ = 0;
-      orientation(*matter, saddle100, saddle110, saddleI, saddleJ, saddleAxis,
-                  saddleBond);
+      const double pSad = volumeSad * sigmaSad(1, 0);
+      Matrix3d external = Matrix3d::Zero();
+      if (variable) {
+        external = -sigmaMin;
+        external(0, 1) = 0.0;
+        external(0, 2) = 0.0;
+        external(1, 2) = 0.0;
+      }
+      const double enthalpy = enthalpyOf(eSad, h0, matter->getCell(), external);
+      const Eigen::Vector3d axis = pairAxis(*matter);
+      const auto [sad100, sad110] = angles(axis);
       auto curveParams = local;
       if (!variable) {
         auto frozen = ParametersLoadAccess::solid_state_options(curveParams).mask;
@@ -767,98 +876,51 @@ TEST_CASE("copper dumbbell saddle under shear is first order",
       if (variable) {
         chart.preconditionCell(*matter);
       }
-      const auto curvatures = chart.lowestCurvatures(
+      const auto curv = chart.lowestCurvatures(
           *matter, chart.packAtoms(search.getEigenvector()), curveParams);
-      auto descend = [&](double sign, double &energy, double &ang100,
-                         double &ang110, int &axisId) {
-        eonc::Matter image = *matter;
-        if (variable) {
-          search.placeAlongMode(image, sign * 0.2);
-        } else {
-          AtomMatrix stepped = image.getPositions();
-          stepped += sign * 0.2 * search.getEigenvector();
-          image.setPositions(stepped);
-        }
-        if (!image.relax(true)) {
-          energy = std::numeric_limits<double>::quiet_NaN();
-          ang100 = 0.0;
-          ang110 = 0.0;
-          axisId = -1;
-          return false;
-        }
-        energy = image.getPotentialEnergy();
-        int unusedI = 0;
-        int unusedJ = 0;
-        double unusedBond = 0.0;
-        orientation(image, ang100, ang110, unusedI, unusedJ, axisId,
-                    unusedBond);
-        return true;
-      };
-      double energyPlus = 0.0;
-      double energyMinus = 0.0;
-      double angPlus100 = 0.0;
-      double angPlus110 = 0.0;
-      double angMinus100 = 0.0;
-      double angMinus110 = 0.0;
-      int axisPlus = -1;
-      int axisMinus = -1;
-      const bool plusOk =
-          descend(1.0, energyPlus, angPlus100, angPlus110, axisPlus);
-      const bool minusOk =
-          descend(-1.0, energyMinus, angMinus100, angMinus110, axisMinus);
-      const bool distinct =
-          axisPlus != axisMinus || std::abs(angPlus100 - angMinus100) > 15.0;
-      // The rotation saddle sits near <110>. Its minima are <100>
-      // dumbbells along different axes, or one side has already become
-      // the <110> minimum when shear makes that orientation stable.
-      const bool ends100 = angPlus100 < 25.0 && angMinus100 < 25.0;
-      const bool ends110 = angPlus110 < 25.0 && angMinus110 < 25.0;
-      const bool oneEach = (angPlus100 < 25.0 && angMinus110 < 25.0) ||
-                           (angMinus100 < 25.0 && angPlus110 < 25.0);
-      const bool rotation =
-          (saddle110 < 25.0 && saddle100 > 20.0 && ends100 &&
-           axisPlus != axisMinus) ||
-          (saddle100 < 25.0 && ends110 &&
-           (axisPlus != axisMinus || std::abs(angPlus100 - angMinus100) > 10.0)) ||
-          oneEach;
-      const double back = std::min(std::abs(energyPlus - reactant),
-                                   std::abs(energyMinus - reactant));
-      table << variable << " " << gamma << " " << calls << " " << barrier
-            << " " << sigmaSad(1, 0) << " " << pMinYx << " " << pSadYx << " "
-            << static_cast<int>(rotation) << " " << status << " "
-            << curvatures[0] << " " << curvatures[1] << " " << reactant100
-            << " " << saddle100 << " " << angPlus100 << " " << angMinus100
-            << " " << axisPlus << " " << axisMinus << " " << reactantBond
-            << " " << amp << "\n";
-      table.flush();
-      INFO("variable " << variable << " strain " << gamma << " status "
-                       << status << " calls " << calls << " barrier " << barrier
-                       << " sigma " << sigmaSad(1, 0) << " Pmin " << pMinYx
-                       << " Psad " << pSadYx << " rotation " << rotation
-                       << " curv " << curvatures[0] << " " << curvatures[1]
-                       << " reactant100 " << reactant100 << " saddle100 "
-                       << saddle100 << " ends " << angPlus100 << " "
-                       << angMinus100 << " axes " << axisPlus << " "
-                       << axisMinus << " bond " << reactantBond << " amp "
-                       << amp);
-      REQUIRE(plusOk);
-      REQUIRE(minusOk);
-      REQUIRE(reactantBond < 2.4);
-      REQUIRE(status == eonc::MinModeSaddleSearch::STATUS_GOOD);
-      REQUIRE(barrier > 0.005);
-      REQUIRE(curvatures[0] < -1e-4);
-      REQUIRE(curvatures[1] > 0.0);
-      REQUIRE(distinct);
-      REQUIRE(back < 0.1);
-      REQUIRE(rotation);
-      if (!variable || gamma > 0.0) {
-        // yx is frozen, so the shear measured by h_yx / h_xx stays at the
-        // applied strain. Relaxing xx rescales h_yx with the cell edge.
-        const double held =
-            matter->getCell()(1, 0) / matter->getCell()(0, 0);
-        REQUIRE(held == Catch::Approx(gamma).margin(1e-4));
+      int nNeg = 0;
+      if (curv[0] < -0.02) {
+        ++nNeg;
       }
-    }
+      if (curv[1] < -0.02) {
+        ++nNeg;
+      }
+      const bool switched = status == eonc::MinModeSaddleSearch::STATUS_GOOD &&
+                            search.getEigenvalue() < 0.0 && min100 < 25.0 &&
+                            sad110 < 15.0 && axis[0] * axis[1] > 0.0 &&
+                            sad100 > min100 + 10.0;
+      table << gamma << " " << (variable ? "variable" : "fixed") << " " << calls
+            << " " << (eSad - eMin) << " " << (enthalpy - eMin) << " "
+            << sigmaSad(1, 0) << " " << pMin << " " << pSad << " " << nNeg
+            << " " << static_cast<int>(switched) << " " << status << " "
+            << min100 << " " << sad100 << " " << sad110 << " " << curv[0]
+            << " " << curv[1] << "\n";
+      table.flush();
+      INFO("shear " << gamma << " variable " << variable << " status " << status
+                    << " calls " << calls << " barrier " << (eSad - eMin)
+                    << " enthalpy " << (enthalpy - eMin) << " stress "
+                    << sigmaSad(1, 0) << " Pmin " << pMin << " Psad " << pSad
+                    << " nNeg " << nNeg << " switch " << switched << " sad100 "
+                    << sad100 << " sad110 " << sad110 << " curv " << curv[0]
+                    << " " << curv[1]);
+      REQUIRE(status == eonc::MinModeSaddleSearch::STATUS_GOOD);
+      REQUIRE(search.getEigenvalue() < 0.0);
+      REQUIRE(nNeg == 1);
+      if (!variable) {
+        REQUIRE(eSad - eMin == Catch::Approx(fixedRef[fixedSlot]).margin(0.005));
+        REQUIRE(switched);
+        ++fixedSlot;
+      } else if (variableSlot < 4) {
+        REQUIRE(enthalpy - eMin ==
+                Catch::Approx(enthalpyRef[variableSlot]).margin(0.005));
+        REQUIRE(switched);
+        ++variableSlot;
+      } else {
+        ++variableSlot;
+      }
+    };
+    runSearch(false);
+    runSearch(true);
   }
 }
 

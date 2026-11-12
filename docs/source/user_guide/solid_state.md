@@ -92,14 +92,18 @@ can read `elastic_dipole_*` or multiply `stress_*` by `cell_volume`.
 
 ## Copper interstitial
 
-The Mishin copper potential (Phys. Rev. B 63, 224106) is read as a
-one-element eam/alloy file. The Cauchy stress is the virial of the pair and
-embedding forces. A <100> dumbbell next to a vacancy has a barrier that
-moves when the cell can shear. Put the defect in a cell of at least 4x4x4
-conventional cells, relax the <100> minimum with the variable-cell
-minimizer, and hold an applied shear as a strain. A fixed cell cannot make
-the <100> to <110> rotation that the shear opens. Set `potential = eam_cu`
-and `[EAM] file` to the setfl path.
+The shear benchmark uses the analytic Mishin EAM1 of Table I in
+Phys. Rev. B 63, 224106. An fcc crystal at 3.615 Angstrom has energy
+-3.5402183104868774 eV per atom. The setfl file is that table rounded
+to -3.54 eV per atom, so `potential = eam_cu` does not reproduce these
+barriers. The defect is a <100> dumbbell on one site of a 3x3x3 cell,
+109 atoms. The shear is the xy map `h = L * [[1, 0, 0], [gamma, 1, 0],
+[0, 0, 1]]`, and the positions move with it, so `x' = x + gamma y`.
+The fixed-cell barrier falls as that shear grows. A variable-cell
+search sets `stress` to the negative of the stress at the minimum, so
+the enthalpy is stationary there. At 5% that search stops on a soft
+mode beside the tilted minimum. The fixed cell still reaches the
+shear-aligned <110> switch.
 
 `max_strain_step` limits how far any strain component may move in one
 update. `max_strain` is the largest strain relative to the cell at the

@@ -93,12 +93,14 @@ public:
   int degreesOfFreedom() override { return chart_.degreesOfFreedom(); }
 
   bool isConverged() override {
-    return chart_.physicalResidual(matter_) <
+    return chart_.convergence(matter_,
+                              params.optimizer_options().convergence_metric) <
            params.optimizer_options().converged_force;
   }
 
   double getConvergence() override {
-    return chart_.physicalResidual(matter_);
+    return chart_.convergence(matter_,
+                              params.optimizer_options().convergence_metric);
   }
 
   VectorXd difference(const VectorXd &a, const VectorXd &b) override {
@@ -174,11 +176,14 @@ public:
     const double tol = params.saddle_search_options().converged_force > 0.0
                            ? params.saddle_search_options().converged_force
                            : params.optimizer_options().converged_force;
-    return chart_.physicalResidual(matter_) < tol;
+    return chart_.convergence(matter_,
+                              params.optimizer_options().convergence_metric) <
+           tol;
   }
 
   double getConvergence() override {
-    return chart_.physicalResidual(matter_);
+    return chart_.convergence(matter_,
+                              params.optimizer_options().convergence_metric);
   }
 
   VectorXd difference(const VectorXd &a, const VectorXd &b) override {
@@ -657,10 +662,37 @@ VectorXd Chart::energyGradient(Matter &matter) const {
 }
 
 double Chart::physicalResidual(Matter &matter) const {
+  return convergence(matter, "norm");
+}
+
+double Chart::convergence(Matter &matter, const std::string &metric) const {
   VectorXd gradient = energyGradient(matter);
   const int base = 3 * static_cast<int>(free_.size());
   for (size_t k = 0; k < cellScale_.size(); ++k) {
     gradient[base + static_cast<int>(k)] *= cellScale_[k];
+  }
+  if (metric == "max_component") {
+    return gradient.size() > 0 ? gradient.cwiseAbs().maxCoeff() : 0.0;
+  }
+  if (metric == "rms") {
+    const auto n = gradient.size();
+    return n > 0 ? gradient.norm() / std::sqrt(static_cast<double>(n)) : 0.0;
+  }
+  if (metric == "max_atom") {
+    double peak = 0.0;
+    const AtomMatrix cartesian = matter.getForces();
+    for (long atom : free_) {
+      peak = std::max(peak, cartesian.row(atom).norm());
+    }
+    const int nCell = static_cast<int>(cellScale_.size());
+    for (int k = 0; k < nCell; ++k) {
+      peak = std::max(peak, std::abs(gradient[base + k]));
+    }
+    return peak;
+  }
+  if (metric != "norm") {
+    throw std::invalid_argument(
+        std::format("[Solid State] unknown convergence_metric: {}", metric));
   }
   return gradient.norm();
 }
@@ -699,12 +731,11 @@ void Chart::preconditionCell(Matter &matter) {
     matter.setCell(savedCell);
     const double curvature =
         -(shiftedForce - force0[base + static_cast<int>(k)]) / delta;
-    // Match the curvature, soft or stiff. A soft cell direction left at
-    // scale 1 keeps a tiny curvature in the joint chart, and the dimer
-    // rotation then cannot get its torque under the tolerance.
+    // Equalize a direction with the atomic curvature. A floor keeps a
+    // soft strain from turning one climb step into a jump.
     const double magnitude = std::abs(curvature);
     if (magnitude > 1e-2) {
-      cellScale_[k] = std::sqrt(magnitude / reference);
+      cellScale_[k] = std::max(0.35, std::sqrt(magnitude / reference));
     }
   }
 }
@@ -918,7 +949,8 @@ runMinMode(Matter &matter, AtomMatrix mode, double reactantEnergy,
     direction = estimate.mode;
     state->curvature = estimate.curvature;
     objective->setMode(direction, estimate.curvature);
-    const double residual = state->chart.physicalResidual(matter);
+    const double residual = state->chart.convergence(
+        matter, params.optimizer_options().convergence_metric);
     if (residual < tol) {
       state->status = estimate.curvature < 0.0
                           ? MinModeSaddleSearch::STATUS_GOOD

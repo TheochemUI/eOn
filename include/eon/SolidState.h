@@ -94,6 +94,11 @@ public:
   /// Convergence uses this, so a stiff direction cannot hide a real force.
   [[nodiscard]] double physicalResidual(Matter &matter) const;
 
+  /// `metric` is the optimizer convergence_metric. The cell block is
+  /// measured before the diagonal scale.
+  [[nodiscard]] double convergence(Matter &matter,
+                                   const std::string &metric) const;
+
   /// Minimum-image difference of two coordinate vectors. The cell block
   /// is not periodic.
   [[nodiscard]] VectorXd difference(const VectorXd &a, const VectorXd &b) const;
