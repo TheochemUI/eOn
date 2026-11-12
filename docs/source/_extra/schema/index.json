@@ -233,7 +233,9 @@
         "weight",
         "pressure",
         "stress",
-        "mask"
+        "mask",
+        "max_strain_step",
+        "max_strain"
       ]
     },
     "EAM": {

@@ -1100,6 +1100,9 @@ int load_ini(const INIReader &ini, Parameters &params) {
         }
       }
     }
+    cell.max_strain_step =
+        ini.GetReal("Solid State", "max_strain_step", cell.max_strain_step);
+    cell.max_strain = ini.GetReal("Solid State", "max_strain", cell.max_strain);
   }
   ParametersLoadAccess::potential_options(params).eamFile =
       ini.Get("EAM", "file",

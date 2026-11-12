@@ -221,6 +221,8 @@ json to_json(const Parameters &p) {
         {"pressure", cell.pressure},
         {"stress", std::move(stress)},
         {"mask", std::move(mask)},
+        {"max_strain_step", cell.max_strain_step},
+        {"max_strain", cell.max_strain},
     };
   }
   j["EAM"] = {{"file", ParametersLoadAccess::potential_options(p).eamFile}};
@@ -810,6 +812,8 @@ void from_json(const json &j, Parameters &p) {
         cell.mask[i] = values.at(i).get<int>();
       }
     }
+    JSON_OPT(s, "max_strain_step", cell.max_strain_step);
+    JSON_OPT(s, "max_strain", cell.max_strain);
   }
   if (j.contains("EAM")) {
     JSON_OPT(j.at("EAM"), "file",

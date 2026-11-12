@@ -95,8 +95,20 @@ can read `elastic_dipole_*` or multiply `stress_*` by `cell_volume`.
 The Mishin copper potential (Phys. Rev. B 63, 224106) is read as a
 one-element eam/alloy file. The Cauchy stress is the virial of the pair and
 embedding forces. A <100> dumbbell next to a vacancy has a barrier that
-moves when the cell can shear; a fixed cell cannot make that motion. Set
-`potential = eam_cu` and `[EAM] file` to the setfl path.
+moves when the cell can shear. Put the defect in a cell of at least 4x4x4
+conventional cells, relax the <100> minimum with the variable-cell
+minimizer, and hold an applied shear as a strain. A fixed cell cannot make
+the <100> to <110> rotation that the shear opens. Set `potential = eam_cu`
+and `[EAM] file` to the setfl path.
+
+`max_strain_step` limits how far any strain component may move in one
+update. `max_strain` is the largest strain relative to the cell at the
+start of that run. Past it the update stops with an error, so a saddle
+search cannot shear the cell without a bound. The imposed shear belongs
+in the starting cell. Freeze that component in `mask` when it must stay
+at the applied value. Stiff cell directions are scaled to an atomic
+curvature on top of the Jacobian, so the dimer rotation does not spend
+its force calls there. The scale does not change the stationary points.
 
 ```{code-block} ini
 [Main]
@@ -114,6 +126,8 @@ weight = 1.0
 pressure = 0.0
 stress = 0 0.001 0 0.001 0 0 0 0 0
 mask = 1 1 1 1 1 1
+max_strain_step = 0.05
+max_strain = 0.20
 
 [Saddle Search]
 min_mode_method = dimer

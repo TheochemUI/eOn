@@ -2987,6 +2987,14 @@ Solid State:
             kind: string
             default: "1 1 1 1 1 1"
 
+        max_strain_step:
+            kind: float
+            default: 0.05
+
+        max_strain:
+            kind: float
+            default: 0.20
+
 ################################################################################
 
 EAM:

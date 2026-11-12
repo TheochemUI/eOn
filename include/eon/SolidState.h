@@ -39,6 +39,10 @@ struct Options {
   Matrix3d external{Matrix3d::Zero()};
   /// True when that strain component is a degree of freedom.
   std::array<bool, 6> mask{{true, true, true, true, true, true}};
+  /// Largest |Δε| of one component in a single coordinate update.
+  double maxStrainStep{0.05};
+  /// Largest |ε| relative to the starting cell. Past this the update throws.
+  double maxStrain{0.20};
 };
 
 [[nodiscard]] Options optionsFrom(const Parameters &params);
@@ -66,9 +70,18 @@ public:
   [[nodiscard]] const Matrix3d &referenceCell() const { return h0_; }
   [[nodiscard]] const std::vector<long> &freeAtoms() const { return free_; }
   [[nodiscard]] const std::vector<int> &activeStrain() const { return active_; }
+  /// >1 shrinks a stiff cell direction in the joint chart.
+  [[nodiscard]] double cellScale(size_t index) const {
+    return cellScale_.at(index);
+  }
 
   [[nodiscard]] VectorXd coordinates(const Matter &matter) const;
   void setCoordinates(Matter &matter, const VectorXd &x) const;
+
+  /// Scale stiff cell directions so their curvature matches an atomic one.
+  /// The Jacobian metric is unchanged: this only rescales the cell block
+  /// the min-mode rotation and the optimizer step in.
+  void preconditionCell(Matter &matter);
 
   /// dE/dq in the chart. One force evaluation when the geometry is dirty.
   [[nodiscard]] VectorXd energyGradient(Matter &matter) const;
@@ -76,6 +89,10 @@ public:
   [[nodiscard]] VectorXd generalizedForce(Matter &matter) const {
     return -energyGradient(matter);
   }
+
+  /// Norm of the force in the Jacobian metric, before the cell-block scale.
+  /// Convergence uses this, so a stiff direction cannot hide a real force.
+  [[nodiscard]] double physicalResidual(Matter &matter) const;
 
   /// Minimum-image difference of two coordinate vectors. The cell block
   /// is not periodic.
@@ -87,6 +104,12 @@ public:
   [[nodiscard]] Matrix3d unpackStrain(const VectorXd &joint) const;
   [[nodiscard]] VectorXd packAtoms(const AtomMatrix &mode) const;
 
+  /// Two smallest curvatures in the joint space. A first-order saddle has
+  /// a negative lowest value and a positive second one.
+  [[nodiscard]] std::array<double, 2>
+  lowestCurvatures(Matter &matter, VectorXd direction,
+                   const Parameters &params) const;
+
 private:
   Options options_;
   Matrix3d h0_{Matrix3d::Identity()};
@@ -95,6 +118,8 @@ private:
   double referenceVolume_{1.0};
   std::vector<long> free_;
   std::vector<int> active_;
+  /// Multiplier on q = J ε. Stiff components are > 1.
+  std::vector<double> cellScale_;
 
   [[nodiscard]] Matrix3d deformation(const Matter &matter) const;
   void readStrain(const Matrix3d &deformation, Matrix3d &eps) const;

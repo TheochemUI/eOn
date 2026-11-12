@@ -755,6 +755,11 @@ struct solid_state_options_t {
   std::array<double, 9> stress{};
   /// xx yx yy zx zy zz. Nonzero means that component can move.
   std::array<int, 6> mask{{1, 1, 1, 1, 1, 1}};
+  /// Largest change of any strain component in one step.
+  double max_strain_step{0.05};
+  /// Largest absolute strain relative to the cell at the start of the run.
+  /// Crossing it is an error: the cell is running away.
+  double max_strain{0.20};
 };
 
 // [Molecular Dynamics] //

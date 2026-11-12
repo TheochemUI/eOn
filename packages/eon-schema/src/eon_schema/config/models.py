@@ -3435,6 +3435,21 @@ class SolidStateConfig(BaseModel):
             "0 freezes that component. All zeros keeps the cell frozen."
         ),
     )
+    max_strain_step: float = Field(
+        default=0.05,
+        description=(
+            "Largest change of one strain component in a single step. "
+            "A larger trial step is shortened to this."
+        ),
+    )
+    max_strain: float = Field(
+        default=0.20,
+        description=(
+            "Largest absolute strain relative to the cell at the start of "
+            "the run. Crossing it raises an error instead of letting the "
+            "cell run away."
+        ),
+    )
 
 
 class EamConfig(BaseModel):

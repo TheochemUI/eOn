@@ -30,6 +30,16 @@
       "default": "1 1 1 1 1 1",
       "description": "Six flags for the lower-triangular strain, xx yx yy zx zy zz. 0 freezes that component. All zeros keeps the cell frozen.",
       "type": "string"
+    },
+    "max_strain_step": {
+      "default": 0.05,
+      "description": "Largest change of one strain component in a single step. A larger trial step is shortened to this.",
+      "type": "number"
+    },
+    "max_strain": {
+      "default": 0.2,
+      "description": "Largest absolute strain relative to the cell at the start of the run. Crossing it raises an error instead of letting the cell run away.",
+      "type": "number"
     }
   }
 }

@@ -20,6 +20,7 @@
 #include "eon/SolidStateNEB.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <format>
 #include <sstream>
@@ -92,10 +93,13 @@ public:
   int degreesOfFreedom() override { return chart_.degreesOfFreedom(); }
 
   bool isConverged() override {
-    return getConvergence() < params.optimizer_options().converged_force;
+    return chart_.physicalResidual(matter_) <
+           params.optimizer_options().converged_force;
   }
 
-  double getConvergence() override { return convergence(); }
+  double getConvergence() override {
+    return chart_.physicalResidual(matter_);
+  }
 
   VectorXd difference(const VectorXd &a, const VectorXd &b) override {
     return chart_.difference(a, b);
@@ -170,11 +174,11 @@ public:
     const double tol = params.saddle_search_options().converged_force > 0.0
                            ? params.saddle_search_options().converged_force
                            : params.optimizer_options().converged_force;
-    return chart_.generalizedForce(matter_).norm() < tol;
+    return chart_.physicalResidual(matter_) < tol;
   }
 
   double getConvergence() override {
-    return chart_.generalizedForce(matter_).norm();
+    return chart_.physicalResidual(matter_);
   }
 
   VectorXd difference(const VectorXd &a, const VectorXd &b) override {
@@ -190,6 +194,24 @@ private:
   double curvature_{0.0};
 };
 
+void removeTranslation(VectorXd &v, int nFree) {
+  if (nFree < 2 || v.size() < 3L * nFree) {
+    return;
+  }
+  Eigen::Vector3d mean = Eigen::Vector3d::Zero();
+  for (int i = 0; i < nFree; ++i) {
+    mean += v.segment<3>(3 * i);
+  }
+  mean /= static_cast<double>(nFree);
+  VectorXd kept = v;
+  for (int i = 0; i < nFree; ++i) {
+    kept.segment<3>(3 * i) -= mean;
+  }
+  if (kept.norm() > 1e-8) {
+    v = kept;
+  }
+}
+
 ModeEstimate dimerMode(Matter &matter, const Chart &chart, VectorXd direction,
                        const Parameters &params) {
   const double fd = params.main_options().finiteDifference;
@@ -197,6 +219,8 @@ ModeEstimate dimerMode(Matter &matter, const Chart &chart, VectorXd direction,
     throw std::invalid_argument(
         "solid-state dimer needs a positive finiteDifference");
   }
+  const int nFree = static_cast<int>(chart.freeAtoms().size());
+  removeTranslation(direction, nFree);
   eonc::safemath::safe_normalize_inplace(direction);
   const double angle = params.dimer_options().rotation_angle;
   VectorXd plane = VectorXd::Zero(direction.size());
@@ -207,6 +231,8 @@ ModeEstimate dimerMode(Matter &matter, const Chart &chart, VectorXd direction,
   long rotations = 0;
   bool done = false;
   while (!done) {
+    removeTranslation(direction, nFree);
+    eonc::safemath::safe_normalize_inplace(direction);
     const VectorXd x = chart.coordinates(matter);
     const AtomMatrix savedPos = matter.getPositions();
     const Matrix3d savedCell = matter.getCell();
@@ -239,10 +265,25 @@ ModeEstimate dimerMode(Matter &matter, const Chart &chart, VectorXd direction,
 
     const double torque = rotational.norm();
     const auto &dimer = params.dimer_options();
+    // A cell direction several times stiffer than an atom is already
+    // scaled down. Rotating it further does not move the mode, and it
+    // spends a force call on every translation step.
+    double relevant2 = 0.0;
+    const int atomDofs = 3 * nFree;
+    for (int i = 0; i < atomDofs && i < rotational.size(); ++i) {
+      relevant2 += rotational[i] * rotational[i];
+    }
+    for (size_t k = 0; k < chart.activeStrain().size(); ++k) {
+      if (chart.cellScale(k) < 3.0) {
+        const double component = rotational[atomDofs + static_cast<int>(k)];
+        relevant2 += component * component;
+      }
+    }
+    const double relevant = std::sqrt(relevant2);
     if ((torque > dimer.torque_max && rotations >= dimer.rotations_max) ||
         (torque < dimer.torque_max && torque >= dimer.torque_min &&
          rotations >= dimer.rotations_min) ||
-        (torque < dimer.torque_min)) {
+        (torque < dimer.torque_min) || (relevant < dimer.torque_min)) {
       done = true;
     }
     if (!done) {
@@ -283,6 +324,7 @@ ModeEstimate dimerMode(Matter &matter, const Chart &chart, VectorXd direction,
       ++rotations;
     }
   }
+  removeTranslation(direction, nFree);
   eonc::safemath::safe_normalize_inplace(direction);
   return {direction, curvature};
 }
@@ -302,12 +344,15 @@ ModeEstimate lanczosMode(Matter &matter, const Chart &chart, VectorXd direction,
   const AtomMatrix savedPos = matter.getPositions();
   const Matrix3d savedCell = matter.getCell();
   const VectorXd force0 = chart.generalizedForce(matter);
+  const int nFree = static_cast<int>(chart.freeAtoms().size());
   auto product = [&](const VectorXd &v) {
     chart.setCoordinates(matter, origin + dr * v);
     const VectorXd force = chart.generalizedForce(matter);
     matter.setPositions(savedPos);
     matter.setCell(savedCell);
-    return -(force - force0) / dr;
+    VectorXd hv = -(force - force0) / dr;
+    removeTranslation(hv, nFree);
+    return hv;
   };
 
   MatrixXd basis(size, maxIters);
@@ -354,6 +399,8 @@ ModeEstimate lanczosMode(Matter &matter, const Chart &chart, VectorXd direction,
   }
   matter.setPositions(savedPos);
   matter.setCell(savedCell);
+  removeTranslation(estimate, nFree);
+  eonc::safemath::safe_normalize_inplace(estimate);
   return {estimate, curvature};
 }
 
@@ -409,7 +456,14 @@ Options optionsFrom(const Parameters &params) {
   }
   options.external = symmetricPart(options.external);
   for (int i = 0; i < 6; ++i) {
-    options.mask[static_cast<size_t>(i)] = stored.mask[static_cast<size_t>(i)] != 0;
+    options.mask[static_cast<size_t>(i)] =
+        stored.mask[static_cast<size_t>(i)] != 0;
+  }
+  options.maxStrainStep = stored.max_strain_step;
+  options.maxStrain = stored.max_strain;
+  if (!(options.maxStrainStep > 0.0) || !(options.maxStrain > 0.0)) {
+    throw std::invalid_argument(
+        "[Solid State] max_strain_step and max_strain must be positive");
   }
   return options;
 }
@@ -465,6 +519,7 @@ Chart::Chart(Matter &matter, const Options &options, AtomMatrix *mode)
       active_.push_back(comp);
     }
   }
+  cellScale_.assign(active_.size(), 1.0);
 }
 
 Matrix3d Chart::deformation(const Matter &matter) const {
@@ -494,8 +549,9 @@ VectorXd Chart::coordinates(const Matter &matter) const {
     x.segment<3>(slot) = reference.transpose();
     slot += 3;
   }
-  for (int comp : active_) {
-    x[slot++] = jacobian_ * eps(kStrainRows[comp], kStrainCols[comp]);
+  for (size_t k = 0; k < active_.size(); ++k) {
+    x[slot++] = cellScale_[k] * jacobian_ *
+                eps(kStrainRows[active_[k]], kStrainCols[active_[k]]);
   }
   return x;
 }
@@ -504,10 +560,42 @@ void Chart::setCoordinates(Matter &matter, const VectorXd &x) const {
   if (x.size() != degreesOfFreedom()) {
     throw std::invalid_argument("solid-state coordinate size mismatch");
   }
+  Matrix3d epsOld;
+  readStrain(deformation(matter), epsOld);
   Matrix3d eps = Matrix3d::Zero();
   int slot = 3 * static_cast<int>(free_.size());
+  for (size_t k = 0; k < active_.size(); ++k) {
+    const int comp = active_[k];
+    eps(kStrainRows[comp], kStrainCols[comp]) =
+        x[slot++] / (cellScale_[k] * jacobian_);
+  }
+  double step = 0.0;
+  double total = 0.0;
   for (int comp : active_) {
-    eps(kStrainRows[comp], kStrainCols[comp]) = x[slot++] / jacobian_;
+    const double now = eps(kStrainRows[comp], kStrainCols[comp]);
+    const double was = epsOld(kStrainRows[comp], kStrainCols[comp]);
+    step = std::max(step, std::abs(now - was));
+    total = std::max(total, std::abs(now));
+  }
+  if (step > options_.maxStrainStep && step > 0.0) {
+    const double factor = options_.maxStrainStep / step;
+    for (int comp : active_) {
+      const double was = epsOld(kStrainRows[comp], kStrainCols[comp]);
+      const double now = eps(kStrainRows[comp], kStrainCols[comp]);
+      eps(kStrainRows[comp], kStrainCols[comp]) = was + factor * (now - was);
+    }
+    total = 0.0;
+    for (int comp : active_) {
+      total = std::max(total, std::abs(eps(kStrainRows[comp], kStrainCols[comp])));
+    }
+  }
+  if (total > options_.maxStrain) {
+    throw std::runtime_error(std::format(
+        "solid-state cell strain exceeded the cap of {:.3f}. The largest "
+        "component relative to the starting cell is {:.3f}. The cell is "
+        "running away; lower max_strain_step or raise max_strain only if "
+        "that strain is physical.",
+        options_.maxStrain, total));
   }
   const Matrix3d deform = Matrix3d::Identity() + eps;
   Matrix3d cell = h0_ * deform;
@@ -560,11 +648,65 @@ VectorXd Chart::energyGradient(Matter &matter) const {
     gradient.segment<3>(slot) = row.transpose();
     slot += 3;
   }
-  for (int comp : active_) {
-    gradient[slot++] =
-        dEnergy(kStrainRows[comp], kStrainCols[comp]) / jacobian_;
+  for (size_t k = 0; k < active_.size(); ++k) {
+    const int comp = active_[k];
+    gradient[slot++] = dEnergy(kStrainRows[comp], kStrainCols[comp]) /
+                       (jacobian_ * cellScale_[k]);
   }
   return gradient;
+}
+
+double Chart::physicalResidual(Matter &matter) const {
+  VectorXd gradient = energyGradient(matter);
+  const int base = 3 * static_cast<int>(free_.size());
+  for (size_t k = 0; k < cellScale_.size(); ++k) {
+    gradient[base + static_cast<int>(k)] *= cellScale_[k];
+  }
+  return gradient.norm();
+}
+
+void Chart::preconditionCell(Matter &matter) {
+  std::fill(cellScale_.begin(), cellScale_.end(), 1.0);
+  if (active_.empty()) {
+    return;
+  }
+  const VectorXd x = coordinates(matter);
+  const AtomMatrix savedPos = matter.getPositions();
+  const Matrix3d savedCell = matter.getCell();
+  const VectorXd force0 = generalizedForce(matter);
+  const double delta = 1e-3;
+  double reference = 1.0;
+  if (!free_.empty()) {
+    VectorXd shifted = x;
+    shifted[0] += delta;
+    setCoordinates(matter, shifted);
+    const double shiftedForce = generalizedForce(matter)[0];
+    matter.setPositions(savedPos);
+    matter.setCell(savedCell);
+    reference = std::abs(-(shiftedForce - force0[0]) / delta);
+    if (!(reference > 0.2)) {
+      reference = 1.0;
+    }
+  }
+  const int base = 3 * static_cast<int>(free_.size());
+  for (size_t k = 0; k < active_.size(); ++k) {
+    VectorXd shifted = x;
+    shifted[base + static_cast<int>(k)] += delta;
+    setCoordinates(matter, shifted);
+    const double shiftedForce =
+        generalizedForce(matter)[base + static_cast<int>(k)];
+    matter.setPositions(savedPos);
+    matter.setCell(savedCell);
+    const double curvature =
+        -(shiftedForce - force0[base + static_cast<int>(k)]) / delta;
+    // Match the curvature, soft or stiff. A soft cell direction left at
+    // scale 1 keeps a tiny curvature in the joint chart, and the dimer
+    // rotation then cannot get its torque under the tolerance.
+    const double magnitude = std::abs(curvature);
+    if (magnitude > 1e-2) {
+      cellScale_[k] = std::sqrt(magnitude / reference);
+    }
+  }
 }
 
 VectorXd Chart::difference(const VectorXd &a, const VectorXd &b) const {
@@ -593,8 +735,10 @@ AtomMatrix Chart::unpackAtoms(const VectorXd &joint) const {
 Matrix3d Chart::unpackStrain(const VectorXd &joint) const {
   Matrix3d eps = Matrix3d::Zero();
   int slot = 3 * static_cast<int>(free_.size());
-  for (int comp : active_) {
-    eps(kStrainRows[comp], kStrainCols[comp]) = joint[slot++] / jacobian_;
+  for (size_t k = 0; k < active_.size(); ++k) {
+    const int comp = active_[k];
+    eps(kStrainRows[comp], kStrainCols[comp]) =
+        joint[slot++] / (cellScale_[k] * jacobian_);
   }
   return eps;
 }
@@ -609,6 +753,79 @@ VectorXd Chart::packAtoms(const AtomMatrix &mode) const {
     slot += 3;
   }
   return joint;
+}
+
+std::array<double, 2>
+Chart::lowestCurvatures(Matter &matter, VectorXd direction,
+                        const Parameters &params) const {
+  const int size = degreesOfFreedom();
+  const int nFree = static_cast<int>(free_.size());
+  const long maxIters =
+      std::max(2L, std::min(12L, static_cast<long>(std::max(size, 2))));
+  const double dr = params.main_options().finiteDifference > 0.0
+                        ? params.main_options().finiteDifference
+                        : 1e-3;
+  removeTranslation(direction, nFree);
+  if (direction.norm() < 1e-8) {
+    direction.setZero();
+    if (size > 0) {
+      direction[0] = 1.0;
+    }
+  }
+  eonc::safemath::safe_normalize_inplace(direction);
+  const VectorXd origin = coordinates(matter);
+  const AtomMatrix savedPos = matter.getPositions();
+  const Matrix3d savedCell = matter.getCell();
+  const VectorXd force0 = generalizedForce(matter);
+  auto product = [&](const VectorXd &v) {
+    setCoordinates(matter, origin + dr * v);
+    const VectorXd force = generalizedForce(matter);
+    matter.setPositions(savedPos);
+    matter.setCell(savedCell);
+    VectorXd hv = -(force - force0) / dr;
+    removeTranslation(hv, nFree);
+    return hv;
+  };
+
+  MatrixXd basis(size, maxIters);
+  MatrixXd tridiagonal = MatrixXd::Zero(maxIters, maxIters);
+  double beta = direction.norm();
+  long kept = 0;
+  for (long i = 0; i < maxIters; ++i) {
+    VectorXd column = direction / beta;
+    removeTranslation(column, nFree);
+    if (column.norm() < 1e-8) {
+      break;
+    }
+    column.normalize();
+    basis.col(i) = column;
+    VectorXd u = product(basis.col(i));
+    if (i > 0) {
+      u -= beta * basis.col(i - 1);
+    }
+    const double alpha = basis.col(i).dot(u);
+    direction = u - alpha * basis.col(i);
+    removeTranslation(direction, nFree);
+    tridiagonal(i, i) = alpha;
+    if (i > 0) {
+      tridiagonal(i - 1, i) = beta;
+      tridiagonal(i, i - 1) = beta;
+    }
+    ++kept;
+    beta = direction.norm();
+    if (beta <= 1e-10 * std::abs(alpha)) {
+      break;
+    }
+  }
+  matter.setPositions(savedPos);
+  matter.setCell(savedCell);
+  if (kept < 1) {
+    return {0.0, 1.0};
+  }
+  Eigen::SelfAdjointEigenSolver<MatrixXd> solver(
+      tridiagonal.topLeftCorner(kept, kept));
+  const double second = kept > 1 ? solver.eigenvalues()(1) : 1.0;
+  return {solver.eigenvalues()(0), second};
 }
 
 std::shared_ptr<ObjectiveFunction>
@@ -632,6 +849,7 @@ makeVariableCellObjective(Matter &matter, const Parameters &params) {
   }
   Chart chart(matter, optionsFrom(params));
   requireChart(chart);
+  chart.preconditionCell(matter);
   return std::make_shared<VariableCellObjective>(matter, std::move(chart),
                                                  params);
 }
@@ -674,7 +892,10 @@ runMinMode(Matter &matter, AtomMatrix mode, double reactantEnergy,
   auto state = std::make_unique<SearchState>(
       Chart(matter, optionsFrom(params), &mode));
   requireChart(state->chart);
+  state->chart.preconditionCell(matter);
   VectorXd direction = state->chart.packAtoms(mode);
+  removeTranslation(direction,
+                    static_cast<int>(state->chart.freeAtoms().size()));
   if (direction.norm() < eonc::safemath::eps) {
     direction.setZero();
     direction[0] = 1.0;
@@ -697,7 +918,7 @@ runMinMode(Matter &matter, AtomMatrix mode, double reactantEnergy,
     direction = estimate.mode;
     state->curvature = estimate.curvature;
     objective->setMode(direction, estimate.curvature);
-    const double residual = state->chart.generalizedForce(matter).norm();
+    const double residual = state->chart.physicalResidual(matter);
     if (residual < tol) {
       state->status = estimate.curvature < 0.0
                           ? MinModeSaddleSearch::STATUS_GOOD
