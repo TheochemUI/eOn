@@ -1,5 +1,6 @@
 import multiprocessing
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -13,11 +14,17 @@ from eon.locking import LockFile
 from eon.structure import Structure
 
 
+def _owner_pid(path):
+    return int(Path(path).read_text().split()[0])
+
+
 def test_acquirelock_writes_pid(tmp_path: Path):
     lock = LockFile(tmp_path / "lockfile")
     assert lock.acquirelock()
     assert lock.lock_path.is_file()
-    assert int(lock.lock_path.read_text().strip()) == os.getpid()
+    pid_text, host = lock.lock_path.read_text().split()
+    assert int(pid_text) == os.getpid()
+    assert host
     assert lock.islocked()
     second = LockFile(lock.lock_path)
     assert second.acquirelock() is False
@@ -31,7 +38,7 @@ def test_aquirelock_is_a_deprecated_alias(tmp_path: Path):
     lock = LockFile(tmp_path / "lockfile")
     with pytest.warns(DeprecationWarning, match="acquirelock"):
         assert lock.aquirelock()
-    assert int(lock.lock_path.read_text().strip()) == os.getpid()
+    assert _owner_pid(lock.lock_path) == os.getpid()
     lock.removelock()
 
 
@@ -56,7 +63,7 @@ def test_stale_pid_is_replaced(tmp_path: Path):
     path.write_text("%i\n" % pid)
     lock = LockFile(path)
     assert lock.acquirelock()
-    assert path.read_text().strip() == str(os.getpid())
+    assert _owner_pid(path) == os.getpid()
     lock.removelock()
 
 
@@ -69,7 +76,7 @@ def test_truncated_lock_is_replaced(tmp_path: Path):
     assert lock.islocked() is False
     assert not path.exists()
     assert lock.acquirelock()
-    assert path.read_text().strip() == str(os.getpid())
+    assert _owner_pid(path) == os.getpid()
     lock.removelock()
 
     empty = tmp_path / "empty"
@@ -77,7 +84,7 @@ def test_truncated_lock_is_replaced(tmp_path: Path):
     os.utime(empty, (old, old))
     again = LockFile(empty)
     assert again.acquirelock()
-    assert empty.read_text().strip() == str(os.getpid())
+    assert _owner_pid(empty) == os.getpid()
     again.removelock()
 
 
@@ -86,7 +93,7 @@ def test_reused_pid_without_flock_is_replaced(tmp_path: Path):
     path.write_text("%i\n" % os.getpid())
     lock = LockFile(path)
     assert lock.acquirelock()
-    assert path.read_text().strip() == str(os.getpid())
+    assert _owner_pid(path) == os.getpid()
     held = LockFile(path)
     assert held.acquirelock() is False
     lock.removelock()
@@ -114,7 +121,7 @@ def _contend(path, begin, finished, slot, results):
         lock = LockFile(path)
         won = bool(lock.acquirelock())
         if won:
-            won = lock.lock_path.read_text().strip() == str(os.getpid())
+            won = _owner_pid(lock.lock_path) == os.getpid()
         results[slot] = 1 if won else 0
         finished.wait(30)
         if won:
@@ -306,7 +313,7 @@ def test_forked_child_exit_keeps_the_lock(tmp_path: Path):
         try:
             # The exit hook copied into the child must leave the file alone.
             lock.removelock()
-            text = path.read_text().strip()
+            text = path.read_text().split()[0]
             ok = path.is_file() and text == str(parent) and text != str(os.getpid())
             if hasattr(os, "register_at_fork"):
                 ok = ok and lock._disarmed
@@ -317,6 +324,220 @@ def test_forked_child_exit_keeps_the_lock(tmp_path: Path):
     assert os.WIFEXITED(status)
     assert os.WEXITSTATUS(status) == 0
     assert path.is_file()
-    assert int(path.read_text().strip()) == parent
+    assert _owner_pid(path) == parent
     lock.removelock()
     assert not path.exists()
+
+
+def _dead_pid():
+    dead = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(30)"])
+    pid = dead.pid
+    dead.kill()
+    dead.wait()
+    return pid
+
+
+def _contend_jobs(root, begin, excl_bar, read_bar, slot, delay):
+    """Recover one stale lock and, if this process wins, write jobs_in once."""
+    import pathlib
+
+    real_read = pathlib.Path.read_bytes
+    real_open = os.open
+    seen = {"open": False, "read": False}
+    armed = {"on": True}
+
+    def patched_open(path, flags, *args, **kwargs):
+        try:
+            return real_open(path, flags, *args, **kwargs)
+        except FileExistsError:
+            if (
+                armed["on"]
+                and Path(path).name == "lockfile"
+                and flags & os.O_EXCL
+                and not seen["open"]
+            ):
+                seen["open"] = True
+                excl_bar.wait(10)
+            raise
+
+    def patched_read(self, *args, **kwargs):
+        data = real_read(self, *args, **kwargs)
+        if armed["on"] and self.name == "lockfile" and not seen["read"]:
+            seen["read"] = True
+            read_bar.wait(10)
+            if delay:
+                time.sleep(0.3)
+        return data
+
+    os.open = patched_open
+    pathlib.Path.read_bytes = patched_read
+    code = 0
+    try:
+        begin.wait(10)
+        lock = LockFile(Path(root) / "lockfile")
+        won = bool(lock.acquirelock())
+        armed["on"] = False
+        if won:
+            jobs = Path(root) / "jobs_in"
+            if jobs.exists():
+                shutil.rmtree(jobs)
+            jobs.mkdir()
+            payload = "pid %d\n" % os.getpid()
+            (jobs / "job.dat").write_text(payload)
+            fd = real_open(
+                str(Path(root) / "winners"),
+                os.O_CREAT | os.O_WRONLY | os.O_APPEND,
+                0o644,
+            )
+            os.write(fd, ("%d\n" % os.getpid()).encode())
+            os.close(fd)
+            time.sleep(0.45)
+            text = ""
+            job_path = jobs / "job.dat"
+            if job_path.is_file():
+                text = job_path.read_text()
+            if text != payload:
+                code = 2
+            lock.removelock()
+    except Exception:
+        code = 1
+    finally:
+        os._exit(code)
+
+
+def test_contending_processes_write_jobs_in_once(tmp_path: Path):
+    """Several processes recover one dead lock. Exactly one writes jobs_in.
+
+    The previous recovery read the lock and then unlinked that path. A
+    second process that had already seen the dead pid deleted the new
+    lock and wrote jobs_in as well. The read barrier holds that window
+    open. The exclusive-create barrier only makes every process reach
+    the recovery together.
+    """
+    root = tmp_path / "run"
+    root.mkdir()
+    (root / "lockfile").write_text("%d\n" % _dead_pid())
+    ctx = multiprocessing.get_context("fork")
+    n = 4
+    begin = ctx.Barrier(n)
+    excl_bar = ctx.Barrier(n)
+    read_bar = ctx.Barrier(n)
+    procs = [
+        ctx.Process(
+            target=_contend_jobs,
+            args=(str(root), begin, excl_bar, read_bar, slot, slot % 2 == 0),
+        )
+        for slot in range(n)
+    ]
+    for proc in procs:
+        proc.start()
+    codes = []
+    for proc in procs:
+        proc.join(20)
+        if proc.is_alive():
+            proc.kill()
+            proc.join(5)
+        codes.append(proc.exitcode)
+    assert codes == [0, 0, 0, 0]
+    winners = (root / "winners").read_text().split()
+    assert winners == [winners[0]]
+    job = root / "jobs_in" / "job.dat"
+    assert job.is_file()
+    assert job.read_text() == "pid %s\n" % winners[0]
+    assert sorted(p.name for p in (root / "jobs_in").iterdir()) == ["job.dat"]
+
+
+def _hold_until_killed(path, ready):
+    lock = LockFile(path)
+    assert lock.acquirelock()
+    ready.set()
+    time.sleep(60)
+
+
+def test_killed_holder_lock_is_recovered(tmp_path: Path):
+    path = tmp_path / "lockfile"
+    ctx = multiprocessing.get_context("fork")
+    ready = ctx.Event()
+    proc = ctx.Process(target=_hold_until_killed, args=(path, ready))
+    proc.start()
+    assert ready.wait(10)
+    proc.kill()
+    proc.join(10)
+    lock = LockFile(path)
+    assert lock.acquirelock()
+    assert _owner_pid(path) == os.getpid()
+    lock.removelock()
+    assert not path.exists()
+
+
+def test_context_releases_lock_on_exception(tmp_path: Path):
+    path = tmp_path / "lockfile"
+    with pytest.raises(RuntimeError, match="boom"):
+        with LockFile(path):
+            assert _owner_pid(path) == os.getpid()
+            raise RuntimeError("boom")
+    assert not path.exists()
+    again = LockFile(path)
+    assert again.acquirelock()
+    again.removelock()
+
+
+def test_uncaught_exception_releases_lock_on_exit(tmp_path: Path):
+    path = tmp_path / "lockfile"
+    repo = str(Path(__file__).resolve().parents[1])
+    script = tmp_path / "boom.py"
+    script.write_text(
+        "\n".join(
+            [
+                "import sys",
+                "sys.path.insert(0, %r)" % repo,
+                "from eon.locking import LockFile",
+                "lock = LockFile(%r)" % str(path),
+                "assert lock.acquirelock()",
+                "raise RuntimeError('boom')",
+                "",
+            ]
+        )
+    )
+    proc = subprocess.run([sys.executable, str(script)], capture_output=True, text=True)
+    assert proc.returncode != 0
+    assert "boom" in proc.stderr
+    assert not path.exists()
+
+
+def _fallback_once(path, begin, results, slot):
+    try:
+        begin.wait(10)
+        lock = LockFile(path)
+        won = bool(lock.acquirelock())
+        results[slot] = 1 if won else 0
+        time.sleep(0.2)
+        if won:
+            lock.removelock()
+        os._exit(0)
+    except Exception:
+        results[slot] = -1
+        os._exit(1)
+
+
+def test_excl_fallback_one_winner(tmp_path, monkeypatch):
+    monkeypatch.setattr("eon.locking.fcntl", None)
+    path = tmp_path / "lockfile"
+    path.write_text("%d\n" % _dead_pid())
+    ctx = multiprocessing.get_context("fork")
+    n = 4
+    begin = ctx.Barrier(n)
+    results = ctx.Array("i", [0] * n)
+    procs = [
+        ctx.Process(target=_fallback_once, args=(path, begin, results, slot))
+        for slot in range(n)
+    ]
+    for proc in procs:
+        proc.start()
+    for proc in procs:
+        proc.join(15)
+        if proc.is_alive():
+            proc.kill()
+            proc.join(5)
+        assert proc.exitcode == 0
+    assert sum(results) == 1

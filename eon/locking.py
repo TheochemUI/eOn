@@ -1,5 +1,6 @@
 import atexit
 import os
+import socket
 import sys
 import time
 import warnings
@@ -10,11 +11,24 @@ try:
 except ImportError:  # pragma: no cover - Windows
     fcntl = None
 
+try:
+    import msvcrt
+except ImportError:  # pragma: no cover - POSIX
+    msvcrt = None
+
 
 # A cut-off write is indistinguishable from a driver that has created the
 # file and not yet stored its pid. A file that stays incomplete for this
 # long was left by a driver that died mid-write.
 _PARTIAL_GRACE_S = 1.0
+
+
+class _Seen:
+    def __init__(self, kind, payload, pid, flock_held):
+        self.kind = kind
+        self.payload = payload
+        self.pid = pid
+        self.flock_held = flock_held
 
 
 def _write_all(fd, payload):
@@ -53,22 +67,44 @@ def _process_alive(pid):
     return True
 
 
-def _parse_pid(payload):
-    """Return the pid stored in a finished lock file, or None.
+def _host_token():
+    raw = socket.gethostname().split(".")[0]
+    raw = raw.encode("ascii", "replace").decode("ascii")
+    safe = "".join(ch if ch.isalnum() or ch in "._-" else "_" for ch in raw)
+    return safe or "localhost"
 
-    A finished file is ``"<pid>\\n"``. Anything else is empty or cut off.
+
+def _owner_bytes():
+    """Bytes stored in a live lock: ``"<pid> <host>\\n"``."""
+    return ("%d %s\n" % (os.getpid(), _host_token())).encode("ascii")
+
+
+def _parse_owner(payload):
+    """Return ``(pid, host)`` from a finished lock file.
+
+    A finished file is ``"<pid>\\n"`` or ``"<pid> <host>\\n"``. A cut-off
+    write has no trailing newline. ``host`` is ``""`` when the file was
+    written by an older driver that stored only the pid.
     """
     if not payload or not payload.endswith(b"\n"):
-        return None
+        return None, ""
     try:
         text = payload.decode("ascii").strip()
     except UnicodeDecodeError:
-        return None
-    if not text.isdigit():
-        return None
-    pid = int(text)
+        return None, ""
+    parts = text.split()
+    if not parts or not parts[0].isdigit():
+        return None, ""
+    pid = int(parts[0])
     if pid <= 0:
-        return None
+        return None, ""
+    host = parts[1] if len(parts) > 1 else ""
+    return pid, host
+
+
+def _parse_pid(payload):
+    """Return the pid stored in a finished lock file, or None."""
+    pid, _host = _parse_owner(payload)
     return pid
 
 
@@ -78,31 +114,49 @@ def _cloexec(flags):
     return flags
 
 
-def _flock_exclusive(fd, blocking):
-    """Take an exclusive flock.
+def _have_kernel_lock():
+    return fcntl is not None or msvcrt is not None
+
+
+def _kernel_lock(fd, blocking):
+    """Take an exclusive kernel lock on *fd*.
 
     Returns True when this call holds the lock, False when a non-blocking
-    attempt found another holder, and None where fcntl is missing.
+    attempt found another holder, and None where no kernel lock exists.
     """
-    if fcntl is None:
-        return None
-    try:
-        if blocking:
-            fcntl.flock(fd, fcntl.LOCK_EX)
-        else:
-            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except OSError:
-        return False
-    return True
+    if fcntl is not None:
+        try:
+            flags = fcntl.LOCK_EX
+            if not blocking:
+                flags |= fcntl.LOCK_NB
+            fcntl.flock(fd, flags)
+        except OSError:
+            return False
+        return True
+    if msvcrt is not None:
+        try:
+            os.lseek(fd, 0, os.SEEK_SET)
+            mode = msvcrt.LK_LOCK if blocking else msvcrt.LK_NBLCK
+            msvcrt.locking(fd, mode, 1)
+        except OSError:
+            return False
+        return True
+    return None
 
 
-def _flock_release(fd):
-    if fcntl is None:
+def _kernel_unlock(fd):
+    if fcntl is not None:
+        try:
+            fcntl.flock(fd, fcntl.LOCK_UN)
+        except OSError:
+            pass
         return
-    try:
-        fcntl.flock(fd, fcntl.LOCK_UN)
-    except OSError:
-        pass
+    if msvcrt is not None:
+        try:
+            os.lseek(fd, 0, os.SEEK_SET)
+            msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+        except OSError:
+            pass
 
 
 class LockFile:
@@ -117,32 +171,55 @@ class LockFile:
         self._disarmed = False
 
     def islocked(self):
-        kind, payload, holder = self._classify()
-        if kind == "live":
-            self.pid = holder
+        info = self._inspect()
+        if info.kind == "held" or info.kind == "pending":
+            self.pid = info.pid
             return True
-        if kind == "pending":
-            # A driver has created the file and is still writing the pid.
-            self.pid = holder
-            return True
-        if kind == "stale":
-            self._unlink_if_same(payload)
+        if info.kind == "stale":
+            self._drop_stale(info.payload)
         self.pid = None
         return False
 
     def acquirelock(self):
         """Create the lock, or take it over when the holder is gone.
 
-        The create is ``O_CREAT|O_EXCL|O_WRONLY``. The pid is written and
-        fsynced, and on platforms with fcntl the descriptor is held under
-        an exclusive flock for the life of this process. If the file
-        already exists, a dead pid or a truncated file is removed and the
-        create is tried once more. A live pid whose flock is not held is
-        the same as a dead holder: the pid was reused.
+        The create is ``O_CREAT|O_EXCL|O_RDWR``. The pid and host are
+        written and fsynced. On platforms with flock or msvcrt the
+        descriptor is held under an exclusive lock for the life of this
+        process. If the file already exists, a dead pid or a truncated
+        file is removed only after a hard link proves it is still that
+        same inode, and the create is tried once more. A live pid whose
+        kernel lock is not held is the same as a dead holder: the pid
+        was reused. Where no kernel lock exists, the exclusive create
+        is the lock.
         """
-        if self._try_create():
-            return True
-        return self._take_stale_once()
+        self._disarmed = False
+        self._arm_fork_guard()
+        deadline = time.monotonic() + _PARTIAL_GRACE_S
+        while True:
+            if self._try_create():
+                return True
+            info = self._inspect()
+            if info.kind == "missing":
+                continue
+            if info.kind == "held":
+                self.pid = info.pid if info.pid is not None else 0
+                return False
+            if info.kind == "pending":
+                if info.flock_held and time.monotonic() >= deadline:
+                    self.pid = info.pid if info.pid is not None else 0
+                    return False
+                if time.monotonic() < deadline:
+                    time.sleep(0.01)
+                    continue
+            if info.payload is None or not self._drop_stale(info.payload):
+                info = self._inspect()
+                if info.kind == "held":
+                    self.pid = info.pid if info.pid is not None else 0
+                    return False
+                if info.kind == "missing":
+                    continue
+                return False
 
     def aquirelock(self):
         warnings.warn(
@@ -151,6 +228,15 @@ class LockFile:
             stacklevel=2,
         )
         return self.acquirelock()
+
+    def __enter__(self):
+        if not self.acquirelock():
+            raise BlockingIOError("Couldn't get lock")
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self.removelock()
+        return False
 
     def _arm_fork_guard(self):
         if not hasattr(os, "register_at_fork"):
@@ -177,14 +263,11 @@ class LockFile:
         if owner is None or os.getpid() != owner:
             return
         try:
-            text = self.lock_path.read_text()
+            payload = self.lock_path.read_bytes()
         except FileNotFoundError:
-            text = None
-        if text is not None and text.strip() == str(owner):
-            try:
-                self.lock_path.unlink()
-            except FileNotFoundError:
-                pass
+            payload = None
+        if payload is not None and _parse_pid(payload) == owner:
+            self._unlink_our_inode()
         self._close()
         self._owner_pid = None
         try:
@@ -193,115 +276,231 @@ class LockFile:
             pass
 
     def _try_create(self):
-        # Arm before the file exists so a fork during the write still
-        # drops the exit handler in the child.
-        self._disarmed = False
-        self._arm_fork_guard()
-        flags = _cloexec(os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        flags = _cloexec(os.O_CREAT | os.O_EXCL | os.O_RDWR)
         try:
             fd = os.open(os.fspath(self.lock_path), flags, 0o644)
         except FileExistsError:
             return False
-        payload = b""
         try:
-            # Flock before the pid is visible so a peer that opens the
-            # empty file cannot treat it as abandoned.
-            held = _flock_exclusive(fd, blocking=True)
-            if fcntl is not None and held is not True:
-                raise OSError("could not flock %s" % self.lock_path)
-            payload = ("%i\n" % os.getpid()).encode("ascii")
-            _write_all(fd, payload)
-            os.fsync(fd)
+            # msvcrt locks a byte range, so the file needs a byte first.
+            # flock locks the open file and does not.
+            if msvcrt is not None and fcntl is None:
+                _write_all(fd, b"\n")
+                os.fsync(fd)
+            held = _kernel_lock(fd, blocking=True)
+            if _have_kernel_lock() and held is not True:
+                raise OSError("could not lock %s" % self.lock_path)
+            self._write_owner(fd)
         except Exception:
-            os.close(fd)
-            self._unlink_if_same(payload if payload else b"")
+            self._discard_fd(fd)
             raise
+        self._remember(fd)
+        return True
+
+    def _write_owner(self, fd):
+        payload = _owner_bytes()
+        os.ftruncate(fd, 0)
+        os.lseek(fd, 0, os.SEEK_SET)
+        _write_all(fd, payload)
+        os.fsync(fd)
+
+    def _remember(self, fd):
         self._fd = fd
         self._owner_pid = os.getpid()
         self.pid = self._owner_pid
         atexit.register(self.removelock)
-        return True
 
-    def _take_stale_once(self):
-        deadline = time.monotonic() + _PARTIAL_GRACE_S
-        while True:
-            kind, payload, holder = self._classify()
-            if kind == "missing":
-                return self._try_create()
-            if kind == "live":
-                self.pid = holder
-                return False
-            if kind == "stale" or time.monotonic() >= deadline:
-                self._unlink_if_same(payload)
-                if self._try_create():
-                    return True
-                kind, _payload, holder = self._classify()
-                if kind == "live":
-                    self.pid = holder
-                return False
-            time.sleep(0.01)
+    def _inspect(self):
+        """Return what the lock file is right now.
 
-    def _classify(self):
-        """Return ``(kind, payload, pid)``.
-
-        ``kind`` is ``missing``, ``live``, ``stale``, or ``pending``.
-        ``payload`` is the bytes last read, so a later unlink can refuse
-        to delete a file that changed. ``pid`` is set when the bytes name one.
+        ``kind`` is ``missing``, ``held``, ``stale``, or ``pending``.
+        ``payload`` is the bytes last read, so a later removal can refuse
+        to delete a file that changed. ``flock_held`` is True when another
+        process holds the kernel lock.
         """
         flags = _cloexec(os.O_RDWR)
         try:
             fd = os.open(os.fspath(self.lock_path), flags)
         except FileNotFoundError:
-            return "missing", None, None
+            return _Seen("missing", None, None, False)
         except PermissionError:
             flags = _cloexec(os.O_RDONLY)
             try:
                 fd = os.open(os.fspath(self.lock_path), flags)
             except FileNotFoundError:
-                return "missing", None, None
-        held = None
+                return _Seen("missing", None, None, False)
+        got = None
         try:
-            held = _flock_exclusive(fd, blocking=False)
+            got = _kernel_lock(fd, blocking=False)
             os.lseek(fd, 0, os.SEEK_SET)
-            payload = os.read(fd, 128)
-            if held:
-                _flock_release(fd)
+            payload = os.read(fd, 256)
         finally:
+            if got is True:
+                _kernel_unlock(fd)
             os.close(fd)
 
-        pid = _parse_pid(payload)
+        pid, _host = _parse_owner(payload)
+        if got is False:
+            if pid is not None and _process_alive(pid):
+                return _Seen("held", payload, pid, True)
+            return _Seen("pending", payload, pid, True)
         if pid is None:
-            if held is False:
-                return "pending", payload, None
             try:
                 age = time.time() - self.lock_path.stat().st_mtime
             except FileNotFoundError:
-                return "missing", None, None
-            if age >= _PARTIAL_GRACE_S:
-                return "stale", payload, None
-            return "pending", payload, None
+                return _Seen("missing", None, None, False)
+            if age < _PARTIAL_GRACE_S:
+                return _Seen("pending", payload, None, False)
+            return _Seen("stale", payload, None, False)
         if not _process_alive(pid):
-            return "stale", payload, pid
-        if held is True:
-            # The pid is in the process table and nobody holds the flock.
-            # The original owner has exited and the id was reused.
-            return "stale", payload, pid
-        return "live", payload, pid
+            return _Seen("stale", payload, pid, False)
+        if got is True:
+            # The pid is in the process table and nobody holds the kernel
+            # lock. The original owner has exited and the id was reused.
+            return _Seen("stale", payload, pid, False)
+        return _Seen("held", payload, pid, False)
 
-    def _unlink_if_same(self, expected):
+    def _drop_stale(self, expected):
+        """Remove *expected* only while the path still names that inode.
+
+        A peer may already have published a new lock under this path.
+        Linking the path and comparing inodes refuses to delete that
+        replacement. Two recoveries of the same dead file both drop it,
+        then exactly one exclusive create wins.
+        """
         if expected is None:
             return False
+        flags = _cloexec(os.O_RDWR)
         try:
-            data = self.lock_path.read_bytes()
+            fd = os.open(os.fspath(self.lock_path), flags)
         except FileNotFoundError:
             return False
-        if data != expected:
-            return False
+        claim = None
+        got = None
         try:
-            self.lock_path.unlink()
+            got = _kernel_lock(fd, blocking=False)
+            if got is False:
+                return False
+            os.lseek(fd, 0, os.SEEK_SET)
+            data = os.read(fd, 256)
+            if data != expected:
+                return False
+            st = os.fstat(fd)
+            claim = self._claim_path()
+            try:
+                os.link(os.fspath(self.lock_path), os.fspath(claim))
+            except FileNotFoundError:
+                return False
+            st_claim = os.stat(claim)
+            if (st_claim.st_ino, st_claim.st_dev) != (st.st_ino, st.st_dev):
+                return False
+            try:
+                os.unlink(os.fspath(self.lock_path))
+            except FileNotFoundError:
+                pass
+            try:
+                st_path = os.stat(self.lock_path)
+            except FileNotFoundError:
+                st_path = None
+            if st_path is not None and (st_path.st_ino, st_path.st_dev) == (
+                st.st_ino,
+                st.st_dev,
+            ):
+                os.unlink(os.fspath(self.lock_path))
+            os.lseek(fd, 0, os.SEEK_SET)
+            if os.read(fd, 256) != expected:
+                try:
+                    os.link(os.fspath(claim), os.fspath(self.lock_path))
+                except FileExistsError:
+                    pass
+                return False
+            return True
+        finally:
+            if got is True:
+                _kernel_unlock(fd)
+            os.close(fd)
+            if claim is not None:
+                try:
+                    claim.unlink()
+                except FileNotFoundError:
+                    pass
+
+    def _unlink_our_inode(self):
+        fd = self._fd
+        if fd is None:
+            try:
+                self.lock_path.unlink()
+            except FileNotFoundError:
+                pass
+            return
+        try:
+            st = os.fstat(fd)
+        except OSError:
+            return
+        try:
+            st_path = os.stat(self.lock_path)
         except FileNotFoundError:
-            return False
-        return True
+            return
+        if (st.st_ino, st.st_dev) != (st_path.st_ino, st_path.st_dev):
+            return
+        claim = self._claim_path()
+        try:
+            os.rename(os.fspath(self.lock_path), os.fspath(claim))
+        except FileNotFoundError:
+            return
+        try:
+            st_claim = os.stat(claim)
+        except FileNotFoundError:
+            return
+        if (st_claim.st_ino, st_claim.st_dev) == (st.st_ino, st.st_dev):
+            try:
+                os.unlink(os.fspath(claim))
+            except FileNotFoundError:
+                pass
+            return
+        try:
+            os.rename(os.fspath(claim), os.fspath(self.lock_path))
+        except OSError:
+            pass
+
+    def _claim_path(self):
+        name = ".%s.%d.%d.claim" % (
+            self.lock_path.name,
+            os.getpid(),
+            time.time_ns(),
+        )
+        return self.lock_path.with_name(name)
+
+    def _discard_fd(self, fd):
+        try:
+            st = os.fstat(fd)
+        except OSError:
+            st = None
+        try:
+            os.close(fd)
+        except OSError:
+            pass
+        if st is None:
+            return
+        claim = self._claim_path()
+        try:
+            os.rename(os.fspath(self.lock_path), os.fspath(claim))
+        except FileNotFoundError:
+            return
+        try:
+            st_claim = os.stat(claim)
+        except FileNotFoundError:
+            return
+        if (st_claim.st_ino, st_claim.st_dev) == (st.st_ino, st.st_dev):
+            try:
+                os.unlink(os.fspath(claim))
+            except FileNotFoundError:
+                pass
+            return
+        try:
+            os.rename(os.fspath(claim), os.fspath(self.lock_path))
+        except OSError:
+            pass
 
     def _close(self):
         fd = self._fd

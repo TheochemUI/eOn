@@ -20,7 +20,7 @@ locally on the server, via MPI,  or using a job queuing system such as
 `akmc`, `parallel_replica`, `unbiased_parallel_replica`, `basin_hopping`,
 and `escape_rate` share a lock file named `lockfile` in the results
 directory. The driver creates that file with an exclusive open, writes
-its process id, and flushes the file. A second driver that finds a live
+its process id and host name, and flushes the file. A second driver that finds a live
 owner leaves without starting a second run. Basin hopping, parallel
 replica, and escape rate log `Couldn't get lock`. Adaptive kinetic Monte
 Carlo logs the owner's process id and exits.

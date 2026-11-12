@@ -72,6 +72,6 @@ def test_missing_results_directory_is_created(tmp_path, monkeypatch, job, entry,
     assert results.is_dir()
     lock = results / "lockfile"
     assert lock.is_file()
-    pid = int(lock.read_text().strip())
+    pid = int(lock.read_text().split()[0])
     assert pid == os.getpid()
     assert (results / log_name).is_file()
