@@ -33,7 +33,9 @@ def _readable_con_fixtures():
             frames = readcon.read_con(str(path))
             if frames:
                 good.append(path)
-        except OSError:
+        except (OSError, ValueError):
+            # 0.20 rejects a count that is not an unsigned integer. The known
+            # bad NEB fixtures raise InvalidCount, a ValueError, and stay out.
             continue
     assert good, "no readable .con fixtures under tests/data"
     return good
@@ -84,9 +86,9 @@ def test_readcon_version_and_chemfiles_status():
     """Record readcon pin; eOn server I/O does not require chemfiles extra."""
     ver = getattr(readcon, "__version__", None)
     assert ver is not None
-    # Lockstep with the C++ wrap: readcon-core 0.14.5 / spec 3.
+    # Lockstep with the C++ wrap: readcon-core 0.20.0.
     parts = _version_tuple(ver)
-    assert parts >= (0, 14, 5), ver
+    assert parts >= (0, 20, 0), ver
     has_cf = readcon.has_chemfiles_support()
     # Default install (no [chemfiles] extra): False. Document either way.
     assert isinstance(has_cf, bool)

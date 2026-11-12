@@ -10,7 +10,7 @@ license = {text = "BSD-3-Clause"}
 requires-python = ">=3.12"
 dependencies = [
     "numpy>=1.26.4",
-    "readcon>=0.14.9",
+    "readcon>=0.20.0",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",

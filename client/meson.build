@@ -856,7 +856,7 @@ _lc_pc = dependency(
 )
 _rkr_pc = dependency(
     'readcon-core',
-    version: '>=0.16.0',
+    version: '>=0.20.0',
     method: 'pkg-config',
     required: false,
     allow_fallback: false,
@@ -886,7 +886,7 @@ else
     ).get_variable('linkcell_dep')
     readcon_dep = subproject(
         'readcon-core',
-        version: '>=0.16.0',
+        version: '>=0.20.0',
         default_options: {
             'with_tests': false,
             'with_examples': false,

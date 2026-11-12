@@ -1,0 +1,11 @@
+eOn con2matter / convel2matter, readcon-core 0.16.0 then 0.20.0
+serial protocol: taskset -c 0, OMP/OPENBLAS/MKL/RAYON threads 1,
+one warmup then n=6, clock steady_clock, type-7 (linear) median and IQR.
+Inputs: one Cu frame, orthogonal cell. 100k is 50x50x40, 1e6 is 100^3.
+100k convel is that geometry plus a velocities section.
+Position sums matched across the two builds.
+
+case               before median ms  before IQR ms   after median ms  after IQR ms
+100k CON                  31.135439       0.124357         26.254130      0.677191
+100k convel               45.933724       0.086919         39.619042      4.774996
+1e6 CON                  497.139524       3.937503        410.647058      2.647799

@@ -41,7 +41,7 @@ def test_wrap_revision_matches_the_python_package():
     assert "allow_fallback: false" in lc
     assert "allow_fallback: false" in rkr
     assert "'readcon-core'" in meson
-    assert "version: '>=0.16.0'" in meson
+    assert "version: '>=0.20.0'" in meson
     assert "eon_rust_abi" in meson
     assert "libreadcon_core" not in meson
     db = meson.split("readcon_db_dep = dependency(", 1)[1].split(

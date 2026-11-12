@@ -1,0 +1,10 @@
+readcon 0.20.0
+kind convel
+path /tmp/eon-read-inputs/cu100k.convel
+protocol taskset_core0 warmup=1 n=6 clock=steady
+sample_ns 40866656 atoms 100000 pos_sum 0x1.ab3fp+23
+sample_ns 43725537 atoms 100000 pos_sum 0x1.ab3fp+23
+sample_ns 38371427 atoms 100000 pos_sum 0x1.ab3fp+23
+sample_ns 41629619 atoms 100000 pos_sum 0x1.ab3fp+23
+sample_ns 36094701 atoms 100000 pos_sum 0x1.ab3fp+23
+sample_ns 35480520 atoms 100000 pos_sum 0x1.ab3fp+23

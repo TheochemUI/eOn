@@ -1,7 +1,7 @@
 project(
     'readcon-core',
     'c',
-    version: '0.16.0',
+    version: '0.20.0',
     meson_version: '>=1.3.0',
     license: 'MIT',
 )

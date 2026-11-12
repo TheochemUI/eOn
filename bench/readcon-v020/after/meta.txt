@@ -1,0 +1,8 @@
+label after
+readcon_pin v0.20.0
+readcon_commit fa192b95817bbeb8732e258b694e62d08af42241
+host Linux 6.12.113+ x86_64
+cpu Intel(R) Xeon(R) Processor
+taskset -c 0
+omp_threads 1
+2026-11-12T04:34:56Z

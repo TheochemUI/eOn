@@ -121,11 +121,11 @@ void set_write_con_forces(bool enabled) noexcept;
 /**
  * Append a frame to a .con, or truncate and write one frame.
  *
- * With `append`, an uncompressed target is extended in place: the new frame is
- * serialized on its own and concatenated, so N appends cost N frame writes
- * rather than N(N+1)/2. Earlier frames are never re-serialized, and the file
- * is flushed before the call returns, so every intermediate state on disk is a
- * complete multi-frame .con.
+ * With `append`, an uncompressed target is extended in place through
+ * readcon::ConFrameWriter OpenMode::Append, so N appends cost N frame writes
+ * rather than N(N+1)/2. Earlier frames are never re-serialized, and the
+ * writer is flushed before the call returns, so every intermediate state on
+ * disk is a complete multi-frame .con.
  *
  * A target that eOn did not write, or that changed size or mtime since eOn
  * last wrote it, is parsed once before anything is added; an unparseable

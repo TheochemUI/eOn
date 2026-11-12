@@ -301,71 +301,26 @@ bool ends_with_newline(const fs::path &path) {
   return last == '\n';
 }
 
-/// Concatenate frames onto an existing uncompressed .con.
+/// Extend an uncompressed .con with readcon's append writer.
 ///
-/// ConFrameWriter emits self-contained frames with no file-level preamble and
-/// no cross-frame state in the output, so bytes serialized one frame at a time
-/// equal the bytes of a whole-file rewrite. Serialization goes through a
-/// scratch file next to the target because readcon-core exposes no
-/// writer over a caller-owned stream and no flush on an open writer; the
-/// target itself is opened in append mode and flushed before returning, which
-/// keeps the file complete and parseable after every call.
+/// OpenMode::Append writes the new frames onto the existing file. A
+/// non-empty target that does not end in a newline gets one before the
+/// next frame. flush() returns only after those frames are a complete,
+/// parseable prefix. Gzip and zstd are refused by the writer; callers
+/// keep the whole-file rewrite for those paths.
 eonc::io::IoStatus append_frames(const fs::path &path,
                                  const std::vector<readcon::ConFrame> &frames,
                                  uint8_t precision) {
-  static std::atomic<uint64_t> scratch_counter{0};
-  const auto scratch =
-      path.parent_path() /
-      std::format(".{}.eon-append-{}.tmp", path.filename().string(),
-                  scratch_counter.fetch_add(1, std::memory_order_relaxed));
-
-  std::string bytes;
   try {
-    {
-      readcon::ConFrameWriter writer(
-          scratch, readcon::ConFrameWriter::Compression::None, precision);
-      writer.extend(frames);
-    }
-    std::ifstream in(scratch, std::ios::binary | std::ios::ate);
-    if (!in) {
-      throw std::runtime_error("serialized frame not readable back");
-    }
-    const auto len = static_cast<std::streamoff>(in.tellg());
-    if (len <= 0) {
-      throw std::runtime_error("serialized frame is empty");
-    }
-    bytes.resize(static_cast<size_t>(len));
-    in.seekg(0);
-    if (!in.read(bytes.data(), static_cast<std::streamsize>(len))) {
-      throw std::runtime_error("short read of serialized frame");
-    }
+    readcon::ConFrameWriter writer(
+        path, readcon::ConFrameWriter::OpenMode::Append, precision);
+    writer.extend(frames);
+    writer.flush();
+    return eonc::io::IoStatus::Ok;
   } catch (const std::exception &e) {
-    std::error_code ec;
-    fs::remove(scratch, ec);
-    EONC_LOG_ERROR("Failed to serialize frame for {}: {}", path.string(),
-                   e.what());
+    EONC_LOG_ERROR("Failed to append to {}: {}", path.string(), e.what());
     return eonc::io::IoStatus::WriteError;
   }
-  std::error_code ec;
-  fs::remove(scratch, ec);
-
-  std::ofstream out(path, std::ios::binary | std::ios::app);
-  if (!out) {
-    EONC_LOG_ERROR("Failed to open {} for append", path.string());
-    return eonc::io::IoStatus::WriteError;
-  }
-  // A frame header must start its own line. eOn's own frames end in a
-  // newline; a hand-written or foreign tail may not.
-  if (!ends_with_newline(path)) {
-    out.put('\n');
-  }
-  out.write(bytes.data(), static_cast<std::streamsize>(bytes.size()));
-  out.flush();
-  if (!out) {
-    EONC_LOG_ERROR("Failed to append to {}", path.string());
-    return eonc::io::IoStatus::WriteError;
-  }
-  return eonc::io::IoStatus::Ok;
 }
 
 /// Seed a builder with identity fields (symbol/fixed/mass/id) and cell headers.
@@ -601,10 +556,9 @@ IoStatus matter2con(Matter &m, std::string filename, bool append,
   const bool concatenate = append && exists && streamable;
 
   // ConFrame is move-only (no default ctor), so frames carries the new frame
-  // either way. A gzip or zstd target cannot be concatenated: readcon-core
-  // reads a single gzip member, so appended members would be invisible
-  // on read-back, and the streaming writers cannot be flushed frame by frame.
-  // Those targets keep the whole-file rewrite, which stays O(N) per append.
+  // either way. OpenMode::Append refuses gzip and zstd, and a compressed
+  // member cannot be extended in place. Those targets keep the whole-file
+  // rewrite.
   std::vector<readcon::ConFrame> frames;
   if (append && exists && !streamable) {
     try {

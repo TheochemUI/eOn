@@ -1,0 +1,10 @@
+readcon 0.16.0
+kind con
+path /tmp/eon-read-inputs/cu1m.con
+protocol taskset_core0 warmup=1 n=6 clock=steady
+sample_ns 498691138 atoms 1000000 pos_sum 0x1.1e1a3p+28
+sample_ns 497103571 atoms 1000000 pos_sum 0x1.1e1a3p+28
+sample_ns 498128057 atoms 1000000 pos_sum 0x1.1e1a3p+28
+sample_ns 492220652 atoms 1000000 pos_sum 0x1.1e1a3p+28
+sample_ns 492902022 atoms 1000000 pos_sum 0x1.1e1a3p+28
+sample_ns 497175478 atoms 1000000 pos_sum 0x1.1e1a3p+28

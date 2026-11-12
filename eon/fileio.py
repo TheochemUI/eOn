@@ -253,19 +253,6 @@ def _path_is_compressed_con(path):
     return name.endswith(".gz") or name.endswith(".zst")
 
 
-def _file_ends_with_newline(path):
-    """True for an empty file too: nothing needs separating from the first frame."""
-    try:
-        with open(path, "rb") as fh:
-            fh.seek(0, os.SEEK_END)
-            if fh.tell() == 0:
-                return True
-            fh.seek(-1, os.SEEK_END)
-            return fh.read(1) == b"\n"
-    except OSError:
-        return True
-
-
 def save_known_saddles(fileout, saddles, reactant):
     '''
     Write the known saddles of a state for a process search client.
@@ -290,9 +277,9 @@ def savecon(fileout, p, w = 'w'):
         p:       Structure (or Structure-like) to save
         w:       write/append flag
 
-    Append of an uncompressed file concatenates one serialized frame. A
-    gzip or zstd target cannot be extended in place, so those still
-    read the existing frames and rewrite the file.
+    Append of an uncompressed file uses readcon's append writer. A gzip
+    or zstd target cannot be extended in place, so those still read the
+    existing frames and rewrite the file.
     '''
     frame = _atoms_to_frame(p)
     frame_text = readcon.write_con_string([frame])
@@ -300,14 +287,11 @@ def savecon(fileout, p, w = 'w'):
         fileout.write(frame_text)
     elif w == 'a' and Path(fileout).exists() and Path(fileout).stat().st_size > 0:
         if _path_is_compressed_con(fileout):
-            existing = readcon.read_con(fileout)
+            existing = list(readcon.read_con(fileout))
             existing.append(frame)
             readcon.write_con(fileout, existing)
         else:
-            with open(fileout, 'a') as fh:
-                if not _file_ends_with_newline(fileout):
-                    fh.write('\n')
-                fh.write(frame_text)
+            readcon.write_con(fileout, [frame], append=True)
     else:
         readcon.write_con(fileout, [frame])
     if not hasattr(fileout, 'write'):
