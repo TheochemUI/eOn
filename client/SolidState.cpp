@@ -697,6 +697,26 @@ double Chart::convergence(Matter &matter, const std::string &metric) const {
   return gradient.norm();
 }
 
+void Chart::setCellScales(std::vector<double> scales) {
+  if (scales.size() != cellScale_.size()) {
+    throw std::invalid_argument("solid-state cell scale size");
+  }
+  cellScale_ = std::move(scales);
+}
+
+double Chart::enthalpy(Matter &matter) const {
+  const double energy = matter.getPotentialEnergy();
+  Matrix3d eps;
+  readStrain(deformation(matter), eps);
+  double work = 0.0;
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j <= i; ++j) {
+      work += options_.external(i, j) * eps(i, j);
+    }
+  }
+  return energy + referenceVolume_ * work;
+}
+
 void Chart::preconditionCell(Matter &matter) {
   std::fill(cellScale_.begin(), cellScale_.end(), 1.0);
   if (active_.empty()) {
@@ -937,10 +957,17 @@ runMinMode(Matter &matter, AtomMatrix mode, double reactantEnergy,
   auto optim = eonc::helpers::create::mkOptim(
       objective, params.optimizer_options().method, params);
   const size_t callsBefore = matter.getPotential()->forceCallCounter.load();
-  const double tol = params.saddle_search_options().converged_force > 0.0
-                         ? params.saddle_search_options().converged_force
-                         : params.optimizer_options().converged_force;
+  double tol = params.saddle_search_options().converged_force > 0.0
+                   ? params.saddle_search_options().converged_force
+                   : params.optimizer_options().converged_force;
   const double maxEnergy = params.saddle_search_options().max_energy;
+  const bool indexCheck = params.solid_state_options().index_check;
+  const double flat = params.solid_state_options().flat;
+  const IndexCheck check;
+  int escapesLeft = check.escapes;
+  std::vector<VectorXd> rejectedAt;
+  const std::vector<double> savedScales = state->chart.cellScales();
+  const int nFree = static_cast<int>(state->chart.freeAtoms().size());
   state->status = MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS;
   long steps = 0;
   for (long iter = 0; iter < std::max(1L, maxIterations); ++iter) {
@@ -952,11 +979,76 @@ runMinMode(Matter &matter, AtomMatrix mode, double reactantEnergy,
     const double residual = state->chart.convergence(
         matter, params.optimizer_options().convergence_metric);
     if (residual < tol) {
-      state->status = estimate.curvature < 0.0
-                          ? MinModeSaddleSearch::STATUS_GOOD
-                          : MinModeSaddleSearch::STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
-      steps = iter;
-      break;
+      bool flatOk = true;
+      if (flat > 0.0 && estimate.curvature < -1e-3) {
+        const double limit = std::max(flat * std::abs(estimate.curvature), 1e-5);
+        if (residual > limit && tol > limit * (1.0 + 1e-9)) {
+          tol = limit;
+          flatOk = false;
+        }
+      }
+      if (!flatOk) {
+        // The normal tolerance was met on a flat negative mode. Keep
+        // stepping until the force matches the curvature as well.
+      } else if (!(estimate.curvature < 0.0)) {
+        state->status =
+            MinModeSaddleSearch::STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
+        steps = iter;
+        break;
+      } else if (!indexCheck) {
+        state->status = MinModeSaddleSearch::STATUS_GOOD;
+        steps = iter;
+        break;
+      } else {
+        const size_t beforeIndex =
+            matter.getPotential()->forceCallCounter.load();
+        state->chart.setCellScales(
+            std::vector<double>(savedScales.size(), 1.0));
+        IndexSpectrum spectrum;
+        bool moved = false;
+        VectorXd hard;
+        try {
+          spectrum = indexAt(matter, state->chart, check);
+          state->negativeModes = spectrum.negative;
+          if (spectrum.isFirstOrder()) {
+            state->rejected = false;
+            state->status = MinModeSaddleSearch::STATUS_GOOD;
+          } else if (spectrum.negative > 1 && escapesLeft > 0 &&
+                     leaveHigherIndex(matter, state->chart, hard, spectrum,
+                                      check, rejectedAt)) {
+            moved = true;
+            --escapesLeft;
+          } else {
+            state->rejected = true;
+            state->status = MinModeSaddleSearch::STATUS_BAD_NO_BARRIER;
+          }
+        } catch (...) {
+          state->chart.setCellScales(savedScales);
+          throw;
+        }
+        state->chart.setCellScales(savedScales);
+        state->indexForceCalls += static_cast<int>(
+            matter.getPotential()->forceCallCounter.load() - beforeIndex);
+        if (moved) {
+          const int base = 3 * nFree;
+          for (size_t k = 0; k < savedScales.size(); ++k) {
+            hard[base + static_cast<int>(k)] *= savedScales[k];
+          }
+          removeTranslation(hard, nFree);
+          if (hard.norm() < eonc::safemath::eps) {
+            hard.setZero();
+            hard[0] = 1.0;
+          }
+          eonc::safemath::safe_normalize_inplace(hard);
+          direction = hard;
+          optim = eonc::helpers::create::mkOptim(
+              objective, params.optimizer_options().method, params);
+          steps = iter;
+          continue;
+        }
+        steps = iter;
+        break;
+      }
     }
     if (iter + 1 >= maxIterations) {
       steps = iter + 1;
@@ -978,10 +1070,6 @@ runMinMode(Matter &matter, AtomMatrix mode, double reactantEnergy,
     if (energy - reactantEnergy > maxEnergy) {
       state->chart.setCoordinates(matter, saved);
       state->status = MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY;
-      break;
-    }
-    if (objective->isConverged() && estimate.curvature < 0.0) {
-      state->status = MinModeSaddleSearch::STATUS_GOOD;
       break;
     }
   }

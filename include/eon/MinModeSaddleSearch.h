@@ -125,6 +125,14 @@ public:
   int getStatus() const override { return status; }
   int getIterationCount() const override { return iteration; }
   int getForceCalls() const override { return forcecalls; }
+  /// Potential calls spent on the projected-index check and on walking
+  /// off a higher-index point. Already included in getForceCalls().
+  [[nodiscard]] int getIndexForceCalls() const { return indexForceCalls_; }
+  /// Negative projected eigenvalues at the accepted or rejected point.
+  /// -1 when the check did not run.
+  [[nodiscard]] int negativeModes() const { return negativeModes_; }
+  /// True when the force tolerance was met and the point was not index 1.
+  [[nodiscard]] bool saddleRejected() const { return saddleRejected_; }
 
   int run() override;
   int run(long max_iterations_override);
@@ -162,6 +170,9 @@ private:
   std::vector<AtomMatrix> knownSaddlePositions_;
   std::vector<double> knownSaddleEnergies_;
   std::unique_ptr<solid::SearchState> solid_;
+  int indexForceCalls_{0};
+  int negativeModes_{-1};
+  bool saddleRejected_{false};
   [[nodiscard]] bool atKnownSaddle() const;
   int runSolidState(long maxIterations);
   eonc::log::Scoped log;

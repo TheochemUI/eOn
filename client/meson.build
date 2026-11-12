@@ -1310,6 +1310,7 @@ eonclib_sources = [
     'NEBSpringForce.cpp',
     'SolidStateNEB.cpp',
     'SolidState.cpp',
+    'SolidStateIndex.cpp',
     'SetflEam.cpp',
     'NEBTangent.cpp',
     'NEBZoom.cpp',

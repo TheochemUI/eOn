@@ -370,6 +370,9 @@ int MinModeSaddleSearch::runSolidState(long maxIterations) {
   status = solid_->status;
   iteration = solid_->iteration;
   forcecalls = solid_->forceCalls;
+  indexForceCalls_ = solid_->indexForceCalls;
+  negativeModes_ = solid_->negativeModes;
+  saddleRejected_ = solid_->rejected;
   return status;
 }
 
@@ -510,6 +513,19 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
 
     auto optim = eonc::helpers::create::mkOptim(
         objf, params.optimizer_options().method, params);
+    const bool govern = params.solid_state_options().enabled;
+    double tol = params.saddle_search_options().converged_force;
+    const double flat = params.solid_state_options().flat;
+    const bool indexCheck = params.solid_state_options().index_check;
+    const eonc::solid::IndexCheck indexSettings;
+    int escapesLeft = indexSettings.escapes;
+    std::vector<VectorXd> rejectedAt;
+    auto convergedNow = [&]() {
+      if (!govern) {
+        return objf->isConverged();
+      }
+      return objf->getConvergence() < tol;
+    };
 
     // Stock max_move stays the cap until a translation crosses max_energy.
     // A search that never crosses it takes the same steps as before.
@@ -603,7 +619,62 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       return wallStalls < kMaxEnergyStalls;
     };
 
-    while (!objf->isConverged() || iteration == 0) {
+    while (true) {
+      if (iteration > 0 && convergedNow()) {
+        const double curv = eonc::eigenmodeGetEigenvalue(*minModeMethod);
+        if (!govern || !(curv < 0.0)) {
+          break;
+        }
+        const double residual = objf->getConvergence();
+        bool flatOk = true;
+        if (flat > 0.0 && curv < -1e-3) {
+          const double limit = std::max(flat * std::abs(curv), 1e-5);
+          if (residual > limit && tol > limit * (1.0 + 1e-9)) {
+            tol = limit;
+            flatOk = false;
+          }
+        }
+        if (flatOk) {
+          if (!indexCheck) {
+            break;
+          }
+          const long beforeIndex = matter->getForceCalls();
+          const auto spectrum = eonc::solid::indexAtoms(*matter, indexSettings);
+          indexForceCalls_ += static_cast<int>(matter->getForceCalls() - beforeIndex);
+          negativeModes_ = spectrum.negative;
+          if (spectrum.isFirstOrder()) {
+            saddleRejected_ = false;
+            break;
+          }
+          bool moved = false;
+          if (spectrum.negative > 1 && escapesLeft > 0) {
+            VectorXd hard;
+            const long beforeWalk = matter->getForceCalls();
+            moved = eonc::solid::leaveHigherIndexAtoms(
+                *matter, hard, spectrum, indexSettings, rejectedAt);
+            indexForceCalls_ +=
+                static_cast<int>(matter->getForceCalls() - beforeWalk);
+            if (moved) {
+              --escapesLeft;
+              AtomMatrix seed(matter->numberOfAtoms(), 3);
+              Eigen::Map<VectorXd>(seed.data(), seed.size()) = hard;
+              objf->reseedMode(seed);
+              mode = seed;
+              if (auto *dimer = eonc::asImprovedDimer(*minModeMethod)) {
+                VectorXd ref = hard.array() * matter->getFreeV().array();
+                dimer->setReferenceMode(ref);
+              }
+              optim = eonc::helpers::create::mkOptim(
+                  objf, params.optimizer_options().method, params);
+            }
+          }
+          if (!moved) {
+            saddleRejected_ = true;
+            status = STATUS_BAD_NO_BARRIER;
+            break;
+          }
+        }
+      }
       matter->pollCancel("saddle");
 
       if (!firstIteration) {
@@ -780,7 +851,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
     }
     forcecalls =
         static_cast<int>(eonc::eigenmodeTotalForceCalls(*minModeMethod) +
-                         probeForceCalls + refineForceCalls);
+                         probeForceCalls + refineForceCalls + indexForceCalls_);
   }
 
   return status;

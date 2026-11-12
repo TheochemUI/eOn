@@ -139,6 +139,127 @@ void placeShear(eonc::Matter &matter, double q, double hyx) {
   matter.setPositions(positions);
 }
 
+// E = -x^2 + s y^2 + z^2 + 1/2 (h_xx - 5)^2. s = +1 is index 1 at the
+// origin; s = -1 is index 2. The cell spring is positive. A second kind
+// is the two-atom surface whose only negative curvature is a rigid
+// translation, or a relative mode once that translation is removed.
+class IndexSurface final : public eonc::Potential {
+public:
+  enum class Kind { Saddle, Double, Translated };
+
+  IndexSurface(Kind kind, bool negativeRelative)
+      : Potential(eonc::PotType::LJ), kind_(kind),
+        negativeRelative_(negativeRelative) {}
+
+  [[nodiscard]] bool computesStress() const noexcept override { return true; }
+  [[nodiscard]] Matrix3d cauchyStress() const override { return sigma_; }
+  [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+
+  void force(long N, const double *R, const int *, double *F, double *U,
+             double *, const double *box) override {
+    Matrix3d h = Matrix3d::Zero();
+    for (int i = 0; i < 9; ++i) {
+      h(i / 3, i % 3) = box[i];
+    }
+    energyOf(R, N, h, U, F);
+    sigma_.setZero();
+    const double volume = std::abs(h.determinant());
+    if (!(volume > 0.0)) {
+      return;
+    }
+    const double step = 1e-7;
+    for (int a = 0; a < 3; ++a) {
+      for (int b = 0; b < 3; ++b) {
+        Matrix3d eps = Matrix3d::Zero();
+        eps(a, b) = step;
+        const Matrix3d plus = h * (Matrix3d::Identity() + eps);
+        const Matrix3d minus = h * (Matrix3d::Identity() - eps);
+        std::vector<double> rPlus(static_cast<size_t>(3 * N));
+        std::vector<double> rMinus(static_cast<size_t>(3 * N));
+        const Matrix3d deformPlus = Matrix3d::Identity() + eps;
+        const Matrix3d deformMinus = Matrix3d::Identity() - eps;
+        for (long atom = 0; atom < N; ++atom) {
+          Eigen::RowVector3d row(R[3 * atom], R[3 * atom + 1], R[3 * atom + 2]);
+          Eigen::RowVector3d up = row * deformPlus;
+          Eigen::RowVector3d down = row * deformMinus;
+          for (int c = 0; c < 3; ++c) {
+            rPlus[static_cast<size_t>(3 * atom + c)] = up[c];
+            rMinus[static_cast<size_t>(3 * atom + c)] = down[c];
+          }
+        }
+        double ePlus = 0.0;
+        double eMinus = 0.0;
+        energyOf(rPlus.data(), N, plus, &ePlus, nullptr);
+        energyOf(rMinus.data(), N, minus, &eMinus, nullptr);
+        sigma_(a, b) = (ePlus - eMinus) / (2.0 * step) / volume;
+      }
+    }
+  }
+
+private:
+  Kind kind_;
+  bool negativeRelative_;
+  Matrix3d sigma_{Matrix3d::Zero()};
+
+  void energyOf(const double *R, long N, const Matrix3d &h, double *energy,
+                double *force) const {
+    if (kind_ == Kind::Translated) {
+      REQUIRE(N == 2);
+      const double s2 = std::sqrt(2.0);
+      const double cx = (R[0] + R[3]) / s2;
+      const double ux = (R[0] - R[3]) / s2;
+      const double uy = (R[1] - R[4]) / s2;
+      const double sign = negativeRelative_ ? -1.0 : 1.0;
+      *energy = sign * 0.5 * ux * ux - 0.5 * cx * cx + 0.5 * uy * uy;
+      if (force == nullptr) {
+        return;
+      }
+      for (int i = 0; i < 6; ++i) {
+        force[i] = 0.0;
+      }
+      const double dCx = -cx;
+      const double dUx = sign * ux;
+      const double dUy = uy;
+      const double g0 = (dCx + dUx) / s2;
+      const double g3 = (dCx - dUx) / s2;
+      const double g1 = dUy / s2;
+      const double g4 = -dUy / s2;
+      force[0] = -g0;
+      force[3] = -g3;
+      force[1] = -g1;
+      force[4] = -g4;
+      return;
+    }
+    REQUIRE(N == 1);
+    const double ySign = kind_ == Kind::Double ? -1.0 : 1.0;
+    const double x = R[0] - 2.5;
+    const double y = R[1] - 2.5;
+    const double z = R[2] - 2.5;
+    const double dh = h(0, 0) - 5.0;
+    *energy = -x * x + ySign * y * y + z * z + 0.5 * dh * dh;
+    if (force == nullptr) {
+      return;
+    }
+    force[0] = 2.0 * x;
+    force[1] = -2.0 * ySign * y;
+    force[2] = -2.0 * z;
+  }
+};
+
+void placeOrigin(eonc::Matter &matter, long atoms) {
+  matter.resize(atoms);
+  for (long i = 0; i < atoms; ++i) {
+    matter.setAtomicNr(i, 1);
+  }
+  matter.setCell(Matrix3d::Identity() * 5.0);
+  matter.setPeriodic(true);
+  AtomMatrix positions = AtomMatrix::Zero(atoms, 3);
+  if (atoms == 1) {
+    positions.row(0).setConstant(2.5);
+  }
+  matter.setPositions(positions);
+}
+
 // Analytic Mishin EAM1 (Phys. Rev. B 63, 224106, Table I). The setfl
 // file is a later tabulation; this is the form the reference saddle uses.
 class MishinEam1 final : public eonc::Potential {
@@ -644,6 +765,150 @@ TEST_CASE("Mishin EAM1 crystal matches the analytic cohesive energy",
   }
 }
 
+TEST_CASE("index check rejects an index-2 point and accepts index 1",
+          "[solid_state][dimer][index_joint]") {
+  auto params = baseParams();
+  ParametersLoadAccess::solid_state_options(params).enabled = true;
+  auto mask = ParametersLoadAccess::solid_state_options(params).mask;
+  mask.fill(0);
+  mask[0] = 1;
+  ParametersLoadAccess::solid_state_options(params).mask = mask;
+  ParametersLoadAccess::saddle_search_options(params).converged_force = 1e-8;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 6;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.05;
+
+  auto load = [&](IndexSurface::Kind kind) {
+    auto pot = std::make_shared<IndexSurface>(kind, false);
+    auto matter = std::make_shared<eonc::Matter>(pot, params);
+    placeOrigin(*matter, 1);
+    return std::pair{pot, matter};
+  };
+  {
+    auto [pot, matter] = load(IndexSurface::Kind::Saddle);
+    eonc::solid::Chart chart(*matter, eonc::solid::optionsFrom(params));
+    const auto accepted = eonc::solid::indexAt(*matter, chart);
+    INFO("accepted " << accepted.values[0] << " " << accepted.values[1]);
+    REQUIRE(accepted.isFirstOrder());
+    REQUIRE(accepted.negative == 1);
+    REQUIRE(accepted.values[0] < -1.5);
+    REQUIRE(accepted.values[1] > 0.5);
+    REQUIRE(accepted.evaluations > 0);
+  }
+  {
+    auto [pot, matter] = load(IndexSurface::Kind::Double);
+    eonc::solid::Chart chart(*matter, eonc::solid::optionsFrom(params));
+    const auto rejected = eonc::solid::indexAt(*matter, chart);
+    INFO("rejected " << rejected.values[0] << " " << rejected.values[1]);
+    REQUIRE(rejected.negative == 2);
+    REQUIRE_FALSE(rejected.isFirstOrder());
+    REQUIRE(rejected.values[0] < -1.5);
+    REQUIRE(rejected.values[1] < -1.5);
+  }
+  {
+    auto [pot, matter] = load(IndexSurface::Kind::Saddle);
+    AtomMatrix mode(1, 3);
+    mode.setZero();
+    mode(0, 0) = 1.0;
+    eonc::MinModeSaddleSearch search(matter, mode, 0.0, params, pot);
+    const int status = search.run();
+    INFO("saddle status " << status << " n " << search.negativeModes()
+                          << " x " << matter->getPositions());
+    REQUIRE(status == eonc::MinModeSaddleSearch::STATUS_GOOD);
+    REQUIRE(search.negativeModes() == 1);
+    REQUIRE_FALSE(search.saddleRejected());
+    const Eigen::RowVector3d centre =
+        matter->getPositions().row(0) - Eigen::RowVector3d::Constant(2.5);
+    REQUIRE(centre.norm() < 1e-5);
+    REQUIRE(search.variableCell());
+  }
+  {
+    auto frozen = params;
+    auto frozenMask = ParametersLoadAccess::solid_state_options(frozen).mask;
+    frozenMask.fill(0);
+    ParametersLoadAccess::solid_state_options(frozen).mask = frozenMask;
+    auto pot = std::make_shared<IndexSurface>(IndexSurface::Kind::Saddle, false);
+    auto matter = std::make_shared<eonc::Matter>(pot, frozen);
+    placeOrigin(*matter, 1);
+    auto before = eonc::solid::indexAtoms(*matter);
+    INFO("direct n " << before.negative << " v0 "
+                     << (before.values.empty() ? 0.0 : before.values.front())
+                     << " v1 "
+                     << (before.values.size() < 2 ? 0.0 : before.values[1]));
+    REQUIRE(before.negative == 1);
+    AtomMatrix mode(1, 3);
+    mode.setZero();
+    mode(0, 0) = 1.0;
+    eonc::MinModeSaddleSearch search(matter, mode, 0.0, frozen, pot);
+    const int status = search.run();
+    INFO("frozen status " << status << " n " << search.negativeModes());
+    REQUIRE(status == eonc::MinModeSaddleSearch::STATUS_GOOD);
+    REQUIRE_FALSE(search.variableCell());
+    REQUIRE(search.negativeModes() == 1);
+    REQUIRE(search.getIndexForceCalls() > 0);
+    const Eigen::RowVector3d frozenCentre =
+        matter->getPositions().row(0) - Eigen::RowVector3d::Constant(2.5);
+    REQUIRE(frozenCentre.norm() < 1e-5);
+  }
+  {
+    auto [pot, matter] = load(IndexSurface::Kind::Double);
+    AtomMatrix mode(1, 3);
+    mode.setZero();
+    mode(0, 0) = 1.0;
+    eonc::MinModeSaddleSearch search(matter, mode, 0.0, params, pot);
+    const int status = search.run();
+    const double moved =
+        (matter->getPositions().row(0) - Eigen::RowVector3d::Constant(2.5))
+            .norm();
+    INFO("double status " << status << " n " << search.negativeModes()
+                          << " moved " << moved);
+    const bool stillThere = moved < 1e-6;
+    if (stillThere) {
+      REQUIRE(status == eonc::MinModeSaddleSearch::STATUS_BAD_NO_BARRIER);
+      REQUIRE(search.saddleRejected());
+      REQUIRE(search.negativeModes() == 2);
+    } else {
+      const bool kept =
+          status != eonc::MinModeSaddleSearch::STATUS_GOOD ||
+          search.negativeModes() == 1;
+      REQUIRE(kept);
+    }
+  }
+}
+
+TEST_CASE("index check does not count a rigid translation",
+          "[solid_state][dimer][index_translation]") {
+  auto params = baseParams();
+  ParametersLoadAccess::main_options(params).removeNetForce = false;
+  auto bare = std::make_shared<IndexSurface>(IndexSurface::Kind::Translated, false);
+  eonc::Matter matter(bare, params);
+  placeOrigin(matter, 2);
+  matter.setPeriodic(false);
+  eonc::solid::IndexCheck projected;
+  auto hidden = eonc::solid::indexAtoms(matter, projected);
+  INFO("projected " << hidden.negative << " lowest "
+                    << (hidden.values.empty() ? 0.0 : hidden.values.front()));
+  REQUIRE(hidden.negative == 0);
+  eonc::solid::IndexCheck raw = projected;
+  raw.project = false;
+  auto visible = eonc::solid::indexAtoms(matter, raw);
+  INFO("raw " << visible.negative << " lowest "
+              << (visible.values.empty() ? 0.0 : visible.values.front()));
+  REQUIRE(visible.negative == 1);
+  REQUIRE(visible.values.front() < -0.5);
+
+  auto saddlePot =
+      std::make_shared<IndexSurface>(IndexSurface::Kind::Translated, true);
+  eonc::Matter saddle(saddlePot, params);
+  placeOrigin(saddle, 2);
+  saddle.setPeriodic(false);
+  auto one = eonc::solid::indexAtoms(saddle, projected);
+  INFO("relative " << one.negative << " lowest "
+                   << (one.values.empty() ? 0.0 : one.values.front()));
+  REQUIRE(one.isFirstOrder());
+  REQUIRE(one.negative == 1);
+  REQUIRE(one.values.front() < -0.5);
+}
+
 TEST_CASE("copper dumbbell saddle follows the shear-aligned switch",
           "[solid_state][eam_cu][dimer]") {
   auto params = baseParams();
@@ -653,7 +918,7 @@ TEST_CASE("copper dumbbell saddle follows the shear-aligned switch",
   ParametersLoadAccess::optimizer_options(params).max_iterations = 600;
   ParametersLoadAccess::optimizer_options(params).max_move = 0.05;
   ParametersLoadAccess::saddle_search_options(params).converged_force = 2e-3;
-  ParametersLoadAccess::saddle_search_options(params).max_iterations = 1000;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 2500;
   ParametersLoadAccess::saddle_search_options(params).max_energy = 1.2;
   ParametersLoadAccess::dimer_options(params).torque_min = 1e-3;
   ParametersLoadAccess::dimer_options(params).rotations_max = 8;
@@ -764,14 +1029,17 @@ TEST_CASE("copper dumbbell saddle follows the shear-aligned switch",
     return energy + std::abs(h0.determinant()) * work;
   };
 
-  const double fixedRef[] = {0.47417449726344785, 0.24356279471709286,
-                             0.14826689300639373, 0.0678422080142127,
-                             0.007348460091009201};
-  const double enthalpyRef[] = {0.34702642693292773, 0.16298514462960156,
-                                0.0875839431751615, 0.02701564574050508};
+  const double fixedRef[] = {0.473916239370908, 0.24356279471709286,
+                             0.14826689300639373, 0.06784288866265342,
+                             0.00776114637324099};
+  const double enthalpyRef[] = {0.34702642693292773, 0.1630119173183857,
+                                0.08761266284551539, 0.0274332017463621};
   const double gammas[] = {0.0, 0.02, 0.03, 0.04, 0.05};
   std::ofstream table("/tmp/cu-saddle.txt");
-  table << "shear cell calls barrier enthalpy stress_xy Pxy_min Pxy_sad n_neg switch status min100 sad100 sad110 curv0 curv1\n";
+  table << std::setprecision(17);
+  table << "shear,cell,calls,index_calls,barrier_eV,enthalpy_eV,curvature,"
+           "max_force,n_neg,reactant_n_neg,reactant_lowest,status,rejected,"
+           "switch,result\n";
   int fixedSlot = 0;
   int variableSlot = 0;
   for (double gamma : gammas) {
@@ -840,22 +1108,42 @@ TEST_CASE("copper dumbbell saddle follows the shear-aligned switch",
     auto runSearch = [&](bool variable) {
       auto local = params;
       ParametersLoadAccess::optimizer_options(local).max_move = 0.005;
+      ParametersLoadAccess::solid_state_options(local).enabled = true;
       if (variable) {
-        ParametersLoadAccess::solid_state_options(local).enabled = true;
         for (int i = 0; i < 9; ++i) {
-          ParametersLoadAccess::solid_state_options(local).stress[static_cast<size_t>(i)] =
-              -sigmaMin(i / 3, i % 3);
+          ParametersLoadAccess::solid_state_options(local)
+              .stress[static_cast<size_t>(i)] = -sigmaMin(i / 3, i % 3);
         }
+      } else {
+        auto frozen = ParametersLoadAccess::solid_state_options(local).mask;
+        frozen.fill(0);
+        ParametersLoadAccess::solid_state_options(local).mask = frozen;
       }
+      auto reactantMatter = load(savedMin, h0, local);
+      const auto reactantBefore = pot->forceCallCounter.load();
+      eonc::solid::IndexSpectrum reactantSpectrum;
+      if (variable) {
+        eonc::solid::Chart reactantChart(
+            *reactantMatter, eonc::solid::optionsFrom(local));
+        reactantSpectrum =
+            eonc::solid::indexAt(*reactantMatter, reactantChart);
+      } else {
+        reactantSpectrum = eonc::solid::indexAtoms(*reactantMatter);
+      }
+      const int reactantCalls = static_cast<int>(
+          pot->forceCallCounter.load() - reactantBefore);
+      const int reactantNeg = reactantSpectrum.negative;
+      const double reactantLowest = reactantSpectrum.values.empty()
+                                        ? 0.0
+                                        : reactantSpectrum.values.front();
       auto matter = load(nudged, h0, local);
       eonc::MinModeSaddleSearch search(matter, connect, eMin, local, pot);
       const auto before = pot->forceCallCounter.load();
       const int status = search.run();
-      const int calls = static_cast<int>(pot->forceCallCounter.load() - before);
+      const int calls =
+          static_cast<int>(pot->forceCallCounter.load() - before);
       const double eSad = matter->getPotentialEnergy();
-      const Matrix3d sigmaSad = matter->cauchyStress();
-      const double volumeSad = std::abs(matter->getCell().determinant());
-      const double pSad = volumeSad * sigmaSad(1, 0);
+      const double barrier = eSad - eMin;
       Matrix3d external = Matrix3d::Zero();
       if (variable) {
         external = -sigmaMin;
@@ -863,59 +1151,55 @@ TEST_CASE("copper dumbbell saddle follows the shear-aligned switch",
         external(0, 2) = 0.0;
         external(1, 2) = 0.0;
       }
-      const double enthalpy = enthalpyOf(eSad, h0, matter->getCell(), external);
+      const double enthalpy =
+          enthalpyOf(eSad, h0, matter->getCell(), external) - eMin;
       const Eigen::Vector3d axis = pairAxis(*matter);
       const auto [sad100, sad110] = angles(axis);
-      auto curveParams = local;
-      if (!variable) {
-        auto frozen = ParametersLoadAccess::solid_state_options(curveParams).mask;
-        frozen.fill(0);
-        ParametersLoadAccess::solid_state_options(curveParams).mask = frozen;
+      const int nNeg = search.negativeModes();
+      const bool rejected = search.saddleRejected();
+      const bool accepted =
+          status == eonc::MinModeSaddleSearch::STATUS_GOOD && !rejected &&
+          nNeg == 1 && search.getEigenvalue() < 0.0;
+      const bool switched = accepted && min100 < 25.0 && sad110 < 15.0 &&
+                            axis[0] * axis[1] > 0.0 && sad100 > min100 + 10.0;
+      std::string result = "index 1";
+      if (reactantNeg > 0) {
+        result = "no barrier / reactant unstable";
+      } else if (!accepted) {
+        result = "no barrier / no saddle";
       }
-      eonc::solid::Chart chart(*matter, eonc::solid::optionsFrom(curveParams));
-      if (variable) {
-        chart.preconditionCell(*matter);
-      }
-      const auto curv = chart.lowestCurvatures(
-          *matter, chart.packAtoms(search.getEigenvector()), curveParams);
-      int nNeg = 0;
-      if (curv[0] < -0.02) {
-        ++nNeg;
-      }
-      if (curv[1] < -0.02) {
-        ++nNeg;
-      }
-      const bool switched = status == eonc::MinModeSaddleSearch::STATUS_GOOD &&
-                            search.getEigenvalue() < 0.0 && min100 < 25.0 &&
-                            sad110 < 15.0 && axis[0] * axis[1] > 0.0 &&
-                            sad100 > min100 + 10.0;
-      table << gamma << " " << (variable ? "variable" : "fixed") << " " << calls
-            << " " << (eSad - eMin) << " " << (enthalpy - eMin) << " "
-            << sigmaSad(1, 0) << " " << pMin << " " << pSad << " " << nNeg
-            << " " << static_cast<int>(switched) << " " << status << " "
-            << min100 << " " << sad100 << " " << sad110 << " " << curv[0]
-            << " " << curv[1] << "\n";
+      table << gamma << "," << (variable ? "variable" : "fixed") << ","
+            << calls << "," << search.getIndexForceCalls() << "," << barrier
+            << "," << enthalpy << "," << search.getEigenvalue() << ","
+            << matter->getForces().cwiseAbs().maxCoeff() << "," << nNeg << ","
+            << reactantNeg << "," << reactantLowest << "," << status << ","
+            << static_cast<int>(rejected) << "," << static_cast<int>(switched)
+            << "," << result << "\n";
       table.flush();
       INFO("shear " << gamma << " variable " << variable << " status " << status
-                    << " calls " << calls << " barrier " << (eSad - eMin)
-                    << " enthalpy " << (enthalpy - eMin) << " stress "
-                    << sigmaSad(1, 0) << " Pmin " << pMin << " Psad " << pSad
-                    << " nNeg " << nNeg << " switch " << switched << " sad100 "
-                    << sad100 << " sad110 " << sad110 << " curv " << curv[0]
-                    << " " << curv[1]);
-      REQUIRE(status == eonc::MinModeSaddleSearch::STATUS_GOOD);
-      REQUIRE(search.getEigenvalue() < 0.0);
-      REQUIRE(nNeg == 1);
-      if (!variable) {
-        REQUIRE(eSad - eMin == Catch::Approx(fixedRef[fixedSlot]).margin(0.005));
-        REQUIRE(switched);
+                    << " calls " << calls << " index "
+                    << search.getIndexForceCalls() << " reactant_calls "
+                    << reactantCalls << " barrier " << barrier << " enthalpy "
+                    << enthalpy << " n_neg " << nNeg << " reactant_n_neg "
+                    << reactantNeg << " reactant_lowest " << reactantLowest
+                    << " switch " << switched << " result " << result
+                    << " sad100 " << sad100 << " sad110 " << sad110);
+      if (reactantNeg > 0) {
+        CHECK(result == "no barrier / reactant unstable");
+      } else if (!variable) {
+        CHECK(accepted);
+        CHECK(barrier == Catch::Approx(fixedRef[fixedSlot]).margin(0.005));
+        CHECK(switched);
         ++fixedSlot;
       } else if (variableSlot < 4) {
-        REQUIRE(enthalpy - eMin ==
-                Catch::Approx(enthalpyRef[variableSlot]).margin(0.005));
-        REQUIRE(switched);
+        CHECK(accepted);
+        CHECK(enthalpy == Catch::Approx(enthalpyRef[variableSlot]).margin(0.005));
+        CHECK(switched);
         ++variableSlot;
       } else {
+        CHECK(accepted);
+        CHECK_FALSE(switched);
+        CHECK(std::abs(enthalpy) < 1e-3);
         ++variableSlot;
       }
     };
@@ -931,6 +1215,8 @@ TEST_CASE("solid state ini keys stay off unless set", "[solid_state]") {
   REQUIRE(params.solid_state_options().mask[1] == 1);
   REQUIRE(params.solid_state_options().max_strain_step == Catch::Approx(0.05));
   REQUIRE(params.solid_state_options().max_strain == Catch::Approx(0.20));
+  REQUIRE(params.solid_state_options().index_check);
+  REQUIRE(params.solid_state_options().flat == Catch::Approx(0.005));
   const char *text = "[Solid State]\n"
                      "enabled = true\n"
                      "weight = 1.5\n"
@@ -939,6 +1225,8 @@ TEST_CASE("solid state ini keys stay off unless set", "[solid_state]") {
                      "mask = 1 0 1 0 0 1\n"
                      "max_strain_step = 0.04\n"
                      "max_strain = 0.15\n"
+                     "index_check = false\n"
+                     "flat = 0\n"
                      "[EAM]\n"
                      "file = cu.setfl\n";
   REQUIRE(params.load_ini_text(text) == 0);
@@ -950,6 +1238,8 @@ TEST_CASE("solid state ini keys stay off unless set", "[solid_state]") {
   REQUIRE(params.solid_state_options().mask[5] == 1);
   REQUIRE(params.solid_state_options().max_strain_step == Catch::Approx(0.04));
   REQUIRE(params.solid_state_options().max_strain == Catch::Approx(0.15));
+  REQUIRE_FALSE(params.solid_state_options().index_check);
+  REQUIRE(params.solid_state_options().flat == Catch::Approx(0.0));
   REQUIRE(params.potential_options().eamFile == "cu.setfl");
   REQUIRE_FALSE(eonc::solid::movesCell(eonc::Parameters{}));
 }

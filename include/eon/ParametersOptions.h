@@ -760,6 +760,15 @@ struct solid_state_options_t {
   /// Largest absolute strain relative to the cell at the start of the run.
   /// Crossing it is an error: the cell is running away.
   double max_strain{0.20};
+  /// Count projected eigenvalues when a solid-state dimer meets its
+  /// force tolerance, and keep only a point with exactly one below
+  /// -1e-4. On by default. A search with `enabled` false ignores it.
+  bool index_check{true};
+  /// A negative curvature λ stays running until the largest force
+  /// component is at most flat*|λ| (and still at most the normal
+  /// tolerance). 0 leaves the normal tolerance alone. Ignored unless
+  /// `enabled` is true.
+  double flat{0.005};
 };
 
 // [Molecular Dynamics] //

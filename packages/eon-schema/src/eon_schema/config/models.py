@@ -3450,6 +3450,25 @@ class SolidStateConfig(BaseModel):
             "cell run away."
         ),
     )
+    index_check: bool = Field(
+        default=True,
+        description=(
+            "When the solid-state dimer meets its force tolerance, accept "
+            "the point only if the projected joint Hessian has exactly one "
+            "eigenvalue below -1e-4. A higher-index point is left along its "
+            "softest negative mode. On by default. A search with enabled "
+            "false does not use it."
+        ),
+    )
+    flat: float = Field(
+        default=0.005,
+        description=(
+            "While the curvature λ is negative, keep iterating until the "
+            "largest force component is at most flat*|λ| as well as the "
+            "normal tolerance. 0 leaves that tolerance unchanged. Ignored "
+            "unless enabled is true."
+        ),
+    )
 
 
 class EamConfig(BaseModel):

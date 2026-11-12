@@ -20,6 +20,7 @@
 #include <iosfwd>
 #include <memory>
 #include <string_view>
+#include <vector>
 
 namespace eonc {
 class JobResultEnvelope;
@@ -43,6 +44,32 @@ struct Options {
   double maxStrainStep{0.05};
   /// Largest |ε| relative to the starting cell. Past this the update throws.
   double maxStrain{0.20};
+};
+
+/// How a converged solid-state dimer checks that the stationary point
+/// is index 1. The defaults match the check used on the copper shear
+/// rows: eight lowest modes, a central step of 1e-4, and a negative
+/// eigenvalue below -1e-4. Six escapes of length 0.02 leave a
+/// higher-index point along its softest negative mode.
+struct IndexCheck {
+  int lowest{8};
+  double negative{-1.0e-4};
+  double step{1.0e-4};
+  int escapes{6};
+  double escape{0.02};
+  /// Rigid translations of the free atoms are removed before the count.
+  bool project{true};
+};
+
+/// Lowest projected eigenvalues, ascending. Eigenvectors are columns.
+struct IndexSpectrum {
+  int negative{0};
+  std::vector<double> values;
+  MatrixXd vectors;
+  /// Generalized evaluations spent on the Hessian actions.
+  int evaluations{0};
+
+  [[nodiscard]] bool isFirstOrder() const { return negative == 1; }
 };
 
 [[nodiscard]] Options optionsFrom(const Parameters &params);
@@ -115,6 +142,14 @@ public:
   lowestCurvatures(Matter &matter, VectorXd direction,
                    const Parameters &params) const;
 
+  /// Diagonal scale on the cell block. The index check clears it so the
+  /// Hessian is the physical Jacobian metric.
+  [[nodiscard]] std::vector<double> cellScales() const { return cellScale_; }
+  void setCellScales(std::vector<double> scales);
+
+  /// E + V0 σ_ext : ε. The upper triangle of ε does no work.
+  [[nodiscard]] double enthalpy(Matter &matter) const;
+
 private:
   Options options_;
   Matrix3d h0_{Matrix3d::Identity()};
@@ -151,9 +186,42 @@ struct SearchState {
   int status{0};
   int iteration{0};
   int forceCalls{0};
+  /// Potential calls spent building projected Hessians and walking off
+  /// a higher-index point. Already included in `forceCalls`.
+  int indexForceCalls{0};
+  /// Negative projected eigenvalues at an accepted or rejected point.
+  /// -1 when the check did not run.
+  int negativeModes{-1};
+  /// The force tolerance was met and the projected Hessian is not index 1.
+  bool rejected{false};
 
   explicit SearchState(Chart chartIn) : chart(std::move(chartIn)) {}
 };
+
+/// Projected spectrum of the joint Hessian at the current geometry.
+/// The matter is put back when the differences are done.
+[[nodiscard]] IndexSpectrum indexAt(Matter &matter, const Chart &chart,
+                                    const IndexCheck &check = {});
+
+/// Same count on a frozen cell: the atomic Hessian, with rigid
+/// translations projected out when `check.project` is set.
+[[nodiscard]] IndexSpectrum indexAtoms(Matter &matter,
+                                       const IndexCheck &check = {});
+
+/// Step off a higher-index point along its softest negative mode, on
+/// the downhill side, until that curvature is no longer below the
+/// cutoff. `hardMode` is the lowest eigenvector. False when neither
+/// sign descends, or the walk returns to a point already left.
+[[nodiscard]] bool leaveHigherIndex(Matter &matter, const Chart &chart,
+                                    VectorXd &hardMode,
+                                    const IndexSpectrum &spectrum,
+                                    const IndexCheck &check,
+                                    std::vector<VectorXd> &rejectedAt);
+
+[[nodiscard]] bool
+leaveHigherIndexAtoms(Matter &matter, VectorXd &hardMode,
+                      const IndexSpectrum &spectrum, const IndexCheck &check,
+                      std::vector<VectorXd> &rejectedAt);
 
 [[nodiscard]] std::unique_ptr<SearchState>
 runMinMode(Matter &matter, AtomMatrix mode, double reactantEnergy,

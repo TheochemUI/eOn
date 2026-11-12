@@ -1103,6 +1103,13 @@ int load_ini(const INIReader &ini, Parameters &params) {
     cell.max_strain_step =
         ini.GetReal("Solid State", "max_strain_step", cell.max_strain_step);
     cell.max_strain = ini.GetReal("Solid State", "max_strain", cell.max_strain);
+    cell.index_check =
+        ini.GetBoolean("Solid State", "index_check", cell.index_check);
+    cell.flat = ini.GetReal("Solid State", "flat", cell.flat);
+    if (!(cell.flat >= 0.0) || !std::isfinite(cell.flat)) {
+      throw std::invalid_argument(
+          "[Solid State] flat must be finite and non-negative");
+    }
   }
   ParametersLoadAccess::potential_options(params).eamFile =
       ini.Get("EAM", "file",

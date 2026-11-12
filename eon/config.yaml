@@ -2995,6 +2995,14 @@ Solid State:
             kind: float
             default: 0.20
 
+        index_check:
+            kind: boolean
+            default: true
+
+        flat:
+            kind: float
+            default: 0.005
+
 ################################################################################
 
 EAM:

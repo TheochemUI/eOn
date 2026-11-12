@@ -235,7 +235,9 @@
         "stress",
         "mask",
         "max_strain_step",
-        "max_strain"
+        "max_strain",
+        "index_check",
+        "flat"
       ]
     },
     "EAM": {

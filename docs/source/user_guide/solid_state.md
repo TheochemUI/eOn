@@ -72,6 +72,20 @@ are an LBFGS pair preconditioner and rigid-body projection. This is not a
 change to the solid-state band: dynamic NEB and image freezing are not part
 of this search.
 
+`index_check` is on by default for this search, including a mask that
+freezes every strain. A historical dimer with `enabled` false does not run
+it. When the force tolerance is met, the search builds the joint Hessian
+by central differences in the chart `J = V^{1/3} N^{1/6}` and projects out
+rigid translations. The point is kept only when exactly one eigenvalue lies
+below -1e-4. A higher-index point is left along its softest negative mode,
+and the search continues. If nothing is accepted, the result is no barrier
+rather than that point. The potential calls spent on the Hessian and on
+that walk are counted apart from the dimer steps. `flat` is 0.005 by
+default. While the curvature {math}`\lambda` is negative, the largest
+force component must also fall to {math}`0.005|\lambda|`, as well as under
+the usual tolerance. Set `flat` to 0 to leave the usual tolerance alone,
+or `index_check` to false to accept the minimum-mode test by itself.
+
 ## Minimizer
 
 The same chart is the objective of a local minimization when `enabled` is
@@ -101,9 +115,18 @@ barriers. The defect is a <100> dumbbell on one site of a 3x3x3 cell,
 [0, 0, 1]]`, and the positions move with it, so `x' = x + gamma y`.
 The fixed-cell barrier falls as that shear grows. A variable-cell
 search sets `stress` to the negative of the stress at the minimum, so
-the enthalpy is stationary there. At 5% that search stops on a soft
-mode beside the tilted minimum. The fixed cell still reaches the
-shear-aligned <110> switch.
+the enthalpy is stationary there. Both searches use `index_check` and
+`flat = 0.005`. The fixed-cell barriers are 0.4738130973207717,
+0.2435460895545134, 0.14829201811522807, 0.067862165555311549 and
+0.0077937374149428251 eV. The variable-cell enthalpy barriers at 0, 2, 3
+and 4% are 0.34700693547728179, 0.16255571725275786, 0.088051942122888249
+and 0.027924583692424676 eV. Each of those points has one projected
+eigenvalue below -1e-4 and is the shear-aligned <110> switch. At 5%
+variable the reactant is a minimum (lowest projected eigenvalue
+0.0028631813667541446) and the search stops on an index-1 point whose
+enthalpy is 8.1226496035924356e-6 eV above that reactant and which is
+not the switch, so that row is not a barrier. Raw force calls and
+`n_neg` are in `benchmarks/solid_dimer_cu.csv`.
 
 `max_strain_step` limits how far any strain component may move in one
 update. `max_strain` is the largest strain relative to the cell at the
@@ -132,6 +155,8 @@ stress = 0 0.001 0 0.001 0 0 0 0 0
 mask = 1 1 1 1 1 1
 max_strain_step = 0.05
 max_strain = 0.20
+index_check = true
+flat = 0.005
 
 [Saddle Search]
 min_mode_method = dimer

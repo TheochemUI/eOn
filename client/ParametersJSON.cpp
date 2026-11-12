@@ -223,6 +223,8 @@ json to_json(const Parameters &p) {
         {"mask", std::move(mask)},
         {"max_strain_step", cell.max_strain_step},
         {"max_strain", cell.max_strain},
+        {"index_check", cell.index_check},
+        {"flat", cell.flat},
     };
   }
   j["EAM"] = {{"file", ParametersLoadAccess::potential_options(p).eamFile}};
@@ -814,6 +816,12 @@ void from_json(const json &j, Parameters &p) {
     }
     JSON_OPT(s, "max_strain_step", cell.max_strain_step);
     JSON_OPT(s, "max_strain", cell.max_strain);
+    JSON_OPT(s, "index_check", cell.index_check);
+    JSON_OPT(s, "flat", cell.flat);
+    if (!(cell.flat >= 0.0) || !std::isfinite(cell.flat)) {
+      throw std::invalid_argument(
+          "[Solid State] flat must be finite and non-negative");
+    }
   }
   if (j.contains("EAM")) {
     JSON_OPT(j.at("EAM"), "file",
