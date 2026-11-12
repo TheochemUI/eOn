@@ -12,6 +12,7 @@
 #pragma once
 #include "Job.h"
 #include "Parameters.h"
+#include "eon/InstantonExternal.h"
 
 namespace eonc {
 
