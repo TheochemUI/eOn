@@ -48,6 +48,10 @@ of thermostat can be set in the **[Dynamics]** section.
 - The {any}`temperature <eon.schema.MainConfig.temperature>` for the dynamics
   run is set in the **[Main]** section.
 
+A continuous run (`-C`) on a queued communicator waits 10 seconds
+between passes. A local communicator does not wait, because the client
+finishes before the pass returns.
+
 ## Configuration
 
 ```{code-block} ini
