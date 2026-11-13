@@ -35,6 +35,9 @@ climbed to the same saddle would have ended the same way.
 The key is read by both the server and the client; with `false` the server
 sends no list and the client ignores one.
 
+A submit that returns in the same clock tick is still a successful submit.
+An interrupt during submit is not recorded as a failed submit.
+
 ## Configuration
 
 ```{code-block} ini

@@ -280,11 +280,17 @@ class ClientMinModeExplorer(MinModeExplorer):
 
         try:
             self.comm.submit_jobs(searches, invariants)
-            t2 = time()
-            logger.info( "Created " + str(len(searches)) + " searches")
-            logger.debug( "Created %.2f searches per second", num_to_make/(t2-t1))
-        except:
+        except Exception:
             logger.exception("Failed to submit searches")
+        else:
+            t2 = time()
+            logger.info("Created " + str(len(searches)) + " searches")
+            elapsed = t2 - t1
+            if elapsed > 0:
+                logger.debug(
+                    "Created %.2f searches per second",
+                    num_to_make / elapsed,
+                )
         self.job_table.write()
 
     def register_results(self):
@@ -584,11 +590,17 @@ class ServerMinModeExplorer(MinModeExplorer):
 
         try:
             self.comm.submit_jobs(jobs, invariants)
-            t2 = time()
-            logger.info( "Created " + str(len(jobs)) + " searches")
-            logger.debug( "Created " + str(num_to_make/(t2-t1)) + " searches per second")
-        except:
+        except Exception:
             logger.exception("Failed to submit searches")
+        else:
+            t2 = time()
+            logger.info("Created " + str(len(jobs)) + " searches")
+            elapsed = t2 - t1
+            if elapsed > 0:
+                logger.debug(
+                    "Created %.2f searches per second",
+                    num_to_make / elapsed,
+                )
 
 
 class ProcessSearch:
