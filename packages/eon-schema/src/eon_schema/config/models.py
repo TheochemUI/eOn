@@ -319,8 +319,8 @@ class BasinHoppingConfig(BaseModel):
         default=False, description="Displace only one atom per step."
     )
     jump_max: int = Field(
-        default=0,
-        description="Number of consecutive rejected steps after which jump steps should be taken.",
+        default=10,
+        description="Number of consecutive rejected steps after which jump steps should be taken. The default is 10, the same count the client uses when the key is omitted.",
     )
     """
     This provides a more global search when the structure is stuck in a certain

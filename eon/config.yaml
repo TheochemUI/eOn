@@ -969,7 +969,7 @@ Basin Hopping:
 
         jump_max:
             kind: int
-            default: 0
+            default: 10
 
         significant_structure:
             kind: boolean
