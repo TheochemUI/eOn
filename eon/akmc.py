@@ -249,8 +249,10 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
                 break
             unconfident_exit_taken = True
 
-        # Do a KMC step.
+        # Do a KMC step. The exit process can belong to another minimum.
+        # The transition still starts at the state this call occupies.
         steps += 1
+        occupied_state = current_state
         if amsel_exit is not None:
             mean_time = amsel_exit.mean_time
             exit_state = _resolve_akmc_state(states, amsel_exit.exit_number)
@@ -362,9 +364,9 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
 
         # Pass transition information to extension schemes
         if config.askmc_on:
-            asKMC.register_transition(current_state, next_state)
+            asKMC.register_transition(occupied_state, next_state)
         if config.sb_on:
-            superbasining.register_transition(current_state, next_state)
+            superbasining.register_transition(occupied_state, next_state)
 
         if amsel_exit is not None:
             proc_id_out = amsel_exit.proc_id
