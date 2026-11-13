@@ -291,6 +291,24 @@ class EnergyLevel(SuperbasinScheme):
         for i in end_statelist:
             self.levels[i] += self.get_energy_increment(e_min, e_global_min, saddle_energy)
 
+        # Energy-level scheme (the energy lid). A state's level starts at
+        # the energy of its minimum and rises on each visit. Two minima
+        # merge when either level exceeds the saddle between them
+        # (Pedersen, Berthet, and Jónsson, Lect. Notes Comput. Sci. 7134,
+        # 34-44, 2012; the saddle-and-minima scheme in Chill et al.,
+        # Modelling Simul. Mater. Sci. Eng. 22, 055002, 2014). The
+        # comparison tests the product energy against the lid once the
+        # product's process table exists. An empty table is an absorbing
+        # product with no escape found yet: merging it gives the transient
+        # set a zero rate-sum, and Superbasin.step cannot select an exit.
+        # The increment above records the visit. The merge waits.
+        if not end_state.get_process_table():
+            logger.debug(
+                "energy lid deferred: state %s has an empty process table",
+                end_state.number,
+            )
+            return
+
         # merge states if one of the two levels is higher than the saddle energy
         largest_level = max(self.levels[start_state], self.levels[end_state])
 
