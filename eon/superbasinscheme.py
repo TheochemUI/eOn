@@ -5,6 +5,7 @@ logger = logging.getLogger('superbasinscheme')
 
 import math
 
+from eon import fileio as io
 from eon import superbasin
 
 class SuperbasinScheme:
@@ -191,7 +192,8 @@ class TransitionCounting(SuperbasinScheme):
                 "%d %d\n" % (end_state.number, self.count[start_state][end_state])
                 for end_state in self.count[start_state]
             ]
-            data_path.write_text("".join(lines))
+            with io.atomic_write(str(data_path)) as handle:
+                handle.write("".join(lines))
 
     def read_data(self):
         self.count = {}
@@ -315,7 +317,8 @@ class EnergyLevel(SuperbasinScheme):
         logger.debug('writing')
         for i in self.levels:
             data_path = Path(i.path) / self.config.sb_state_file
-            data_path.write_text("%f\n" % self.levels[i])
+            with io.atomic_write(str(data_path)) as handle:
+                handle.write("%f\n" % self.levels[i])
 
 
 class RateThreshold(SuperbasinScheme):
