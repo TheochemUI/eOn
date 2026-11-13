@@ -11,11 +11,13 @@
       "type": "number"
     },
     "converged_angle": {
-      "default": 5.0,
+      "default": 0.08,
+      "description": "Initial rotation convergence. The client default is 0.08. This is not the classical dimer angle.",
       "type": "number"
     },
     "relaxation_converged_angle": {
-      "default": 0.005,
+      "default": 0.001,
+      "description": "Rotation convergence after relaxation. The client default is 0.001.",
       "type": "number"
     },
     "max_initial_rotation_iterations": {
