@@ -489,6 +489,58 @@ def _partition(decision: Mapping[str, Any]) -> tuple[list[int], list[int], list]
     return transient, absorbing, rates
 
 
+def _settled_lid(decision: Mapping[str, Any], fallback: float) -> float:
+    """Cutoff discover used for the partition it returned.
+
+    ``discover_decide_status`` stores ``(e_min_final, retighten_steps,
+    floor_hit)`` at index 9. The exit process uses that cutoff. The
+    caller's ``e_min_init`` is only where the search started.
+    """
+    raw = decision.get("raw")
+    if isinstance(raw, (list, tuple)) and len(raw) > 9:
+        record = raw[9]
+        if isinstance(record, (list, tuple)) and record:
+            try:
+                lid = float(record[0])
+            except (TypeError, ValueError):
+                return float(fallback)
+            if math.isfinite(lid):
+                return lid
+    return float(fallback)
+
+
+def _rates_at_lid(
+    state_dict: Mapping[int, Any],
+    transient: list[int],
+    absorbing: list[int],
+    rates: list,
+    lid: float,
+) -> tuple[list[int], list]:
+    """Keep in-basin edges, and exits ``_exit_process`` accepts at ``lid``.
+
+    An edge into the transient set stays. An edge into an absorbing state
+    stays only when that state has a process at or above ``lid``. Dropping
+    the in-basin edges would leave a member with no path out.
+    """
+    allowed: list[int] = []
+    for absorbing_id in absorbing:
+        if _exit_process(state_dict, transient, int(absorbing_id), lid) is not None:
+            allowed.append(int(absorbing_id))
+    if not allowed:
+        return [], []
+    allowed_set = set(allowed)
+    transient_set = {int(item) for item in transient}
+    kept_absorbing = [int(item) for item in absorbing if int(item) in allowed_set]
+    kept_rates = [
+        item
+        for item in rates
+        if int(item[1]) in transient_set or int(item[1]) in allowed_set
+    ]
+    if not kept_rates:
+        return [], []
+    return kept_absorbing, kept_rates
+
+
 def _sample_index(weights: list[float], draw: float) -> int | None:
     total = 0.0
     for weight in weights:
@@ -538,6 +590,17 @@ def _invoke_kernel(
     return float(result.t_exit), [float(x) for x in result.weights], True
 
 
+def _kernel_ready(got, absorbing: list[int]) -> bool:
+    if got is None:
+        return False
+    clock, weights, _time_is_sample = got
+    return (
+        len(weights) == len(absorbing)
+        and math.isfinite(clock)
+        and clock >= 0.0
+    )
+
+
 def _kernel_exit(
     prefer: str,
     transient: list[int],
@@ -546,27 +609,36 @@ def _kernel_exit(
     entry: int,
     uniform: Callable[[], float],
 ) -> tuple[str, int, float, bool] | None:
-    """Pick one absorbing state. MRM is the mean clock. FPTA is one sample."""
+    """Pick one absorbing state. MRM is the mean clock. FPTA is one sample.
+
+    The caller's generator is touched only after a probe at ``0.5`` has
+    shown that the kernel can answer. A kernel that cannot answer, and a
+    caller that then returns no exit, leaves that generator where it was.
+    """
     order = (prefer, "fpta" if prefer == "mrm" else "mrm")
     errors: list[str] = []
     for name in order:
         if name not in _EXIT_KERNELS:
             continue
         try:
-            draw = float(uniform())
+            probe = _invoke_kernel(name, transient, absorbing, rates, entry, 0.5)
+        except Exception as exc:
+            errors.append("%s: %s: %s" % (name, type(exc).__name__, exc))
+            continue
+        if not _kernel_ready(probe, absorbing):
+            errors.append("%s: bad result" % name)
+            continue
+        try:
             # FPTA rejects the closed ends of the unit interval.
-            draw = min(max(draw, 1e-16), 1.0 - 1e-16)
+            draw = min(max(float(uniform()), 1e-16), 1.0 - 1e-16)
             got = _invoke_kernel(name, transient, absorbing, rates, entry, draw)
         except Exception as exc:
             errors.append("%s: %s: %s" % (name, type(exc).__name__, exc))
             continue
-        if got is None:
-            errors.append("%s: missing" % name)
-            continue
-        clock, weights, time_is_sample = got
-        if len(weights) != len(absorbing) or not math.isfinite(clock) or clock < 0.0:
+        if not _kernel_ready(got, absorbing):
             errors.append("%s: bad result" % name)
             continue
+        clock, weights, time_is_sample = got
         index = _sample_index(weights, float(uniform()))
         if index is None:
             errors.append("%s: empty weights" % name)
@@ -614,10 +686,15 @@ def _exit_process(
     state_dict: Mapping[int, Any],
     transient: list[int],
     absorbing_id: int,
-    e_min_init: float,
+    lid: float,
 ) -> tuple[int, Any, float, float] | None:
-    """Fastest exit process from the transient set into ``absorbing_id``."""
-    cutoff = float(e_min_init)
+    """Fastest exit process from the transient set into ``absorbing_id``.
+
+    ``lid`` is the cutoff that built the partition, not the value the
+    search started from. A barrier below that cutoff is still inside
+    the basin.
+    """
+    cutoff = float(lid)
     best: tuple[float, int, Any, float] | None = None
     for number in transient:
         state = state_dict.get(int(number))
@@ -717,18 +794,32 @@ def amsel_discover_exit(
         transient, absorbing, rates = parts
         if entry not in transient:
             transient = [entry] + [n for n in transient if n != entry]
+        # The same cutoff discover settled on. e_min_init is where the
+        # search started; a retightened floor is lower.
+        lid = _settled_lid(decision, knobs["e_min_init"])
+    else:
+        transient, absorbing, rates = direct
+        lid = float(knobs["e_min_init"])
+    # One reactant and no edge below the settled lid is not a superbasin.
+    # The plain clock is that exit. Drawing here would spend the uniforms
+    # the plain step needs, or replace it with a different pairing.
+    if direct is None and len(transient) == 1 and not _has_in_basin_edge(view, lid):
+        return None
+    absorbing, rates = _rates_at_lid(view.state_dict, transient, absorbing, rates, lid)
+    if not absorbing:
+        return None
     prefer = "mrm" if bool(getattr(config, "debug_use_mean_time", False)) else "fpta"
     chosen = _kernel_exit(prefer, transient, absorbing, rates, entry, uniform)
     if chosen is None:
         return None
     kernel, absorbing_id, clock, time_is_sample = chosen
-    proc = _exit_process(view.state_dict, transient, absorbing_id, knobs["e_min_init"])
+    proc = _exit_process(view.state_dict, transient, absorbing_id, lid)
     if proc is None:
         logger.warning(
-            "amsel %s absorbing state %s has no exit process at or above e_min_init %.3f eV",
+            "amsel %s absorbing state %s has no exit process at or above the settled lid %.3f eV",
             kernel,
             absorbing_id,
-            knobs["e_min_init"],
+            lid,
         )
         return None
     exit_number, proc_id, barrier, rate = proc
