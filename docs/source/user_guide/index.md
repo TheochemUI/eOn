@@ -74,9 +74,10 @@ Spellings that do not match a client job are `finite_differences` (use
 <project:finite_difference.md>), `molecular_dynamics` (use `dynamics`),
 `displacement_sampling`, `akmc`, and `hyperdynamics` (use
 `safe_hyperdynamics`). `escape_rate` runs on the server, and the schema marks
-that entry TODO. <project:oh_tst.md> is a client job and is absent from the
-schema list. <project:global_optimization.md> is minima hopping, not basin
-hopping. These method options share the `job` key.
+that entry TODO. A new product records its own transition time, and its
+rate is the reciprocal of that time. <project:oh_tst.md> is a client job and
+is absent from the schema list. <project:global_optimization.md> is minima
+hopping, not basin hopping. These method options share the `job` key.
 
 There are specific options for each method, and a set of general options which
 are shared between methods. Examples of these general options include

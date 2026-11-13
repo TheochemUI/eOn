@@ -204,7 +204,6 @@ def accumulate_end_state(product, state, result, config):
     table_path = end_state_table_path(config, state.number)
     rows = load_end_state_table(table_path)
     trans_time = float(result["results"]["transition_time_s"])
-    time_check = max((float(r["time"]) for r in rows), default=0.0)
     matched_pid = find_matching_process(product, state, config)
 
     if matched_pid is not None:
@@ -233,13 +232,12 @@ def accumulate_end_state(product, state, result, config):
     else:
         process_id = state.add_process(result)
         next_state = max((int(r["state"]) for r in rows), default=-1) + 1
-        new_time = time_check + trans_time
         rows.append(
             {
                 "state": next_state,
                 "views": 1,
-                "rate": (1.0 / new_time) if new_time else 0.0,
-                "time": new_time,
+                "rate": (1.0 / trans_time) if trans_time else 0.0,
+                "time": trans_time,
                 "process_id": process_id,
             }
         )
