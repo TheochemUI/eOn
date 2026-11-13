@@ -44,6 +44,8 @@ the factor.
 - The occasional jumping variant of {cite:t}`bh-iwamatsuBasinHoppingOccasional2004`
   is also implemented, and is controlled by
   {any}`jump_max <eon.schema.BasinHoppingConfig.jump_max>`.
+- The displacement algorithm key is `displacement_algorithm`. The default
+  is `standard`.
 
 ## Configuration
 
