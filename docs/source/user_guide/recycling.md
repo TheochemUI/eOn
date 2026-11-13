@@ -34,6 +34,9 @@ searches in the region around the atoms that moved significantly from state
 computational costs. If this region is local, the overall cost does not
 increase with the total system size.
 
+Recycling metadata is replaced in one step. A write that stops partway
+leaves the previous file.
+
 ## Configuration
 
 ```{code-block} ini
