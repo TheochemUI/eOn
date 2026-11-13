@@ -56,6 +56,12 @@ the factor.
 .. autopydantic_model:: eon.schema.BasinHoppingConfig
 ```
 
+## Work-unit id
+
+`wuid.dat` is stored in the results directory, next to `bh.log`. The file
+is replaced in one step, so a killed rewrite leaves the previous id in
+place. Reset removes that same file.
+
 ## References
 
 
