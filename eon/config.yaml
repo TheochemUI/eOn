@@ -1758,7 +1758,7 @@ Saddle Search:
 
         displace_radius:
             kind: float
-            default: 5.0
+            default: 4.0
 
         max_single_displace:
             kind: float

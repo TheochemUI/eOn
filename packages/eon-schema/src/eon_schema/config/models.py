@@ -1278,8 +1278,8 @@ class SaddleSearchConfig(BaseModel):
         description="Maximum step size for saddle-search displacement updates.",
     )
     displace_radius: float = Field(
-        default=5.0,
-        description="Atoms within this distance of the epicenter will be displaced.",
+        default=4.0,
+        description="Atoms within this distance of the epicenter will be displaced. The default is 4 angstroms, the same distance the client uses when the key is omitted.",
     )
     displace_magnitude: float = Field(
         default=0.1,
