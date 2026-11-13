@@ -225,6 +225,12 @@ class Structure:
         self.atom_ids = np.concatenate(
             (self.atom_ids, np.array([atom_id], dtype=np.uint64))
         )
+        self.file_to_struct = np.concatenate(
+            (
+                np.asarray(self.file_to_struct, dtype=np.int64),
+                np.array([len(self) - 1], dtype=np.int64),
+            )
+        )
 
     # --- readcon ConFrame bridge (canonical I/O type) ---
 
