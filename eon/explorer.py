@@ -864,7 +864,7 @@ class ProcessSearch:
 
     def save_result(self, result):
         dir_path = Path(self.config.path_incomplete) / result["name"]
-        dir_path.mkdir(parents=True)
+        dir_path.mkdir(parents=True, exist_ok=True)
         for k in result:
             if hasattr(result[k], "getvalue"):
                 (dir_path / k).write_text(result[k].getvalue())
