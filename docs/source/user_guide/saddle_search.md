@@ -35,7 +35,8 @@ probabilistically from several strategies, each controlled by a relative weight:
 The weights do not need to sum to 1; they are normalised internally. Setting a
 weight to 0 disables that strategy. For example, setting only
 `displace_listed_atom_weight = 1.0` and all other weights to 0 starts
-every saddle search from an atom in the explicit list.
+every saddle search from an atom in the explicit list. `displace_atom_list = None`
+is an empty list. `-1` still means every free atom.
 
 ### Radius and Magnitude
 
