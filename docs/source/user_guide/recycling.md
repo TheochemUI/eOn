@@ -34,6 +34,9 @@ searches in the region around the atoms that moved significantly from state
 computational costs. If this region is local, the overall cost does not
 increase with the total system size.
 
+Superbasin recycling reads the coarse-graining scheme name `mcamc`
+when it decides whether the state just left a superbasin.
+
 ## Configuration
 
 ```{code-block} ini
