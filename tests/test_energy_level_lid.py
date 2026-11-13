@@ -15,6 +15,7 @@ the absorption probabilities are not trivial.
 from __future__ import annotations
 
 import math
+import shutil
 import tempfile
 from pathlib import Path
 from types import SimpleNamespace
@@ -150,8 +151,10 @@ def test_empty_product_below_the_lid_stays_an_exit(monkeypatch):
     t0, t1, p_product, p_other = _exact_absorbing_chain()
     assert math.isclose(p_product + p_other, 1.0)
 
-    with tempfile.TemporaryDirectory(prefix="energy-lid-") as tmp:
-        scheme, metastable, neighbor, product, other = _build(Path(tmp))
+    root = Path(tempfile.mkdtemp(prefix="energy-lid-"))
+    scheme = None
+    try:
+        scheme, metastable, neighbor, product, other = _build(root)
         _fill_until_transient_basin(scheme, metastable, neighbor)
 
         # The hop that used to pull the empty product into the basin.
@@ -213,3 +216,8 @@ def test_empty_product_below_the_lid_stays_an_exit(monkeypatch):
         assert proc1 == 20
         assert landed1 == 2
         assert math.isclose(mean1, t1, rel_tol=1e-12, abs_tol=1e-12)
+    finally:
+        # write_data runs from EnergyLevel.__del__. Drop the scheme
+        # while the state directories still exist.
+        del scheme
+        shutil.rmtree(root, ignore_errors=True)
