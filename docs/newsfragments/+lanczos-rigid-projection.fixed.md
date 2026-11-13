@@ -1,0 +1,1 @@
+Project rigid translation and rotation modes out of Lanczos Hessian-vector products for non-periodic systems with all atoms mobile. When a projected trial direction is degenerate, Lanczos now reseeds with a direction in the projected subspace that is orthogonal to the existing Krylov basis.
