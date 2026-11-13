@@ -31,6 +31,7 @@ def _displace() -> Displace:
         displace_1d=False,
         random_mode=False,
         comp_brute_neighbors=False,
+        void_bias_fraction=0.2,
     )
     disp = Displace(reactant, 0.1, 3.0, None, config=config)
     disp.neighbors_list = [[1], [0]]
