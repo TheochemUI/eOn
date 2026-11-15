@@ -295,7 +295,13 @@ class Communicator:
                         logger.exception("Failed to read file %s" % filename)
                         continue
 
-                    # add result to results
+                    # A gap in the numbered files makes the index larger
+                    # than the count of results*.dat. Grow the slot list
+                    # so that file is still harvested.
+                    while len(results) <= index:
+                        results.append({
+                            'name': bundled_job_name(dirname, len(results)),
+                        })
                     results[index][key] = filedata
                     results[index]['number'] = index
 
