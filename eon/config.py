@@ -139,9 +139,14 @@ class ConfigClass:
                                         sys.stderr.write('option "%s" of section "%s" should be a float\n' %(o,psection))
                                 elif k.kind == "boolean":
                                     booleans = ['True', 'true', 'T', 't', '0', 'False', 'false', 'F', 'f', '1']
-                                    if parser.get(psection,k.name) not in booleans:
+                                    raw_bool = parser.get(psection, k.name)
+                                    if raw_bool not in booleans:
                                         config_error = True
                                         sys.stderr.write('option "%s" of section "%s" should be boolean\n' %(o,psection))
+                                    elif raw_bool in ('T', 't'):
+                                        parser.set(psection, k.name, 'true')
+                                    elif raw_bool in ('F', 'f'):
+                                        parser.set(psection, k.name, 'false')
                                 elif k.kind == "string" and len(k.values) !=0:
                                     values = k.values
                                     raw = parser.get(psection, k.name)
