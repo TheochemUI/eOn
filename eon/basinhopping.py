@@ -9,7 +9,6 @@ np.seterr(divide="raise", over="raise", under="print", invalid="raise")
 import optparse
 import shutil
 import sys
-import random
 from pathlib import Path
 
 from eon import version
@@ -36,7 +35,8 @@ class BHStates:
         # stable minimum.
         self.energy_table.rows.sort(key=lambda r: r['energy'])
         lowest_N = self.energy_table.rows[:N]
-        i = random.choice(lowest_N)['state']
+        # ConfigClass seeds numpy, not the stdlib generator.
+        i = lowest_N[int(np.random.randint(len(lowest_N)))]['state']
         minimum = Path(self.config.path_states) / str(i) / "minimum.con"
         return StringIO(minimum.read_text())
 

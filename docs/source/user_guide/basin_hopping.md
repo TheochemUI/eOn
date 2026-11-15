@@ -51,6 +51,8 @@ so far. A pool size of 0 keeps using the original `pos.con`.
 - The occasional jumping variant of {cite:t}`bh-iwamatsuBasinHoppingOccasional2004`
   is also implemented, and is controlled by
   {any}`jump_max <eon.schema.BasinHoppingConfig.jump_max>`.
+- The reactant drawn from the stored minima follows `random_seed` on the
+  numpy generator. The same seed repeats the same draw.
 
 ## Configuration
 
