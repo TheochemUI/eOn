@@ -1,0 +1,1 @@
+The energy-level scheme waits to merge a product until that product has a process table. An empty table is an absorbing product with no escape yet, and merging it left a zero rate-sum so the step could not select an exit.
