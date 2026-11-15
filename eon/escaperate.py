@@ -232,6 +232,8 @@ def accumulate_end_state(product, state, result, config):
         process_id = matched_pid
     else:
         process_id = state.add_process(result)
+        if process_id is None:
+            return None
         next_state = max((int(r["state"]) for r in rows), default=-1) + 1
         new_time = time_check + trans_time
         rows.append(
@@ -320,10 +322,13 @@ def register_results(comm, current_state, states, config: ConfigClass = None):
             product = io.loadcon(result['product.con'])
             process_id = accumulate_end_state(product, state, result, config)
             time = result['results']['transition_time_s']
-            logger.info("Found transition with time %.3e", time)
-            if not transition and current_state.number==state.number:
-                transition = {'process_id':process_id, 'time':time}
-            state.zero_time()
+            if process_id is None:
+                logger.warning("Rejected product for state %i", state.number)
+            else:
+                logger.info("Found transition with time %.3e", time)
+                if not transition and current_state.number==state.number:
+                    transition = {'process_id':process_id, 'time':time}
+                state.zero_time()
         else:
             state.inc_time(result['results']['simulation_time_s'])
         num_registered += 1

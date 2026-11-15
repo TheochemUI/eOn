@@ -50,6 +50,9 @@ To run Parallel Replica jobs:
 of thermostat can be set in the **[Dynamics]** section.
 - The {any}`temperature <eon.schema.MainConfig.temperature>` for the dynamics
   run is set in the **[Main]** section.
+- A product whose geometry cannot be read is not a transition. The time
+  already stored for the state is kept, and searches from that state are
+  not cancelled. The escape-rate register follows the same rule.
 
 A continuous run (`-C`) on a queued communicator waits 10 seconds
 between passes. A local communicator does not wait, because the client
