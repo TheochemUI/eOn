@@ -10,6 +10,7 @@ np.seterr(divide="raise", over="raise", under="print", invalid="raise")
 import optparse
 import shutil
 import sys
+import time
 from pathlib import Path
 
 from eon import version
@@ -283,7 +284,7 @@ def main(config: ConfigClass = None):
                     # In local, everything is synchronous, so no need to wait here.
                     wait = lambda: None
                 else:
-                    wait = lambda: sleep(10.0)
+                    wait = lambda: time.sleep(10.0)
             else:
                 raise RuntimeError("You have found a bug in eOn!")
             while True:
