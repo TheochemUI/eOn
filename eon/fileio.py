@@ -123,6 +123,155 @@ def atomic_write(path, mode='w'):
         raise
 
 
+def _intact_prefix(data, header_lines, min_fields, exact):
+    """Bytes to keep, and whether the final line was torn.
+
+    A final line past the header is torn when it has no trailing newline
+    or the wrong number of fields. ``exact`` requires that count;
+    otherwise the line needs at least ``min_fields``.
+    """
+    if not data:
+        return data, False
+    if data.endswith(b"\n"):
+        end = len(data) - 1
+        prev = data.rfind(b"\n", 0, end)
+        start = 0 if prev < 0 else prev + 1
+        if data[:start].count(b"\n") < header_lines:
+            return data, False
+        count = len(data[start:end].split())
+        ok = count == min_fields if exact else count >= min_fields
+        if ok:
+            return data, False
+        return data[:start], True
+    prev = data.rfind(b"\n")
+    start = 0 if prev < 0 else prev + 1
+    if data[:start].count(b"\n") < header_lines:
+        return data, False
+    return data[:start], True
+
+
+def _last_line_start(handle, size, ends_nl):
+    """Byte offset of the final line. ``ends_nl`` skips a trailing newline."""
+    skip = 1 if ends_nl else 0
+    found = 0
+    pos = size
+    while pos > 0:
+        step = min(4096, pos)
+        pos -= step
+        handle.seek(pos)
+        chunk = handle.read(step)
+        idx = len(chunk)
+        while True:
+            idx = chunk.rfind(b"\n", 0, idx)
+            if idx < 0:
+                break
+            found += 1
+            if found > skip:
+                return pos + idx + 1
+    return 0
+
+
+def _preceding_newlines(handle, start, need):
+    if need <= 0 or start <= 0:
+        return 0
+    handle.seek(0)
+    remaining = start
+    count = 0
+    while remaining > 0 and count < need:
+        chunk = handle.read(min(4096, remaining))
+        if not chunk:
+            break
+        remaining -= len(chunk)
+        count += chunk.count(b"\n")
+    return count
+
+
+def _torn_keep(path, header_lines, min_fields, exact):
+    """Cut off a torn tail. Return the length to restore if the append fails.
+
+    Only the tail, and enough of the front to see the header, is read.
+    """
+    path = Path(path)
+    if not path.is_file():
+        return 0
+    size = path.stat().st_size
+    if size == 0:
+        return 0
+    with open(path, "rb") as handle:
+        handle.seek(size - 1)
+        ends_nl = handle.read(1) == b"\n"
+        start = _last_line_start(handle, size, ends_nl)
+        if _preceding_newlines(handle, start, header_lines) < header_lines:
+            return size
+        if not ends_nl:
+            keep = start
+        else:
+            handle.seek(start)
+            fields = len(handle.read(size - 1 - start).split())
+            bad = fields != min_fields if exact else fields < min_fields
+            keep = start if bad else size
+    if keep != size:
+        os.truncate(path, keep)
+    return keep
+
+
+def _append_line(path, line, header_lines, min_fields, exact):
+    """Append one full line, after cutting off a torn tail.
+
+    The line is a single write, followed by a flush and an fsync. If
+    that raises, the file is truncated back to the length it had once
+    the torn tail was gone.
+    """
+    restore = _torn_keep(path, header_lines, min_fields, exact)
+    try:
+        with open(path, "a") as handle:
+            handle.write(line)
+            handle.flush()
+            os.fsync(handle.fileno())
+    except BaseException:
+        try:
+            os.truncate(path, restore)
+        except OSError:
+            pass
+        raise
+
+
+class DurableTable:
+    '''Append one text line and drop a torn tail.
+
+    ``header_lines`` leaves a short header alone. ``min_fields`` is the
+    field count of a data line. ``exact`` requires that count; otherwise
+    the line needs at least that many fields. A final data line with no
+    newline, or with the wrong field count, is torn.
+
+    ``lines`` returns the kept lines and logs a warning when a tail was
+    dropped. ``append`` truncates that tail, writes the new line once,
+    then flushes and fsyncs. If the write raises, the file is cut back
+    to the length it had once the torn tail was gone.
+    '''
+
+    def __init__(self, path, header_lines, min_fields, exact=False, label=None):
+        self.path = Path(path)
+        self.header_lines = header_lines
+        self.min_fields = min_fields
+        self.exact = exact
+        self.label = str(self.path) if label is None else label
+
+    def lines(self):
+        data = self.path.read_bytes()
+        kept, torn = _intact_prefix(
+            data, self.header_lines, self.min_fields, self.exact
+        )
+        if torn:
+            logger.warning("%s has a torn final line; dropping it", self.label)
+        return kept.decode().splitlines()
+
+    def append(self, line):
+        _append_line(
+            self.path, line, self.header_lines, self.min_fields, self.exact
+        )
+
+
 def _maybe_open(target, mode, attr):
     '''
     Context manager over a filename or an already open file-like object.
