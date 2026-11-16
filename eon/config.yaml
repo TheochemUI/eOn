@@ -753,11 +753,11 @@ GPR Dimer:
 
         converged_angle:
             kind: float
-            default: 5.0
+            default: 0.08
 
         relaxation_converged_angle:
             kind: float
-            default: 0.005
+            default: 0.001
 
         max_initial_rotation_iterations:
           kind: int
