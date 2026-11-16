@@ -66,6 +66,12 @@ draw well past that sum matches no row: the step count does not advance,
 and the state and the simulation time stay as they were. An empty table,
 or a table whose rates sum to zero, is the same kind of mismatch.
 
+Adding a process appends one line to the process table, then flushes and
+syncs it.
+A final line with no newline or the wrong number of fields is dropped, and
+the next append cuts that tail off first. A write that stops partway leaves
+the previous table.
+
 A complete tutorial is [also provided](project:../tutorials/akmc.md).
 
 ## Prepared imbalance
