@@ -39,6 +39,13 @@ jobs:
 
       - uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4
         with:
+          # Unpinned setup-pixi installs the latest Pixi. 0.84.2 rejects the
+          # main baseline (579738a): mkeon depends on setupeon in the removed
+          # environment "eon" (prefix-dev/pixi#7284, since 0.82.1), so
+          # `pixi install --locked` exits before any benchmark. 0.82.0 is the
+          # version the wheel-host job pins, and it installs that baseline,
+          # develop, and this branch.
+          pixi-version: v0.82.0
           cache: true
           cache-write: false
           activate-environment: true
