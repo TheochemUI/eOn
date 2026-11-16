@@ -17,6 +17,8 @@ and this section can be left unconfigured.
 The akmc, basin hopping, parallel replica, and escape rate drivers
 create the `results` directory before they open the log or `lockfile`. When `main_directory` does not exist yet, it is not this working directory.
 The confirmation prompt still runs.
+`info.txt` under the results directory is replaced in one step. A write that
+fails leaves the previous file.
 
 ## Configuration
 

@@ -52,7 +52,7 @@ def write_info_txt(config, parser):
     """Write a ConfigParser to info.txt, creating path_results if needed."""
     path = info_txt_path(config)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w") as fh:
+    with atomic_write(path) as fh:
         parser.write(fh)
 
 
