@@ -28,6 +28,9 @@ the compiled solver does, so a later call sees the same input.
 Transition counts and energy levels are replaced in one step. A write that
 stops partway leaves the previous file.
 
+A superbasin directory that already exists still gets a `storage` folder.
+A later merge archives the previous basin there.
+
 ## Accelerated Superbasin Kinetic Monte Carlo (AS-KMC)
 
 The second method, accelerated superbasin kinetic Monte Carlo (AS-KMC) of
