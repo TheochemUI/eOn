@@ -65,9 +65,14 @@
       ],
       "type": "string"
     },
-    "max_displacement_algorithm": {
-      "default": 0,
-      "description": "Method for displacements.",
+    "displacement_algorithm": {
+      "default": "standard",
+      "description": "How the maximum displacement changes: standard, linear, or quadratic. The client reads this key.",
+      "enum": [
+        "standard",
+        "linear",
+        "quadratic"
+      ],
       "type": "string"
     },
     "quenching_steps": {

@@ -982,7 +982,7 @@ Basin Hopping:
                 - gaussian
                 - uniform
 
-        max_displacement_algorithm:
+        displacement_algorithm:
             kind: string
             default: standard
             values:
