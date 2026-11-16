@@ -38,6 +38,9 @@ sends no list and the client ignores one.
 Saving a finished result into a directory that already exists replaces
 the files in that directory.
 
+A submit that returns in the same clock tick is still a successful submit.
+An interrupt during submit is not recorded as a failed submit.
+
 ## Configuration
 
 ```{code-block} ini
