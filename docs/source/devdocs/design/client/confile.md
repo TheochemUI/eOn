@@ -98,6 +98,12 @@ frame = readcon.read_first_frame(filename)  # single frame
 readcon.write_con(filename, [frame])     # write
 ```
 
+`savecon` writes those frames to a temporary file in the same directory and
+`os.replace` moves it over the destination. The temporary name keeps the
+suffix, so a `.gz` or `.zst` target stays compressed. A writer that raises
+leaves the previous file. An uncompressed append still extends the file in
+place with `write_con(append=True)`.
+
 `DurableTable` in the same module appends one text line to a table or a
 log. The line is a single write, followed by a flush and an fsync. A
 final data line with no newline, or with the wrong number of fields, is

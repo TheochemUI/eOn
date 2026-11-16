@@ -419,6 +419,35 @@ def save_known_saddles(fileout, saddles, reactant):
             fileout.write("%.6f %.6f %.6f\n" % (x, y, z))
 
 
+def _write_con_replace(path, frames):
+    '''
+    Write frames beside path, then replace path in one step.
+    The temporary name keeps path's suffix, so write_con still
+    compresses a .gz or .zst target. A writer that raises leaves
+    path as it was. mkstemp opens at 0600, so the destination's
+    own mode carries over, or the umask default when it is new.
+    '''
+    dest = Path(path)
+    directory = str(dest.resolve().parent)
+    fd, temp_path = tempfile.mkstemp(dir=directory,
+                                     prefix='.' + dest.name + '.',
+                                     suffix=dest.suffix)
+    try:
+        os.close(fd)
+        readcon.write_con(temp_path, frames)
+        try:
+            os.chmod(temp_path, stat.S_IMODE(os.stat(path).st_mode))
+        except OSError:
+            os.chmod(temp_path, DEFAULT_FILE_MODE)
+        os.replace(temp_path, path)
+    except BaseException:
+        try:
+            os.unlink(temp_path)
+        except OSError:
+            pass
+        raise
+
+
 def savecon(fileout, p, w = 'w'):
     '''
     Save a con file via readcon.
@@ -428,7 +457,10 @@ def savecon(fileout, p, w = 'w'):
 
     Append of an uncompressed file uses readcon's append writer. A gzip
     or zstd target cannot be extended in place, so those still read the
-    existing frames and rewrite the file.
+    existing frames and rewrite the file. A rewrite goes to a temporary
+    file in the same directory, keeping the suffix so a compressed target
+    stays compressed, and os.replace moves it over the destination. A
+    writer that raises leaves the previous file.
     '''
     frame = _atoms_to_frame(p)
     frame_text = readcon.write_con_string([frame])
@@ -438,11 +470,11 @@ def savecon(fileout, p, w = 'w'):
         if _path_is_compressed_con(fileout):
             existing = list(readcon.read_con(fileout))
             existing.append(frame)
-            readcon.write_con(fileout, existing)
+            _write_con_replace(fileout, existing)
         else:
             readcon.write_con(fileout, [frame], append=True)
     else:
-        readcon.write_con(fileout, [frame])
+        _write_con_replace(fileout, [frame])
     if not hasattr(fileout, 'write'):
         if w == 'a':
             _mirror_con_text(fileout, frame_text)
