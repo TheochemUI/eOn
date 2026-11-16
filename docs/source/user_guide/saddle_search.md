@@ -41,7 +41,8 @@ is an empty list. `-1` still means every free atom.
 ### Radius and Magnitude
 
 Once the epicenter is chosen, all atoms within `displace_radius` of the
-epicenter are displaced. Each displaced atom receives a random perturbation
+epicenter are displaced. The default is 4 angstroms, the same distance the
+client uses when the key is omitted. Each displaced atom receives a random perturbation
 drawn from a Gaussian distribution with standard deviation
 `displace_magnitude` (in Ångströms) independently in each Cartesian direction.
 
