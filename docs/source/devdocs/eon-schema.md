@@ -70,6 +70,9 @@ assert not unknown_ini_keys(cfg)
 write_ini("config.ini", cfg)
 ```
 
+`write_ini` replaces `config.ini` in one step. A write that fails leaves the
+previous file.
+
 Covered L0 sections (Main, Potential, Optimizer, Structure Comparison, Process
 Search) can be key-checked with `unknown_ini_keys`. Other pot sections
 (SocketNWChemPot, Metatomic, …) are free-form relative to the Cap’n Proto

@@ -15,6 +15,9 @@ INI ``improved``). Known renames live in :data:`INI_FIELD_ALIASES`.
 from __future__ import annotations
 
 import configparser
+import os
+import stat
+import tempfile
 from pathlib import Path
 from typing import Any, Mapping, MutableMapping, Optional, Sequence, Union
 
@@ -121,8 +124,28 @@ def write_ini(
         for key, val in options.items():
             parser.set(section, str(key), format_ini_value(val))
     out.parent.mkdir(parents=True, exist_ok=True)
-    with out.open("w", encoding="utf-8") as fh:
-        parser.write(fh)
+    fd, temp_path = tempfile.mkstemp(
+        dir=str(out.parent),
+        prefix="." + out.name + ".",
+        suffix=".tmp",
+    )
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            parser.write(fh)
+        try:
+            mode = stat.S_IMODE(out.stat().st_mode)
+        except OSError:
+            mask = os.umask(0)
+            os.umask(mask)
+            mode = 0o666 & ~mask
+        os.chmod(temp_path, mode)
+        os.replace(temp_path, out)
+    except BaseException:
+        try:
+            os.unlink(temp_path)
+        except OSError:
+            pass
+        raise
     return out
 
 
