@@ -74,6 +74,14 @@ the previous table.
 
 A complete tutorial is [also provided](project:../tutorials/akmc.md).
 
+## State list
+
+Visited minima live under `states/`, and `states/state_table` holds one
+energy per state. A new run creates the directory and an empty table
+together. A run that stopped after the directory was created, and before
+the table existed, resumes: the table is created with an exclusive open
+when it is absent. A table that is already there is not truncated.
+
 ## Prepared imbalance
 
 A two-state channel relaxes a prepared population imbalance as

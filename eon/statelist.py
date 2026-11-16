@@ -12,6 +12,19 @@ from eon.config import ConfigClass # Typing
 logger = logging.getLogger('statelist')
 
 
+def _ensure_state_table(path):
+    """Create an empty state table when the file is absent.
+
+    The open is exclusive (``O_CREAT|O_EXCL``). A table that already
+    exists, including one written by another process, is left as it is.
+    """
+    try:
+        with open(path, 'x'):
+            pass
+    except FileExistsError:
+        return
+
+
 class StateList:
     """ The StateList class.  Serves as an interface to State objects and StateList metadata. """
     def __init__(self, StateClass, initial_state = None, config: ConfigClass = None):
@@ -36,7 +49,10 @@ class StateList:
         if not root.is_dir():
             logger.warning("State list path does not exist; Creating: %s" % self.path)
             root.mkdir(parents=True)
-            Path(self.state_table_path).write_text("")
+        # The table used to be written only with that mkdir. A directory
+        # left without one still has to resume, and an existing table
+        # must not be truncated.
+        _ensure_state_table(self.state_table_path)
 
         # Create the zero state directory if it does not exist.
         if not (root / "0").is_dir():
