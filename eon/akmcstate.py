@@ -271,7 +271,6 @@ class AKMCState(state.State):
         return id
 
     def append_search_result(self, result, comment, superbasin):
-        f = open(self.search_result_path, 'a')
         resultdata = result['results']
 
         if self.config.akmc_server_side_process_search:
@@ -282,15 +281,19 @@ class AKMCState(state.State):
         if superbasin:
             comment += " [%i]" % superbasin.id
 
-        f.write("%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (result[first_column],
-                 result["type"],
-                 resultdata["barrier_reactant_to_product"],
-                 resultdata["displacement_saddle_distance"],
-                 resultdata["force_calls_saddle"],
-                 resultdata["force_calls_minimization"],
-                 resultdata["force_calls_prefactors"],
-                 comment))
-        f.close()
+        line = "%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (
+            result[first_column],
+            result["type"],
+            resultdata["barrier_reactant_to_product"],
+            resultdata["displacement_saddle_distance"],
+            resultdata["force_calls_saddle"],
+            resultdata["force_calls_minimization"],
+            resultdata["force_calls_prefactors"],
+            comment,
+        )
+        io.DurableTable(
+            self.search_result_path, header_lines=2, min_fields=8, exact=False
+        ).append(line)
         self.info.set("MetaData", "searches", self.get_number_of_searches() + 1)
 
     def get_ratetable(self, superbasin=None):
@@ -432,11 +435,7 @@ class AKMCState(state.State):
             # filter out recycled saddles if displace_moved_only is true
             dyn_saddles = set()
             if self.config.disp_moved_only:
-                f = open(self.search_result_path)
-                f.readline()
-                f.readline()
-
-                for line in f:
+                for line in self._search_result_data_lines():
                     status = line.split()[7]
                     if not (status.startswith('good') or status.startswith('repeat')):
                         continue
@@ -445,7 +444,6 @@ class AKMCState(state.State):
                         continue
                     pid = int(status.split('-')[1])
                     dyn_saddles.add(pid)
-                f.close()
 
                 rt = [entry
                       for entry in rt
@@ -705,17 +703,25 @@ class AKMCState(state.State):
             self.increment_time(0.0, self.config.saddle_dynamics_temperature)
             return dict([int(temp), float(time)] for temp, time in self.info.items("SearchTime", raw=True))
 
+    def _search_result_data_lines(self):
+        """Search-log rows after the two header lines, without a torn tail."""
+        path = Path(self.search_result_path)
+        if not path.is_file():
+            return []
+        kept = io.DurableTable(
+            path,
+            header_lines=2,
+            min_fields=8,
+            exact=False,
+            label="State %s search log" % self.number,
+        ).lines()
+        return kept[2:]
+
     def get_number_of_searches(self):
         n = self.info.get("MetaData", "searches", None)
         if n is not None:
             return int(n)
-        n = 0
-        if Path(self.search_result_path).is_file():
-            with Path(self.search_result_path).open() as f:
-                f.readline()
-                f.readline()
-                for line in f:
-                    n += 1
+        n = len(self._search_result_data_lines())
         self.info.set("MetaData", "searches", n)
         return n
 

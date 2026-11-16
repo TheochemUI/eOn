@@ -45,7 +45,10 @@ Each client is tasked with one or more such searches. It climbs from the minimum
 to a saddle, and if successful, it minimizes on either side of the saddle to
 determine the connecting states. The prefactor for the transition is also
 calculated by finite difference and the hTST rate is calculated. These data are
-reported back to the server.
+reported back to the server. A search result is appended as one line, then
+flushed and synced. A final line with no newline or too few fields is
+dropped, and the next append cuts that tail off first. A write that stops
+partway leaves the previous log.
 
 Adaptive (a), or off-lattice KMC {cite:p}`ak-trochetOffLatticeKineticMonte2020`
 works in continuous configuration space. The method builds a rate table from
