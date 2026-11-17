@@ -22,6 +22,8 @@ fails leaves the previous file.
 A path may contain a percent sign. `main_directory = /tmp/a%b` is that
 directory. `%(main_directory)s` still expands, and `%%` is still one
 percent sign.
+`prng.pkl` under the main directory is replaced in one step. A write that
+fails leaves the previous random state.
 
 ## Configuration
 
