@@ -50,7 +50,9 @@ so far. A pool size of 0 keeps using the original `pos.con`.
   <eon.schema.BasinHoppingConfig.significant_structure>`
 - The occasional jumping variant of {cite:t}`bh-iwamatsuBasinHoppingOccasional2004`
   is also implemented, and is controlled by
-  {any}`jump_max <eon.schema.BasinHoppingConfig.jump_max>`.
+  {any}`jump_max <eon.schema.BasinHoppingConfig.jump_max>`. The default is
+  10 consecutive rejections, the same count the client uses when the key
+  is omitted.
 - The displacement algorithm key is `displacement_algorithm`. The default
   is `standard`.
 - The reactant drawn from the stored minima follows `random_seed` on the
