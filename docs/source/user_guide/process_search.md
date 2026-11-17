@@ -41,6 +41,9 @@ the files in that directory.
 A submit that returns in the same clock tick is still a successful submit.
 An interrupt during submit is not recorded as a failed submit.
 
+The server reads `pos.con` and `explorer.pickle` from the run directory, and
+writes `searches.log` in the results directory.
+
 ## Configuration
 
 ```{code-block} ini
