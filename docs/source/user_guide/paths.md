@@ -19,6 +19,9 @@ create the `results` directory before they open the log or `lockfile`. When `mai
 The confirmation prompt still runs.
 `info.txt` under the results directory is replaced in one step. A write that
 fails leaves the previous file.
+A path may contain a percent sign. `main_directory = /tmp/a%b` is that
+directory. `%(main_directory)s` still expands, and `%%` is still one
+percent sign.
 
 ## Configuration
 
