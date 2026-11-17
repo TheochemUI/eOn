@@ -1,5 +1,14 @@
 var NAVTREEINDEX30 =
 {
+"structeonc_1_1PrfoRefineResult.html#ad778bb56b316748897a745218f9f0418":[5,0,0,138,5],
+"structeonc_1_1RegistryLifetime.html":[3,0,1,155],
+"structeonc_1_1RegistryLifetime.html":[5,0,0,142],
+"structeonc_1_1RegistryLifetime.html#abdd08107c6843abb55d2563dcd5de9c8":[3,0,1,155,0],
+"structeonc_1_1RegistryLifetime.html#abdd08107c6843abb55d2563dcd5de9c8":[5,0,0,142,0],
+"structeonc_1_1ReplicaDynamicsJob_1_1PrdClock.html":[3,0,1,157,0],
+"structeonc_1_1ReplicaDynamicsJob_1_1PrdClock.html":[5,0,0,144,0],
+"structeonc_1_1ReplicaDynamicsJob_1_1PrdClock.html#a1f2f835afddd8cdce48abe1e9d9e6cf5":[3,0,1,157,0,1],
+"structeonc_1_1ReplicaDynamicsJob_1_1PrdClock.html#a1f2f835afddd8cdce48abe1e9d9e6cf5":[5,0,0,144,0,1],
 "structeonc_1_1ReplicaDynamicsJob_1_1PrdClock.html#a97f39f1d5137aa5c2dddf7225246c55f":[3,0,1,157,0,2],
 "structeonc_1_1ReplicaDynamicsJob_1_1PrdClock.html#a97f39f1d5137aa5c2dddf7225246c55f":[5,0,0,144,0,2],
 "structeonc_1_1ReplicaDynamicsJob_1_1PrdClock.html#ae43443cda59cf8fc5a915b4c7547fbb2":[3,0,1,157,0,0],
@@ -240,14 +249,5 @@ var NAVTREEINDEX30 =
 "structeonc_1_1basin__hopping__options__t.html#afdd9d01cc36292a9fc2bc142076010a5":[5,0,0,17,6],
 "structeonc_1_1bgsd__options__t.html":[3,0,1,33],
 "structeonc_1_1bgsd__options__t.html":[5,0,0,20],
-"structeonc_1_1bgsd__options__t.html#a5007d5c72ee281df07fe6f2a9f3c5177":[3,0,1,33,5],
-"structeonc_1_1bgsd__options__t.html#a5007d5c72ee281df07fe6f2a9f3c5177":[5,0,0,20,5],
-"structeonc_1_1bgsd__options__t.html#a632d1ba463ae61438cb32c2c9ee56719":[3,0,1,33,3],
-"structeonc_1_1bgsd__options__t.html#a632d1ba463ae61438cb32c2c9ee56719":[5,0,0,20,3],
-"structeonc_1_1bgsd__options__t.html#a67d42eeb520bde21bd6ab703454c3ab9":[3,0,1,33,4],
-"structeonc_1_1bgsd__options__t.html#a67d42eeb520bde21bd6ab703454c3ab9":[5,0,0,20,4],
-"structeonc_1_1bgsd__options__t.html#a854d58ef5c2933d81bc08c24bada72df":[3,0,1,33,1],
-"structeonc_1_1bgsd__options__t.html#a854d58ef5c2933d81bc08c24bada72df":[5,0,0,20,1],
-"structeonc_1_1bgsd__options__t.html#a9534c4c3f3ec594c4152005ee6180d51":[3,0,1,33,2],
-"structeonc_1_1bgsd__options__t.html#a9534c4c3f3ec594c4152005ee6180d51":[5,0,0,20,2]
+"structeonc_1_1bgsd__options__t.html#a5007d5c72ee281df07fe6f2a9f3c5177":[3,0,1,33,5]
 };

@@ -543,6 +543,19 @@ consistent across <code class="docutils literal notranslate"><span class="pre">n
 </span><span data-line="5"><span class="n">readcon</span><span class="o">.</span><span class="n">write_con</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="p">[</span><span class="n">frame</span><span class="p">])</span>     <span class="c1"># write</span>
 </span></pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">savecon</span></code> writes those frames to a temporary file in the same directory and
+<code class="docutils literal notranslate"><span class="pre">os.replace</span></code> moves it over the destination. The temporary name keeps the
+suffix, so a <code class="docutils literal notranslate"><span class="pre">.gz</span></code> or <code class="docutils literal notranslate"><span class="pre">.zst</span></code> target stays compressed. A writer that raises
+leaves the previous file. An uncompressed append still extends the file in
+place with <code class="docutils literal notranslate"><span class="pre">write_con(append=True)</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">DurableTable</span></code> in the same module appends one text line to a table or a
+log. The line is a single write, followed by a flush and an fsync. A
+final data line with no newline, or with the wrong number of fields, is
+dropped on read and a warning is logged. The next append cuts that tail
+off before it writes. A write that raises is truncated back to the
+length the file had once the torn tail was gone. <code class="docutils literal notranslate"><span class="pre">header_lines</span></code> keeps a
+short header, <code class="docutils literal notranslate"><span class="pre">min_fields</span></code> is the field count, and <code class="docutils literal notranslate"><span class="pre">exact</span></code> requires that
+count rather than a minimum.</p>
 <p>At the time of writing, the Python orchestration layer is still primarily a
 consumer of <code class="docutils literal notranslate"><span class="pre">.con</span></code> data; the richer frame metadata is currently produced in
 the C++ client for trajectory outputs and downstream visualization tooling.</p>

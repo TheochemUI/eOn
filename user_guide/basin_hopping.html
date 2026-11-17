@@ -353,6 +353,7 @@ data-aria-dark="Switch to auto color mode">
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#acceptance">Acceptance</a></li>
+<li><a class="reference internal" href="#reactant-pool">Reactant pool</a></li>
 <li><a class="reference internal" href="#notes">Notes</a></li>
 <li><a class="reference internal" href="#configuration">Configuration</a><ul>
 <li><a class="reference internal" href="#eon.schema.BasinHoppingConfig"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig</span></code></a><ul>
@@ -367,7 +368,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#eon.schema.BasinHoppingConfig.adjust_period"><code class="docutils literal notranslate">adjust_period</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.BasinHoppingConfig.target_ratio"><code class="docutils literal notranslate">target_ratio</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.BasinHoppingConfig.displacement_distribution"><code class="docutils literal notranslate">displacement_distribution</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.BasinHoppingConfig.max_displacement_algorithm"><code class="docutils literal notranslate">max_displacement_algorithm</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.BasinHoppingConfig.displacement_algorithm"><code class="docutils literal notranslate">displacement_algorithm</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.BasinHoppingConfig.quenching_steps"><code class="docutils literal notranslate">quenching_steps</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.BasinHoppingConfig.swap_probability"><code class="docutils literal notranslate">swap_probability</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.BasinHoppingConfig.single_atom_displace"><code class="docutils literal notranslate">single_atom_displace</span></code></a></li>
@@ -378,6 +379,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 </ul>
 </li>
+<li><a class="reference internal" href="#work-unit-id">Work-unit id</a></li>
 <li><a class="reference internal" href="#references">References</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
@@ -475,7 +477,7 @@ data-aria-dark="Switch to auto color mode">
 <h1>Basin hopping<a class="headerlink" href="#basin-hopping" title="Link to this heading">¶</a></h1>
 <p>Basin hopping is a Monte Carlo method in which the energy of each configuration
 is taken to be the energy of a local minimum
-<span id="id1">[<a class="reference internal" href="#id95" title="David J. Wales and Jonathan P. K. Doye. Global Optimization by Basin-Hopping and the Lowest Energy Structures of Lennard-Jones Clusters Containing up to 110 Atoms. The Journal of Physical Chemistry A, 101(28):5111–5116, July 1997. doi:10.1021/jp970984n.">BH_WD97</a>]</span>.</p>
+<span id="id1">[<a class="reference internal" href="#id96" title="David J. Wales and Jonathan P. K. Doye. Global Optimization by Basin-Hopping and the Lowest Energy Structures of Lennard-Jones Clusters Containing up to 110 Atoms. The Journal of Physical Chemistry A, 101(28):5111–5116, July 1997. doi:10.1021/jp970984n.">BH_WD97</a>]</span>.</p>
 <p>The driver stores <code class="docutils literal notranslate"><span class="pre">bh.log</span></code> and <code class="docutils literal notranslate"><span class="pre">lockfile</span></code> in the results directory. A second
 driver in that directory logs <code class="docutils literal notranslate"><span class="pre">Couldn't</span> <span class="pre">get</span> <span class="pre">lock</span></code> and exits. See
 <a class="reference internal" href="communicator.html"><span class="doc">Communicator</span></a> for how the lock is taken. Registering results and
@@ -500,15 +502,28 @@ kelvin. A temperature or <code class="docutils literal notranslate"><span class=
 Other hops are accepted. <code class="docutils literal notranslate"><span class="pre">quenching_steps</span></code> reject an uphill hop and skip
 the factor.</p>
 </section>
+<section id="reactant-pool">
+<h2>Reactant pool<a class="headerlink" href="#reactant-pool" title="Link to this heading">¶</a></h2>
+<p>The server stores each accepted minimum. When <code class="docutils literal notranslate"><span class="pre">initial_state_pool_size</span></code>
+is positive, the next reactant is drawn from that many lowest-energy
+minima. A pool size of 1 always restarts from the lowest energy stored
+so far. A pool size of 0 keeps using the original <code class="docutils literal notranslate"><span class="pre">pos.con</span></code>.</p>
+</section>
 <section id="notes">
 <h2>Notes<a class="headerlink" href="#notes" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">eOn</span></code> defaults to letting displacements occur from minimized structures as per
-the method of <span id="id2">White and Mayne [<a class="reference internal" href="#id96" title="Ronald P White and Howard R Mayne. An investigation of two approaches to basin hopping minimization for atomic and molecular clusters. Chemical Physics Letters, 289(5-6):463–468, June 1998. doi:10.1016/S0009-2614(98)00431-X.">BH_WM98</a>]</span>, which is
+the method of <span id="id2">White and Mayne [<a class="reference internal" href="#id97" title="Ronald P White and Howard R Mayne. An investigation of two approaches to basin hopping minimization for atomic and molecular clusters. Chemical Physics Letters, 289(5-6):463–468, June 1998. doi:10.1016/S0009-2614(98)00431-X.">BH_WM98</a>]</span>, which is
 controlled by <a class="reference internal" href="#eon.schema.BasinHoppingConfig.significant_structure" title="eon.schema.BasinHoppingConfig.significant_structure"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">siginificant_structure</span></code></a></p></li>
 <li><p>The occasional jumping variant of <span id="id3">Iwamatsu and Okabe [<a class="reference internal" href="#id41" title="Masao Iwamatsu and Yutaka Okabe. Basin hopping with occasional jumping. Chemical Physics Letters, 399(4):396–400, December 2004. doi:10.1016/j.cplett.2004.10.032.">BH_IO04</a>]</span>
 is also implemented, and is controlled by
-<a class="reference internal" href="#eon.schema.BasinHoppingConfig.jump_max" title="eon.schema.BasinHoppingConfig.jump_max"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">jump_max</span></code></a>.</p></li>
+<a class="reference internal" href="#eon.schema.BasinHoppingConfig.jump_max" title="eon.schema.BasinHoppingConfig.jump_max"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">jump_max</span></code></a>. The default is
+10 consecutive rejections, the same count the client uses when the key
+is omitted.</p></li>
+<li><p>The displacement algorithm key is <code class="docutils literal notranslate"><span class="pre">displacement_algorithm</span></code>. The default
+is <code class="docutils literal notranslate"><span class="pre">standard</span></code>.</p></li>
+<li><p>The reactant drawn from the stored minima follows <code class="docutils literal notranslate"><span class="pre">random_seed</span></code> on the
+numpy generator. The same seed repeats the same draw.</p></li>
 </ul>
 </section>
 <section id="configuration">
@@ -533,7 +548,7 @@ is also implemented, and is controlled by
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">adjust_period</span> <span class="pre">(int)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">target_ratio</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">displacement_distribution</span> <span class="pre">(Literal['gaussian',</span> <span class="pre">'uniform'])</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_displacement_algorithm</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">displacement_algorithm</span> <span class="pre">(Literal['standard',</span> <span class="pre">'linear',</span> <span class="pre">'quadratic'])</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">quenching_steps</span> <span class="pre">(int)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">swap_probability</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">single_atom_displace</span> <span class="pre">(bool)</span></code></p></li>
@@ -622,9 +637,9 @@ values of <a class="reference internal" href="#eon.schema.BasinHoppingConfig.dis
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.BasinHoppingConfig.max_displacement_algorithm">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_displacement_algorithm</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#eon.schema.BasinHoppingConfig.max_displacement_algorithm" title="Link to this definition">¶</a></dt>
-<dd><p>Method for displacements.</p>
+<dt class="sig sig-object py" id="eon.schema.BasinHoppingConfig.displacement_algorithm">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displacement_algorithm</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.15)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'standard'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'linear'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'quadratic'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'standard'</span></span><a class="headerlink" href="#eon.schema.BasinHoppingConfig.displacement_algorithm" title="Link to this definition">¶</a></dt>
+<dd><p>How the maximum displacement changes: standard, linear, or quadratic. The client reads this key.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -648,18 +663,18 @@ values of <a class="reference internal" href="#eon.schema.BasinHoppingConfig.dis
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.BasinHoppingConfig.jump_max">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">jump_max</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#eon.schema.BasinHoppingConfig.jump_max" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">jump_max</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></span><a class="headerlink" href="#eon.schema.BasinHoppingConfig.jump_max" title="Link to this definition">¶</a></dt>
 <dd><p>This provides a more global search when the structure is stuck in a certain
 basin. The number of jump steps is assigned in
 <a class="reference internal" href="#eon.schema.BasinHoppingConfig.jump_steps" title="eon.schema.BasinHoppingConfig.jump_steps"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">eon.schema.BasinHoppingConfig.jump_steps</span></code></a>. See
 <span id="id1">Iwamatsu and Okabe [<a class="reference internal" href="#id41" title="Masao Iwamatsu and Yutaka Okabe. Basin hopping with occasional jumping. Chemical Physics Letters, 399(4):396–400, December 2004. doi:10.1016/j.cplett.2004.10.032.">BH_IO04</a>]</span> for more details.</p>
-<p>Number of consecutive rejected steps after which jump steps should be taken.</p>
+<p>Number of consecutive rejected steps after which jump steps should be taken. The default is 10, the same count the client uses when the key is omitted.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.BasinHoppingConfig.significant_structure">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">significant_structure</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="headerlink" href="#eon.schema.BasinHoppingConfig.significant_structure" title="Link to this definition">¶</a></dt>
-<dd><p>Implements the method of <span id="id2">White and Mayne [<a class="reference internal" href="#id96" title="Ronald P White and Howard R Mayne. An investigation of two approaches to basin hopping minimization for atomic and molecular clusters. Chemical Physics Letters, 289(5-6):463–468, June 1998. doi:10.1016/S0009-2614(98)00431-X.">BH_WM98</a>]</span>.</p>
+<dd><p>Implements the method of <span id="id2">White and Mayne [<a class="reference internal" href="#id97" title="Ronald P White and Howard R Mayne. An investigation of two approaches to basin hopping minimization for atomic and molecular clusters. Chemical Physics Letters, 289(5-6):463–468, June 1998. doi:10.1016/S0009-2614(98)00431-X.">BH_WM98</a>]</span>.</p>
 <p>Displace from minimized structures.</p>
 </dd></dl>
 
@@ -672,6 +687,12 @@ basin. The number of jump steps is assigned in
 </dd></dl>
 
 </section>
+<section id="work-unit-id">
+<h2>Work-unit id<a class="headerlink" href="#work-unit-id" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">wuid.dat</span></code> is stored in the results directory, next to <code class="docutils literal notranslate"><span class="pre">bh.log</span></code>. The file
+is replaced in one step, so a killed rewrite leaves the previous id in
+place. Reset removes that same file.</p>
+</section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
 <div class="docutils container" id="id4">
@@ -681,11 +702,11 @@ basin. The number of jump steps is assigned in
 <span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id1">2</a>)</span>
 <p>Masao Iwamatsu and Yutaka Okabe. Basin hopping with occasional jumping. <em>Chemical Physics Letters</em>, 399(4):396–400, December 2004. <a class="reference external" href="https://doi.org/10.1016/j.cplett.2004.10.032">doi:10.1016/j.cplett.2004.10.032</a>.</p>
 </div>
-<div class="citation" id="id95" role="doc-biblioentry">
+<div class="citation" id="id96" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">BH_WD97</a><span class="fn-bracket">]</span></span>
 <p>David J. Wales and Jonathan P. K. Doye. Global Optimization by Basin-Hopping and the Lowest Energy Structures of Lennard-Jones Clusters Containing up to 110 Atoms. <em>The Journal of Physical Chemistry A</em>, 101(28):5111–5116, July 1997. <a class="reference external" href="https://doi.org/10.1021/jp970984n">doi:10.1021/jp970984n</a>.</p>
 </div>
-<div class="citation" id="id96" role="doc-biblioentry">
+<div class="citation" id="id97" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>BH_WM98<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
 <p>Ronald P White and Howard R Mayne. An investigation of two approaches to basin hopping minimization for atomic and molecular clusters. <em>Chemical Physics Letters</em>, 289(5-6):463–468, June 1998. <a class="reference external" href="https://doi.org/10.1016/S0009-2614(98)00431-X">doi:10.1016/S0009-2614(98)00431-X</a>.</p>

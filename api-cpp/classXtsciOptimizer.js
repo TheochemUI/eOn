@@ -6,11 +6,14 @@ var classXtsciOptimizer =
     [ "ensureSolver", "classXtsciOptimizer.html#a4c35607672825155d0cda735ae84e118", null ],
     [ "method", "classXtsciOptimizer.html#a60d0585e92e6f5a78cf817d8400f2111", null ],
     [ "operator=", "classXtsciOptimizer.html#a87d98e09bd1a2d61a62892b4b08b0602", null ],
+    [ "refreshExpPrecon", "classXtsciOptimizer.html#a6f2f86862f7162cbaf9b9db9a239084a", null ],
     [ "run", "classXtsciOptimizer.html#a4928929091c0d1f588e04ac29a8a86b4", null ],
     [ "step", "classXtsciOptimizer.html#ac8fa0e20cc86e1240da7e50af7ccd249", null ],
     [ "m_cached_x", "classXtsciOptimizer.html#a5854cdd11934a6f03d601c140b38563f", null ],
     [ "m_eindir", "classXtsciOptimizer.html#ad94bf9c63f6f403b0f1456124a4eef2c", null ],
     [ "m_method", "classXtsciOptimizer.html#a4c71e33562837319e9d56f592003d7e9", null ],
+    [ "m_preconAt", "classXtsciOptimizer.html#a1c7cd6d3f1891fa78993f1c27223654a", null ],
+    [ "m_preconRnn", "classXtsciOptimizer.html#acdda76a8b37dc55665c2d316ecba18b8", null ],
     [ "m_solver", "classXtsciOptimizer.html#a9121e4b8075aaf0f60912967a7ef633c", null ],
     [ "m_x", "classXtsciOptimizer.html#a92eeff22e2007615935c6de6fb9983b7", null ]
 ];

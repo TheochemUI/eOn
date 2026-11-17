@@ -1,9 +1,12 @@
 var NAVTREEINDEX6 =
 {
-"classXtsciOptimizer.html#a92eeff22e2007615935c6de6fb9983b7":[5,0,45,12],
-"classXtsciOptimizer.html#ac8fa0e20cc86e1240da7e50af7ccd249":[5,0,45,7],
+"classXtsciOptimizer.html#a87d98e09bd1a2d61a62892b4b08b0602":[5,0,45,5],
+"classXtsciOptimizer.html#a9121e4b8075aaf0f60912967a7ef633c":[5,0,45,14],
+"classXtsciOptimizer.html#a92eeff22e2007615935c6de6fb9983b7":[5,0,45,15],
+"classXtsciOptimizer.html#ac8fa0e20cc86e1240da7e50af7ccd249":[5,0,45,8],
+"classXtsciOptimizer.html#acdda76a8b37dc55665c2d316ecba18b8":[5,0,45,13],
 "classXtsciOptimizer.html#ace475c05a05056ee374e9f93762f1ba3":[5,0,45,1],
-"classXtsciOptimizer.html#ad94bf9c63f6f403b0f1456124a4eef2c":[5,0,45,9],
+"classXtsciOptimizer.html#ad94bf9c63f6f403b0f1456124a4eef2c":[5,0,45,10],
 "classXtsciOptimizer.html#af936772c239b63a89fa00d61bc9d030d":[5,0,45,0],
 "classeonc_1_1ARTnResource.html":[3,0,1,25],
 "classeonc_1_1ARTnResource.html":[5,0,0,12],
@@ -246,8 +249,5 @@ var NAVTREEINDEX6 =
 "classeonc_1_1BasinHoppingJob.html#ae69e6d8732b5a0d091a6372952ff0274":[3,0,1,31,16],
 "classeonc_1_1BasinHoppingJob.html#ae69e6d8732b5a0d091a6372952ff0274":[5,0,0,18,16],
 "classeonc_1_1BasinHoppingJob.html#ae6c747778a927bbce63a5a062008c3a9":[3,0,1,31,7],
-"classeonc_1_1BasinHoppingJob.html#ae6c747778a927bbce63a5a062008c3a9":[5,0,0,18,7],
-"classeonc_1_1BasinHoppingSaddleSearch.html":[3,0,1,32],
-"classeonc_1_1BasinHoppingSaddleSearch.html":[5,0,0,19],
-"classeonc_1_1BasinHoppingSaddleSearch.html#a011a30b22bf7f41c29881531fef5cfb1":[3,0,1,32,0]
+"classeonc_1_1BasinHoppingJob.html#ae6c747778a927bbce63a5a062008c3a9":[5,0,0,18,7]
 };

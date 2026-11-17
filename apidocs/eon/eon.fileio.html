@@ -367,6 +367,11 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#eon.fileio.DEFAULT_FILE_MODE"><code class="docutils literal notranslate"><span class="pre">DEFAULT_FILE_MODE</span></code></a></li>
 <li><a class="reference internal" href="#eon.fileio.DEFAULT_DIR_MODE"><code class="docutils literal notranslate"><span class="pre">DEFAULT_DIR_MODE</span></code></a></li>
 <li><a class="reference internal" href="#eon.fileio.atomic_write"><code class="docutils literal notranslate"><span class="pre">atomic_write()</span></code></a></li>
+<li><a class="reference internal" href="#eon.fileio.DurableTable"><code class="docutils literal notranslate"><span class="pre">DurableTable</span></code></a><ul>
+<li><a class="reference internal" href="#eon.fileio.DurableTable.lines"><code class="docutils literal notranslate">lines()</span></code></a></li>
+<li><a class="reference internal" href="#eon.fileio.DurableTable.append"><code class="docutils literal notranslate">append()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#eon.fileio.loadcons"><code class="docutils literal notranslate"><span class="pre">loadcons()</span></code></a></li>
 <li><a class="reference internal" href="#eon.fileio.loadxyz"><code class="docutils literal notranslate"><span class="pre">loadxyz()</span></code></a></li>
 <li><a class="reference internal" href="#eon.fileio.loadposcars"><code class="docutils literal notranslate"><span class="pre">loadposcars()</span></code></a></li>
@@ -496,13 +501,16 @@ data-aria-dark="Switch to auto color mode">
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-left">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.ini" title="eon.fileio.ini"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ini</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.DurableTable" title="eon.fileio.DurableTable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DurableTable</span></code></a></p></td>
+<td><p>Append one text line and drop a torn tail.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.ini" title="eon.fileio.ini"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ini</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.Dynamics" title="eon.fileio.Dynamics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dynamics</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.Dynamics" title="eon.fileio.Dynamics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dynamics</span></code></a></p></td>
 <td><p>The Dynamics class handles I/O for the dynamics.txt file of an aKMC simulation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.Table" title="eon.fileio.Table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Table</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.Table" title="eon.fileio.Table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Table</span></code></a></p></td>
 <td><p>A class that provides a nice io abstraction for table like data.  The data
 is saved in a pretty printed format. Also provides nice data retrival
 methods.</p></td>
@@ -700,6 +708,31 @@ mkstemp opens at 0600, so the destination’s own mode carries over, or
 the umask default for a file that does not exist yet.</p>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="eon.fileio.DurableTable">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.fileio.</span></span><span class="sig-name descname"><span class="pre">DurableTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/fileio.html#DurableTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.fileio.DurableTable" title="Link to this definition">¶</a></dt>
+<dd><p>Append one text line and drop a torn tail.</p>
+<p><code class="docutils literal notranslate"><span class="pre">header_lines</span></code> leaves a short header alone. <code class="docutils literal notranslate"><span class="pre">min_fields</span></code> is the
+field count of a data line. <code class="docutils literal notranslate"><span class="pre">exact</span></code> requires that count; otherwise
+the line needs at least that many fields. A final data line with no
+newline, or with the wrong field count, is torn.</p>
+<p><code class="docutils literal notranslate"><span class="pre">lines</span></code> returns the kept lines and logs a warning when a tail was
+dropped. <code class="docutils literal notranslate"><span class="pre">append</span></code> truncates that tail, writes the new line once,
+then flushes and fsyncs. If the write raises, the file is cut back
+to the length it had once the torn tail was gone.</p>
+<p class="rubric">Initialization</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.fileio.DurableTable.lines">
+<span class="sig-name descname"><span class="pre">lines</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/fileio.html#DurableTable.lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.fileio.DurableTable.lines" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.fileio.DurableTable.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/fileio.html#DurableTable.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.fileio.DurableTable.append" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.fileio.loadcons">
 <span class="sig-prename descclassname"><span class="pre">eon.fileio.</span></span><span class="sig-name descname"><span class="pre">loadcons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/fileio.html#loadcons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.fileio.loadcons" title="Link to this definition">¶</a></dt>
@@ -745,7 +778,10 @@ p:       Structure (or Structure-like) to save
 w:       write/append flag</p>
 <p>Append of an uncompressed file uses readcon’s append writer. A gzip
 or zstd target cannot be extended in place, so those still read the
-existing frames and rewrite the file.</p>
+existing frames and rewrite the file. A rewrite goes to a temporary
+file in the same directory, keeping the suffix so a compressed target
+stays compressed, and os.replace moves it over the destination. A
+writer that raises leaves the previous file.</p>
 </dd></dl>
 
 <dl class="py function">

@@ -242,12 +242,12 @@ var NAVTREEINDEX5 =
 "classXTBEngineLoader.html#ac5af3a21e836bb5971078c573dacafc2":[5,0,43,3],
 "classXTBEngineLoader.html#ae0bdc20d1c35a89e58c367e07ece2e45":[5,0,43,2],
 "classXtsciOptimizer.html":[5,0,45],
-"classXtsciOptimizer.html#a4928929091c0d1f588e04ac29a8a86b4":[5,0,45,6],
+"classXtsciOptimizer.html#a1c7cd6d3f1891fa78993f1c27223654a":[5,0,45,12],
+"classXtsciOptimizer.html#a4928929091c0d1f588e04ac29a8a86b4":[5,0,45,7],
 "classXtsciOptimizer.html#a4c35607672825155d0cda735ae84e118":[5,0,45,3],
 "classXtsciOptimizer.html#a4c5185aaff94e1b79547580288d95e0d":[5,0,45,2],
-"classXtsciOptimizer.html#a4c71e33562837319e9d56f592003d7e9":[5,0,45,10],
-"classXtsciOptimizer.html#a5854cdd11934a6f03d601c140b38563f":[5,0,45,8],
+"classXtsciOptimizer.html#a4c71e33562837319e9d56f592003d7e9":[5,0,45,11],
+"classXtsciOptimizer.html#a5854cdd11934a6f03d601c140b38563f":[5,0,45,9],
 "classXtsciOptimizer.html#a60d0585e92e6f5a78cf817d8400f2111":[5,0,45,4],
-"classXtsciOptimizer.html#a87d98e09bd1a2d61a62892b4b08b0602":[5,0,45,5],
-"classXtsciOptimizer.html#a9121e4b8075aaf0f60912967a7ef633c":[5,0,45,11]
+"classXtsciOptimizer.html#a6f2f86862f7162cbaf9b9db9a239084a":[5,0,45,6]
 };

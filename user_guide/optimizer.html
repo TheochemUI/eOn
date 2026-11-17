@@ -540,12 +540,12 @@ data-aria-dark="Switch to auto color mode">
 <p>The eOn optimizers skip a line search when taking the steepest-descent step.</p>
 </div>
 <p>There are several other ways in which the <code class="docutils literal notranslate"><span class="pre">eOn</span></code> implementations differ from a
-standard optimizer software suite<a class="footnote-reference brackets" href="#id121" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> . Some prominent reasons are:</p>
+standard optimizer software suite<a class="footnote-reference brackets" href="#id123" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> . Some prominent reasons are:</p>
 <ul class="simple">
 <li><p>They are written for the <a class="reference internal" href="neb.html"><span class="std std-doc">Nudged elastic band</span></a>, whose energy surface has no
 closed form</p>
 <ul>
-<li><p>Especially in the global band optimization approach <span id="id2">[<a class="reference internal" href="#id80" title="Daniel Sheppard, Rye Terrell, and Graeme Henkelman. Optimization methods for finding minimum energy paths. The Journal of Chemical Physics, 128(13):134106, April 2008. doi:10.1063/1.2841941.">OPT_STH08</a>]</span>.</p></li>
+<li><p>Especially in the global band optimization approach <span id="id2">[<a class="reference internal" href="#id82" title="Daniel Sheppard, Rye Terrell, and Graeme Henkelman. Optimization methods for finding minimum energy paths. The Journal of Chemical Physics, 128(13):134106, April 2008. doi:10.1063/1.2841941.">OPT_STH08</a>]</span>.</p></li>
 </ul>
 </li>
 <li><p>They are specialized for atomic systems</p></li>
@@ -1059,7 +1059,8 @@ an <code class="docutils literal notranslate"><span class="pre">eindir_objective
 checks the eindir ABI stamp, the gradient feature bit, and the semantic
 descriptor (eV, angstrom, analytic forces) before dispatch.
 <code class="docutils literal notranslate"><span class="pre">Optimizer::run</span></code> then calls <code class="docutils literal notranslate"><span class="pre">rgmin_minimize_eindir</span></code> unless the step
-needs a host Hessian or the method is <code class="docutils literal notranslate"><span class="pre">fire2</span></code>. <code class="docutils literal notranslate"><span class="pre">step()</span></code> stays one
+needs a host Hessian, the method is <code class="docutils literal notranslate"><span class="pre">fire2</span></code>, or <code class="docutils literal notranslate"><span class="pre">precon</span></code> is
+<code class="docutils literal notranslate"><span class="pre">rgmin_exp</span></code>. <code class="docutils literal notranslate"><span class="pre">step()</span></code> stays one
 <code class="docutils literal notranslate"><span class="pre">rgmin_solver_t</span></code> iteration. Both paths give <code class="docutils literal notranslate"><span class="pre">fire</span></code>, <code class="docutils literal notranslate"><span class="pre">fire2</span></code> and
 <code class="docutils literal notranslate"><span class="pre">quickmin</span></code> the <code class="docutils literal notranslate"><span class="pre">time_step</span></code> as their time step, and give the other
 methods <code class="docutils literal notranslate"><span class="pre">max_move</span></code> as their first step.</p>
@@ -1089,6 +1090,25 @@ built in eOn. Two-loop plus that matrix is (H_0 = P^{-1});
 <code class="docutils literal notranslate"><span class="pre">lbfgs_precon</span></code>, and <code class="docutils literal notranslate"><span class="pre">lbfgs_accept</span></code> still drive it, and the
 rgmin adapter falls back to them when the <code class="docutils literal notranslate"><span class="pre">[Xtsci]</span></code> fields are
 left at their defaults.</p>
+<p><code class="docutils literal notranslate"><span class="pre">precon</span> <span class="pre">=</span> <span class="pre">rgmin_exp</span></code> is the Exp preconditioner of
+<span id="id3">Packwood <em>et al.</em> [<a class="reference internal" href="#id72" title="David Packwood, James Kermode, Letif Mones, Noam Bernstein, John Woolley, Nicholas Gould, Christoph Ortner, and Gábor Csányi. A universal preconditioner for simulating condensed phase materials. The Journal of Chemical Physics, 144(16):164109, April 2016. doi:10.1063/1.4947024.">OPT_PKM+16</a>]</span> built inside
+rgmin instead of eOn. The adapter sends the minimum-image atom pairs
+within <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">r_nn</span></code> (or <code class="docutils literal notranslate"><span class="pre">[LBFGS]</span> <span class="pre">lbfgs_precon_rcut</span></code>) with
+<code class="docutils literal notranslate"><span class="pre">lbfgs_precon_A</span></code>. rgmin assembles the sparse matrix with
+<code class="docutils literal notranslate"><span class="pre">c_stab</span> <span class="pre">=</span> <span class="pre">0.1</span></code>, estimates <code class="docutils literal notranslate"><span class="pre">mu</span></code> from one extra force call, and solves
+it by conjugate gradients. The pairs are rebuilt once an atom has moved
+<code class="docutils literal notranslate"><span class="pre">r_nn</span> <span class="pre">/</span> <span class="pre">2</span></code>. The eOn <code class="docutils literal notranslate"><span class="pre">exp</span></code> kind is a dense (3N \times 3N) matrix
+factorized each step, so its cost grows as (N^3). <code class="docutils literal notranslate"><span class="pre">rgmin_exp</span></code> only
+applies to the L-BFGS two-loop step, and <code class="docutils literal notranslate"><span class="pre">qn_step</span> <span class="pre">=</span> <span class="pre">newton</span></code>, RFO or
+dogleg with it is an error.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Optimizer]</span>
+</span><span data-line="2"><span class="na">opt_method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">lbfgs</span>
+</span><span data-line="3"><span class="na">opt_backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">rgmin</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">[Xtsci]</span>
+</span><span data-line="6"><span class="na">precon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">rgmin_exp</span>
+</span></pre></div>
+</div>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Optimizer]</span>
 </span><span data-line="2"><span class="na">opt_method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">xtsci</span>
 </span><span data-line="3">
@@ -1107,7 +1127,7 @@ left at their defaults.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">method</span> <span class="pre">(Literal['lbfgs',</span> <span class="pre">'bfgs',</span> <span class="pre">'sr1',</span> <span class="pre">'sr2',</span> <span class="pre">'newton',</span> <span class="pre">'rfo',</span> <span class="pre">'steepest',</span> <span class="pre">'adam',</span> <span class="pre">'pso',</span> <span class="pre">'polak_ribiere',</span> <span class="pre">'fletcher_reeves',</span> <span class="pre">'hestenes_stiefel',</span> <span class="pre">'dai_yuan',</span> <span class="pre">'conjugate_descent',</span> <span class="pre">'hager_zhang',</span> <span class="pre">'liu_storey',</span> <span class="pre">'fr_pr',</span> <span class="pre">'fire',</span> <span class="pre">'bb',</span> <span class="pre">'dogleg',</span> <span class="pre">'fire2',</span> <span class="pre">'quickmin'])</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">qn_step</span> <span class="pre">(Literal['lbfgs',</span> <span class="pre">'newton',</span> <span class="pre">'rfo'])</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">precon</span> <span class="pre">(Literal['none',</span> <span class="pre">'pair',</span> <span class="pre">'pair_abs',</span> <span class="pre">'pair_full',</span> <span class="pre">'exp',</span> <span class="pre">'c1',</span> <span class="pre">'lindh',</span> <span class="pre">'lindh_full',</span> <span class="pre">'fischer',</span> <span class="pre">'schlegel',</span> <span class="pre">'swart'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">precon</span> <span class="pre">(Literal['none',</span> <span class="pre">'pair',</span> <span class="pre">'pair_abs',</span> <span class="pre">'pair_full',</span> <span class="pre">'exp',</span> <span class="pre">'c1',</span> <span class="pre">'lindh',</span> <span class="pre">'lindh_full',</span> <span class="pre">'fischer',</span> <span class="pre">'schlegel',</span> <span class="pre">'swart',</span> <span class="pre">'rgmin_exp'])</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">accept</span> <span class="pre">(Literal['none',</span> <span class="pre">'energy',</span> <span class="pre">'nonmonotone'])</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">highs</span> <span class="pre">(bool)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">manifold</span> <span class="pre">(Literal['euclidean',</span> <span class="pre">'rigid_quotient',</span> <span class="pre">'mw_rigid',</span> <span class="pre">'sphere',</span> <span class="pre">'so3',</span> <span class="pre">'stiefel',</span> <span class="pre">'se3'])</span></code></p></li>
@@ -1173,12 +1193,16 @@ that same host matrix as the step (eOn rematch).</p>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.XtsciConfig.precon">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">precon</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.15)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pair'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pair_abs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pair_full'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'exp'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'c1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lindh'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lindh_full'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fischer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'schlegel'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'swart'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></span><a class="headerlink" href="#eon.schema.XtsciConfig.precon" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">precon</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.15)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pair'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pair_abs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pair_full'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'exp'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'c1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lindh'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lindh_full'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fischer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'schlegel'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'swart'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rgmin_exp'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></span><a class="headerlink" href="#eon.schema.XtsciConfig.precon" title="Link to this definition">¶</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">pair</span></code> is the Mones PSD clip. <code class="docutils literal notranslate"><span class="pre">pair_full</span></code> keeps signed
 curvature. <code class="docutils literal notranslate"><span class="pre">lindh_full</span></code> / <code class="docutils literal notranslate"><span class="pre">fischer</span></code> / <code class="docutils literal notranslate"><span class="pre">schlegel</span></code> / <code class="docutils literal notranslate"><span class="pre">swart</span></code>
 are Cartesian model Hessians (B^T k B). The matrix is assembled
-in eOn and passed through <code class="docutils literal notranslate"><span class="pre">rgmin_solver_step_hess</span></code>.</p>
-<p>Host pair / model Hessian kind. Built in eOn, not in xtsci.</p>
+in eOn and passed through <code class="docutils literal notranslate"><span class="pre">rgmin_solver_step_hess</span></code>.
+<code class="docutils literal notranslate"><span class="pre">rgmin_exp</span></code> sends rgmin the minimum-image pairs within
+<code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">r_nn</span></code> (or <code class="docutils literal notranslate"><span class="pre">lbfgs_precon_rcut</span></code>). rgmin assembles the sparse
+Exp matrix, estimates <code class="docutils literal notranslate"><span class="pre">mu</span></code> with one force call, and solves it
+by conjugate gradients.</p>
+<p>Host pair / model Hessian kind, built in eOn. rgmin_exp is the sparse Packwood Exp metric built in rgmin.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -1322,9 +1346,13 @@ of the host dimer and does not reach the session.</p>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
-<div class="docutils container" id="id3">
+<div class="docutils container" id="id4">
 <div role="list" class="citation-list">
-<div class="citation" id="id80" role="doc-biblioentry">
+<div class="citation" id="id72" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">OPT_PKM+16</a><span class="fn-bracket">]</span></span>
+<p>David Packwood, James Kermode, Letif Mones, Noam Bernstein, John Woolley, Nicholas Gould, Christoph Ortner, and Gábor Csányi. A universal preconditioner for simulating condensed phase materials. <em>The Journal of Chemical Physics</em>, 144(16):164109, April 2016. <a class="reference external" href="https://doi.org/10.1063/1.4947024">doi:10.1063/1.4947024</a>.</p>
+</div>
+<div class="citation" id="id82" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">OPT_STH08</a><span class="fn-bracket">]</span></span>
 <p>Daniel Sheppard, Rye Terrell, and Graeme Henkelman. Optimization methods for finding minimum energy paths. <em>The Journal of Chemical Physics</em>, 128(13):134106, April 2008. <a class="reference external" href="https://doi.org/10.1063/1.2841941">doi:10.1063/1.2841941</a>.</p>
 </div>
@@ -1334,7 +1362,7 @@ of the host dimer and does not reach the session.</p>
 </section>
 <hr class="footnotes docutils" />
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id121" role="doc-footnote">
+<aside class="footnote brackets" id="id123" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>e.g. as may be found in <code class="docutils literal notranslate"><span class="pre">scipy</span></code> or <code class="docutils literal notranslate"><span class="pre">ceres</span></code> for instance</p>
 </aside>

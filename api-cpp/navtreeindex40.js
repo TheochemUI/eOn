@@ -1,5 +1,14 @@
 var NAVTREEINDEX40 =
 {
+"xtb_8h.html#adb3f42280b2b3bc08a4def8e6910967f":[6,0,1,0,3,15,1,57],
+"xtb_8h.html#ae08f9a75280d77e4c4fd487a05b38eea":[6,0,1,0,3,15,1,28],
+"xtb_8h.html#ae0ece287f0ed7f0e072599fe86b715ad":[6,0,1,0,3,15,1,10],
+"xtb_8h.html#ae16e1909af90586c2e9ac86740f10b2b":[6,0,1,0,3,15,1,35],
+"xtb_8h.html#ae7e66e63839df3ba108dfded47c8a7e5":[6,0,1,0,3,15,1,15],
+"xtb_8h.html#aed7b94383c8fdf60b3e29cd4f79fc982":[6,0,1,0,3,15,1,56],
+"xtb_8h.html#af2849fb9a570a2bbc417da509d05a84b":[6,0,1,0,3,15,1,19],
+"xtb_8h.html#af3f97f4b2b5a09f49ef4c918a77a60b7":[6,0,1,0,3,15,1,34],
+"xtb_8h_source.html":[6,0,1,0,3,15,1],
 "xtb__c__abi_8h.html":[6,0,1,0,3,11,9],
 "xtb__c__abi_8h.html#a095e5b7b70f775595963295f9f9cd4b7":[6,0,1,0,3,11,9,5],
 "xtb__c__abi_8h.html#a1786d9f1df089ee1d5b41e1389567afe":[6,0,1,0,3,11,9,3],

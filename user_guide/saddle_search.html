@@ -575,20 +575,26 @@ probabilistically from several strategies, each controlled by a relative weight:
 <p>The weights do not need to sum to 1; they are normalised internally. Setting a
 weight to 0 disables that strategy. For example, setting only
 <code class="docutils literal notranslate"><span class="pre">displace_listed_atom_weight</span> <span class="pre">=</span> <span class="pre">1.0</span></code> and all other weights to 0 starts
-every saddle search from an atom in the explicit list.</p>
+every saddle search from an atom in the explicit list. <code class="docutils literal notranslate"><span class="pre">displace_atom_list</span> <span class="pre">=</span> <span class="pre">None</span></code>
+is an empty list. <code class="docutils literal notranslate"><span class="pre">-1</span></code> still means every free atom.</p>
 </section>
 <section id="radius-and-magnitude">
 <h3>Radius and Magnitude<a class="headerlink" href="#radius-and-magnitude" title="Link to this heading">¶</a></h3>
 <p>Once the epicenter is chosen, all atoms within <code class="docutils literal notranslate"><span class="pre">displace_radius</span></code> of the
-epicenter are displaced. Each displaced atom receives a random perturbation
+epicenter are displaced. The default is 4 angstroms, the same distance the
+client uses when the key is omitted. Each displaced atom receives a random perturbation
 drawn from a Gaussian distribution with standard deviation
 <code class="docutils literal notranslate"><span class="pre">displace_magnitude</span></code> (in Ångströms) independently in each Cartesian direction.</p>
+<p><code class="docutils literal notranslate"><span class="pre">void_bias_fraction</span></code> mixes a repulsive neighbor direction into that
+displacement. Zero, the default, leaves the Gaussian direction unchanged.
+The example <code class="docutils literal notranslate"><span class="pre">akmc-al-void-biasing</span></code> sets it to 0.2.</p>
 </section>
 <section id="displacing-all-listed-atoms">
 <h3>Displacing all listed atoms<a class="headerlink" href="#displacing-all-listed-atoms" title="Link to this heading">¶</a></h3>
 <p>When <code class="docutils literal notranslate"><span class="pre">displace_all_listed</span></code> is <strong>true</strong> and a listed-atom strategy is selected,
-<em>every</em> atom in <code class="docutils literal notranslate"><span class="pre">displace_atom_list</span></code> (or <code class="docutils literal notranslate"><span class="pre">displace_type_list</span></code>) is displaced,
-not a single random pick. Atoms within <code class="docutils literal notranslate"><span class="pre">displace_radius</span></code> of <em>any</em>
+<em>every</em> atom in <code class="docutils literal notranslate"><span class="pre">displace_atom_list</span></code> or <code class="docutils literal notranslate"><span class="pre">displace_type_list</span></code> is displaced,
+not a single random pick. The server passes the flag into both the atom
+list and the type list. Atoms within <code class="docutils literal notranslate"><span class="pre">displace_radius</span></code> of <em>any</em>
 displaced atom are also included. Set <code class="docutils literal notranslate"><span class="pre">displace_radius</span></code> to 0 to restrict the
 displacement strictly to the listed atoms.</p>
 </section>
@@ -774,8 +780,8 @@ seeds the initial mode; ARTn takes over from the displaced structure.</p></li>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_radius">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_radius</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_radius" title="Link to this definition">¶</a></dt>
-<dd><p>Atoms within this distance of the epicenter will be displaced.</p>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_radius</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_radius" title="Link to this definition">¶</a></dt>
+<dd><p>Atoms within this distance of the epicenter will be displaced. The default is 4 angstroms, the same distance the client uses when the key is omitted.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -1002,7 +1008,7 @@ the IRC how-to shows on the Morse Pt saddle.</p>
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">bowl_breakout</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.bowl_breakout" title="Link to this definition">¶</a></dt>
 <dd><p>Determines <a class="reference internal" href="#eon.schema.SaddleSearchConfig.bowl_active_atoms" title="eon.schema.SaddleSearchConfig.bowl_active_atoms"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">bowl_active_atoms</span></code></a> that are subject to the largest forces.
 To activate, <a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive" title="eon.schema.SaddleSearchConfig.confine_positive"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">confine_positive</span></code></a> must also be true. Method of
-<span id="id3">Pedersen and Luiser [<a class="reference internal" href="#id77" title="Andreas Pedersen and Mathieu Luiser. Bowl breakout: Escaping the positive region when searching for saddle points. The Journal of Chemical Physics, 141(2):024109, July 2014. doi:10.1063/1.4885852.">SS_PL14</a>]</span>.</p>
+<span id="id3">Pedersen and Luiser [<a class="reference internal" href="#id78" title="Andreas Pedersen and Mathieu Luiser. Bowl breakout: Escaping the positive region when searching for saddle points. The Journal of Chemical Physics, 141(2):024109, July 2014. doi:10.1063/1.4885852.">SS_PL14</a>]</span>.</p>
 <p>When activated, the search within positive regions of PES is confined to a subset of atoms.</p>
 </dd></dl>
 
@@ -1114,16 +1120,16 @@ minimizes to the final state.</p></li>
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prfo_refine</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.prfo_refine" title="Link to this definition">¶</a></dt>
 <dd><p>Off by default.
 It continues the dimer and climbing image searches of eOn
-(<span id="id4">Goswami <em>et al.</em> [<a class="reference internal" href="#id108" title="Rohit Goswami, Sam Chill, Rye Terrell, Graeme Henkelman, Matthew Welborn, Liang Zhang, Andreas Pedersen, t-brink, Erik Edelmann, Jean Claude, Alejandro, Sung Hoon Jung, Seyed Alireza Ghasemi, chemist29, satishskamath, Maxim, Tobias Dijkhuis, and via9a. TheochemUI/eOn: v3.6.0. October 2026. doi:10.5281/zenodo.23166734.">SS_GCT+26</a>]</span>,
+(<span id="id4">Goswami <em>et al.</em> [<a class="reference internal" href="#id109" title="Rohit Goswami, Sam Chill, Rye Terrell, Graeme Henkelman, Matthew Welborn, Liang Zhang, Andreas Pedersen, t-brink, Erik Edelmann, Jean Claude, Alejandro, Sung Hoon Jung, Seyed Alireza Ghasemi, chemist29, satishskamath, Maxim, Tobias Dijkhuis, and via9a. TheochemUI/eOn: v3.6.0. October 2026. doi:10.5281/zenodo.23166734.">SS_GCT+26</a>]</span>,
 <span id="id5">Goswami <em>et al.</em> [<a class="reference internal" href="#id34" title="Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Pena-Torres, and Hannes Jónsson. Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions. Journal of Chemical Theory and Computation, 21(16):7935–7943, July 2025. doi:10.1021/acs.jctc.5c00866.">SS_GMK+25</a>]</span>,
 <span id="id6">Goswami <em>et al.</em> [<a class="reference internal" href="#id36" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">SS_GGJonsson26</a>]</span>).
 After a min-mode search ends with status good and a negative
 curvature, the saddle geometry, the lowest mode and its curvature go
 to the rgsaddle Sella order-1 session.
 That session runs partitioned rational function optimization (P-RFO)
-in a trust region (<span id="id7">Banerjee <em>et al.</em> [<a class="reference internal" href="#id111" title="Ajit Banerjee, Noah Adams, Jack Simons, and Ron Shepard. Search for stationary points on surfaces. The Journal of Physical Chemistry, 89(1):52–57, January 1985. doi:10.1021/j100247a015.">SS_BASS85</a>]</span>,
-<span id="id8">Baker [<a class="reference internal" href="#id109" title="Jon Baker. An algorithm for the location of transition states. Journal of Computational Chemistry, 7(4):385–395, August 1986. doi:10.1002/jcc.540070402.">SS_Bak86</a>]</span>,
-<span id="id9">Hermes <em>et al.</em> [<a class="reference internal" href="#id110" title="Eric D. Hermes, Khachik Sargsyan, Habib N. Najm, and Judit Zádor. Sella, an open-source automation-friendly molecular saddle point optimizer. Journal of Chemical Theory and Computation, 18(11):6974–6988, 2022. doi:10.1021/acs.jctc.2c00395.">SS_HSNZador22</a>]</span>) until the
+in a trust region (<span id="id7">Banerjee <em>et al.</em> [<a class="reference internal" href="#id112" title="Ajit Banerjee, Noah Adams, Jack Simons, and Ron Shepard. Search for stationary points on surfaces. The Journal of Physical Chemistry, 89(1):52–57, January 1985. doi:10.1021/j100247a015.">SS_BASS85</a>]</span>,
+<span id="id8">Baker [<a class="reference internal" href="#id110" title="Jon Baker. An algorithm for the location of transition states. Journal of Computational Chemistry, 7(4):385–395, August 1986. doi:10.1002/jcc.540070402.">SS_Bak86</a>]</span>,
+<span id="id9">Hermes <em>et al.</em> [<a class="reference internal" href="#id111" title="Eric D. Hermes, Khachik Sargsyan, Habib N. Najm, and Judit Zádor. Sella, an open-source automation-friendly molecular saddle point optimizer. Journal of Chemical Theory and Computation, 18(11):6974–6988, 2022. doi:10.1021/acs.jctc.2c00395.">SS_HSNZador22</a>]</span>) until the
 max-atom force is below <a class="reference internal" href="#eon.schema.SaddleSearchConfig.prfo_refine_force" title="eon.schema.SaddleSearchConfig.prfo_refine_force"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">prfo_refine_force</span></code></a>.
 The min mode is then estimated once more at the refined point.
 A nudged elastic band (NEB) job with a climbing image reads the same
@@ -1153,6 +1159,9 @@ call.</p>
 </section>
 <section id="gaussian-process-dimer">
 <h2>Gaussian process dimer<a class="headerlink" href="#gaussian-process-dimer" title="Link to this heading">¶</a></h2>
+<p>The GPR dimer <code class="docutils literal notranslate"><span class="pre">converged_angle</span></code> default is 0.08 and
+<code class="docutils literal notranslate"><span class="pre">relaxation_converged_angle</span></code> is 0.001, the client values. These are not
+the classical dimer angle.</p>
 <p><code class="docutils literal notranslate"><span class="pre">min_mode_method</span> <span class="pre">=</span> <span class="pre">gprdimer</span></code> runs the Gaussian process dimer from a
 <code class="docutils literal notranslate"><span class="pre">gpr_optim</span></code> checkout in <code class="docutils literal notranslate"><span class="pre">subprojects/gpr_optim</span></code>, for example
 <code class="docutils literal notranslate"><span class="pre">rsync</span> <span class="pre">-a</span> <span class="pre">../gpr_optim/</span> <span class="pre">subprojects/gpr_optim/</span></code>. Under <code class="docutils literal notranslate"><span class="pre">-Dwith_gprd=auto</span></code>
@@ -1213,8 +1222,8 @@ structured JSON metadata in the second CON header line via <code class="docutils
 <h2>Refining a converged saddle<a class="headerlink" href="#refining-a-converged-saddle" title="Link to this heading">¶</a></h2>
 <p>This section covers partitioned rational function optimization (P-RFO) refinement.
 It takes a saddle from a dimer or Lanczos search in eOn and lowers its max-atom force further.
-The searches it continues are those of <span id="id3">Goswami <em>et al.</em> [<a class="reference internal" href="#id108" title="Rohit Goswami, Sam Chill, Rye Terrell, Graeme Henkelman, Matthew Welborn, Liang Zhang, Andreas Pedersen, t-brink, Erik Edelmann, Jean Claude, Alejandro, Sung Hoon Jung, Seyed Alireza Ghasemi, chemist29, satishskamath, Maxim, Tobias Dijkhuis, and via9a. TheochemUI/eOn: v3.6.0. October 2026. doi:10.5281/zenodo.23166734.">SS_GCT+26</a>]</span> and <span id="id4">Goswami <em>et al.</em> [<a class="reference internal" href="#id34" title="Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Pena-Torres, and Hannes Jónsson. Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions. Journal of Chemical Theory and Computation, 21(16):7935–7943, July 2025. doi:10.1021/acs.jctc.5c00866.">SS_GMK+25</a>]</span>, and for a band, the climbing image of <span id="id5">Goswami <em>et al.</em> [<a class="reference internal" href="#id36" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">SS_GGJonsson26</a>]</span>.
-The step is the P-RFO step of <span id="id6">Banerjee <em>et al.</em> [<a class="reference internal" href="#id111" title="Ajit Banerjee, Noah Adams, Jack Simons, and Ron Shepard. Search for stationary points on surfaces. The Journal of Physical Chemistry, 89(1):52–57, January 1985. doi:10.1021/j100247a015.">SS_BASS85</a>]</span> and <span id="id7">Baker [<a class="reference internal" href="#id109" title="Jon Baker. An algorithm for the location of transition states. Journal of Computational Chemistry, 7(4):385–395, August 1986. doi:10.1002/jcc.540070402.">SS_Bak86</a>]</span> in the trust region of the Sella optimizer of <span id="id8">Hermes <em>et al.</em> [<a class="reference internal" href="#id110" title="Eric D. Hermes, Khachik Sargsyan, Habib N. Najm, and Judit Zádor. Sella, an open-source automation-friendly molecular saddle point optimizer. Journal of Chemical Theory and Computation, 18(11):6974–6988, 2022. doi:10.1021/acs.jctc.2c00395.">SS_HSNZador22</a>]</span>, as rgsaddle implements it.
+The searches it continues are those of <span id="id3">Goswami <em>et al.</em> [<a class="reference internal" href="#id109" title="Rohit Goswami, Sam Chill, Rye Terrell, Graeme Henkelman, Matthew Welborn, Liang Zhang, Andreas Pedersen, t-brink, Erik Edelmann, Jean Claude, Alejandro, Sung Hoon Jung, Seyed Alireza Ghasemi, chemist29, satishskamath, Maxim, Tobias Dijkhuis, and via9a. TheochemUI/eOn: v3.6.0. October 2026. doi:10.5281/zenodo.23166734.">SS_GCT+26</a>]</span> and <span id="id4">Goswami <em>et al.</em> [<a class="reference internal" href="#id34" title="Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Pena-Torres, and Hannes Jónsson. Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions. Journal of Chemical Theory and Computation, 21(16):7935–7943, July 2025. doi:10.1021/acs.jctc.5c00866.">SS_GMK+25</a>]</span>, and for a band, the climbing image of <span id="id5">Goswami <em>et al.</em> [<a class="reference internal" href="#id36" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">SS_GGJonsson26</a>]</span>.
+The step is the P-RFO step of <span id="id6">Banerjee <em>et al.</em> [<a class="reference internal" href="#id112" title="Ajit Banerjee, Noah Adams, Jack Simons, and Ron Shepard. Search for stationary points on surfaces. The Journal of Physical Chemistry, 89(1):52–57, January 1985. doi:10.1021/j100247a015.">SS_BASS85</a>]</span> and <span id="id7">Baker [<a class="reference internal" href="#id110" title="Jon Baker. An algorithm for the location of transition states. Journal of Computational Chemistry, 7(4):385–395, August 1986. doi:10.1002/jcc.540070402.">SS_Bak86</a>]</span> in the trust region of the Sella optimizer of <span id="id8">Hermes <em>et al.</em> [<a class="reference internal" href="#id111" title="Eric D. Hermes, Khachik Sargsyan, Habib N. Najm, and Judit Zádor. Sella, an open-source automation-friendly molecular saddle point optimizer. Journal of Chemical Theory and Computation, 18(11):6974–6988, 2022. doi:10.1021/acs.jctc.2c00395.">SS_HSNZador22</a>]</span>, as rgsaddle implements it.
 The refinement is off by default.</p>
 <section id="how-to-refine-a-dimer-saddle">
 <h3>How to refine a dimer saddle<a class="headerlink" href="#how-to-refine-a-dimer-saddle" title="Link to this heading">¶</a></h3>
@@ -1406,12 +1415,12 @@ implementation (dimer, improved dimer, Lanczos, GPR dimer)</p></li>
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
 <div class="docutils container" id="id9">
 <div role="list" class="citation-list">
-<div class="citation" id="id109" role="doc-biblioentry">
+<div class="citation" id="id110" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>SS_Bak86<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id8">1</a>,<a role="doc-backlink" href="#id7">2</a>)</span>
 <p>Jon Baker. An algorithm for the location of transition states. <em>Journal of Computational Chemistry</em>, 7(4):385–395, August 1986. <a class="reference external" href="https://doi.org/10.1002/jcc.540070402">doi:10.1002/jcc.540070402</a>.</p>
 </div>
-<div class="citation" id="id111" role="doc-biblioentry">
+<div class="citation" id="id112" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>SS_BASS85<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id7">1</a>,<a role="doc-backlink" href="#id6">2</a>)</span>
 <p>Ajit Banerjee, Noah Adams, Jack Simons, and Ron Shepard. Search for stationary points on surfaces. <em>The Journal of Physical Chemistry</em>, 89(1):52–57, January 1985. <a class="reference external" href="https://doi.org/10.1021/j100247a015">doi:10.1021/j100247a015</a>.</p>
@@ -1424,7 +1433,7 @@ implementation (dimer, improved dimer, Lanczos, GPR dimer)</p></li>
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">SS_GS89</a><span class="fn-bracket">]</span></span>
 <p>Carlos Gonzalez and H. Bernhard Schlegel. An improved algorithm for reaction path following. <em>The Journal of Chemical Physics</em>, 90(4):2154–2161, February 1989. <a class="reference external" href="https://doi.org/10.1063/1.456010">doi:10.1063/1.456010</a>.</p>
 </div>
-<div class="citation" id="id108" role="doc-biblioentry">
+<div class="citation" id="id109" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>SS_GCT+26<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
 <p>Rohit Goswami, Sam Chill, Rye Terrell, Graeme Henkelman, Matthew Welborn, Liang Zhang, Andreas Pedersen, t-brink, Erik Edelmann, Jean Claude, Alejandro, Sung Hoon Jung, Seyed Alireza Ghasemi, chemist29, satishskamath, Maxim, Tobias Dijkhuis, and via9a. TheochemUI/eOn: v3.6.0. October 2026. <a class="reference external" href="https://doi.org/10.5281/zenodo.23166734">doi:10.5281/zenodo.23166734</a>.</p>
@@ -1443,7 +1452,7 @@ implementation (dimer, improved dimer, Lanczos, GPR dimer)</p></li>
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">SS_HJonsson99</a><span class="fn-bracket">]</span></span>
 <p>Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. <em>The Journal of Chemical Physics</em>, 111(15):7010–7022, October 1999. <a class="reference external" href="https://doi.org/10.1063/1.480097">doi:10.1063/1.480097</a>.</p>
 </div>
-<div class="citation" id="id110" role="doc-biblioentry">
+<div class="citation" id="id111" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>SS_HSNZador22<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id9">1</a>,<a role="doc-backlink" href="#id8">2</a>)</span>
 <p>Eric D. Hermes, Khachik Sargsyan, Habib N. Najm, and Judit Zádor. Sella, an open-source automation-friendly molecular saddle point optimizer. <em>Journal of Chemical Theory and Computation</em>, 18(11):6974–6988, 2022. <a class="reference external" href="https://doi.org/10.1021/acs.jctc.2c00395">doi:10.1021/acs.jctc.2c00395</a>.</p>
@@ -1452,7 +1461,7 @@ implementation (dimer, improved dimer, Lanczos, GPR dimer)</p></li>
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">SS_MM00</a><span class="fn-bracket">]</span></span>
 <p>Rachid Malek and Normand Mousseau. Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique. <em>Physical Review E</em>, 62(6):7723–7728, December 2000. <a class="reference external" href="https://doi.org/10.1103/PhysRevE.62.7723">doi:10.1103/PhysRevE.62.7723</a>.</p>
 </div>
-<div class="citation" id="id77" role="doc-biblioentry">
+<div class="citation" id="id78" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">SS_PL14</a><span class="fn-bracket">]</span></span>
 <p>Andreas Pedersen and Mathieu Luiser. Bowl breakout: Escaping the positive region when searching for saddle points. <em>The Journal of Chemical Physics</em>, 141(2):024109, July 2014. <a class="reference external" href="https://doi.org/10.1063/1.4885852">doi:10.1063/1.4885852</a>.</p>
 </div>

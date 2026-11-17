@@ -472,7 +472,13 @@ For standalone client usage (the common case), the default paths are sufficient
 and this section can be left unconfigured.</p>
 </div>
 <p>The akmc, basin hopping, parallel replica, and escape rate drivers
-create the <code class="docutils literal notranslate"><span class="pre">results</span></code> directory before they open the log or <code class="docutils literal notranslate"><span class="pre">lockfile</span></code>.</p>
+create the <code class="docutils literal notranslate"><span class="pre">results</span></code> directory before they open the log or <code class="docutils literal notranslate"><span class="pre">lockfile</span></code>. When <code class="docutils literal notranslate"><span class="pre">main_directory</span></code> does not exist yet, it is not this working directory.
+The confirmation prompt still runs.
+<code class="docutils literal notranslate"><span class="pre">info.txt</span></code> under the results directory is replaced in one step. A write that
+fails leaves the previous file.
+A path may contain a percent sign. <code class="docutils literal notranslate"><span class="pre">main_directory</span> <span class="pre">=</span> <span class="pre">/tmp/a%b</span></code> is that
+directory. <code class="docutils literal notranslate"><span class="pre">%(main_directory)s</span></code> still expands, and <code class="docutils literal notranslate"><span class="pre">%%</span></code> is still one
+percent sign.</p>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Paths]</span>

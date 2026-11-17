@@ -35,20 +35,27 @@ probabilistically from several strategies, each controlled by a relative weight:
 The weights do not need to sum to 1; they are normalised internally. Setting a
 weight to 0 disables that strategy. For example, setting only
 `displace_listed_atom_weight = 1.0` and all other weights to 0 starts
-every saddle search from an atom in the explicit list.
+every saddle search from an atom in the explicit list. `displace_atom_list = None`
+is an empty list. `-1` still means every free atom.
 
 ### Radius and Magnitude
 
 Once the epicenter is chosen, all atoms within `displace_radius` of the
-epicenter are displaced. Each displaced atom receives a random perturbation
+epicenter are displaced. The default is 4 angstroms, the same distance the
+client uses when the key is omitted. Each displaced atom receives a random perturbation
 drawn from a Gaussian distribution with standard deviation
 `displace_magnitude` (in Ångströms) independently in each Cartesian direction.
+
+`void_bias_fraction` mixes a repulsive neighbor direction into that
+displacement. Zero, the default, leaves the Gaussian direction unchanged.
+The example `akmc-al-void-biasing` sets it to 0.2.
 
 ### Displacing all listed atoms
 
 When `displace_all_listed` is **true** and a listed-atom strategy is selected,
-*every* atom in `displace_atom_list` (or `displace_type_list`) is displaced,
-not a single random pick. Atoms within `displace_radius` of *any*
+*every* atom in `displace_atom_list` or `displace_type_list` is displaced,
+not a single random pick. The server passes the flag into both the atom
+list and the type list. Atoms within `displace_radius` of *any*
 displaced atom are also included. Set `displace_radius` to 0 to restrict the
 displacement strictly to the listed atoms.
 
@@ -112,6 +119,10 @@ scale still follows `improved = false`.
 ```
 
 ## Gaussian process dimer
+
+The GPR dimer `converged_angle` default is 0.08 and
+`relaxation_converged_angle` is 0.001, the client values. These are not
+the classical dimer angle.
 
 `min_mode_method = gprdimer` runs the Gaussian process dimer from a
 `gpr_optim` checkout in `subprojects/gpr_optim`, for example

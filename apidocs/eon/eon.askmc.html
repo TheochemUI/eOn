@@ -581,7 +581,8 @@ These will be “substituted” in place of their corresponding rates in the nor
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC.append_modified_process_table">
 <span class="sig-name descname"><span class="pre">append_modified_process_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saddle_energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product_energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barrier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">view_count</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC.append_modified_process_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC.append_modified_process_table" title="Link to this definition">¶</a></dt>
-<dd><p>Append a single line to the modified process table on disk.</p>
+<dd><p>Append one modified-process row, then flush and sync it.</p>
+<p>A torn final line is cut off first.</p>
 </dd></dl>
 
 <dl class="py method">

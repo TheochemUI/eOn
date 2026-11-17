@@ -35,6 +35,13 @@ kelvin. A temperature or `kB` that is not positive rejects the uphill hop.
 Other hops are accepted. `quenching_steps` reject an uphill hop and skip
 the factor.
 
+## Reactant pool
+
+The server stores each accepted minimum. When `initial_state_pool_size`
+is positive, the next reactant is drawn from that many lowest-energy
+minima. A pool size of 1 always restarts from the lowest energy stored
+so far. A pool size of 0 keeps using the original `pos.con`.
+
 ## Notes
 
 - `eOn` defaults to letting displacements occur from minimized structures as per
@@ -43,7 +50,13 @@ the factor.
   <eon.schema.BasinHoppingConfig.significant_structure>`
 - The occasional jumping variant of {cite:t}`bh-iwamatsuBasinHoppingOccasional2004`
   is also implemented, and is controlled by
-  {any}`jump_max <eon.schema.BasinHoppingConfig.jump_max>`.
+  {any}`jump_max <eon.schema.BasinHoppingConfig.jump_max>`. The default is
+  10 consecutive rejections, the same count the client uses when the key
+  is omitted.
+- The displacement algorithm key is `displacement_algorithm`. The default
+  is `standard`.
+- The reactant drawn from the stored minima follows `random_seed` on the
+  numpy generator. The same seed repeats the same draw.
 
 ## Configuration
 
@@ -55,6 +68,12 @@ the factor.
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.BasinHoppingConfig
 ```
+
+## Work-unit id
+
+`wuid.dat` is stored in the results directory, next to `bh.log`. The file
+is replaced in one step, so a killed rewrite leaves the previous id in
+place. Reset removes that same file.
 
 ## References
 

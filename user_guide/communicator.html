@@ -475,7 +475,10 @@ data-aria-dark="Switch to auto color mode">
 simulation data is stored on the server and clients are sent jobs and return the
 results. Each time <code class="docutils literal notranslate"><span class="pre">eOn</span></code> is run it first checks to see if any results have come
 back from clients and processes them, then submits more jobs if
-needed. In <code class="docutils literal notranslate"><span class="pre">eOn</span></code> there are several different ways to run jobs. One can run them
+needed. A bundled results file whose index is past the number of
+results files is still harvested. A finished job replaces a results directory of the same name, and
+the harvested files are the new ones. The same replacement applies to a
+debug copy kept for that job. In <code class="docutils literal notranslate"><span class="pre">eOn</span></code> there are several different ways to run jobs. One can run them
 locally on the server, via MPI,  or using a job queuing system such as
 <a class="reference external" href="http://www.oracle.com/us/products/tools/oracle-grid-engine-075549.html">SGE</a>.</p>
 <section id="one-driver-in-a-directory">
@@ -736,7 +739,8 @@ It does not need <code class="docutils literal notranslate"><span class="pre">-D
 <p>A client whose job fails, through a potential error, a <code class="docutils literal notranslate"><span class="pre">config.ini</span></code> it cannot
 load or a job type it does not know, logs the error into that job’s directory
 and hands the directory back without <code class="docutils literal notranslate"><span class="pre">results.dat</span></code>. The server logs
-<code class="docutils literal notranslate"><span class="pre">returned</span> <span class="pre">no</span> <span class="pre">results</span></code> for it and the rank takes the next job.</p>
+<code class="docutils literal notranslate"><span class="pre">returned</span> <span class="pre">no</span> <span class="pre">results</span></code> for it and the rank takes the next job. Submitting
+the same job id again replaces that bundle directory.</p>
 </section>
 <section id="cluster">
 <h3>Cluster<a class="headerlink" href="#cluster" title="Link to this heading">¶</a></h3>
@@ -770,7 +774,9 @@ the command each job runs, <code class="docutils literal notranslate"><span clas
 starts them from its wrapper inside the job (<code class="docutils literal notranslate"><span class="pre">srun</span> <span class="pre">-n</span> <span class="pre">48</span> <span class="pre">cpmd.x</span> <span class="pre">...</span></code>); the
 client itself stays one process. When a state reaches its confidence the
 server cancels only the jobs still queued. Jobs that already finished are
-harvested on the next pass and filtered by state.</p>
+harvested on the next pass and filtered by state. Queue ids are stored in
+<code class="docutils literal notranslate"><span class="pre">script_job_ids</span></code> under the scratch directory. That file is replaced in one
+step, and a truncated file starts the run with an empty id map.</p>
 </section>
 </section>
 </section>

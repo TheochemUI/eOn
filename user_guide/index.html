@@ -485,7 +485,9 @@ package <code class="docutils literal notranslate"><span class="pre">pyeonclient
 <h2>Configuration file (<code class="docutils literal notranslate"><span class="pre">config.ini</span></code>)<a class="headerlink" href="#configuration-file-config-ini" title="Link to this heading">¶</a></h2>
 <p>Each of the sections and methods may still be included in a configuration file
 with the appropriate section header (used by the <code class="docutils literal notranslate"><span class="pre">eonclient</span></code> binary, the AKMC
-server, and optional workdir helpers).</p>
+server, and optional workdir helpers). Boolean values may be written <code class="docutils literal notranslate"><span class="pre">true</span></code>,
+<code class="docutils literal notranslate"><span class="pre">false</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">T</span></code>, <code class="docutils literal notranslate"><span class="pre">t</span></code>, <code class="docutils literal notranslate"><span class="pre">F</span></code>, or <code class="docutils literal notranslate"><span class="pre">f</span></code>. Server-side process search without a
+default prefactor, or with a bundle size other than 1, exits with status 1.</p>
 </section>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
@@ -511,9 +513,10 @@ case. A name outside the enumeration stops the client with <code class="docutils
 <a class="reference internal" href="finite_difference.html"><span class="std std-doc">Finite-difference curvature</span></a>), <code class="docutils literal notranslate"><span class="pre">molecular_dynamics</span></code> (use <code class="docutils literal notranslate"><span class="pre">dynamics</span></code>),
 <code class="docutils literal notranslate"><span class="pre">displacement_sampling</span></code>, <code class="docutils literal notranslate"><span class="pre">akmc</span></code>, and <code class="docutils literal notranslate"><span class="pre">hyperdynamics</span></code> (use
 <code class="docutils literal notranslate"><span class="pre">safe_hyperdynamics</span></code>). <code class="docutils literal notranslate"><span class="pre">escape_rate</span></code> runs on the server, and the schema marks
-that entry TODO. <a class="reference internal" href="oh_tst.html"><span class="std std-doc">Optimal hyperplane transition state theory</span></a> is a client job and is absent from the
-schema list. <a class="reference internal" href="global_optimization.html"><span class="std std-doc">Minima hopping</span></a> is minima hopping, not basin
-hopping. These method options share the <code class="docutils literal notranslate"><span class="pre">job</span></code> key.</p>
+that entry TODO. A new product records its own transition time, and its
+rate is the reciprocal of that time. <a class="reference internal" href="oh_tst.html"><span class="std std-doc">Optimal hyperplane transition state theory</span></a> is a client job and
+is absent from the schema list. <a class="reference internal" href="global_optimization.html"><span class="std std-doc">Minima hopping</span></a> is minima
+hopping, not basin hopping. These method options share the <code class="docutils literal notranslate"><span class="pre">job</span></code> key.</p>
 <p>There are specific options for each method, and a set of general options which
 are shared between methods. Examples of these general options include
 specification of the interatomic potential and the parameters for doing structural

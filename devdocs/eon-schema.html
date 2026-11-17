@@ -552,6 +552,8 @@ rgpycrumbs issue tracker.</p>
 </span><span data-line="21"><span class="n">write_ini</span><span class="p">(</span><span class="s2">&quot;config.ini&quot;</span><span class="p">,</span> <span class="n">cfg</span><span class="p">)</span>
 </span></pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">write_ini</span></code> replaces <code class="docutils literal notranslate"><span class="pre">config.ini</span></code> in one step. A write that fails leaves the
+previous file.</p>
 <p>Covered L0 sections (Main, Potential, Optimizer, Structure Comparison, Process
 Search) can be key-checked with <code class="docutils literal notranslate"><span class="pre">unknown_ini_keys</span></code>. Other pot sections
 (SocketNWChemPot, Metatomic, …) are free-form relative to the Cap’n Proto

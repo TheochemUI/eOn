@@ -514,14 +514,14 @@ obtained differs.</p>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lor</span></code></p></td>
 <td><p>Locally optimal rotation (LOR), Algorithm I</p></td>
-<td><p><span id="id8">Leng <em>et al.</em> [<a class="reference internal" href="#id108" title="Jing Leng, Weiguo Gao, Cheng Shang, and Zhi-Pan Liu. Efficient softest mode finding in transition states calculations. The Journal of Chemical Physics, 138(9):094110, March 2013. doi:10.1063/1.4792644.">DM_LGSL13</a>]</span>; at most one new FD force per rotation iteration via Hessian–vector products and force translation of prior H·N / H·F⊥ products</p></td>
+<td><p><span id="id8">Leng <em>et al.</em> [<a class="reference internal" href="#id109" title="Jing Leng, Weiguo Gao, Cheng Shang, and Zhi-Pan Liu. Efficient softest mode finding in transition states calculations. The Journal of Chemical Physics, 138(9):094110, March 2013. doi:10.1063/1.4792644.">DM_LGSL13</a>]</span>; at most one new FD force per rotation iteration via Hessian–vector products and force translation of prior H·N / H·F⊥ products</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 2.17.2: </span><code class="docutils literal notranslate"><span class="pre">rotation_backend</span></code> (<code class="docutils literal notranslate"><span class="pre">classical</span></code> | <code class="docutils literal notranslate"><span class="pre">lanczos</span></code> | <code class="docutils literal notranslate"><span class="pre">davidson</span></code> | <code class="docutils literal notranslate"><span class="pre">lor</span></code>). The LOR path
-implements Leng et al. <span id="id9">[<a class="reference internal" href="#id108" title="Jing Leng, Weiguo Gao, Cheng Shang, and Zhi-Pan Liu. Efficient softest mode finding in transition states calculations. The Journal of Chemical Physics, 138(9):094110, March 2013. doi:10.1063/1.4792644.">DM_LGSL13</a>]</span>: 2×2 then 3×3 Ritz
+implements Leng et al. <span id="id9">[<a class="reference internal" href="#id109" title="Jing Leng, Weiguo Gao, Cheng Shang, and Zhi-Pan Liu. Efficient softest mode finding in transition states calculations. The Journal of Chemical Physics, 138(9):094110, March 2013. doi:10.1063/1.4792644.">DM_LGSL13</a>]</span>: 2×2 then 3×3 Ritz
 problems in the rotation subspace, force translation for H·P₃ (linear action of H
 on the unit Gram–Schmidt residual of the trial direction), residual /
 <code class="docutils literal notranslate"><span class="pre">rotations_max</span></code> / stall stops, and a best-mode
@@ -673,7 +673,7 @@ shared dispatch helper. Rotation iteration budgets for LOR follow
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">DM_KastnerS08</a><span class="fn-bracket">]</span></span>
 <p>Johannes Kästner and Paul Sherwood. Superlinearly converging dimer method for transition state search. <em>The Journal of Chemical Physics</em>, 128(1):014106, January 2008. <a class="reference external" href="https://doi.org/10.1063/1.2815812">doi:10.1063/1.2815812</a>.</p>
 </div>
-<div class="citation" id="id108" role="doc-biblioentry">
+<div class="citation" id="id109" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>DM_LGSL13<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id8">1</a>,<a role="doc-backlink" href="#id9">2</a>)</span>
 <p>Jing Leng, Weiguo Gao, Cheng Shang, and Zhi-Pan Liu. Efficient softest mode finding in transition states calculations. <em>The Journal of Chemical Physics</em>, 138(9):094110, March 2013. <a class="reference external" href="https://doi.org/10.1063/1.4792644">doi:10.1063/1.4792644</a>.</p>

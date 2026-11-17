@@ -475,7 +475,8 @@ indices written directly in <code class="docutils literal notranslate"><span cla
 <strong>file-order</strong> rows (the order atoms appear in the <code class="docutils literal notranslate"><span class="pre">.con</span></code>). After
 load, <code class="docutils literal notranslate"><span class="pre">Structure</span></code> sorts unique <code class="docutils literal notranslate"><span class="pre">atom_id</span></code>s; <code class="docutils literal notranslate"><span class="pre">ListedAtoms</span></code> always
 remaps the file-order list through that sort, then keeps free
-atoms. Prefer this over guessing Structure rows.</p></li>
+atoms. Prefer this over guessing Structure rows. Appending an atom
+extends that file-order map, so the new atom is its last row.</p></li>
 <li><p><strong>Dynamic script</strong> (<code class="docutils literal notranslate"><span class="pre">displace_atom_kmc_state_script</span></code>): a Python script
 that is executed once per new AKMC state. The script receives a temp
 <code class="docutils literal notranslate"><span class="pre">.con</span></code> written from the in-memory <code class="docutils literal notranslate"><span class="pre">Structure</span></code> (<code class="docutils literal notranslate"><span class="pre">atom_id</span></code> order) and

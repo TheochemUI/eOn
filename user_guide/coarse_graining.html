@@ -495,12 +495,17 @@ slower transitions can take a prohibitively large number of KMC steps.
 <span id="id1">Novotny [<a class="reference internal" href="#id69" title="M. A. Novotny. A Tutorial on Advanced Dynamic Monte Carlo Methods for Systems with Discrete State Spaces, pages 153–210. WORLD SCIENTIFIC, April 2001. doi:10.1142/9789812811578_0003.">CG_Nov01</a>]</span>, groups states that are joined
 by fast rates into “superbasins”. Information about transitions between states
 in a superbasin is lost, but the rates for transitions across a superbasin are
-correct.</p>
+correct. The numpy fallback copies the rate matrices and the cost vector, as
+the compiled solver does, so a later call sees the same input.</p>
+<p>Transition counts and energy levels are replaced in one step. A write that
+stops partway leaves the previous file.</p>
+<p>A superbasin directory that already exists still gets a <code class="docutils literal notranslate"><span class="pre">storage</span></code> folder.
+A later merge archives the previous basin there.</p>
 </section>
 <section id="accelerated-superbasin-kinetic-monte-carlo-as-kmc">
 <h2>Accelerated Superbasin Kinetic Monte Carlo (AS-KMC)<a class="headerlink" href="#accelerated-superbasin-kinetic-monte-carlo-as-kmc" title="Link to this heading">¶</a></h2>
 <p>The second method, accelerated superbasin kinetic Monte Carlo (AS-KMC) of
-<span id="id2">Voter [<a class="reference internal" href="#id92" title="Arthur F. Voter. Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events. Physical Review Letters, 78(20):3908–3911, May 1997. doi:10.1103/PhysRevLett.78.3908.">CG_Vot97</a>]</span>, artificially raises low
+<span id="id2">Voter [<a class="reference internal" href="#id93" title="Arthur F. Voter. Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events. Physical Review Letters, 78(20):3908–3911, May 1997. doi:10.1103/PhysRevLett.78.3908.">CG_Vot97</a>]</span>, artificially raises low
 barriers. The dynamics between states connected by fast rates are simulated, but
 an error is introduced in the dynamics direction and time.</p>
 <p>The basic process of AS-KMC involves gradually raising process barriers found to
@@ -509,6 +514,9 @@ more likely. The method is designed to raise all the barriers in the superbasin
 simultaneously. Once a particular barrier has been crossed a certain number of
 times, <span class="math notranslate nohighlight">\(N_f\)</span> (more on determining <span class="math notranslate nohighlight">\(N_f\)</span> shortly), a check is
 performed to determine whether or not the current state is part of a superbasin.
+The first time a process is followed, that sighting counts toward <span class="math notranslate nohighlight">\(N_f\)</span>.
+When the count already meets <span class="math notranslate nohighlight">\(N_f\)</span>, the Superbasin Criterion runs on
+that visit.
 This is called the Superbasin Criterion.</p>
 <p>In the Superbasin Criterion, a search is performed, originating at the current
 state and proceeding outward through all low-barrier processes to adjacent
@@ -532,6 +540,12 @@ Criterion(<a class="reference internal" href="#eon.schema.CoarseGrainingConfig.a
 the approximate amount of error the user might expect in eventual superbasin
 exit direction and time compared to normal KMC simulation
 (<a class="reference internal" href="#eon.schema.CoarseGrainingConfig.askmc_confidence" title="eon.schema.CoarseGrainingConfig.askmc_confidence"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">eon.schema.CoarseGrainingConfig.askmc_confidence</span></code></a>).</p>
+<p>A new modified-process row is appended as one line, then flushed and
+synced. A final line with no newline or the wrong number of fields is
+dropped, and the next append cuts that tail off first. A write that
+stops partway leaves the previous rows.</p>
+<p>The counters in <code class="docutils literal notranslate"><span class="pre">askmc_data.txt</span></code> are replaced in one step. A write that
+stops partway leaves the previous counters.</p>
 </section>
 <section id="amsel-discover-decide">
 <h2>amsel discover_decide<a class="headerlink" href="#amsel-discover-decide" title="Link to this heading">¶</a></h2>
@@ -652,6 +666,9 @@ names.</p>
 FPTA. A rejected basin falls through to the MCAMC superbasin step.
 <code class="docutils literal notranslate"><span class="pre">split_required</span></code> on that MCAMC object keeps the entry state and writes the
 reduced member list.</p>
+<p>The superbasin exit draw uses the same strict cumulative test as a
+single-state kinetic Monte Carlo step. A column whose probability is zero
+is not selected when the draw is zero.</p>
 </section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
@@ -824,7 +841,7 @@ have to be made when finding product states of unvisited processes.</p>
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">CG_Nov01</a><span class="fn-bracket">]</span></span>
 <p>M. A. Novotny. <em>A Tutorial on Advanced Dynamic Monte Carlo Methods for Systems with Discrete State Spaces</em>, pages 153–210. WORLD SCIENTIFIC, April 2001. <a class="reference external" href="https://doi.org/10.1142/9789812811578_0003">doi:10.1142/9789812811578_0003</a>.</p>
 </div>
-<div class="citation" id="id92" role="doc-biblioentry">
+<div class="citation" id="id93" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">CG_Vot97</a><span class="fn-bracket">]</span></span>
 <p>Arthur F. Voter. Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events. <em>Physical Review Letters</em>, 78(20):3908–3911, May 1997. <a class="reference external" href="https://doi.org/10.1103/PhysRevLett.78.3908">doi:10.1103/PhysRevLett.78.3908</a>.</p>
 </div>

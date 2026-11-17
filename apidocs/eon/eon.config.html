@@ -357,6 +357,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#data">Data</a></li>
 <li><a class="reference internal" href="#api">API</a><ul>
+<li><a class="reference internal" href="#eon.config.LiteralPercentInterpolation"><code class="docutils literal notranslate"><span class="pre">LiteralPercentInterpolation</span></code></a></li>
 <li><a class="reference internal" href="#eon.config.canonical_listed_value"><code class="docutils literal notranslate"><span class="pre">canonical_listed_value()</span></code></a></li>
 <li><a class="reference internal" href="#eon.config.ConfigSection"><code class="docutils literal notranslate"><span class="pre">ConfigSection</span></code></a></li>
 <li><a class="reference internal" href="#eon.config.ConfigKey"><code class="docutils literal notranslate"><span class="pre">ConfigKey</span></code></a></li>
@@ -438,13 +439,16 @@ data-aria-dark="Switch to auto color mode">
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-left">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.config.ConfigSection" title="eon.config.ConfigSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConfigSection</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.config.LiteralPercentInterpolation" title="eon.config.LiteralPercentInterpolation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LiteralPercentInterpolation</span></code></a></p></td>
+<td><p>Basic interpolation that keeps a lone percent sign.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.config.ConfigSection" title="eon.config.ConfigSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConfigSection</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.config.ConfigKey" title="eon.config.ConfigKey"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConfigKey</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.config.ConfigKey" title="eon.config.ConfigKey"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConfigKey</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.config.ConfigClass" title="eon.config.ConfigClass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConfigClass</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.config.ConfigClass" title="eon.config.ConfigClass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConfigClass</span></code></a></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -477,6 +481,16 @@ data-aria-dark="Switch to auto color mode">
 </section>
 <section id="api">
 <h3>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="eon.config.LiteralPercentInterpolation">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.config.</span></span><span class="sig-name descname"><span class="pre">LiteralPercentInterpolation</span></span><a class="reference internal" href="../../_modules/eon/config.html#LiteralPercentInterpolation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.config.LiteralPercentInterpolation" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/configparser.html#configparser.BasicInterpolation" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">configparser.BasicInterpolation</span></code></a></p>
+<p>Basic interpolation that keeps a lone percent sign.</p>
+<p><code class="docutils literal notranslate"><span class="pre">%(name)s</span></code> still expands and <code class="docutils literal notranslate"><span class="pre">%%</span></code> is still one percent sign. A
+percent that is neither of those is the character itself, so a path
+such as <code class="docutils literal notranslate"><span class="pre">/tmp/a%b</span></code> can be a main_directory.</p>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.config.canonical_listed_value">
 <span class="sig-prename descclassname"><span class="pre">eon.config.</span></span><span class="sig-name descname"><span class="pre">canonical_listed_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/config.html#canonical_listed_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.config.canonical_listed_value" title="Link to this definition">¶</a></dt>
