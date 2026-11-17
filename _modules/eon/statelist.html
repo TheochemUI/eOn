@@ -615,50 +615,61 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="194"><span class="sd">        &quot;&quot;&quot;</span>
 </span><span data-line="195">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_table</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
 </span><span data-line="196">            <span class="k">return</span>
-</span><span data-line="197">        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_table_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span><span data-line="198">            <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
-</span><span data-line="199">        <span class="bp">self</span><span class="o">.</span><span class="n">state_table</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="200">        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
-</span><span data-line="201">            <span class="n">parts</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-</span><span data-line="202">            <span class="k">if</span> <span class="ow">not</span> <span class="n">parts</span><span class="p">:</span>
-</span><span data-line="203">                <span class="k">continue</span>
-</span><span data-line="204">            <span class="bp">self</span><span class="o">.</span><span class="n">state_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span></div>
+</span><span data-line="197">        <span class="n">lines</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">DurableTable</span><span class="p">(</span>
+</span><span data-line="198">            <span class="bp">self</span><span class="o">.</span><span class="n">state_table_path</span><span class="p">,</span>
+</span><span data-line="199">            <span class="n">header_lines</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+</span><span data-line="200">            <span class="n">min_fields</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span data-line="201">            <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="202">            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;state_table </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_table_path</span><span class="p">,</span>
+</span><span data-line="203">        <span class="p">)</span><span class="o">.</span><span class="n">lines</span><span class="p">()</span>
+</span><span data-line="204">        <span class="bp">self</span><span class="o">.</span><span class="n">state_table</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="205">        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+</span><span data-line="206">            <span class="n">parts</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+</span><span data-line="207">            <span class="k">if</span> <span class="ow">not</span> <span class="n">parts</span><span class="p">:</span>
+</span><span data-line="208">                <span class="k">continue</span>
+</span><span data-line="209">            <span class="bp">self</span><span class="o">.</span><span class="n">state_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span></div>
 
-</span><span data-line="205">
+</span><span data-line="210">
 <div class="viewcode-block" id="StateList.save_state_table">
 <a class="viewcode-back" href="../../apidocs/eon/eon.statelist.html#eon.statelist.StateList.save_state_table">[docs]</a>
-</span><span data-line="206">    <span class="k">def</span><span class="w"> </span><span class="nf">save_state_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="207">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_table</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="208">            <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">atomic_write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_table_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span><span data-line="209">                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_table</span><span class="p">)):</span>
-</span><span data-line="210">                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">% 7d</span><span class="s2"> </span><span class="si">%16.5f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_table</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span></div>
+</span><span data-line="211">    <span class="k">def</span><span class="w"> </span><span class="nf">save_state_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="212">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_table</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="213">            <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">atomic_write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_table_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span data-line="214">                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_table</span><span class="p">)):</span>
+</span><span data-line="215">                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">% 7d</span><span class="s2"> </span><span class="si">%16.5f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_table</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span></div>
 
-</span><span data-line="211">
+</span><span data-line="216">
 <div class="viewcode-block" id="StateList.append_state_table">
 <a class="viewcode-back" href="../../apidocs/eon/eon.statelist.html#eon.statelist.StateList.append_state_table">[docs]</a>
-</span><span data-line="212">    <span class="k">def</span><span class="w"> </span><span class="nf">append_state_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy</span><span class="p">):</span>
-</span><span data-line="213">        <span class="n">number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_num_states</span><span class="p">()</span>
-</span><span data-line="214">        <span class="k">if</span> <span class="n">energy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="215">            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span>
-</span><span data-line="216">                <span class="s2">&quot;State </span><span class="si">%i</span><span class="s2"> has no reactant energy in its info file; it cannot &quot;</span>
-</span><span data-line="217">                <span class="s2">&quot;be added to the state table&quot;</span> <span class="o">%</span> <span class="n">number</span>
-</span><span data-line="218">            <span class="p">)</span>
-</span><span data-line="219">        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_table_path</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span><span data-line="220">            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">% 7d</span><span class="s2"> </span><span class="si">%16.5f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="n">energy</span><span class="p">))</span>
-</span><span data-line="221">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_table</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="222">            <span class="bp">self</span><span class="o">.</span><span class="n">state_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">energy</span><span class="p">)</span></div>
+</span><span data-line="217">    <span class="k">def</span><span class="w"> </span><span class="nf">append_state_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy</span><span class="p">):</span>
+</span><span data-line="218"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Append one state row, then flush and sync it.</span>
+</span><span data-line="219">
+</span><span data-line="220"><span class="sd">        A torn final line is cut off first.</span>
+</span><span data-line="221"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="222">        <span class="n">number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_num_states</span><span class="p">()</span>
+</span><span data-line="223">        <span class="k">if</span> <span class="n">energy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="224">            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span>
+</span><span data-line="225">                <span class="s2">&quot;State </span><span class="si">%i</span><span class="s2"> has no reactant energy in its info file; it cannot &quot;</span>
+</span><span data-line="226">                <span class="s2">&quot;be added to the state table&quot;</span> <span class="o">%</span> <span class="n">number</span>
+</span><span data-line="227">            <span class="p">)</span>
+</span><span data-line="228">        <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">% 7d</span><span class="s2"> </span><span class="si">%16.5f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="n">energy</span><span class="p">)</span>
+</span><span data-line="229">        <span class="n">io</span><span class="o">.</span><span class="n">DurableTable</span><span class="p">(</span>
+</span><span data-line="230">            <span class="bp">self</span><span class="o">.</span><span class="n">state_table_path</span><span class="p">,</span> <span class="n">header_lines</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">min_fields</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span>
+</span><span data-line="231">        <span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+</span><span data-line="232">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_table</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="233">            <span class="bp">self</span><span class="o">.</span><span class="n">state_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">energy</span><span class="p">)</span></div>
 
-</span><span data-line="223">
+</span><span data-line="234">
 <div class="viewcode-block" id="StateList.state_path">
 <a class="viewcode-back" href="../../apidocs/eon/eon.statelist.html#eon.statelist.StateList.state_path">[docs]</a>
-</span><span data-line="224">    <span class="k">def</span><span class="w"> </span><span class="nf">state_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_number</span><span class="p">):</span>
-</span><span data-line="225"><span class="w">        </span><span class="sd">&quot;&quot;&quot; Utility function to return the compiled path of a state, whether it exists or not. &quot;&quot;&quot;</span>
-</span><span data-line="226">        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="o">/</span> <span class="nb">str</span><span class="p">(</span><span class="n">state_number</span><span class="p">))</span></div>
+</span><span data-line="235">    <span class="k">def</span><span class="w"> </span><span class="nf">state_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_number</span><span class="p">):</span>
+</span><span data-line="236"><span class="w">        </span><span class="sd">&quot;&quot;&quot; Utility function to return the compiled path of a state, whether it exists or not. &quot;&quot;&quot;</span>
+</span><span data-line="237">        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="o">/</span> <span class="nb">str</span><span class="p">(</span><span class="n">state_number</span><span class="p">))</span></div>
 </div>
 
-</span><span data-line="227">
-</span><span data-line="228"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-</span><span data-line="229">    <span class="k">pass</span>
+</span><span data-line="238">
+</span><span data-line="239"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span data-line="240">    <span class="k">pass</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

@@ -521,6 +521,10 @@ syncs it.
 A final line with no newline or the wrong number of fields is dropped, and
 the next append cuts that tail off first. A write that stops partway leaves
 the previous table.</p>
+<p>A new state is recorded by appending one line to <code class="docutils literal notranslate"><span class="pre">state_table</span></code>, then
+flushing and syncing it. A final line with no newline or the wrong number
+of fields is dropped, and the next append cuts that tail off first. A
+write that stops partway leaves the previous table.</p>
 <p>A complete tutorial is <a class="reference internal" href="../tutorials/akmc.html"><span class="std std-doc">also provided</span></a>.</p>
 <section id="state-list">
 <h2>State list<a class="headerlink" href="#state-list" title="Link to this heading">¶</a></h2>

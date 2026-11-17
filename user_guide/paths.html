@@ -478,7 +478,9 @@ The confirmation prompt still runs.
 fails leaves the previous file.
 A path may contain a percent sign. <code class="docutils literal notranslate"><span class="pre">main_directory</span> <span class="pre">=</span> <span class="pre">/tmp/a%b</span></code> is that
 directory. <code class="docutils literal notranslate"><span class="pre">%(main_directory)s</span></code> still expands, and <code class="docutils literal notranslate"><span class="pre">%%</span></code> is still one
-percent sign.</p>
+percent sign.
+<code class="docutils literal notranslate"><span class="pre">prng.pkl</span></code> under the main directory is replaced in one step. A write that
+fails leaves the previous random state.</p>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Paths]</span>

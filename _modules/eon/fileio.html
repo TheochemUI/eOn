@@ -489,7 +489,7 @@ data-aria-dark="Switch to auto color mode">
 <a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.save_prng_state">[docs]</a>
 </span><span data-line="68"><span class="k">def</span><span class="w"> </span><span class="nf">save_prng_state</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
 </span><span data-line="69">    <span class="n">state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
-</span><span data-line="70">    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+</span><span data-line="70">    <span class="k">with</span> <span class="n">atomic_write</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
 </span><span data-line="71">        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">fh</span><span class="p">,</span> <span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">)</span></div>
 
 </span><span data-line="72">
