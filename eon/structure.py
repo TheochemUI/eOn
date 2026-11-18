@@ -96,6 +96,21 @@ def file_rows_to_structure_rows(
     return out
 
 
+def _array_of(frame, name: str):
+    """The ``(N, 3)`` array a frame holds for a per-atom section, or ``None``.
+
+    ``None`` also stands for a frame that cannot say, so the caller falls back
+    to reading the atoms one at a time.
+    """
+    getter = getattr(frame, name, None)
+    if getter is None:
+        return None
+    try:
+        return getter()
+    except Exception:
+        return None
+
+
 class Structure:
     """Mutable atomic configuration (numpy-backed).
 
@@ -203,8 +218,9 @@ class Structure:
         """
         n = len(self)
         ids = np.asarray(self.atom_ids, dtype=np.uint64).reshape(-1)
-        if ids.shape[0] == n and ids.size > 0 and np.unique(ids).size == n:
-            return ids
+        if ids.shape[0] == n and ids.size > 0:
+            if n == 1 or bool(np.all(ids[1:] > ids[:-1])) or np.unique(ids).size == n:
+                return ids
         return np.arange(1, n + 1, dtype=np.uint64)
 
     def atom_is_free(self) -> np.ndarray:
@@ -273,29 +289,38 @@ class Structure:
                 [atom.atom_id for atom in frame.atoms], dtype=np.uint64
             ).reshape(n)
         p.atom_ids = ids
-        for i, atom in enumerate(frame.atoms):
-            p.names[i] = atom.symbol
-            p.mass[i] = atom.mass if atom.mass is not None else 0.0
-            fixed = atom.fixed
-            if fixed is None:
-                p._free[i] = (1.0, 1.0, 1.0)
-            else:
-                p._free[i] = tuple(0.0 if flag else 1.0 for flag in fixed)
+        atom_list = frame.atoms
+        p.names = [atom.symbol for atom in atom_list]
+        masses = [atom.mass for atom in atom_list]
+        p.mass = np.array(
+            [0.0 if m is None else m for m in masses], dtype=float
+        ).reshape(n)
+        flags = [atom.fixed for atom in atom_list]
+        fixed = np.array(
+            [(False, False, False) if f is None else f for f in flags], dtype=bool
+        ).reshape(n, 3)
+        p._free = np.where(fixed, 0.0, 1.0)
         order = structure_order(p.atom_ids)
         file_to_struct = np.empty(n, dtype=np.int64)
         file_to_struct[order] = np.arange(n, dtype=np.int64)
         p.file_to_struct = file_to_struct
-        if not np.array_equal(order, np.arange(n)):
+        identity = np.array_equal(order, np.arange(n))
+        if not identity:
             p.r = p.r[order]
             p.free = p.free[order]
             p.mass = p.mass[order]
             p.atom_ids = p.atom_ids[order]
             p.names = [p.names[j] for j in order]
 
-        def _section(attrs: tuple[str, str, str]) -> np.ndarray | None:
+        def _section(
+            attrs: tuple[str, str, str], array: np.ndarray | None
+        ) -> np.ndarray | None:
+            if array is not None:
+                arr = np.array(array, dtype=float).reshape(n, 3)
+                return arr if identity else arr[order]
             rows = []
             present = False
-            for atom in frame.atoms:
+            for atom in atom_list:
                 vals = [getattr(atom, name) for name in attrs]
                 if any(val is not None for val in vals):
                     present = True
@@ -303,12 +328,18 @@ class Structure:
             if not present:
                 return None
             arr = np.array(rows, dtype=float)
-            if not np.array_equal(order, np.arange(n)):
-                arr = arr[order]
-            return arr
+            return arr if identity else arr[order]
 
-        p.forces = _section(("fx", "fy", "fz"))
-        p.velocities = _section(("vx", "vy", "vz"))
+        # Section mask 0: the frame holds neither forces nor velocities.
+        mask = getattr(frame, "sections_mask", None)
+        if mask is not None and not callable(mask) and int(mask) == 0:
+            p.forces = None
+            p.velocities = None
+        else:
+            p.forces = _section(("fx", "fy", "fz"), _array_of(frame, "forces_array"))
+            p.velocities = _section(
+                ("vx", "vy", "vz"), _array_of(frame, "velocities_array")
+            )
         meta = getattr(frame, "metadata", None)
         if meta is not None:
             try:
@@ -318,6 +349,30 @@ class Structure:
             if energy is not None:
                 p.con_energy = float(energy)
         return p
+
+    def _species_masses(self, symbols: list) -> list:
+        """Per-atom mass with each species held to its first atom's mass.
+
+        A con file carries one mass per species block; atoms of a species
+        that disagree are collapsed onto the first and the change logged.
+        """
+        masses = np.asarray(self.mass, dtype=float).reshape(-1)
+        if not symbols:
+            return []
+        if bool((masses == masses[0]).all()):
+            return masses.tolist()
+        names = np.asarray(symbols)
+        _, first, inverse = np.unique(names, return_index=True, return_inverse=True)
+        collapsed = masses[first][inverse.reshape(-1)]
+        for i in np.flatnonzero(collapsed != masses).tolist():
+            logger.info(
+                "Collapsed mass of %s atom %s from %s to %s",
+                symbols[i],
+                i,
+                float(masses[i]),
+                float(collapsed[i]),
+            )
+        return collapsed.tolist()
 
     def to_conframe(
         self,
@@ -331,50 +386,42 @@ class Structure:
         the grouping back out of.
         """
         lengths, angles = box_to_length_angle(self.box)
-        atom_ids = self.ids_or_sequential()
+        n = len(self)
+        atom_ids = self.ids_or_sequential().tolist()
         forces = getattr(self, "forces", None)
         velocities = getattr(self, "velocities", None)
-        first_mass: dict[str, float] = {}
-        atom_list = []
-        for i in range(len(self)):
-            fixed = [bool(self._free[i, a] < 0.5) for a in range(3)]
-            symbol = self.names[i]
-            mass = float(self.mass[i])
-            seen = first_mass.get(symbol)
-            if seen is None:
-                first_mass[symbol] = mass
-            elif seen != mass:
-                logger.info(
-                    "Collapsed mass of %s atom %s from %s to %s",
-                    symbol,
-                    i,
-                    mass,
-                    seen,
-                )
-                mass = seen
-            kwargs = {}
-            if forces is not None:
-                row = np.asarray(forces[i], dtype=float).reshape(3)
-                kwargs["fx"] = float(row[0])
-                kwargs["fy"] = float(row[1])
-                kwargs["fz"] = float(row[2])
-            if velocities is not None:
-                row = np.asarray(velocities[i], dtype=float).reshape(3)
-                kwargs["vx"] = float(row[0])
-                kwargs["vy"] = float(row[1])
-                kwargs["vz"] = float(row[2])
-            atom_list.append(
-                readcon.Atom(
-                    symbol=symbol,
-                    x=float(self.r[i][0]),
-                    y=float(self.r[i][1]),
-                    z=float(self.r[i][2]),
-                    fixed=fixed,
-                    atom_id=int(atom_ids[i]),
-                    mass=mass,
-                    **kwargs,
-                )
+        symbols = list(self.names)
+        masses = self._species_masses(symbols)
+        fixed = (np.asarray(self._free, dtype=float) < 0.5).tolist()
+        xyz = np.asarray(self.r, dtype=float).tolist()
+        extras: list[dict] = [{} for _ in range(n)]
+        if forces is not None:
+            rows = np.asarray(forces, dtype=float).reshape(n, 3).tolist()
+            extras = [
+                {**e, "fx": row[0], "fy": row[1], "fz": row[2]}
+                for e, row in zip(extras, rows)
+            ]
+        if velocities is not None:
+            rows = np.asarray(velocities, dtype=float).reshape(n, 3).tolist()
+            extras = [
+                {**e, "vx": row[0], "vy": row[1], "vz": row[2]}
+                for e, row in zip(extras, rows)
+            ]
+        atom_list = [
+            readcon.Atom(
+                symbol=symbol,
+                x=pos[0],
+                y=pos[1],
+                z=pos[2],
+                fixed=flags,
+                atom_id=atom_id,
+                mass=mass,
+                **extra,
             )
+            for symbol, pos, flags, atom_id, mass, extra in zip(
+                symbols, xyz, fixed, atom_ids, masses, extras
+            )
+        ]
         frame = readcon.ConFrame(
             cell=list(lengths),
             angles=list(angles),
