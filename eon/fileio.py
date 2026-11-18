@@ -533,17 +533,40 @@ class ini(SCP):
     def __init__(self, filenames):
         self.loaded = False
         self.filenames = filenames
+        self._parsed_from = None
         SCP.__init__(self)
+
+    def _file_contents(self):
+        """Bytes of each file now, ``None`` for one that cannot be read."""
+        names = [self.filenames] if isinstance(self.filenames, (str, os.PathLike)) \
+            else list(self.filenames)
+        contents = []
+        for name in names:
+            try:
+                with open(name, 'rb') as fh:
+                    contents.append(fh.read())
+            except OSError:
+                contents.append(None)
+        return contents
+
+    def _parse(self, contents):
+        SCP.read(self, self.filenames)
+        self._parsed_from = contents
 
     def read(self):
         self.loaded = True
-        SCP.read(self, self.filenames)
+        self._parse(self._file_contents())
 
     def get(self, section, option, default="ini_no_default", **kwargs):
         if not self.loaded:
             self.read()
         try:
-            SCP.read(self, self.filenames)
+            # Parse again only when a file's bytes are not the bytes last
+            # parsed; the files are small and re-reading them is cheap, the
+            # parse is not.
+            contents = self._file_contents()
+            if contents != self._parsed_from:
+                self._parse(contents)
             value = SCP.get(self, section, option, **kwargs)
         except:
             if default == "ini_no_default":
