@@ -43,3 +43,43 @@
   communicator and disabled Python binding as defaults. The in-process
   communicator and its binding are now the defaults, while explicit
   communicator selection remains available.
+- `client/potentials/LAMMPS/LAMMPSPot.cpp:93-177` replayed four `unfix`
+  commands, four group deletions, and every fixed-coordinate group on every
+  force call. Matter supplies the same all-free mask on each call, so the
+  worker spent most of its live AKMC time processing commands that could not
+  affect a force. All-free masks are now normalized to empty, unchanged masks
+  are ignored, and a changed mask is applied once per LAMMPS instance.
+- `eon/communicator_inprocess.py:517-540` ignored `path_pot`. The local
+  communicator copied `in.lammps` and its table into each job directory, but
+  the in-process path constructed its potential in the state directory. That
+  made native EAM detection fail and could fall through to liblammps without
+  an input file. Potential support files now have one persistent,
+  traversal-checked workspace per communicator.
+- `eon/communicator_inprocess.py:57-64,551-589` included the per-search random
+  seed in the state-session cache key. Every search therefore invalidated the
+  supposedly persistent potential and minimized reactant. Random seeds are
+  now excluded from the session identity; geometry and all behavior-affecting
+  configuration remain in it. `eon/config.py:233-240` also validated
+  `reuse_state_sessions` but never copied its parsed value onto ConfigClass,
+  making the comparison switch always use its constructor default. The
+  runtime configuration now carries the parsed boolean.
+- `eon/explorer.py:140-145` assumed every communicator completed
+  asynchronously. An in-process result stayed only in memory, while the AKMC
+  invocation exited before its next registration pass and discarded it.
+  Synchronous communicators now register their completed batch immediately.
+- `client/ProcessSearchJob.cpp:192-252` regenerated a displacement when called
+  through the Python binding instead of consuming the server's exact
+  `displacement.con` and `direction.dat`. The in-process entry now accepts
+  those objects directly, preserves reactant atom indexing and fixed
+  coordinates, and follows the same search as the file path.
+- `client/ProcessSearchJob.cpp:276-282` did not expose its final status and
+  always wrote legacy result files from the in-process entry.
+  `eon/communicator_inprocess.py:390-438` also emitted a mapping with keys that
+  did not match the typed JobResult schema. The binding now returns status,
+  force-call phases, barriers, energies, and prefactors without writing job
+  files, and the communicator publishes a complete typed and legacy view.
+- `client/python/pyeonclient/__init__.py:99` did not export the already-bound
+  `ProcessSearchJob`, so Python silently used the lower-level saddle-only
+  fallback. The fallback omitted endpoint minimization, connectivity,
+  prefactors, and process status. The complete process-search class is now
+  the public in-process path.
