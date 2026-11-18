@@ -108,8 +108,25 @@ def akmc(config: ConfigClass = None, steps=0):
         sb = None
         explore_state = current_state
 
+    # amsel takes the catalogs it is given as complete. An exit waits for
+    # every transient state to reach akmc_confidence, so the search goes to
+    # the least confident one. That confidence is the plain one, without the
+    # superbasin filter, so the explorer is not told about the superbasin.
+    explore_sb = sb
+    if getattr(config, "amsel_discover_decide", False):
+        from eon.amsel_superbasin_gate import amsel_search_state
+
+        needs_search = amsel_search_state(
+            current_state,
+            lambda number: _resolve_akmc_state(states, number),
+            config,
+        )
+        if needs_search is not None:
+            explore_state = needs_search
+            explore_sb = None
+
     state_explorer = explorer.get_minmodexplorer(config)(
-        states, previous_state, explore_state, superbasin=sb, config=config)
+        states, previous_state, explore_state, superbasin=explore_sb, config=config)
     state_explorer.explore()
 
     # Take a KMC step, if it's time.
@@ -236,14 +253,21 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
         amsel_exit = None
         # discover_decide runs from [amsel] alone. use_mcamc is not required.
         if discover_decide:
-            from eon.amsel_superbasin_gate import amsel_discover_exit
-
-            amsel_exit = amsel_discover_exit(
-                current_state,
-                lambda number: _resolve_akmc_state(states, number),
-                config,
-                uniform=np.random.random_sample,
+            from eon.amsel_superbasin_gate import (
+                AmselNeedsSearch,
+                amsel_discover_exit,
             )
+
+            try:
+                amsel_exit = amsel_discover_exit(
+                    current_state,
+                    lambda number: _resolve_akmc_state(states, number),
+                    config,
+                    uniform=np.random.random_sample,
+                )
+            except AmselNeedsSearch as waiting:
+                logger.info("No amsel exit yet: %s", waiting)
+                break
         if not confident:
             if amsel_exit is None:
                 break

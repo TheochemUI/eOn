@@ -20,6 +20,11 @@ too: the absorbing label is a 32-bit id, and the hop creates the product
 state from the process id. The exit time and channel come from
 MRM (mean time) or FPTA (one sample). The kernels are the ``amsel``
 package. A missing package logs ``unavailable`` and returns no exit.
+
+amsel takes the edges it is given as each transient state's complete
+catalog. An exit therefore waits until every transient state has eOn's own
+confidence, ``config.akmc_confidence``. ``AmselNeedsSearch`` names the
+states below it, and ``amsel_search_state`` picks the one to search next.
 """
 from __future__ import annotations
 
@@ -27,6 +32,7 @@ import hashlib
 import json
 import logging
 import math
+import numbers
 from pathlib import Path
 from typing import Any, Callable, Mapping
 
@@ -72,18 +78,34 @@ def _process_barrier_eV(proc: Mapping[str, Any]) -> float:
     return 1.0
 
 
+def _unique_numbers(items) -> list[int]:
+    """State numbers in first-seen order, each once."""
+    seen: set[int] = set()
+    ordered: list[int] = []
+    for number in items:
+        number = int(number)
+        if number not in seen:
+            seen.add(number)
+            ordered.append(number)
+    return ordered
+
+
 def build_graph_from_superbasin(superbasin: Any, entry_number: int) -> tuple[
     list[int],
     list[tuple[int, int, float]],
     list[float],
 ]:
-    """Return (candidate_states, rate_triples, ts_energies) for amsel."""
-    candidates = [int(n) for n in superbasin.state_numbers]
+    """Return (candidate_states, rate_triples, ts_energies) for amsel.
+
+    A state listed more than once contributes its process table once.
+    """
+    members = _unique_numbers(superbasin.state_numbers)
+    candidates = list(members)
     if int(entry_number) not in candidates:
         candidates = [int(entry_number)] + candidates
     rates: list[tuple[int, int, float]] = []
     barriers: list[float] = []
-    for number in superbasin.state_numbers:
+    for number in members:
         procs = superbasin.state_dict[number].get_process_table()
         for process_key, proc in list(procs.items()):
             rate = float(proc.get("rate", 0.0) or 0.0)
@@ -732,31 +754,98 @@ def _amsel_floats(config: Any) -> dict[str, Any]:
     }
 
 
-def amsel_discover_exit(
+class AmselNeedsSearch(RuntimeError):
+    """A transient state is below the configured confidence.
+
+    ``states`` holds ``(state number, confidence)`` pairs, least confident
+    first. A confidence of ``None`` is a state that reported none, or
+    reported NaN. Such a state needs search like any other.
+    """
+
+    def __init__(self, states):
+        self.states = tuple((int(number), conf) for number, conf in states)
+        detail = ", ".join(
+            "%d (confidence %s)" % (number, "missing" if conf is None else "%.6f" % conf)
+            for number, conf in self.states
+        )
+        super().__init__("amsel exit waits for process searches on states " + detail)
+
+
+def _confidence_threshold(config: Any) -> float:
+    """``config.akmc_confidence`` as a finite float. There is no default."""
+    if not hasattr(config, "akmc_confidence"):
+        raise AttributeError(
+            "config has no akmc_confidence; an amsel exit needs the confidence "
+            "eOn requires of a state"
+        )
+    value = config.akmc_confidence
+    if isinstance(value, bool) or not isinstance(value, numbers.Real):
+        raise TypeError("akmc_confidence must be a real number, not %r" % (value,))
+    value = float(value)
+    if not math.isfinite(value):
+        raise ValueError("akmc_confidence must be finite, not %r" % value)
+    return value
+
+
+def _state_confidence(state: Any) -> float | None:
+    """eOn's own confidence of ``state``, or None when it reports none.
+
+    This is ``get_confidence()`` with no superbasin: the confidence of the
+    whole catalog, the same value the plain step tests. Missing, non-numeric
+    and non-finite values are None.
+    """
+    getter = getattr(state, "get_confidence", None)
+    if not callable(getter):
+        return None
+    value = getter()
+    if isinstance(value, bool) or not isinstance(value, numbers.Real):
+        return None
+    value = float(value)
+    return value if math.isfinite(value) else None
+
+
+class _ExitPlan:
+    """Everything the exit needs, before a kernel is called."""
+
+    __slots__ = ("view", "entry", "transient", "absorbing", "rates", "lid", "direct")
+
+    def __init__(self, view, entry, transient, absorbing, rates, lid, direct):
+        self.view = view
+        self.entry = int(entry)
+        self.transient = _unique_numbers(transient)
+        self.absorbing = absorbing
+        self.rates = rates
+        self.lid = float(lid)
+        self.direct = bool(direct)
+
+
+def _unconfident_states(
+    plan: _ExitPlan, threshold: float
+) -> list[tuple[int, float | None]]:
+    """Transient states below ``threshold``, least confident first.
+
+    A state with no confidence sorts before every state with one.
+    """
+    unreported: list[tuple[int, float | None]] = []
+    below: list[tuple[int, float | None]] = []
+    for number in plan.transient:
+        conf = _state_confidence(plan.view.state_dict.get(int(number)))
+        if conf is None:
+            unreported.append((int(number), None))
+        elif conf < threshold:
+            below.append((int(number), conf))
+    below.sort(key=lambda item: (item[1], item[0]))
+    return sorted(unreported) + below
+
+
+def _plan_exit(
     entry_state: Any,
     resolve_state: Callable[[int], Any] | None,
     config: Any,
-    uniform: Callable[[], float] | None = None,
-) -> AmselExit | None:
-    """Log ``amsel discover_decide status`` and maybe return an MRM or FPTA exit.
-
-    The log line is written for every call, including a table with one
-    state and a missing ``amsel`` package. An in-basin edge is a barrier
-    strictly below ``e_min_init``. With such an edge, an exit is returned
-    when discover accepts the basin, retightens it, or splits it. With no
-    such edge, a barrier at or above the cutoff is a direct exit. The
-    transient set is the entry state, the products are absorbing, and the
-    logged status is ``accepted``. A product column of -1 uses a 32-bit
-    absorbing label. The process id is unchanged.
-
-    ``debug_use_mean_time`` selects MRM. Otherwise the clock is one FPTA
-    sample. The other kernel is used when the selected one is missing.
-    A missing package logs ``unavailable`` and returns no exit.
-    """
-    if uniform is None:
-        import random
-
-        uniform = random.random
+    *,
+    log: bool,
+) -> _ExitPlan | None:
+    """The partition an exit would use, or None when there is no exit."""
     knobs = _amsel_floats(config)
     view = basin_view_from_state(entry_state, resolve_state, knobs["e_min_init"])
     decision = discover_decide_for_superbasin(
@@ -785,13 +874,16 @@ def amsel_discover_exit(
             "primary_transient": list(transient),
             "raw": ("accepted", list(transient), list(absorbing), list(rates)),
         }
-    status = _log_status(decision)
-    if not status_pair(status, bool(decision.get("available"))):
-        logger.warning(
-            "amsel discover_decide status=%s available=%s is outside the vocabulary",
-            status,
-            decision.get("available"),
-        )
+    if log:
+        status = _log_status(decision)
+        if not status_pair(status, bool(decision.get("available"))):
+            logger.warning(
+                "amsel discover_decide status=%s available=%s is outside the vocabulary",
+                status,
+                decision.get("available"),
+            )
+    else:
+        status = str(decision.get("status", "unavailable"))
     if status not in _EXIT_STATUSES or not decision.get("available"):
         return None
     if direct is None:
@@ -815,12 +907,79 @@ def amsel_discover_exit(
     absorbing, rates = _rates_at_lid(view.state_dict, transient, absorbing, rates, lid)
     if not absorbing:
         return None
+    return _ExitPlan(view, entry, transient, absorbing, rates, lid, direct is not None)
+
+
+def amsel_search_state(
+    entry_state: Any,
+    resolve_state: Callable[[int], Any] | None,
+    config: Any,
+) -> Any | None:
+    """The state eOn should search next for an exit from ``entry_state``.
+
+    It is the least confident transient state of the partition an exit
+    would use, when any is below ``config.akmc_confidence``. None means no
+    transient state waits on a search, or there is no exit to wait for.
+    A state that cannot be resolved to a real state is passed over.
+    """
+    plan = _plan_exit(entry_state, resolve_state, config, log=False)
+    if plan is None:
+        return None
+    for number, _conf in _unconfident_states(plan, _confidence_threshold(config)):
+        state = plan.view.state_dict.get(number)
+        if state is not None and not isinstance(state, _ProcessView):
+            return state
+    return None
+
+
+def amsel_discover_exit(
+    entry_state: Any,
+    resolve_state: Callable[[int], Any] | None,
+    config: Any,
+    uniform: Callable[[], float] | None = None,
+) -> AmselExit | None:
+    """Log ``amsel discover_decide status`` and maybe return an MRM or FPTA exit.
+
+    The log line is written for every call, including a table with one
+    state and a missing ``amsel`` package. An in-basin edge is a barrier
+    strictly below ``e_min_init``. With such an edge, an exit is returned
+    when discover accepts the basin, retightens it, or splits it. With no
+    such edge, a barrier at or above the cutoff is a direct exit. The
+    transient set is the entry state, the products are absorbing, and the
+    logged status is ``accepted``. A product column of -1 uses a 32-bit
+    absorbing label. The process id is unchanged.
+
+    amsel takes the edges it is given as each transient state's complete
+    catalog. No exit is taken while a transient state is below
+    ``config.akmc_confidence``, the test eOn applies to a plain state.
+    ``AmselNeedsSearch`` names those states, and no kernel runs and no
+    uniform is drawn. A state with a missing or NaN confidence is one of
+    them. A configured confidence that is missing or not a finite number
+    is an error.
+
+    ``debug_use_mean_time`` selects MRM. Otherwise the clock is one FPTA
+    sample. The other kernel is used when the selected one is missing.
+    A missing package logs ``unavailable`` and returns no exit.
+    """
+    if uniform is None:
+        import random
+
+        uniform = random.random
+    plan = _plan_exit(entry_state, resolve_state, config, log=True)
+    if plan is None:
+        return None
+    waiting = _unconfident_states(plan, _confidence_threshold(config))
+    if waiting:
+        logger.info("amsel exit waits for searches: %s", AmselNeedsSearch(waiting))
+        raise AmselNeedsSearch(waiting)
+    transient, absorbing, rates, lid = plan.transient, plan.absorbing, plan.rates, plan.lid
+    entry = plan.entry
     prefer = "mrm" if bool(getattr(config, "debug_use_mean_time", False)) else "fpta"
     chosen = _kernel_exit(prefer, transient, absorbing, rates, entry, uniform)
     if chosen is None:
         return None
     kernel, absorbing_id, clock, time_is_sample = chosen
-    proc = _exit_process(view.state_dict, transient, absorbing_id, lid)
+    proc = _exit_process(plan.view.state_dict, transient, absorbing_id, lid)
     if proc is None:
         logger.warning(
             "amsel %s absorbing state %s has no exit process at or above the settled lid %.3f eV",

@@ -48,6 +48,7 @@ class _States:
 
 
 class _Gate:
+    akmc_confidence = 0.99
     amsel_e_min_init = 0.5
     amsel_e_min_step = 0.05
     amsel_e_min_floor = 0.05

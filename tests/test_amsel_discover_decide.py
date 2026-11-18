@@ -300,8 +300,10 @@ def _accepted_basin(entry, candidates, rates, barriers, e_init, e_step, e_floor,
     )
 
 
-def test_discover_decide_steps_when_old_confidence_is_zero(tmp_path, monkeypatch, caplog):
-    """Scheme old at confidence 0 still leaves through the 0.30 eV MRM exit."""
+def test_discover_decide_steps_when_every_transient_state_is_confident(
+    tmp_path, monkeypatch, caplog
+):
+    """Scheme old leaves through the 0.30 eV MRM exit once each transient state qualifies."""
     seen = {}
 
     def mrm(transient, absorbing, rates, entry):
@@ -324,7 +326,7 @@ def test_discover_decide_steps_when_old_confidence_is_zero(tmp_path, monkeypatch
     assert cfg.akmc_confidence_scheme == "old"
     entry, states = _isomer1()
     for state in states.mapping.values():
-        state.confidence = 0.0
+        state.confidence = cfg.akmc_confidence
     caplog.set_level(logging.INFO, logger="superbasin.amsel_gate")
     current, previous, time, steps = kmc_step(
         entry, states, 0.0, 0.025, None, config=cfg
@@ -335,6 +337,37 @@ def test_discover_decide_steps_when_old_confidence_is_zero(tmp_path, monkeypatch
     assert time == pytest.approx(4.2e-3)
     assert seen["kernel"] == "mrm"
     assert any("status=accepted" in message for message in caplog.messages)
+
+
+def test_discover_decide_holds_when_a_transient_state_is_below_confidence(
+    tmp_path, monkeypatch
+):
+    """One transient state below the threshold keeps the exit from being taken."""
+
+    def mrm(transient, absorbing, rates, entry):
+        raise AssertionError("no kernel runs while a transient state needs search")
+
+    _install_mrm(monkeypatch, _accepted_basin, mrm)
+    cfg = _config(
+        tmp_path,
+        """
+        [amsel]
+        discover_decide = true
+        e_min_init = 0.25
+        """,
+        confidence=0.6,
+    )
+    entry, states = _isomer1()
+    for state in states.mapping.values():
+        state.confidence = cfg.akmc_confidence
+    states.mapping[0].confidence = 0.0
+    current, previous, time, steps = kmc_step(
+        entry, states, 0.0, 0.025, None, config=cfg
+    )
+    assert steps == 0
+    assert current.number == 1
+    assert previous.number == 1
+    assert time == 0.0
 
 
 def test_old_confidence_holds_the_step_when_discover_decide_is_off(tmp_path):
@@ -401,7 +434,7 @@ def test_lone_barrier_is_a_direct_mrm_exit(tmp_path, monkeypatch, caplog):
     state0 = _State(
         0,
         {4: {"rate": 1.0e2, "product": 1, "barrier": 0.30, "prefactor": 1.0e12}},
-        confidence=0.0,
+        confidence=1.0,
     )
     state1 = _State(
         1,
@@ -430,8 +463,8 @@ def test_lone_barrier_is_a_direct_mrm_exit(tmp_path, monkeypatch, caplog):
     assert any("exit kernel=mrm" in message and "product=1" in message for message in caplog.messages)
 
 
-def test_unlinked_product_steps_before_confidence(tmp_path, monkeypatch, caplog):
-    """The live product column -1 leaves at confidence 0. The process id stays the table key."""
+def test_unlinked_product_exits_once_the_state_is_confident(tmp_path, monkeypatch, caplog):
+    """The live product column -1 leaves. The process id stays the table key."""
     seen = {}
     proc_id = 957256310822057824
 
@@ -484,7 +517,7 @@ def test_unlinked_product_steps_before_confidence(tmp_path, monkeypatch, caplog)
         0,
         {proc_id: row},
         energy=-2795.962935813,
-        confidence=0.0,
+        confidence=1.0,
     )
 
     class _Linking(_States):
