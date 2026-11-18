@@ -63,9 +63,11 @@ class StateList:
         ''' Returns a State object referenced by state_number and process_id. '''
         # If the number of states in state_table is zero
         #we need to add the zero state and energy to the state table.
-        if self.get_num_states() == 0:
+        num_states = self.get_num_states()
+        if num_states == 0:
             zst = self.get_state(0)
-            self.append_state_table(zst.get_energy())
+            self.append_state_table(zst.get_energy(), number=0)
+            num_states = 1
 
         # Load the state object containing the process we want the product for.
         st = self.get_state(state_number)
@@ -81,7 +83,7 @@ class StateList:
             # Make a list of states for which we need to compare self.configurations.
             enew = st.procs[process_id]['product_energy']
             energetically_close = []
-            for id in range(self.get_num_states()):
+            for id in range(num_states):
                 if abs(self.get_state(id).get_energy() - enew) < self.epsilon_e:
                     energetically_close.append(id)
 
@@ -98,7 +100,7 @@ class StateList:
                         return self.get_state(id)
 
             # The id for the new state is the number of states.
-            newstnr = self.get_num_states()
+            newstnr = num_states
 
             # Create the new state object.
             newst = self.StateClass(
@@ -112,7 +114,9 @@ class StateList:
             self.register_process(st.number, newstnr, process_id)
 
             # Append the new state to the state table.
-            self.append_state_table(st.procs[process_id]['product_energy'])
+            self.append_state_table(
+                st.procs[process_id]['product_energy'], number=newstnr
+            )
 
         # The product state already exists, so get it.
         else:
@@ -159,8 +163,9 @@ class StateList:
                 for i in range(len(self.state_table)):
                     f.write("% 7d %16.5f\n" % (i, self.state_table[i]))
 
-    def append_state_table(self, energy):
-        number = self.get_num_states()
+    def append_state_table(self, energy, number=None):
+        if number is None:
+            number = self.get_num_states()
         if energy is None:
             raise IOError(
                 "State %i has no reactant energy in its info file; it cannot "
