@@ -158,6 +158,21 @@ TEST_CASE("LAMMPS screen cursor rewinds when the file is replaced",
   REQUIRE(eonc::lammpsScreenCursor(-1, 80, false) == 0);
 }
 
+TEST_CASE("LAMMPS fixed-mask updates ignore unchanged and all-free masks",
+          "[lammps][mask][hotpath]") {
+  const double freeMask[6] = {};
+  const double fixedMask[6] = {0.0, 0.0, 1.0, 0.0, 0.0, 0.0};
+  std::vector<double> current;
+
+  REQUIRE_FALSE(eonc::lammpsHasFixedCoordinates(2, freeMask));
+  REQUIRE(eonc::lammpsHasFixedCoordinates(2, fixedMask));
+  REQUIRE_FALSE(eonc::lammpsFixedMaskMatches(current, 2, freeMask));
+
+  current.assign(fixedMask, fixedMask + 6);
+  REQUIRE(eonc::lammpsFixedMaskMatches(current, 2, fixedMask));
+  REQUIRE_FALSE(eonc::lammpsFixedMaskMatches(current, 2, freeMask));
+}
+
 #if defined(__linux__)
 namespace {
 std::vector<long> childProcesses() {
