@@ -501,10 +501,10 @@ class LocalInProcess(Communicator):
 
         self._in_submit = True
         try:
-            workdir = self._stage_potential_files()
             with _PROCESS_CWD_LOCK:
                 previous = Path.cwd()
                 try:
+                    workdir = self._stage_potential_files()
                     if workdir is not None:
                         os.chdir(workdir)
                     self._submit_loop(data, invariants, pc)
