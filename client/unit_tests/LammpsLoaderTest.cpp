@@ -17,8 +17,13 @@
 #include "eon/potentials/LAMMPS/LammpsLoader.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/Potential.h"
 #include "eon/potentials/LAMMPS/LAMMPSPot.h"
+#ifdef WITH_RGPOT
+#include "eon/potentials/Rgpot/RgpotPot.h"
+#endif
 
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
@@ -201,6 +206,20 @@ TEST_CASE("production LAMMPS stays in-process and matches the direct library",
   LAMMPSPot production(params);
   REQUIRE(childProcesses() == before);
   LAMMPSPot direct(params, loader);
+#ifdef WITH_RGPOT
+  auto preferred = eonc::helpers::makePotential(params);
+  auto *rgpot = dynamic_cast<RgpotPot *>(preferred.get());
+  REQUIRE(rgpot != nullptr);
+  REQUIRE(rgpot->backend() == "eam");
+
+  eonc::Parameters rgpotLammpsParams;
+  ParametersLoadAccess::potential_options(rgpotLammpsParams).potential =
+      PotType::RGPOT;
+  ParametersLoadAccess::rgpot_options(rgpotLammpsParams).backend = "lammps";
+  auto rgpotLammps = eonc::helpers::makePotential(rgpotLammpsParams);
+  REQUIRE(dynamic_cast<LAMMPSPot *>(rgpotLammps.get()) != nullptr);
+  REQUIRE(childProcesses() == before);
+#endif
 
   constexpr long n = 2;
   const double box[9] = {20.0, 0.0, 0.0, 0.0, 20.0,
@@ -216,6 +235,15 @@ TEST_CASE("production LAMMPS stays in-process and matches the direct library",
   for (int i = 0; i < 6; ++i) {
     REQUIRE(fp[i] == Catch::Approx(fd[i]).margin(1.0e-8));
   }
+#ifdef WITH_RGPOT
+  double fr[6] = {};
+  double ur = 0.0;
+  preferred->force(n, positions, atomicNumbers, fr, &ur, &variance, box);
+  REQUIRE(ur == Catch::Approx(ud).margin(1.0e-8));
+  for (int i = 0; i < 6; ++i) {
+    REQUIRE(fr[i] == Catch::Approx(fd[i]).margin(1.0e-8));
+  }
+#endif
   REQUIRE(childProcesses() == before);
 
   std::filesystem::current_path(oldCwd);
