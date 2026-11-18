@@ -106,6 +106,16 @@ def test_get_communicator_inprocess(tmp_path, monkeypatch):
     assert type(c).__name__ == "LocalInProcess"
 
 
+def test_config_reads_state_session_reuse_switch(tmp_path):
+    from eon.config import ConfigClass
+
+    ini = tmp_path / "config.ini"
+    ini.write_text("[Communicator]\nreuse_state_sessions = false\n")
+    cfg = ConfigClass()
+    cfg.init(str(ini))
+    assert cfg.comm_reuse_state_sessions is False
+
+
 @pytest.mark.parametrize("geometry", ["structure", "conframe", "con_text"])
 def test_inprocess_minimize_job(tmp_path, geometry):
     _need_client()

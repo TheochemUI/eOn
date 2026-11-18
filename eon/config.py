@@ -234,6 +234,9 @@ class ConfigClass:
         self.comm_job_bundle_size = parser.getint('Communicator', 'jobs_per_bundle')
         self.comm_job_buffer_size = parser.getint('Communicator', 'num_jobs')
         self.comm_job_max_size = parser.getint('Communicator', 'max_jobs')
+        self.comm_reuse_state_sessions = parser.getboolean(
+            'Communicator', 'reuse_state_sessions'
+        )
         self.path_scratch = parser.get('Paths', 'scratch')
         if self.comm_type == 'local':
             self.comm_local_client = parser.get('Communicator', 'client_path')
