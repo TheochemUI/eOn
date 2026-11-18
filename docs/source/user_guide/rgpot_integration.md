@@ -13,7 +13,7 @@ and different runtime topologies.
 
 | Role | Meson option | What runs in eOn | Wire / load | Typical use |
 | --- | --- | --- | --- | --- |
-| Direct in-process | always, except Windows | Potential type `RGPOT`: links rgpot NWChemPot / CPMDPot | `dlopen` of `libnwchemc.so` / `libcpmdc.so` in the eOn address space | Production NWChem/CPMD forces in one process |
+| Direct in-process | always, except Windows | Potential type `RGPOT`, plus native EAM selected from simple LAMMPS inputs | Linked rgpot frontends and `dlopen` engines in the eOn address space | Production EAM/NWChem/CPMD forces in one process |
 | eOn as RPC server | `-Dwith_serve=true` | `eonclient --serve` implements rgpot's Potential RPC | Cap'n Proto server in eOn | ChemGP / other tools drive any eOn pot over the network |
 | RPC client to potserv | Outside eOn | Code outside eOn connects to rgpot `potserv` | Cap'n Proto client to potserv, which then `dlopen`s engines | Engine debugging via potserv |
 
@@ -28,6 +28,12 @@ i-PI socket protocol to an external NWChem process. That path stays warm
 across POSDATA because NWChem keeps its SCF state. Direct RGPOT relies on
 nwchemc skipping redundant RTDB resets when method params are unchanged so
 multi-step optimize/NEB stays competitive with the socket.
+
+`potential = lammps` is routed in-process too. eOn first tries rgpot's
+native `EAMTablePot` for a single-element `eam`, `eam/alloy`, or `eam/fs`
+deck. Other decks use the LAMMPS library interface directly. The historical
+fork-and-pipe LAMMPS worker is retained only as an explicit benchmark and
+compatibility mode; it is not the production default.
 
 ## Build flags (summary)
 

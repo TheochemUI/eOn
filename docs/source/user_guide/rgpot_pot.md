@@ -32,7 +32,7 @@ Cap'n Proto messages passed into the C ABI. The `rgpot` Meson subproject is
 `subprojects/rgpot.wrap`, and the build pulls `nwchempot_dep` and
 `cpmdpot_dep`. Serve mode uses `ptlrpc_dep` under `-Dwith_serve`.
 
-`dependency('rgpot')` prefers an installed rgpot at 3.5.1 or newer. The Meson
+`dependency('rgpot')` prefers an installed rgpot at 3.7.0 or newer. The Meson
 wrap is the fallback. A CPMD run that splits ranks uses the flag in the CPMD
 section.
 
@@ -130,6 +130,41 @@ device = cpu
 `engine_path` may point at `libuma_engine.so`. The client also reads
 `RGPOT_UMA_ENGINE`. A molecule whose `.con` file carries no cell gets a
 25 angstrom diagonal box.
+
+## LAMMPS EAM input
+
+`potential = lammps` first recognizes a simple metal-unit EAM input:
+`pair_style eam`, `eam/alloy`, or `eam/fs`, one `pair_coeff`, and optional
+neighbor-list commands. A single-element table runs through rgpot's native
+`EAMTablePot` in the eOn process. The engine instance and its buffered
+neighbor list remain alive across force calls. Unsupported LAMMPS input,
+including multi-element mappings, falls back to the linked LAMMPS library
+interface, also in the eOn process.
+
+The native path passes positions in angstroms, energies in eV, forces in
+eV/angstrom, and the complete row-major cell. The `units` command must be
+`metal`; eOn does not guess or convert another LAMMPS unit style.
+
+The same native kernel can be selected explicitly:
+
+```{code-block} ini
+[Potential]
+potential = rgpot
+
+[RgpotPot]
+backend = eamtable
+table_path = Cu01.eam.alloy
+table_format = setfl
+neighbor_skin = 1.0
+```
+
+The native names built by the pinned rgpot are also accepted as backends:
+`lj`, `morse`, `suttonchen`, `swsi1985`, `tersoffsi`, `emt`, and
+`eamcell`, plus the Fortran potential names when rgpot was built with them.
+`backend = lammps`, `lammpc`, or `lammpsc` selects eOn's linked LAMMPS
+library fallback. rgpot 3.7 does not provide a general LAMMPS-input engine;
+its similarly named external-potential class is an engine conformance
+fixture for Lennard-Jones parameters, not an arbitrary LAMMPS deck.
 
 ## CPMD
 
