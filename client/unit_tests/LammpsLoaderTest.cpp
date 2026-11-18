@@ -19,8 +19,16 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/potentials/LAMMPS/LAMMPSPot.h"
 
+#include <filesystem>
+#include <fstream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
+#include <vector>
+
+#if defined(__linux__)
+#include <unistd.h>
+#endif
 
 namespace tests {
 
@@ -144,5 +152,75 @@ TEST_CASE("LAMMPS screen cursor rewinds when the file is replaced",
   REQUIRE(eonc::lammpsScreenCursor(40, 80, false) == 40);
   REQUIRE(eonc::lammpsScreenCursor(-1, 80, false) == 0);
 }
+
+#if defined(__linux__)
+namespace {
+std::vector<long> childProcesses() {
+  std::ifstream in("/proc/self/task/" + std::to_string(getpid()) + "/children");
+  std::vector<long> children;
+  long pid = 0;
+  while (in >> pid) {
+    children.push_back(pid);
+  }
+  return children;
+}
+} // namespace
+
+TEST_CASE("production LAMMPS stays in-process and matches the direct library",
+          "[lammps][integration][inprocess]") {
+  auto &loader = eonc::LammpsLoader::instance();
+  try {
+    loader.require_loaded();
+  } catch (const std::runtime_error &) {
+    SKIP("liblammps is not available");
+  }
+
+  const char *systems = std::getenv("EON_TEST_SYSTEMS_DIR");
+  REQUIRE(systems != nullptr);
+  const auto root =
+      std::filesystem::weakly_canonical(std::filesystem::path(systems) /
+                                        "../../../..");
+  const auto table = root / "examples/CECAM_examples/advance_topic/FCC_GB/"
+                            "potfiles/Cu01.eam.alloy";
+  REQUIRE(std::filesystem::is_regular_file(table));
+
+  const auto oldCwd = std::filesystem::current_path();
+  const auto work = std::filesystem::temp_directory_path() /
+                    ("eon-lammps-inprocess-" + std::to_string(getpid()));
+  std::filesystem::create_directories(work);
+  std::filesystem::current_path(work);
+  {
+    std::ofstream input("in.lammps");
+    input << "pair_style eam/alloy\n"
+          << "pair_coeff * * " << table.string() << " Cu\n";
+  }
+
+  eonc::Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LAMMPS;
+  const auto before = childProcesses();
+  LAMMPSPot production(params);
+  REQUIRE(childProcesses() == before);
+  LAMMPSPot direct(params, loader);
+
+  constexpr long n = 2;
+  const double box[9] = {20.0, 0.0, 0.0, 0.0, 20.0,
+                         0.0,  0.0, 0.0, 20.0};
+  const double positions[6] = {5.0, 5.0, 5.0, 7.4, 5.0, 5.0};
+  const int atomicNumbers[2] = {29, 29};
+  double fp[6] = {}, fd[6] = {};
+  double up = 0.0, ud = 0.0, variance = 0.0;
+  production.force(n, positions, atomicNumbers, fp, &up, &variance, box);
+  direct.force(n, positions, atomicNumbers, fd, &ud, &variance, box);
+
+  REQUIRE(up == Catch::Approx(ud).margin(1.0e-8));
+  for (int i = 0; i < 6; ++i) {
+    REQUIRE(fp[i] == Catch::Approx(fd[i]).margin(1.0e-8));
+  }
+  REQUIRE(childProcesses() == before);
+
+  std::filesystem::current_path(oldCwd);
+  std::filesystem::remove_all(work);
+}
+#endif
 
 } // namespace tests

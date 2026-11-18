@@ -198,3 +198,41 @@ def test_inprocess_conframe_key(tmp_path):
     _assert_product_frame(r0)
     assert "saddle" not in r0
     assert list(scratch.rglob("*")) == []
+
+
+def test_process_searches_reuse_one_state_potential_and_minimized_reactant(
+    tmp_path,
+):
+    _need_client()
+    from eon.communicator_inprocess import LocalInProcess
+    from eon.config import config
+
+    scratch = tmp_path / "scratch"
+    config.path_scratch = str(scratch)
+    c = LocalInProcess(str(scratch), bundle_size=1, config=config)
+    ini = StringIO(
+        "[Main]\njob = process_search\n"
+        "[Potential]\npotential = lj\n"
+        "[Process Search]\nminimize_first = true\n"
+        "[Saddle Search]\nmax_iterations = 1\n"
+    )
+    invariants = {
+        "config.ini": (ini, 0o644),
+        "pos.con": (_lj_con_text(), 0o644),
+    }
+
+    c.submit_jobs([{"id": "17_1"}], invariants)
+    first = c.get_results()[0]
+    first_potential = first["_matter"].get_potential()
+    first_calls = first_potential.force_call_counter
+
+    ini.seek(0)
+    invariants["pos.con"][0].seek(0)
+    c.submit_jobs([{"id": "17_2"}], invariants)
+    second = c.get_results()[0]
+    second_potential = second["_matter"].get_potential()
+
+    assert second_potential is first_potential
+    assert c.state_session_count == 1
+    assert c.state_minimization_count("17") == 1
+    assert second_potential.force_call_counter > first_calls
