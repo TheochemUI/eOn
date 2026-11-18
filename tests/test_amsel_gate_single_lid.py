@@ -168,3 +168,42 @@ def test_escape_below_the_initial_lid_uses_the_settled_lid():
     assert got is not None
     assert got.kernel == "fpta"
     assert got.barrier == pytest.approx(0.20)
+
+
+def test_single_transient_ignores_distant_low_barrier_in_view():
+    entry = _State(
+        0,
+        {
+            0: {"product": 1, "rate": 1.3e12, "barrier": 0.088, "prefactor": 1.0e13},
+        },
+    )
+    neighbor = _State(
+        1,
+        {
+            0: {"product": 0, "rate": 1.3e12, "barrier": 0.088, "prefactor": 1.0e13},
+            1: {"product": -1, "rate": 5.6e12, "barrier": 0.025, "prefactor": 1.0e13},
+        },
+    )
+    states = _States({0: entry, 1: neighbor})
+    rng = np.random.default_rng(11)
+    before = rng.bit_generator.state
+    got = amsel_discover_exit(entry, states.get_state, _Gate(), uniform=rng.random)
+    assert got is None
+    assert rng.bit_generator.state == before
+
+
+def test_sampling_confidence_skips_unrecorded_recycled_proc():
+    from types import SimpleNamespace
+    from eon.akmcstate import AKMCState
+
+    fake = SimpleNamespace(
+        config=SimpleNamespace(
+            akmc_confidence_correction=False,
+            akmc_confidence_scheme="sampling",
+            recycling_on=False,
+        ),
+        get_ratetable=lambda superbasin=None: [(101, 1.0e12, 1.0e13), (202, 1.0e12, 1.0e13)],
+        get_proc_random_count=lambda: {101: 10},
+    )
+    score = AKMCState.get_confidence(fake)
+    assert 0.0 <= score <= 1.0
