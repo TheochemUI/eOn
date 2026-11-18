@@ -95,13 +95,22 @@ void LAMMPSPot::setFixedMask(long nAtoms, const double *isFixed) {
   if (!workerChild_) {
     lock.lock();
   }
-  if (nAtoms <= 0 || isFixed == nullptr) {
+  if (!eonc::lammpsHasFixedCoordinates(nAtoms, isFixed)) {
+    if (fixedMask_.empty() && maskN_ == 0) {
+      return;
+    }
     fixedMask_.clear();
     maskN_ = 0;
+    fixedMaskDirty_ = true;
+    return;
+  }
+  if (maskN_ == nAtoms &&
+      eonc::lammpsFixedMaskMatches(fixedMask_, nAtoms, isFixed)) {
     return;
   }
   fixedMask_.assign(isFixed, isFixed + 3 * nAtoms);
   maskN_ = nAtoms;
+  fixedMaskDirty_ = true;
 }
 
 void LAMMPSPot::applySetforce(long N) {
@@ -112,10 +121,12 @@ void LAMMPSPot::applySetforce(long N) {
     if (!workerChild_) {
       lock.lock();
     }
-    if (LAMMPSObj == nullptr || maskN_ != N || fixedMask_.empty()) {
+    if (LAMMPSObj == nullptr || !fixedMaskDirty_) {
       return;
     }
-    mask = fixedMask_;
+    if (maskN_ == N) {
+      mask = fixedMask_;
+    }
   }
   static constexpr const char *kUnfix[] = {"unfix eon_fx", "unfix eon_fy",
                                            "unfix eon_fz", "unfix eon_freeze"};
@@ -133,6 +144,11 @@ void LAMMPSPot::applySetforce(long N) {
       lammpsCommand(cmd);
     } catch (...) {
     }
+  }
+  if (mask.empty()) {
+    std::lock_guard<std::mutex> lock(maskMutex_);
+    fixedMaskDirty_ = false;
+    return;
   }
   // Matter stores per-axis isFixed. A z-only freeze must not leave LAMMPS
   // free to move that atom in z.
@@ -157,6 +173,8 @@ void LAMMPSPot::applySetforce(long N) {
         ("group " + std::string(kGroup[ax]) + " id " + ids[ax]).c_str());
     lammpsCommand(kFix[ax]);
   }
+  std::lock_guard<std::mutex> lock(maskMutex_);
+  fixedMaskDirty_ = false;
 }
 
 void LAMMPSPot::cleanMemory() {
@@ -899,4 +917,13 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   lammpsCommand("variable eon_sxy equal c_eon_press[4]");
   lammpsCommand("variable eon_sxz equal c_eon_press[5]");
   lammpsCommand("variable eon_syz equal c_eon_press[6]");
+  // A fresh LAMMPS instance has no eOn fix/group state to remove. Apply a
+  // non-empty stored mask once; an all-free mask needs no commands.
+  {
+    std::unique_lock<std::mutex> lock(maskMutex_, std::defer_lock);
+    if (!workerChild_) {
+      lock.lock();
+    }
+    fixedMaskDirty_ = !fixedMask_.empty();
+  }
 }

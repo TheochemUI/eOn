@@ -46,6 +46,32 @@ inline std::int64_t lammpsScreenCursor(std::int64_t pos, std::int64_t fileSize,
   return pos;
 }
 
+inline bool lammpsHasFixedCoordinates(long nAtoms, const double *mask) {
+  if (nAtoms <= 0 || mask == nullptr) {
+    return false;
+  }
+  for (long i = 0; i < 3 * nAtoms; ++i) {
+    if (mask[i] >= 0.5) {
+      return true;
+    }
+  }
+  return false;
+}
+
+inline bool lammpsFixedMaskMatches(const std::vector<double> &current,
+                                   long nAtoms, const double *mask) {
+  if (nAtoms <= 0 || mask == nullptr ||
+      current.size() != static_cast<size_t>(3 * nAtoms)) {
+    return false;
+  }
+  for (long i = 0; i < 3 * nAtoms; ++i) {
+    if (current[static_cast<size_t>(i)] != mask[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
 /// LAMMPS argv. The log file stays off. A screen path is copied into the
 /// process logger by the caller.
 inline std::vector<std::string> lammpsOpenArgs(bool logging, bool with_omp,
@@ -121,6 +147,7 @@ private:
   bool haveStress_{false};
   std::vector<double> fixedMask_;
   long maskN_{0};
+  bool fixedMaskDirty_{true};
   // Covers fixedMask_ and, on the in-process paths, LAMMPSObj. The worker
   // pipe uses the same mutex: a shared instance must not update the mask
   // while another thread copies it or evaluates a force.
