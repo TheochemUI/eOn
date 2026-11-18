@@ -255,3 +255,37 @@ def ref_get_displacement(disp, atom_index):
                 displacement[displaced[k]] = displacement[displaced[k]] * [1, 0, 0]
     displacement /= np.linalg.norm(displacement)
     return moved, displacement / np.linalg.norm(displacement)
+
+
+_OPEN_COUNTERS: list = []
+
+
+def _audit_opens(event, args):
+    if event != "open" or not _OPEN_COUNTERS:
+        return
+    path, mode = args[0], args[1]
+    if not isinstance(path, (str, bytes)) and not hasattr(path, "__fspath__"):
+        return
+    name = path.decode() if isinstance(path, bytes) else str(path)
+    reading = mode is None or "r" in mode
+    for counter in _OPEN_COUNTERS:
+        counter.append((name, bool(reading and "+" not in (mode or ""))))
+
+
+sys.addaudithook(_audit_opens)
+
+
+@contextlib.contextmanager
+def count_opens():
+    """Yield the list of ``(path, read_only)`` for every open() in the block."""
+    seen: list = []
+    _OPEN_COUNTERS.append(seen)
+    try:
+        yield seen
+    finally:
+        _OPEN_COUNTERS.remove(seen)
+
+
+def reads_of(seen, name: str) -> int:
+    """Read-only opens of paths whose last component is *name*."""
+    return sum(1 for path, reading in seen if reading and path.rsplit("/", 1)[-1] == name)
