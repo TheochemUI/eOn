@@ -288,7 +288,9 @@ class SyntheticClient:
         }
 
 
-def write_config(root: Path, cells: int, extra: str = "") -> Path:
+def write_config(
+    root: Path, cells: int, extra: str = "", transitions: int = 5
+) -> Path:
     text = f"""[Main]
 job = akmc
 temperature = 300
@@ -315,7 +317,7 @@ use_mean_time = false
 [Coarse Graining]
 use_mcamc = true
 superbasin_scheme = transition_counting
-number_of_transitions = 5
+number_of_transitions = {transitions}
 
 [amsel]
 discover_decide = true
@@ -325,14 +327,14 @@ discover_decide = true
     return path
 
 
-def setup_run(root: Path, cells: int, extra: str = ""):
+def setup_run(root: Path, cells: int, extra: str = "", transitions: int = 5):
     """Write pos.con and config.ini under *root* and return the config."""
     from eon import fileio as io
     from eon.config import ConfigClass
 
     root.mkdir(parents=True, exist_ok=True)
     io.savecon(str(root / "pos.con"), build_cell(cells))
-    path = write_config(root, cells, extra)
+    path = write_config(root, cells, extra, transitions)
     os.chdir(root)
     cfg = ConfigClass()
     cfg.init(str(path))
@@ -401,8 +403,35 @@ def read_dynamics(config) -> list:
     return rows
 
 
-def run(root: Path, cells: int, cycles: int, searches: int):
-    cfg = setup_run(root, cells)
+def snapshot(config) -> dict:
+    """The server's record of a run as text: what a trajectory is compared on.
+
+    Dynamics rows, the state table, every state's process table and the
+    superbasin files. Nothing in it names a path or a time of day.
+    """
+    root = Path(config.path_results)
+    states = Path(config.path_states)
+    out = {
+        "dynamics": (root / "dynamics.txt").read_text().splitlines()
+        if (root / "dynamics.txt").is_file()
+        else [],
+        "state_table": (states / "state_table").read_text().splitlines(),
+        "processtables": {},
+        "superbasins": {},
+    }
+    basins = Path(config.sb_path)
+    for path in sorted(basins.rglob("*")):
+        if path.is_file():
+            out["superbasins"][str(path.relative_to(basins))] = path.read_text()
+    numbers = sorted(int(p.name) for p in states.iterdir() if p.name.isdigit())
+    for number in numbers:
+        table = states / str(number) / "processtable"
+        out["processtables"][str(number)] = table.read_text().splitlines()
+    return out
+
+
+def run(root: Path, cells: int, cycles: int, searches: int, transitions: int = 5):
+    cfg = setup_run(root, cells, transitions=transitions)
     client = SyntheticClient(cells, 7)
     per_cycle = []
     for _ in range(cycles):
@@ -421,8 +450,20 @@ def main():
     ap.add_argument("--cycles", type=int, default=12)
     ap.add_argument("--searches", type=int, default=16)
     ap.add_argument("--root", type=Path, required=True)
+    ap.add_argument("--transitions", type=int, default=5)
+    ap.add_argument(
+        "--record", type=Path, help="write the run's snapshot to this JSON file"
+    )
     args = ap.parse_args()
-    cfg, per_cycle = run(args.root, args.cells, args.cycles, args.searches)
+    cfg, per_cycle = run(
+        args.root, args.cells, args.cycles, args.searches, args.transitions
+    )
+    if args.record is not None:
+        import json
+
+        args.record.write_text(
+            json.dumps(snapshot(cfg), indent=1, sort_keys=True) + "\n"
+        )
     rows = read_dynamics(cfg)
     n = len(per_cycle)
     mean = float(np.mean(per_cycle))
