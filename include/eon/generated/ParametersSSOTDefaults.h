@@ -110,5 +110,8 @@ struct GeneratedDefaults {
   static constexpr auto RGPOTPOT_XTB_CHARGE = 0.0;
   static constexpr auto RGPOTPOT_XTB_UHF = 0;
   static constexpr auto RGPOTPOT_TASK_NAME = std::string_view{"omol"};
+  static constexpr auto RGPOTPOT_TABLE_PATH = std::string_view{""};
+  static constexpr auto RGPOTPOT_TABLE_FORMAT = std::string_view{"setfl"};
+  static constexpr auto RGPOTPOT_NEIGHBOR_SKIN = 1.0;
 };
 } // namespace eonc::params_ssot

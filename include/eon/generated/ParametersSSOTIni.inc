@@ -36,6 +36,9 @@ inline void project_ssot_ini(INIReader &ini, Parameters &params) {
     o.xtb_max_iterations = static_cast<int>(ini.GetInteger(sec, "max_iterations", ini.GetInteger(sec, "xtb_max_iterations", o.xtb_max_iterations)));
     o.xtb_uhf = static_cast<int>(ini.GetInteger(sec, "uhf", ini.GetInteger(sec, "xtb_uhf", o.xtb_uhf)));
     o.task_name = ini.Get(sec, "task_name", o.task_name);
+    o.table_path = ini.Get(sec, "table_path", o.table_path);
+    o.table_format = ini.Get(sec, "table_format", o.table_format);
+    o.neighbor_skin = ini.GetReal(sec, "neighbor_skin", o.neighbor_skin);
     o.xtb_charge = ini.GetReal(sec, "xtb_charge", static_cast<double>(o.charge));
     const std::string be = toLowerCase(o.backend);
     if (be == "xtb" || be == "xtbpot" || be == "gfn" || be == "gfnxtb") {
