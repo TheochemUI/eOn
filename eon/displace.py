@@ -10,6 +10,76 @@ from eon import atoms
 from eon import fileio as io
 
 from eon.config import ConfigClass  # Typing
+from eon.geometry.neighbors import _periodic_flags, neighbor_vector_table
+
+_vector_table_memo = {}
+
+
+def _vector_table(reactant, radius):
+    """Neighbour vectors of *reactant*, kept for the batch that draws from it.
+
+    Every displacement of a batch starts from the same reactant. The table is
+    reused while the radius, positions, box and periodicity are the ones it
+    was built from, so a reactant that moves between draws is searched again.
+    """
+    key = (
+        np.asarray(reactant.r, dtype=float),
+        np.asarray(reactant.box, dtype=float),
+        np.asarray(_periodic_flags(reactant, None), dtype=bool),
+    )
+    hit = _vector_table_memo.get("last")
+    if (
+        hit is not None
+        and hit[0] == radius
+        and all(np.array_equal(a, b) for a, b in zip(hit[1], key))
+    ):
+        return hit[2]
+    table = neighbor_vector_table(reactant, radius)
+    _vector_table_memo["last"] = (radius, tuple(a.copy() for a in key), table)
+    return table
+
+
+_batched_norms_match = {}
+
+
+def _row_norms(rows):
+    """``np.linalg.norm`` of each row, to the last bit.
+
+    A batched inner product is used where it agrees with the one-vector
+    ``np.linalg.norm`` on a fixed sample of vectors, since that depends on
+    the BLAS build; otherwise each row is taken on its own.
+    """
+    vecdot = getattr(np, "vecdot", None)
+    if vecdot is not None:
+        if "ok" not in _batched_norms_match:
+            sample = np.random.RandomState(0).normal(scale=3.0, size=(2048, 3))
+            single = np.array([np.linalg.norm(v) for v in sample])
+            _batched_norms_match["ok"] = bool(
+                np.array_equal(np.sqrt(vecdot(sample, sample)), single)
+            )
+        if _batched_norms_match["ok"]:
+            return np.sqrt(vecdot(rows, rows))
+    return np.array([np.linalg.norm(v) for v in rows])
+
+
+def _void_force(reactant, radius, displaced_atoms):
+    """Pseudo-electrostatic repulsion of each displaced atom from its neighbours.
+
+    Terms are taken in neighbour order and added one after another, as a
+    loop over the vectors would add them.
+    """
+    vectors, bounds = _vector_table(reactant, radius)
+    force = np.zeros(reactant.r.shape)
+    for atom in displaced_atoms:
+        rows = vectors[bounds[atom] : bounds[atom + 1]]
+        if rows.shape[0] == 0:
+            continue
+        # + 1e-6 keeps perfectly symmetric situations from dividing by zero
+        mag = _row_norms(rows) + 1e-6
+        cubed = np.array([m**3 for m in mag.tolist()])
+        terms = -rows / cubed[:, None]
+        force[atom] = np.cumsum(np.vstack((force[atom : atom + 1], terms)), axis=0)[-1]
+    return force
 
 
 class DisplacementManager:
@@ -251,10 +321,11 @@ class Displace:
         displacement = np.zeros(self.reactant.r.shape)
         if hasattr(atom_index, "__getitem__"):
             logger.debug("Displacement epicenters: ", atom_index)
+            chosen = set(atom_index)
             neighbors = [
                 self.neighbors_list[i]
                 for i in range(len(self.neighbors_list))
-                if i in atom_index
+                if i in chosen
             ]
             # flatten
             neighbors = sum(neighbors, [])
@@ -265,12 +336,14 @@ class Displace:
             logger.debug("Displacement epicenter: %d" % atom_index)
             displaced_atoms = [atom_index] + self.neighbors_list[atom_index]
 
+        free = self.reactant.atom_is_free()
+
         # ensures that the total displacement vector exceeds a given length, but the current default is zero
         while displacement_norm <= self.config.disp_min_norm:
             displacement = np.zeros(self.reactant.r.shape)
             for i in range(len(displaced_atoms)):
                 # don't displace frozen atoms
-                if not self.reactant.atom_is_free()[displaced_atoms[i]]:
+                if not free[displaced_atoms[i]]:
                     continue
                 # Displace one of the free atoms by a gaussian distributed
                 # random number with a standard deviation of self.std_dev.
@@ -288,19 +361,11 @@ class Displace:
         ## a hard coded value will not break things later. It's essentially
         ## negligible at this size.
         if self.void_bias_fraction > 1e-6:
-            self.neighbor_list_vectors = atoms.neighbor_list_vectors(
-                self.reactant, self.radius, self.config.comp_brute_neighbors
-            )
-
             ## treats the nearest neighbors as repulsive, since I keep finding
             ## interstitials
-            pseudoelectrostatic_force = np.zeros(self.reactant.r.shape)
-            for atom_index in displaced_atoms:
-                for vec in self.neighbor_list_vectors[atom_index]:
-                    mag = (
-                        np.linalg.norm(vec) + 1e-6
-                    )  # I just want to prevent NaNs in perfectly symmetric situations
-                    pseudoelectrostatic_force[atom_index] += -vec / (mag**3)
+            pseudoelectrostatic_force = _void_force(
+                self.reactant, self.radius, displaced_atoms
+            )
             # now we norm it for mixing
             void_vec = pseudoelectrostatic_force / np.linalg.norm(
                 pseudoelectrostatic_force
@@ -317,7 +382,7 @@ class Displace:
         if self.config.random_mode:
             displacement *= 0.0
             for i in range(len(displaced_atoms)):
-                if not self.reactant.atom_is_free()[displaced_atoms[i]]:
+                if not free[displaced_atoms[i]]:
                     continue
                 displacement[displaced_atoms[i]] = np.random.normal(
                     scale=self.std_dev, size=3

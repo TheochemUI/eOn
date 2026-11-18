@@ -161,6 +161,30 @@ def brute_neighbor_list(p: StructureLike, cutoff: float) -> List[List[int]]:
     return neighbor_list(p, cutoff, brute=True)
 
 
+def neighbor_vector_table(p: StructureLike, cutoff: float):
+    """``(vectors, bounds)``: every neighbour vector in one ``(M, 3)`` array.
+
+    Row ``bounds[k]:bounds[k + 1]`` of *vectors* holds the minimum-image
+    vectors from atom ``k`` to each of its neighbours, in neighbour order.
+    These are the rows :func:`neighbor_list_vectors` splits into lists.
+    """
+    n, i, j = _cutoff_pairs(p, cutoff)
+    if i is None:
+        return np.zeros((0, 3), dtype=float), [0] * (n + 1)
+    r, box = _positions_box(p)
+    centers, others = _unique_pairs(n, i, j)
+    if centers.size == 0:
+        return np.zeros((0, 3), dtype=float), [0] * (n + 1)
+    ibox = np.linalg.inv(box)
+    wrapped = np.atleast_2d(
+        np.asarray(
+            pbc(r[others] - r[centers], box, ibox, periodic=_periodic_flags(p, None)),
+            dtype=float,
+        )
+    )
+    return wrapped, _row_bounds(n, centers)
+
+
 def neighbor_list_vectors(
     p: StructureLike,
     cutoff: float,
@@ -174,19 +198,8 @@ def neighbor_list_vectors(
     installed). Multi-image pair lists belong on
     :func:`neighbor_list_pairs`.
     """
-    n, i, j = _cutoff_pairs(p, cutoff)
-    if i is None:
-        return [[] for _ in range(n)]
-    r, box = _positions_box(p)
-    centers, others = _unique_pairs(n, i, j)
-    if centers.size == 0:
-        return [[] for _ in range(n)]
-    ibox = np.linalg.inv(box)
-    wrapped = np.atleast_2d(
-        pbc(r[others] - r[centers], box, ibox, periodic=_periodic_flags(p, None))
-    )
-    bounds = _row_bounds(n, centers)
-    return [list(wrapped[bounds[k] : bounds[k + 1]]) for k in range(n)]
+    vectors, bounds = neighbor_vector_table(p, cutoff)
+    return [list(vectors[bounds[k] : bounds[k + 1]]) for k in range(len(bounds) - 1)]
 
 
 def neighbor_list_pairs(
