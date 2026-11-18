@@ -389,6 +389,18 @@ void bind_sampling(nb::module_ &m) {
           },
           nb::arg("matter"),
           "Run the job on an in-memory Matter. Returns product (min2).")
+      .def(
+          "run_from_matter_displaced",
+          [](ProcessSearchJob &self, std::shared_ptr<Matter> seed,
+             std::shared_ptr<Matter> displaced,
+             const eonc::pybind::NpF64 &modeArray) {
+            AtomMatrix mode = eonc::pybind::atom_matrix_from_numpy(modeArray);
+            nb::gil_scoped_release release;
+            return self.runFromMatter(std::move(seed), std::move(displaced),
+                                      mode);
+          },
+          nb::arg("matter"), nb::arg("displacement"), nb::arg("mode"),
+          "Run from the exact displacement and mode prepared by the server.")
       .def_prop_ro("min1", &ProcessSearchJob::getMin1)
       .def_prop_ro("min2", &ProcessSearchJob::getMin2)
       .def_prop_ro("saddle", &ProcessSearchJob::getSaddle)
@@ -396,7 +408,14 @@ void bind_sampling(nb::module_ &m) {
       .def_prop_ro("prefactor_forward", &ProcessSearchJob::prefactorForward)
       .def_prop_ro("prefactor_reverse", &ProcessSearchJob::prefactorReverse)
       .def_prop_ro("barrier_forward", &ProcessSearchJob::barrierForward)
-      .def_prop_ro("barrier_reverse", &ProcessSearchJob::barrierReverse);
+      .def_prop_ro("barrier_reverse", &ProcessSearchJob::barrierReverse)
+      .def_prop_ro("status", &ProcessSearchJob::status)
+      .def_prop_ro("force_calls_saddle",
+                   &ProcessSearchJob::forceCallsSaddle)
+      .def_prop_ro("force_calls_minimization",
+                   &ProcessSearchJob::forceCallsMinimization)
+      .def_prop_ro("force_calls_prefactors",
+                   &ProcessSearchJob::forceCallsPrefactors);
 
   // --- Structure helpers (predicates; neither argument is modified) ---
   m.def(

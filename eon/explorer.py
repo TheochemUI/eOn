@@ -141,6 +141,8 @@ class MinModeExplorer(Explorer):
         self.register_results()
         if self.state.get_confidence(self.superbasin) < self.config.akmc_confidence:
             self.make_jobs()
+            if getattr(self.comm, "results_are_synchronous", False):
+                self.register_results()
         else:
             num_cancelled = self.comm.cancel_state(self.state.number)
             logger.info("Cancelled %i workunits from state %i",

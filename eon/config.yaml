@@ -1566,6 +1566,10 @@ Communicator:
             kind: int
             default: 1
 
+        reuse_state_sessions:
+            kind: boolean
+            default: true
+
         max_jobs:
             kind: int
             default: 0

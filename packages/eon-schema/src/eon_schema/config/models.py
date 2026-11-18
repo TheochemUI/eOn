@@ -409,6 +409,13 @@ class CommunicatorConfig(BaseModel):
     ``local``, it is the number of jobs run every time the program is invoked. For
     ``cluster``, it is the desired sum of the queued and running jobs.
     """
+    reuse_state_sessions: bool = Field(
+        default=True,
+        description=(
+            "Reuse one potential and minimized reactant per state in the "
+            "in-process communicator. Disable only for controlled comparisons."
+        ),
+    )
     max_jobs: int = Field(
         default=0,
         description="Maximum number of akmc jobs that can be running at once for the current state.",

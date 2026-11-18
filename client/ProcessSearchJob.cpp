@@ -185,9 +185,18 @@ std::vector<std::string> ProcessSearchJob::run() {
 
 std::shared_ptr<Matter>
 ProcessSearchJob::runFromMatter(std::shared_ptr<Matter> seed) {
+  return runFromMatter(std::move(seed), nullptr, AtomMatrix{});
+}
+
+std::shared_ptr<Matter>
+ProcessSearchJob::runFromMatter(std::shared_ptr<Matter> seed,
+                                std::shared_ptr<Matter> displaced,
+                                const AtomMatrix &suppliedMode) {
   if (!seed) {
     throw std::runtime_error("ProcessSearchJob::runFromMatter: null Matter");
   }
+  inProcessMode = true;
+  const bool haveDisplacement = static_cast<bool>(displaced);
   initial = seed;
   initial->setPotential(pot);
   // A clone keeps this job's potential; makePotential rebuilds from the
@@ -200,12 +209,41 @@ ProcessSearchJob::runFromMatter(std::shared_ptr<Matter> seed) {
                            eonc::helpers::makePotential(params));
   }
   displacement = std::make_shared<Matter>(pot, params);
-  saddle = std::make_shared<Matter>(pot, params);
+  saddle = displaced ? std::move(displaced)
+                     : std::make_shared<Matter>(pot, params);
+  saddle->setPotential(pot);
   min1 = std::make_shared<Matter>(pot, params);
   min2 = std::make_shared<Matter>(min2Pot, params);
   AtomMatrix mode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
-  if (!eonc::helpers::applyClientDisplacement(*saddle, *initial, params,
-                                              &mode)) {
+  if (haveDisplacement &&
+      saddle->numberOfAtoms() != initial->numberOfAtoms()) {
+    throw std::runtime_error(
+        "ProcessSearchJob::runFromMatter: displacement atom count mismatch");
+  }
+  if (haveDisplacement) {
+    AtomMatrix positions = saddle->getPositionsCopy();
+    std::vector<long> fileMap(
+        static_cast<size_t>(initial->numberOfAtoms()));
+    for (long i = 0; i < initial->numberOfAtoms(); ++i) {
+      if (initial->getFixed(i)) {
+        positions.row(i) = initial->getPositions().row(i);
+      }
+      saddle->setAtomIndex(i, initial->getAtomIndex(i));
+      fileMap[static_cast<size_t>(i)] = initial->mapFileRow(i);
+    }
+    saddle->setFileToMatter(std::move(fileMap));
+    saddle->setPositions(positions);
+  }
+  if (suppliedMode.size() != 0) {
+    if (suppliedMode.rows() != initial->numberOfAtoms() ||
+        suppliedMode.cols() != 3) {
+      throw std::runtime_error(
+          "ProcessSearchJob::runFromMatter: direction shape mismatch");
+    }
+    mode = suppliedMode;
+  } else if (!haveDisplacement &&
+             !eonc::helpers::applyClientDisplacement(
+                 *saddle, *initial, params, &mode)) {
     *saddle = *initial;
   }
   *displacement = *saddle;
@@ -235,9 +273,12 @@ std::shared_ptr<Matter> ProcessSearchJob::runPrepared() {
   }
 
   int status = doProcessSearch();
+  lastStatus = status;
 
   printEndState(status);
-  saveData(status);
+  if (!inProcessMode) {
+    saveData(status);
+  }
 
   return min2 ? min2 : saddle;
 }

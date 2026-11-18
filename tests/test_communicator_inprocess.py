@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from io import StringIO
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -200,18 +201,42 @@ def test_inprocess_conframe_key(tmp_path):
     assert list(scratch.rglob("*")) == []
 
 
+def test_inprocess_stages_potential_files_in_evaluation_workdir(tmp_path):
+    _need_client()
+    from eon.communicator_inprocess import LocalInProcess
+    from eon.config import ConfigClass
+
+    potfiles = tmp_path / "potfiles"
+    potfiles.mkdir()
+    (potfiles / "support.table").write_text("potential data\n")
+    cfg = ConfigClass()
+    cfg.path_scratch = str(tmp_path / "scratch")
+    cfg.path_pot = str(potfiles)
+    c = LocalInProcess(cfg.path_scratch, bundle_size=1, config=cfg)
+    job = {"id": "support", "structure": _lj_structure()}
+    ini = StringIO("[Main]\njob = point\n[Potential]\npotential = lj\n")
+    original_cwd = Path.cwd()
+
+    c.submit_jobs([job], {"config.ini": (ini, 0o644)})
+
+    staged = Path(cfg.path_scratch) / ".inprocess-potential" / "support.table"
+    assert staged.read_text() == "potential data\n"
+    assert Path.cwd() == original_cwd
+
+
 def test_process_searches_reuse_one_state_potential_and_minimized_reactant(
-    tmp_path,
+    tmp_path, monkeypatch,
 ):
     _need_client()
     from eon.communicator_inprocess import LocalInProcess
     from eon.config import config
 
+    monkeypatch.chdir(tmp_path)
     scratch = tmp_path / "scratch"
     config.path_scratch = str(scratch)
     c = LocalInProcess(str(scratch), bundle_size=1, config=config)
     ini = StringIO(
-        "[Main]\njob = process_search\n"
+        "[Main]\njob = process_search\nrandom_seed = 1\n"
         "[Potential]\npotential = lj\n"
         "[Process Search]\nminimize_first = true\n"
         "[Saddle Search]\nmax_iterations = 1\n"
@@ -222,20 +247,29 @@ def test_process_searches_reuse_one_state_potential_and_minimized_reactant(
     }
 
     c.submit_jobs([{"id": "17_1"}], invariants)
-    first = c.get_results()[0]
-    first_potential = first["_matter"].get_potential()
+    c.get_results()
+    first_potential = c._state_sessions["17"]["potential"]
     first_calls = first_potential.force_call_counter
 
-    ini.seek(0)
+    invariants["config.ini"] = (
+        StringIO(
+            "[Main]\njob = process_search\nrandom_seed = 2\n"
+            "[Potential]\npotential = lj\n"
+            "[Process Search]\nminimize_first = true\n"
+            "[Saddle Search]\nmax_iterations = 1\n"
+        ),
+        0o644,
+    )
     invariants["pos.con"][0].seek(0)
     c.submit_jobs([{"id": "17_2"}], invariants)
-    second = c.get_results()[0]
-    second_potential = second["_matter"].get_potential()
+    c.get_results()
+    second_potential = c._state_sessions["17"]["potential"]
 
     assert second_potential is first_potential
     assert c.state_session_count == 1
     assert c.state_minimization_count("17") == 1
     assert second_potential.force_call_counter > first_calls
+    assert list(tmp_path.glob("*.con")) == []
 
 
 def test_process_search_session_reuse_can_be_disabled_for_comparison(tmp_path):

@@ -96,6 +96,7 @@ try:
         MonteCarlo,
         BasinHopping,
         ProcessSearch,
+        ProcessSearchJob,
         TAD,
         ParallelReplica,
         SafeHyperdynamics,

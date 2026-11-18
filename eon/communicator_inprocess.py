@@ -11,6 +11,8 @@ from __future__ import annotations
 import logging
 import os
 import hashlib
+import re
+import threading
 from io import StringIO
 from pathlib import Path
 from typing import Any
@@ -23,6 +25,7 @@ from eon.communicator import Communicator, CommunicatorError
 logger = logging.getLogger("communicator")
 
 _GEOMETRY_KEYS = ("structure", "conframe", "reactant", "pos", "pos.con")
+_PROCESS_CWD_LOCK = threading.Lock()
 
 
 def _require_pyeonclient():
@@ -49,6 +52,15 @@ def _config_text(invariants: dict) -> str | None:
             return content.read()
         return str(content)
     return None
+
+
+def _session_config_fingerprint(text: str | None) -> str:
+    stable = re.sub(
+        r"(?mi)^\s*random_seed\s*=.*$",
+        "",
+        text or "",
+    )
+    return hashlib.sha256(stable.encode("utf-8")).hexdigest()
 
 
 def _params_from_invariants(pc, invariants: dict) -> Any:
@@ -180,30 +192,13 @@ def _state_key(job: dict) -> str:
     return str(job.get("id", "state")).split("_", 1)[0]
 
 
-class _LazyCon:
-    """.con text for callers that read min.con or saddle.con, built on first read."""
+def _con_io(structure) -> StringIO:
+    from eon import fileio as fio
 
-    def __init__(self, structure):
-        self._structure = structure
-        self._text: str | None = None
-
-    def _materialize(self) -> str:
-        if self._text is None:
-            import eon.fileio as fio
-
-            buf = StringIO()
-            fio.savecon(buf, self._structure)
-            self._text = buf.getvalue()
-        return self._text
-
-    def getvalue(self) -> str:
-        return self._materialize()
-
-    def seek(self, *args, **kwargs):
-        return 0
-
-    def read(self, *args, **kwargs) -> str:
-        return self._materialize()
+    stream = StringIO()
+    fio.savecon(stream, structure)
+    stream.seek(0)
+    return stream
 
 
 def _run_inprocess_job(pc, job_kind, matter, pot, params, job: dict, token=None) -> dict:
@@ -246,7 +241,20 @@ def _run_inprocess_job(pc, job_kind, matter, pot, params, job: dict, token=None)
                 mode = np.asarray(vals[: 3 * n], dtype=float).reshape(n, 3)
         if hasattr(pc, "ProcessSearchJob"):
             job_obj = pc.ProcessSearchJob(pot, params)
-            product = job_obj.run_from_matter(matter)
+            if "displacement.con" in job and "direction.dat" in job:
+                from pyeonclient.bridge import structure_to_matter
+
+                displacement_structure = _structure_from_geometry(
+                    job["displacement.con"], "job['displacement.con']"
+                )
+                displacement = structure_to_matter(
+                    displacement_structure, pot, params
+                )
+                product = job_obj.run_from_matter_displaced(
+                    matter, displacement, mode
+                )
+            else:
+                product = job_obj.run_from_matter(matter)
             saddle = job_obj.saddle
             if product is None or saddle is None:
                 raise CommunicatorError(
@@ -258,8 +266,37 @@ def _run_inprocess_job(pc, job_kind, matter, pot, params, job: dict, token=None)
                 "min1": job_obj.min1,
                 "min2": job_obj.min2,
                 "energy": float(saddle.potential_energy),
+                "potential_energy_reactant": float(
+                    job_obj.min1.potential_energy
+                ),
+                "potential_energy_product": float(
+                    job_obj.min2.potential_energy
+                ),
+                "potential_energy_saddle": float(
+                    saddle.potential_energy
+                ),
+                "barrier_reactant_to_product": float(
+                    job_obj.barrier_forward
+                ),
+                "barrier_product_to_reactant": float(
+                    job_obj.barrier_reverse
+                ),
+                "displacement_saddle_distance": float(
+                    pc.structure_distance(matter, saddle)
+                ),
+                "prefactor_reactant_to_product": float(
+                    job_obj.prefactor_forward
+                ),
+                "prefactor_product_to_reactant": float(
+                    job_obj.prefactor_reverse
+                ),
+                "force_calls_breakdown": {
+                    "minimization": int(job_obj.force_calls_minimization),
+                    "saddle": int(job_obj.force_calls_saddle),
+                    "prefactors": int(job_obj.force_calls_prefactors),
+                },
                 "force_calls": int(product.force_calls),
-                "status": 0,
+                "status": int(job_obj.status),
                 "job_type": (
                     "process_search"
                     if job_kind == JT.Process_Search
@@ -366,11 +403,11 @@ def _job_result(
     else:
         reason = "FAIL"
     return {
-        "termination_reason": status,
-        "termination_reason_text": reason,
+        "status_code": status,
+        "status_text": reason,
         "job_type": job_type,
         "potential_energy": energy,
-        "total_force_calls": force_calls,
+        "force_calls": {"total": force_calls},
     }
 
 
@@ -382,9 +419,17 @@ def _results_dat(
     *,
     cancelled: bool = False,
 ) -> str:
-    data = _job_result(
-        status, energy, force_calls, job_type, cancelled=cancelled
+    return _results_dat_from_job_result(
+        _job_result(
+            status, energy, force_calls, job_type, cancelled=cancelled
+        )
     )
+
+
+def _results_dat_from_job_result(job_result: dict) -> str:
+    from eon_schema.jobs import job_result_legacy_dict
+
+    data = job_result_legacy_dict(job_result)
     lines = []
     for key, val in data.items():
         if isinstance(val, float):
@@ -397,6 +442,8 @@ def _results_dat(
 class LocalInProcess(Communicator):
     """Run client work in-process via Matter (nanobind), not a subprocess."""
 
+    results_are_synchronous = True
+
     def __init__(self, scratchpath, bundle_size=1, config=None):
         if config is None:
             raise TypeError("LocalInProcess requires a ConfigClass instance")
@@ -408,6 +455,9 @@ class LocalInProcess(Communicator):
         self._cpp_token = None
         self._state_sessions: dict[str, dict[str, Any]] = {}
         self._state_minimizations: dict[str, int] = {}
+        self._reuse_state_sessions = bool(
+            getattr(config, "comm_reuse_state_sessions", True)
+        )
 
     @property
     def state_session_count(self):
@@ -451,25 +501,54 @@ class LocalInProcess(Communicator):
 
         self._in_submit = True
         try:
-            self._submit_loop(data, invariants, pc)
+            workdir = self._stage_potential_files()
+            with _PROCESS_CWD_LOCK:
+                previous = Path.cwd()
+                try:
+                    if workdir is not None:
+                        os.chdir(workdir)
+                    self._submit_loop(data, invariants, pc)
+                finally:
+                    os.chdir(previous)
         finally:
             self._in_submit = False
             self.token.reset()
+
+    def _stage_potential_files(self):
+        from eon import fileio
+
+        files = fileio.load_potfiles(
+            getattr(self.config, "path_pot", "") or ""
+        )
+        if not files:
+            return None
+        workdir = Path(self.scratchpath) / ".inprocess-potential"
+        workdir.mkdir(parents=True, exist_ok=True)
+        root = workdir.resolve()
+        for filename, (contents, permissions) in files.items():
+            destination = (workdir / filename).resolve()
+            if root not in destination.parents:
+                raise CommunicatorError(
+                    f"potential support file escapes workspace: {filename}"
+                )
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_text(contents.getvalue())
+            destination.chmod(permissions)
+        return workdir
 
     def _submit_loop(self, data, invariants, pc):
         from pyeonclient.bridge import structure_to_matter, matter_to_structure
 
         for job in data:
             self.token.raise_if_cancelled()
+            setup_force_calls = 0
             jid = job.get("id", "job")
             config_source = (
                 job if "config.ini" in job or "config" in job else invariants
             )
             params = _params_from_invariants(pc, config_source)
             config_text = _config_text(config_source)
-            config_fingerprint = hashlib.sha256(
-                (config_text or "").encode("utf-8")
-            ).hexdigest()
+            config_fingerprint = _session_config_fingerprint(config_text)
             job_kind = getattr(params, "job", pc.JobType.Minimization)
             try:
                 structure = _structure_from_job(job, invariants)
@@ -486,7 +565,11 @@ class LocalInProcess(Communicator):
             )
             state_id = _state_key(job)
             fingerprint = _geometry_fingerprint(structure)
-            session = self._state_sessions.get(state_id) if stateful else None
+            session = (
+                self._state_sessions.get(state_id)
+                if stateful and self._reuse_state_sessions
+                else None
+            )
             if (
                 session is None
                 or session["fingerprint"] != fingerprint
@@ -497,6 +580,7 @@ class LocalInProcess(Communicator):
                 if stateful and bool(
                     getattr(params, "process_search_minimize_first", False)
                 ):
+                    setup_calls_before = int(pot.force_call_counter)
                     matter, converged = matter.relax(
                         inplace=True,
                         quiet=True,
@@ -507,10 +591,13 @@ class LocalInProcess(Communicator):
                         raise CommunicatorError(
                             f"inprocess: reactant minimization failed for state {state_id}"
                         )
+                    setup_force_calls = (
+                        int(pot.force_call_counter) - setup_calls_before
+                    )
                     self._state_minimizations[state_id] = (
                         self._state_minimizations.get(state_id, 0) + 1
                     )
-                if stateful:
+                if stateful and self._reuse_state_sessions:
                     self._state_sessions[state_id] = {
                         "potential": pot,
                         "matter": matter,
@@ -547,7 +634,19 @@ class LocalInProcess(Communicator):
             finally:
                 self._cpp_token = None
             matter = payload["matter"]
-            payload["force_calls"] = int(pot.force_call_counter) - calls_before
+            if "force_calls_breakdown" in payload:
+                payload["force_calls_breakdown"]["minimization"] += (
+                    setup_force_calls
+                )
+                payload["force_calls"] = sum(
+                    payload["force_calls_breakdown"].values()
+                )
+            else:
+                payload["force_calls"] = (
+                    int(pot.force_call_counter)
+                    - calls_before
+                    + setup_force_calls
+                )
             out = matter_to_structure(matter)
 
             energy = float(payload["energy"])
@@ -558,10 +657,24 @@ class LocalInProcess(Communicator):
             job_result = _job_result(
                 status, energy, fcalls, jname, cancelled=cancelled
             )
-            results = StringIO(
-                _results_dat(
-                    status, energy, fcalls, jname, cancelled=cancelled
+            if "force_calls_breakdown" in payload:
+                job_result["force_calls"].update(
+                    payload["force_calls_breakdown"]
                 )
+            for key in (
+                "potential_energy_reactant",
+                "potential_energy_product",
+                "potential_energy_saddle",
+                "barrier_reactant_to_product",
+                "barrier_product_to_reactant",
+                "displacement_saddle_distance",
+                "prefactor_reactant_to_product",
+                "prefactor_product_to_reactant",
+            ):
+                if key in payload:
+                    job_result[key] = payload[key]
+            results = StringIO(
+                _results_dat_from_job_result(job_result)
             )
 
             rec = {
@@ -569,7 +682,7 @@ class LocalInProcess(Communicator):
                 "number": 0,
                 "name": str(jid),
                 "product": _conframe_of(out),
-                "min.con": _LazyCon(out),
+                "min.con": _con_io(out),
                 "job_result": job_result,
                 "results.dat": results,
                 "_matter": matter,
@@ -577,11 +690,20 @@ class LocalInProcess(Communicator):
                 "_energy": energy,
                 "_converged": bool(payload.get("converged", status == 0)),
             }
+            if "min1" in payload:
+                reactant = matter_to_structure(payload["min1"])
+                rec["reactant"] = _conframe_of(reactant)
+                rec["reactant.con"] = _con_io(reactant)
+            rec["product.con"] = _con_io(out)
+            if "direction.dat" in job:
+                rec["mode.dat"] = StringIO(
+                    _con_text_of(job["direction.dat"])
+                )
             saddle = payload.get("saddle")
             if saddle is not None:
                 saddle_structure = matter_to_structure(saddle)
                 rec["saddle"] = _conframe_of(saddle_structure)
-                rec["saddle.con"] = _LazyCon(saddle_structure)
+                rec["saddle.con"] = _con_io(saddle_structure)
                 rec["_saddle"] = saddle
             self._finished.append(rec)
             logger.info(

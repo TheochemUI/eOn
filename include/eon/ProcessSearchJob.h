@@ -66,6 +66,9 @@ public:
   std::vector<std::string> run(void) override;
   /// In-process entry: seed reactant Matter, no pos.con.
   std::shared_ptr<Matter> runFromMatter(std::shared_ptr<Matter> seed);
+  std::shared_ptr<Matter>
+  runFromMatter(std::shared_ptr<Matter> seed,
+                std::shared_ptr<Matter> displaced, const AtomMatrix &mode);
 
   std::shared_ptr<Matter> getInitial() const { return initial; }
   std::shared_ptr<Matter> getSaddle() const { return saddle; }
@@ -75,6 +78,10 @@ public:
   double prefactorReverse() const { return prefactorsValues[1]; }
   double barrierForward() const { return barriersValues[0]; }
   double barrierReverse() const { return barriersValues[1]; }
+  int status() const { return lastStatus; }
+  size_t forceCallsSaddle() const { return fCallsSaddle; }
+  size_t forceCallsMinimization() const { return fCallsMin; }
+  size_t forceCallsPrefactors() const { return fCallsPrefactors; }
 
 private:
   eonc::log::Scoped log;
@@ -119,6 +126,8 @@ private:
   size_t fCallsMin{0};
   //! Force calls to find the prefactors
   size_t fCallsPrefactors{0};
+  int lastStatus{MinModeSaddleSearch::STATUS_INIT};
+  bool inProcessMode{false};
 };
 
 } // namespace eonc
