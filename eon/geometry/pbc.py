@@ -38,6 +38,78 @@ def _pbc_numpy(
     return np.dot(wrapped, box)
 
 
+_ORTHOGONAL_MEMO: dict = {}
+
+
+def _wrap_orthogonal(rows: np.ndarray, lengths: np.ndarray) -> np.ndarray:
+    """One image shift per axis, as ``minimage`` does in an orthogonal cell.
+
+    A component at or above half the edge moves down one edge, one below
+    minus half moves up one, and a component exactly at minus half stays.
+    A row more than one edge out is moved once, not reduced, as there.
+    """
+    half = lengths / 2.0
+    return np.where(
+        rows >= half, rows - lengths, np.where(rows < -half, rows + lengths, rows)
+    )
+
+
+def _probe_rows(lengths: np.ndarray) -> np.ndarray:
+    """Rows that separate one wrap rule from another: scattered rows up to
+    one and a half edges out, and rows on and beside every half-edge tie."""
+    rng = np.random.RandomState(0)
+    rows = [rng.uniform(-1.5, 1.5, size=(256, 3)) * lengths]
+    half = lengths / 2.0
+    for axis in range(3):
+        for sign in (1.0, -1.0):
+            for edge in (half[axis], np.nextafter(half[axis], 0.0),
+                         np.nextafter(half[axis], np.inf)):
+                row = rng.uniform(-0.4, 0.4, size=3) * lengths
+                row[axis] = sign * edge
+                rows.append(row[None, :])
+    rows.append(np.zeros((1, 3)))
+    return np.vstack(rows)
+
+
+def _orthogonal_lengths(cell, box: np.ndarray) -> np.ndarray | None:
+    """Edge lengths that make :func:`_wrap_orthogonal` agree with *cell*, or None.
+
+    minimage takes its edge lengths from the cell's volume and the face
+    areas, which differs from the diagonal of the box in the last bit for
+    some boxes. The candidate is therefore checked against the cell on the
+    probe rows, bit for bit, once per box; a box that fails it, or one that
+    is not orthogonal, wraps through the cell row by row.
+    """
+    key = box.tobytes()
+    if key in _ORTHOGONAL_MEMO:
+        return _ORTHOGONAL_MEMO[key]
+    lengths = None
+    diag = np.diagonal(box)
+    is_ortho = getattr(cell, "is_ortho", None)
+    if bool((diag > 0.0).all()) and (not callable(is_ortho) or is_ortho()):
+        volume = diag[0] * diag[1] * diag[2]
+        lengths = np.array(
+            [
+                volume / (diag[1] * diag[2]),
+                volume / (diag[0] * diag[2]),
+                volume / (diag[0] * diag[1]),
+            ]
+        )
+        rows = _probe_rows(lengths)
+        zero = [0.0, 0.0, 0.0]
+        want = np.array([cell.displacement(zero, row.tolist()) for row in rows])
+        got = _wrap_orthogonal(rows, lengths)
+        if not (
+            np.array_equal(got, want)
+            and np.array_equal(np.signbit(got), np.signbit(want))
+        ):
+            lengths = None
+    if len(_ORTHOGONAL_MEMO) >= 64:
+        _ORTHOGONAL_MEMO.clear()
+    _ORTHOGONAL_MEMO[key] = lengths
+    return lengths
+
+
 def pbc(
     r,
     box,
@@ -81,6 +153,9 @@ def pbc(
                 cell.displacement([0.0, 0.0, 0.0], r.tolist()), dtype=float
             )
         rows = np.atleast_2d(r)
+        lengths = _orthogonal_lengths(cell, box)
+        if lengths is not None and bool(np.isfinite(rows).all()):
+            return _wrap_orthogonal(rows, lengths)
         wrap_many = getattr(cell, "wrap_many", None)
         if wrap_many is not None:
             return np.asarray(wrap_many(rows), dtype=float)

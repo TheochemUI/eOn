@@ -34,20 +34,30 @@ def _positions_box(p: StructureLike):
     return r, box
 
 
-def _pair_lists(n: int, i: np.ndarray, j: np.ndarray) -> List[List[int]]:
-    """Convert vesin pair indices to eOn adjacency lists (plain Python ints).
+def _unique_pairs(n: int, i: np.ndarray, j: np.ndarray):
+    """Unique non-self ``(center, neighbor)`` pairs, sorted by center then neighbor.
 
-    Vesin may return the same neighbor index multiple times under different
-    periodic shifts when the cutoff reaches multiple images. eOn historically
-    stores unique atom indices only (no multi-image multiplicity).
+    Vesin and linkcell may return the same neighbor index several times under
+    different periodic shifts when the cutoff reaches multiple images. eOn
+    historically stores unique atom indices only (no multi-image multiplicity).
     """
-    nl_sets = [set() for _ in range(n)]
-    for a, b in zip(i.tolist(), j.tolist()):
-        ai, bi = int(a), int(b)
-        if ai == bi:
-            continue
-        nl_sets[ai].add(bi)
-    return [sorted(s) for s in nl_sets]
+    i = np.asarray(i, dtype=np.int64).reshape(-1)
+    j = np.asarray(j, dtype=np.int64).reshape(-1)
+    keep = i != j
+    keys = np.unique(i[keep] * n + j[keep])
+    return keys // n, keys % n
+
+
+def _row_bounds(n: int, centers: np.ndarray) -> List[int]:
+    return np.searchsorted(centers, np.arange(n + 1)).tolist()
+
+
+def _pair_lists(n: int, i: np.ndarray, j: np.ndarray) -> List[List[int]]:
+    """Convert vesin pair indices to eOn adjacency lists (plain Python ints)."""
+    centers, others = _unique_pairs(n, i, j)
+    bounds = _row_bounds(n, centers)
+    flat = others.tolist()
+    return [flat[bounds[k] : bounds[k + 1]] for k in range(n)]
 
 
 def _periodic_flags(p: StructureLike, periodic: PeriodicSpec | None) -> PeriodicSpec:
@@ -92,6 +102,30 @@ def _linkcell_pairs(r: np.ndarray, box: np.ndarray, cutoff: float, *, half: bool
     )
 
 
+def _cutoff_pairs(
+    p: StructureLike,
+    cutoff: float,
+    periodic: PeriodicSpec | None = None,
+):
+    """``(n, i, j)``: raw pair rows within *cutoff*, or ``None`` for no pairs.
+
+    The index arrays may repeat a pair under several shifts; see
+    :func:`_unique_pairs`.
+    """
+    r, box = _positions_box(p)
+    n = r.shape[0]
+    if n == 0 or cutoff <= 0:
+        return n, None, None
+    flags = _periodic_flags(p, periodic)
+    if _all_periodic(flags):
+        packed = _linkcell_pairs(r, box, cutoff, half=False)
+        if packed is not None:
+            return n, packed[0], packed[1]
+    calc = VesinNeighborList(cutoff=float(cutoff), full_list=True)
+    i, j = calc.compute(r, box, periodic=flags, quantities="ij")
+    return n, np.asarray(i), np.asarray(j)
+
+
 def neighbor_list(
     p: StructureLike,
     cutoff: float,
@@ -116,20 +150,10 @@ def neighbor_list(
         periodic cells use :func:`linkcell.pairs_within`. An open axis
         uses vesin.
     """
-    r, box = _positions_box(p)
-    n = r.shape[0]
-    if n == 0:
-        return []
-    if cutoff <= 0:
+    n, i, j = _cutoff_pairs(p, cutoff, periodic)
+    if i is None:
         return [[] for _ in range(n)]
-    flags = _periodic_flags(p, periodic)
-    if _all_periodic(flags):
-        packed = _linkcell_pairs(r, box, cutoff, half=False)
-        if packed is not None:
-            return _pair_lists(n, packed[0], packed[1])
-    calc = VesinNeighborList(cutoff=float(cutoff), full_list=True)
-    i, j = calc.compute(r, box, periodic=flags, quantities="ij")
-    return _pair_lists(n, np.asarray(i), np.asarray(j))
+    return _pair_lists(n, i, j)
 
 
 def brute_neighbor_list(p: StructureLike, cutoff: float) -> List[List[int]]:
@@ -150,22 +174,19 @@ def neighbor_list_vectors(
     installed). Multi-image pair lists belong on
     :func:`neighbor_list_pairs`.
     """
-    nl = neighbor_list(p, cutoff, brute=brute)
+    n, i, j = _cutoff_pairs(p, cutoff)
+    if i is None:
+        return [[] for _ in range(n)]
     r, box = _positions_box(p)
+    centers, others = _unique_pairs(n, i, j)
+    if centers.size == 0:
+        return [[] for _ in range(n)]
     ibox = np.linalg.inv(box)
-    pairs = [(center, j) for center, neighs in enumerate(nl) for j in neighs]
-    if not pairs:
-        return [[] for _ in nl]
-    diffs = np.empty((len(pairs), 3), dtype=float)
-    for k, (center, j) in enumerate(pairs):
-        diffs[k] = r[j] - r[center]
     wrapped = np.atleast_2d(
-        pbc(diffs, box, ibox, periodic=_periodic_flags(p, None))
+        pbc(r[others] - r[centers], box, ibox, periodic=_periodic_flags(p, None))
     )
-    out: List[List[np.ndarray]] = [[] for _ in nl]
-    for k, (center, _j) in enumerate(pairs):
-        out[center].append(np.asarray(wrapped[k], dtype=float))
-    return out
+    bounds = _row_bounds(n, centers)
+    return [list(wrapped[bounds[k] : bounds[k + 1]]) for k in range(n)]
 
 
 def neighbor_list_pairs(
@@ -236,7 +257,11 @@ def neighbor_list_linkcell(
 def coordination_numbers(
     p: StructureLike, cutoff: float, brute: bool = False
 ) -> List[int]:
-    return [len(l) for l in neighbor_list(p, cutoff, brute)]
+    n, i, j = _cutoff_pairs(p, cutoff)
+    if i is None:
+        return [0] * n
+    centers, _others = _unique_pairs(n, i, j)
+    return np.bincount(centers, minlength=n).tolist()
 
 
 def least_coordinated(
