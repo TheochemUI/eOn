@@ -42,7 +42,7 @@ class ConfigClass:
 
         y = yaml.load(
             (Path(__file__).parent / "config.yaml").read_text(),
-            Loader=yaml.BaseLoader,
+            Loader=getattr(yaml, "CBaseLoader", yaml.BaseLoader),
         )
 
         for section_name in y:
