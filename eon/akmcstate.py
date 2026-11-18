@@ -349,12 +349,14 @@ class AKMCState(state.State):
             repeats = {}
             for event in rt:
                 id = event[0]
-                repeats[id] = all_repeats[id]
+                if id in all_repeats:
+                    repeats[id] = all_repeats[id]
             # number of events
             m = len(repeats)
             # number of searches
             n = sum(repeats.values())
-            if n < 10: return 0.0
+            if m < 1 or n < 10:
+                return 0.0
 
             # probabilities
             ps = np.array(list(repeats.values()),dtype=float)

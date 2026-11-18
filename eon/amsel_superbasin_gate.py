@@ -452,9 +452,16 @@ def basin_view_from_state(
     )
 
 
-def _has_in_basin_edge(view: Any, e_min_init: float) -> bool:
+def _has_in_basin_edge(
+    view: Any, e_min_init: float, state_ids: list[int] | None = None
+) -> bool:
     cutoff = float(e_min_init)
-    for state in view.state_dict.values():
+    states = (
+        [view.state_dict[int(sid)] for sid in state_ids if int(sid) in view.state_dict]
+        if state_ids is not None
+        else view.state_dict.values()
+    )
+    for state in states:
         for process_key, proc in state.get_process_table().items():
             if _product_id(proc, process_key) is None:
                 continue
@@ -803,7 +810,7 @@ def amsel_discover_exit(
     # One reactant and no edge below the settled lid is not a superbasin.
     # The plain clock is that exit. Drawing here would spend the uniforms
     # the plain step needs, or replace it with a different pairing.
-    if direct is None and len(transient) == 1 and not _has_in_basin_edge(view, lid):
+    if direct is None and len(transient) == 1 and not _has_in_basin_edge(view, lid, transient):
         return None
     absorbing, rates = _rates_at_lid(view.state_dict, transient, absorbing, rates, lid)
     if not absorbing:
