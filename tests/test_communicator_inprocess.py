@@ -236,3 +236,34 @@ def test_process_searches_reuse_one_state_potential_and_minimized_reactant(
     assert c.state_session_count == 1
     assert c.state_minimization_count("17") == 1
     assert second_potential.force_call_counter > first_calls
+
+
+def test_process_search_session_reuse_can_be_disabled_for_comparison(tmp_path):
+    _need_client()
+    from eon.communicator_inprocess import LocalInProcess
+    from eon.config import ConfigClass
+
+    cfg = ConfigClass()
+    cfg.path_scratch = str(tmp_path / "scratch")
+    cfg.comm_reuse_state_sessions = False
+    c = LocalInProcess(cfg.path_scratch, bundle_size=1, config=cfg)
+    ini = StringIO(
+        "[Main]\njob = process_search\n"
+        "[Potential]\npotential = lj\n"
+        "[Process Search]\nminimize_first = true\n"
+        "[Saddle Search]\nmax_iterations = 1\n"
+    )
+    invariants = {
+        "config.ini": (ini, 0o644),
+        "pos.con": (_lj_con_text(), 0o644),
+    }
+
+    c.submit_jobs([{"id": "23_1"}], invariants)
+    first = c.get_results()[0]["_matter"].get_potential()
+    ini.seek(0)
+    invariants["pos.con"][0].seek(0)
+    c.submit_jobs([{"id": "23_2"}], invariants)
+    second = c.get_results()[0]["_matter"].get_potential()
+
+    assert second is not first
+    assert c.state_minimization_count("23") == 2
