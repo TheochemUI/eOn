@@ -35,4 +35,7 @@
     o.xtb_charge = GD::RGPOTPOT_XTB_CHARGE;
     o.xtb_uhf = GD::RGPOTPOT_XTB_UHF;
     o.task_name = std::string(GD::RGPOTPOT_TASK_NAME);
+    o.table_path = std::string(GD::RGPOTPOT_TABLE_PATH);
+    o.table_format = std::string(GD::RGPOTPOT_TABLE_FORMAT);
+    o.neighbor_skin = GD::RGPOTPOT_NEIGHBOR_SKIN;
   }

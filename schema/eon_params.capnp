@@ -228,6 +228,10 @@ struct RgpotPotOptions {
   xtb_uhf @30 :Int32 = 0;
   # UMA (backend=uma): model task head of the AOTI package.
   task_name @31 :Text = "omol";
+  # Native EAMTable (backend=eam). An empty path is not a table.
+  table_path @32 :Text = "";
+  table_format @33 :Text = "setfl";
+  neighbor_skin @34 :Float64 = 1.0;
 }
 
 # ---------------------------------------------------------------------
