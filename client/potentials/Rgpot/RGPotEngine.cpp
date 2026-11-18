@@ -35,7 +35,20 @@
 #include "eon/potentials/Rgpot/XTBEngineLoader.h"
 #include "rgpot/CPMDPot/CPMDPot.hpp"
 #include "rgpot/CalculatorGroup.hpp"
+#include "rgpot/EAM/EAMPot.hpp"
+#ifdef RGPOT_HAS_EAM_TABLE
+#include "rgpot/EAMTable/EAMTablePot.hpp"
+#endif
+#include "rgpot/EMT/EMTPot.hpp"
+#include "rgpot/LennardJones/LJPot.hpp"
+#include "rgpot/Morse/MorsePot.hpp"
 #include "rgpot/NWChemPot/NWChemPot.hpp"
+#include "rgpot/StillingerWeber/SWSi.hpp"
+#include "rgpot/SuttonChen/SuttonChenPot.hpp"
+#include "rgpot/Tersoff/TersoffSiC.hpp"
+#ifdef RGPOT_HAS_FORTRAN_POTS
+#include "rgpot/fortran/FortranPots.hpp"
+#endif
 #include "rgpot/rpc/Potentials.capnp.h"
 
 using rgpot::types::AtomMatrix;
@@ -233,13 +246,17 @@ namespace eon {
 } // namespace eon
 
 struct RGPotEngine::Impl {
-  enum class Backend { Nwchemc, Cpmdc, Metatomic, Uma, Xtb };
+  enum class Backend { Nwchemc, Cpmdc, Metatomic, Uma, Xtb, Eam, Native };
   Backend backend{Backend::Nwchemc};
   std::unique_ptr<rgpot::NWChemPot> nwchem;
   std::unique_ptr<rgpot::CPMDPot> cpmd;
   std::unique_ptr<MetatomicEngineLoader> metatomic;
   std::unique_ptr<GenericEngineLoader> uma;
   std::unique_ptr<XTBEngineLoader> xtb;
+#ifdef RGPOT_HAS_EAM_TABLE
+  std::unique_ptr<rgpot::EAMTablePot> eam;
+#endif
+  std::unique_ptr<rgpot::PotentialBase> native;
   // Calculator groups (cpmdc, ranks_per_image > 0). One group when off.
   int groups{1};
   int group{0};
@@ -250,7 +267,73 @@ struct RGPotEngine::Impl {
 RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
     : impl_(std::make_unique<Impl>()) {
   backend_ = to_lower(opt.backend);
-  if (backend_ == "nwchem" || backend_ == "nwchemc" ||
+  if (backend_ == "eam" || backend_ == "eamtable" ||
+      backend_ == "eam/alloy" || backend_ == "eam/fs") {
+#ifdef RGPOT_HAS_EAM_TABLE
+    backend_ = "eam";
+    impl_->backend = Impl::Backend::Eam;
+    const std::string format = to_lower(opt.eam_format);
+    rgpot::EAMTableFormat tableFormat = rgpot::EAMTableFormat::Setfl;
+    if (format == "funcfl" || format == "eam")
+      tableFormat = rgpot::EAMTableFormat::Funcfl;
+    else if (format == "fs" || format == "eam/fs")
+      tableFormat = rgpot::EAMTableFormat::FinnisSinclair;
+    else if (format != "setfl" && format != "eam/alloy")
+      throw std::runtime_error("RGPOT(eam): unknown table format '" +
+                               opt.eam_format + "'");
+    impl_->eam = std::make_unique<rgpot::EAMTablePot>(
+        rgpot::EAMTableConfig{.path = opt.eam_path,
+                              .format = tableFormat,
+                              .periodic = true,
+                              .stress = false,
+                              .skin = opt.eam_skin});
+#else
+    throw std::runtime_error(
+        "RGPOT(eam): rgpot was built without -Dwith_eam_table=true");
+#endif
+  } else if (backend_ == "lj") {
+    impl_->backend = Impl::Backend::Native;
+    impl_->native = std::make_unique<rgpot::LJPot>(rgpot::LJConfig{});
+  } else if (backend_ == "morse") {
+    impl_->backend = Impl::Backend::Native;
+    impl_->native = std::make_unique<rgpot::MorsePot>(rgpot::MorseConfig{});
+  } else if (backend_ == "suttonchen") {
+    impl_->backend = Impl::Backend::Native;
+    impl_->native =
+        std::make_unique<rgpot::SuttonChenPot>(rgpot::SuttonChenConfig{});
+  } else if (backend_ == "swsi1985") {
+    impl_->backend = Impl::Backend::Native;
+    impl_->native = std::make_unique<rgpot::StillingerWeberSi>();
+  } else if (backend_ == "tersoffsi") {
+    impl_->backend = Impl::Backend::Native;
+    impl_->native = std::make_unique<rgpot::TersoffSiC>();
+  } else if (backend_ == "emt") {
+    impl_->backend = Impl::Backend::Native;
+    impl_->native = std::make_unique<rgpot::EMTPot>();
+  } else if (backend_ == "eamcell") {
+    impl_->backend = Impl::Backend::Native;
+    impl_->native = std::make_unique<rgpot::EAMPot>();
+#ifdef RGPOT_HAS_FORTRAN_POTS
+  } else if (backend_ == "swsi") {
+    impl_->backend = Impl::Backend::Native;
+    impl_->native = std::make_unique<rgpot::fortranpots::SWPot>();
+  } else if (backend_ == "edip") {
+    impl_->backend = Impl::Backend::Native;
+    impl_->native = std::make_unique<rgpot::fortranpots::EDIPPot>();
+  } else if (backend_ == "lenoskysi") {
+    impl_->backend = Impl::Backend::Native;
+    impl_->native = std::make_unique<rgpot::fortranpots::LenoskyPot>();
+  } else if (backend_ == "eamal") {
+    impl_->backend = Impl::Backend::Native;
+    impl_->native = std::make_unique<rgpot::fortranpots::EAMAlPot>();
+  } else if (backend_ == "fehe") {
+    impl_->backend = Impl::Backend::Native;
+    impl_->native = std::make_unique<rgpot::fortranpots::FeHePot>();
+  } else if (backend_ == "cuh2") {
+    impl_->backend = Impl::Backend::Native;
+    impl_->native = std::make_unique<rgpot::fortranpots::CuH2Pot>();
+#endif
+  } else if (backend_ == "nwchem" || backend_ == "nwchemc" ||
       backend_ == "nwchempot") {
     backend_ = "nwchemc";
     impl_->backend = Impl::Backend::Nwchemc;
@@ -418,7 +501,7 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
   } else {
     throw std::runtime_error(
         "RGPOT: unknown backend '" + opt.backend +
-        "' (expected nwchemc, cpmdc, metatomic, uma, or xtb)");
+        "' (expected an rgpot native potential or an in-process engine)");
   }
 }
 
@@ -532,6 +615,15 @@ bool RGPotEngine::available() const {
     return impl_->uma->available();
   if (impl_->backend == Impl::Backend::Xtb && impl_->xtb)
     return impl_->xtb->available();
+  if (impl_->backend == Impl::Backend::Eam) {
+#ifdef RGPOT_HAS_EAM_TABLE
+    return impl_->eam != nullptr;
+#else
+    return false;
+#endif
+  }
+  if (impl_->backend == Impl::Backend::Native)
+    return impl_->native != nullptr;
   return false;
 }
 
@@ -610,6 +702,23 @@ void RGPotEngine::forceEngine(long N, const double *R, const int *atomicNrs,
     impl_->xtb->force(N, R, atomicNrs, F, U, nullptr, box);
     return;
   }
+  if (impl_->backend == Impl::Backend::Native) {
+    auto result = (*impl_->native)(positions, atmtypes, cell);
+    *U = std::get<0>(result);
+    const auto &nativeForces = std::get<1>(result);
+    std::copy(nativeForces.data(), nativeForces.data() + 3 * N, F);
+    return;
+  }
+#ifdef RGPOT_HAS_EAM_TABLE
+  if (impl_->backend == Impl::Backend::Eam) {
+    rgpot::ForceOut out{F, 0.0, 0.0};
+    impl_->eam->forceImpl(
+        rgpot::ForceInput{static_cast<std::size_t>(N), R, atomicNrs, box},
+        &out);
+    *U = out.energy;
+    return;
+  }
+#endif
 
   // rgpot >= 2.5.0: operator() returns (energy, forces, variance).
   std::tuple<double, AtomMatrix, double> result;

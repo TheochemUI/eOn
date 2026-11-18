@@ -1,9 +1,7 @@
 [wrap-git]
 directory = rgpot
 url = https://github.com/OmniPotentRPC/rgpot.git
-# rgpot 3.5.1 (signed tag v3.5.1, commit 4b24f1b). 3.5.0 shipped the
-# new C++ layout under soversion 3. 3.5.1 is soversion 4 (librgpot.so.4).
-# eOn compiles the inline caps() into librgpot_pot.so.
-revision = 4b24f1b7bcff988178e6b184abcfaa408f149914
+# rgpot develop with persistent native EAM neighbor lists.
+revision = 424629e5ba9c0948b8d6224f5b49c014ffb4ac7c
 depth = 1
 diff_files = rgpot-capnp-includes.patch

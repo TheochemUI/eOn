@@ -135,8 +135,11 @@ struct socket_nwchem_options_t {
 // [RgpotPot] — in-process rgpot (dlopen engines; no potserv). Packaging
 // prefers metatomic/xtb via RGPOT over fat -Dwith_metatomic / -Dwith_xtb.
 struct rgpot_options_t {
-  /// "nwchemc", "cpmdc", "metatomic", or "xtb"
+  /// Engine name, native EAMTable, or the in-process LAMMPS library.
   std::string backend{"nwchemc"};
+  std::string table_path{};
+  std::string table_format{"setfl"};
+  double neighbor_skin{1.0};
   std::string basis{"sto-3g"};
   std::string theory{"scf"};
   std::string scf_type{"rhf"};

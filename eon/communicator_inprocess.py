@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import logging
 import os
+import hashlib
 from io import StringIO
 from pathlib import Path
 from typing import Any
@@ -35,21 +36,26 @@ def _require_pyeonclient():
     return pc
 
 
-def _params_from_invariants(pc, invariants: dict) -> Any:
-    """Load Parameters from config.ini bytes if present, else defaults."""
-    params = pc.Parameters()
-    # invariants values are (StringIO, mode) or StringIO
+def _config_text(invariants: dict) -> str | None:
     for name, val in invariants.items():
-        base = Path(name).name
-        if base not in ("config.ini", "config"):
+        if Path(name).name not in ("config.ini", "config"):
             continue
         content = val[0] if isinstance(val, tuple) else val
         if hasattr(content, "getvalue"):
-            text = content.getvalue()
-        elif hasattr(content, "read"):
-            text = content.read()
-        else:
-            text = str(content)
+            return content.getvalue()
+        if hasattr(content, "read"):
+            if hasattr(content, "seek"):
+                content.seek(0)
+            return content.read()
+        return str(content)
+    return None
+
+
+def _params_from_invariants(pc, invariants: dict) -> Any:
+    """Load Parameters from config.ini bytes if present, else defaults."""
+    params = pc.Parameters()
+    text = _config_text(invariants)
+    if text is not None:
         if hasattr(params, "load_ini_text"):
             params.load_ini_text(text)
         else:
@@ -157,6 +163,23 @@ def _conframe_of(structure):
     return structure.to_conframe()
 
 
+def _geometry_fingerprint(structure) -> str:
+    digest = hashlib.sha256()
+    for value in (structure.r, structure.box, structure.mass, structure.free):
+        array = np.ascontiguousarray(value)
+        digest.update(str(array.dtype).encode("ascii"))
+        digest.update(str(array.shape).encode("ascii"))
+        digest.update(array.tobytes())
+    digest.update("\0".join(structure.names).encode("utf-8"))
+    return digest.hexdigest()
+
+
+def _state_key(job: dict) -> str:
+    if "state" in job:
+        return str(job["state"])
+    return str(job.get("id", "state")).split("_", 1)[0]
+
+
 class _LazyCon:
     """.con text for callers that read min.con or saddle.con, built on first read."""
 
@@ -225,13 +248,17 @@ def _run_inprocess_job(pc, job_kind, matter, pot, params, job: dict, token=None)
             job_obj = pc.ProcessSearchJob(pot, params)
             product = job_obj.run_from_matter(matter)
             saddle = job_obj.saddle
+            if product is None or saddle is None:
+                raise CommunicatorError(
+                    "inprocess: process search returned no product or saddle"
+                )
             return {
                 "matter": product,
                 "saddle": saddle,
                 "min1": job_obj.min1,
                 "min2": job_obj.min2,
-                "energy": float(saddle.potential_energy) if saddle else 0.0,
-                "force_calls": int(product.force_calls) if product else 0,
+                "energy": float(saddle.potential_energy),
+                "force_calls": int(product.force_calls),
                 "status": 0,
                 "job_type": (
                     "process_search"
@@ -379,6 +406,15 @@ class LocalInProcess(Communicator):
         self.token = CancelToken()
         self._in_submit = False
         self._cpp_token = None
+        self._state_sessions: dict[str, dict[str, Any]] = {}
+        self._state_minimizations: dict[str, int] = {}
+
+    @property
+    def state_session_count(self):
+        return len(self._state_sessions)
+
+    def state_minimization_count(self, state):
+        return self._state_minimizations.get(str(state), 0)
 
     def get_queue_size(self):
         return 0
@@ -412,23 +448,29 @@ class LocalInProcess(Communicator):
         that read .con text. Nothing is written to disk.
         """
         pc = self._pc
-        params = _params_from_invariants(pc, invariants)
-        pot = pc.make_potential(params)
-        job_kind = getattr(params, "job", pc.JobType.Minimization)
 
         self._in_submit = True
         try:
-            self._submit_loop(data, invariants, pc, pot, params, job_kind)
+            self._submit_loop(data, invariants, pc)
         finally:
             self._in_submit = False
             self.token.reset()
 
-    def _submit_loop(self, data, invariants, pc, pot, params, job_kind):
+    def _submit_loop(self, data, invariants, pc):
         from pyeonclient.bridge import structure_to_matter, matter_to_structure
 
         for job in data:
             self.token.raise_if_cancelled()
             jid = job.get("id", "job")
+            config_source = (
+                job if "config.ini" in job or "config" in job else invariants
+            )
+            params = _params_from_invariants(pc, config_source)
+            config_text = _config_text(config_source)
+            config_fingerprint = hashlib.sha256(
+                (config_text or "").encode("utf-8")
+            ).hexdigest()
+            job_kind = getattr(params, "job", pc.JobType.Minimization)
             try:
                 structure = _structure_from_job(job, invariants)
             except CommunicatorError:
@@ -438,13 +480,54 @@ class LocalInProcess(Communicator):
                 logger.exception("inprocess: failed to read geometry for %s", jid)
                 raise CommunicatorError(str(e)) from e
 
-            matter = structure_to_matter(structure, pot, params)
+            stateful = job_kind in (
+                pc.JobType.Process_Search,
+                pc.JobType.Saddle_Search,
+            )
+            state_id = _state_key(job)
+            fingerprint = _geometry_fingerprint(structure)
+            session = self._state_sessions.get(state_id) if stateful else None
+            if (
+                session is None
+                or session["fingerprint"] != fingerprint
+                or session["config_fingerprint"] != config_fingerprint
+            ):
+                pot = pc.make_potential(params)
+                matter = structure_to_matter(structure, pot, params)
+                if stateful and bool(
+                    getattr(params, "process_search_minimize_first", False)
+                ):
+                    matter, converged = matter.relax(
+                        inplace=True,
+                        quiet=True,
+                        write_movie=False,
+                        checkpoint=False,
+                    )
+                    if not converged:
+                        raise CommunicatorError(
+                            f"inprocess: reactant minimization failed for state {state_id}"
+                        )
+                    self._state_minimizations[state_id] = (
+                        self._state_minimizations.get(state_id, 0) + 1
+                    )
+                if stateful:
+                    self._state_sessions[state_id] = {
+                        "potential": pot,
+                        "matter": matter,
+                        "parameters": params,
+                        "fingerprint": fingerprint,
+                        "config_fingerprint": config_fingerprint,
+                    }
+            else:
+                pot = session["potential"]
+                matter = session["matter"]
             if hasattr(pc, "CancelToken") and hasattr(matter, "set_cancel_token"):
                 self._cpp_token = pc.CancelToken()
                 matter.set_cancel_token(self._cpp_token)
                 if self.token.cancelled:
                     self._cpp_token.request()
             cancelled_exc = getattr(pc, "JobCancelled", None)
+            calls_before = int(pot.force_call_counter)
             try:
                 payload = _run_inprocess_job(
                     pc, job_kind, matter, pot, params, job, token=self.token
@@ -454,7 +537,7 @@ class LocalInProcess(Communicator):
                     raise
                 payload = {
                     "matter": matter,
-                    "energy": 0.0,
+                    "energy": float(matter.potential_energy),
                     "force_calls": int(getattr(matter, "force_calls", 0) or 0),
                     "status": 1,
                     "job_type": str(getattr(job_kind, "name", job_kind)),
@@ -464,6 +547,7 @@ class LocalInProcess(Communicator):
             finally:
                 self._cpp_token = None
             matter = payload["matter"]
+            payload["force_calls"] = int(pot.force_call_counter) - calls_before
             out = matter_to_structure(matter)
 
             energy = float(payload["energy"])

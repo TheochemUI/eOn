@@ -1545,7 +1545,7 @@ Communicator:
 
         type:
             kind: string
-            default: local
+            default: inprocess
             values:
                 - cluster
                 - local
@@ -2299,6 +2299,18 @@ RgpotPot:
         backend:
             kind: string
             default: "nwchemc"
+
+        table_path:
+            kind: string
+            default: ""
+
+        table_format:
+            kind: string
+            default: "setfl"
+
+        neighbor_skin:
+            kind: float
+            default: 1.0
 
         basis:
             kind: string

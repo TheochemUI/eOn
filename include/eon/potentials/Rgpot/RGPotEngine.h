@@ -45,9 +45,13 @@ struct RGPotEngineOptions {
   // C ABI. model_path is the AOTI package; charge and multiplicity ride
   // the shared fields.
   std::string task_name{"omol"};
+  // Native tabulated EAM. One engine instance owns and reuses its Verlet list.
+  std::string eam_path;
+  std::string eam_format{"setfl"}; // funcfl, setfl, or fs
+  double eam_skin{1.0};
 };
 
-/** Opaque rgpot-backed engine (nwchemc / cpmdc / metatomic / uma / xtb). */
+/** Opaque rgpot-backed engine (including native EAM and dlopen engines). */
 class RGPotEngine {
 public:
   explicit RGPotEngine(const RGPotEngineOptions &opt);

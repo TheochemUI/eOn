@@ -12,6 +12,7 @@
 #include "eon/EonLogger.h"
 #include <cctype>
 #include <csignal>
+#include <cstdlib>
 #include <ctime>
 #include <limits>
 #include <memory>
@@ -57,6 +58,7 @@
 #ifndef IS_WINDOWS
 #include "eon/potentials/SocketNWChem/SocketNWChemPot.h"
 #ifdef WITH_RGPOT
+#include "eon/potentials/Rgpot/RGPotEngine.h"
 #include "eon/potentials/Rgpot/RgpotPot.h"
 #endif
 #endif
@@ -112,7 +114,11 @@
 #endif
 
 #include <cmath>
+#include <filesystem>
+#include <fstream>
 #include <limits>
+#include <optional>
+#include <sstream>
 #include <stdexcept>
 
 std::tuple<double, AtomMatrix> eonc::Potential::get_ef(const AtomMatrix &pos,
@@ -144,6 +150,109 @@ std::string lower_copy(std::string s) {
     c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
   }
   return s;
+}
+
+struct EamInput {
+  std::filesystem::path table;
+  std::string format;
+};
+
+std::vector<std::string> words(std::string line) {
+  if (const auto comment = line.find('#'); comment != std::string::npos) {
+    line.erase(comment);
+  }
+  std::istringstream input(line);
+  std::vector<std::string> out;
+  for (std::string word; input >> word;) {
+    out.push_back(std::move(word));
+  }
+  return out;
+}
+
+std::optional<EamInput> simple_eam_input() {
+  std::ifstream input("in.lammps");
+  if (!input) {
+    return std::nullopt;
+  }
+  std::string style;
+  std::vector<std::string> coefficient;
+  for (std::string line; std::getline(input, line);) {
+    const auto token = words(std::move(line));
+    if (token.empty()) {
+      continue;
+    }
+    const std::string command = lower_copy(token.front());
+    if (command == "units") {
+      if (token.size() != 2 || lower_copy(token[1]) != "metal") {
+        return std::nullopt;
+      }
+    } else if (command == "pair_style") {
+      if (token.size() != 2) {
+        return std::nullopt;
+      }
+      style = lower_copy(token[1]);
+    } else if (command == "pair_coeff") {
+      coefficient = token;
+    } else if (command != "neighbor" && command != "neigh_modify") {
+      return std::nullopt;
+    }
+  }
+  if (coefficient.size() < 4 || coefficient[1] != "*" ||
+      coefficient[2] != "*") {
+    return std::nullopt;
+  }
+
+  EamInput result{.table = coefficient[3]};
+  if (style == "eam") {
+    if (coefficient.size() != 4) {
+      return std::nullopt;
+    }
+    result.format = "funcfl";
+    return result;
+  }
+  if (style != "eam/alloy" && style != "eam/fs") {
+    return std::nullopt;
+  }
+
+  std::ifstream table(result.table);
+  std::string header;
+  for (int line = 0; line < 4; ++line) {
+    if (!std::getline(table, header)) {
+      return std::nullopt;
+    }
+  }
+  const auto elementLine = words(std::move(header));
+  if (elementLine.size() != 2 || elementLine[0] != "1" ||
+      coefficient.size() != 5 || coefficient[4] != elementLine[1]) {
+    return std::nullopt;
+  }
+  result.format = style == "eam/fs" ? "fs" : "setfl";
+  return result;
+}
+
+std::unique_ptr<Potential> make_lammps_potential(const Parameters &params) {
+#if !defined(EONMPI) && !defined(IS_WINDOWS)
+  if (const char *worker = std::getenv("EON_LAMMPS_WORKER");
+      worker != nullptr && std::string_view(worker) == "1") {
+    return std::make_unique<LAMMPSPot>(params,
+                                       LAMMPSPot::Execution::Worker);
+  }
+#endif
+#ifdef WITH_RGPOT
+  if (const auto eam = simple_eam_input()) {
+    try {
+      RGPotEngineOptions options;
+      options.backend = "eam";
+      options.eam_path = eam->table.string();
+      options.eam_format = eam->format;
+      return std::make_unique<RgpotPot>(params, options);
+    } catch (const std::exception &error) {
+      EONC_LOG_WARNING("rgpot EAM setup failed ({}); using liblammps",
+                       error.what());
+    }
+  }
+#endif
+  return std::make_unique<LAMMPSPot>(params);
 }
 
 #ifdef RGPOT_HAS_EXPR
@@ -346,7 +455,7 @@ std::unique_ptr<Potential> makePotential(PotType ptype,
 #endif
 #endif
   case PotType::LAMMPS: {
-    return std::make_unique<LAMMPSPot>(params);
+    return make_lammps_potential(params);
   }
 #ifdef EONMPI
   case PotType::MPI: {
@@ -472,6 +581,11 @@ std::unique_ptr<Potential> makePotential(PotType ptype,
 #endif
 #ifdef WITH_RGPOT
   case PotType::RGPOT: {
+    const std::string backend = lower_copy(params.rgpot_options().backend);
+    if (backend == "lammps" || backend == "lammpc" ||
+        backend == "lammpsc") {
+      return std::make_unique<LAMMPSPot>(params);
+    }
     return (std::make_unique<RgpotPot>(params));
     break;
   }

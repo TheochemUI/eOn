@@ -375,7 +375,7 @@ class CommunicatorConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
     type: Literal["local", "local_lib", "inprocess", "cluster", "mpi"] = Field(
-        default="local",
+        default="inprocess",
         description="Communicator type",
     )
     """
@@ -789,10 +789,19 @@ class RgpotPot(BaseModel):
     backend: str = Field(
         default="nwchemc",
         description=(
-            "rgpot backend: 'nwchemc', 'cpmdc', 'metatomic', or 'xtb' "
-            "(aliases: nwchem/cpmd/mta/gfn). metatomic/xtb dlopen "
-            "libmetatomic_engine.so / libxtb_engine.so for packaging."
+            "rgpot backend. Engine backends include nwchemc, cpmdc, metatomic, "
+            "uma, and xtb; native EAMTable uses eam or eamtable; lammps, "
+            "lammpc, and lammpsc select eOn's in-process LAMMPS library."
         ),
+    )
+    table_path: str = Field(
+        default="", description="DYNAMO table path for the native EAMTable backend."
+    )
+    table_format: str = Field(
+        default="setfl", description="Native EAM table format: funcfl, setfl, or fs."
+    )
+    neighbor_skin: float = Field(
+        default=1.0, description="Native EAM buffered neighbor-list skin in angstroms."
     )
     basis: str = Field(
         default="sto-3g", description="Basis set for the NWChem backend."

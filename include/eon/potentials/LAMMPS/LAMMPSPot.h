@@ -70,12 +70,12 @@ class ILammpsLoader;
 class LAMMPSPot : public eonc::Potential {
 
 public:
-  [[nodiscard]] bool needsPerImageInstance() const noexcept override {
-    return true;
-  }
-  /// Production: process-default LammpsLoader and POSIX worker isolation.
+  enum class Execution { InProcess, Worker };
+  /// Production: process-default LammpsLoader, evaluated in this process.
   explicit LAMMPSPot(const eonc::Parameters &p);
-  /// Test seam: injected loader, no worker fork, no process-default load.
+  /// Benchmark and compatibility selection. Production uses InProcess.
+  LAMMPSPot(const eonc::Parameters &p, Execution execution);
+  /// Test seam: injected loader, no process-default load.
   LAMMPSPot(const eonc::Parameters &p, eonc::ILammpsLoader &loader);
   ~LAMMPSPot();
   void cleanMemory();
@@ -96,6 +96,7 @@ private:
   int lammpsThr{0};
   bool lammpsLogging_{false};
   int lammpsLogIndex_{0};
+  bool isolateWorker_{false};
   std::mutex maskMutex_;
   // client_lammps-N.log. The worker child writes it. The parent, after the
   // child has finished a force call, copies new lines into the process log.

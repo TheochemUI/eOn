@@ -21,6 +21,9 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
   RGPotEngineOptions opt;
   const auto &o = p.rgpot_options();
   opt.backend = o.backend;
+  opt.eam_path = o.table_path;
+  opt.eam_format = o.table_format;
+  opt.eam_skin = o.neighbor_skin;
   opt.basis = o.basis;
   opt.theory = o.theory;
   opt.scf_type = o.scf_type;
@@ -118,6 +121,20 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
       << std::endl;
   // Finalize is registered first. The grouped-exit handler is next, and
   // the stop handler is last, so exit runs stop, then Finalize, then _Exit.
+  impl_->finalizeMpiAtExit();
+  impl_->armGroupedExit();
+  releaseWorkersAtExit();
+  if (!driver_)
+    serveWorker();
+}
+
+RgpotPot::RgpotPot(const eonc::Parameters &p,
+                   const RGPotEngineOptions &options)
+    : eonc::Potential(eonc::PotType::LAMMPS, p) {
+  impl_ = std::make_unique<RGPotEngine>(options);
+  backend_ = impl_->backend();
+  driver_ = impl_->worldRank() == 0;
+  std::cout << "RgpotPot: in-process rgpot backend=" << backend_ << std::endl;
   impl_->finalizeMpiAtExit();
   impl_->armGroupedExit();
   releaseWorkersAtExit();

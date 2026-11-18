@@ -19,6 +19,7 @@
 #include <string>
 
 class RGPotEngine;
+struct RGPotEngineOptions;
 
 /**
  * Potential backed by rgpot NWChemPot / CPMDPot (in-process dlopen of
@@ -28,6 +29,7 @@ class RGPotEngine;
 class RgpotPot final : public eonc::Potential {
 public:
   explicit RgpotPot(const eonc::Parameters &p);
+  RgpotPot(const eonc::Parameters &p, const RGPotEngineOptions &options);
   ~RgpotPot() override;
 
   RgpotPot(const RgpotPot &) = delete;

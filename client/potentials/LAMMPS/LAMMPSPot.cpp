@@ -22,6 +22,7 @@
 #include <format>
 #include <fstream>
 #include <map>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -42,7 +43,11 @@
 #endif
 
 LAMMPSPot::LAMMPSPot(const eonc::Parameters &p)
-    : LAMMPSPot(p, eonc::LammpsLoader::instance(), true) {}
+    : LAMMPSPot(p, eonc::LammpsLoader::instance(), false) {}
+
+LAMMPSPot::LAMMPSPot(const eonc::Parameters &p, Execution execution)
+    : LAMMPSPot(p, eonc::LammpsLoader::instance(),
+                execution == Execution::Worker) {}
 
 LAMMPSPot::LAMMPSPot(const eonc::Parameters &p, eonc::ILammpsLoader &loader)
     : LAMMPSPot(p, loader, false) {}
@@ -52,7 +57,8 @@ LAMMPSPot::LAMMPSPot(const eonc::Parameters &p, eonc::ILammpsLoader &loader,
     : eonc::Potential(p),
       loader_{loader},
       lammpsThr{p.potential_options().LAMMPSThreads},
-      lammpsLogging_{p.potential_options().LAMMPSLogging}
+      lammpsLogging_{p.potential_options().LAMMPSLogging},
+      isolateWorker_{isolate_worker}
 #ifdef EONMPI
       ,
       mpiComm{eonc::getMpiClientComm(p)}
@@ -411,7 +417,9 @@ bool LAMMPSPot::noteScreenGeometry(long N, const double *box) {
 
 void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
                       double *U, double *variance, const double *box) {
-  variance = nullptr;
+  if (variance) {
+    *variance = 0.0;
+  }
 
 #ifdef EONMPI
   std::lock_guard<std::mutex> stateLock(workerMutex);
@@ -424,6 +432,15 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
   // Drive the dedicated worker process so this image's LAMMPS runs in its own
   // process (own MPI_COMM_WORLD).  Per-image NEB threads thus evaluate forces
   // as truly concurrent processes with no shared-communicator contention.
+  if (!isolateWorker_) {
+    // Serial LAMMPS builds expose process-global state even when each caller
+    // owns an instance. Keep the library in-process while excluding another
+    // LAMMPS instance from its collectives and global registries.
+    static std::mutex processLammpsMutex;
+    std::scoped_lock locks(processLammpsMutex, workerMutex);
+    forceLocal(N, R, atomicNrs, F, U, box);
+    return;
+  }
   std::lock_guard<std::mutex> workerLock(workerMutex);
   if (workerRespawnsLeft <= 0) {
     rejectGeometry(U, F, N);
@@ -789,16 +806,33 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
     lammpsCommand(cmd.c_str());
   }
 
-  // Detect units from in.lammps: look for "#!units real" marker
+  // Read the unit command before create_box. LAMMPS rejects changing units
+  // after a box exists, while eOn historically loaded the complete file only
+  // after creating the box and therefore relied on a private comment marker.
   realunits = false;
+  std::vector<std::string> inputCommands;
   if (std::filesystem::exists("in.lammps")) {
     std::ifstream infile("in.lammps");
     std::string line;
     while (std::getline(infile, line)) {
       if (line == "#!units real") {
         realunits = true;
-        break;
+        continue;
       }
+      std::istringstream words(line);
+      std::string command;
+      words >> command;
+      if (command == "units") {
+        std::string units;
+        words >> units;
+        if (units != "metal" && units != "real") {
+          throw std::runtime_error(
+              "LAMMPS: eOn supports only metal and real units");
+        }
+        realunits = units == "real";
+        continue;
+      }
+      inputCommands.push_back(std::move(line));
     }
   } else {
     if (LAMMPSObj != nullptr) {
@@ -846,8 +880,11 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
 
   lammpsCommand("mass * 1.0");
 
-  // Load user LAMMPS input script
-  lmp.file(LAMMPSObj, "in.lammps");
+  // Load the remainder after the box exists. Empty and comment lines are
+  // accepted by lammps_command.
+  for (const std::string &command : inputCommands) {
+    lammpsCommand(command.c_str());
+  }
 
   // Define variables for force/energy extraction
   lammpsCommand("variable fx atom fx");

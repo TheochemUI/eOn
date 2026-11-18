@@ -553,14 +553,10 @@ _deps += dl_dep
 # with *default* options before eOn can pass its own; get_variable() then
 # fails for anything the default profile skipped. Force pkg-config-only.
 _rgpot_proj = []
-# rgpot 3.5.1 is the minimum. 3.5.0 changed the C++ layout of
-# PotCaps, LJConfig, LJClusterConfig and MorseConfig but kept
-# soversion 3, so a caller built against 3.4.0 crashes. 3.5.1
-# publishes that layout as librgpot.so.4. eOn compiles the inline
-# caps() into librgpot_pot.so.
+# rgpot 3.7 provides native tabulated EAM with a persistent neighbor list.
 _rgpot_pkg = dependency(
     'rgpot',
-    version: '>=3.5.1',
+    version: '>=3.7.0',
     method: 'pkg-config',
     required: false,
     allow_fallback: false,
@@ -581,6 +577,7 @@ if not _rgpot_pkg.found()
         # ExprPot is a separate option. The basic build must compile it
         # or PotType.EXPR falls through to the generic terminating error.
         'with_expr': true,
+        'with_eam_table': true,
         # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H are
         # Fortran kernels inside librgpot.
         'with_fortran_pots': 'enabled',
@@ -2483,5 +2480,14 @@ if get_option('with_tests')
         args: ['[.benchmark]'],
         workdir: meson.project_source_root() + '/client/unit_tests/data/systems/neb_morse',
         timeout: 120,
+    )
+
+    executable(
+        'cu_force_benchmark',
+        ['unit_tests/CuForceBenchmark.cpp'],
+        dependencies: test_deps,
+        include_directories: _incdirs,
+        cpp_args: test_args,
+        link_with: test_link,
     )
 endif
