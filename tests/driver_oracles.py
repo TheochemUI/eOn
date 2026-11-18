@@ -213,7 +213,6 @@ def ref_get_displacement(disp, atom_index):
     """
     reactant = disp.reactant
     config = disp.config
-    assert not config.random_mode
     nl = ref_neighbor_lists(reactant, disp.radius)
     if hasattr(atom_index, "__getitem__"):
         neighbours = [nl[i] for i in range(len(nl)) if i in atom_index]
@@ -246,5 +245,13 @@ def ref_get_displacement(disp, atom_index):
     )
     moved = reactant.copy()
     moved.r += displacement
+    if config.random_mode:
+        displacement *= 0.0
+        for k in range(len(displaced)):
+            if not reactant.atom_is_free()[displaced[k]]:
+                continue
+            displacement[displaced[k]] = np.random.normal(scale=disp.std_dev, size=3)
+            if config.displace_1d:
+                displacement[displaced[k]] = displacement[displaced[k]] * [1, 0, 0]
     displacement /= np.linalg.norm(displacement)
     return moved, displacement / np.linalg.norm(displacement)
