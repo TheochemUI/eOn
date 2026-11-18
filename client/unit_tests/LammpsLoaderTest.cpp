@@ -229,6 +229,9 @@ TEST_CASE("production LAMMPS stays in-process and matches the direct library",
   double fp[6] = {}, fd[6] = {};
   double up = 0.0, ud = 0.0, variance = 0.0;
   production.force(n, positions, atomicNumbers, fp, &up, &variance, box);
+  // An MPI-enabled liblammps may start one Open MPI singleton daemon on its
+  // first library call. No subsequent force call may create another process.
+  const auto afterLibraryInitialization = childProcesses();
   direct.force(n, positions, atomicNumbers, fd, &ud, &variance, box);
 
   REQUIRE(up == Catch::Approx(ud).margin(1.0e-8));
@@ -244,7 +247,7 @@ TEST_CASE("production LAMMPS stays in-process and matches the direct library",
     REQUIRE(fr[i] == Catch::Approx(fd[i]).margin(1.0e-8));
   }
 #endif
-  REQUIRE(childProcesses() == before);
+  REQUIRE(childProcesses() == afterLibraryInitialization);
 
   std::filesystem::current_path(oldCwd);
   std::filesystem::remove_all(work);
