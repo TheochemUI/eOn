@@ -455,7 +455,8 @@ def test_lone_barrier_is_a_direct_mrm_exit(tmp_path, monkeypatch, caplog):
     assert previous.number == 0
     assert current.number == 1
     assert time == pytest.approx(1.0e-2)
-    assert seen["calls"] == [([0], [1], [(0, 1, 1.0e2)], 0)]
+    # The kernel is probed once and then called once for the draw.
+    assert seen["calls"] == [([0], [1], [(0, 1, 1.0e2)], 0)] * 2
     assert any(
         "status=accepted" in message and "available=True" in message
         for message in caplog.messages
