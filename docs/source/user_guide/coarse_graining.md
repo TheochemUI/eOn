@@ -68,10 +68,19 @@ exit direction and time compared to normal KMC simulation
 ## amsel discover_decide
 
 `[amsel] discover_decide = true` runs on the current state's process table.
-The state list can hold one state. `use_mcamc` stays off. The repeat-count
-confidence scheme does not hold this step. A run that leaves
-`discover_decide` off still waits for `confidence` under
+The state list can hold one state. `use_mcamc` stays off. A run that leaves
+`discover_decide` off waits for the current state to reach `confidence` under
 `confidence_scheme`.
+
+amsel reads the edges it is given as the complete outgoing catalog of each
+transient state. A state with only some of its exits found has an escape rate
+that is too small, so the exit time comes out too long, and the exits not yet
+found carry no weight. With `discover_decide` on, an exit is therefore taken
+only when every transient state of the basin has the confidence `confidence`
+asks of a plain state (`State.get_confidence()` at or above `confidence`). A
+state that reports no confidence, or NaN, does not qualify. While any
+transient state falls short, no exit is taken and the next process searches
+go to the least confident of them, through the usual search loop.
 
 A barrier strictly below `e_min_init` counts as an in-basin edge. A barrier
 at or above `e_min_init` counts as an exit. On Si6N8 isomer 1 the back

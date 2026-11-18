@@ -1,0 +1,1 @@
+An amsel exit now waits until every transient state has the configured confidence, and process searches go to the least confident of them. A state with only some exits found no longer gives amsel a catalog that looks complete, and a revisited state adds its processes once.
