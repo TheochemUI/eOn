@@ -16,6 +16,11 @@ from eon import fileio as io
 from eon.config import ConfigClass  # Typing
 
 
+def search_counts_for_confidence(result_type):
+    """Random, dynamics, and recycling searches enter the sampling count."""
+    return result_type in ("random", "dynamics", "recycling")
+
+
 class AKMCState(state.State):
     ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = list(range(9))
     processtable_head_fmt = "%7s %16s %11s %9s %16s %17s %8s %12s %7s\n"
@@ -102,7 +107,7 @@ class AKMCState(state.State):
             self.append_search_result(result, "repeat-%d" % id, superbasin)
             self.procs[id]['repeats'] += 1
             self.save_process_table()
-            if result['type'] == "random" or result['type'] == "dynamics":
+            if search_counts_for_confidence(result['type']):
                 self.inc_proc_random_count(id)
                 # Do not increase repeats if we are currently in a
                 # superbasin and the process does not lead out of it;
@@ -194,7 +199,7 @@ class AKMCState(state.State):
             self.save_process_table()
 
         # If this is a random search type, add this proc to the random proc dict.
-        if result['type'] == "random" or result['type'] == "dynamics":
+        if search_counts_for_confidence(result['type']):
             self.inc_proc_random_count(id)
 
         # Store the process as soon as it is registered. Confidence stays
