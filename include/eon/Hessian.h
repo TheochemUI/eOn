@@ -85,8 +85,11 @@ greedyColorCutoffGraph(const std::vector<std::vector<int>> &adj);
 
 /// Conflict graph on ``atoms``: two mobile atoms share an edge when their
 /// closed cutoff neighborhoods intersect, then greedy-colored. Empty when
-/// the neighbor list cannot be built.
+/// the neighbor list cannot be built. A periodic box builds its neighbor list
+/// on the calling thread when ``parallel`` is false, so no worker threads
+/// start.
 std::vector<int> colorMobileCutoffGraph(const Matter &matter,
-                                        const VectorXi &atoms, double cutoff);
+                                        const VectorXi &atoms, double cutoff,
+                                        bool parallel = true);
 
 } // namespace eonc
