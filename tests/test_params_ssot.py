@@ -302,6 +302,7 @@ def test_parity_parameters_h_main_members():
         "removeNetForce": "remove_net_force",
         "parallel": "parallel",
         "writeConForces": "write_con_forces",
+        "singleThreadedClient": "single_threaded_client",
     }
     ssot = {f["snake"] for f in params_ssot.scalar_fields("Main")}
     for mem in members:

@@ -113,6 +113,27 @@ Paths
 Debug
 : which lists extra output options
 
+## Threads
+
+By default `eonclient` runs a logging thread next to the compute thread, and
+`parallel = true` lets the dimer, NEB, and process search endpoint
+minimizations start worker threads. A client that must stay on a single thread,
+for example under a scheduler that counts threads, sets both options:
+
+```{code-block} ini
+[Main]
+parallel = false
+single_threaded_client = true
+```
+
+The compute thread then drains the log queue itself, about every 100
+milliseconds and again whenever the client flushes or exits, so the records and
+their order match a default run. `single_threaded_client = true` with
+`parallel = true` stops the client with an error. The option is read once, from
+the first parameter file the client loads (`config_0.ini` when a standalone
+MPI client has one), and applies to the whole process. Command line jobs such as `--help` do
+not read a parameter file and keep the logging thread.
+
 ## Configuration
 
 ```{code-block} ini

@@ -10,6 +10,7 @@
     "Main.quiet",
     "Main.random_seed",
     "Main.remove_net_force",
+    "Main.single_threaded_client",
     "Main.temperature",
     "Main.write_con_forces",
     "Main.write_log",

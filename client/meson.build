@@ -1991,6 +1991,17 @@ if get_option('with_tests')
     if not is_windows
         test_array += [['test_client_timing', 'ClientTimingTest.cpp', '', 60]]
     endif
+    # Samples /proc/<pid>/task of a spawned eonclient.
+    if host_machine.system() == 'linux'
+        test_array += [
+            [
+                'test_process_search_threading',
+                'ProcessSearchThreadingTest.cpp',
+                'saddle_search',
+                120,
+            ],
+        ]
+    endif
     # Fortran potential tests: require Fortran shared libs at runtime
     if get_option('with_fortran')
         test_array += [
@@ -2177,7 +2188,7 @@ if get_option('with_tests')
         if _have_staged_engine_imports
             _case_depends += [_stage_engine_imports]
         endif
-        if test.get(0) == 'test_client_timing'
+        if test.get(0) in ['test_client_timing', 'test_process_search_threading']
             _case_depends += [ec]
         elif test.get(0) == 'test_serve_spec'
             # Spawn eonclient. The shared test env is one object, so this

@@ -641,6 +641,7 @@ void Matter::setSurfaceEpoch(unsigned long long epoch) {
 
 void Matter::computePotential() const {
   cancel_token_.poll("force");
+  eonc::log::poll_if_due();
   if (recomputePotential || epochDirty()) {
     if (!potential) {
       throw std::runtime_error(

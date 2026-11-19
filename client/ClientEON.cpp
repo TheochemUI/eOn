@@ -147,16 +147,41 @@ static int eonClientMain(int argc, char **argv) {
 #endif
   if (argc > 1 && !serverRank) {
     eonc::commandLine(argc, argv);
-    quill::Backend::stop();
+    eonc::log::shutdown();
     return 0;
   }
 
-  // Quill backend, file sinks, and the combi logger. Deferred until a job
-  // path actually runs so process start is not dominated by the log thread.
-  auto *logger = eonc::log::init_client();
+  // File sinks and the combi logger. Deferred until a job path actually runs
+  // so process start is not dominated by the log thread. The backend starts
+  // after the first parameter file is read, because [Main]
+  // single_threaded_client decides whether it gets a thread of its own.
+  auto *logger = eonc::log::init_client_loggers();
   if (!logger) {
     logger = eonc::log::get();
   }
+  // False when the parameter file asks for a single threaded client and
+  // still leaves worker threads on. The error is logged here, so the caller
+  // only has to stop.
+  auto startLogBackend = [&]() -> bool {
+    const auto &mainOpts = parameters.main_options();
+    const bool conflict =
+        mainOpts.singleThreadedClient && mainOpts.parallel;
+    const auto wanted = mainOpts.singleThreadedClient && !conflict
+                            ? eonc::log::BackendMode::Manual
+                            : eonc::log::BackendMode::Thread;
+    const auto actual = eonc::log::start_client_backend(wanted);
+    if (conflict) {
+      QUILL_LOG_ERROR(logger, "[Main] single_threaded_client = true needs "
+                              "parallel = false");
+      return false;
+    }
+    if (actual != wanted) {
+      QUILL_LOG_WARNING(logger,
+                        "[Main] single_threaded_client differs from the value "
+                        "read at startup and is ignored");
+    }
+    return true;
+  };
   // File sinks open relative to this directory. MPI jobs chdir later.
   const auto logHome = std::filesystem::current_path();
 
@@ -170,7 +195,7 @@ static int eonClientMain(int argc, char **argv) {
     if (getenv("EON_NUMBER_OF_CLIENTS") == nullptr) {
       QUILL_LOG_ERROR(logger,
                       "error: must set the env var EON_NUMBER_OF_CLIENTS");
-      logger->flush_log();
+      eonc::log::flush(logger);
       return 1;
     }
     number_of_clients = atoi(getenv("EON_NUMBER_OF_CLIENTS"));
@@ -198,9 +223,12 @@ static int eonClientMain(int argc, char **argv) {
                    parameters.main_options().iniFilename);
     error = parameters.load(parameters.main_options().iniFilename);
   }
+  if (!startLogBackend()) {
+    error = 1;
+  }
   if (error) {
     QUILL_LOG_ERROR(logger, "problem loading parameter file");
-    logger->flush_log();
+    eonc::log::flush(logger);
     MPI_Abort(MPI_COMM_WORLD, 1);
   }
 
@@ -246,7 +274,7 @@ static int eonClientMain(int argc, char **argv) {
     QUILL_LOG_ERROR(logger,
                     "didn't launch as many mpi client ranks as specified in "
                     "EON_NUMBER_OF_CLIENTS");
-    logger->flush_log();
+    eonc::log::flush(logger);
     MPI_Abort(MPI_COMM_WORLD, 1);
   }
   clients = number_of_clients;
@@ -258,7 +286,7 @@ static int eonClientMain(int argc, char **argv) {
                       "ranks divisible by EON_NUMBER_OF_CLIENTS ({} potential "
                       "ranks, {} clients)",
                       potentials, clients);
-      logger->flush_log();
+      eonc::log::flush(logger);
       MPI_Abort(MPI_COMM_WORLD, 1);
     }
     std::vector<int> potential_ranks(potentials);
@@ -373,7 +401,7 @@ static int eonClientMain(int argc, char **argv) {
       if (const auto chdirError =
               eonc::helpers::enterJobDirectory(path.c_str())) {
         QUILL_LOG_ERROR(logger, "error: chdir: {}", *chdirError);
-        logger->flush_log();
+        eonc::log::flush(logger);
         MPI_Send(&path[0], 1024, MPI_CHAR, server_rank, 0, MPI_COMM_WORLD);
         continue;
       }
@@ -384,10 +412,10 @@ static int eonClientMain(int argc, char **argv) {
     // Flushes the logs into the job directory so a failed job still shows
     // its error to whoever reads the returned directory.
     auto stageFailedJobLogs = [&] {
-      logger->flush_log();
+      eonc::log::flush(logger);
       if (auto *trace =
               quill::Frontend::get_logger(std::string{"_traceback"})) {
-        trace->flush_log();
+        eonc::log::flush(trace);
       }
       for (const std::string_view logName :
            {std::string_view{"client_quill.log"},
@@ -425,10 +453,13 @@ static int eonClientMain(int argc, char **argv) {
           eonc::helpers::getRelevantFile(parameters.main_options().iniFilename);
       QUILL_LOG_INFO(logger, "Loading parameter file {}", config_file);
       error = parameters.load(config_file);
+      if (!startLogBackend()) {
+        error = 1;
+      }
 
       if (error) {
         QUILL_LOG_ERROR(logger, "problem loading parameter file, stopping");
-        logger->flush_log();
+        eonc::log::flush(logger);
         if (keepServing) {
           stageFailedJobLogs();
           continue;
@@ -445,7 +476,7 @@ static int eonClientMain(int argc, char **argv) {
         QUILL_LOG_ERROR(logger, "error: Unknown job: {}",
                         std::string{magic_enum::enum_name<eonc::JobType>(
                             parameters.main_options().job)});
-        logger->flush_log();
+        eonc::log::flush(logger);
         if (keepServing) {
           stageFailedJobLogs();
           continue;
@@ -458,7 +489,7 @@ static int eonClientMain(int argc, char **argv) {
         filenames = job->run();
       } catch (int e) {
         QUILL_LOG_CRITICAL(logger, "[ERROR] job exited on error {}", e);
-        logger->flush_log();
+        eonc::log::flush(logger);
         if (keepServing) {
           stageFailedJobLogs();
           continue;
@@ -466,7 +497,7 @@ static int eonClientMain(int argc, char **argv) {
         return EXIT_FAILURE;
       } catch (const std::exception &e) {
         QUILL_LOG_CRITICAL(logger, "[ERROR] unhandled exception: {}", e.what());
-        logger->flush_log();
+        eonc::log::flush(logger);
         std::cerr << "[ERROR] unhandled exception: " << e.what() << "\n";
         if (keepServing) {
           stageFailedJobLogs();
@@ -533,10 +564,10 @@ static int eonClientMain(int argc, char **argv) {
       }
       result_file.close();
 
-      logger->flush_log();
+      eonc::log::flush(logger);
       if (auto *trace =
               quill::Frontend::get_logger(std::string{"_traceback"})) {
-        trace->flush_log();
+        eonc::log::flush(trace);
       }
       // Quill opens these before an MPI job chdir. Copy them into the job
       // directory so return_files.dat does not name a missing log.
@@ -596,7 +627,7 @@ static int eonClientMain(int argc, char **argv) {
 #endif
 
   // Ensure all queued log messages are flushed before exiting
-  quill::Backend::stop();
+  eonc::log::shutdown();
   return EXIT_SUCCESS;
 }
 
@@ -606,7 +637,7 @@ int reportFatal(std::string_view what) {
   std::cerr << "eonclient: fatal error: " << what << '\n';
   // Drain the queued CRITICAL lines that say why: an escaping exception
   // reaches std::terminate without them, and so does std::exit.
-  quill::Backend::stop();
+  eonc::log::shutdown();
 #ifdef EONMPI
   int mpiReady = 0;
   MPI_Initialized(&mpiReady);

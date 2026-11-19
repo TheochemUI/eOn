@@ -305,6 +305,13 @@ CATALOG = {
           "ordinal": 12,
           "snake": "parallel",
           "type": "Bool"
+        },
+        {
+          "capnp": "singleThreadedClient",
+          "default": False,
+          "ordinal": 13,
+          "snake": "single_threaded_client",
+          "type": "Bool"
         }
       ],
       "struct": "MainOptions"

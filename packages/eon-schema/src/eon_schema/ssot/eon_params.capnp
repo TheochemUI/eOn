@@ -36,6 +36,8 @@ struct MainOptions {
   writeConForces @11 :Bool = false;
   # Client-only parallel force evaluation (not in server yaml)
   parallel @12 :Bool = true;
+  # Client-only: no Quill backend thread; needs parallel = false
+  singleThreadedClient @13 :Bool = false;
 }
 
 # ---------------------------------------------------------------------

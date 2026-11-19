@@ -44,6 +44,10 @@ struct main_options_t {
   /// (enables force+energy co-load on restart); classic readers such as
   /// ASE's eon parser reject frames that carry them.
   bool writeConForces{false};
+  /// Run the client on one thread: no Quill backend thread and, since
+  /// `parallel` must be false with it, no worker threads. The logger is
+  /// polled by the compute thread. Read once at startup.
+  bool singleThreadedClient{false};
 };
 
 // [Potential] //

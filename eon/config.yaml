@@ -76,6 +76,10 @@ Main:
             kind: boolean
             default: True
 
+        single_threaded_client:
+            kind: boolean
+            default: False
+
 ################################################################################
 
 Potential:

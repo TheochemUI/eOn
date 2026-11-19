@@ -123,6 +123,8 @@ void apply_ssot_defaults(Parameters &p) {
   ParametersLoadAccess::main_options(p).writeConForces =
       GD::MAIN_WRITE_CON_FORCES;
   ParametersLoadAccess::main_options(p).parallel = GD::MAIN_PARALLEL;
+  ParametersLoadAccess::main_options(p).singleThreadedClient =
+      GD::MAIN_SINGLE_THREADED_CLIENT;
 
   ParametersLoadAccess::potential_options(p).potential =
       pot_from_ssot(GD::POTENTIAL_POTENTIAL);

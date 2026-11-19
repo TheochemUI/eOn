@@ -90,6 +90,10 @@ int load_ini(INIReader &ini, Parameters &params) {
                      ParametersLoadAccess::main_options(params).removeNetForce);
   ParametersLoadAccess::main_options(params).parallel = ini.GetBoolean(
       "Main", "parallel", ParametersLoadAccess::main_options(params).parallel);
+  ParametersLoadAccess::main_options(params).singleThreadedClient =
+      ini.GetBoolean(
+          "Main", "single_threaded_client",
+          ParametersLoadAccess::main_options(params).singleThreadedClient);
 
   // [Potential] //
 

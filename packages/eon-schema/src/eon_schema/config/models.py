@@ -116,6 +116,18 @@ class MainConfig(BaseModel):
         default=True,
         description="If True, ensures that the net force on the system of atoms is zero by adjusting the force on each free atom.",
     )
+    single_threaded_client: bool = Field(
+        default=False,
+        description=(
+            "Run eonclient on one thread. The logger then has no backend"
+            " thread and is drained by the compute thread, so the process"
+            " shows a single thread for the whole job. Requires"
+            " ``parallel = false`` in the same section, otherwise the client"
+            " stops with an error. Read once, from the first parameter file"
+            " the client loads. Off by default, which keeps Quill's logging"
+            " thread."
+        ),
+    )
 
 
 class StructureComparisonConfig(BaseModel):

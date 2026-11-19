@@ -70,6 +70,8 @@ json to_json(const Parameters &p) {
       {"write_con_forces",
        ParametersLoadAccess::main_options(p).writeConForces},
       {"parallel", ParametersLoadAccess::main_options(p).parallel},
+      {"single_threaded_client",
+       ParametersLoadAccess::main_options(p).singleThreadedClient},
   };
 
   // [Potential]
@@ -473,6 +475,8 @@ void from_json(const json &j, Parameters &p) {
     JSON_OPT(m, "write_con_forces",
              ParametersLoadAccess::main_options(p).writeConForces);
     JSON_OPT(m, "parallel", ParametersLoadAccess::main_options(p).parallel);
+    JSON_OPT(m, "single_threaded_client",
+             ParametersLoadAccess::main_options(p).singleThreadedClient);
   }
 
   // [Potential]

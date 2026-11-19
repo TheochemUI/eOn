@@ -18,7 +18,8 @@
         "write_log",
         "write_con_forces",
         "max_force_calls",
-        "remove_net_force"
+        "remove_net_force",
+        "single_threaded_client"
       ]
     },
     "Potential": {

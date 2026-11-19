@@ -18,6 +18,7 @@ struct GeneratedDefaults {
   static constexpr auto MAIN_REMOVE_NET_FORCE = true;
   static constexpr auto MAIN_WRITE_CON_FORCES = false;
   static constexpr auto MAIN_PARALLEL = true;
+  static constexpr auto MAIN_SINGLE_THREADED_CLIENT = false;
   static constexpr auto POTENTIAL_POTENTIAL = std::string_view{"lj"};
   static constexpr auto POTENTIAL_MPI_POLL_PERIOD = 0.25;
   static constexpr auto POTENTIAL_LAMMPS_LOGGING = false;
