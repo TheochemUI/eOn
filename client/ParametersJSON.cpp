@@ -69,6 +69,7 @@ json to_json(const Parameters &p) {
        ParametersLoadAccess::main_options(p).removeNetForce},
       {"write_con_forces",
        ParametersLoadAccess::main_options(p).writeConForces},
+      {"parallel", ParametersLoadAccess::main_options(p).parallel},
   };
 
   // [Potential]
@@ -471,6 +472,7 @@ void from_json(const json &j, Parameters &p) {
              ParametersLoadAccess::main_options(p).removeNetForce);
     JSON_OPT(m, "write_con_forces",
              ParametersLoadAccess::main_options(p).writeConForces);
+    JSON_OPT(m, "parallel", ParametersLoadAccess::main_options(p).parallel);
   }
 
   // [Potential]
