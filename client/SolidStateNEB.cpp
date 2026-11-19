@@ -11,7 +11,10 @@
 */
 #include "eon/SolidStateNEB.h"
 
+#include <algorithm>
 #include <cmath>
+#include <format>
+#include <limits>
 #include <stdexcept>
 
 namespace eonc::neb {
@@ -113,6 +116,49 @@ void interpolateSolidStateLinear(std::vector<Matter> &images) {
     const AtomMatrix fractional = s0 + t * ds;
     images[static_cast<size_t>(i)].setCell(h);
     images[static_cast<size_t>(i)].setPositions(fractional * h);
+  }
+}
+
+double minimumPerpendicularWidth(const Matrix3d &cell) {
+  const double volume = std::abs(cell.determinant());
+  // A zero or singular cell makes volume / |b x c| a 0/0 NaN. std::min
+  // then keeps the other argument, so the width would come back infinite
+  // and a direct check would accept the cell.
+  if (!(volume > 0.0)) {
+    return 0.0;
+  }
+  double width = std::numeric_limits<double>::infinity();
+  for (int axis = 0; axis < 3; ++axis) {
+    const Vector3d b = cell.row((axis + 1) % 3);
+    const Vector3d c = cell.row((axis + 2) % 3);
+    const double span = b.cross(c).norm();
+    if (!(span > 0.0)) {
+      return 0.0;
+    }
+    const double face = volume / span;
+    if (!std::isfinite(face)) {
+      return 0.0;
+    }
+    width = std::min(width, face);
+  }
+  return width;
+}
+
+void requireMinimumImageCell(const Matrix3d &cell, double cutoff,
+                             const std::string &label) {
+  if (!(cutoff > 0.0)) {
+    return;
+  }
+  const double width = minimumPerpendicularWidth(cell);
+  // The pair list keeps a pair at r^2 <= cutoff^2, so a half-cell
+  // separation equal to the cutoff is still a tie. Equality is refused.
+  if (!(2.0 * cutoff < width)) {
+    throw std::invalid_argument(std::format(
+        "solid_state NEB: the potential sums one minimum image out to a "
+        "cutoff of {:.4f} Angstrom, but the {} has a perpendicular cell "
+        "width of {:.4f} Angstrom. The cell must be wider than twice the "
+        "cutoff. Lower [Potential] pair_cutoff or use a larger cell.",
+        cutoff, label, width));
   }
 }
 

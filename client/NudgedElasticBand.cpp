@@ -1095,6 +1095,13 @@ void NudgedElasticBand::prepareSolidState() {
     }
     eonc::neb::orientSolidStateMatter(*image);
   }
+  if (pot) {
+    for (size_t i = 0; i < path.size(); ++i) {
+      eonc::neb::requireMinimumImageCell(path[i]->getCell(),
+                                         pot->minimumImageCutoff(),
+                                         std::format("band image {}", i));
+    }
+  }
   const double volume0 = std::abs(path.front()->getCell().determinant());
   const double volume1 = std::abs(path.back()->getCell().determinant());
   solidJacobian_ =
@@ -1147,6 +1154,9 @@ void NudgedElasticBand::projectSolidState(bool ci_active) {
   }
 
   for (long i = 1; i <= numImages; ++i) {
+    eonc::neb::requireMinimumImageCell(path[i]->getCell(),
+                                       pot->minimumImageCutoff(),
+                                       std::format("band image {}", i));
     const double volume = std::abs(path[i]->getCell().determinant());
     Matrix3d stress = path[i]->cauchyStress();
     Matrix3d cellTrue =

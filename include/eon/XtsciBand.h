@@ -15,6 +15,7 @@
 #include "Parameters.h"
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 struct RgsaddleBand;
@@ -60,6 +61,9 @@ private:
   bool m_solid{false};
   // [Main] parallel: the surface evaluates its images on the image pool.
   bool m_threads{false};
+  // Reason from the last solid-state trial cell the minimum-image check
+  // refused. Empty when that callback did not refuse a cell.
+  std::string m_surfaceError;
 };
 
 } // namespace eonc
