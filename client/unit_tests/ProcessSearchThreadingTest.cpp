@@ -126,7 +126,41 @@ struct ClientRun {
   }
 };
 
+// One pass over /proc/<pid>/task. A thread that exits mid-read is skipped.
+std::map<long, std::string> readTaskNames(const fs::path &taskDir) {
+  std::map<long, std::string> names;
+  std::error_code ec;
+  for (fs::directory_iterator it(taskDir, ec), end; !ec && it != end;
+       it.increment(ec)) {
+    const long tid = std::atol(it->path().filename().c_str());
+    std::ifstream comm(it->path() / "comm");
+    std::string name;
+    if (tid > 0 && std::getline(comm, name)) {
+      names.emplace(tid, name);
+    }
+  }
+  return names;
+}
+
+// posix_spawn's child keeps the test executable's comm until exec. The
+// kernel keeps 15 characters of it (`test_process_se` for this binary)
+// on the one thread exec then names eonclient. /proc/<pid>/exe and that
+// comm both name the client once exec has finished. Samples taken before
+// then are not threads the client created.
+bool clientExeced(pid_t pid, const std::map<long, std::string> &names) {
+  const auto main = names.find(static_cast<long>(pid));
+  if (main != names.end() && main->second == "eonclient") {
+    return true;
+  }
+  std::error_code ec;
+  const fs::path exe =
+      fs::read_symlink(fs::path("/proc") / std::to_string(pid) / "exe", ec);
+  return !ec && exe.filename() == "eonclient";
+}
+
 // Runs eonclient in `dir` and samples /proc/<pid>/task until it exits.
+// Sampling starts once exec has completed. Every thread in a kept sample
+// is recorded, so a thread the client really creates still shows up.
 ClientRun runClient(const fs::path &dir) {
   const char *client = std::getenv("EONCLIENT");
   REQUIRE(client != nullptr);
@@ -154,6 +188,7 @@ ClientRun runClient(const fs::path &dir) {
   const fs::path taskDir = fs::path("/proc") / std::to_string(pid) / "task";
   const timespec pause{0, 100000};
   int status = 0;
+  bool recording = false;
   while (true) {
     const pid_t done = waitpid(pid, &status, WNOHANG);
     if (done == pid) {
@@ -162,17 +197,32 @@ ClientRun runClient(const fs::path &dir) {
     if (done < 0) {
       FAIL("waitpid failed while sampling the client");
     }
-    std::error_code ec;
-    for (fs::directory_iterator it(taskDir, ec), end; !ec && it != end;
-         it.increment(ec)) {
-      const long tid = std::atol(it->path().filename().c_str());
-      std::ifstream comm(it->path() / "comm");
-      std::string name;
-      if (tid > 0 && std::getline(comm, name)) {
-        run.threads[tid].insert(name);
+    const auto names = readTaskNames(taskDir);
+    if (!recording) {
+      if (!clientExeced(pid, names)) {
+        nanosleep(&pause, nullptr);
+        continue;
       }
+      recording = true;
     }
-    ++run.samples;
+    // exe can flip while this sample still reads the pre-exec comm.
+    // Drop that name until eonclient itself has been stored. Any other
+    // tid is a thread the client created, and a later rename of the
+    // compute thread is stored too.
+    const auto stored = run.threads.find(static_cast<long>(pid));
+    const bool sawClient =
+        stored != run.threads.end() && stored->second.count("eonclient") != 0;
+    bool kept = false;
+    for (const auto &[tid, name] : names) {
+      if (tid == static_cast<long>(pid) && name != "eonclient" && !sawClient) {
+        continue;
+      }
+      run.threads[tid].insert(name);
+      kept = true;
+    }
+    if (kept) {
+      ++run.samples;
+    }
     nanosleep(&pause, nullptr);
   }
   run.exitCode = WIFEXITED(status) ? WEXITSTATUS(status) : -1;
