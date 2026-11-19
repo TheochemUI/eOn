@@ -92,6 +92,10 @@ Main:
             kind: float
             default: 10.0
 
+        single_threaded_client:
+            kind: boolean
+            default: False
+
 ################################################################################
 
 Potential:

@@ -44,6 +44,8 @@ struct MainOptions {
   cell @14 :Text = "";
   pbc @15 :Bool = true;
   defaultVacuum @16 :Float64 = 10.0;
+  # Client-only: no Quill backend thread; needs parallel = false
+  singleThreadedClient @17 :Bool = false;
 }
 
 # ---------------------------------------------------------------------

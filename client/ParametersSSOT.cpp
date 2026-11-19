@@ -128,6 +128,8 @@ void apply_ssot_defaults(Parameters &p) {
   ParametersLoadAccess::main_options(p).cell = std::string(GD::MAIN_CELL);
   ParametersLoadAccess::main_options(p).pbc = GD::MAIN_PBC;
   ParametersLoadAccess::main_options(p).defaultVacuum = GD::MAIN_DEFAULT_VACUUM;
+  ParametersLoadAccess::main_options(p).singleThreadedClient =
+      GD::MAIN_SINGLE_THREADED_CLIENT;
 
   ParametersLoadAccess::potential_options(p).potential =
       pot_from_ssot(GD::POTENTIAL_POTENTIAL);
