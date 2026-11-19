@@ -246,6 +246,14 @@ public:
     }
   }
 
+  /// Cutoff of a kernel that sums one minimum image per atom pair, in
+  /// position length units. Such a kernel is a smooth function of the
+  /// geometry only while twice this cutoff fits in every perpendicular
+  /// width of the cell. 0 means the potential has no such limit.
+  [[nodiscard]] virtual double minimumImageCutoff() const noexcept {
+    return 0.0;
+  }
+
   /// Distance beyond which every Hessian block between two atoms is
   /// exactly zero, in position length units.
   ///

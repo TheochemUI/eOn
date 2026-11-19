@@ -12,6 +12,7 @@
 #pragma once
 
 #include <span>
+#include <string>
 #include <vector>
 
 #include "Eigen.h"
@@ -32,6 +33,19 @@ double solidStateJacobian(double meanVolume, int nAtoms, double weight);
 bool orientCellLowerTriangular(Matrix3d &cell, AtomMatrix &positions);
 
 void orientSolidStateMatter(Matter &image);
+
+/// Smallest distance between opposite faces of the cell, which is the
+/// smallest perpendicular width of the periodic box.
+double minimumPerpendicularWidth(const Matrix3d &cell);
+
+/// A kernel that sums one minimum image per pair sees the whole
+/// interaction sphere only when twice its cutoff fits in every
+/// perpendicular width. Beyond that its energy jumps and its force is not
+/// the gradient of its energy, so a band optimizer is handed a surface it
+/// cannot descend. Throws std::invalid_argument naming `label` then. A
+/// cutoff of 0 means the potential has no such limit and is accepted.
+void requireMinimumImageCell(const Matrix3d &cell, double cutoff,
+                             const std::string &label);
 
 /// Replace interior images by a fractional linear interpolation of the
 /// oriented endpoints. `images` includes the endpoints.

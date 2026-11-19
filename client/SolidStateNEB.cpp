@@ -11,7 +11,10 @@
 */
 #include "eon/SolidStateNEB.h"
 
+#include <algorithm>
 #include <cmath>
+#include <format>
+#include <limits>
 #include <stdexcept>
 
 namespace eonc::neb {
@@ -113,6 +116,33 @@ void interpolateSolidStateLinear(std::vector<Matter> &images) {
     const AtomMatrix fractional = s0 + t * ds;
     images[static_cast<size_t>(i)].setCell(h);
     images[static_cast<size_t>(i)].setPositions(fractional * h);
+  }
+}
+
+double minimumPerpendicularWidth(const Matrix3d &cell) {
+  const double volume = std::abs(cell.determinant());
+  double width = std::numeric_limits<double>::infinity();
+  for (int axis = 0; axis < 3; ++axis) {
+    const Vector3d b = cell.row((axis + 1) % 3);
+    const Vector3d c = cell.row((axis + 2) % 3);
+    width = std::min(width, volume / b.cross(c).norm());
+  }
+  return width;
+}
+
+void requireMinimumImageCell(const Matrix3d &cell, double cutoff,
+                             const std::string &label) {
+  if (!(cutoff > 0.0)) {
+    return;
+  }
+  const double width = minimumPerpendicularWidth(cell);
+  if (!(2.0 * cutoff <= width)) {
+    throw std::invalid_argument(std::format(
+        "solid_state NEB: the potential sums one minimum image out to a "
+        "cutoff of {:.4f} Angstrom, but the {} has a perpendicular cell "
+        "width of {:.4f} Angstrom. The cell must be at least twice the "
+        "cutoff wide. Lower [Potential] pair_cutoff or use a larger cell.",
+        cutoff, label, width));
   }
 }
 
