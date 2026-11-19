@@ -177,8 +177,7 @@ static int eonClientMain(int argc, char **argv) {
   // only has to stop.
   auto startLogBackend = [&]() -> bool {
     const auto &mainOpts = parameters.main_options();
-    const bool conflict =
-        mainOpts.singleThreadedClient && mainOpts.parallel;
+    const bool conflict = mainOpts.singleThreadedClient && mainOpts.parallel;
     const auto wanted = mainOpts.singleThreadedClient && !conflict
                             ? eonc::log::BackendMode::Manual
                             : eonc::log::BackendMode::Thread;
