@@ -75,6 +75,7 @@ json to_json(const Parameters &p) {
       {"cell", ParametersLoadAccess::main_options(p).cell},
       {"pbc", ParametersLoadAccess::main_options(p).pbc},
       {"default_vacuum", ParametersLoadAccess::main_options(p).defaultVacuum},
+      {"parallel", ParametersLoadAccess::main_options(p).parallel},
   };
 
   // [Potential]
@@ -535,6 +536,7 @@ void from_json(const json &j, Parameters &p) {
     main.cell = std::move(cell);
     main.pbc = pbc;
     main.defaultVacuum = vacuum;
+    JSON_OPT(m, "parallel", main.parallel);
   }
 
   // [Potential]
