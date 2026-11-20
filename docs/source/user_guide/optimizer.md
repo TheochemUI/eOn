@@ -165,8 +165,10 @@ an ``eindir_objective_t`` around the ``ObjectiveFunction``. The adapter
 checks the eindir ABI stamp, the gradient feature bit, and the semantic
 descriptor (eV, angstrom, analytic forces) before dispatch.
 ``Optimizer::run`` then calls ``rgmin_minimize_eindir`` unless the step
-needs a host Hessian, the method is ``fire2``, or ``precon`` is
-``rgmin_exp``. ``step()`` stays one
+needs a host Hessian, the method is ``fire2``, ``precon`` is
+``rgmin_exp``, or the session explicitly selects the L-BFGS line search.
+For ordinary Euclidean energy minimization eOn uses strong Wolfe L-BFGS
+with either the scalar or exponential inverse-Hessian seed. ``step()`` stays one
 ``rgmin_solver_t`` iteration. Both paths give ``fire``, ``fire2`` and
 ``quickmin`` the ``time_step`` as their time step, and give the other
 methods ``max_move`` as their first step.

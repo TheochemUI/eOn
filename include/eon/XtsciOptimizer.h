@@ -58,6 +58,7 @@ private:
   Eigen::VectorXd m_preconAt;
   double m_preconRnn{0.0};
 
+  bool usesWolfeLbfgs() const;
   void ensureSolver(double a_maxMove);
   void refreshExpPrecon();
 };
