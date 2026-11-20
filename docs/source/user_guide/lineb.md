@@ -104,7 +104,9 @@ band repeats the same job totals and has its own `neb_bead` and image energy.
 import readcon
 
 frame = readcon.read_con("lineb.con")[0]
-counts = frame.metadata["lineb"]["surface_calls"]
+ledger = frame.metadata["evaluation_counts"]
+counts = ledger["surface_calls"]
+backend = ledger["potential_calls"]
 print(counts)
 ```
 

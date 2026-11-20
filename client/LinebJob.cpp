@@ -302,6 +302,13 @@ std::vector<std::string> LinebJob::run(void) {
       {"output", outputEnd - solveEnd},
       {"total", outputEnd - jobStart}};
   const nlohmann::json metadata = {
+      {"evaluation_counts",
+       {{"scope", "job"},
+        {"boundary", "solver_callback_geometry"},
+        {"surface_calls", solverCalls},
+        {"potential_calls", potentialCalls},
+        {"driver_rows_by_provider",
+         {{params.potential_options().potential, outputEnd - jobStart}}}}},
       {"lineb",
        {{"scope", "job"},
         {"energy", o.energy},
