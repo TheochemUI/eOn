@@ -31,6 +31,22 @@
       "description": "Parallel spacing spring.",
       "type": "number"
     },
+    "linear_seed": {
+      "default": false,
+      "description": "Join the initial turning points with a straight path.",
+      "type": "boolean"
+    },
+    "endpoint_convergence": {
+      "default": false,
+      "description": "Apply opt_tol to the endpoints and perp_tol to the interior.",
+      "type": "boolean"
+    },
+    "endpoint_kappa": {
+      "default": 0.0,
+      "description": "Fixed endpoint coefficient; zero selects endpoint_scale.",
+      "minimum": 0,
+      "type": "number"
+    },
     "endpoint_scale": {
       "default": 0.2,
       "description": "Endpoint equipotential force scale.",
