@@ -1498,7 +1498,7 @@ Lineb:
 
     options:
 
-        # Multi-frame seed band (neb.con). Every image must start above energy.
+        # Multi-frame seed band (neb.con). Interior images must start at or above energy plus the turning width.
         initial_path:
             kind: string
             default: ""

@@ -2856,8 +2856,8 @@ class LinebConfig(BaseModel):
     initial_path: str = Field(
         default="",
         description=(
-            "Multi-frame seed band (neb.con). Every image must start above"
-            " energy."
+            "Multi-frame seed band (neb.con). Interior images must start at or"
+            " above energy plus the turning width."
         ),
     )
     energy: float = Field(

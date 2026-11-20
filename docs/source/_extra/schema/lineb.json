@@ -8,7 +8,7 @@
   "properties": {
     "initial_path": {
       "default": "",
-      "description": "Multi-frame seed band (neb.con). Every image must start above energy.",
+      "description": "Multi-frame seed band (neb.con). Interior images must start at or above energy plus the turning width.",
       "type": "string"
     },
     "energy": {

@@ -1028,7 +1028,7 @@ struct instanton_options_t {
 // quadrature match LinebConfig::new; hbar and boltzmann are eOn's eV /
 // amu / Angstrom / K units.
 struct lineb_options_t {
-  // Multi-frame seed band (neb.con); every image must lie above energy.
+  // Multi-frame seed band (neb.con); interior images must clear the turning width above energy.
   std::string initial_path{""};
   // Tunneling energy E of the equipotential endpoints, eV.
   double energy{0.0};
