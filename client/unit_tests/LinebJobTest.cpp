@@ -166,16 +166,21 @@ TEST_CASE("LinebJob runs a fixed-energy seeded Morse band when available",
 #ifdef RGSADDLE_HAS_LINEB_RATE_DIAGNOSTICS
     lineb.beads = 8;
     eonc::LinebJob rateJob(pot, params);
-    REQUIRE_FALSE(rateJob.run().empty());
+    const auto callsBeforeRateJob = pot->forceCallCounter.load();
+    const auto rateFiles = rateJob.run();
+    REQUIRE_FALSE(rateFiles.empty());
     const auto rateFrame = readcon::read_first_frame("lineb.con");
-    const auto rate =
-        nlohmann::json::parse(rateFrame.metadata_json()).at("lineb");
+    const auto rateMetadata = nlohmann::json::parse(rateFrame.metadata_json());
+    const auto &rate = rateMetadata.at("lineb");
+    REQUIRE(rate.at("potential_calls").at("total").get<size_t>() ==
+            pot->forceCallCounter.load() - callsBeforeRateJob);
     // One mobile atom contributes three coordinates per replica. The
     // imaginary-time translation removes one mode from the full ring.
     REQUIRE(rate.at("spectrum").at("modes") == 3 * lineb.beads - 1);
     REQUIRE(rate.at("spectrum").at("negative_modes").is_number_integer());
     REQUIRE(rate.at("log_rate_over_reactant").is_number());
 #ifdef RGSADDLE_HAS_LINEB_ORBIT
+    REQUIRE(std::find(rateFiles.begin(), rateFiles.end(), "lineb-orbit.con") != rateFiles.end());
     const auto frames = readcon::read_all_frames("lineb-orbit.con");
     REQUIRE(frames.size() == static_cast<size_t>(lineb.beads));
     std::vector<std::array<double, 3>> coordinates, gradients;
@@ -183,8 +188,7 @@ TEST_CASE("LinebJob runs a fixed-energy seeded Morse band when available",
     for (const auto &bead : frames) {
       const auto info = nlohmann::json::parse(bead.metadata_json());
       REQUIRE(info.at("evaluation_counts") ==
-              nlohmann::json::parse(rateFrame.metadata_json())
-                  .at("evaluation_counts"));
+              rateMetadata.at("evaluation_counts"));
       const auto &observed = info.at("lineb_orbit");
       REQUIRE(observed.at("mobile_atom_ids").size() == 1);
       const auto id = observed.at("mobile_atom_ids").at(0).get<uint64_t>();
