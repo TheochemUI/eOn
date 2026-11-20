@@ -299,6 +299,7 @@ struct LinebOptions {
   max_steps @12 :Int64 = 1000;
   beads @13 :Int64 = 0;
   molecular @14 :Bool = false;
+  endpoint_kappa @15 :Float64 = 0.0;
 }
 
 # ---------------------------------------------------------------------

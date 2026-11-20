@@ -138,5 +138,6 @@ struct GeneratedDefaults {
   static constexpr auto LINEB_MAX_STEPS = 1000;
   static constexpr auto LINEB_BEADS = 0;
   static constexpr auto LINEB_MOLECULAR = false;
+  static constexpr auto LINEB_ENDPOINT_KAPPA = 0.0;
 };
 } // namespace eonc::params_ssot

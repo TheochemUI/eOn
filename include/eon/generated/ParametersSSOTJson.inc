@@ -56,7 +56,8 @@ inline void project_ssot_json_write(json &j, const Parameters &p) {
         {"quadrature_pairs", o.quadrature_pairs},
         {"max_steps", o.max_steps},
         {"beads", o.beads},
-        {"molecular", o.molecular}
+        {"molecular", o.molecular},
+        {"endpoint_kappa", o.endpoint_kappa}
     };
   }
 }
@@ -130,5 +131,6 @@ inline void project_ssot_json_read(const json &j, Parameters &p) {
     if (s.contains("max_steps")) o.max_steps = s.at("max_steps").get<decltype(o.max_steps)>();
     if (s.contains("beads")) o.beads = s.at("beads").get<decltype(o.beads)>();
     if (s.contains("molecular")) o.molecular = s.at("molecular").get<decltype(o.molecular)>();
+    if (s.contains("endpoint_kappa")) o.endpoint_kappa = s.at("endpoint_kappa").get<decltype(o.endpoint_kappa)>();
   }
 }

@@ -279,6 +279,9 @@ void validate_lineb_options(const Parameters &params, bool energy_present) {
     throw std::invalid_argument(
         "[Lineb] opt_tol and perp_tol must be finite and non-negative");
   }
+  if (!std::isfinite(o.endpoint_kappa) || o.endpoint_kappa < 0.0) {
+    throw std::invalid_argument("[Lineb] endpoint_kappa must be finite and non-negative");
+  }
   if (!(o.spring > 0.0) || !std::isfinite(o.spring) ||
       !(o.endpoint_scale > 0.0) || !std::isfinite(o.endpoint_scale)) {
     throw std::invalid_argument(

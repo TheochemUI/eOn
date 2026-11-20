@@ -2873,6 +2873,8 @@ class LinebConfig(BaseModel):
         description="Mass-weighted stop on the perpendicular action gradient.",
     )
     spring: float = Field(default=0.1, description="Parallel spacing spring.")
+    endpoint_kappa: float = Field(default=0.0, ge=0, allow_inf_nan=False,
+                                  description="Fixed endpoint coefficient; zero selects endpoint_scale.")
     endpoint_scale: float = Field(
         default=0.2, description="Endpoint equipotential force scale."
     )

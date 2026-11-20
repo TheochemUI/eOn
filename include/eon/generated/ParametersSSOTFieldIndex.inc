@@ -7,6 +7,7 @@
     "Instanton.springs",
     "Lineb.beads",
     "Lineb.boltzmann",
+    "Lineb.endpoint_kappa",
     "Lineb.endpoint_scale",
     "Lineb.energy",
     "Lineb.hbar",

@@ -365,6 +365,13 @@ CATALOG = {
           "ordinal": 14,
           "snake": "molecular",
           "type": "Bool"
+        },
+        {
+          "capnp": "endpoint_kappa",
+          "default": 0.0,
+          "ordinal": 15,
+          "snake": "endpoint_kappa",
+          "type": "Float64"
         }
       ],
       "json_name": "Lineb",

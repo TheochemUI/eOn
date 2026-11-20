@@ -73,4 +73,5 @@ inline void project_ssot_ini(const INIReader &ini, Parameters &params) {
   o.max_steps = ini.GetInteger(sec, "max_steps", o.max_steps);
   o.beads = ini.GetInteger(sec, "beads", o.beads);
   o.molecular = ini.GetBoolean(sec, "molecular", o.molecular);
+  o.endpoint_kappa = ini.GetReal(sec, "endpoint_kappa", o.endpoint_kappa);
 }

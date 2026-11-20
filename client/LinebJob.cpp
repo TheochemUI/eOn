@@ -188,11 +188,22 @@ std::vector<std::string> LinebJob::run(void) {
   LinebSurface ctx{&probe, freeAtoms};
 
   rgsaddle_lineb_result_t result{};
+#if RGSADDLE_ABI_MINOR >= 47
+  const rgsaddle_status_t rc = rgsaddle_lineb_solve_with_kappa(
+      &cfg, static_cast<int64_t>(band.size()),
+      static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
+      o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
+      &ctx, optimized.data(), &result, o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr);
+#else
+  if (o.endpoint_kappa > 0.0) {
+    throw std::runtime_error("lineb: endpoint_kappa requires rgsaddle ABI minor 47");
+  }
   const rgsaddle_status_t rc = rgsaddle_lineb_solve(
       &cfg, static_cast<int64_t>(band.size()),
       static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
       o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
       &ctx, optimized.data(), &result);
+#endif
 
   if (rc != RGSADDLE_OK) {
     std::string message = std::string("lineb: rgsaddle_lineb_solve: ") +

@@ -37,6 +37,12 @@ positions consistent across the seed. Under periodic boundaries the job joins
 adjacent images by their minimum-image displacements. Use a nonperiodic system
 with all atoms free for molecular alignment.
 
+Set `endpoint_kappa` to a positive value for the fixed turning-surface force
+coefficient in Eqs. (19) and (21) of the paper. The coefficient multiplies
+the energy error in eV to give a force in mass-weighted action units. Its
+default of zero selects the gradient-normalized `endpoint_scale` restraint.
+A positive value requires rgsaddle ABI minor 47 or higher.
+
 Tolerances `opt_tol` and `perp_tol` are mass-weighted force norms. The
 remaining keys (`spring`, `endpoint_scale`, `time_step`, `max_move`,
 `turning_width`, `quadrature_pairs`, `max_steps`) match rgsaddle's

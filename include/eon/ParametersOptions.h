@@ -1036,6 +1036,7 @@ struct lineb_options_t {
   double perp_tol{1e-3}; // mass-weighted perpendicular action-gradient stop
   double spring{0.1};
   double endpoint_scale{0.2};
+  double endpoint_kappa{0.0};
   double time_step{0.1};
   double max_move{0.2};
   double turning_width{1e-3};

@@ -53,4 +53,5 @@
     o.max_steps = GD::LINEB_MAX_STEPS;
     o.beads = GD::LINEB_BEADS;
     o.molecular = GD::LINEB_MOLECULAR;
+    o.endpoint_kappa = GD::LINEB_ENDPOINT_KAPPA;
   }
