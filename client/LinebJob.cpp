@@ -240,12 +240,24 @@ std::vector<std::string> LinebJob::run(void) {
 #endif
 #if RGSADDLE_ABI_MINOR >= 50
   rgsaddle_lineb_counts_t counts{};
+#if RGSADDLE_ABI_MINOR >= 51
+  int64_t negativeModes = -1;
+  int64_t retainedModes = -1;
+  const rgsaddle_status_t rc = rgsaddle_lineb_solve_counted_diagnostics(
+      &cfg, static_cast<int64_t>(band.size()),
+      static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
+      o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
+      &ctx, optimized.data(), &result,
+      o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options, &counts,
+      &negativeModes, &retainedModes);
+#else
   const rgsaddle_status_t rc = rgsaddle_lineb_solve_counted(
       &cfg, static_cast<int64_t>(band.size()),
       static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
       o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
       &ctx, optimized.data(), &result,
       o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options, &counts);
+#endif
 #else
   const rgsaddle_status_t rc = rgsaddle_lineb_solve_options(
       &cfg, static_cast<int64_t>(band.size()),
@@ -353,6 +365,13 @@ std::vector<std::string> LinebJob::run(void) {
         {"surface_call_unit", "configuration"},
         {"surface_calls", solverCalls},
         {"potential_calls", potentialCalls}}}};
+  auto &spectrum = metadata["lineb"]["spectrum"];
+  spectrum = nullptr;
+#if RGSADDLE_ABI_MINOR >= 51
+  if (negativeModes >= 0 && retainedModes >= 0) {
+    spectrum = {{"negative_modes", negativeModes}, {"modes", retainedModes}};
+  }
+#endif
   auto &providerResults = metadata["evaluation_counts"]["rgpot_results"];
   providerResults = nullptr;
 #ifdef RGPOT_HAS_CACHE
