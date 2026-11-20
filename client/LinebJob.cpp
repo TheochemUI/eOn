@@ -301,6 +301,7 @@ std::vector<std::string> LinebJob::run(void) {
       {"solve", solveEnd - solveStart},
       {"output", outputEnd - solveEnd},
       {"total", outputEnd - jobStart}};
+  const auto provenance = provenanceForJob(params);
   const nlohmann::json metadata = {
       {"evaluation_counts",
        {{"scope", "job"},
@@ -308,7 +309,7 @@ std::vector<std::string> LinebJob::run(void) {
         {"surface_calls", solverCalls},
         {"potential_calls", potentialCalls},
         {"driver_rows_by_provider",
-         {{params.potential_options().potential, outputEnd - jobStart}}}}},
+         {{provenance.rgpot_name, outputEnd - jobStart}}}}},
       {"lineb",
        {{"scope", "job"},
         {"energy", o.energy},
@@ -330,7 +331,7 @@ std::vector<std::string> LinebJob::run(void) {
       RunStatus::GOOD, params.potential_options().potential,
       pot->forceCallCounter.load(), true,
       band[band.size() / 2]->getPotentialEnergy());
-  env.provenance = provenanceForJob(params);
+  env.provenance = provenance;
   env.job_type = "lineb";
   env.extras.emplace_back("action", result.action);
   env.extras.emplace_back("half_period", result.half_period);
