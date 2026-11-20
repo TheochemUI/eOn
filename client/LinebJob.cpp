@@ -104,6 +104,45 @@ rgsaddle_status_t surfaceCallback(void *user, rgsaddle_surface_request_t *req) {
   }
 }
 
+#ifdef RGSADDLE_HAS_LINEB_ORBIT
+void writeRateOrbit(const std::string &filename, const Matter &seed,
+                    const std::vector<long> &freeAtoms,
+                    const std::vector<double> &positions,
+                    const std::vector<double> &gradients,
+                    nlohmann::json metadata) {
+  Matter bead(seed);
+  // Preserve the continuous Cartesian path across periodic cell boundaries.
+  // The copy is only serialized; the potential is never called on it.
+  bead.setPeriodic(false);
+  AtomMatrix xyz = bead.getPositions();
+  const size_t width = 3 * freeAtoms.size();
+  std::vector<readcon::ConFrame> frames;
+  frames.reserve(positions.size() / width);
+  auto &observed = metadata["lineb_orbit"];
+  for (const auto atom : freeAtoms) {
+    observed["mobile_atom_ids"].push_back(bead.getAtomIndex(atom));
+  }
+  for (size_t offset = 0; offset < positions.size(); offset += width) {
+    auto &rows = observed["gradients_eV_per_angstrom"];
+    rows = nlohmann::json::array();
+    for (size_t a = 0; a < freeAtoms.size(); ++a) {
+      const size_t k = offset + 3 * a;
+      xyz.row(freeAtoms[a]) = Eigen::Map<const Eigen::RowVector3d>(positions.data() + k);
+      rows.push_back({gradients[k], gradients[k+1], gradients[k+2]});
+    }
+    bead.setPositions(xyz);
+    io::ConFrameMetadata frame;
+    frame.frame_index = frames.size();
+    frame.write_con_forces = false;
+    frame.raw_json = metadata.dump();
+    frames.push_back(io::matterToConFrame(bead, &frame));
+  }
+  if (!io::io_ok(io::writeConFrames(filename, frames))) {
+    throw std::runtime_error("lineb: cannot write " + filename);
+  }
+}
+#endif
+
 void unpackPositions(const std::vector<double> &flat,
                      const std::vector<long> &freeAtoms,
                      std::vector<std::shared_ptr<Matter>> &band) {
@@ -243,6 +282,25 @@ std::vector<std::string> LinebJob::run(void) {
 #ifdef RGSADDLE_HAS_LINEB_RATE_DIAGNOSTICS
   int64_t negativeModes = -1;
   int64_t retainedModes = -1;
+#ifdef RGSADDLE_HAS_LINEB_ORBIT
+  const size_t width = 3 * freeAtoms.size();
+  if (static_cast<size_t>(o.beads) > std::vector<double>().max_size() / width) {
+    throw std::length_error("lineb: orbit exceeds addressable memory");
+  }
+  std::vector<double> orbitPositions(static_cast<size_t>(o.beads) * width);
+  std::vector<double> orbitGradients(orbitPositions.size());
+  rgsaddle_lineb_orbit_t orbit{};
+  orbit.capacity = orbitPositions.size();
+  orbit.positions = orbitPositions.data();
+  orbit.gradients = orbitGradients.data();
+  const rgsaddle_status_t rc = rgsaddle_lineb_solve_counted_orbit(
+      &cfg, static_cast<int64_t>(band.size()),
+      static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
+      o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
+      &ctx, optimized.data(), &result,
+      o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options, &counts,
+      &negativeModes, &retainedModes, o.beads ? &orbit : nullptr);
+#else
   const rgsaddle_status_t rc = rgsaddle_lineb_solve_counted_diagnostics(
       &cfg, static_cast<int64_t>(band.size()),
       static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
@@ -250,6 +308,7 @@ std::vector<std::string> LinebJob::run(void) {
       &ctx, optimized.data(), &result,
       o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options, &counts,
       &negativeModes, &retainedModes);
+#endif
 #else
   const rgsaddle_status_t rc = rgsaddle_lineb_solve_counted(
       &cfg, static_cast<int64_t>(band.size()),
@@ -389,6 +448,23 @@ std::vector<std::string> LinebJob::run(void) {
                                  {"output", delta(cacheAtOutput, end)}};
   }
 #endif
+  std::vector<std::string> files{resultsFile, pathFile};
+#ifdef RGSADDLE_HAS_LINEB_ORBIT
+  if (o.beads > 0) {
+    const auto component = static_cast<size_t>(orbit.max_coordinate);
+    const long atom = freeAtoms.at(component / 3);
+    metadata["lineb"]["stationarity"] = {
+        {"discretization", "ring_polymer"},
+        {"max_abs_eV_per_angstrom", orbit.max_abs_residual},
+        {"rms_eV_per_angstrom", orbit.rms_residual},
+        {"max_bead", orbit.max_bead},
+        {"max_atom_id", band.front()->getAtomIndex(atom)},
+        {"max_axis", component % 3}};
+    files.emplace_back("lineb-orbit.con");
+    writeRateOrbit(files.back(), *band.front(), freeAtoms, orbitPositions,
+                   orbitGradients, metadata);
+  }
+#endif
   const auto metadataJson = metadata.dump();
   for (size_t i = 0; i < metas.size(); ++i) {
     metas[i].neb_bead = i;
@@ -440,7 +516,7 @@ std::vector<std::string> LinebJob::run(void) {
       result.action, result.temperature, result.temperature_dynamics,
       result.iterations);
 
-  return {resultsFile, pathFile};
+  return files;
 #else
   return {};
 #endif
