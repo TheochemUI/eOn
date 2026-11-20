@@ -320,8 +320,9 @@ std::vector<std::string> LinebJob::run(void) {
         {"temperature_dynamics", result.temperature_dynamics},
         {"half_period", result.half_period},
         {"half_period_dynamics", result.half_period_dynamics},
-        {"log_rate_over_reactant", o.beads ? nlohmann::json(result.log_rate_over_reactant)
-                                          : nlohmann::json(nullptr)},
+        {"log_rate_over_reactant",
+         o.beads ? nlohmann::json(result.log_rate_over_reactant)
+                 : nlohmann::json(nullptr)},
         {"optimizer", o.projected_verlet ? "projected_verlet" : "fire"},
         {"surface_call_unit", "configuration"},
         {"surface_calls", solverCalls},
