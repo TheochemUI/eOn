@@ -1,0 +1,1 @@
+The `lineb` job optimizes a fixed-energy tunneling path with rgsaddle. The output CON frames carry the job's force-call counts alongside the image energies. With rgsaddle ABI minor 50 the counts distinguish seeding, band optimization, turning-point preparation, quadrature, dynamics and rate evaluation.

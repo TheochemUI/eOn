@@ -94,8 +94,38 @@ remaining keys (`spring`, `endpoint_scale`, `time_step`, `max_move`,
 
 | File | Contents |
 |---|---|
-| `lineb.con` | Optimized band |
+| `lineb.con` | Optimized band, per-image energy and job-wide force-call counts in the second-line JSON of each frame |
 | `results.dat` | Action, both half periods and temperatures, optional `log_rate_over_reactant`, call counts |
+
+Read the counters from any frame with readcon. Every frame of the optimized
+band repeats the same job totals and has its own `neb_bead` and image energy.
+
+```python
+import readcon
+
+frame = readcon.read_con("lineb.con")[0]
+counts = frame.metadata["lineb"]["surface_calls"]
+print(counts)
+```
+
+With rgsaddle ABI minor 50, the six disjoint counts sum to `total`.
+Each surface call evaluates one atomic configuration.
+
+| Key | Evaluations counted |
+|---|---|
+| `seed` | Inspecting the supplied band and locating the initial energy crossings |
+| `optimization` | Relaxing the band, including trial steps |
+| `path_preparation` | Preparing the converged path and refining its turning points |
+| `quadrature` | Integrating the action and building the imaginary-time table |
+| `dynamics` | Integrating the independent constrained trajectory |
+| `rate` | Evaluating the rate prefactor, zero for a path-only job |
+
+The sibling `potential_calls` object records changes to eOn's potential counter
+during `setup`, `solve` and `output`, plus their `total`. Caching can make
+these counts differ from the solver's requests. An MEP computed by a separate
+job has its own cost. Older rgsaddle libraries supply the combined
+`optimizer_reported` and `measure_reported` fields, plus `dynamics`, `rate`
+and the observed remainder in `unclassified`.
 
 For positive replica counts, `log_rate_over_reactant` is the natural
 logarithm of the rate times the reactant partition function, {math}`\ln(k Z_r)`.
