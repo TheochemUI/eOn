@@ -389,6 +389,28 @@ json to_json(const Parameters &p) {
     };
   }
 
+  // [Lineb]
+  {
+    const auto &o = ParametersLoadAccess::lineb_options(p);
+    j["Lineb"] = {
+        {"initial_path", o.initial_path},
+        {"energy", o.energy},
+        {"opt_tol", o.opt_tol},
+        {"perp_tol", o.perp_tol},
+        {"spring", o.spring},
+        {"endpoint_scale", o.endpoint_scale},
+        {"time_step", o.time_step},
+        {"max_move", o.max_move},
+        {"turning_width", o.turning_width},
+        {"hbar", o.hbar},
+        {"boltzmann", o.boltzmann},
+        {"quadrature_pairs", o.quadrature_pairs},
+        {"max_steps", o.max_steps},
+        {"beads", o.beads},
+        {"molecular", o.molecular},
+    };
+  }
+
   // [Debug]
   j["Debug"] = {
       {"write_movies", ParametersLoadAccess::debug_options(p).write_movies},
@@ -979,6 +1001,27 @@ void from_json(const json &j, Parameters &p) {
     JSON_OPT(s, "pi_recrossing_time", o.pi_recrossing_time);
     JSON_OPT(s, "pi_recrossing_spacing", o.pi_recrossing_spacing);
     eonc::piqtst::validateOptions(o);
+  }
+
+  // [Lineb]
+  if (j.contains("Lineb")) {
+    auto &s = j.at("Lineb");
+    auto &o = ParametersLoadAccess::lineb_options(p);
+    JSON_OPT(s, "initial_path", o.initial_path);
+    JSON_OPT(s, "energy", o.energy);
+    JSON_OPT(s, "opt_tol", o.opt_tol);
+    JSON_OPT(s, "perp_tol", o.perp_tol);
+    JSON_OPT(s, "spring", o.spring);
+    JSON_OPT(s, "endpoint_scale", o.endpoint_scale);
+    JSON_OPT(s, "time_step", o.time_step);
+    JSON_OPT(s, "max_move", o.max_move);
+    JSON_OPT(s, "turning_width", o.turning_width);
+    JSON_OPT(s, "hbar", o.hbar);
+    JSON_OPT(s, "boltzmann", o.boltzmann);
+    JSON_OPT(s, "quadrature_pairs", o.quadrature_pairs);
+    JSON_OPT(s, "max_steps", o.max_steps);
+    JSON_OPT(s, "beads", o.beads);
+    JSON_OPT(s, "molecular", o.molecular);
   }
 
   // The ini loader derives these from the femtosecond inputs whether or

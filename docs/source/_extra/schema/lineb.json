@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/lineb.json",
+  "title": "Lineb",
+  "description": "config.ini [Lineb] section (LinebConfig). Fixed-energy LI-NEB through rgsaddle_lineb_solve.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "initial_path": {
+      "default": "",
+      "description": "Multi-frame seed band (neb.con). Every image must start above energy.",
+      "type": "string"
+    },
+    "energy": {
+      "default": 0.0,
+      "description": "Tunneling energy E of the equipotential endpoints, eV.",
+      "type": "number"
+    },
+    "opt_tol": {
+      "default": 0.001,
+      "description": "Mass-weighted stop on the nudged force.",
+      "type": "number"
+    },
+    "perp_tol": {
+      "default": 0.001,
+      "description": "Mass-weighted stop on the perpendicular action gradient.",
+      "type": "number"
+    },
+    "spring": {
+      "default": 0.1,
+      "description": "Parallel spacing spring constant.",
+      "type": "number"
+    },
+    "endpoint_scale": {
+      "default": 0.2,
+      "description": "Endpoint equipotential force scale.",
+      "type": "number"
+    },
+    "time_step": {
+      "default": 0.1,
+      "description": "Initial FIRE / quick-min time step.",
+      "type": "number"
+    },
+    "max_move": {
+      "default": 0.2,
+      "description": "Step cap; per atom when molecular, else whole-band Euclidean length. 0 leaves the step uncapped.",
+      "type": "number"
+    },
+    "turning_width": {
+      "default": 0.001,
+      "description": "Fraction of the highest seed height above E; interiors stay above E+w.",
+      "type": "number"
+    },
+    "hbar": {
+      "default": 0.06465415129579072,
+      "description": "hbar in eV^0.5 amu^0.5 Angstrom. Temperature is hbar/(k_B tau).",
+      "type": "number"
+    },
+    "boltzmann": {
+      "default": 8.617333262145177e-5,
+      "description": "Boltzmann constant in eV/K.",
+      "type": "number"
+    },
+    "quadrature_pairs": {
+      "default": 4,
+      "description": "Simpson pairs per chord for the period quadrature.",
+      "minimum": 1,
+      "type": "integer"
+    },
+    "max_steps": {
+      "default": 1000,
+      "description": "Optimizer step budget.",
+      "minimum": 1,
+      "type": "integer"
+    },
+    "beads": {
+      "default": 0,
+      "description": "Harmonic quantum TST replicas. 0 writes the path only (log rate NaN).",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "molecular": {
+      "default": false,
+      "description": "false expands atom masses to coordinates. true uses molecule alignment and needs every atom free.",
+      "type": "boolean"
+    }
+  }
+}

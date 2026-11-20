@@ -97,7 +97,8 @@ enum class JobType {
   Test,
   GP_Surrogate,
   OH_TST,
-  Instanton
+  Instanton,
+  Lineb
 };
 
 enum class OptType {

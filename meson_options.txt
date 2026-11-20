@@ -69,7 +69,7 @@ option('with_rgmin', type : 'feature', value : 'auto',
 option('with_xtsci', type : 'boolean', value : false, deprecated : true,
        description : 'Old spelling of -Dwith_rgmin=enabled (rgmin was xtsci-optimize)')
 option('with_rgsaddle', type : 'boolean', value : false,
-       description : 'NEB band and min-mode rotation through rgsaddle')
+       description : 'NEB band, min-mode, IRC, and LI-NEB (when rgsaddle exports rgsaddle_lineb_solve) through rgsaddle')
 # Install eon/ server package + eonclient CLI (disable for pyeonclient-only wheels)
 option('install_eon_server', type : 'boolean', value : true,
        description : 'Install eon Python package and eonclient binary (false for standalone pyeonclient)')

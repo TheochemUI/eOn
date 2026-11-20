@@ -901,6 +901,28 @@
         "scmlicense",
         "amsresources"
       ]
+    },
+    "Lineb": {
+      "model": "LinebConfig",
+      "file": "lineb.json",
+      "id": "https://eondocs.org/schema/lineb.json",
+      "keys": [
+        "initial_path",
+        "energy",
+        "opt_tol",
+        "perp_tol",
+        "spring",
+        "endpoint_scale",
+        "time_step",
+        "max_move",
+        "turning_width",
+        "hbar",
+        "boltzmann",
+        "quadrature_pairs",
+        "max_steps",
+        "beads",
+        "molecular"
+      ]
     }
   }
 }

@@ -402,6 +402,13 @@ if get_option('with_rgsaddle')
     if rgsaddle_dep.version().version_compare('>=0.3.0')
         _args += ['-DWITH_RGSADDLE_BAND_PRECON']
     endif
+    if meson.get_compiler('cpp').has_function(
+        'rgsaddle_lineb_solve',
+        prefix: '#include <rgsaddle.h>',
+        dependencies: rgsaddle_dep,
+    )
+        _args += ['-DWITH_RGSADDLE_LINEB']
+    endif
 endif
 
 eigen_dep = dependency('eigen3', required: false)
@@ -1295,6 +1302,7 @@ eonclib_sources = [
     'MobileAtoms.cpp',
     'HessianJob.cpp',
     'InstantonJob.cpp',
+    'LinebJob.cpp',
     'ReplicaDynamicsJob.cpp',
     'TADJob.cpp',
     'ProcessSearchJob.cpp',
@@ -2432,6 +2440,7 @@ if get_option('with_tests')
         test_array += [['test_rgsaddle_band', 'RgsaddleBandTest.cpp', 'neb_morse']]
         test_array += [['test_rgsaddle_neb', 'RgsaddleNEBTest.cpp', 'neb_lj13']]
         test_array += [['test_rgsaddle_irc', 'RgsaddleIrcTest.cpp', 'neb_lj13']]
+        test_array += [['test_lineb_job', 'LinebJobTest.cpp', 'neb_morse']]
     endif
     # Without rgsaddle it checks that prfo_refine is refused before a search.
     test_array += [['test_prfo_refine', 'PrfoRefineTest.cpp', 'neb_lj13']]

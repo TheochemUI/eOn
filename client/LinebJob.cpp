@@ -1,0 +1,345 @@
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
+#include "eon/LinebJob.h"
+
+#include "eon/ConFileIO.h"
+#include "eon/EonLogger.h"
+#include "eon/JobResult.h"
+#include "eon/Matter.h"
+#include "eon/PotRegistry.h"
+#include "eon/Potential.h"
+
+#include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <limits>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+#ifdef WITH_RGSADDLE_LINEB
+#include <rgsaddle.h>
+#endif
+
+namespace eonc {
+
+bool linebAvailable() {
+#ifdef WITH_RGSADDLE_LINEB
+  rgsaddle_version_t abi{};
+  return rgsaddle_abi_stamp(&abi) == RGSADDLE_OK &&
+         abi.major == RGSADDLE_ABI_MAJOR;
+#else
+  return false;
+#endif
+}
+
+namespace {
+
+#ifdef WITH_RGSADDLE_LINEB
+
+struct LinebSurface {
+  Matter *probe = nullptr;
+  std::vector<long> freeAtoms;
+};
+
+/// Map free-atom positions into the full Matter and write energy plus
+/// energy gradients (minus forces) for those atoms. Same sign convention
+/// as XtsciIrc / Instanton.
+rgsaddle_status_t surfaceCallback(void *user, rgsaddle_surface_request_t *req) {
+  auto *ctx = static_cast<LinebSurface *>(user);
+  if (ctx == nullptr || ctx->probe == nullptr || req == nullptr ||
+      req->positions == nullptr || req->energies == nullptr ||
+      req->gradients == nullptr) {
+    return RGSADDLE_SURFACE_FAILED;
+  }
+  const auto nFree = static_cast<int64_t>(ctx->freeAtoms.size());
+  if (req->n_atoms != nFree) {
+    return RGSADDLE_SHAPE;
+  }
+
+  const int64_t nImages =
+      (req->flags & RGSADDLE_REQ_ONE_IMAGE) ? 1 : req->n_images;
+  if (nImages < 1) {
+    return RGSADDLE_SHAPE;
+  }
+
+  try {
+    AtomMatrix pos = ctx->probe->getPositions();
+    for (int64_t image = 0; image < nImages; ++image) {
+      const double *xyz = req->positions + image * nFree * 3;
+      for (int64_t a = 0; a < nFree; ++a) {
+        const long atom = ctx->freeAtoms[static_cast<size_t>(a)];
+        pos(atom, 0) = xyz[3 * a + 0];
+        pos(atom, 1) = xyz[3 * a + 1];
+        pos(atom, 2) = xyz[3 * a + 2];
+      }
+      ctx->probe->setPositions(pos);
+      req->energies[image] = ctx->probe->getPotentialEnergy();
+      const AtomMatrix forces = ctx->probe->getForces();
+      double *grad = req->gradients + image * nFree * 3;
+      for (int64_t a = 0; a < nFree; ++a) {
+        const long atom = ctx->freeAtoms[static_cast<size_t>(a)];
+        grad[3 * a + 0] = -forces(atom, 0);
+        grad[3 * a + 1] = -forces(atom, 1);
+        grad[3 * a + 2] = -forces(atom, 2);
+      }
+    }
+    return RGSADDLE_OK;
+  } catch (...) {
+    return RGSADDLE_SURFACE_FAILED;
+  }
+}
+
+/// Free atoms that are free on every axis. Partial per-axis freezes are
+/// unsupported by the lineb C API (no mask).
+void collectFreeAtoms(const Matter &m, std::vector<long> &freeAtoms,
+                      std::vector<double> &masses) {
+  freeAtoms.clear();
+  masses.clear();
+  for (long i = 0; i < m.numberOfAtoms(); ++i) {
+    const int fx = m.getFixed(i, 0);
+    const int fy = m.getFixed(i, 1);
+    const int fz = m.getFixed(i, 2);
+    if (fx && fy && fz) {
+      continue;
+    }
+    if (fx || fy || fz) {
+      throw std::runtime_error(
+          "lineb: per-axis frozen coordinates are unsupported; fix or free "
+          "all three axes of each atom");
+    }
+    const double mass = m.getMass(i);
+    if (!(mass > 0.0) || !std::isfinite(mass)) {
+      throw std::runtime_error(
+          "lineb: every free atom needs a finite positive mass");
+    }
+    freeAtoms.push_back(i);
+    masses.push_back(mass);
+  }
+  if (freeAtoms.empty()) {
+    throw std::runtime_error("lineb: every atom is fixed");
+  }
+}
+
+std::vector<std::shared_ptr<Matter>>
+loadSeedBand(const Parameters &params, const std::shared_ptr<Potential> &pot,
+             const std::string &path) {
+  if (path.empty()) {
+    throw std::runtime_error(
+        "lineb: [Lineb] initial_path must name a multi-frame seed band");
+  }
+  const auto frames = readcon::read_all_frames(path);
+  if (frames.size() < 3) {
+    throw std::runtime_error(
+        "lineb: the seed band needs at least three images (endpoints and one "
+        "interior image)");
+  }
+  std::vector<std::shared_ptr<Matter>> band;
+  band.reserve(frames.size());
+  for (const auto &frame : frames) {
+    auto image = std::make_shared<Matter>(pot, params);
+    if (!io::io_ok(io::con2matter(*image, frame))) {
+      throw std::runtime_error("lineb: cannot read a frame of " + path);
+    }
+    if (!band.empty() &&
+        image->numberOfAtoms() != band.front()->numberOfAtoms()) {
+      throw std::runtime_error("lineb: seed images differ in atom count");
+    }
+    band.push_back(std::move(image));
+  }
+  return band;
+}
+
+void packPositions(const std::vector<std::shared_ptr<Matter>> &band,
+                   const std::vector<long> &freeAtoms,
+                   std::vector<double> &out) {
+  const auto nImages = band.size();
+  const auto nFree = freeAtoms.size();
+  out.assign(nImages * nFree * 3, 0.0);
+  for (size_t i = 0; i < nImages; ++i) {
+    const AtomMatrix pos = band[i]->getPositions();
+    for (size_t a = 0; a < nFree; ++a) {
+      const long atom = freeAtoms[a];
+      const size_t base = (i * nFree + a) * 3;
+      out[base + 0] = pos(atom, 0);
+      out[base + 1] = pos(atom, 1);
+      out[base + 2] = pos(atom, 2);
+    }
+  }
+}
+
+void unpackPositions(const std::vector<double> &flat,
+                     const std::vector<long> &freeAtoms,
+                     std::vector<std::shared_ptr<Matter>> &band) {
+  const auto nFree = freeAtoms.size();
+  if (nFree == 0 || flat.size() % (nFree * 3) != 0) {
+    throw std::runtime_error("lineb: optimized path has the wrong length");
+  }
+  const size_t nImages = flat.size() / (nFree * 3);
+  if (nImages != band.size()) {
+    throw std::runtime_error("lineb: optimized path image count changed");
+  }
+  for (size_t i = 0; i < nImages; ++i) {
+    AtomMatrix pos = band[i]->getPositions();
+    for (size_t a = 0; a < nFree; ++a) {
+      const long atom = freeAtoms[a];
+      const size_t base = (i * nFree + a) * 3;
+      pos(atom, 0) = flat[base + 0];
+      pos(atom, 1) = flat[base + 1];
+      pos(atom, 2) = flat[base + 2];
+    }
+    band[i]->setPositions(pos);
+  }
+}
+
+#endif // WITH_RGSADDLE_LINEB
+
+} // namespace
+
+std::vector<std::string> LinebJob::run(void) {
+  if (!linebAvailable()) {
+    throw std::runtime_error(
+        "lineb: needs -Dwith_rgsaddle=true against a rgsaddle that exports "
+        "rgsaddle_lineb_solve (lineb C API)");
+  }
+
+#ifdef WITH_RGSADDLE_LINEB
+  const auto &o = params.lineb_options();
+  if (!(o.energy < std::numeric_limits<double>::infinity()) ||
+      !std::isfinite(o.energy)) {
+    throw std::runtime_error("lineb: [Lineb] energy must be a finite tunneling "
+                             "energy below the barrier");
+  }
+  if (o.max_steps < 1) {
+    throw std::runtime_error("lineb: [Lineb] max_steps must be at least 1");
+  }
+  if (o.beads < 0) {
+    throw std::runtime_error(
+        "lineb: [Lineb] beads must be nonnegative (0 is path only)");
+  }
+
+  auto band = loadSeedBand(params, pot, o.initial_path);
+  std::vector<long> freeAtoms;
+  std::vector<double> masses;
+  collectFreeAtoms(*band.front(), freeAtoms, masses);
+  for (size_t i = 1; i < band.size(); ++i) {
+    std::vector<long> otherFree;
+    std::vector<double> otherMasses;
+    collectFreeAtoms(*band[i], otherFree, otherMasses);
+    if (otherFree != freeAtoms) {
+      throw std::runtime_error(
+          "lineb: every seed image must share the same free-atom mask");
+    }
+  }
+  if (o.molecular &&
+      static_cast<long>(freeAtoms.size()) != band.front()->numberOfAtoms()) {
+    throw std::runtime_error(
+        "lineb: molecular alignment needs every atom free (no frozen "
+        "substrate atoms)");
+  }
+  if (o.molecular && freeAtoms.size() < 2) {
+    throw std::runtime_error(
+        "lineb: molecular alignment needs at least two free atoms");
+  }
+
+  std::vector<double> positions;
+  packPositions(band, freeAtoms, positions);
+  std::vector<double> optimized(positions.size(), 0.0);
+
+  rgsaddle_lineb_config_t cfg{};
+  const rgsaddle_status_t cfgRc =
+      rgsaddle_lineb_config_default(o.opt_tol, o.perp_tol, &cfg);
+  if (cfgRc != RGSADDLE_OK) {
+    throw std::runtime_error(
+        std::string("lineb: rgsaddle_lineb_config_default: ") +
+        rgsaddle_status_name(cfgRc));
+  }
+  cfg.spring = o.spring;
+  cfg.endpoint_scale = o.endpoint_scale;
+  cfg.time_step = o.time_step;
+  cfg.max_move = o.max_move;
+  cfg.turning_width = o.turning_width;
+  cfg.hbar = o.hbar;
+  cfg.boltzmann = o.boltzmann;
+  cfg.quadrature_pairs = o.quadrature_pairs;
+
+  Matter probe(*band.front());
+  LinebSurface ctx{&probe, freeAtoms};
+
+  rgsaddle_lineb_result_t result{};
+  const rgsaddle_status_t rc = rgsaddle_lineb_solve(
+      &cfg, static_cast<int64_t>(band.size()),
+      static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
+      o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
+      &ctx, optimized.data(), &result);
+
+  // Propagate the library status, including existing non-success codes for
+  // an unconverged band. Do not invent a new status.
+  if (rc != RGSADDLE_OK) {
+    throw std::runtime_error(std::string("lineb: rgsaddle_lineb_solve: ") +
+                             rgsaddle_status_name(rc));
+  }
+
+  unpackPositions(optimized, freeAtoms, band);
+
+  const std::string pathFile = "lineb.con";
+  const std::string resultsFile = "results.dat";
+  std::vector<io::ConFrameMetadata> metas(band.size());
+  for (size_t i = 0; i < band.size(); ++i) {
+    metas[i].energy = band[i]->getPotentialEnergy();
+  }
+  if (!io::io_ok(io::writeNebPath(pathFile, band, metas))) {
+    throw std::runtime_error("lineb: cannot write " + pathFile);
+  }
+
+  auto env = JobResultEnvelope::fromMinimization(
+      RunStatus::GOOD, params.potential_options().potential,
+      pot->forceCallCounter.load(), true,
+      band[band.size() / 2]->getPotentialEnergy());
+  env.provenance = provenanceForJob(params);
+  env.job_type = "lineb";
+  env.extras.emplace_back("action", result.action);
+  env.extras.emplace_back("half_period", result.half_period);
+  env.extras.emplace_back("half_period_dynamics", result.half_period_dynamics);
+  env.extras.emplace_back("temperature", result.temperature);
+  env.extras.emplace_back("temperature_dynamics", result.temperature_dynamics);
+  env.extras.emplace_back("log_rate_over_reactant",
+                          result.log_rate_over_reactant);
+  env.extras.emplace_back("iterations",
+                          static_cast<double>(result.iterations));
+  env.extras.emplace_back("optimizer_calls",
+                          static_cast<double>(result.optimizer_calls));
+  env.extras.emplace_back("measure_calls",
+                          static_cast<double>(result.measure_calls));
+  env.extras.emplace_back("dynamics_calls",
+                          static_cast<double>(result.dynamics_calls));
+  env.extras.emplace_back("rate_calls", static_cast<double>(result.rate_calls));
+  env.extras.emplace_back("energy", o.energy);
+  env.extras.emplace_back("beads", static_cast<double>(o.beads));
+  env.extras.emplace_back("molecular", o.molecular ? 1.0 : 0.0);
+  env.extras.emplace_back("n_images", static_cast<double>(band.size()));
+  env.extras.emplace_back("n_free_atoms",
+                          static_cast<double>(freeAtoms.size()));
+  env.writeResultsDat(resultsFile);
+
+  EONC_LOG_INFO(
+      "[Lineb] action {:.6g}, T {:.4g} K (dynamics {:.4g} K), {} steps",
+      result.action, result.temperature, result.temperature_dynamics,
+      result.iterations);
+
+  return {resultsFile, pathFile};
+#else
+  return {};
+#endif
+}
+
+} // namespace eonc

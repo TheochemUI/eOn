@@ -4,6 +4,7 @@
 
 ### Added
 
+- ``LinebConfig`` and ``job = lineb`` for the fixed-energy LI-NEB section.
 - ``OptimizerConfig.opt_backend`` (``eon`` or ``rgmin``) picks who runs the
   ``lbfgs``, ``fire``, ``cg``, ``sd`` and ``qm`` optimizers.
 - ``XtsciConfig.method`` accepts ``quickmin``.

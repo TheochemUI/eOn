@@ -1020,6 +1020,38 @@ struct instanton_options_t {
   long pi_recrossing_spacing{50};
 };
 
+// [Lineb] //
+// Fixed-energy line-integral nudged elastic band through rgsaddle
+// (Ásgeirsson, Arnaldsson and Jónsson, J. Chem. Phys. 148, 102334 (2018)).
+// Needs a rgsaddle that exports rgsaddle_lineb_solve. Defaults for the
+// spring, endpoint scale, time step, max move, turning width and
+// quadrature match LinebConfig::new; hbar and boltzmann are eOn's eV /
+// amu / Angstrom / K units.
+struct lineb_options_t {
+  // Multi-frame seed band (neb.con); every image must lie above energy.
+  std::string initial_path{""};
+  // Tunneling energy E of the equipotential endpoints, eV.
+  double energy{0.0};
+  double opt_tol{1e-3};  // mass-weighted nudged-force stop
+  double perp_tol{1e-3}; // mass-weighted perpendicular action-gradient stop
+  double spring{0.1};
+  double endpoint_scale{0.2};
+  double time_step{0.1};
+  double max_move{0.2};
+  double turning_width{1e-3};
+  // eV^0.5 amu^0.5 Angstrom; temperature is hbar / (k_B tau).
+  // Same values as eonc::tunneling::kHbar and kBoltzmann.
+  double hbar{0.06465415129579072};
+  double boltzmann{8.617333262145177e-5}; // eV / K
+  long quadrature_pairs{4};
+  long max_steps{1000};
+  // Harmonic quantum TST replicas; 0 writes the path only (log rate NaN).
+  long beads{0};
+  // false: expand atom masses to coordinates (adsorbate / fixed field).
+  // true: molecule alignment; every atom must be free.
+  bool molecular{false};
+};
+
 // [OH_TST] //
 // Optimized hyperplanar TST (Johannesson-Jonsson, JCP 115, 9644
 // (2001)): reversible-work progression of a hyperplanar dividing

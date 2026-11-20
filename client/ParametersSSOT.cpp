@@ -60,6 +60,8 @@ JobType job_from_ssot(std::string_view j) {
     return JobType::Global_Optimization;
   if (j == "instanton")
     return JobType::Instanton;
+  if (j == "lineb")
+    return JobType::Lineb;
   return JobType::Process_Search;
 }
 

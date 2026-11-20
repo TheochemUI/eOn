@@ -251,6 +251,10 @@ const Parameters::instanton_options_t &Parameters::instanton_options() const {
   return impl_->instanton_options_;
 }
 
+const Parameters::lineb_options_t &Parameters::lineb_options() const {
+  return impl_->lineb_options_;
+}
+
 void Parameters::set_mpi_client_comm(std::uintptr_t raw) {
   ensure_impl().potential_options_.MPIClientComm = raw;
 }
@@ -647,6 +651,15 @@ instanton_options_t &ParametersLoadAccess::instanton_options(Parameters &p) {
 const instanton_options_t &
 ParametersLoadAccess::instanton_options(const Parameters &p) {
   return p.impl_->instanton_options_;
+}
+
+lineb_options_t &ParametersLoadAccess::lineb_options(Parameters &p) {
+  return p.ensure_impl().lineb_options_;
+}
+
+const lineb_options_t &
+ParametersLoadAccess::lineb_options(const Parameters &p) {
+  return p.impl_->lineb_options_;
 }
 
 } // namespace eonc

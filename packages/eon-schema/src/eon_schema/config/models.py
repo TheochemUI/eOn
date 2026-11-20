@@ -38,6 +38,7 @@ class MainConfig(BaseModel):
         "gp_surrogate",
         "hessian",
         "instanton",
+        "lineb",
         "minimization",
         "monte_carlo",
         "molecular_dynamics",
@@ -2849,6 +2850,84 @@ class HessianConfig(BaseModel):
     )
 
 
+class LinebConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    initial_path: str = Field(
+        default="",
+        description=(
+            "Multi-frame seed band (neb.con). Every image must start above"
+            " energy."
+        ),
+    )
+    energy: float = Field(
+        default=0.0,
+        description="Tunneling energy E of the equipotential endpoints, eV.",
+    )
+    opt_tol: float = Field(
+        default=1e-3,
+        description="Mass-weighted stop on the nudged force.",
+    )
+    perp_tol: float = Field(
+        default=1e-3,
+        description="Mass-weighted stop on the perpendicular action gradient.",
+    )
+    spring: float = Field(default=0.1, description="Parallel spacing spring.")
+    endpoint_scale: float = Field(
+        default=0.2, description="Endpoint equipotential force scale."
+    )
+    time_step: float = Field(
+        default=0.1, description="Initial FIRE / quick-min time step."
+    )
+    max_move: float = Field(
+        default=0.2,
+        description=(
+            "Step cap; per atom when molecular, else whole-band Euclidean"
+            " length. 0 leaves the step uncapped."
+        ),
+    )
+    turning_width: float = Field(
+        default=1e-3,
+        description=(
+            "Fraction of the highest seed height above E; interiors stay"
+            " above E+w."
+        ),
+    )
+    hbar: float = Field(
+        default=0.06465415129579072,
+        description=(
+            "hbar in eV^0.5 amu^0.5 Angstrom. Temperature is hbar/(k_B tau)."
+        ),
+    )
+    boltzmann: float = Field(
+        default=8.617333262145177e-5,
+        description="Boltzmann constant in eV/K.",
+    )
+    quadrature_pairs: int = Field(
+        default=4,
+        ge=1,
+        description="Simpson pairs per chord for the period quadrature.",
+    )
+    max_steps: int = Field(
+        default=1000, ge=1, description="Optimizer step budget."
+    )
+    beads: int = Field(
+        default=0,
+        ge=0,
+        description=(
+            "Harmonic quantum TST replicas. 0 writes the path only (log rate"
+            " NaN)."
+        ),
+    )
+    molecular: bool = Field(
+        default=False,
+        description=(
+            "false expands atom masses to coordinates. true uses molecule"
+            " alignment and needs every atom free."
+        ),
+    )
+
+
 class InstantonConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
@@ -3420,6 +3499,7 @@ class Config(BaseModel):
     davidson: DavidsonConfig
     hessian: HessianConfig
     instanton: InstantonConfig = Field(default_factory=InstantonConfig)
+    lineb: LinebConfig = Field(default_factory=LinebConfig)
     communicator: CommunicatorConfig
     process_search: ProcessSearchConfig
     prefactor: PrefactorConfig

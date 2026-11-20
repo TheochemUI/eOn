@@ -111,7 +111,8 @@ void bind_enums(nb::module_ &m) {
       .value("Test", eonc::JobType::Test)
       .value("GP_Surrogate", eonc::JobType::GP_Surrogate)
       .value("OH_TST", eonc::JobType::OH_TST)
-      .value("Instanton", eonc::JobType::Instanton);
+      .value("Instanton", eonc::JobType::Instanton)
+      .value("Lineb", eonc::JobType::Lineb);
 
   m.def(
       "job_type_from_name",
