@@ -44,12 +44,22 @@ default of zero selects the gradient-normalized `endpoint_scale` restraint.
 A positive value requires rgsaddle ABI minor 47 or higher.
 
 For the initialization and convergence test used in the paper’s Cu(110)
-calculation, supply a full path between the minima and set both
+calculation, supply a path that crosses the target energy on both sides
+of the saddle and set both
 `linear_seed = true` and `endpoint_convergence = true`. The first option
 joins the two energy crossings with a straight line. The second tests the
 nudged force at each endpoint and the perpendicular action gradient at
 each interior image. Each option can be used independently with rgsaddle
 ABI minor 48 or higher.
+
+The eOn job uses the number of frames in `initial_path` as the number of
+LI-NEB images. For a ten-image calculation with a densely sampled MEP,
+locate its two crossings of the target energy, interpolate ten frames
+along the straight line between them, and pass those frames as the seed.
+The accuracy of the crossings matters near the saddle. For the frozen
+Cu(110) reconstruction, following the intrinsic reaction coordinate
+from the saddle in both directions resolved the first pair of crossings
+at 0.05 eV below the barrier.
 
 For a frozen Cu substrate with two mobile hydrogen atoms of mass
 1.00793 amu, the paper uses a spring of 20 Å⁻² and an endpoint coefficient
