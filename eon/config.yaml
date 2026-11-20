@@ -1522,7 +1522,6 @@ Lineb:
             kind: float
             default: 0.1
 
-        # Positive for a fixed turning-surface coefficient; zero selects endpoint_scale.
         linear_seed:
             kind: bool
             default: false
@@ -1531,6 +1530,12 @@ Lineb:
             kind: bool
             default: false
 
+        # Project the velocity of the band onto its nudged force at each Verlet step.
+        projected_verlet:
+            kind: bool
+            default: false
+
+        # Positive for a fixed turning-surface coefficient; zero selects endpoint_scale.
         endpoint_kappa:
             kind: float
             default: 0.0

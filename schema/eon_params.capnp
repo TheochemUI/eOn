@@ -302,6 +302,7 @@ struct LinebOptions {
   endpoint_kappa @15 :Float64 = 0.0;
   linear_seed @16 :Bool = false;
   endpoint_convergence @17 :Bool = false;
+  projected_verlet @18 :Bool = false;
 }
 
 # ---------------------------------------------------------------------

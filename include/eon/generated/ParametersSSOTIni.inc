@@ -76,4 +76,5 @@ inline void project_ssot_ini(const INIReader &ini, Parameters &params) {
   o.endpoint_kappa = ini.GetReal(sec, "endpoint_kappa", o.endpoint_kappa);
   o.linear_seed = ini.GetBoolean(sec, "linear_seed", o.linear_seed);
   o.endpoint_convergence = ini.GetBoolean(sec, "endpoint_convergence", o.endpoint_convergence);
+  o.projected_verlet = ini.GetBoolean(sec, "projected_verlet", o.projected_verlet);
 }

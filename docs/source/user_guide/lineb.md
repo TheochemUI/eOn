@@ -52,6 +52,10 @@ nudged force at each endpoint and the perpendicular action gradient at
 each interior image. Each option can be used independently with rgsaddle
 ABI minor 48 or higher.
 
+The paper also uses velocity-projected velocity Verlet for optimizing the
+band. Set `projected_verlet = true` to request that optimizer with
+rgsaddle ABI minor 49 or higher. The default optimizer is FIRE 2.0.
+
 The eOn job uses the number of frames in `initial_path` as the number of
 LI-NEB images. For a ten-image calculation with a densely sampled MEP,
 locate its two crossings of the target energy, interpolate ten frames

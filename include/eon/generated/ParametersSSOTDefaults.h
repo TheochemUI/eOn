@@ -141,5 +141,6 @@ struct GeneratedDefaults {
   static constexpr auto LINEB_ENDPOINT_KAPPA = 0.0;
   static constexpr auto LINEB_LINEAR_SEED = false;
   static constexpr auto LINEB_ENDPOINT_CONVERGENCE = false;
+  static constexpr auto LINEB_PROJECTED_VERLET = false;
 };
 } // namespace eonc::params_ssot

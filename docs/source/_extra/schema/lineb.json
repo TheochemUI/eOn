@@ -41,6 +41,11 @@
       "description": "Apply opt_tol to the endpoints and perp_tol to the interior.",
       "type": "boolean"
     },
+    "projected_verlet": {
+      "default": false,
+      "description": "Optimize the band with velocity-projected velocity Verlet.",
+      "type": "boolean"
+    },
     "endpoint_kappa": {
       "default": 0.0,
       "description": "Fixed endpoint coefficient; zero selects endpoint_scale.",

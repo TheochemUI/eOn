@@ -59,7 +59,8 @@ inline void project_ssot_json_write(json &j, const Parameters &p) {
         {"molecular", o.molecular},
         {"endpoint_kappa", o.endpoint_kappa},
         {"linear_seed", o.linear_seed},
-        {"endpoint_convergence", o.endpoint_convergence}
+        {"endpoint_convergence", o.endpoint_convergence},
+        {"projected_verlet", o.projected_verlet}
     };
   }
 }
@@ -136,5 +137,6 @@ inline void project_ssot_json_read(const json &j, Parameters &p) {
     if (s.contains("endpoint_kappa")) o.endpoint_kappa = s.at("endpoint_kappa").get<decltype(o.endpoint_kappa)>();
     if (s.contains("linear_seed")) o.linear_seed = s.at("linear_seed").get<decltype(o.linear_seed)>();
     if (s.contains("endpoint_convergence")) o.endpoint_convergence = s.at("endpoint_convergence").get<decltype(o.endpoint_convergence)>();
+    if (s.contains("projected_verlet")) o.projected_verlet = s.at("projected_verlet").get<decltype(o.projected_verlet)>();
   }
 }

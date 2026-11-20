@@ -2875,6 +2875,7 @@ class LinebConfig(BaseModel):
     spring: float = Field(default=0.1, description="Parallel spacing spring.")
     linear_seed: bool = Field(default=False, description="Join the initial turning points with a straight path.")
     endpoint_convergence: bool = Field(default=False, description="Apply opt_tol to the endpoints and perp_tol to the interior.")
+    projected_verlet: bool = Field(default=False, description="Optimize the band with velocity-projected velocity Verlet.")
     endpoint_kappa: float = Field(default=0.0, ge=0, allow_inf_nan=False,
                                   description="Fixed endpoint coefficient; zero selects endpoint_scale.")
     endpoint_scale: float = Field(

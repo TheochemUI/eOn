@@ -19,6 +19,7 @@
     "Lineb.molecular",
     "Lineb.opt_tol",
     "Lineb.perp_tol",
+    "Lineb.projected_verlet",
     "Lineb.quadrature_pairs",
     "Lineb.spring",
     "Lineb.time_step",

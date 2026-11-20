@@ -386,6 +386,13 @@ CATALOG = {
           "ordinal": 17,
           "snake": "endpoint_convergence",
           "type": "Bool"
+        },
+        {
+          "capnp": "projected_verlet",
+          "default": False,
+          "ordinal": 18,
+          "snake": "projected_verlet",
+          "type": "Bool"
         }
       ],
       "json_name": "Lineb",
