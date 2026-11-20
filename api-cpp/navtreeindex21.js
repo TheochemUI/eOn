@@ -1,5 +1,10 @@
 var NAVTREEINDEX21 =
 {
+"classeonc_1_1tunneling_1_1QuadraticBath.html#a698c66fba3806f0fbb98b6cce6768089":[5,0,0,8,12,13],
+"classeonc_1_1tunneling_1_1QuadraticBath.html#a76ad3e4695656abd308865ab3aca846c":[3,0,1,21,12,12],
+"classeonc_1_1tunneling_1_1QuadraticBath.html#a76ad3e4695656abd308865ab3aca846c":[5,0,0,8,12,12],
+"classeonc_1_1tunneling_1_1QuadraticBath.html#a8381e872795c00a2f977c362a3564b0c":[3,0,1,21,12,2],
+"classeonc_1_1tunneling_1_1QuadraticBath.html#a8381e872795c00a2f977c362a3564b0c":[5,0,0,8,12,2],
 "classeonc_1_1tunneling_1_1QuadraticBath.html#a8e33614a0ff05c08a1178876a656bb89":[3,0,1,21,12,0],
 "classeonc_1_1tunneling_1_1QuadraticBath.html#a8e33614a0ff05c08a1178876a656bb89":[5,0,0,8,12,0],
 "classeonc_1_1tunneling_1_1QuadraticBath.html#a9d6acba2ba79a5ed386c87bcc88b35ba":[3,0,1,21,12,8],
@@ -244,10 +249,5 @@ var NAVTREEINDEX21 =
 "functions_func_s.html":[5,3,1,18],
 "functions_func_t.html":[5,3,1,19],
 "functions_func_u.html":[5,3,1,20],
-"functions_func_v.html":[5,3,1,21],
-"functions_func_w.html":[5,3,1,22],
-"functions_func_x.html":[5,3,1,23],
-"functions_func_z.html":[5,3,1,24],
-"functions_func_~.html":[5,3,1,25],
-"functions_g.html":[5,3,0,8]
+"functions_func_v.html":[5,3,1,21]
 };

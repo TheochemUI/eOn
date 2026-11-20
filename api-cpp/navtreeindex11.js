@@ -1,5 +1,6 @@
 var NAVTREEINDEX11 =
 {
+"classeonc_1_1IRAResource.html#af3d14e26ba8af9e6cc5a32aad8446de7":[5,0,0,91,14],
 "classeonc_1_1IRAResource.html#af3e45227d5dcd69fb59e3d9393529f69":[3,0,1,104,12],
 "classeonc_1_1IRAResource.html#af3e45227d5dcd69fb59e3d9393529f69":[5,0,0,91,12],
 "classeonc_1_1IRAResource_1_1Key.html":[3,0,1,104,0],
@@ -248,6 +249,5 @@ var NAVTREEINDEX11 =
 "classeonc_1_1Lanczos.html#a22f138fb8df071be0f551e83133d1d91":[5,0,0,99,4],
 "classeonc_1_1Lanczos.html#a784c83638bdd48a4e2f7b06babd3c9cf":[3,0,1,112,8],
 "classeonc_1_1Lanczos.html#a784c83638bdd48a4e2f7b06babd3c9cf":[5,0,0,99,8],
-"classeonc_1_1Lanczos.html#a862fd99f7f81def38985142301891144":[3,0,1,112,9],
-"classeonc_1_1Lanczos.html#a862fd99f7f81def38985142301891144":[5,0,0,99,9]
+"classeonc_1_1Lanczos.html#a862fd99f7f81def38985142301891144":[3,0,1,112,9]
 };

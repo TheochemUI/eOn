@@ -325,6 +325,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a44b9979c8df31acc86cfbe87dec05d26" id="r_a44b9979c8df31acc86cfbe87dec05d26"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a44b9979c8df31acc86cfbe87dec05d26">forceBatchOwned</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes, const long *owners)</td></tr>
 <tr class="memdesc:a44b9979c8df31acc86cfbe87dec05d26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate forces for N systems in a single call.  <br /></td></tr>
 <tr class="memitem:aa66e1416134ff55639a6d20a34e3c1c1" id="r_aa66e1416134ff55639a6d20a34e3c1c1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aa66e1416134ff55639a6d20a34e3c1c1">forceBatch</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes)</td></tr>
+<tr class="memitem:a116025f5055f636d2a67e672909dd5c2" id="r_a116025f5055f636d2a67e672909dd5c2"><td class="memItemLeft">virtual double&#160;</td><td class="memItemRight"><a class="el" href="#a116025f5055f636d2a67e672909dd5c2">minimumImageCutoff</a> () const noexcept</td></tr>
+<tr class="memdesc:a116025f5055f636d2a67e672909dd5c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cutoff of a kernel that sums one minimum image per atom pair, in position length units.  <br /></td></tr>
 <tr class="memitem:a80011be65081bbcafb4a1d332062f3ef" id="r_a80011be65081bbcafb4a1d332062f3ef"><td class="memItemLeft">virtual double&#160;</td><td class="memItemRight"><a class="el" href="#a80011be65081bbcafb4a1d332062f3ef">hessianRange</a> () const noexcept</td></tr>
 <tr class="memdesc:a80011be65081bbcafb4a1d332062f3ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance beyond which every <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> block between two atoms is exactly zero, in position length units.  <br /></td></tr>
 </table><table class="memberdecls">
@@ -1126,25 +1128,25 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classRgpotAdapter.html#a2ce490db285f82d29c901a9087bfec80">RgpotAdapter&lt; RPot &gt;</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00259">259</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  259</span>                                                             {</div>
-<div class="line"><span class="lineno">  260</span><span class="preprocessor">#if defined(__GNUC__) || defined(__clang__)</span></div>
-<div class="line"><span class="lineno">  261</span><span class="preprocessor">#pragma GCC diagnostic push</span></div>
-<div class="line"><span class="lineno">  262</span><span class="preprocessor">#pragma GCC diagnostic ignored &quot;-Wdeprecated-declarations&quot;</span></div>
-<div class="line"><span class="lineno">  263</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  264</span><span class="preprocessor">#if defined(_MSC_VER)</span></div>
-<div class="line"><span class="lineno">  265</span><span class="preprocessor">#pragma warning(push)</span></div>
-<div class="line"><span class="lineno">  266</span><span class="preprocessor">#pragma warning(disable : 4996)</span></div>
-<div class="line"><span class="lineno">  267</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  268</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> range = <a class="code hl_function" href="#a8f4fea1662aaa9e26f7a2ac0862d53f8">finiteCutoff</a>();</div>
-<div class="line"><span class="lineno">  269</span><span class="preprocessor">#if defined(_MSC_VER)</span></div>
-<div class="line"><span class="lineno">  270</span><span class="preprocessor">#pragma warning(pop)</span></div>
-<div class="line"><span class="lineno">  271</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  272</span><span class="preprocessor">#if defined(__GNUC__) || defined(__clang__)</span></div>
-<div class="line"><span class="lineno">  273</span><span class="preprocessor">#pragma GCC diagnostic pop</span></div>
-<div class="line"><span class="lineno">  274</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  275</span>    <span class="keywordflow">return</span> range;</div>
-<div class="line"><span class="lineno">  276</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00269">269</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  269</span>                                                             {</div>
+<div class="line"><span class="lineno">  270</span><span class="preprocessor">#if defined(__GNUC__) || defined(__clang__)</span></div>
+<div class="line"><span class="lineno">  271</span><span class="preprocessor">#pragma GCC diagnostic push</span></div>
+<div class="line"><span class="lineno">  272</span><span class="preprocessor">#pragma GCC diagnostic ignored &quot;-Wdeprecated-declarations&quot;</span></div>
+<div class="line"><span class="lineno">  273</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  274</span><span class="preprocessor">#if defined(_MSC_VER)</span></div>
+<div class="line"><span class="lineno">  275</span><span class="preprocessor">#pragma warning(push)</span></div>
+<div class="line"><span class="lineno">  276</span><span class="preprocessor">#pragma warning(disable : 4996)</span></div>
+<div class="line"><span class="lineno">  277</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  278</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> range = <a class="code hl_function" href="#a8f4fea1662aaa9e26f7a2ac0862d53f8">finiteCutoff</a>();</div>
+<div class="line"><span class="lineno">  279</span><span class="preprocessor">#if defined(_MSC_VER)</span></div>
+<div class="line"><span class="lineno">  280</span><span class="preprocessor">#pragma warning(pop)</span></div>
+<div class="line"><span class="lineno">  281</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  282</span><span class="preprocessor">#if defined(__GNUC__) || defined(__clang__)</span></div>
+<div class="line"><span class="lineno">  283</span><span class="preprocessor">#pragma GCC diagnostic pop</span></div>
+<div class="line"><span class="lineno">  284</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  285</span>    <span class="keywordflow">return</span> range;</div>
+<div class="line"><span class="lineno">  286</span>  }</div>
 <div class="ttc" id="aclasseonc_1_1Potential_html_a8f4fea1662aaa9e26f7a2ac0862d53f8"><div class="ttname"><a href="#a8f4fea1662aaa9e26f7a2ac0862d53f8">eonc::Potential::finiteCutoff</a></div><div class="ttdeci">virtual double finiteCutoff() const noexcept</div><div class="ttdoc">Finite interaction range in position length units.</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00134">Potential.h:134</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -1283,6 +1285,41 @@ Private Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  160</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>(<a class="code hl_enumvalue" href="#a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058">PotLayout::InProcess</a>);</div>
 <div class="line"><span class="lineno">  161</span>  }</div>
 <div class="ttc" id="aclasseonc_1_1Potential_html_a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058"><div class="ttname"><a href="#a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058">eonc::Potential::PotLayout::InProcess</a></div><div class="ttdeci">@ InProcess</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00155">Potential.h:155</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a116025f5055f636d2a67e672909dd5c2" name="a116025f5055f636d2a67e672909dd5c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a116025f5055f636d2a67e672909dd5c2">&#9670;&#160;</a></span>minimumImageCutoff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual double eonc::Potential::minimumImageCutoff </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cutoff of a kernel that sums one minimum image per atom pair, in position length units. </p>
+<p>The energy stays continuous, but a half-cell tie is an energy cusp: the force jumps and is not the energy gradient, unless twice this cutoff is strictly inside every perpendicular width of the cell. 0 means the potential has no such limit. </p>
+
+<p>Reimplemented in <a class="el" href="classRgpotAdapter.html#a91a596a843b1ee1f9799dd5061778122">RgpotAdapter&lt; RPot &gt;</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00255">255</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  255</span>                                                                   {</div>
+<div class="line"><span class="lineno">  256</span>    <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><span class="lineno">  257</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>

@@ -27,6 +27,7 @@ var classeonc_1_1Potential =
     [ "isSurrogate", "classeonc_1_1Potential.html#a85b0a3456f6528d8c464ab4b5774878e", null ],
     [ "isThreadSafe", "classeonc_1_1Potential.html#af6c385eb52d3764246416ea389c84131", null ],
     [ "layoutFlags", "classeonc_1_1Potential.html#ac0b6310014f5d95811c5e0ec451568ba", null ],
+    [ "minimumImageCutoff", "classeonc_1_1Potential.html#a116025f5055f636d2a67e672909dd5c2", null ],
     [ "needsPerImageInstance", "classeonc_1_1Potential.html#a8b83745c9898990f848daafa4c351c2f", null ],
     [ "recordForceCall", "classeonc_1_1Potential.html#ad78bc42ff8490f74c5208c32f471fd18", null ],
     [ "registry", "classeonc_1_1Potential.html#a08973ecbbc422f435cc4d0b5d67d3c45", null ],

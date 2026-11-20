@@ -238,7 +238,10 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('SolidStateNEB_
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="SolidStateNEB_8h_source.html">eon/SolidStateNEB.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
 <code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;format&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
 <code>#include &lt;stdexcept&gt;</code><br />
 </div>
 <p><a href="SolidStateNEB_8cpp_source.html">Go to the source code of this file.</a></p>
@@ -258,6 +261,10 @@ Functions</h2></td></tr>
 <tr class="memitem:adb3b7f2dddfe3c22643699b0bf849279" id="r_adb3b7f2dddfe3c22643699b0bf849279"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1neb.html#adb3b7f2dddfe3c22643699b0bf849279">eonc::neb::orientSolidStateMatter</a> (<a class="el" href="classMatter.html">Matter</a> &amp;image)</td></tr>
 <tr class="memitem:a1cd6aa7232d2706d28750e8487bb1873" id="r_a1cd6aa7232d2706d28750e8487bb1873"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1neb.html#a1cd6aa7232d2706d28750e8487bb1873">eonc::neb::interpolateSolidStateLinear</a> (std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &amp;images)</td></tr>
 <tr class="memdesc:a1cd6aa7232d2706d28750e8487bb1873"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace interior images by a fractional linear interpolation of the oriented endpoints.  <br /></td></tr>
+<tr class="memitem:ac62bd458ab2e8bd1106e6ea8ac749315" id="r_ac62bd458ab2e8bd1106e6ea8ac749315"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1neb.html#ac62bd458ab2e8bd1106e6ea8ac749315">eonc::neb::minimumPerpendicularWidth</a> (const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cell)</td></tr>
+<tr class="memdesc:ac62bd458ab2e8bd1106e6ea8ac749315"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smallest distance between opposite faces of the cell, which is the smallest perpendicular width of the periodic box.  <br /></td></tr>
+<tr class="memitem:abd010626e0317ac7c12c1d8141da2d61" id="r_abd010626e0317ac7c12c1d8141da2d61"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1neb.html#abd010626e0317ac7c12c1d8141da2d61">eonc::neb::requireMinimumImageCell</a> (const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cell, double cutoff, const std::string &amp;label)</td></tr>
+<tr class="memdesc:abd010626e0317ac7c12c1d8141da2d61"><td class="mdescLeft">&#160;</td><td class="mdescRight">A kernel that sums one minimum image per pair is differentiable only when twice its cutoff is strictly inside every perpendicular width.  <br /></td></tr>
 <tr class="memitem:a878bd9e04ba095d1b6a33b57d81ac6a9" id="r_a878bd9e04ba095d1b6a33b57d81ac6a9"><td class="memItemLeft"><a class="el" href="structeonc_1_1neb_1_1JointBlock.html">JointBlock</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1neb.html#a878bd9e04ba095d1b6a33b57d81ac6a9">eonc::neb::jointDisplacement</a> (const <a class="el" href="classMatter.html">Matter</a> &amp;from, const <a class="el" href="classMatter.html">Matter</a> &amp;to, double jacobian)</td></tr>
 <tr class="memdesc:a878bd9e04ba095d1b6a33b57d81ac6a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Displacement of <span class="tt">to</span> relative to <span class="tt">from</span> in the joint metric.  <br /></td></tr>
 <tr class="memitem:a56f330ea1a8ea5dacb011eb0746f1990" id="r_a56f330ea1a8ea5dacb011eb0746f1990"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1neb.html#a56f330ea1a8ea5dacb011eb0746f1990">eonc::neb::jointNorm</a> (const <a class="el" href="structeonc_1_1neb_1_1JointBlock.html">JointBlock</a> &amp;block)</td></tr>

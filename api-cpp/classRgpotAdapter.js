@@ -15,6 +15,7 @@ var classRgpotAdapter =
     [ "isSharedInstanceThreadSafe", "classRgpotAdapter.html#a47e5303efdd1eb6ce47bdbfe59310c18", null ],
     [ "isThreadSafe", "classRgpotAdapter.html#a055a5f208ff16306b35632596a161674", null ],
     [ "kernel", "classRgpotAdapter.html#a5d2b00bf64a722a4829e19076f82fb2d", null ],
+    [ "minimumImageCutoff", "classRgpotAdapter.html#a91a596a843b1ee1f9799dd5061778122", null ],
     [ "needsPerImageInstance", "classRgpotAdapter.html#a9c53cdefdb91580b0ed424b3cb90946f", null ],
     [ "requiresIsolatedMoleculeLayout", "classRgpotAdapter.html#a18f57c04222975e8937d95623fb264d8", null ],
     [ "storeStress", "classRgpotAdapter.html#a6c15203416b0209f8b2b03446b3268ff", null ],

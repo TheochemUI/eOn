@@ -1,5 +1,6 @@
 var NAVTREEINDEX15 =
 {
+"classeonc_1_1NudgedElasticBand.html#ae9e33f2bcf2145fbaf15d96638288c60":[5,0,0,118,44],
 "classeonc_1_1NudgedElasticBand.html#af3aab21133a069b95ce79c1770342455":[3,0,1,131,25],
 "classeonc_1_1NudgedElasticBand.html#af3aab21133a069b95ce79c1770342455":[5,0,0,118,25],
 "classeonc_1_1NudgedElasticBandJob.html":[3,0,1,132],
@@ -248,6 +249,5 @@ var NAVTREEINDEX15 =
 "classeonc_1_1Parameters.html#a6995d10768f287a85503fbc2ebeb7ab7":[5,0,0,128,25],
 "classeonc_1_1Parameters.html#a6c02cd2aa45d14f5a602828e5348556a":[3,0,1,141,26],
 "classeonc_1_1Parameters.html#a6c02cd2aa45d14f5a602828e5348556a":[5,0,0,128,26],
-"classeonc_1_1Parameters.html#a6c24e085597f8e0d137e0a850af3a4db":[3,0,1,141,94],
-"classeonc_1_1Parameters.html#a6c24e085597f8e0d137e0a850af3a4db":[5,0,0,128,94]
+"classeonc_1_1Parameters.html#a6c24e085597f8e0d137e0a850af3a4db":[3,0,1,141,94]
 };

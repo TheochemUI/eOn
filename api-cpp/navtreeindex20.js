@@ -1,5 +1,10 @@
 var NAVTREEINDEX20 =
 {
+"classeonc_1_1pathintegral_1_1RingPolymer.html#a29ad6aa078ee7c0bbf4d7dec249191d1":[5,0,0,6,1,40],
+"classeonc_1_1pathintegral_1_1RingPolymer.html#a2b49bf3a864bbb22c5dcd5dc2138aab5":[3,0,1,12,1,58],
+"classeonc_1_1pathintegral_1_1RingPolymer.html#a2b49bf3a864bbb22c5dcd5dc2138aab5":[5,0,0,6,1,58],
+"classeonc_1_1pathintegral_1_1RingPolymer.html#a2bd8ddc3c753deb5849285f4b63cbe69":[3,0,1,12,1,26],
+"classeonc_1_1pathintegral_1_1RingPolymer.html#a2bd8ddc3c753deb5849285f4b63cbe69":[5,0,0,6,1,26],
 "classeonc_1_1pathintegral_1_1RingPolymer.html#a36dcd022de9897e734dc25b367480ea2":[3,0,1,12,1,66],
 "classeonc_1_1pathintegral_1_1RingPolymer.html#a36dcd022de9897e734dc25b367480ea2":[5,0,0,6,1,66],
 "classeonc_1_1pathintegral_1_1RingPolymer.html#a3713acb61dad24fe24f5cb82f8ce29bb":[3,0,1,12,1,41],
@@ -244,10 +249,5 @@ var NAVTREEINDEX20 =
 "classeonc_1_1tunneling_1_1QuadraticBath.html#a0638e8f382f4a0dfb3d27c0a672394ef":[5,0,0,8,12,10],
 "classeonc_1_1tunneling_1_1QuadraticBath.html#a4fc5c5f5f533ea6082cb4ad4c57462e5":[3,0,1,21,12,4],
 "classeonc_1_1tunneling_1_1QuadraticBath.html#a4fc5c5f5f533ea6082cb4ad4c57462e5":[5,0,0,8,12,4],
-"classeonc_1_1tunneling_1_1QuadraticBath.html#a698c66fba3806f0fbb98b6cce6768089":[3,0,1,21,12,13],
-"classeonc_1_1tunneling_1_1QuadraticBath.html#a698c66fba3806f0fbb98b6cce6768089":[5,0,0,8,12,13],
-"classeonc_1_1tunneling_1_1QuadraticBath.html#a76ad3e4695656abd308865ab3aca846c":[3,0,1,21,12,12],
-"classeonc_1_1tunneling_1_1QuadraticBath.html#a76ad3e4695656abd308865ab3aca846c":[5,0,0,8,12,12],
-"classeonc_1_1tunneling_1_1QuadraticBath.html#a8381e872795c00a2f977c362a3564b0c":[3,0,1,21,12,2],
-"classeonc_1_1tunneling_1_1QuadraticBath.html#a8381e872795c00a2f977c362a3564b0c":[5,0,0,8,12,2]
+"classeonc_1_1tunneling_1_1QuadraticBath.html#a698c66fba3806f0fbb98b6cce6768089":[3,0,1,21,12,13]
 };

@@ -1,5 +1,12 @@
 var NAVTREEINDEX35 =
 {
+"structeonc_1_1optimizer__options__t_1_1lbfgs__t.html#a5c4974213efdf257a7df731e2a218bd8":[3,0,1,137,2,16],
+"structeonc_1_1optimizer__options__t_1_1lbfgs__t.html#a5c4974213efdf257a7df731e2a218bd8":[5,0,0,124,2,16],
+"structeonc_1_1optimizer__options__t_1_1lbfgs__t.html#a5e93976fa35cc9072e7c645499c1d7fa":[3,0,1,137,2,7],
+"structeonc_1_1optimizer__options__t_1_1lbfgs__t.html#a5e93976fa35cc9072e7c645499c1d7fa":[5,0,0,124,2,7],
+"structeonc_1_1optimizer__options__t_1_1lbfgs__t.html#a6cc0a33d20ac7837392efa17a9e37221":[3,0,1,137,2,15],
+"structeonc_1_1optimizer__options__t_1_1lbfgs__t.html#a6cc0a33d20ac7837392efa17a9e37221":[5,0,0,124,2,15],
+"structeonc_1_1optimizer__options__t_1_1lbfgs__t.html#a889b9ddf00a75fe632266b3b5f70cc0b":[3,0,1,137,2,12],
 "structeonc_1_1optimizer__options__t_1_1lbfgs__t.html#a889b9ddf00a75fe632266b3b5f70cc0b":[5,0,0,124,2,12],
 "structeonc_1_1optimizer__options__t_1_1lbfgs__t.html#a9d302c97bf6b583c1e6f91c7822ddb60":[3,0,1,137,2,18],
 "structeonc_1_1optimizer__options__t_1_1lbfgs__t.html#a9d302c97bf6b583c1e6f91c7822ddb60":[5,0,0,124,2,18],
@@ -242,12 +249,5 @@ var NAVTREEINDEX35 =
 "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a9f947a05746694838c3cca91a6da82a6":[3,0,1,11,0,76],
 "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a9f947a05746694838c3cca91a6da82a6":[5,0,0,5,0,76],
 "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#aa5e2e9a0d83557429da0800142ed0fbc":[3,0,1,11,0,87],
-"structeonc_1_1params__ssot_1_1GeneratedDefaults.html#aa5e2e9a0d83557429da0800142ed0fbc":[5,0,0,5,0,87],
-"structeonc_1_1params__ssot_1_1GeneratedDefaults.html#aad9c220aa45148604a5f07604a671e8d":[3,0,1,11,0,69],
-"structeonc_1_1params__ssot_1_1GeneratedDefaults.html#aad9c220aa45148604a5f07604a671e8d":[5,0,0,5,0,69],
-"structeonc_1_1params__ssot_1_1GeneratedDefaults.html#aae36b71b63ed419aa97f2147c7e917f9":[3,0,1,11,0,60],
-"structeonc_1_1params__ssot_1_1GeneratedDefaults.html#aae36b71b63ed419aa97f2147c7e917f9":[5,0,0,5,0,60],
-"structeonc_1_1params__ssot_1_1GeneratedDefaults.html#aafff66f12dc71ffdd6d223ceb439fe8b":[3,0,1,11,0,39],
-"structeonc_1_1params__ssot_1_1GeneratedDefaults.html#aafff66f12dc71ffdd6d223ceb439fe8b":[5,0,0,5,0,39],
-"structeonc_1_1params__ssot_1_1GeneratedDefaults.html#ab08bd110f610ea4d5ae7d71fbd2c4b95":[3,0,1,11,0,34]
+"structeonc_1_1params__ssot_1_1GeneratedDefaults.html#aa5e2e9a0d83557429da0800142ed0fbc":[5,0,0,5,0,87]
 };

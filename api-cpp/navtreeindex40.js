@@ -1,5 +1,12 @@
 var NAVTREEINDEX40 =
 {
+"xtb_8h.html#ac4999abe290c5f518f3e7ff80eb5a0e7":[6,0,1,0,3,15,1,53],
+"xtb_8h.html#ac51c937bea8c228a219faa298900de9f":[6,0,1,0,3,15,1,52],
+"xtb_8h.html#ad0a8969cb9393b84e69e9334d5c14fdc":[6,0,1,0,3,15,1,40],
+"xtb_8h.html#ad1323aad3162112e6e711718d7e43e66":[6,0,1,0,3,15,1,23],
+"xtb_8h.html#ad3f28efa50c096dd39c07ad8507485a2":[6,0,1,0,3,15,1,26],
+"xtb_8h.html#ad6ac441d23346805fa5330a1c4541aa8":[6,0,1,0,3,15,1,36],
+"xtb_8h.html#ad87c63959a77029d188158322ea995fc":[6,0,1,0,3,15,1,2],
 "xtb_8h.html#adb3f42280b2b3bc08a4def8e6910967f":[6,0,1,0,3,15,1,57],
 "xtb_8h.html#ae08f9a75280d77e4c4fd487a05b38eea":[6,0,1,0,3,15,1,28],
 "xtb_8h.html#ae0ece287f0ed7f0e072599fe86b715ad":[6,0,1,0,3,15,1,10],

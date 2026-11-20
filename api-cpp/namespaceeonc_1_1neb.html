@@ -316,6 +316,10 @@ Functions</h2></td></tr>
 <tr class="memitem:adb3b7f2dddfe3c22643699b0bf849279" id="r_adb3b7f2dddfe3c22643699b0bf849279"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#adb3b7f2dddfe3c22643699b0bf849279">orientSolidStateMatter</a> (<a class="el" href="classMatter.html">Matter</a> &amp;image)</td></tr>
 <tr class="memitem:a1cd6aa7232d2706d28750e8487bb1873" id="r_a1cd6aa7232d2706d28750e8487bb1873"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a1cd6aa7232d2706d28750e8487bb1873">interpolateSolidStateLinear</a> (std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &amp;images)</td></tr>
 <tr class="memdesc:a1cd6aa7232d2706d28750e8487bb1873"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace interior images by a fractional linear interpolation of the oriented endpoints.  <br /></td></tr>
+<tr class="memitem:ac62bd458ab2e8bd1106e6ea8ac749315" id="r_ac62bd458ab2e8bd1106e6ea8ac749315"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ac62bd458ab2e8bd1106e6ea8ac749315">minimumPerpendicularWidth</a> (const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cell)</td></tr>
+<tr class="memdesc:ac62bd458ab2e8bd1106e6ea8ac749315"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smallest distance between opposite faces of the cell, which is the smallest perpendicular width of the periodic box.  <br /></td></tr>
+<tr class="memitem:abd010626e0317ac7c12c1d8141da2d61" id="r_abd010626e0317ac7c12c1d8141da2d61"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#abd010626e0317ac7c12c1d8141da2d61">requireMinimumImageCell</a> (const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cell, double cutoff, const std::string &amp;label)</td></tr>
+<tr class="memdesc:abd010626e0317ac7c12c1d8141da2d61"><td class="mdescLeft">&#160;</td><td class="mdescRight">A kernel that sums one minimum image per pair is differentiable only when twice its cutoff is strictly inside every perpendicular width.  <br /></td></tr>
 <tr class="memitem:a878bd9e04ba095d1b6a33b57d81ac6a9" id="r_a878bd9e04ba095d1b6a33b57d81ac6a9"><td class="memItemLeft"><a class="el" href="structeonc_1_1neb_1_1JointBlock.html">JointBlock</a>&#160;</td><td class="memItemRight"><a class="el" href="#a878bd9e04ba095d1b6a33b57d81ac6a9">jointDisplacement</a> (const <a class="el" href="classMatter.html">Matter</a> &amp;from, const <a class="el" href="classMatter.html">Matter</a> &amp;to, double jacobian)</td></tr>
 <tr class="memdesc:a878bd9e04ba095d1b6a33b57d81ac6a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Displacement of <span class="tt">to</span> relative to <span class="tt">from</span> in the joint metric.  <br /></td></tr>
 <tr class="memitem:a56f330ea1a8ea5dacb011eb0746f1990" id="r_a56f330ea1a8ea5dacb011eb0746f1990"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a56f330ea1a8ea5dacb011eb0746f1990">jointNorm</a> (const <a class="el" href="structeonc_1_1neb_1_1JointBlock.html">JointBlock</a> &amp;block)</td></tr>
@@ -627,16 +631,16 @@ Functions</h2></td></tr>
 <p>NEB force on the Jacobian-scaled strain. </p>
 <p>Cauchy stress uses sigma = (1/V) dE/dε for h &lt;- h (I+ε) at fixed fractional coordinates. External stress is added before the -V factor (positive hydrostatic pressure pushes the cell inward). </p>
 
-<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00146">146</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  147</span>                                                      {</div>
-<div class="line"><span class="lineno">  148</span>  <span class="keywordflow">if</span> (!(volume &gt; 0.0) || !(jacobian &gt; 0.0)) {</div>
-<div class="line"><span class="lineno">  149</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><span class="lineno">  150</span>        <span class="stringliteral">&quot;solid-state cell force needs a positive volume and Jacobian&quot;</span>);</div>
-<div class="line"><span class="lineno">  151</span>  }</div>
-<div class="line"><span class="lineno">  152</span>  <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> force = -(volume / jacobian) * (cauchy + externalStress);</div>
-<div class="line"><span class="lineno">  153</span>  zeroUpper(force);</div>
-<div class="line"><span class="lineno">  154</span>  <span class="keywordflow">return</span> force;</div>
-<div class="line"><span class="lineno">  155</span>}</div>
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00192">192</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  193</span>                                                      {</div>
+<div class="line"><span class="lineno">  194</span>  <span class="keywordflow">if</span> (!(volume &gt; 0.0) || !(jacobian &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  195</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  196</span>        <span class="stringliteral">&quot;solid-state cell force needs a positive volume and Jacobian&quot;</span>);</div>
+<div class="line"><span class="lineno">  197</span>  }</div>
+<div class="line"><span class="lineno">  198</span>  <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> force = -(volume / jacobian) * (cauchy + externalStress);</div>
+<div class="line"><span class="lineno">  199</span>  zeroUpper(force);</div>
+<div class="line"><span class="lineno">  200</span>  <span class="keywordflow">return</span> force;</div>
+<div class="line"><span class="lineno">  201</span>}</div>
 <div class="ttc" id="aEigen_8h_html_a5a21583e98df78e5b867b370291714d0"><div class="ttname"><a href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 3, 3, eOnStorageOrder &gt; Matrix3d</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00035">Eigen.h:35</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -1016,13 +1020,13 @@ Functions</h2></td></tr>
 <p>Central difference of the potential energy on the six lower strain components. </p>
 <p>Upper-triangle components stay zero. </p>
 
-<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00157">157</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  157</span>                                                                              {</div>
-<div class="line"><span class="lineno">  158</span>  <span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> *<span class="keyword">const</span> one[] = {&amp;image};</div>
-<div class="line"><span class="lineno">  159</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#a5c7063d07b10a060f0f5bc13565dd7e4">finiteDifferenceCauchyStresses</a>(one, strainStep).front();</div>
-<div class="line"><span class="lineno">  160</span>}</div>
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00203">203</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  203</span>                                                                              {</div>
+<div class="line"><span class="lineno">  204</span>  <span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> *<span class="keyword">const</span> one[] = {&amp;image};</div>
+<div class="line"><span class="lineno">  205</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#a5c7063d07b10a060f0f5bc13565dd7e4">finiteDifferenceCauchyStresses</a>(one, strainStep).front();</div>
+<div class="line"><span class="lineno">  206</span>}</div>
 <div class="ttc" id="aclasseonc_1_1Matter_html"><div class="ttname"><a href="classeonc_1_1Matter.html">eonc::Matter</a></div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00094">Matter.h:94</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1neb_html_a5c7063d07b10a060f0f5bc13565dd7e4"><div class="ttname"><a href="#a5c7063d07b10a060f0f5bc13565dd7e4">eonc::neb::finiteDifferenceCauchyStresses</a></div><div class="ttdeci">std::vector&lt; Matrix3d &gt; finiteDifferenceCauchyStresses(std::span&lt; const Matter *const &gt; images, double strainStep)</div><div class="ttdoc">The same central difference for several images at once.</div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8cpp_source.html#l00163">SolidStateNEB.cpp:163</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1neb_html_a5c7063d07b10a060f0f5bc13565dd7e4"><div class="ttname"><a href="#a5c7063d07b10a060f0f5bc13565dd7e4">eonc::neb::finiteDifferenceCauchyStresses</a></div><div class="ttdeci">std::vector&lt; Matrix3d &gt; finiteDifferenceCauchyStresses(std::span&lt; const Matter *const &gt; images, double strainStep)</div><div class="ttdoc">The same central difference for several images at once.</div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8cpp_source.html#l00209">SolidStateNEB.cpp:209</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1048,61 +1052,61 @@ Functions</h2></td></tr>
 <p>The same central difference for several images at once. </p>
 <p>The 12 strained copies of every image go to the potential as one batch, so calculator groups or a batched model take them together. </p>
 
-<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00163">163</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  164</span>                                                  {</div>
-<div class="line"><span class="lineno">  165</span>  <span class="keywordflow">if</span> (!(strainStep &gt; 0.0)) {</div>
-<div class="line"><span class="lineno">  166</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><span class="lineno">  167</span>        <span class="stringliteral">&quot;stress finite difference needs a positive step&quot;</span>);</div>
-<div class="line"><span class="lineno">  168</span>  }</div>
-<div class="line"><span class="lineno">  169</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> rows[6] = {0, 1, 1, 2, 2, 2};</div>
-<div class="line"><span class="lineno">  170</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> cols[6] = {0, 0, 1, 0, 1, 2};</div>
-<div class="line"><span class="lineno">  171</span>  <span class="comment">// Per image: raised then lowered copy for each of the six components.</span></div>
-<div class="line"><span class="lineno">  172</span>  std::vector&lt;Matter&gt; strained;</div>
-<div class="line"><span class="lineno">  173</span>  strained.reserve(12 * images.size());</div>
-<div class="line"><span class="lineno">  174</span>  std::vector&lt;double&gt; volumes;</div>
-<div class="line"><span class="lineno">  175</span>  volumes.reserve(images.size());</div>
-<div class="line"><span class="lineno">  176</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> Matter *image : images) {</div>
-<div class="line"><span class="lineno">  177</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell = image-&gt;getCell();</div>
-<div class="line"><span class="lineno">  178</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> positions = image-&gt;getPositions();</div>
-<div class="line"><span class="lineno">  179</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> volume = std::abs(cell.determinant());</div>
-<div class="line"><span class="lineno">  180</span>    <span class="keywordflow">if</span> (!(volume &gt; 0.0)) {</div>
-<div class="line"><span class="lineno">  181</span>      <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><span class="lineno">  182</span>          <span class="stringliteral">&quot;stress finite difference needs a nonzero cell&quot;</span>);</div>
-<div class="line"><span class="lineno">  183</span>    }</div>
-<div class="line"><span class="lineno">  184</span>    volumes.push_back(volume);</div>
-<div class="line"><span class="lineno">  185</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> comp = 0; comp &lt; 6; ++comp) {</div>
-<div class="line"><span class="lineno">  186</span>      <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> strain = Matrix3d::Zero();</div>
-<div class="line"><span class="lineno">  187</span>      strain(rows[comp], cols[comp]) = strainStep;</div>
-<div class="line"><span class="lineno">  188</span>      <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;deformation :</div>
-<div class="line"><span class="lineno">  189</span>           {<a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a>(Matrix3d::Identity() + strain),</div>
-<div class="line"><span class="lineno">  190</span>            <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a>(Matrix3d::Identity() - strain)}) {</div>
-<div class="line"><span class="lineno">  191</span>        Matter &amp;copy = strained.emplace_back(*image);</div>
-<div class="line"><span class="lineno">  192</span>        copy.<a class="code hl_function" href="classMatter.html#a3c4002006e09f4e4b7fa2ffbf191db26">setCell</a>(cell * deformation);</div>
-<div class="line"><span class="lineno">  193</span>        copy.<a class="code hl_function" href="classMatter.html#a271f1a697333162ba3705bff86dfef06">setPositions</a>(positions * deformation);</div>
-<div class="line"><span class="lineno">  194</span>      }</div>
-<div class="line"><span class="lineno">  195</span>    }</div>
-<div class="line"><span class="lineno">  196</span>  }</div>
-<div class="line"><span class="lineno">  197</span>  std::vector&lt;Matter *&gt; batch;</div>
-<div class="line"><span class="lineno">  198</span>  batch.reserve(strained.size());</div>
-<div class="line"><span class="lineno">  199</span>  <span class="keywordflow">for</span> (Matter &amp;m : strained) {</div>
-<div class="line"><span class="lineno">  200</span>    batch.push_back(&amp;m);</div>
-<div class="line"><span class="lineno">  201</span>  }</div>
-<div class="line"><span class="lineno">  202</span>  <span class="keywordflow">if</span> (!batch.empty()) {</div>
-<div class="line"><span class="lineno">  203</span>    <a class="code hl_function" href="namespaceeonc.html#abcb215950a62dd0c90c82213b53be033">eonc::evaluateTogether</a>(*batch.front()-&gt;getPotential(), batch);</div>
-<div class="line"><span class="lineno">  204</span>  }</div>
-<div class="line"><span class="lineno">  205</span>  std::vector&lt;Matrix3d&gt; sigma(images.size(), Matrix3d::Zero());</div>
-<div class="line"><span class="lineno">  206</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 0; k &lt; images.size(); ++k) {</div>
-<div class="line"><span class="lineno">  207</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> comp = 0; comp &lt; 6; ++comp) {</div>
-<div class="line"><span class="lineno">  208</span>      <span class="keyword">const</span> Matter &amp;raised = strained[12 * k + 2 * comp];</div>
-<div class="line"><span class="lineno">  209</span>      <span class="keyword">const</span> Matter &amp;lowered = strained[12 * k + 2 * comp + 1];</div>
-<div class="line"><span class="lineno">  210</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="namespaceeonc_1_1potential__owner.html#afc6a7c02bcd9348bd5eb4aca7e95dcd0">derivative</a> =</div>
-<div class="line"><span class="lineno">  211</span>          (raised.<a class="code hl_function" href="classMatter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>() - lowered.<a class="code hl_function" href="classMatter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>()) /</div>
-<div class="line"><span class="lineno">  212</span>          (2.0 * strainStep);</div>
-<div class="line"><span class="lineno">  213</span>      sigma[k](rows[comp], cols[comp]) = derivative / volumes[k];</div>
-<div class="line"><span class="lineno">  214</span>    }</div>
-<div class="line"><span class="lineno">  215</span>  }</div>
-<div class="line"><span class="lineno">  216</span>  <span class="keywordflow">return</span> sigma;</div>
-<div class="line"><span class="lineno">  217</span>}</div>
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00209">209</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  210</span>                                                  {</div>
+<div class="line"><span class="lineno">  211</span>  <span class="keywordflow">if</span> (!(strainStep &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  212</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  213</span>        <span class="stringliteral">&quot;stress finite difference needs a positive step&quot;</span>);</div>
+<div class="line"><span class="lineno">  214</span>  }</div>
+<div class="line"><span class="lineno">  215</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> rows[6] = {0, 1, 1, 2, 2, 2};</div>
+<div class="line"><span class="lineno">  216</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> cols[6] = {0, 0, 1, 0, 1, 2};</div>
+<div class="line"><span class="lineno">  217</span>  <span class="comment">// Per image: raised then lowered copy for each of the six components.</span></div>
+<div class="line"><span class="lineno">  218</span>  std::vector&lt;Matter&gt; strained;</div>
+<div class="line"><span class="lineno">  219</span>  strained.reserve(12 * images.size());</div>
+<div class="line"><span class="lineno">  220</span>  std::vector&lt;double&gt; volumes;</div>
+<div class="line"><span class="lineno">  221</span>  volumes.reserve(images.size());</div>
+<div class="line"><span class="lineno">  222</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> Matter *image : images) {</div>
+<div class="line"><span class="lineno">  223</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell = image-&gt;getCell();</div>
+<div class="line"><span class="lineno">  224</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> positions = image-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  225</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> volume = std::abs(cell.determinant());</div>
+<div class="line"><span class="lineno">  226</span>    <span class="keywordflow">if</span> (!(volume &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  227</span>      <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  228</span>          <span class="stringliteral">&quot;stress finite difference needs a nonzero cell&quot;</span>);</div>
+<div class="line"><span class="lineno">  229</span>    }</div>
+<div class="line"><span class="lineno">  230</span>    volumes.push_back(volume);</div>
+<div class="line"><span class="lineno">  231</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> comp = 0; comp &lt; 6; ++comp) {</div>
+<div class="line"><span class="lineno">  232</span>      <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> strain = Matrix3d::Zero();</div>
+<div class="line"><span class="lineno">  233</span>      strain(rows[comp], cols[comp]) = strainStep;</div>
+<div class="line"><span class="lineno">  234</span>      <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;deformation :</div>
+<div class="line"><span class="lineno">  235</span>           {<a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a>(Matrix3d::Identity() + strain),</div>
+<div class="line"><span class="lineno">  236</span>            <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a>(Matrix3d::Identity() - strain)}) {</div>
+<div class="line"><span class="lineno">  237</span>        Matter &amp;copy = strained.emplace_back(*image);</div>
+<div class="line"><span class="lineno">  238</span>        copy.<a class="code hl_function" href="classMatter.html#a3c4002006e09f4e4b7fa2ffbf191db26">setCell</a>(cell * deformation);</div>
+<div class="line"><span class="lineno">  239</span>        copy.<a class="code hl_function" href="classMatter.html#a271f1a697333162ba3705bff86dfef06">setPositions</a>(positions * deformation);</div>
+<div class="line"><span class="lineno">  240</span>      }</div>
+<div class="line"><span class="lineno">  241</span>    }</div>
+<div class="line"><span class="lineno">  242</span>  }</div>
+<div class="line"><span class="lineno">  243</span>  std::vector&lt;Matter *&gt; batch;</div>
+<div class="line"><span class="lineno">  244</span>  batch.reserve(strained.size());</div>
+<div class="line"><span class="lineno">  245</span>  <span class="keywordflow">for</span> (Matter &amp;m : strained) {</div>
+<div class="line"><span class="lineno">  246</span>    batch.push_back(&amp;m);</div>
+<div class="line"><span class="lineno">  247</span>  }</div>
+<div class="line"><span class="lineno">  248</span>  <span class="keywordflow">if</span> (!batch.empty()) {</div>
+<div class="line"><span class="lineno">  249</span>    <a class="code hl_function" href="namespaceeonc.html#abcb215950a62dd0c90c82213b53be033">eonc::evaluateTogether</a>(*batch.front()-&gt;getPotential(), batch);</div>
+<div class="line"><span class="lineno">  250</span>  }</div>
+<div class="line"><span class="lineno">  251</span>  std::vector&lt;Matrix3d&gt; sigma(images.size(), Matrix3d::Zero());</div>
+<div class="line"><span class="lineno">  252</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 0; k &lt; images.size(); ++k) {</div>
+<div class="line"><span class="lineno">  253</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> comp = 0; comp &lt; 6; ++comp) {</div>
+<div class="line"><span class="lineno">  254</span>      <span class="keyword">const</span> Matter &amp;raised = strained[12 * k + 2 * comp];</div>
+<div class="line"><span class="lineno">  255</span>      <span class="keyword">const</span> Matter &amp;lowered = strained[12 * k + 2 * comp + 1];</div>
+<div class="line"><span class="lineno">  256</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="namespaceeonc_1_1potential__owner.html#afc6a7c02bcd9348bd5eb4aca7e95dcd0">derivative</a> =</div>
+<div class="line"><span class="lineno">  257</span>          (raised.<a class="code hl_function" href="classMatter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>() - lowered.<a class="code hl_function" href="classMatter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>()) /</div>
+<div class="line"><span class="lineno">  258</span>          (2.0 * strainStep);</div>
+<div class="line"><span class="lineno">  259</span>      sigma[k](rows[comp], cols[comp]) = derivative / volumes[k];</div>
+<div class="line"><span class="lineno">  260</span>    }</div>
+<div class="line"><span class="lineno">  261</span>  }</div>
+<div class="line"><span class="lineno">  262</span>  <span class="keywordflow">return</span> sigma;</div>
+<div class="line"><span class="lineno">  263</span>}</div>
 <div class="ttc" id="aclassMatter_html_a271f1a697333162ba3705bff86dfef06"><div class="ttname"><a href="classMatter.html#a271f1a697333162ba3705bff86dfef06">Matter::setPositions</a></div><div class="ttdeci">void setPositions(const AtomMatrix &amp;pos)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00420">Matter.cpp:420</a></div></div>
 <div class="ttc" id="aclassMatter_html_a3c4002006e09f4e4b7fa2ffbf191db26"><div class="ttname"><a href="classMatter.html#a3c4002006e09f4e4b7fa2ffbf191db26">Matter::setCell</a></div><div class="ttdeci">void setCell(const Matrix3d &amp;newCell)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00347">Matter.cpp:347</a></div></div>
 <div class="ttc" id="aclassMatter_html_a991745c4fb760027221d419b8cf6fd8e"><div class="ttname"><a href="classMatter.html#a991745c4fb760027221d419b8cf6fd8e">Matter::getPotentialEnergy</a></div><div class="ttdeci">double getPotentialEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00624">Matter.cpp:624</a></div></div>
@@ -1215,32 +1219,32 @@ Functions</h2></td></tr>
 <p>Replace interior images by a fractional linear interpolation of the oriented endpoints. </p>
 <p><span class="tt">images</span> includes the endpoints. </p>
 
-<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00093">93</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   93</span>                                                            {</div>
-<div class="line"><span class="lineno">   94</span>  <span class="keyword">const</span> <span class="keyword">auto</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(images.size());</div>
-<div class="line"><span class="lineno">   95</span>  <span class="keywordflow">if</span> (n &lt; 3) {</div>
-<div class="line"><span class="lineno">   96</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><span class="lineno">   97</span>        <span class="stringliteral">&quot;solid_state interpolation needs two endpoints and one image&quot;</span>);</div>
-<div class="line"><span class="lineno">   98</span>  }</div>
-<div class="line"><span class="lineno">   99</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> h0 = images.front().getCell();</div>
-<div class="line"><span class="lineno">  100</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> h1 = images.back().getCell();</div>
-<div class="line"><span class="lineno">  101</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> s0 = fractionalCoordinates(images.front());</div>
-<div class="line"><span class="lineno">  102</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> ds = fractionalCoordinates(images.back()) - s0;</div>
-<div class="line"><span class="lineno">  103</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> atom = 0; atom &lt; ds.rows(); ++atom) {</div>
-<div class="line"><span class="lineno">  104</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> axis = 0; axis &lt; 3; ++axis) {</div>
-<div class="line"><span class="lineno">  105</span>      ds(atom, axis) = wrapFrac(ds(atom, axis));</div>
-<div class="line"><span class="lineno">  106</span>    }</div>
-<div class="line"><span class="lineno">  107</span>  }</div>
-<div class="line"><span class="lineno">  108</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> denom = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(n - 1);</div>
-<div class="line"><span class="lineno">  109</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 1; i &lt; n - 1; ++i) {</div>
-<div class="line"><span class="lineno">  110</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> t = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i) / denom;</div>
-<div class="line"><span class="lineno">  111</span>    <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> h = (1.0 - t) * h0 + t * h1;</div>
-<div class="line"><span class="lineno">  112</span>    zeroUpper(h);</div>
-<div class="line"><span class="lineno">  113</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> fractional = s0 + t * ds;</div>
-<div class="line"><span class="lineno">  114</span>    images[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)].setCell(h);</div>
-<div class="line"><span class="lineno">  115</span>    images[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)].setPositions(fractional * h);</div>
-<div class="line"><span class="lineno">  116</span>  }</div>
-<div class="line"><span class="lineno">  117</span>}</div>
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00096">96</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   96</span>                                                            {</div>
+<div class="line"><span class="lineno">   97</span>  <span class="keyword">const</span> <span class="keyword">auto</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(images.size());</div>
+<div class="line"><span class="lineno">   98</span>  <span class="keywordflow">if</span> (n &lt; 3) {</div>
+<div class="line"><span class="lineno">   99</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  100</span>        <span class="stringliteral">&quot;solid_state interpolation needs two endpoints and one image&quot;</span>);</div>
+<div class="line"><span class="lineno">  101</span>  }</div>
+<div class="line"><span class="lineno">  102</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> h0 = images.front().getCell();</div>
+<div class="line"><span class="lineno">  103</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> h1 = images.back().getCell();</div>
+<div class="line"><span class="lineno">  104</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> s0 = fractionalCoordinates(images.front());</div>
+<div class="line"><span class="lineno">  105</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> ds = fractionalCoordinates(images.back()) - s0;</div>
+<div class="line"><span class="lineno">  106</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> atom = 0; atom &lt; ds.rows(); ++atom) {</div>
+<div class="line"><span class="lineno">  107</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> axis = 0; axis &lt; 3; ++axis) {</div>
+<div class="line"><span class="lineno">  108</span>      ds(atom, axis) = wrapFrac(ds(atom, axis));</div>
+<div class="line"><span class="lineno">  109</span>    }</div>
+<div class="line"><span class="lineno">  110</span>  }</div>
+<div class="line"><span class="lineno">  111</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> denom = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(n - 1);</div>
+<div class="line"><span class="lineno">  112</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 1; i &lt; n - 1; ++i) {</div>
+<div class="line"><span class="lineno">  113</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> t = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i) / denom;</div>
+<div class="line"><span class="lineno">  114</span>    <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> h = (1.0 - t) * h0 + t * h1;</div>
+<div class="line"><span class="lineno">  115</span>    zeroUpper(h);</div>
+<div class="line"><span class="lineno">  116</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> fractional = s0 + t * ds;</div>
+<div class="line"><span class="lineno">  117</span>    images[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)].setCell(h);</div>
+<div class="line"><span class="lineno">  118</span>    images[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)].setPositions(fractional * h);</div>
+<div class="line"><span class="lineno">  119</span>  }</div>
+<div class="line"><span class="lineno">  120</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1271,31 +1275,31 @@ Functions</h2></td></tr>
 <p>Displacement of <span class="tt">to</span> relative to <span class="tt">from</span> in the joint metric. </p>
 <p>Atomic rows are fractional minimum-image displacements mapped through the average cell. The cell block is the averaged right strain of the Jacobian-scaled cell difference. </p>
 
-<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00119">119</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  120</span>                                              {</div>
-<div class="line"><span class="lineno">  121</span>  <span class="keywordflow">if</span> (!(jacobian &gt; 0.0)) {</div>
-<div class="line"><span class="lineno">  122</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><span class="lineno">  123</span>        <span class="stringliteral">&quot;solid-state displacement needs a positive Jacobian&quot;</span>);</div>
-<div class="line"><span class="lineno">  124</span>  }</div>
-<div class="line"><span class="lineno">  125</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> hFrom = from.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>();</div>
-<div class="line"><span class="lineno">  126</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> hTo = to.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>();</div>
-<div class="line"><span class="lineno">  127</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> frac = fractionalCoordinates(to) - fractionalCoordinates(from);</div>
-<div class="line"><span class="lineno">  128</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> atom = 0; atom &lt; frac.rows(); ++atom) {</div>
-<div class="line"><span class="lineno">  129</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> axis = 0; axis &lt; 3; ++axis) {</div>
-<div class="line"><span class="lineno">  130</span>      frac(atom, axis) = wrapFrac(frac(atom, axis));</div>
-<div class="line"><span class="lineno">  131</span>    }</div>
-<div class="line"><span class="lineno">  132</span>  }</div>
-<div class="line"><span class="lineno">  133</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> average = 0.5 * (hFrom + hTo);</div>
-<div class="line"><span class="lineno">  134</span>  <a class="code hl_struct" href="structeonc_1_1neb_1_1JointBlock.html">JointBlock</a> out;</div>
-<div class="line"><span class="lineno">  135</span>  out.<a class="code hl_variable" href="structeonc_1_1neb_1_1JointBlock.html#aee1093c3cc7abdb4996368d756396e4a">atomic</a> = frac * average;</div>
-<div class="line"><span class="lineno">  136</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> dh = jacobian * (hTo - hFrom);</div>
-<div class="line"><span class="lineno">  137</span>  out.cell = 0.5 * (hFrom.inverse() * dh + hTo.inverse() * dh);</div>
-<div class="line"><span class="lineno">  138</span>  zeroUpper(out.cell);</div>
-<div class="line"><span class="lineno">  139</span>  <span class="keywordflow">return</span> out;</div>
-<div class="line"><span class="lineno">  140</span>}</div>
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00165">165</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  166</span>                                              {</div>
+<div class="line"><span class="lineno">  167</span>  <span class="keywordflow">if</span> (!(jacobian &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  168</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  169</span>        <span class="stringliteral">&quot;solid-state displacement needs a positive Jacobian&quot;</span>);</div>
+<div class="line"><span class="lineno">  170</span>  }</div>
+<div class="line"><span class="lineno">  171</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> hFrom = from.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>();</div>
+<div class="line"><span class="lineno">  172</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> hTo = to.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>();</div>
+<div class="line"><span class="lineno">  173</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> frac = fractionalCoordinates(to) - fractionalCoordinates(from);</div>
+<div class="line"><span class="lineno">  174</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> atom = 0; atom &lt; frac.rows(); ++atom) {</div>
+<div class="line"><span class="lineno">  175</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> axis = 0; axis &lt; 3; ++axis) {</div>
+<div class="line"><span class="lineno">  176</span>      frac(atom, axis) = wrapFrac(frac(atom, axis));</div>
+<div class="line"><span class="lineno">  177</span>    }</div>
+<div class="line"><span class="lineno">  178</span>  }</div>
+<div class="line"><span class="lineno">  179</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> average = 0.5 * (hFrom + hTo);</div>
+<div class="line"><span class="lineno">  180</span>  <a class="code hl_struct" href="structeonc_1_1neb_1_1JointBlock.html">JointBlock</a> out;</div>
+<div class="line"><span class="lineno">  181</span>  out.<a class="code hl_variable" href="structeonc_1_1neb_1_1JointBlock.html#aee1093c3cc7abdb4996368d756396e4a">atomic</a> = frac * average;</div>
+<div class="line"><span class="lineno">  182</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> dh = jacobian * (hTo - hFrom);</div>
+<div class="line"><span class="lineno">  183</span>  out.cell = 0.5 * (hFrom.inverse() * dh + hTo.inverse() * dh);</div>
+<div class="line"><span class="lineno">  184</span>  zeroUpper(out.cell);</div>
+<div class="line"><span class="lineno">  185</span>  <span class="keywordflow">return</span> out;</div>
+<div class="line"><span class="lineno">  186</span>}</div>
 <div class="ttc" id="aclasseonc_1_1Matter_html_a527727dfd88d55bc617c3633a1ca5776"><div class="ttname"><a href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">eonc::Matter::getCell</a></div><div class="ttdeci">Matrix3d getCell() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00345">Matter.cpp:345</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb_1_1JointBlock_html"><div class="ttname"><a href="structeonc_1_1neb_1_1JointBlock.html">eonc::neb::JointBlock</a></div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8h_source.html#l00040">SolidStateNEB.h:40</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb_1_1JointBlock_html_aee1093c3cc7abdb4996368d756396e4a"><div class="ttname"><a href="structeonc_1_1neb_1_1JointBlock.html#aee1093c3cc7abdb4996368d756396e4a">eonc::neb::JointBlock::atomic</a></div><div class="ttdeci">AtomMatrix atomic</div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8h_source.html#l00041">SolidStateNEB.h:41</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb_1_1JointBlock_html"><div class="ttname"><a href="structeonc_1_1neb_1_1JointBlock.html">eonc::neb::JointBlock</a></div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8h_source.html#l00055">SolidStateNEB.h:55</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb_1_1JointBlock_html_aee1093c3cc7abdb4996368d756396e4a"><div class="ttname"><a href="structeonc_1_1neb_1_1JointBlock.html#aee1093c3cc7abdb4996368d756396e4a">eonc::neb::JointBlock::atomic</a></div><div class="ttdeci">AtomMatrix atomic</div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8h_source.html#l00056">SolidStateNEB.h:56</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1314,11 +1318,57 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00142">142</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  142</span>                                          {</div>
-<div class="line"><span class="lineno">  143</span>  <span class="keywordflow">return</span> std::hypot(block.<a class="code hl_variable" href="structeonc_1_1neb_1_1JointBlock.html#aee1093c3cc7abdb4996368d756396e4a">atomic</a>.norm(), block.<a class="code hl_variable" href="structeonc_1_1neb_1_1JointBlock.html#acfa94964889e6bbd97c7a974d5aa14c8">cell</a>.norm());</div>
-<div class="line"><span class="lineno">  144</span>}</div>
-<div class="ttc" id="astructeonc_1_1neb_1_1JointBlock_html_acfa94964889e6bbd97c7a974d5aa14c8"><div class="ttname"><a href="structeonc_1_1neb_1_1JointBlock.html#acfa94964889e6bbd97c7a974d5aa14c8">eonc::neb::JointBlock::cell</a></div><div class="ttdeci">Matrix3d cell</div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8h_source.html#l00042">SolidStateNEB.h:42</a></div></div>
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00188">188</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  188</span>                                          {</div>
+<div class="line"><span class="lineno">  189</span>  <span class="keywordflow">return</span> std::hypot(block.<a class="code hl_variable" href="structeonc_1_1neb_1_1JointBlock.html#aee1093c3cc7abdb4996368d756396e4a">atomic</a>.norm(), block.<a class="code hl_variable" href="structeonc_1_1neb_1_1JointBlock.html#acfa94964889e6bbd97c7a974d5aa14c8">cell</a>.norm());</div>
+<div class="line"><span class="lineno">  190</span>}</div>
+<div class="ttc" id="astructeonc_1_1neb_1_1JointBlock_html_acfa94964889e6bbd97c7a974d5aa14c8"><div class="ttname"><a href="structeonc_1_1neb_1_1JointBlock.html#acfa94964889e6bbd97c7a974d5aa14c8">eonc::neb::JointBlock::cell</a></div><div class="ttdeci">Matrix3d cell</div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8h_source.html#l00057">SolidStateNEB.h:57</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac62bd458ab2e8bd1106e6ea8ac749315" name="ac62bd458ab2e8bd1106e6ea8ac749315"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac62bd458ab2e8bd1106e6ea8ac749315">&#9670;&#160;</a></span>minimumPerpendicularWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::neb::minimumPerpendicularWidth </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>cell</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Smallest distance between opposite faces of the cell, which is the smallest perpendicular width of the periodic box. </p>
+<p>A zero or singular cell has no perpendicular width and returns 0. </p>
+
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00122">122</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  122</span>                                                       {</div>
+<div class="line"><span class="lineno">  123</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> volume = std::abs(cell.determinant());</div>
+<div class="line"><span class="lineno">  124</span>  <span class="comment">// A zero or singular cell makes volume / |b x c| a 0/0 NaN. std::min</span></div>
+<div class="line"><span class="lineno">  125</span>  <span class="comment">// then keeps the other argument, so the width would come back infinite</span></div>
+<div class="line"><span class="lineno">  126</span>  <span class="comment">// and a direct check would accept the cell.</span></div>
+<div class="line"><span class="lineno">  127</span>  <span class="keywordflow">if</span> (!(volume &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  128</span>    <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><span class="lineno">  129</span>  }</div>
+<div class="line"><span class="lineno">  130</span>  <span class="keywordtype">double</span> width = std::numeric_limits&lt;double&gt;::infinity();</div>
+<div class="line"><span class="lineno">  131</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> axis = 0; axis &lt; 3; ++axis) {</div>
+<div class="line"><span class="lineno">  132</span>    <span class="keyword">const</span> Vector3d b = cell.row((axis + 1) % 3);</div>
+<div class="line"><span class="lineno">  133</span>    <span class="keyword">const</span> Vector3d c = cell.row((axis + 2) % 3);</div>
+<div class="line"><span class="lineno">  134</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> span = b.cross(c).norm();</div>
+<div class="line"><span class="lineno">  135</span>    <span class="keywordflow">if</span> (!(span &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  136</span>      <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><span class="lineno">  137</span>    }</div>
+<div class="line"><span class="lineno">  138</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> face = volume / span;</div>
+<div class="line"><span class="lineno">  139</span>    <span class="keywordflow">if</span> (!std::isfinite(face)) {</div>
+<div class="line"><span class="lineno">  140</span>      <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><span class="lineno">  141</span>    }</div>
+<div class="line"><span class="lineno">  142</span>    width = std::min(width, face);</div>
+<div class="line"><span class="lineno">  143</span>  }</div>
+<div class="line"><span class="lineno">  144</span>  <span class="keywordflow">return</span> width;</div>
+<div class="line"><span class="lineno">  145</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1344,37 +1394,37 @@ Functions</h2></td></tr>
 <p>Rotate the lab frame so the cell is lower triangular: the first lattice vector lies on x and the second lies in the xy plane. </p>
 <p>Fractional coordinates and the sign of the volume are unchanged. Returns false when the cell is singular or two lattice vectors are parallel. </p>
 
-<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00049">49</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   49</span>                                                                      {</div>
-<div class="line"><span class="lineno">   50</span>  <span class="keyword">const</span> Vector3d a = cell.row(0);</div>
-<div class="line"><span class="lineno">   51</span>  <span class="keyword">const</span> Vector3d b = cell.row(1);</div>
-<div class="line"><span class="lineno">   52</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> na = a.norm();</div>
-<div class="line"><span class="lineno">   53</span>  <span class="keywordflow">if</span> (!(na &gt; 1e-12)) {</div>
-<div class="line"><span class="lineno">   54</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   55</span>  }</div>
-<div class="line"><span class="lineno">   56</span>  <span class="keyword">const</span> Vector3d e1 = a / na;</div>
-<div class="line"><span class="lineno">   57</span>  <span class="keyword">const</span> Vector3d bPerp = b - b.dot(e1) * e1;</div>
-<div class="line"><span class="lineno">   58</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> nb = bPerp.norm();</div>
-<div class="line"><span class="lineno">   59</span>  <span class="keywordflow">if</span> (!(nb &gt; 1e-12)) {</div>
-<div class="line"><span class="lineno">   60</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   61</span>  }</div>
-<div class="line"><span class="lineno">   62</span>  <span class="keyword">const</span> Vector3d e2 = bPerp / nb;</div>
-<div class="line"><span class="lineno">   63</span>  <span class="keyword">const</span> Vector3d e3 = e1.cross(e2);</div>
-<div class="line"><span class="lineno">   64</span>  <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> rotation;</div>
-<div class="line"><span class="lineno">   65</span>  rotation.col(0) = e1;</div>
-<div class="line"><span class="lineno">   66</span>  rotation.col(1) = e2;</div>
-<div class="line"><span class="lineno">   67</span>  rotation.col(2) = e3;</div>
-<div class="line"><span class="lineno">   68</span>  <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> oriented = cell * rotation;</div>
-<div class="line"><span class="lineno">   69</span>  zeroUpper(oriented);</div>
-<div class="line"><span class="lineno">   70</span>  <span class="keywordflow">if</span> (positions.rows() &gt; 0) {</div>
-<div class="line"><span class="lineno">   71</span>    positions = positions * rotation;</div>
-<div class="line"><span class="lineno">   72</span>  }</div>
-<div class="line"><span class="lineno">   73</span>  <span class="keywordflow">if</span> (!(std::abs(oriented.determinant()) &gt; 1e-18)) {</div>
-<div class="line"><span class="lineno">   74</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00052">52</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   52</span>                                                                      {</div>
+<div class="line"><span class="lineno">   53</span>  <span class="keyword">const</span> Vector3d a = cell.row(0);</div>
+<div class="line"><span class="lineno">   54</span>  <span class="keyword">const</span> Vector3d b = cell.row(1);</div>
+<div class="line"><span class="lineno">   55</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> na = a.norm();</div>
+<div class="line"><span class="lineno">   56</span>  <span class="keywordflow">if</span> (!(na &gt; 1e-12)) {</div>
+<div class="line"><span class="lineno">   57</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   58</span>  }</div>
+<div class="line"><span class="lineno">   59</span>  <span class="keyword">const</span> Vector3d e1 = a / na;</div>
+<div class="line"><span class="lineno">   60</span>  <span class="keyword">const</span> Vector3d bPerp = b - b.dot(e1) * e1;</div>
+<div class="line"><span class="lineno">   61</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> nb = bPerp.norm();</div>
+<div class="line"><span class="lineno">   62</span>  <span class="keywordflow">if</span> (!(nb &gt; 1e-12)) {</div>
+<div class="line"><span class="lineno">   63</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   64</span>  }</div>
+<div class="line"><span class="lineno">   65</span>  <span class="keyword">const</span> Vector3d e2 = bPerp / nb;</div>
+<div class="line"><span class="lineno">   66</span>  <span class="keyword">const</span> Vector3d e3 = e1.cross(e2);</div>
+<div class="line"><span class="lineno">   67</span>  <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> rotation;</div>
+<div class="line"><span class="lineno">   68</span>  rotation.col(0) = e1;</div>
+<div class="line"><span class="lineno">   69</span>  rotation.col(1) = e2;</div>
+<div class="line"><span class="lineno">   70</span>  rotation.col(2) = e3;</div>
+<div class="line"><span class="lineno">   71</span>  <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> oriented = cell * rotation;</div>
+<div class="line"><span class="lineno">   72</span>  zeroUpper(oriented);</div>
+<div class="line"><span class="lineno">   73</span>  <span class="keywordflow">if</span> (positions.rows() &gt; 0) {</div>
+<div class="line"><span class="lineno">   74</span>    positions = positions * rotation;</div>
 <div class="line"><span class="lineno">   75</span>  }</div>
-<div class="line"><span class="lineno">   76</span>  cell = oriented;</div>
-<div class="line"><span class="lineno">   77</span>  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   78</span>}</div>
+<div class="line"><span class="lineno">   76</span>  <span class="keywordflow">if</span> (!(std::abs(oriented.determinant()) &gt; 1e-18)) {</div>
+<div class="line"><span class="lineno">   77</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   78</span>  }</div>
+<div class="line"><span class="lineno">   79</span>  cell = oriented;</div>
+<div class="line"><span class="lineno">   80</span>  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   81</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1393,23 +1443,23 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00080">80</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   80</span>                                           {</div>
-<div class="line"><span class="lineno">   81</span>  <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell = image.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>();</div>
-<div class="line"><span class="lineno">   82</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> positions = image.<a class="code hl_function" href="classeonc_1_1Matter.html#a2472b3c954d101c0810da69ed442b244">getPositions</a>();</div>
-<div class="line"><span class="lineno">   83</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="#a079cbe0a04943b877c53b7566f6701cc">orientCellLowerTriangular</a>(cell, positions)) {</div>
-<div class="line"><span class="lineno">   84</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><span class="lineno">   85</span>        <span class="stringliteral">&quot;solid_state NEB could not put the cell in lower-triangular form&quot;</span>);</div>
-<div class="line"><span class="lineno">   86</span>  }</div>
-<div class="line"><span class="lineno">   87</span>  image.<a class="code hl_function" href="classeonc_1_1Matter.html#a3c4002006e09f4e4b7fa2ffbf191db26">setCell</a>(cell);</div>
-<div class="line"><span class="lineno">   88</span>  <span class="keywordflow">if</span> (positions.rows() &gt; 0) {</div>
-<div class="line"><span class="lineno">   89</span>    image.<a class="code hl_function" href="classeonc_1_1Matter.html#a271f1a697333162ba3705bff86dfef06">setPositions</a>(positions);</div>
-<div class="line"><span class="lineno">   90</span>  }</div>
-<div class="line"><span class="lineno">   91</span>}</div>
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00083">83</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   83</span>                                           {</div>
+<div class="line"><span class="lineno">   84</span>  <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell = image.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>();</div>
+<div class="line"><span class="lineno">   85</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> positions = image.<a class="code hl_function" href="classeonc_1_1Matter.html#a2472b3c954d101c0810da69ed442b244">getPositions</a>();</div>
+<div class="line"><span class="lineno">   86</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="#a079cbe0a04943b877c53b7566f6701cc">orientCellLowerTriangular</a>(cell, positions)) {</div>
+<div class="line"><span class="lineno">   87</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">   88</span>        <span class="stringliteral">&quot;solid_state NEB could not put the cell in lower-triangular form&quot;</span>);</div>
+<div class="line"><span class="lineno">   89</span>  }</div>
+<div class="line"><span class="lineno">   90</span>  image.<a class="code hl_function" href="classeonc_1_1Matter.html#a3c4002006e09f4e4b7fa2ffbf191db26">setCell</a>(cell);</div>
+<div class="line"><span class="lineno">   91</span>  <span class="keywordflow">if</span> (positions.rows() &gt; 0) {</div>
+<div class="line"><span class="lineno">   92</span>    image.<a class="code hl_function" href="classeonc_1_1Matter.html#a271f1a697333162ba3705bff86dfef06">setPositions</a>(positions);</div>
+<div class="line"><span class="lineno">   93</span>  }</div>
+<div class="line"><span class="lineno">   94</span>}</div>
 <div class="ttc" id="aclasseonc_1_1Matter_html_a2472b3c954d101c0810da69ed442b244"><div class="ttname"><a href="classeonc_1_1Matter.html#a2472b3c954d101c0810da69ed442b244">eonc::Matter::getPositions</a></div><div class="ttdeci">const AtomMatrix &amp; getPositions() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00378">Matter.cpp:378</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Matter_html_a271f1a697333162ba3705bff86dfef06"><div class="ttname"><a href="classeonc_1_1Matter.html#a271f1a697333162ba3705bff86dfef06">eonc::Matter::setPositions</a></div><div class="ttdeci">void setPositions(const AtomMatrix &amp;pos)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00420">Matter.cpp:420</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Matter_html_a3c4002006e09f4e4b7fa2ffbf191db26"><div class="ttname"><a href="classeonc_1_1Matter.html#a3c4002006e09f4e4b7fa2ffbf191db26">eonc::Matter::setCell</a></div><div class="ttdeci">void setCell(const Matrix3d &amp;newCell)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00347">Matter.cpp:347</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1neb_html_a079cbe0a04943b877c53b7566f6701cc"><div class="ttname"><a href="#a079cbe0a04943b877c53b7566f6701cc">eonc::neb::orientCellLowerTriangular</a></div><div class="ttdeci">bool orientCellLowerTriangular(Matrix3d &amp;cell, AtomMatrix &amp;positions)</div><div class="ttdoc">Rotate the lab frame so the cell is lower triangular: the first lattice vector lies on x and the seco...</div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8cpp_source.html#l00049">SolidStateNEB.cpp:49</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1neb_html_a079cbe0a04943b877c53b7566f6701cc"><div class="ttname"><a href="#a079cbe0a04943b877c53b7566f6701cc">eonc::neb::orientCellLowerTriangular</a></div><div class="ttdeci">bool orientCellLowerTriangular(Matrix3d &amp;cell, AtomMatrix &amp;positions)</div><div class="ttdoc">Rotate the lab frame so the cell is lower triangular: the first lattice vector lies on x and the seco...</div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8cpp_source.html#l00052">SolidStateNEB.cpp:52</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1711,6 +1761,54 @@ Functions</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
+<a id="abd010626e0317ac7c12c1d8141da2d61" name="abd010626e0317ac7c12c1d8141da2d61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd010626e0317ac7c12c1d8141da2d61">&#9670;&#160;</a></span>requireMinimumImageCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::neb::requireMinimumImageCell </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>cell</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>cutoff</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>label</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>A kernel that sums one minimum image per pair is differentiable only when twice its cutoff is strictly inside every perpendicular width. </p>
+<p>At a tie the energy has a cusp, the force jumps, and a band optimizer is handed a surface it cannot descend. Throws std::invalid_argument naming <span class="tt">label</span> then. A cutoff of 0 means the potential has no such limit and is accepted. </p>
+
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00147">147</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  148</span>                                                     {</div>
+<div class="line"><span class="lineno">  149</span>  <span class="keywordflow">if</span> (!(cutoff &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  150</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  151</span>  }</div>
+<div class="line"><span class="lineno">  152</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> width = <a class="code hl_function" href="#ac62bd458ab2e8bd1106e6ea8ac749315">minimumPerpendicularWidth</a>(cell);</div>
+<div class="line"><span class="lineno">  153</span>  <span class="comment">// The pair list keeps a pair at r^2 &lt;= cutoff^2, so a half-cell</span></div>
+<div class="line"><span class="lineno">  154</span>  <span class="comment">// separation equal to the cutoff is still a tie. Equality is refused.</span></div>
+<div class="line"><span class="lineno">  155</span>  <span class="keywordflow">if</span> (!(2.0 * cutoff &lt; width)) {</div>
+<div class="line"><span class="lineno">  156</span>    <span class="keywordflow">throw</span> std::invalid_argument(std::format(</div>
+<div class="line"><span class="lineno">  157</span>        <span class="stringliteral">&quot;solid_state NEB: the potential sums one minimum image out to a &quot;</span></div>
+<div class="line"><span class="lineno">  158</span>        <span class="stringliteral">&quot;cutoff of {:.4f} Angstrom, but the {} has a perpendicular cell &quot;</span></div>
+<div class="line"><span class="lineno">  159</span>        <span class="stringliteral">&quot;width of {:.4f} Angstrom. The cell must be wider than twice the &quot;</span></div>
+<div class="line"><span class="lineno">  160</span>        <span class="stringliteral">&quot;cutoff. Lower [Potential] pair_cutoff or use a larger cell.&quot;</span>,</div>
+<div class="line"><span class="lineno">  161</span>        cutoff, label, width));</div>
+<div class="line"><span class="lineno">  162</span>  }</div>
+<div class="line"><span class="lineno">  163</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1neb_html_ac62bd458ab2e8bd1106e6ea8ac749315"><div class="ttname"><a href="#ac62bd458ab2e8bd1106e6ea8ac749315">eonc::neb::minimumPerpendicularWidth</a></div><div class="ttdeci">double minimumPerpendicularWidth(const Matrix3d &amp;cell)</div><div class="ttdoc">Smallest distance between opposite faces of the cell, which is the smallest perpendicular width of th...</div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8cpp_source.html#l00122">SolidStateNEB.cpp:122</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="a3c6d7be8fb5777d625b17120e3e1c736" name="a3c6d7be8fb5777d625b17120e3e1c736"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3c6d7be8fb5777d625b17120e3e1c736">&#9670;&#160;</a></span>solidStateCartesianStep()</h2>
 
@@ -1740,28 +1838,28 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00231">231</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  234</span>                                                       {</div>
-<div class="line"><span class="lineno">  235</span>  <span class="keywordflow">if</span> (!(jacobian &gt; 0.0)) {</div>
-<div class="line"><span class="lineno">  236</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;solid-state step needs a positive Jacobian&quot;</span>);</div>
-<div class="line"><span class="lineno">  237</span>  }</div>
-<div class="line"><span class="lineno">  238</span>  <span class="keywordflow">if</span> (atomicForce.rows() != image.<a class="code hl_function" href="classeonc_1_1Matter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>()) {</div>
-<div class="line"><span class="lineno">  239</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;solid-state step force row count mismatch&quot;</span>);</div>
-<div class="line"><span class="lineno">  240</span>  }</div>
-<div class="line"><span class="lineno">  241</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell = image.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>();</div>
-<div class="line"><span class="lineno">  242</span>  <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> strain = cellForce / jacobian;</div>
-<div class="line"><span class="lineno">  243</span>  zeroUpper(strain);</div>
-<div class="line"><span class="lineno">  244</span>  CartesianStep step;</div>
-<div class="line"><span class="lineno">  245</span>  step.cell = cell * strain;</div>
-<div class="line"><span class="lineno">  246</span>  zeroUpper(step.cell);</div>
-<div class="line"><span class="lineno">  247</span>  step.positions = atomicForce + image.<a class="code hl_function" href="classeonc_1_1Matter.html#a2472b3c954d101c0810da69ed442b244">getPositions</a>() * strain;</div>
-<div class="line"><span class="lineno">  248</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> atom = 0; atom &lt; image.<a class="code hl_function" href="classeonc_1_1Matter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>(); ++atom) {</div>
-<div class="line"><span class="lineno">  249</span>    <span class="keywordflow">if</span> (image.<a class="code hl_function" href="classeonc_1_1Matter.html#aeccfa311325cb6f4fb520cf071fef679">getFixed</a>(atom)) {</div>
-<div class="line"><span class="lineno">  250</span>      step.positions.row(atom).setZero();</div>
-<div class="line"><span class="lineno">  251</span>    }</div>
-<div class="line"><span class="lineno">  252</span>  }</div>
-<div class="line"><span class="lineno">  253</span>  <span class="keywordflow">return</span> step;</div>
-<div class="line"><span class="lineno">  254</span>}</div>
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00277">277</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  280</span>                                                       {</div>
+<div class="line"><span class="lineno">  281</span>  <span class="keywordflow">if</span> (!(jacobian &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  282</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;solid-state step needs a positive Jacobian&quot;</span>);</div>
+<div class="line"><span class="lineno">  283</span>  }</div>
+<div class="line"><span class="lineno">  284</span>  <span class="keywordflow">if</span> (atomicForce.rows() != image.<a class="code hl_function" href="classeonc_1_1Matter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>()) {</div>
+<div class="line"><span class="lineno">  285</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;solid-state step force row count mismatch&quot;</span>);</div>
+<div class="line"><span class="lineno">  286</span>  }</div>
+<div class="line"><span class="lineno">  287</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell = image.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>();</div>
+<div class="line"><span class="lineno">  288</span>  <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> strain = cellForce / jacobian;</div>
+<div class="line"><span class="lineno">  289</span>  zeroUpper(strain);</div>
+<div class="line"><span class="lineno">  290</span>  CartesianStep step;</div>
+<div class="line"><span class="lineno">  291</span>  step.cell = cell * strain;</div>
+<div class="line"><span class="lineno">  292</span>  zeroUpper(step.cell);</div>
+<div class="line"><span class="lineno">  293</span>  step.positions = atomicForce + image.<a class="code hl_function" href="classeonc_1_1Matter.html#a2472b3c954d101c0810da69ed442b244">getPositions</a>() * strain;</div>
+<div class="line"><span class="lineno">  294</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> atom = 0; atom &lt; image.<a class="code hl_function" href="classeonc_1_1Matter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>(); ++atom) {</div>
+<div class="line"><span class="lineno">  295</span>    <span class="keywordflow">if</span> (image.<a class="code hl_function" href="classeonc_1_1Matter.html#aeccfa311325cb6f4fb520cf071fef679">getFixed</a>(atom)) {</div>
+<div class="line"><span class="lineno">  296</span>      step.positions.row(atom).setZero();</div>
+<div class="line"><span class="lineno">  297</span>    }</div>
+<div class="line"><span class="lineno">  298</span>  }</div>
+<div class="line"><span class="lineno">  299</span>  <span class="keywordflow">return</span> step;</div>
+<div class="line"><span class="lineno">  300</span>}</div>
 <div class="ttc" id="aclasseonc_1_1Matter_html_a5b678e80aa584c41d54e221d04bb729e"><div class="ttname"><a href="classeonc_1_1Matter.html#a5b678e80aa584c41d54e221d04bb729e">eonc::Matter::numberOfAtoms</a></div><div class="ttdeci">long int numberOfAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00343">Matter.cpp:343</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Matter_html_aeccfa311325cb6f4fb520cf071fef679"><div class="ttname"><a href="classeonc_1_1Matter.html#aeccfa311325cb6f4fb520cf071fef679">eonc::Matter::getFixed</a></div><div class="ttdeci">int getFixed(long int atom) const</div><div class="ttdoc">1 if every Cartesian axis of the atom is fixed, else 0.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00575">Matter.cpp:575</a></div></div>
 </div><!-- fragment -->
@@ -1794,17 +1892,17 @@ Functions</h2></td></tr>
 <p><a class="el" href="classeonc_1_1Potential.html">Potential</a> energy plus P : (h0^{-1} (h-h0)) * V0. </p>
 <p>Pressure is hydrostatic, in eV/Angstrom^3. A zero pressure returns the potential energy. </p>
 
-<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00219">219</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  220</span>                                           {</div>
-<div class="line"><span class="lineno">  221</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> energy = image.<a class="code hl_function" href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>();</div>
-<div class="line"><span class="lineno">  222</span>  <span class="keywordflow">if</span> (pressure == 0.0) {</div>
-<div class="line"><span class="lineno">  223</span>    <span class="keywordflow">return</span> energy;</div>
-<div class="line"><span class="lineno">  224</span>  }</div>
-<div class="line"><span class="lineno">  225</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> h0 = reference.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>();</div>
-<div class="line"><span class="lineno">  226</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> strain = h0.inverse() * (image.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>() - h0);</div>
-<div class="line"><span class="lineno">  227</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> volume = std::abs(h0.determinant());</div>
-<div class="line"><span class="lineno">  228</span>  <span class="keywordflow">return</span> energy + pressure * strain.trace() * volume;</div>
-<div class="line"><span class="lineno">  229</span>}</div>
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00265">265</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  266</span>                                           {</div>
+<div class="line"><span class="lineno">  267</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> energy = image.<a class="code hl_function" href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>();</div>
+<div class="line"><span class="lineno">  268</span>  <span class="keywordflow">if</span> (pressure == 0.0) {</div>
+<div class="line"><span class="lineno">  269</span>    <span class="keywordflow">return</span> energy;</div>
+<div class="line"><span class="lineno">  270</span>  }</div>
+<div class="line"><span class="lineno">  271</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> h0 = reference.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>();</div>
+<div class="line"><span class="lineno">  272</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> strain = h0.inverse() * (image.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>() - h0);</div>
+<div class="line"><span class="lineno">  273</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> volume = std::abs(h0.determinant());</div>
+<div class="line"><span class="lineno">  274</span>  <span class="keywordflow">return</span> energy + pressure * strain.trace() * volume;</div>
+<div class="line"><span class="lineno">  275</span>}</div>
 <div class="ttc" id="aclasseonc_1_1Matter_html_a991745c4fb760027221d419b8cf6fd8e"><div class="ttname"><a href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">eonc::Matter::getPotentialEnergy</a></div><div class="ttdeci">double getPotentialEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00624">Matter.cpp:624</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -1836,15 +1934,15 @@ Functions</h2></td></tr>
 <p>J = (V/N)^{1/3} * N^{1/2} * weight, with V the mean endpoint volume. </p>
 <p>doi:10.1063/1.3684549 </p>
 
-<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00040">40</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   40</span>                                                                        {</div>
-<div class="line"><span class="lineno">   41</span>  <span class="keywordflow">if</span> (!(meanVolume &gt; 0.0) || nAtoms &lt; 1 || !(weight &gt; 0.0)) {</div>
-<div class="line"><span class="lineno">   42</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><span class="lineno">   43</span>        <span class="stringliteral">&quot;solid-state Jacobian needs a positive volume, atom count, and weight&quot;</span>);</div>
-<div class="line"><span class="lineno">   44</span>  }</div>
-<div class="line"><span class="lineno">   45</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nAtoms);</div>
-<div class="line"><span class="lineno">   46</span>  <span class="keywordflow">return</span> std::cbrt(meanVolume / n) * std::sqrt(n) * weight;</div>
-<div class="line"><span class="lineno">   47</span>}</div>
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00043">43</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   43</span>                                                                        {</div>
+<div class="line"><span class="lineno">   44</span>  <span class="keywordflow">if</span> (!(meanVolume &gt; 0.0) || nAtoms &lt; 1 || !(weight &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">   45</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">   46</span>        <span class="stringliteral">&quot;solid-state Jacobian needs a positive volume, atom count, and weight&quot;</span>);</div>
+<div class="line"><span class="lineno">   47</span>  }</div>
+<div class="line"><span class="lineno">   48</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nAtoms);</div>
+<div class="line"><span class="lineno">   49</span>  <span class="keywordflow">return</span> std::cbrt(meanVolume / n) * std::sqrt(n) * weight;</div>
+<div class="line"><span class="lineno">   50</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

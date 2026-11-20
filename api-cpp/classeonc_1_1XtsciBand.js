@@ -19,5 +19,6 @@ var classeonc_1_1XtsciBand =
     [ "m_neb", "classeonc_1_1XtsciBand.html#a0926f776e6dc24a017b26048d53c458d", null ],
     [ "m_solid", "classeonc_1_1XtsciBand.html#ab5582ada971e2d0ff80a80dc74f12c00", null ],
     [ "m_springKs", "classeonc_1_1XtsciBand.html#ae5a31d96b67529efdb7ec9aa46db27bc", null ],
+    [ "m_surfaceError", "classeonc_1_1XtsciBand.html#a3f0d3095c693ac4d24e7a4759a3d33b4", null ],
     [ "m_threads", "classeonc_1_1XtsciBand.html#a579c608b422f303ff67051eca4a2adf2", null ]
 ];

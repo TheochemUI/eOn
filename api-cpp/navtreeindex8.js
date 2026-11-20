@@ -1,5 +1,6 @@
 var NAVTREEINDEX8 =
 {
+"classeonc_1_1Dimer.html#a5e93e4abbfe36b673f64ce52ce32c4e9":[5,0,0,36,5],
 "classeonc_1_1Dimer.html#a7d532e504027f51edb3d6ddb664eb962":[3,0,1,49,6],
 "classeonc_1_1Dimer.html#a7d532e504027f51edb3d6ddb664eb962":[5,0,0,36,6],
 "classeonc_1_1Dimer.html#a88f7d082ef9ada89dbecd8ebf518b30d":[3,0,1,49,11],
@@ -248,6 +249,5 @@ var NAVTREEINDEX8 =
 "classeonc_1_1GleThermostat.html#aa7a3c9730017b05b20ce86dcb6492913":[5,0,0,52,1],
 "classeonc_1_1GleThermostat.html#ab216aabbfb04b7d8f5dc00344f6b081b":[3,0,1,65,7],
 "classeonc_1_1GleThermostat.html#ab216aabbfb04b7d8f5dc00344f6b081b":[5,0,0,52,7],
-"classeonc_1_1GleThermostat.html#acabef7555303fac51df7f96618788712":[3,0,1,65,0],
-"classeonc_1_1GleThermostat.html#acabef7555303fac51df7f96618788712":[5,0,0,52,0]
+"classeonc_1_1GleThermostat.html#acabef7555303fac51df7f96618788712":[3,0,1,65,0]
 };
