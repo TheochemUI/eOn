@@ -1,0 +1,1 @@
+`[Main] parallel` is now read from and written to JSON parameters. A JSON configuration with `parallel` set to false used to be ignored, so the dimer and the process search still started worker threads.

@@ -25,6 +25,7 @@
 #include <string>
 #include <string_view>
 #include <system_error>
+#include <thread>
 
 namespace eonc::log {
 
@@ -36,32 +37,121 @@ inline constexpr std::string_view kTracebackLoggerName{"_traceback"};
 inline constexpr std::chrono::milliseconds kBackendSleep{1};
 } // namespace detail
 
-/// \brief Start the client backend and the combi / traceback loggers once.
+
+/// How queued log records reach the sinks.
 ///
+/// Thread runs Quill's own backend thread. Manual runs no thread at all:
+/// the thread that logs polls the queue itself through poll(), flush()
+/// and shutdown(), so a client can be strictly single threaded.
+enum class BackendMode { Thread, Manual };
+
+namespace detail {
+
+inline std::atomic<quill::ManualBackendWorker *> g_manual_worker{nullptr};
+inline std::atomic<std::thread::id> g_manual_owner{};
+inline std::atomic<std::chrono::steady_clock::rep> g_last_poll{0};
+
+/// Poll no more often than this in Manual mode. Matches the flush
+/// interval of the Thread backend, so output is as timely.
+inline constexpr std::chrono::milliseconds kManualPollInterval{100};
+
+[[nodiscard]] inline quill::ManualBackendWorker *manual_worker_for_caller() {
+  auto *worker = g_manual_worker.load(std::memory_order_acquire);
+  if (worker && g_manual_owner.load() == std::this_thread::get_id()) {
+    return worker;
+  }
+  return nullptr;
+}
+
+} // namespace detail
+
+inline BackendMode start_client_backend(BackendMode mode) noexcept;
+
+/// \brief True once the client queue is drained by its own thread.
+[[nodiscard]] inline bool manual_backend() noexcept {
+  return detail::g_manual_worker.load(std::memory_order_acquire) != nullptr;
+}
+
+/// \brief Write every queued record to the sinks and flush the sinks.
+///
+/// In Manual mode only the thread that started the backend can do this;
+/// a call from another thread leaves the records queued for that thread.
+/// In Thread mode the backend thread does the work and this returns once
+/// it has.
+inline void flush(quill::Logger *logger) noexcept {
+  if (manual_backend()) {
+    if (auto *worker = detail::manual_worker_for_caller()) {
+      worker->poll();
+      // An idle poll flushes the sinks (sink_min_flush_interval is zero).
+      worker->poll_one();
+    }
+    return;
+  }
+  // The flush record waits for a backend. One that was never started would
+  // block here for good, and one that was stopped cannot answer.
+  if (!quill::Backend::is_running()) {
+    start_client_backend(BackendMode::Thread);
+    if (!quill::Backend::is_running()) {
+      return;
+    }
+  }
+  if (logger) {
+    logger->flush_log();
+  }
+}
+
+/// \brief Drain the queue now and then, from the polling thread.
+///
+/// Cheap when the backend runs its own thread or when called from a
+/// thread that does not own the queue. Place it on a path the compute
+/// thread revisits often.
+inline void poll_if_due() noexcept {
+  if (!manual_backend()) {
+    return;
+  }
+  auto *worker = detail::manual_worker_for_caller();
+  if (!worker) {
+    return;
+  }
+  const auto now = std::chrono::steady_clock::now().time_since_epoch().count();
+  const auto last = detail::g_last_poll.load(std::memory_order_relaxed);
+  if (now - last <
+      std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+          detail::kManualPollInterval)
+          .count()) {
+    return;
+  }
+  detail::g_last_poll.store(now, std::memory_order_relaxed);
+  worker->poll();
+  worker->poll_one();
+}
+
+/// \brief Drain the queue and stop the backend. Safe to call twice.
+inline void shutdown() noexcept {
+  if (manual_backend()) {
+    flush(nullptr);
+    return;
+  }
+  // Records logged before any backend existed are written by this one.
+  if (!quill::Backend::is_running()) {
+    start_client_backend(BackendMode::Thread);
+  }
+  quill::Backend::stop();
+}
+
+/// \brief Create the combi and traceback loggers once, without a backend.
+///
+/// Records logged before start_client_backend() wait in the queue, so the
+/// parameter file can be read first and still report its own errors.
 /// Not called from process load. Help, version, and feature flags return
 /// before this. Tests that already registered "combi" are left alone.
-[[nodiscard]] inline quill::Logger *init_client() noexcept {
+[[nodiscard]] inline quill::Logger *init_client_loggers() noexcept {
   static std::once_flag once;
   std::call_once(once, [] {
     if (quill::Frontend::get_logger(std::string(detail::kDefaultLoggerName))) {
       return;
     }
     try {
-      quill::BackendOptions backend_options;
-      // The backend thread sleeps this long when its queues are empty. At
-      // 10 us it woke about 13,000 times a second beside the force loop;
-      // at 1 ms a line reaches its sink at most 1 ms late. Order is kept
-      // either way, and Backend::stop and flush_log drain the queues.
-      backend_options.sleep_duration = detail::kBackendSleep;
-      backend_options.transit_event_buffer_initial_capacity = 2048;
-      backend_options.log_timestamp_ordering_grace_period =
-          std::chrono::microseconds{0};
-      backend_options.sink_min_flush_interval = std::chrono::milliseconds{100};
-      backend_options.check_printable_char = {};
-      try {
-        quill::Backend::start(backend_options);
-      } catch (...) {
-      }
       auto console_sink =
           quill::Frontend::create_or_get_sink<quill::ConsoleSink>("console");
       auto file_sink = quill::Frontend::create_or_get_sink<quill::FileSink>(
@@ -94,10 +184,64 @@ inline constexpr std::chrono::milliseconds kBackendSleep{1};
               " [%(log_level)] [%(source_location)] [%(caller_function)] \n "
               "%(message)\n[end %(log_level)]"},
           quill::ClockSourceType::System);
+      // Build the logger and thread context singletons before the backend
+      // one. Statics are destroyed in reverse order, so the manual worker
+      // then drains its queue at exit while both are still alive.
+      quill::Frontend::preallocate();
     } catch (...) {
     }
   });
   return quill::Frontend::get_logger(std::string(detail::kDefaultLoggerName));
+}
+
+/// \brief Start draining the client queue, once. Later calls do nothing.
+///
+/// Manual installs an exit handler that drains the queue, since Quill's
+/// own exit handler belongs to its backend thread. A backend that is
+/// already running (a test fixture started one) is left in charge.
+/// \return the mode now in effect.
+inline BackendMode start_client_backend(BackendMode mode) noexcept {
+  static std::once_flag once;
+  static BackendMode effective{BackendMode::Thread};
+  std::call_once(once, [mode] {
+    if (quill::Backend::is_running() || manual_backend()) {
+      return;
+    }
+    try {
+      quill::BackendOptions backend_options;
+      backend_options.transit_event_buffer_initial_capacity = 2048;
+      backend_options.log_timestamp_ordering_grace_period =
+          std::chrono::microseconds{0};
+      backend_options.check_printable_char = {};
+      if (mode == BackendMode::Manual) {
+        backend_options.sink_min_flush_interval = std::chrono::milliseconds{0};
+        auto *worker = quill::Backend::acquire_manual_backend_worker();
+        worker->init(backend_options);
+        detail::g_manual_owner.store(std::this_thread::get_id());
+        detail::g_manual_worker.store(worker, std::memory_order_release);
+        std::atexit([] { shutdown(); });
+        effective = BackendMode::Manual;
+        return;
+      }
+      // The backend thread sleeps this long when its queues are empty. At
+      // 10 us it woke about 13,000 times a second beside the force loop;
+      // at 1 ms a line reaches its sink at most 1 ms late. Order is kept
+      // either way, and Backend::stop and flush_log drain the queues.
+      backend_options.sleep_duration = detail::kBackendSleep;
+      backend_options.sink_min_flush_interval = std::chrono::milliseconds{100};
+      quill::Backend::start(backend_options);
+    } catch (...) {
+    }
+  });
+  return effective;
+}
+
+/// \brief Start the client backend thread and the combi / traceback
+/// loggers once.
+[[nodiscard]] inline quill::Logger *init_client() noexcept {
+  auto *logger = init_client_loggers();
+  start_client_backend(BackendMode::Thread);
+  return logger;
 }
 
 /// \brief Get or create the default "combi" logger.

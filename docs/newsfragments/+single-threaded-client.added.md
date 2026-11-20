@@ -1,0 +1,1 @@
+`[Main] single_threaded_client = true` runs `eonclient` on one thread for the whole job. The logger has no backend thread and the compute thread drains it, so a process search shows a single thread. It needs `parallel = false`, is read once from the first parameter file, and is off by default.

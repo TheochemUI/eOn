@@ -180,8 +180,11 @@ struct MobileColoring {
   std::vector<std::vector<int>> closed;
 };
 
+// With `parallel` false the periodic rows come from vesin, which builds on
+// the calling thread. linkcell hands the same rows out of a rayon pool whose
+// workers start on first use and stay for the life of the process.
 MobileColoring buildMobileColoring(const Matter &matter, const VectorXi &atoms,
-                                   double cutoff) {
+                                   double cutoff, bool parallel = true) {
   MobileColoring out;
   const int nAtoms = static_cast<int>(matter.numberOfAtoms());
   const int nMobile = static_cast<int>(atoms.rows());
@@ -207,7 +210,7 @@ MobileColoring buildMobileColoring(const Matter &matter, const VectorXi &atoms,
       nbs[static_cast<std::size_t>(i)].push_back(j);
   };
   try {
-    if (matter.getPeriodic()) {
+    if (matter.getPeriodic() && parallel) {
       for (const auto &pair :
            periodicCutoffNeighbors(pos.data(), static_cast<std::size_t>(nAtoms),
                                    cell.data(), cutoff))
@@ -219,7 +222,8 @@ MobileColoring buildMobileColoring(const Matter &matter, const VectorXi &atoms,
       opt.full = true;
       opt.return_distances = false;
       opt.return_vectors = false;
-      opt.periodic = {false, false, false};
+      const bool periodic = matter.getPeriodic();
+      opt.periodic = {periodic, periodic, periodic};
       nl.compute(pos.data(), static_cast<std::size_t>(nAtoms), cell.data(),
                  opt);
       for (size_t p = 0; p < nl.size(); ++p)
@@ -334,8 +338,9 @@ greedyColorCutoffGraph(const std::vector<std::vector<int>> &adj) {
 }
 
 std::vector<int> colorMobileCutoffGraph(const Matter &matter,
-                                        const VectorXi &atoms, double cutoff) {
-  return buildMobileColoring(matter, atoms, cutoff).color;
+                                        const VectorXi &atoms, double cutoff,
+                                        bool parallel) {
+  return buildMobileColoring(matter, atoms, cutoff, parallel).color;
 }
 
 bool Hessian::calculate() {
@@ -502,7 +507,8 @@ bool Hessian::calculateColored(double range, double dr, FdScheme scheme) {
   const int nAtoms = static_cast<int>(matter->numberOfAtoms());
   const int nMobile = static_cast<int>(atoms.rows());
   const int size = nMobile * 3;
-  const MobileColoring coloring = buildMobileColoring(*matter, atoms, range);
+  const MobileColoring coloring = buildMobileColoring(
+      *matter, atoms, range, parameters.main_options().parallel);
   if (static_cast<int>(coloring.color.size()) != nMobile ||
       static_cast<int>(coloring.closed.size()) != nMobile) {
     return false;

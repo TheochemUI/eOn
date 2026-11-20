@@ -1,0 +1,1 @@
+`[Main] parallel = false` no longer starts rayon worker threads in the colored Hessian. A periodic box now takes its cutoff neighbors from `vesin` on the calling thread, where `linkcell` started a pool of workers on first use that stayed for the rest of the process.
