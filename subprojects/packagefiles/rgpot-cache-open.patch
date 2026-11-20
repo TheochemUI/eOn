@@ -1,9 +1,6 @@
 --- a/CppCore/rgpot/PotentialCache.hpp
 +++ b/CppCore/rgpot/PotentialCache.hpp
-@@ -123,6 +123,9 @@
-   void add_serialized(const KeyHash &key, double energy,
-                       const rgpot::types::AtomMatrix &forces);
- 
+@@ -126,3 +126,6 @@
 +  /// Whether a database is attached.
 +  [[nodiscard]] bool is_open() const { return db_ != nullptr; }
 +
