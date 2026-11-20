@@ -524,6 +524,18 @@ XtsciBand::XtsciBand(NudgedElasticBand &neb, const Parameters &params)
   if (m_band == nullptr) {
     throw std::runtime_error("rgsaddle_band_create failed");
   }
+#if RGSADDLE_ABI_MINOR >= 40
+  // Plain CI-NEB stops on the band force. The optional curvature
+  // certification displaces the climbing image to probe its Hessian.
+  if (stamp.minor >= 40 && !nebOpt.climbing_image.ocineb.use_mmf) {
+    const int rc = rgsaddle_band_set_saddle_check(m_band, nullptr);
+    if (rc != RGSADDLE_OK) {
+      rgsaddle_band_free(m_band);
+      m_band = nullptr;
+      checkStatus(rc, "rgsaddle_band_set_saddle_check");
+    }
+  }
+#endif
 #ifdef WITH_RGSADDLE_BAND_PRECON
   if (nebOpt.band.precon == "exp") {
     // a, c_stab and r_cut_factor at 0 take rgsaddle's 3, 0.1 and 2.
