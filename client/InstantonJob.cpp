@@ -20,9 +20,7 @@
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 #include "eon/Tunneling.h"
-
-#include <Eigen/QR>
-#include <Eigen/SVD>
+#include "eon/TunnelingJobSupport.h"
 
 #include <algorithm>
 #include <array>
@@ -46,217 +44,11 @@ namespace {
 /// One unit of imaginary time, sqrt(amu Angstrom^2 / eV), in fs.
 constexpr double kTimeUnitFs = 10.180505717871193;
 
-/// Mass-weighted coordinates over the free atoms, measured from a reference
-/// structure under its minimum image.
-class MassWeighted {
-public:
-  explicit MassWeighted(const Matter &reference)
-      : ref_(reference) {
-    for (long i = 0; i < reference.numberOfAtoms(); ++i) {
-      if (reference.getFixed(i)) {
-        continue;
-      }
-      const double m = reference.getMass(i);
-      if (!(m > 0.0)) {
-        throw std::invalid_argument("instanton: a free atom without a mass");
-      }
-      free_.push_back(i);
-      sqrtMass_.push_back(std::sqrt(m));
-    }
-    if (free_.empty()) {
-      throw std::invalid_argument("instanton: every atom is fixed");
-    }
-  }
-  long dimension() const { return 3 * static_cast<long>(free_.size()); }
-  VectorXi freeAtoms() const {
-    VectorXi out(static_cast<long>(free_.size()));
-    for (size_t k = 0; k < free_.size(); ++k) {
-      out(static_cast<long>(k)) = static_cast<int>(free_[k]);
-    }
-    return out;
-  }
-  /// The mean of a set of beads, and the root-mean-square spread of each
-  /// free atom's position about it along x, y and z in Angstrom (row-major
-  /// over every atom of m, zero for a fixed atom).
-  std::vector<double> spreadAbout(const std::vector<VectorXd> &beads,
-                                  VectorXd &centroid, long atoms) const {
-    centroid = VectorXd::Zero(dimension());
-    for (const auto &q : beads) {
-      centroid += q;
-    }
-    centroid /= static_cast<double>(std::max<size_t>(1, beads.size()));
-    std::vector<double> out(static_cast<size_t>(3 * atoms), 0.0);
-    for (size_t k = 0; k < free_.size(); ++k) {
-      for (int c = 0; c < 3; ++c) {
-        const long i = static_cast<long>(3 * k) + c;
-        double ss = 0.0;
-        for (const auto &q : beads) {
-          const double d = q(i) - centroid(i);
-          ss += d * d;
-        }
-        out[static_cast<size_t>(3 * free_[k] + c)] =
-            std::sqrt(ss /
-                      static_cast<double>(std::max<size_t>(1, beads.size()))) /
-            sqrtMass_[k];
-      }
-    }
-    return out;
-  }
-  VectorXd toQ(const Matter &m) const {
-    const AtomMatrix d = ref_.pbc(m.getPositions() - ref_.getPositions());
-    VectorXd q(dimension());
-    for (size_t k = 0; k < free_.size(); ++k) {
-      for (int c = 0; c < 3; ++c) {
-        q(static_cast<long>(3 * k) + c) = sqrtMass_[k] * d(free_[k], c);
-      }
-    }
-    return q;
-  }
-  void place(const VectorXd &q, Matter &m) const {
-    AtomMatrix r = ref_.getPositions();
-    for (size_t k = 0; k < free_.size(); ++k) {
-      for (int c = 0; c < 3; ++c) {
-        r(free_[k], c) += q(static_cast<long>(3 * k) + c) / sqrtMass_[k];
-      }
-    }
-    m.setPositions(r);
-  }
-  /// Three translations, then three rotations about the centre of mass, in
-  /// these coordinates. A rotation column is zero for a linear molecule.
-  MatrixXd rigidGenerators(const Matter &m) const {
-    const long n = dimension();
-    MatrixXd b = MatrixXd::Zero(n, 6);
-    const AtomMatrix r = m.getPositions();
-    Eigen::RowVector3d com = Eigen::RowVector3d::Zero();
-    double total = 0.0;
-    for (size_t k = 0; k < free_.size(); ++k) {
-      const double w = sqrtMass_[k] * sqrtMass_[k];
-      com += w * r.row(free_[k]);
-      total += w;
-    }
-    com /= total;
-    for (size_t k = 0; k < free_.size(); ++k) {
-      const long i = static_cast<long>(3 * k);
-      const Eigen::Vector3d x = (r.row(free_[k]) - com).transpose();
-      for (int c = 0; c < 3; ++c) {
-        b(i + c, c) = sqrtMass_[k];
-        Eigen::Vector3d e = Eigen::Vector3d::Zero();
-        e(c) = 1.0;
-        b.block(i, 3 + c, 3, 1) = sqrtMass_[k] * e.cross(x);
-      }
-    }
-    return b;
-  }
-  /// Which of the three rotation generators are zero modes of hess, by
-  /// tunneling::rotationZeroModes: the rotation's curvature against the
-  /// softest vibration, not whether the cell is periodic (a cluster in a box
-  /// is periodic and still free to rotate).
-  void markRotationZeroModes(const MatrixXd &hess, const MatrixXd &generators,
-                             std::array<bool, 3> &keep,
-                             std::array<double, 3> &residual) const {
-    const tunneling::RotationZeroModes z =
-        tunneling::rotationZeroModes(hess, generators);
-    keep = z.zero;
-    residual = z.residual;
-  }
-  /// With no atom fixed, an orthonormal basis of the rigid motions of m:
-  /// three translations, plus each rotation `rotations` marks as a zero
-  /// mode. Empty when an atom is fixed. Rank-revealing, so a linear
-  /// molecule keeps two rotations.
-  MatrixXd rigidBasis(const Matter &m,
-                      const std::array<bool, 3> &rotations) const {
-    if (static_cast<long>(free_.size()) != m.numberOfAtoms()) {
-      return {};
-    }
-    const MatrixXd g = rigidGenerators(m);
-    const long n = g.rows();
-    std::vector<int> cols{0, 1, 2};
-    for (int c = 0; c < 3; ++c) {
-      if (rotations[static_cast<size_t>(c)]) {
-        cols.push_back(3 + c);
-      }
-    }
-    MatrixXd b(n, static_cast<long>(cols.size()));
-    for (size_t k = 0; k < cols.size(); ++k) {
-      b.col(static_cast<long>(k)) = g.col(cols[k]);
-    }
-    const Eigen::ColPivHouseholderQR<MatrixXd> qr(b);
-    const long rank = qr.rank();
-    if (rank <= 0) {
-      return {};
-    }
-    return qr.householderQ() * MatrixXd::Identity(n, rank);
-  }
-  const std::vector<double> &sqrtMasses() const { return sqrtMass_; }
-  /// Cartesian positions of the free atoms of the reference, 3 per atom.
-  VectorXd referenceFree() const {
-    const AtomMatrix r = ref_.getPositions();
-    VectorXd out(dimension());
-    for (size_t k = 0; k < free_.size(); ++k) {
-      for (int c = 0; c < 3; ++c) {
-        out(static_cast<long>(3 * k) + c) = r(free_[k], c);
-      }
-    }
-    return out;
-  }
-  VectorXd gradient(const AtomMatrix &forces) const {
-    VectorXd g(dimension());
-    for (size_t k = 0; k < free_.size(); ++k) {
-      for (int c = 0; c < 3; ++c) {
-        g(static_cast<long>(3 * k) + c) = -forces(free_[k], c) / sqrtMass_[k];
-      }
-    }
-    return g;
-  }
-
-private:
-  const Matter &ref_;
-  std::vector<long> free_;
-  std::vector<double> sqrtMass_;
-};
-
-/// With no atom fixed, removes the rigid part of m's displacement from
-/// ref: the mass-weighted mean (translation), and for a cluster the
-/// mass-weighted best rotation (Kabsch). A path that carried either would
-/// pay kinetic action for motion that costs no energy.
-void alignRigid(const Matter &ref, Matter &m) {
-  const long n = ref.numberOfAtoms();
-  for (long i = 0; i < n; ++i) {
-    if (ref.getFixed(i)) {
-      return;
-    }
-  }
-  AtomMatrix d = ref.pbc(m.getPositions() - ref.getPositions());
-  VectorXd w(n);
-  for (long i = 0; i < n; ++i) {
-    w(i) = ref.getMass(i);
-  }
-  const double total = w.sum();
-  const Eigen::RowVector3d shift = (w.transpose() * d) / total;
-  d.rowwise() -= shift;
-  if (!ref.getPeriodic()) {
-    const Eigen::RowVector3d com = (w.transpose() * ref.getPositions()) / total;
-    AtomMatrix x = ref.getPositions();
-    x.rowwise() -= com;
-    const AtomMatrix y = x + d;
-    const Eigen::Matrix3d h = y.transpose() * w.asDiagonal() * x;
-    Eigen::JacobiSVD<Eigen::Matrix3d> svd(h, Eigen::ComputeFullU |
-                                                 Eigen::ComputeFullV);
-    Eigen::Matrix3d fix = Eigen::Matrix3d::Identity();
-    fix(2, 2) = (svd.matrixV() * svd.matrixU().transpose()).determinant() < 0.0
-                    ? -1.0
-                    : 1.0;
-    const Eigen::Matrix3d rot = svd.matrixV() * fix * svd.matrixU().transpose();
-    d = (y * rot.transpose()) - x;
-  }
-  m.setPositions(ref.getPositions() + d);
-}
-
 /// One frame at the beads' centroid with the readcon spreads section: the
 /// delocalised configuration as centroid plus per-atom root-mean-square
 /// spread, which a path-integral trajectory writes the same way.
 void writeCentroid(const std::string &file, const std::vector<VectorXd> &beads,
-                   const MassWeighted &mw, const Matter &reactant,
+                   const eonc::MassWeighted &mw, const Matter &reactant,
                    std::vector<io::ConMetadataValue> scalars) {
   VectorXd centroid;
   Matter frame(reactant);
@@ -396,7 +188,7 @@ void steepestDescentPath(const VectorXd &qSaddle, double vSaddle,
 /// reactant, and its thermal rate.
 std::vector<std::string>
 runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
-        const Matter &reactant, const MassWeighted &mw,
+        const Matter &reactant, const eonc::MassWeighted &mw,
         const tunneling::BatchPotential &evaluate,
         const std::function<MatrixXd(const VectorXd &)> &hessianAt,
         const std::function<MatrixXd(const VectorXd &)> &beadHessianAt,
@@ -431,7 +223,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   }
   // Highest first, so each ring can start the colder one.
   std::sort(temperatures.begin(), temperatures.end(), std::greater<>());
-  alignRigid(reactant, saddle);
+  eonc::alignRigid(reactant, saddle);
   const long n = mw.dimension();
   const VectorXd qSaddle = mw.toQ(saddle);
   const double vReactant = Matter(reactant).getPotentialEnergy();
@@ -495,7 +287,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         throw std::runtime_error("instanton: " + o.initial_path +
                                  " differs in atom count");
       }
-      alignRigid(reactant, image);
+      eonc::alignRigid(reactant, image);
       pathQ.push_back(mw.toQ(image));
       const auto energy = frame.energy_opt();
       haveEnergies = haveEnergies && energy.has_value();
@@ -946,99 +738,25 @@ std::vector<std::string> InstantonJob::run(void) {
   if (!io::io_ok(reactant->con2matter(o.reactant_filename))) {
     throw std::runtime_error("instanton: cannot read " + o.reactant_filename);
   }
-  const MassWeighted mw(*reactant);
+  TunnelingJobContext context(params, pot, *reactant);
+  const eonc::MassWeighted &mw = context.coordinates();
   const long n = mw.dimension();
   const VectorXd qStart = VectorXd::Zero(n);
 
-  // Bead evaluations: one batch per call, through forceBatch when the
-  // potential spreads a batch over calculators.
-  std::vector<std::unique_ptr<Matter>> pool;
   auto evaluate = [&](const std::vector<VectorXd> &q, std::vector<double> &v,
                       std::vector<VectorXd> &grad) {
-    while (pool.size() < q.size()) {
-      pool.push_back(std::make_unique<Matter>(*reactant));
-    }
-    for (size_t j = 0; j < q.size(); ++j) {
-      mw.place(q[j], *pool[j]);
-    }
-    v.resize(q.size());
-    grad.resize(q.size());
-    if (pot->supportsBatchEvaluation() && q.size() > 1) {
-      const long atoms = reactant->numberOfAtoms();
-      std::vector<VectorXi> nrs(q.size());
-      std::vector<Matrix3d> boxes(q.size());
-      std::vector<const double *> posPtr, boxPtr;
-      std::vector<const int *> nrsPtr;
-      std::vector<double *> frcPtr;
-      for (size_t j = 0; j < q.size(); ++j) {
-        nrs[j] = pool[j]->getAtomicNrs();
-        boxes[j] = pool[j]->getPeriodic() ? pool[j]->getCell()
-                                          : Matrix3d::Zero().eval();
-      }
-      for (size_t j = 0; j < q.size(); ++j) {
-        posPtr.push_back(pool[j]->getPositions().data());
-        nrsPtr.push_back(nrs[j].data());
-        frcPtr.push_back(pool[j]->forcesData());
-        boxPtr.push_back(boxes[j].data());
-      }
-      std::vector<double> energies(q.size()), variances(q.size());
-      pot->forceBatch(static_cast<long>(q.size()), atoms, posPtr.data(),
-                      nrsPtr.data(), frcPtr.data(), energies.data(),
-                      variances.data(), boxPtr.data());
-      for (size_t j = 0; j < q.size(); ++j) {
-        pool[j]->setComputedPotential(energies[j], variances[j]);
-      }
-    }
-    for (size_t j = 0; j < q.size(); ++j) {
-      v[j] = pool[j]->getPotentialEnergy();
-      grad[j] = mw.gradient(pool[j]->getForces());
-    }
+    context.evaluate(q, v, grad);
   };
 
-  // The first call is the reactant. Its Hessian decides which rotations
-  // are zero modes; later beads reuse that decision.
-  std::array<bool, 3> rotationZero{{false, false, false}};
-  std::array<double, 3> rotationResidual{{0.0, 0.0, 0.0}};
-  bool rotationsKnown = false;
-  auto hessianWith = [&](const VectorXd &q, bool projectRotations) {
-    Matter m(*reactant);
-    mw.place(q, m);
-    Hessian h(params, &m);
-    h.writeHessianFile(false);
-    MatrixXd out = h.getHessian(&m, mw.freeAtoms());
-    if (out.rows() != n) {
-      throw std::runtime_error("instanton: a bead Hessian failed");
-    }
-    if (!rotationsKnown) {
-      mw.markRotationZeroModes(out, mw.rigidGenerators(m), rotationZero,
-                               rotationResidual);
-      rotationsKnown = true;
-    }
-    // A finite-difference Hessian of a free structure has small nonzero
-    // rigid eigenvalues of either sign; project them to zero. At a point
-    // that is not stationary, H r for a rotation r is the rotated gradient,
-    // which on a ring bead balances the springs; ring beads keep it and
-    // lose only their translations.
-    const std::array<bool, 3> none{{false, false, false}};
-    const MatrixXd rigid =
-        mw.rigidBasis(m, projectRotations ? rotationZero : none);
-    if (rigid.cols() > 0) {
-      const MatrixXd p = MatrixXd::Identity(n, n) - rigid * rigid.transpose();
-      out = p * out * p;
-    }
-    return out;
-  };
-  auto hessianAt = [&](const VectorXd &q) { return hessianWith(q, true); };
+  auto hessianAt = [&](const VectorXd &q) { return context.hessianAt(q); };
   auto beadHessianAt = [&](const VectorXd &q) {
-    if (!rotationsKnown) {
-      hessianWith(VectorXd::Zero(n), true);
-    }
-    return hessianWith(q, false);
+    return context.beadHessianAt(q);
   };
 
   if (o.mode == "rate") {
     return runRate(params, pot, *reactant, mw, evaluate, hessianAt,
-                   beadHessianAt, rotationZero, rotationResidual);
+                   beadHessianAt, context.rotationZero(),
+                   context.rotationResidual());
   }
 
   auto product = std::make_unique<Matter>(pot, params);
@@ -1048,7 +766,7 @@ std::vector<std::string> InstantonJob::run(void) {
   if (reactant->numberOfAtoms() != product->numberOfAtoms()) {
     throw std::runtime_error("instanton: the minima differ in atom count");
   }
-  alignRigid(*reactant, *product);
+  eonc::alignRigid(*reactant, *product);
   const VectorXd qEnd = mw.toQ(*product);
 
   // Starting path: a band from file, else the straight line.
@@ -1060,7 +778,7 @@ std::vector<std::string> InstantonJob::run(void) {
       if (!io::io_ok(io::con2matter(m, frame))) {
         throw std::runtime_error("instanton: cannot read " + o.initial_path);
       }
-      alignRigid(*reactant, m);
+      eonc::alignRigid(*reactant, m);
       guess.push_back(mw.toQ(m));
     }
     if (guess.size() >= 2) {

@@ -32,7 +32,8 @@
         "safe_hyperdynamics",
         "structure_comparison",
         "tad",
-        "unbiased_parallel_replica"
+        "unbiased_parallel_replica",
+        "line_integral_tunneling"
       ],
       "type": "string"
     },

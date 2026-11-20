@@ -60,6 +60,8 @@ JobType job_from_ssot(std::string_view j) {
     return JobType::Global_Optimization;
   if (j == "instanton")
     return JobType::Instanton;
+  if (j == "line_integral_tunneling")
+    return JobType::Line_Integral_Tunneling;
   return JobType::Process_Search;
 }
 

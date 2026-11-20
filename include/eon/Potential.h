@@ -264,6 +264,26 @@ public:
 #endif
     return range;
   }
+
+  /// True when this potential exposes an exact mass-weighted Hessian-vector
+  /// product in the free-atom coordinate basis.
+  [[nodiscard]] virtual bool
+  supportsMassWeightedHessianVectorProduct() const noexcept {
+    return false;
+  }
+
+  /// Exact mass-weighted Hessian-vector product in free-atom coordinates.
+  /// Direction and return size are 3*freeAtoms.size(). Implementations must
+  /// not approximate this with finite differences.
+  virtual VectorXd massWeightedHessianVectorProduct(const Matter &matter,
+                                                    const VectorXd &direction,
+                                                    const VectorXi &freeAtoms) {
+    (void)matter;
+    (void)direction;
+    (void)freeAtoms;
+    throw std::logic_error(
+        "Potential::massWeightedHessianVectorProduct is not implemented");
+  }
 };
 
 namespace helpers {

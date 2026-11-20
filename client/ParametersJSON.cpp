@@ -11,6 +11,7 @@
 */
 #include "eon/ParametersJSON.h"
 #include "eon/HelperFunctions.h"
+#include "eon/LineIntegralTunneling.h"
 #include "eon/PIQTST.h"
 #include "eon/Parameters.h"
 #include "eon/ParametersINI.h"
@@ -341,6 +342,30 @@ json to_json(const Parameters &p) {
         {"pi_recrossing_children", o.pi_recrossing_children},
         {"pi_recrossing_time", o.pi_recrossing_time},
         {"pi_recrossing_spacing", o.pi_recrossing_spacing},
+    };
+  }
+
+  // [Line Integral Tunneling]
+  {
+    const auto &o = ParametersLoadAccess::line_integral_tunneling_options(p);
+    j["Line Integral Tunneling"] = {
+        {"reactant_filename", o.reactant_filename},
+        {"saddle_filename", o.saddle_filename},
+        {"mep_filename", o.mep_filename},
+        {"images", o.images},
+        {"replicas", o.replicas},
+        {"energy_offset", o.energy_offset},
+        {"lowest_temperature", o.lowest_temperature},
+        {"energy_step", o.energy_step},
+        {"log_rate_tolerance", o.log_rate_tolerance},
+        {"spring", o.spring},
+        {"contour", o.contour},
+        {"force_tolerance", o.force_tolerance},
+        {"max_iterations", o.max_iterations},
+        {"li_neb_time_step", o.li_neb_time_step},
+        {"period_tolerance", o.period_tolerance},
+        {"determinant_estimated_error", o.determinant_estimated_error},
+        {"optimizer", o.optimizer},
     };
   }
 
@@ -821,6 +846,31 @@ void from_json(const json &j, Parameters &p) {
     JSON_OPT(s, "pi_recrossing_time", o.pi_recrossing_time);
     JSON_OPT(s, "pi_recrossing_spacing", o.pi_recrossing_spacing);
     eonc::piqtst::validateOptions(o);
+  }
+
+  // [Line Integral Tunneling]
+  if (j.contains("Line Integral Tunneling")) {
+    const auto &s = j.at("Line Integral Tunneling");
+    auto &o = ParametersLoadAccess::line_integral_tunneling_options(p);
+    JSON_OPT(s, "reactant_filename", o.reactant_filename);
+    JSON_OPT(s, "saddle_filename", o.saddle_filename);
+    JSON_OPT(s, "mep_filename", o.mep_filename);
+    JSON_OPT(s, "images", o.images);
+    JSON_OPT(s, "replicas", o.replicas);
+    JSON_OPT(s, "energy_offset", o.energy_offset);
+    JSON_OPT(s, "lowest_temperature", o.lowest_temperature);
+    JSON_OPT(s, "energy_step", o.energy_step);
+    JSON_OPT(s, "log_rate_tolerance", o.log_rate_tolerance);
+    JSON_OPT(s, "spring", o.spring);
+    JSON_OPT(s, "contour", o.contour);
+    JSON_OPT(s, "force_tolerance", o.force_tolerance);
+    JSON_OPT(s, "max_iterations", o.max_iterations);
+    JSON_OPT(s, "li_neb_time_step", o.li_neb_time_step);
+    JSON_OPT(s, "period_tolerance", o.period_tolerance);
+    JSON_OPT(s, "determinant_estimated_error", o.determinant_estimated_error);
+    JSON_OPT(s, "optimizer", o.optimizer);
+    o.optimizer = lowerCopy(o.optimizer);
+    eonc::tunneling::validateOptions(o);
   }
 
   // The ini loader derives these from the femtosecond inputs whether or

@@ -38,6 +38,7 @@ class MainConfig(BaseModel):
         "gp_surrogate",
         "hessian",
         "instanton",
+        "line_integral_tunneling",
         "minimization",
         "monte_carlo",
         "molecular_dynamics",
@@ -2766,6 +2767,94 @@ class InstantonConfig(BaseModel):
     )
 
 
+class LineIntegralTunnelingConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    reactant_filename: str = Field(
+        default="reactant.con", description="Reactant minimum."
+    )
+    saddle_filename: str = Field(
+        default="saddle.con", description="First-order saddle."
+    )
+    mep_filename: str = Field(
+        default="neb.con",
+        description="Multi-frame minimum-energy path crossing the saddle.",
+    )
+    images: int = Field(
+        default=10, ge=3, description="Images on each optimal tunnelling path."
+    )
+    replicas: int = Field(
+        default=128,
+        ge=4,
+        description="Equally spaced imaginary-time replicas for HQTST.",
+    )
+    energy_offset: float = Field(
+        default=0.01,
+        gt=0.0,
+        description="First path energy below the saddle, in eV.",
+    )
+    lowest_temperature: float = Field(
+        default=50.0,
+        gt=0.0,
+        description="Lowest requested continuation temperature, in K.",
+    )
+    energy_step: float = Field(
+        default=0.01,
+        gt=0.0,
+        description="Maximum energy decrease between continuation paths, in eV.",
+    )
+    log_rate_tolerance: float = Field(
+        default=0.5,
+        gt=0.0,
+        description="Largest allowed change in ln(k) between continuation paths.",
+    )
+    spring: float = Field(
+        default=20.0,
+        gt=0.0,
+        description="LI-NEB spacing spring constant, in inverse Angstrom squared.",
+    )
+    contour: float = Field(
+        default=1000.0,
+        gt=0.0,
+        description="Endpoint energy-contour parameter, in inverse eV Angstrom.",
+    )
+    force_tolerance: float = Field(
+        default=0.01,
+        gt=0.0,
+        description="Largest interior perpendicular or endpoint force.",
+    )
+    max_iterations: int = Field(
+        default=5000, ge=1, description="LI-NEB optimizer iterations."
+    )
+    li_neb_time_step: float = Field(
+        default=0.01,
+        gt=0.0,
+        description="Velocity-projection velocity Verlet step.",
+    )
+    period_tolerance: float = Field(
+        default=0.01,
+        gt=0.0,
+        description=(
+            "Absolute tolerance for the imaginary-time period quadrature, "
+            "in the internal mass-weighted time unit."
+        ),
+    )
+    determinant_estimated_error: float = Field(
+        default=0.1,
+        gt=0.0,
+        description=(
+            "Stopping target for the estimated ln k error from the stochastic "
+            "ring and reactant log-determinants; not a certified error bound."
+        ),
+    )
+    optimizer: Literal[
+        "velocity_verlet", "fire", "lbfgs", "cg", "qm", "sd", "xtsci"
+    ] = Field(
+        default="velocity_verlet",
+        description="LI-NEB optimizer; velocity_verlet is the paper default.",
+    )
+
+
 class DynamicsConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
@@ -3011,6 +3100,9 @@ class Config(BaseModel):
     davidson: DavidsonConfig
     hessian: HessianConfig
     instanton: InstantonConfig = Field(default_factory=InstantonConfig)
+    line_integral_tunneling: LineIntegralTunnelingConfig = Field(
+        default_factory=LineIntegralTunnelingConfig
+    )
     communicator: CommunicatorConfig
     process_search: ProcessSearchConfig
     prefactor: PrefactorConfig

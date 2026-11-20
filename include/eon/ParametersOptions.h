@@ -872,6 +872,45 @@ struct instanton_options_t {
   long pi_recrossing_spacing{50};
 };
 
+// [Line Integral Tunneling] //
+// Energy-continuation LI-NEB paths and the harmonic quantum transition-state
+// rate of Asgeirsson, Arnaldsson and Jonsson, JCP 148, 102334 (2018).
+struct line_integral_tunneling_options_t {
+  std::string reactant_filename{"reactant.con"};
+  std::string saddle_filename{"saddle.con"};
+  std::string mep_filename{"neb.con"};
+  long images{10};
+  long replicas{128};
+  double energy_offset{0.01}; // eV below the saddle for the first path
+  // Continue toward lower energy until the orbit reaches this temperature
+  // (K). The final path is the first at or below the requested temperature.
+  double lowest_temperature{50.0};
+  // Maximum energy decrease (eV) between continuation paths. The actual
+  // decrease may be smaller to limit the predicted change in ln(k).
+  double energy_step{0.01};
+  // Positive bound on the magnitude of the ln(k) change between paths.
+  double log_rate_tolerance{0.5};
+  // The spring spaces images by mass-weighted path length
+  // (sqrt(amu) Angstrom).
+  double spring{20.0};
+  // The endpoint contour force uses mass-weighted path length
+  // (sqrt(amu) Angstrom).
+  double contour{1000.0};
+  double force_tolerance{0.01};
+  long max_iterations{5000};
+  // LI-NEB velocity-projection velocity Verlet step in
+  // sqrt(amu) Angstrom / sqrt(eV).
+  double li_neb_time_step{0.01};
+  // Absolute imaginary-time period quadrature tolerance in the internal
+  // sqrt(amu) Angstrom / sqrt(eV) time unit.
+  double period_tolerance{0.01};
+  // Stopping target for the estimated ln k error from the stochastic ring
+  // and reactant log-determinants. This is not a certified error bound.
+  double determinant_estimated_error{0.1};
+  // "velocity_verlet", or an OptType token such as FIRE, LBFGS, CG, QM, SD.
+  std::string optimizer{"velocity_verlet"};
+};
+
 // [OH_TST] //
 // Optimized hyperplanar TST (Johannesson-Jonsson, JCP 115, 9644
 // (2001)): reversible-work progression of a hyperplanar dividing

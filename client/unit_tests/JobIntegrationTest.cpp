@@ -42,7 +42,9 @@
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <iomanip>
 #include <iterator>
+#include <limits>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -2987,6 +2989,46 @@ force_tolerance = 1e-6
   REQUIRE(std::abs(halfLog - fullLog) < 1e-2);
   REQUIRE(std::abs(againLog - fullLog) < 1e-2);
   REQUIRE(halfCalls < fullCalls);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "InstantonJob retains partially fixed atom compatibility",
+                 "[job][instanton][integration]") {
+  if (!copyTestData("neb_lj13")) {
+    SKIP("neb_lj13 test system not found");
+  }
+  Parameters localParameters;
+  ParametersLoadAccess::potential_options(localParameters).potential =
+      PotType::LJ;
+  auto potential = helpers::sharePotential(
+      helpers::makePotential(PotType::LJ, localParameters));
+  Matter reactant(potential, localParameters);
+  REQUIRE(io::io_ok(reactant.con2matter((workdir / "reactant.con").string())));
+  reactant.setFixed(0, 2, 1);
+  REQUIRE(io::io_ok(reactant.matter2con((workdir / "reactant.con").string())));
+
+  constexpr long beads = 64;
+  const double ringDiscretizationOrder =
+      1.0 / (static_cast<double>(beads) * static_cast<double>(beads));
+  const double forceTolerance = 4.0 * ringDiscretizationOrder;
+  std::ostringstream config;
+  config << std::setprecision(std::numeric_limits<double>::max_digits10)
+         << "[Main]\n"
+            "job = instanton\n\n"
+            "[Potential]\n"
+            "potential = lj\n\n"
+            "[Instanton]\n"
+            "beads = "
+         << beads
+         << "\n"
+            "beta_hbar_omega = 30\n"
+            "max_iterations = 4000\n"
+            "force_tolerance = "
+         << forceTolerance << "\n";
+  writeConfig(config.str());
+  const auto results = runJob();
+  REQUIRE(results.at("termination_reason") == "0");
+  REQUIRE(std::filesystem::exists(workdir / "instanton.con"));
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,

@@ -766,6 +766,30 @@
         "scmlicense",
         "amsresources"
       ]
+    },
+    "Line Integral Tunneling": {
+      "model": "LineIntegralTunnelingConfig",
+      "file": "line-integral-tunneling.json",
+      "id": "https://eondocs.org/schema/line-integral-tunneling.json",
+      "keys": [
+        "reactant_filename",
+        "saddle_filename",
+        "mep_filename",
+        "images",
+        "replicas",
+        "energy_offset",
+        "lowest_temperature",
+        "energy_step",
+        "log_rate_tolerance",
+        "spring",
+        "contour",
+        "force_tolerance",
+        "max_iterations",
+        "li_neb_time_step",
+        "period_tolerance",
+        "determinant_estimated_error",
+        "optimizer"
+      ]
     }
   }
 }

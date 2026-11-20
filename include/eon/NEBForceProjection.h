@@ -22,9 +22,14 @@ AtomMatrix computeTangent(const AtomMatrix &posDiffNext,
                           const AtomMatrix &posDiffPrev, double energy,
                           double energyPrev, double energyNext,
                           bool use_old_tangent);
+VectorXd computeTangent(const VectorXd &posDiffNext,
+                        const VectorXd &posDiffPrev, double energy,
+                        double energyPrev, double energyNext,
+                        bool use_old_tangent);
 
 /// Compute the perpendicular component of force relative to the tangent.
 AtomMatrix forcePerp(const AtomMatrix &force, const AtomMatrix &tangent);
+VectorXd forcePerp(const VectorXd &force, const VectorXd &tangent);
 
 /// Compute the climbing image projected force.
 /// F_CI = F - 2*(F.t)*t + forceDNEB

@@ -14,6 +14,7 @@
 #include "eon/ConFileIO.h"
 #include "eon/EpiCenters.h"
 #include "eon/HelperFunctions.h"
+#include "eon/LineIntegralTunneling.h"
 #include "eon/Parameters.h"
 #include "magic_enum/magic_enum.hpp"
 
@@ -1827,6 +1828,38 @@ int load_ini(INIReader &ini, Parameters &params) {
     o.pi_recrossing_spacing = ini.GetInteger(
         "Instanton", "pi_recrossing_spacing", o.pi_recrossing_spacing);
     eonc::piqtst::validateOptions(o);
+  }
+
+  // [Line Integral Tunneling] //
+  {
+    auto &o = ParametersLoadAccess::line_integral_tunneling_options(params);
+    constexpr const char *section = "Line Integral Tunneling";
+    o.reactant_filename =
+        ini.Get(section, "reactant_filename", o.reactant_filename);
+    o.saddle_filename = ini.Get(section, "saddle_filename", o.saddle_filename);
+    o.mep_filename = ini.Get(section, "mep_filename", o.mep_filename);
+    o.images = ini.GetInteger(section, "images", o.images);
+    o.replicas = ini.GetInteger(section, "replicas", o.replicas);
+    o.energy_offset = ini.GetReal(section, "energy_offset", o.energy_offset);
+    o.lowest_temperature =
+        ini.GetReal(section, "lowest_temperature", o.lowest_temperature);
+    o.energy_step = ini.GetReal(section, "energy_step", o.energy_step);
+    o.log_rate_tolerance =
+        ini.GetReal(section, "log_rate_tolerance", o.log_rate_tolerance);
+    o.spring = ini.GetReal(section, "spring", o.spring);
+    o.contour = ini.GetReal(section, "contour", o.contour);
+    o.force_tolerance =
+        ini.GetReal(section, "force_tolerance", o.force_tolerance);
+    o.max_iterations =
+        ini.GetInteger(section, "max_iterations", o.max_iterations);
+    o.li_neb_time_step =
+        ini.GetReal(section, "li_neb_time_step", o.li_neb_time_step);
+    o.period_tolerance =
+        ini.GetReal(section, "period_tolerance", o.period_tolerance);
+    o.determinant_estimated_error = ini.GetReal(
+        section, "determinant_estimated_error", o.determinant_estimated_error);
+    o.optimizer = toLowerCase(ini.Get(section, "optimizer", o.optimizer));
+    eonc::tunneling::validateOptions(o);
   }
 
   // [OH_TST] //

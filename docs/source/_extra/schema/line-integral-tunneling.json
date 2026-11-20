@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/line-integral-tunneling.json",
+  "title": "Line Integral Tunneling",
+  "description": "config.ini [Line Integral Tunneling] section (LineIntegralTunnelingConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "reactant_filename": {
+      "default": "reactant.con",
+      "description": "Reactant minimum.",
+      "type": "string"
+    },
+    "saddle_filename": {
+      "default": "saddle.con",
+      "description": "First-order saddle.",
+      "type": "string"
+    },
+    "mep_filename": {
+      "default": "neb.con",
+      "description": "Multi-frame minimum-energy path crossing the saddle.",
+      "type": "string"
+    },
+    "images": {
+      "default": 10,
+      "description": "Images on each optimal tunnelling path.",
+      "minimum": 3,
+      "type": "integer"
+    },
+    "replicas": {
+      "default": 128,
+      "description": "Equally spaced imaginary-time replicas for HQTST.",
+      "minimum": 4,
+      "type": "integer"
+    },
+    "energy_offset": {
+      "default": 0.01,
+      "description": "First path energy below the saddle, in eV.",
+      "exclusiveMinimum": 0.0,
+      "type": "number"
+    },
+    "lowest_temperature": {
+      "default": 50.0,
+      "description": "Lowest requested continuation temperature, in K.",
+      "exclusiveMinimum": 0.0,
+      "type": "number"
+    },
+    "energy_step": {
+      "default": 0.01,
+      "description": "Maximum energy decrease between continuation paths, in eV.",
+      "exclusiveMinimum": 0.0,
+      "type": "number"
+    },
+    "log_rate_tolerance": {
+      "default": 0.5,
+      "description": "Largest allowed change in ln(k) between continuation paths.",
+      "exclusiveMinimum": 0.0,
+      "type": "number"
+    },
+    "spring": {
+      "default": 20.0,
+      "description": "LI-NEB spacing spring constant, in inverse Angstrom squared.",
+      "exclusiveMinimum": 0.0,
+      "type": "number"
+    },
+    "contour": {
+      "default": 1000.0,
+      "description": "Endpoint energy-contour parameter, in inverse eV Angstrom.",
+      "exclusiveMinimum": 0.0,
+      "type": "number"
+    },
+    "force_tolerance": {
+      "default": 0.01,
+      "description": "Largest interior perpendicular or endpoint force.",
+      "exclusiveMinimum": 0.0,
+      "type": "number"
+    },
+    "max_iterations": {
+      "default": 5000,
+      "description": "LI-NEB optimizer iterations.",
+      "minimum": 1,
+      "type": "integer"
+    },
+    "li_neb_time_step": {
+      "default": 0.01,
+      "description": "Velocity-projection velocity Verlet step.",
+      "exclusiveMinimum": 0.0,
+      "type": "number"
+    },
+    "period_tolerance": {
+      "default": 0.01,
+      "description": "Absolute tolerance for the imaginary-time period quadrature, in the internal mass-weighted time unit.",
+      "exclusiveMinimum": 0.0,
+      "type": "number"
+    },
+    "determinant_estimated_error": {
+      "default": 0.1,
+      "description": "Stopping target for the estimated ln k error from the stochastic ring and reactant log-determinants; not a certified error bound.",
+      "exclusiveMinimum": 0.0,
+      "type": "number"
+    },
+    "optimizer": {
+      "default": "velocity_verlet",
+      "description": "LI-NEB optimizer; velocity_verlet is the paper default.",
+      "enum": [
+        "velocity_verlet",
+        "fire",
+        "lbfgs",
+        "cg",
+        "qm",
+        "sd",
+        "xtsci"
+      ],
+      "type": "string"
+    }
+  }
+}

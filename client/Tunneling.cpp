@@ -3550,6 +3550,13 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
   }
 }
 
+std::vector<std::vector<VectorXd>>
+ringRigidMotions(const std::vector<VectorXd> &beads,
+                 const RingRigidBodies &bodies) {
+  return ringRigidBasis(beads, bodies.sqrtMasses, bodies.reference,
+                        bodies.rotations);
+}
+
 RotationZeroModes rotationZeroModes(const MatrixXd &hess,
                                     const MatrixXd &generators) {
   RotationZeroModes out;
