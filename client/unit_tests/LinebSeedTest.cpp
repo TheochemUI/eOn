@@ -3,9 +3,9 @@
 **
 ** SPDX-License-Identifier: BSD-3-Clause
 */
+#include "eon/LinebSeed.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
-#include "eon/LinebSeed.h"
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
 
@@ -120,8 +120,7 @@ TEST_CASE("lineb pack recovers continuous free coords across a PBC crossing",
   const AtomMatrix continuousEnd = ref->getPositions() + endShift;
   band[2]->setPositions(continuousEnd);
   const AtomMatrix wrappedEnd = band[2]->getPositions();
-  REQUIRE((wrappedEnd - continuousEnd).cwiseAbs().maxCoeff() >
-          0.5 * lx - 1e-6);
+  REQUIRE((wrappedEnd - continuousEnd).cwiseAbs().maxCoeff() > 0.5 * lx - 1e-6);
 
   std::vector<long> freeAtoms;
   std::vector<double> masses;
@@ -129,8 +128,7 @@ TEST_CASE("lineb pack recovers continuous free coords across a PBC crossing",
   std::vector<double> packed;
   eonc::lineb::packSeedCartesian(band, freeAtoms, false, packed);
 
-  REQUIRE((band[2]->getPositions() - wrappedEnd).cwiseAbs().maxCoeff() <
-          1e-12);
+  REQUIRE((band[2]->getPositions() - wrappedEnd).cwiseAbs().maxCoeff() < 1e-12);
 
   const size_t nFree = freeAtoms.size();
   REQUIRE(packed.size() == 3 * nFree * 3);

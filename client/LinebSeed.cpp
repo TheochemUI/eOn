@@ -35,8 +35,7 @@ bool matchingSeedImage(const Matter &ref, const Matter &image) {
     if (ref.getFixedMask(i) != image.getFixedMask(i)) {
       return false;
     }
-    if (ref.getFixed(i) &&
-        delta.row(i).cwiseAbs().maxCoeff() > kSeedMatchTol) {
+    if (ref.getFixed(i) && delta.row(i).cwiseAbs().maxCoeff() > kSeedMatchTol) {
       return false;
     }
   }

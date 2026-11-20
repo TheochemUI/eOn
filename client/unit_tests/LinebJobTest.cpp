@@ -3,9 +3,9 @@
 **
 ** SPDX-License-Identifier: BSD-3-Clause
 */
+#include "eon/LinebJob.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
-#include "eon/LinebJob.h"
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
 #include "eon/Tunneling.h"
@@ -65,8 +65,8 @@ TEST_CASE("LinebJob refuses a build without the lineb C API", "[lineb]") {
   auto pot = eonc::helpers::sharePotential(
       eonc::helpers::makePotential(PotType::MORSE_PT, params));
   eonc::LinebJob job(pot, params);
-  REQUIRE_THROWS_WITH(job.run(),
-                      Catch::Matchers::ContainsSubstring("rgsaddle_lineb_solve"));
+  REQUIRE_THROWS_WITH(
+      job.run(), Catch::Matchers::ContainsSubstring("rgsaddle_lineb_solve"));
 }
 
 TEST_CASE("LinebJob runs a fixed-energy seeded Morse band when available",
@@ -108,7 +108,8 @@ TEST_CASE("LinebJob runs a fixed-energy seeded Morse band when available",
   for (size_t i = 0; i < seed.size(); ++i) {
     metas[i].energy = seed[i]->getPotentialEnergy();
   }
-  REQUIRE(eonc::io::io_ok(eonc::io::writeNebPath("lineb_seed.con", seed, metas)));
+  REQUIRE(
+      eonc::io::io_ok(eonc::io::writeNebPath("lineb_seed.con", seed, metas)));
 
   auto &lineb = ParametersLoadAccess::lineb_options(params);
   lineb.initial_path = "lineb_seed.con";

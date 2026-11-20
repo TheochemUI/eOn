@@ -280,7 +280,8 @@ void validate_lineb_options(const Parameters &params, bool energy_present) {
         "[Lineb] opt_tol and perp_tol must be finite and non-negative");
   }
   if (!std::isfinite(o.endpoint_kappa) || o.endpoint_kappa < 0.0) {
-    throw std::invalid_argument("[Lineb] endpoint_kappa must be finite and non-negative");
+    throw std::invalid_argument(
+        "[Lineb] endpoint_kappa must be finite and non-negative");
   }
   if (!(o.spring > 0.0) || !std::isfinite(o.spring) ||
       !(o.endpoint_scale > 0.0) || !std::isfinite(o.endpoint_scale)) {
@@ -302,8 +303,7 @@ void validate_lineb_options(const Parameters &params, bool energy_present) {
         "[Lineb] hbar and boltzmann must be finite and positive");
   }
   if (o.quadrature_pairs < 1) {
-    throw std::invalid_argument(
-        "[Lineb] quadrature_pairs must be at least 1");
+    throw std::invalid_argument("[Lineb] quadrature_pairs must be at least 1");
   }
   if (o.max_steps < 1) {
     throw std::invalid_argument("[Lineb] max_steps must be at least 1");
@@ -317,8 +317,7 @@ void validate_lineb_options(const Parameters &params, bool energy_present) {
         "[Lineb] beads must be 0 (path only) or at least 2 (harmonic QTST)");
   }
   if (params.main_options().job == JobType::Lineb && !energy_present) {
-    throw std::invalid_argument(
-        "[Lineb] energy must be set when job = lineb");
+    throw std::invalid_argument("[Lineb] energy must be set when job = lineb");
   }
 }
 

@@ -541,10 +541,9 @@ TEST_CASE("Lineb projection loads defaults and refuses beads=1",
       std::invalid_argument);
 
   Parameters missingEnergy;
-  REQUIRE_THROWS_AS(
-      missingEnergy.load_ini_text("[Main]\njob = lineb\n"
-                                  "[Lineb]\nbeads = 0\n"),
-      std::invalid_argument);
+  REQUIRE_THROWS_AS(missingEnergy.load_ini_text("[Main]\njob = lineb\n"
+                                                "[Lineb]\nbeads = 0\n"),
+                    std::invalid_argument);
 
   Parameters linebOk;
   REQUIRE(linebOk.load_ini_text("[Main]\njob = lineb\n"

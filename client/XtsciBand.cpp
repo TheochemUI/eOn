@@ -227,8 +227,8 @@ int xtsciBandSurface(void *user, void *request) {
 #if RGSADDLE_ABI_MINOR >= 23
     if ((req->flags & RGSADDLE_REQ_CLIMBING_IMAGE) != 0) {
       const bool perImage = (req->flags & RGSADDLE_REQ_ONE_IMAGE) != 0;
-      if (req->n_images != (perImage ? band : 1) ||
-          req->image < 0 || req->image >= band) {
+      if (req->n_images != (perImage ? band : 1) || req->image < 0 ||
+          req->image >= band) {
         return RGSADDLE_SHAPE;
       }
       // The curvature probe displaces the climbing image off the band.

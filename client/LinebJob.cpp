@@ -190,17 +190,20 @@ std::vector<std::string> LinebJob::run(void) {
   rgsaddle_lineb_result_t result{};
 #if RGSADDLE_ABI_MINOR < 49
   if (o.projected_verlet) {
-    throw std::runtime_error("lineb: projected_verlet requires rgsaddle ABI minor 49");
+    throw std::runtime_error(
+        "lineb: projected_verlet requires rgsaddle ABI minor 49");
   }
 #endif
 #if RGSADDLE_ABI_MINOR < 48
   if (o.linear_seed || o.endpoint_convergence) {
-    throw std::runtime_error("lineb: linear_seed and endpoint_convergence require rgsaddle ABI minor 48");
+    throw std::runtime_error("lineb: linear_seed and endpoint_convergence "
+                             "require rgsaddle ABI minor 48");
   }
 #endif
 #if RGSADDLE_ABI_MINOR >= 48
-  uint32_t options = (o.linear_seed ? RGSADDLE_LINEB_LINEAR_SEED : 0u) |
-                     (o.endpoint_convergence ? RGSADDLE_LINEB_ENDPOINT_CONVERGENCE : 0u);
+  uint32_t options =
+      (o.linear_seed ? RGSADDLE_LINEB_LINEAR_SEED : 0u) |
+      (o.endpoint_convergence ? RGSADDLE_LINEB_ENDPOINT_CONVERGENCE : 0u);
 #if RGSADDLE_ABI_MINOR >= 49
   if (o.projected_verlet) {
     options |= RGSADDLE_LINEB_PROJECTED_VERLET;
@@ -210,16 +213,19 @@ std::vector<std::string> LinebJob::run(void) {
       &cfg, static_cast<int64_t>(band.size()),
       static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
       o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
-      &ctx, optimized.data(), &result, o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options);
+      &ctx, optimized.data(), &result,
+      o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options);
 #elif RGSADDLE_ABI_MINOR >= 47
   const rgsaddle_status_t rc = rgsaddle_lineb_solve_with_kappa(
       &cfg, static_cast<int64_t>(band.size()),
       static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
       o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
-      &ctx, optimized.data(), &result, o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr);
+      &ctx, optimized.data(), &result,
+      o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr);
 #else
   if (o.endpoint_kappa > 0.0) {
-    throw std::runtime_error("lineb: endpoint_kappa requires rgsaddle ABI minor 47");
+    throw std::runtime_error(
+        "lineb: endpoint_kappa requires rgsaddle ABI minor 47");
   }
   const rgsaddle_status_t rc = rgsaddle_lineb_solve(
       &cfg, static_cast<int64_t>(band.size()),
@@ -229,8 +235,8 @@ std::vector<std::string> LinebJob::run(void) {
 #endif
 
   if (rc != RGSADDLE_OK) {
-    std::string message = std::string("lineb: rgsaddle_lineb_solve: ") +
-                          rgsaddle_status_name(rc);
+    std::string message =
+        std::string("lineb: rgsaddle_lineb_solve: ") + rgsaddle_status_name(rc);
     const char *detail = rgsaddle_last_error();
     if (detail && *detail) {
       message += std::string(" (") + detail + ")";
@@ -263,8 +269,7 @@ std::vector<std::string> LinebJob::run(void) {
   env.extras.emplace_back("temperature_dynamics", result.temperature_dynamics);
   env.extras.emplace_back("log_rate_over_reactant",
                           result.log_rate_over_reactant);
-  env.extras.emplace_back("iterations",
-                          static_cast<double>(result.iterations));
+  env.extras.emplace_back("iterations", static_cast<double>(result.iterations));
   env.extras.emplace_back("optimizer_calls",
                           static_cast<double>(result.optimizer_calls));
   env.extras.emplace_back("measure_calls",
