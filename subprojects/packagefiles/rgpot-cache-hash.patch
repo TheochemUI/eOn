@@ -1,0 +1,9 @@
+--- a/CppCore/rgpot/Potential.hpp
++++ b/CppCore/rgpot/Potential.hpp
+@@ -24,3 +24,6 @@
+ #define XXH_INLINE_ALL
++// Hash scalar fingerprints and floating-point arrays through their byte
++// representations. Typed unaligned loads alias neither of these types.
++#define XXH_FORCE_MEMORY_ACCESS 0
+ #include "rgpot/CalculatorGroup.hpp"
+ #include "rgpot/PotentialCache.hpp"
