@@ -259,8 +259,8 @@ std::vector<std::string> LinebJob::run(void) {
   rgsaddle_lineb_result_t result{};
 #ifndef RGSADDLE_LINEB_PROJECTED_VERLET
   if (o.projected_verlet) {
-    throw std::runtime_error(
-        "lineb: projected_verlet requires rgsaddle with RGSADDLE_LINEB_PROJECTED_VERLET");
+    throw std::runtime_error("lineb: projected_verlet requires rgsaddle with "
+                             "RGSADDLE_LINEB_PROJECTED_VERLET");
   }
 #endif
 #ifndef RGSADDLE_LINEB_LINEAR_SEED
