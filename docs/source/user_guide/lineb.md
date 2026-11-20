@@ -124,6 +124,7 @@ remaining keys (`spring`, `endpoint_scale`, `time_step`, `max_move`,
 | File | Contents |
 |---|---|
 | `lineb.con` | Optimized band, per-image energy and job-wide force-call counts in the second-line JSON of each frame |
+| `lineb-orbit.con` | Equal-time rate replicas, mobile-atom potential gradients, and finite-bead stationarity for a rate run with an orbit-capable backend |
 | `results.dat` | Action, both half periods and temperatures, optional `log_rate_over_reactant`, call counts |
 
 Read the counters from any frame with readcon. Every frame of the optimized
@@ -180,3 +181,31 @@ modes and the number with negative eigenvalues when a backend with
 that does not return the spectrum. A first-order instanton has one negative
 mode. Check the force residual around the ring as well as the mode count
 and rate when increasing the number of replicas.
+
+For a rate job (`beads > 0`) with `RGSADDLE_HAS_LINEB_ORBIT`, open
+`lineb-orbit.con` with readcon. Each frame holds one replica of the
+full ring in continuous Cartesian coordinates, including the fixed atoms.
+The second-line JSON records the energy gradients of the mobile atoms at
+those coordinates, in the order of their CON atom IDs. Returning replicas
+reuse the measured outbound coordinates and gradients. The diagnostic
+uses the potential evaluations already counted in the rate.
+
+```python
+import readcon
+
+ring = readcon.read_con("lineb-orbit.con")
+frame = ring[0].metadata
+print(frame["lineb_orbit"]["mobile_atom_ids"])
+print(frame["lineb_orbit"]["gradients_eV_per_angstrom"])
+print(frame["lineb"]["stationarity"])
+```
+
+For replica $j$ and mobile coordinate $a$, the discrete residual is
+$R_{ja}=\partial_a V(x_j)+m_a(P/\tau)^2(2x_{ja}-x_{j-1,a}-x_{j+1,a})$.
+Indices wrap around the ring, $P$ is the number of beads, and $\tau$ is
+twice the reported half period. `max_abs_eV_per_angstrom` and
+`rms_eV_per_angstrom` summarize all mobile Cartesian components.
+`max_bead` and `max_axis` are zero-based. `max_atom_id` identifies
+the CON atom. Compare these values as the path images and bead count
+increase. A continuum residual requires differentiating the path in
+continuous imaginary time.
