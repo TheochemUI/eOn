@@ -21,6 +21,8 @@
 
 #include <cmath>
 #include <limits>
+#include <map>
+#include <nlohmann/json.hpp>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -48,6 +50,7 @@ namespace {
 struct LinebSurface {
   Matter *probe = nullptr;
   std::vector<long> freeAtoms;
+  int64_t surfaceRows = 0;
 };
 
 /// Map free-atom positions into the full Matter and write energy plus
@@ -92,6 +95,7 @@ rgsaddle_status_t surfaceCallback(void *user, rgsaddle_surface_request_t *req) {
         grad[3 * a + 2] = -forces(atom, 2);
       }
     }
+    ctx->surfaceRows += nImages;
     return RGSADDLE_OK;
   } catch (...) {
     return RGSADDLE_SURFACE_FAILED;
@@ -148,6 +152,7 @@ std::vector<std::string> LinebJob::run(void) {
         "lineb: [Lineb] beads must be nonnegative (0 is path only)");
   }
 
+  const auto jobStart = pot->forceCallCounter.load();
   auto band = lineb::loadSeedBand(params, pot, o.initial_path);
   std::vector<long> freeAtoms;
   std::vector<double> masses;
@@ -187,6 +192,7 @@ std::vector<std::string> LinebJob::run(void) {
   Matter probe(*band.front());
   LinebSurface ctx{&probe, freeAtoms};
 
+  const auto solveStart = pot->forceCallCounter.load();
   rgsaddle_lineb_result_t result{};
 #if RGSADDLE_ABI_MINOR < 49
   if (o.projected_verlet) {
@@ -244,6 +250,7 @@ std::vector<std::string> LinebJob::run(void) {
     throw std::runtime_error(message);
   }
 
+  const auto solveEnd = pot->forceCallCounter.load();
   unpackPositions(optimized, freeAtoms, band);
 
   const std::string pathFile = "lineb.con";
@@ -251,6 +258,41 @@ std::vector<std::string> LinebJob::run(void) {
   std::vector<io::ConFrameMetadata> metas(band.size());
   for (size_t i = 0; i < band.size(); ++i) {
     metas[i].energy = band[i]->getPotentialEnergy();
+  }
+  // rgsaddle reports post-seed phases. The callback counts every configuration,
+  // including the energy evaluations used to initialize the turning points.
+  const auto seedCalls = ctx.surfaceRows - result.optimizer_calls -
+                         result.measure_calls - result.dynamics_calls -
+                         result.rate_calls;
+  if (seedCalls < 0) {
+    throw std::runtime_error(
+        "lineb: reported phase counts exceed surface requests");
+  }
+  const std::map<std::string, int64_t> solverCalls{
+      {"seed_calls", seedCalls},
+      {"optimizer_calls", result.optimizer_calls},
+      {"measure_calls", result.measure_calls},
+      {"dynamics_calls", result.dynamics_calls},
+      {"rate_calls", result.rate_calls},
+      {"solver_calls", ctx.surfaceRows}};
+  const auto outputEnd = pot->forceCallCounter.load();
+  const std::map<std::string, size_t> potentialCalls{
+      {"setup", solveStart - jobStart},
+      {"solve", solveEnd - solveStart},
+      {"output", outputEnd - solveEnd},
+      {"total", outputEnd - jobStart}};
+  const nlohmann::json metadata = {
+      {"lineb",
+       {{"scope", "job"},
+        {"energy", o.energy},
+        {"beads", o.beads},
+        {"optimizer", o.projected_verlet ? "projected_verlet" : "fire"},
+        {"surface_calls", solverCalls},
+        {"potential_calls", potentialCalls}}}};
+  const auto metadataJson = metadata.dump();
+  for (size_t i = 0; i < metas.size(); ++i) {
+    metas[i].neb_bead = i;
+    metas[i].raw_json = metadataJson;
   }
   if (!io::io_ok(io::writeNebPath(pathFile, band, metas))) {
     throw std::runtime_error("lineb: cannot write " + pathFile);
@@ -270,13 +312,13 @@ std::vector<std::string> LinebJob::run(void) {
   env.extras.emplace_back("log_rate_over_reactant",
                           result.log_rate_over_reactant);
   env.extras.emplace_back("iterations", static_cast<double>(result.iterations));
-  env.extras.emplace_back("optimizer_calls",
-                          static_cast<double>(result.optimizer_calls));
-  env.extras.emplace_back("measure_calls",
-                          static_cast<double>(result.measure_calls));
-  env.extras.emplace_back("dynamics_calls",
-                          static_cast<double>(result.dynamics_calls));
-  env.extras.emplace_back("rate_calls", static_cast<double>(result.rate_calls));
+  for (const auto &[phase, count] : solverCalls) {
+    env.extras.emplace_back(phase, static_cast<double>(count));
+  }
+  for (const auto &[phase, count] : potentialCalls) {
+    env.extras.emplace_back("potential_calls_" + phase,
+                            static_cast<double>(count));
+  }
   env.extras.emplace_back("energy", o.energy);
   env.extras.emplace_back("beads", static_cast<double>(o.beads));
   env.extras.emplace_back("molecular", o.molecular ? 1.0 : 0.0);
