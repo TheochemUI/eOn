@@ -20,6 +20,7 @@
 #include <filesystem>
 #include <fstream>
 #include <memory>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
 
@@ -157,6 +158,21 @@ TEST_CASE("LinebJob runs a fixed-energy seeded Morse band when available",
     REQUIRE(blob.find("action") != std::string::npos);
     REQUIRE(blob.find("log_rate_over_reactant") != std::string::npos);
     REQUIRE(std::filesystem::exists("lineb.con"));
+    const auto frame = readcon::read_first_frame("lineb.con");
+    const auto metadata = nlohmann::json::parse(frame.metadata_json());
+    REQUIRE(metadata.at("lineb").at("spectrum").is_null());
+#ifdef RGSADDLE_HAS_LINEB_RATE_DIAGNOSTICS
+    lineb.beads = 8;
+    eonc::LinebJob rateJob(pot, params);
+    REQUIRE_FALSE(rateJob.run().empty());
+    const auto rateFrame = readcon::read_first_frame("lineb.con");
+    const auto rate = nlohmann::json::parse(rateFrame.metadata_json()).at("lineb");
+    // One mobile atom contributes three coordinates per replica. The
+    // imaginary-time translation removes one mode from the full ring.
+    REQUIRE(rate.at("spectrum").at("modes") == 3 * lineb.beads - 1);
+    REQUIRE(rate.at("spectrum").at("negative_modes").is_number_integer());
+    REQUIRE(rate.at("log_rate_over_reactant").is_number());
+#endif
   }
 }
 

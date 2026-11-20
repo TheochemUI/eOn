@@ -175,8 +175,8 @@ from the eOn time unit (about 10.18 fs). A path-only run writes NaN for this
 field. A solver failure appears in the job log with the rgsaddle status. When the solver exhausts `max_steps`, the diagnostic reports both final force norms and the tolerance for each.
 
 The readcon field `lineb.spectrum` reports the number of retained ring
-modes and the number with negative eigenvalues when rgsaddle ABI minor 51
-or higher evaluates the rate. It is null for a path-only run or a backend
+modes and the number with negative eigenvalues when a backend with
+`RGSADDLE_HAS_LINEB_RATE_DIAGNOSTICS` evaluates the rate. It is null for a path-only run or a backend
 that does not return the spectrum. A first-order instanton has one negative
 mode. Check the force residual around the ring as well as the mode count
 and rate when increasing the number of replicas.

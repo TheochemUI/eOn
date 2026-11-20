@@ -240,7 +240,7 @@ std::vector<std::string> LinebJob::run(void) {
 #endif
 #if RGSADDLE_ABI_MINOR >= 50
   rgsaddle_lineb_counts_t counts{};
-#if RGSADDLE_ABI_MINOR >= 51
+#ifdef RGSADDLE_HAS_LINEB_RATE_DIAGNOSTICS
   int64_t negativeModes = -1;
   int64_t retainedModes = -1;
   const rgsaddle_status_t rc = rgsaddle_lineb_solve_counted_diagnostics(
@@ -367,7 +367,7 @@ std::vector<std::string> LinebJob::run(void) {
         {"potential_calls", potentialCalls}}}};
   auto &spectrum = metadata["lineb"]["spectrum"];
   spectrum = nullptr;
-#if RGSADDLE_ABI_MINOR >= 51
+#ifdef RGSADDLE_HAS_LINEB_RATE_DIAGNOSTICS
   if (negativeModes >= 0 && retainedModes >= 0) {
     spectrum = {{"negative_modes", negativeModes}, {"modes", retainedModes}};
   }
