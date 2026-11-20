@@ -81,7 +81,11 @@ public:
 
 #ifdef RGPOT_HAS_CACHE
   void setResultCache(rgpot::cache::PotentialCache *cache) override {
-    pot_.setCache(cache);
+    if constexpr (requires { pot_.set_cache(cache); }) {
+      pot_.set_cache(cache);
+    } else {
+      pot_.setCache(cache);
+    }
   }
 #endif
 
