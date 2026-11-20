@@ -54,4 +54,4 @@ logarithm of the rate times the reactant partition function, {math}`\ln(k Z_r)`.
 To compare with a rate in inverse seconds, subtract {math}`\ln Z_r` evaluated
 at the same temperature, energy zero and rigid-mode convention, then convert
 from the eOn time unit (about 10.18 fs). A path-only run writes NaN for this
-field. A solver failure appears in the job log with the rgsaddle status.
+field. A solver failure appears in the job log with the rgsaddle status. When the solver exhausts `max_steps`, the diagnostic reports both final force norms and the tolerance for each.
