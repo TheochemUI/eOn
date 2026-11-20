@@ -127,8 +127,9 @@ void writeRateOrbit(const std::string &filename, const Matter &seed,
     rows = nlohmann::json::array();
     for (size_t a = 0; a < freeAtoms.size(); ++a) {
       const size_t k = offset + 3 * a;
-      xyz.row(freeAtoms[a]) = Eigen::Map<const Eigen::RowVector3d>(positions.data() + k);
-      rows.push_back({gradients[k], gradients[k+1], gradients[k+2]});
+      xyz.row(freeAtoms[a]) =
+          Eigen::Map<const Eigen::RowVector3d>(positions.data() + k);
+      rows.push_back({gradients[k], gradients[k + 1], gradients[k + 2]});
     }
     bead.setPositions(xyz);
     io::ConFrameMetadata frame;
