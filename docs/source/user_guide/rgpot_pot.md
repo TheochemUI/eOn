@@ -32,8 +32,14 @@ Cap'n Proto messages passed into the C ABI. The `rgpot` Meson subproject is
 `subprojects/rgpot.wrap`, and the build pulls `nwchempot_dep` and
 `cpmdpot_dep`. Serve mode uses `ptlrpc_dep` under `-Dwith_serve`.
 
-`dependency('rgpot')` prefers an installed rgpot at 3.5.1 or newer. The Meson
-wrap is the fallback. A CPMD run that splits ranks uses the flag in the CPMD
+`dependency('rgpot')` prefers an installed rgpot newer than 3.7.0, the last
+release without the analytic Hessian-vector products that line-integral
+tunnelling uses. The Meson wrap is the fallback. Its pinned upstream revision
+propagates the Cap'n Proto RPC header dependency itself, so eOn no longer
+carries the former include-path patch. Before this eOn change can use an
+installed rgpot, upstream must publish a release newer than 3.7.0 that contains
+the #258 analytic products and the #292 LJ domain-error fix; until then the
+pinned wrap is required. A CPMD run that splits ranks uses the flag in the CPMD
 section.
 
 ## Configuration

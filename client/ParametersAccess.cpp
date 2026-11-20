@@ -251,6 +251,11 @@ const Parameters::instanton_options_t &Parameters::instanton_options() const {
   return impl_->instanton_options_;
 }
 
+const Parameters::line_integral_tunneling_options_t &
+Parameters::line_integral_tunneling_options() const {
+  return impl_->line_integral_tunneling_options_;
+}
+
 void Parameters::set_mpi_client_comm(std::uintptr_t raw) {
   ensure_impl().potential_options_.MPIClientComm = raw;
 }
@@ -647,6 +652,16 @@ instanton_options_t &ParametersLoadAccess::instanton_options(Parameters &p) {
 const instanton_options_t &
 ParametersLoadAccess::instanton_options(const Parameters &p) {
   return p.impl_->instanton_options_;
+}
+
+line_integral_tunneling_options_t &
+ParametersLoadAccess::line_integral_tunneling_options(Parameters &p) {
+  return p.ensure_impl().line_integral_tunneling_options_;
+}
+
+const line_integral_tunneling_options_t &
+ParametersLoadAccess::line_integral_tunneling_options(const Parameters &p) {
+  return p.impl_->line_integral_tunneling_options_;
 }
 
 } // namespace eonc

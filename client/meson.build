@@ -553,14 +553,16 @@ _deps += dl_dep
 # with *default* options before eOn can pass its own; get_variable() then
 # fails for anything the default profile skipped. Force pkg-config-only.
 _rgpot_proj = []
-# rgpot 3.5.1 is the minimum. 3.5.0 changed the C++ layout of
-# PotCaps, LJConfig, LJClusterConfig and MorseConfig but kept
-# soversion 3, so a caller built against 3.4.0 crashes. 3.5.1
-# publishes that layout as librgpot.so.4. eOn compiles the inline
-# caps() into librgpot_pot.so.
+# An installed rgpot must be newer than 3.7.0: PotCaps::analyticHvp and
+# the analytic HessianVectorCache scheme the adapter forwards to came
+# after that release. The wrap pins 758dbc02, the merge of
+# OmniPotentRPC/rgpot#292 into develop; it includes the analytic products from
+# merged PR #258 but still reports 3.7.0, so this check cannot select an
+# installed build of that revision.
+# eOn compiles the inline caps() into librgpot_pot.so.
 _rgpot_pkg = dependency(
     'rgpot',
-    version: '>=3.5.1',
+    version: '>3.7.0',
     method: 'pkg-config',
     required: false,
     allow_fallback: false,
@@ -905,6 +907,10 @@ eonclib_sources = [
     'MobileAtoms.cpp',
     'HessianJob.cpp',
     'InstantonJob.cpp',
+    'LineIntegralTunneling.cpp',
+    'LineIntegralTunnelingJob.cpp',
+    'RingDeterminant.cpp',
+    'TunnelingJobSupport.cpp',
     'ReplicaDynamicsJob.cpp',
     'TADJob.cpp',
     'ProcessSearchJob.cpp',
@@ -1942,6 +1948,8 @@ if get_option('with_tests')
         # The cubic rate at 600 beads, and its half-ring comparison, run
         # past the default 30s.
         ['test_tunneling', 'TunnelingTest.cpp', '', 1200],
+        ['test_line_integral_tunneling', 'LineIntegralTunnelingTest.cpp', 'modified_muller_brown', 300],
+        ['test_ring_determinant', 'RingDeterminantTest.cpp', ''],
         ['test_pot', 'PotTest.cpp', 'neb_morse'],
         ['test_rgpot_adapter', 'RgpotAdapterTest.cpp', 'neb_morse'],
         # ['approve_params', 'ApproveParams.cpp', ''], # needs to handle additional parameters
@@ -2002,6 +2010,14 @@ if get_option('with_tests')
             ['test_fehe', 'FeHeTest.cpp', 'fe_bcc'],
         ]
     endif
+    if get_option('with_cuh2')
+        # The CuH2 regression derives its cloned product workers from the
+        # available CPUs. A one-worker runner needs substantially longer than
+        # the usual multi-core run, so retain realistic loaded-CI headroom.
+        test_array += [
+            ['test_cuh2_line_integral', 'CuH2LineIntegralTest.cpp', 'cuh2_neb_test', 7200],
+        ]
+    endif
     if get_option('with_ase')
         test_array += [['test_ase_pot', 'ASEPotTest.cpp', 'ase_pot']]
     endif
@@ -2048,6 +2064,8 @@ if get_option('with_tests')
         _fortran_pot_dirs += meson.project_build_root() / 'client' / 'potentials' / 'Metatomic'
     endif
     _test_env = environment()
+    _test_env.set('OMP_NUM_THREADS', '1')
+    _test_env.set('OPENBLAS_NUM_THREADS', '1')
     _systems_dir = join_paths(
         meson.project_source_root(),
         'client',
@@ -2056,6 +2074,7 @@ if get_option('with_tests')
         'systems',
     )
     _test_env.set('EON_TEST_SYSTEMS_DIR', _systems_dir)
+    _test_env.set('EON_SOURCE_DIR', meson.project_source_root())
     _test_env.set('EONCLIENT', ec.full_path())
     _test_env.set('EON_RELAX_ENGINE', eon_relax_engine.full_path())
     # The Metatomic job puts torch/lib ahead of the pixi prefix. The

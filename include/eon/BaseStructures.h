@@ -97,7 +97,8 @@ enum class JobType {
   Test,
   GP_Surrogate,
   OH_TST,
-  Instanton
+  Instanton,
+  Line_Integral_Tunneling
 };
 
 enum class OptType {
@@ -114,7 +115,12 @@ enum class OptType {
 
 enum class NEBInit { LINEAR, IDPP, IDPP_COLLECTIVE, SIDPP, SIDPP_ZBL, FILE };
 
-enum class RunStatus { GOOD = 0, FAIL_MAX_ITERATIONS, FAIL_POTENTIAL_FAILED };
+enum class RunStatus {
+  GOOD = 0,
+  FAIL_MAX_ITERATIONS,
+  FAIL_POTENTIAL_FAILED,
+  FAIL_ESTIMATED_ERROR_TARGET
+};
 
 // Dimer rotation / softest-mode estimation backend (Leng et al. JCP 2013 LOR,
 // classical constrained rotation, or FD min-mode Lanczos/Davidson).

@@ -274,5 +274,18 @@ def _generate_docs_figures(app):
         log.warning("metatomic backend figure failed: %s", exc)
 
 
+def _generate_line_integral_tables(app):
+    """Build the CuH2 line-integral tables and quoted numbers from CSV."""
+    import sys
+
+    scripts = _Path(__file__).resolve().parents[2] / "scripts"
+    if str(scripts) not in sys.path:
+        sys.path.insert(0, str(scripts))
+    from line_integral_cuh2_tables import generate_docs_assets
+
+    generate_docs_assets()
+
+
 def setup(app):
     app.connect("builder-inited", _generate_docs_figures)
+    app.connect("builder-inited", _generate_line_integral_tables)

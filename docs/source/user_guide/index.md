@@ -149,6 +149,7 @@ artn
 hessian
 finite_difference
 instanton
+line_integral_tunneling
 prefactor
 ```
 

@@ -96,6 +96,8 @@ public:
   using debug_options_t = eonc::debug_options_t;
   using oh_tst_options_t = eonc::oh_tst_options_t;
   using instanton_options_t = eonc::instanton_options_t;
+  using line_integral_tunneling_options_t =
+      eonc::line_integral_tunneling_options_t;
 
   void set_mpi_client_comm(std::uintptr_t raw);
   [[nodiscard]] std::uintptr_t mpi_client_comm() const;
@@ -144,6 +146,8 @@ public:
   const debug_options_t &debug_options() const;
   const oh_tst_options_t &oh_tst_options() const;
   const instanton_options_t &instanton_options() const;
+  const line_integral_tunneling_options_t &
+  line_integral_tunneling_options() const;
 
   friend int config::load_ini(::INIReader &, Parameters &);
   friend void config::apply_ssot_defaults(Parameters &);
@@ -259,6 +263,10 @@ struct ParametersLoadAccess {
   static const oh_tst_options_t &oh_tst_options(const Parameters &p);
   static instanton_options_t &instanton_options(Parameters &p);
   static const instanton_options_t &instanton_options(const Parameters &p);
+  static line_integral_tunneling_options_t &
+  line_integral_tunneling_options(Parameters &p);
+  static const line_integral_tunneling_options_t &
+  line_integral_tunneling_options(const Parameters &p);
 };
 
 } // namespace eonc

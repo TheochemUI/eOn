@@ -9,17 +9,21 @@
 */
 #pragma once
 
+#include <cmath>
+#include <functional>
 #include <memory>
 #include <stdexcept>
 #include <type_traits>
 #include <vector>
 
+#include "eon/Matter.h"
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
 #include "eon/potentials/PluginLoader.h"
 #include "eon/potentials/RgpotAdapter/HessianRange.h"
 
 #include "rgpot/ForceStructs.hpp"
+#include "rgpot/HessianVector.hpp"
 #include "rgpot/pot_caps.hpp"
 
 /// Wraps one rgpot kernel as an eOn Potential.
@@ -44,20 +48,30 @@ public:
     requires(!std::is_base_of_v<eonc::IPluginLoader, std::remove_cvref_t<Cfg>>)
   RgpotAdapter(eonc::PotType ptype, const eonc::Parameters &params,
                const Cfg &cfg, eonc::IPluginLoader &loader)
-      : eonc::Potential(ptype, params), pot_(cfg), loader_(loader) {
+      : eonc::Potential(ptype, params), pot_(cfg), loader_(loader),
+        clone_([ptype, params, cfg, &loader]() {
+          return std::make_shared<RgpotAdapter<RPot>>(ptype, params, cfg,
+                                                       loader);
+        }) {
     finishConstruct(params);
   }
 
   /// Kernels with no configuration surface default-construct in place.
   RgpotAdapter(eonc::PotType ptype, const eonc::Parameters &params)
       : eonc::Potential(ptype, params), pot_(),
-        loader_(eonc::PluginLoader::instance()) {
+        loader_(eonc::PluginLoader::instance()),
+        clone_([ptype, params]() {
+          return std::make_shared<RgpotAdapter<RPot>>(ptype, params);
+        }) {
     finishConstruct(params);
   }
   /// Test seam: injected loader, no process-default search-path mutation.
   RgpotAdapter(eonc::PotType ptype, const eonc::Parameters &params,
                eonc::IPluginLoader &loader)
-      : eonc::Potential(ptype, params), pot_(), loader_(loader) {
+      : eonc::Potential(ptype, params), pot_(), loader_(loader),
+        clone_([ptype, params, &loader]() {
+          return std::make_shared<RgpotAdapter<RPot>>(ptype, params, loader);
+        }) {
     finishConstruct(params);
   }
 
@@ -164,6 +178,77 @@ public:
            caps.reentrancy == rgpot::Reentrancy::PerInstance;
   }
 
+  [[nodiscard]] std::shared_ptr<eonc::Potential>
+  clonePotential() const override {
+    return clone_ ? clone_() : nullptr;
+  }
+
+  /// Only a kernel that advertises and implements rgpot's analytic product
+  /// qualifies; rgpot's finite-difference schemes are never used here.
+  [[nodiscard]] bool
+  supportsMassWeightedHessianVectorProduct() const noexcept override {
+    if constexpr (rgpot::AnalyticHessianVectorKernel<RPot>) {
+      return pot_.caps().analyticHvp;
+    } else {
+      return false;
+    }
+  }
+
+  /// H v in q = sqrt(m) x over the free atoms: the Cartesian direction is
+  /// v / sqrt(m) with the fixed atoms held, and the product is divided by
+  /// sqrt(m) again. The box follows force(): a non-periodic system gets a
+  /// zero box unless the potential forwards its stored cell.
+  VectorXd massWeightedHessianVectorProduct(const eonc::Matter &matter,
+                                            const VectorXd &direction,
+                                            const VectorXi &freeAtoms) override {
+    if constexpr (rgpot::AnalyticHessianVectorKernel<RPot>) {
+      if (!pot_.caps().analyticHvp) {
+        throw std::logic_error(
+            "rgpot Hessian-vector product: kernel has no analytic product");
+      }
+      if (direction.size() != 3 * freeAtoms.size()) {
+        throw std::invalid_argument(
+            "rgpot Hessian-vector product: direction does not match the free "
+            "atoms");
+      }
+      const long atoms = matter.numberOfAtoms();
+      std::vector<double> cartesian(static_cast<size_t>(3 * atoms), 0.0);
+      std::vector<double> product(cartesian.size());
+      std::vector<double> inverseSqrtMass(static_cast<size_t>(freeAtoms.size()));
+      for (long k = 0; k < freeAtoms.size(); ++k) {
+        const long atom = freeAtoms(k);
+        inverseSqrtMass[static_cast<size_t>(k)] =
+            1.0 / std::sqrt(matter.getMass(atom));
+        for (long axis = 0; axis < 3; ++axis) {
+          cartesian[static_cast<size_t>(3 * atom + axis)] =
+              direction(3 * k + axis) * inverseSqrtMass[static_cast<size_t>(k)];
+        }
+      }
+      const VectorXi numbers = matter.getAtomicNrs();
+      const Matrix3d cell = (matter.getPeriodic() || forwardsStoredCell())
+                                ? matter.getCell()
+                                : Matrix3d::Zero().eval();
+      const rgpot::ForceInput in{static_cast<size_t>(atoms),
+                                 matter.getPositions().data(), numbers.data(),
+                                 cell.data()};
+      rgpot::HessianVectorCache products;
+      products.apply(pot_, in, cartesian.data(), product.data(), 0.0,
+                     rgpot::HvpScheme::Analytic);
+      VectorXd out(direction.size());
+      for (long k = 0; k < freeAtoms.size(); ++k) {
+        const long atom = freeAtoms(k);
+        for (long axis = 0; axis < 3; ++axis) {
+          out(3 * k + axis) = product[static_cast<size_t>(3 * atom + axis)] *
+                              inverseSqrtMass[static_cast<size_t>(k)];
+        }
+      }
+      return out;
+    } else {
+      return eonc::Potential::massWeightedHessianVectorProduct(
+          matter, direction, freeAtoms);
+    }
+  }
+
   [[nodiscard]] const RPot &kernel() const noexcept { return pot_; }
 
   /// Hessian block range from HessianRangeOf<RPot>, not from whether
@@ -202,6 +287,7 @@ private:
 
   RPot pot_;
   eonc::IPluginLoader &loader_;
+  std::function<std::shared_ptr<eonc::Potential>()> clone_;
   Matrix3d stress_{Matrix3d::Zero()};
   bool haveStress_{false};
 };

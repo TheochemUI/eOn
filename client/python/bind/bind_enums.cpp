@@ -111,7 +111,8 @@ void bind_enums(nb::module_ &m) {
       .value("Test", eonc::JobType::Test)
       .value("GP_Surrogate", eonc::JobType::GP_Surrogate)
       .value("OH_TST", eonc::JobType::OH_TST)
-      .value("Instanton", eonc::JobType::Instanton);
+      .value("Instanton", eonc::JobType::Instanton)
+      .value("Line_Integral_Tunneling", eonc::JobType::Line_Integral_Tunneling);
 
   m.def(
       "job_type_from_name",
@@ -152,7 +153,9 @@ void bind_enums(nb::module_ &m) {
   nb::enum_<eonc::RunStatus>(m, "RunStatus")
       .value("GOOD", eonc::RunStatus::GOOD)
       .value("FAIL_MAX_ITERATIONS", eonc::RunStatus::FAIL_MAX_ITERATIONS)
-      .value("FAIL_POTENTIAL_FAILED", eonc::RunStatus::FAIL_POTENTIAL_FAILED);
+      .value("FAIL_POTENTIAL_FAILED", eonc::RunStatus::FAIL_POTENTIAL_FAILED)
+      .value("FAIL_ESTIMATED_ERROR_TARGET",
+             eonc::RunStatus::FAIL_ESTIMATED_ERROR_TARGET);
 }
 
 } // namespace eonc::pybind

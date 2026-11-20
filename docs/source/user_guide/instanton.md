@@ -22,6 +22,8 @@ ways:
 
 With `mode = rate` the same job estimates the thermal rate through a saddle
 instead of a splitting. That path is below.
+The alternative {doc}`line_integral_tunneling` job obtains the thermal
+instanton by energy-continuation LI-NEB and evaluates HQTST on that path.
 
 Energies are in eV, lengths in Å and masses in amu throughout, so
 mass-weighted lengths are in amu^0.5 Å.
@@ -91,7 +93,7 @@ beads = 256
 springs = trotter
 beta_hbar_omega = 30
 force_tolerance = 1e-3
-; one finite-difference Hessian every 4 beads, linear in between
+; one image Hessian every 4 beads, linear in between
 hessian_stride = 4
 ```
 
@@ -105,7 +107,15 @@ the kink to relax into both wells. `results.dat` reports
 mode. Values above {math}`10^3` mean the kink is isolated; small values mean
 {math}`\beta\hbar` is too short. With no atom fixed, the product is aligned
 to the reactant first: its mass-weighted mean displacement is removed, and
-for a cluster its best rotation as well.
+for a cluster its best rotation as well. Tunnelling coordinates retain
+Cartesian constraint masks, including masks that fix only selected axes of an
+atom.
+
+Image Hessians are assembled from the potential's exact mass-weighted
+Hessian-vector product when it provides one, and from the configured
+finite-difference fallback otherwise. Existing results can therefore change
+when a coarse difference step previously biased the curvature; the exact
+product removes that step-size dependence.
 
 With that reactant rotation removed, each iteration evaluates every interior bead of the kink in one call. Under
 `[RgpotPot] ranks_per_image`, that call spreads the beads over the Car-Parrinello molecular dynamics (CPMD)
@@ -240,8 +250,9 @@ written. The step climbs the mode that overlaps
 the last climb and turns every other negative curvature downhill; the
 imaginary-time cycle and the rigid motions of the whole ring, rebuilt
 from the current beads, are held in place and left out of the step. A
-converged gradient is classified with finite-difference bead Hessians,
-since the Bofill blocks can carry negative curvatures the surface does
+converged gradient is classified with freshly assembled bead Hessians,
+using exact products where available and the declared finite-difference
+fallback otherwise, since the Bofill blocks can carry negative curvatures the surface does
 not have; a second negative curvature that survives is a higher-index
 stationary ring, and the search steps down that mode. The ring Hessian is block cyclic
 tridiagonal in the beads, and every solve, determinant and inertia count
@@ -252,8 +263,8 @@ freedom, and the {math}`Nf \times Nf` matrix is never formed, so the same
 step serves a seven-atom cluster and a 254-atom cell. The lowest ring
 modes come from Lanczos on matrix-vector products. The bead curvature
 blocks start from the saddle Hessian (`initial_hessians = saddle`, no force
-calls) and follow accepted moves with a Bofill update, rebuilt from
-finite differences up to three times when the trust radius reaches its
+calls) and follow accepted moves with a Bofill update, rebuilt from the
+potential product or finite-difference fallback up to three times when the trust radius reaches its
 floor. Near-zero eigenvectors of the saddle Hessian are held at a
 spring-sized curvature in the Newton step, so a rigid displacement does
 not singularize the chain. `initial_hessians = finite_difference` takes

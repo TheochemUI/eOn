@@ -353,6 +353,10 @@ struct RateInstanton {
   /// not underflow.
   double classicalRate = 0.0;
   double classicalLogRate = 0.0;
+  /// Estimated ln k error from stochastic determinants (zero when exact).
+  double logRateError = 0.0;
+  /// Hessian-vector products behind the determinants.
+  long hessianProducts = 0;
 };
 
 /// Finds the rate instanton at inverse temperature `beta` (1 / eV).
@@ -424,6 +428,13 @@ struct RingRigidBodies {
   VectorXd reference;
   std::array<bool, 3> rotations{{false, false, false}};
 };
+
+/// The orthonormal rigid motions of a whole ring of beads, one vector per
+/// bead each: the translations and each free rotation about the ring's
+/// centre of mass. Empty masses give none.
+std::vector<std::vector<VectorXd>>
+ringRigidMotions(const std::vector<VectorXd> &beads,
+                 const RingRigidBodies &bodies);
 
 /// Fills the rate from the bead Hessians, the reactant minimum's Hessian and
 /// energy, and optionally the saddle's Hessian and energy for the classical

@@ -14,60 +14,82 @@
 
 #include <algorithm>
 #include <cmath>
+#include <stdexcept>
 
 namespace eonc::neb {
 
 // matDot is now in Eigen.h (shared across all files)
 
+namespace {
+
+template <typename Coordinate>
+Coordinate tangentImpl(const Coordinate &posDiffNext,
+                       const Coordinate &posDiffPrev, double energy,
+                       double energyPrev, double energyNext,
+                       bool useOldTangent) {
+  Coordinate tangent;
+  if (useOldTangent) {
+    tangent = posDiffNext;
+  } else if (energyNext > energy && energy > energyPrev) {
+    tangent = posDiffNext;
+  } else if (energy > energyNext && energyPrev > energy) {
+    tangent = posDiffPrev;
+  } else {
+    const double energyDiffPrev = energyPrev - energy;
+    const double energyDiffNext = energyNext - energy;
+    const double minDiffEnergy =
+        std::min(std::abs(energyDiffPrev), std::abs(energyDiffNext));
+    const double maxDiffEnergy =
+        std::max(std::abs(energyDiffPrev), std::abs(energyDiffNext));
+    if (energyDiffPrev > energyDiffNext) {
+      tangent = posDiffNext * minDiffEnergy + posDiffPrev * maxDiffEnergy;
+    } else {
+      tangent = posDiffNext * maxDiffEnergy + posDiffPrev * minDiffEnergy;
+    }
+  }
+  return tangent;
+}
+
+} // namespace
+
 AtomMatrix computeTangent(const AtomMatrix &posDiffNext,
                           const AtomMatrix &posDiffPrev, double energy,
                           double energyPrev, double energyNext,
                           bool use_old_tangent) {
-  AtomMatrix tang;
-
-  if (use_old_tangent) {
-    tang = posDiffNext;
-  } else {
-    // Improved tangent scheme
-    if (energyNext > energy && energy > energyPrev) {
-      tang = posDiffNext;
-    } else if (energy > energyNext && energyPrev > energy) {
-      tang = posDiffPrev;
-    } else {
-      // Extremum: energy-weighted combination
-      double energyDiffPrev = energyPrev - energy;
-      double energyDiffNext = energyNext - energy;
-      double minDiffEnergy =
-          std::min(std::abs(energyDiffPrev), std::abs(energyDiffNext));
-      double maxDiffEnergy =
-          std::max(std::abs(energyDiffPrev), std::abs(energyDiffNext));
-
-      if (energyDiffPrev > energyDiffNext) {
-        tang = posDiffNext * minDiffEnergy + posDiffPrev * maxDiffEnergy;
-      } else {
-        tang = posDiffNext * maxDiffEnergy + posDiffPrev * minDiffEnergy;
-      }
-    }
-  }
-
-  // Normalize with safety check
-  double norm = tang.norm();
+  AtomMatrix tangent = tangentImpl(posDiffNext, posDiffPrev, energy, energyPrev,
+                                   energyNext, use_old_tangent);
+  double norm = tangent.norm();
   if (norm > 1e-10) {
-    tang /= norm;
+    tangent /= norm;
   } else {
-    // Fallback: use direction to next image
-    tang = posDiffNext;
-    norm = tang.norm();
+    tangent = posDiffNext;
+    norm = tangent.norm();
     if (norm > 1e-10) {
-      tang /= norm;
+      tangent /= norm;
     }
   }
+  return tangent;
+}
 
-  return tang;
+VectorXd computeTangent(const VectorXd &posDiffNext,
+                        const VectorXd &posDiffPrev, double energy,
+                        double energyPrev, double energyNext,
+                        bool use_old_tangent) {
+  VectorXd tangent = tangentImpl(posDiffNext, posDiffPrev, energy, energyPrev,
+                                 energyNext, use_old_tangent);
+  const double norm = tangent.norm();
+  if (!(norm > 0.0)) {
+    throw std::invalid_argument("NEB tangent has zero length");
+  }
+  return tangent / norm;
 }
 
 AtomMatrix forcePerp(const AtomMatrix &force, const AtomMatrix &tangent) {
   return force - matDot(force, tangent) * tangent;
+}
+
+VectorXd forcePerp(const VectorXd &force, const VectorXd &tangent) {
+  return force - force.dot(tangent) * tangent;
 }
 
 AtomMatrix climbingImageForce(const AtomMatrix &force,

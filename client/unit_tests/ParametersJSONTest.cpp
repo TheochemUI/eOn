@@ -20,6 +20,7 @@
 #include <nlohmann/json.hpp>
 #include <stdexcept>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 namespace tests {
@@ -433,6 +434,139 @@ TEST_CASE("JSON round-trips every Instanton and Hessian key",
   REQUIRE(lh.resume);
   REQUIRE(lh.checkpoint_path == "hessian.ckpt");
   REQUIRE_FALSE(lh.write_modes);
+}
+
+TEST_CASE("JSON round-trips line-integral tunneling options",
+          "[params][json]") {
+  Parameters written;
+  auto &o = ParametersLoadAccess::line_integral_tunneling_options(written);
+  o.reactant_filename = "minimum.con";
+  o.saddle_filename = "transition.con";
+  o.mep_filename = "path.con";
+  o.images = 12;
+  o.replicas = 96;
+  o.energy_offset = 0.04;
+  o.lowest_temperature = 65.0;
+  o.energy_step = 0.03;
+  o.log_rate_tolerance = 0.2;
+  o.spring = 18.0;
+  o.contour = 900.0;
+  o.force_tolerance = 0.008;
+  o.max_iterations = 1200;
+  o.li_neb_time_step = 0.02;
+  o.period_tolerance = 0.005;
+  o.determinant_estimated_error = 0.04;
+  o.optimizer = "fire";
+
+  Parameters loaded;
+  eonc::config::from_json(eonc::config::to_json(written), loaded);
+  const auto &l = loaded.line_integral_tunneling_options();
+  REQUIRE(l.reactant_filename == "minimum.con");
+  REQUIRE(l.saddle_filename == "transition.con");
+  REQUIRE(l.mep_filename == "path.con");
+  REQUIRE(l.images == 12);
+  REQUIRE(l.replicas == 96);
+  REQUIRE(l.energy_offset == Catch::Approx(0.04));
+  REQUIRE(l.lowest_temperature == Catch::Approx(65.0));
+  REQUIRE(l.energy_step == Catch::Approx(0.03));
+  REQUIRE(l.log_rate_tolerance == Catch::Approx(0.2));
+  REQUIRE(l.spring == Catch::Approx(18.0));
+  REQUIRE(l.contour == Catch::Approx(900.0));
+  REQUIRE(l.force_tolerance == Catch::Approx(0.008));
+  REQUIRE(l.max_iterations == 1200);
+  REQUIRE(l.li_neb_time_step == Catch::Approx(0.02));
+  REQUIRE(l.period_tolerance == Catch::Approx(0.005));
+  REQUIRE(l.determinant_estimated_error == Catch::Approx(0.04));
+  REQUIRE(l.optimizer == "fire");
+}
+
+TEST_CASE("INI loads line-integral tunneling options", "[params][ini]") {
+  Parameters loaded;
+  REQUIRE(loaded.load_ini_text(R"(
+[Main]
+job = line_integral_tunneling
+
+[Line Integral Tunneling]
+images = 9
+replicas = 150
+energy_offset = 0.05
+lowest_temperature = 75
+energy_step = 0.025
+log_rate_tolerance = 0.3
+spring = 20
+contour = 1000
+force_tolerance = 0.01
+max_iterations = 2500
+li_neb_time_step = 0.015
+period_tolerance = 0.0075
+determinant_estimated_error = 0.06
+optimizer = lbfgs
+)") == 0);
+  REQUIRE(loaded.main_options().job == JobType::Line_Integral_Tunneling);
+  const auto &o = loaded.line_integral_tunneling_options();
+  REQUIRE(o.images == 9);
+  REQUIRE(o.replicas == 150);
+  REQUIRE(o.energy_offset == Catch::Approx(0.05));
+  REQUIRE(o.lowest_temperature == Catch::Approx(75.0));
+  REQUIRE(o.energy_step == Catch::Approx(0.025));
+  REQUIRE(o.log_rate_tolerance == Catch::Approx(0.3));
+  REQUIRE(o.spring == Catch::Approx(20.0));
+  REQUIRE(o.contour == Catch::Approx(1000.0));
+  REQUIRE(o.force_tolerance == Catch::Approx(0.01));
+  REQUIRE(o.max_iterations == 2500);
+  REQUIRE(o.li_neb_time_step == Catch::Approx(0.015));
+  REQUIRE(o.period_tolerance == Catch::Approx(0.0075));
+  REQUIRE(o.determinant_estimated_error == Catch::Approx(0.06));
+  REQUIRE(o.optimizer == "lbfgs");
+}
+
+TEST_CASE("JSON rejects every invalid line-integral option with its key",
+          "[params][json][line-integral]") {
+  const std::vector<std::pair<std::string, nlohmann::json>> invalid{
+      {"images", 2},
+      {"replicas", 3},
+      {"energy_offset", 0.0},
+      {"lowest_temperature", 0.0},
+      {"energy_step", 0.0},
+      {"log_rate_tolerance", 0.0},
+      {"spring", 0.0},
+      {"contour", 0.0},
+      {"force_tolerance", 0.0},
+      {"max_iterations", 0},
+      {"li_neb_time_step", 0.0},
+      {"period_tolerance", 0.0},
+      {"determinant_estimated_error", 0.0},
+      {"optimizer", "bogus"},
+  };
+  for (const auto &[key, value] : invalid) {
+    DYNAMIC_SECTION(key) {
+      Parameters loaded;
+      const nlohmann::json input{
+          {"Line Integral Tunneling", {{key, value}}}};
+      REQUIRE_THROWS_WITH(
+          eonc::config::from_json(input, loaded),
+          Catch::Matchers::ContainsSubstring(key));
+    }
+  }
+}
+
+TEST_CASE("INI uses the shared line-integral option validation",
+          "[params][ini][line-integral]") {
+  const std::vector<std::pair<std::string, std::string>> invalid{
+      {"images", "2"},
+      {"replicas", "3"},
+      {"period_tolerance", "0"},
+      {"optimizer", "bogus"},
+  };
+  for (const auto &[key, value] : invalid) {
+    DYNAMIC_SECTION(key) {
+      Parameters loaded;
+      const std::string ini = "[Line Integral Tunneling]\n" + key + " = " +
+                              value + "\n";
+      REQUIRE_THROWS_WITH(loaded.load_ini_text(ini),
+                          Catch::Matchers::ContainsSubstring(key));
+    }
+  }
 }
 
 TEST_CASE("JSON derives the thermostat times the way the ini does",
