@@ -15,6 +15,8 @@
 #include <rgsaddle.h>
 #endif
 
+#include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdlib>
 #include <filesystem>
@@ -173,6 +175,41 @@ TEST_CASE("LinebJob runs a fixed-energy seeded Morse band when available",
     REQUIRE(rate.at("spectrum").at("modes") == 3 * lineb.beads - 1);
     REQUIRE(rate.at("spectrum").at("negative_modes").is_number_integer());
     REQUIRE(rate.at("log_rate_over_reactant").is_number());
+#ifdef RGSADDLE_HAS_LINEB_ORBIT
+    const auto frames = readcon::read_all_frames("lineb-orbit.con");
+    REQUIRE(frames.size() == static_cast<size_t>(lineb.beads));
+    std::vector<std::array<double, 3>> coordinates, gradients;
+    double mass = 0;
+    for (const auto &bead : frames) {
+      const auto info = nlohmann::json::parse(bead.metadata_json());
+      REQUIRE(info.at("evaluation_counts") == nlohmann::json::parse(rateFrame.metadata_json()).at("evaluation_counts"));
+      const auto &observed = info.at("lineb_orbit");
+      REQUIRE(observed.at("mobile_atom_ids").size() == 1);
+      const auto id = observed.at("mobile_atom_ids").at(0).get<uint64_t>();
+      const auto atoms = bead.atoms();
+      const auto atom = std::find_if(atoms.begin(), atoms.end(),
+                                     [id](const auto &a) { return a.atom_id == id; });
+      REQUIRE(atom != atoms.end());
+      coordinates.push_back({atom->x, atom->y, atom->z});
+      gradients.push_back(observed.at("gradients_eV_per_angstrom").at(0).get<std::array<double, 3>>());
+      mass = atom->mass;
+    }
+    const auto n = frames.size();
+    const double spring = mass * std::pow(n / (2 * rate.at("half_period").get<double>()), 2);
+    double maxAbs = 0, sumSquares = 0;
+    for (size_t b = 0; b < n; ++b) {
+      for (size_t c = 0; c < 3; ++c) {
+        const double residual = gradients[b][c] + spring *
+            ((coordinates[b][c] - coordinates[(b+n-1)%n][c]) +
+             (coordinates[b][c] - coordinates[(b+1)%n][c]));
+        maxAbs = std::max(maxAbs, std::abs(residual));
+        sumSquares += residual * residual;
+      }
+    }
+    const auto &summary = rate.at("stationarity");
+    REQUIRE(summary.at("max_abs_eV_per_angstrom").get<double>() == Catch::Approx(maxAbs).margin(1e-10));
+    REQUIRE(summary.at("rms_eV_per_angstrom").get<double>() == Catch::Approx(std::sqrt(sumSquares/(3*n))).margin(1e-10));
+#endif
 #endif
   }
 }
