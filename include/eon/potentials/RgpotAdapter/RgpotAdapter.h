@@ -19,6 +19,8 @@
 #include "eon/potentials/PluginLoader.h"
 #include "eon/potentials/RgpotAdapter/HessianRange.h"
 
+#include "eon/potentials/RgpotAdapter/ResultCache.h"
+
 #include "rgpot/ForceStructs.hpp"
 #include "rgpot/pot_caps.hpp"
 
@@ -26,7 +28,13 @@
 ///
 /// Scalar and batched requests use rgpot's public batch interface so its
 /// result cache and kernel accounting apply to both paths.
-template <class RPot> class RgpotAdapter final : public eonc::Potential {
+template <class RPot>
+class RgpotAdapter final : public eonc::Potential
+#ifdef RGPOT_HAS_CACHE
+    ,
+                           public eonc::RgpotCacheProvider
+#endif
+{
 public:
   /// Kernels construct in place from their config: several hold mutexes
   /// or other immovable state, so the adapter never copies or moves them.
@@ -70,6 +78,12 @@ public:
         loader_(loader) {
     finishConstruct(params);
   }
+
+#ifdef RGPOT_HAS_CACHE
+  void setResultCache(rgpot::cache::PotentialCache *cache) override {
+    pot_.setCache(cache);
+  }
+#endif
 
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override {

@@ -18,11 +18,13 @@
 #include "eon/Matter.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
+#include "eon/potentials/RgpotAdapter/ResultCache.h"
 
 #include <cmath>
 #include <limits>
 #include <map>
 #include <nlohmann/json.hpp>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -152,6 +154,24 @@ std::vector<std::string> LinebJob::run(void) {
         "lineb: [Lineb] beads must be nonnegative (0 is path only)");
   }
 
+#ifdef RGPOT_HAS_CACHE
+  std::optional<ScopedRgpotCache> resultCache;
+  if (!o.result_cache.empty()) {
+    auto *provider = dynamic_cast<RgpotCacheProvider *>(pot.get());
+    if (!provider) {
+      throw std::runtime_error("lineb: result_cache requires an rgpot adapter");
+    }
+    resultCache.emplace(*provider, o.result_cache);
+  }
+  const auto cacheCounts = [&] {
+    return resultCache ? resultCache->counts() : rgpot::cache::EvalCounts{};
+  };
+#else
+  if (!o.result_cache.empty()) {
+    throw std::runtime_error(
+        "lineb: result_cache requires rgpot built with cache support");
+  }
+#endif
   const auto jobStart = pot->forceCallCounter.load();
   auto band = lineb::loadSeedBand(params, pot, o.initial_path);
   std::vector<long> freeAtoms;
@@ -192,6 +212,9 @@ std::vector<std::string> LinebJob::run(void) {
   Matter probe(*band.front());
   LinebSurface ctx{&probe, freeAtoms};
 
+#ifdef RGPOT_HAS_CACHE
+  const auto cacheAtSolve = cacheCounts();
+#endif
   const auto solveStart = pot->forceCallCounter.load();
   rgsaddle_lineb_result_t result{};
 #if RGSADDLE_ABI_MINOR < 49
@@ -260,6 +283,9 @@ std::vector<std::string> LinebJob::run(void) {
     throw std::runtime_error(message);
   }
 
+#ifdef RGPOT_HAS_CACHE
+  const auto cacheAtOutput = cacheCounts();
+#endif
   const auto solveEnd = pot->forceCallCounter.load();
   unpackPositions(optimized, freeAtoms, band);
 
@@ -302,7 +328,7 @@ std::vector<std::string> LinebJob::run(void) {
       {"output", outputEnd - solveEnd},
       {"total", outputEnd - jobStart}};
   const auto provenance = provenanceForJob(params);
-  const nlohmann::json metadata = {
+  nlohmann::json metadata = {
       {"evaluation_counts",
        {{"scope", "job"},
         {"boundary", "solver_callback_geometry"},
@@ -327,6 +353,23 @@ std::vector<std::string> LinebJob::run(void) {
         {"surface_call_unit", "configuration"},
         {"surface_calls", solverCalls},
         {"potential_calls", potentialCalls}}}};
+  auto &providerResults = metadata["evaluation_counts"]["rgpot_results"];
+  providerResults = nullptr;
+#ifdef RGPOT_HAS_CACHE
+  if (resultCache) {
+    const auto end = cacheCounts();
+    const auto delta = [](auto first, auto last) {
+      return nlohmann::json{{"computed", last.computed - first.computed},
+                            {"served", last.served - first.served}};
+    };
+    const rgpot::cache::EvalCounts zero{};
+    providerResults = delta(zero, end);
+    providerResults["scope"] = "job";
+    providerResults["phases"] = {{"setup", delta(zero, cacheAtSolve)},
+                                 {"solve", delta(cacheAtSolve, cacheAtOutput)},
+                                 {"output", delta(cacheAtOutput, end)}};
+  }
+#endif
   const auto metadataJson = metadata.dump();
   for (size_t i = 0; i < metas.size(); ++i) {
     metas[i].neb_bead = i;

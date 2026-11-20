@@ -41,6 +41,11 @@
       "description": "Apply opt_tol to the endpoints and perp_tol to the interior.",
       "type": "boolean"
     },
+    "result_cache": {
+      "default": "",
+      "description": "Path to the rgpot result cache for this LI-NEB job.",
+      "type": "string"
+    },
     "projected_verlet": {
       "default": false,
       "description": "Optimize the band with velocity-projected velocity Verlet.",

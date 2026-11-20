@@ -57,4 +57,5 @@
     o.linear_seed = GD::LINEB_LINEAR_SEED;
     o.endpoint_convergence = GD::LINEB_ENDPOINT_CONVERGENCE;
     o.projected_verlet = GD::LINEB_PROJECTED_VERLET;
+    o.result_cache = std::string(GD::LINEB_RESULT_CACHE);
   }

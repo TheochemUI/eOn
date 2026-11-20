@@ -393,6 +393,13 @@ CATALOG = {
           "ordinal": 18,
           "snake": "projected_verlet",
           "type": "Bool"
+        },
+        {
+          "capnp": "result_cache",
+          "default": "",
+          "ordinal": 19,
+          "snake": "result_cache",
+          "type": "Text"
         }
       ],
       "json_name": "Lineb",

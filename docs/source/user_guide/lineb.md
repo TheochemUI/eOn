@@ -158,6 +158,15 @@ job has its own cost. Older rgsaddle libraries supply the combined
 `optimizer_reported` and `measure_reported` fields, plus `dynamics`, `rate`
 and the observed remainder in `unclassified`.
 
+To measure work inside rgpot, set `result_cache` in `[Lineb]` to a
+RocksDB directory and use an rgpot potential with cache support
+(`-Drgpot:with_cache=true` for the bundled dependency). A new directory
+starts cold. Reusing the directory lets rgpot serve matching geometries.
+The readcon metadata field `evaluation_counts.rgpot_results` gives
+`computed` and `served` for the job and for each of `setup`, `solve`,
+and `output` under `phases`. Without an attached cache this field is null.
+For cost comparisons, record whether the database was cold or reused.
+
 For positive replica counts, `log_rate_over_reactant` is the natural
 logarithm of the rate times the reactant partition function, {math}`\ln(k Z_r)`.
 To compare with a rate in inverse seconds, subtract {math}`\ln Z_r` evaluated

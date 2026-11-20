@@ -748,6 +748,9 @@ struct CutoffOnlyKernel {
   [[nodiscard]] const Config &config() const noexcept { return cfg; }
   [[nodiscard]] rgpot::PotCaps caps() const noexcept { return {}; }
   void forceBatch(const rgpot::ForceBatch &) const {}
+#ifdef RGPOT_HAS_CACHE
+  void setCache(rgpot::cache::PotentialCache *) {}
+#endif
   Config cfg{};
 };
 

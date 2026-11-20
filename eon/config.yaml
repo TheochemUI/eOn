@@ -1503,6 +1503,11 @@ Lineb:
             kind: string
             default: ""
 
+        # Persistent rgpot result database for LI-NEB geometry evaluations.
+        result_cache:
+            kind: string
+            default: ""
+
         # Tunneling energy E of the equipotential endpoints, eV.
         energy:
             kind: float

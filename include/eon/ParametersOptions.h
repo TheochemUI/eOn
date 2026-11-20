@@ -1040,6 +1040,7 @@ struct lineb_options_t {
   bool linear_seed{false};
   bool endpoint_convergence{false};
   bool projected_verlet{false};
+  std::string result_cache;
   double time_step{0.1};
   double max_move{0.2};
   double turning_width{1e-3};

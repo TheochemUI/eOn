@@ -303,6 +303,7 @@ struct LinebOptions {
   linear_seed @16 :Bool = false;
   endpoint_convergence @17 :Bool = false;
   projected_verlet @18 :Bool = false;
+  result_cache @19 :Text = "";
 }
 
 # ---------------------------------------------------------------------

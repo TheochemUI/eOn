@@ -578,6 +578,7 @@
         "spring",
         "linear_seed",
         "endpoint_convergence",
+        "result_cache",
         "projected_verlet",
         "endpoint_kappa",
         "endpoint_scale",
