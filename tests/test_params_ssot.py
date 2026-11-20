@@ -236,6 +236,7 @@ def test_lineb_is_projected_without_duplicate_adapter_gets():
         "linear_seed",
         "endpoint_convergence",
         "projected_verlet",
+        "result_cache",
         "time_step",
         "max_move",
         "turning_width",
@@ -246,6 +247,7 @@ def test_lineb_is_projected_without_duplicate_adapter_gets():
         "beads",
         "molecular",
     }
+    assert params_ssot.defaults_for("Lineb")["result_cache"] == ""
     assert params_ssot.defaults_for("Lineb")["beads"] == 0
     assert params_ssot.defaults_for("Lineb")["spring"] == 0.1
 
