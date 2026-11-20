@@ -7,7 +7,6 @@
 
 #ifdef RGPOT_HAS_CACHE
 #include "rgpot/PotentialCache.hpp"
-#include <memory>
 #include <stdexcept>
 #include <string>
 
@@ -23,21 +22,8 @@ public:
 class ScopedRgpotCache {
 public:
   ScopedRgpotCache(RgpotCacheProvider &provider, const std::string &path)
-      : provider_(provider) {
-    rocksdb::Options options;
-    options.create_if_missing = true;
-#if RGPOT_ROCKSDB_UNIQUE_PTR_OPEN
-    const auto status = rocksdb::DB::Open(options, path, &db_);
-#else
-    rocksdb::DB *raw = nullptr;
-    const auto status = rocksdb::DB::Open(options, path, &raw);
-    db_.reset(raw);
-#endif
-    if (!status.ok()) {
-      throw std::runtime_error("lineb: cannot open rgpot result cache " + path +
-                               ": " + status.ToString());
-    }
-    cache_.set_db(db_.get());
+      : cache_(path), provider_(provider) {
+    checkOpen(cache_, path);
     provider_.setResultCache(&cache_);
   }
   ~ScopedRgpotCache() { provider_.setResultCache(nullptr); }
@@ -47,7 +33,19 @@ public:
   auto counts() const { return cache_.counts(); }
 
 private:
-  std::unique_ptr<rocksdb::DB> db_;
+  template <class Cache>
+  static void checkOpen(const Cache &cache, const std::string &path) {
+    if constexpr (requires { cache.is_open(); }) {
+      if (!cache.is_open()) {
+        throw std::runtime_error("lineb: cannot open rgpot result cache " +
+                                 path);
+      }
+    } else {
+      throw std::runtime_error(
+          "lineb: installed rgpot must expose PotentialCache::is_open to "
+          "verify result_cache");
+    }
+  }
   rgpot::cache::PotentialCache cache_;
   RgpotCacheProvider &provider_;
 };
