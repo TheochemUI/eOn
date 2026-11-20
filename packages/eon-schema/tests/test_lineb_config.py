@@ -19,6 +19,7 @@ def test_lineb_json_round_trip():
         initial_path="neb.con",
         energy=0.25,
         beads=32,
+        endpoint_kappa=2.5,
         molecular=True,
         opt_tol=1e-4,
         perp_tol=2e-4,
@@ -26,6 +27,7 @@ def test_lineb_json_round_trip():
     restored = LinebConfig.model_validate_json(configured.model_dump_json())
     assert restored.initial_path == "neb.con"
     assert restored.energy == 0.25
+    assert restored.endpoint_kappa == 2.5
     assert restored.beads == 32
     assert restored.molecular is True
     assert restored.opt_tol == 1e-4

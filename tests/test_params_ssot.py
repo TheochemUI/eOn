@@ -232,6 +232,7 @@ def test_lineb_is_projected_without_duplicate_adapter_gets():
         "perp_tol",
         "spring",
         "endpoint_scale",
+        "endpoint_kappa",
         "time_step",
         "max_move",
         "turning_width",
