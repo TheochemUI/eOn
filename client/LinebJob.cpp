@@ -194,11 +194,14 @@ std::vector<std::string> LinebJob::run(void) {
       o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
       &ctx, optimized.data(), &result);
 
-  // Propagate the library status, including existing non-success codes for
-  // an unconverged band. Do not invent a new status.
   if (rc != RGSADDLE_OK) {
-    throw std::runtime_error(std::string("lineb: rgsaddle_lineb_solve: ") +
-                             rgsaddle_status_name(rc));
+    std::string message = std::string("lineb: rgsaddle_lineb_solve: ") +
+                          rgsaddle_status_name(rc);
+    const char *detail = rgsaddle_last_error();
+    if (detail && *detail) {
+      message += std::string(" (") + detail + ")";
+    }
+    throw std::runtime_error(message);
   }
 
   unpackPositions(optimized, freeAtoms, band);
