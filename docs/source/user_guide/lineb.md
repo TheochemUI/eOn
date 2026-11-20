@@ -20,6 +20,35 @@ Energies are in eV, lengths in Å and masses in amu. Defaults for
 `hbar` and `boltzmann` match eOn's tunneling constants so the reported
 temperature is in kelvin.
 
+## Run a Morse barrier example
+
+From the repository root, copy the example to a run directory and invoke
+the client built with rgsaddle and the `morse_pt` potential.
+
+```sh
+mkdir -p run/lineb-morse
+cp examples/lineb-morse/{config.ini,seed.con} run/lineb-morse/
+(cd run/lineb-morse && eonclient)
+```
+
+Two fixed Pt atoms sit 10 Å apart. A third Pt atom moves between two
+equivalent binding sites. The three seed frames bracket the barrier at
+the specified energy of −0.55436031 eV. The job writes the optimized
+path to `run/lineb-morse/lineb.con`. With ABI minor 50, the first frame
+gives the action and the cost for the entire band:
+
+```python
+import readcon
+
+frame = readcon.read_con("run/lineb-morse/lineb.con")[0]
+print(round(frame.metadata["lineb"]["action"], 4))
+print(frame.metadata["evaluation_counts"]["potential_calls"])
+```
+
+A reference run gave an action of 36.6004 and used 1084 potential
+evaluations for the solve and three to write the image energies.
+The example requests the path only. Its JSON rate field is null.
+
 ## Inputs
 
 | File / key | Role |
@@ -27,7 +56,7 @@ temperature is in kelvin.
 | `[Main] job = lineb` | Select the job |
 | `[Lineb] initial_path` | Multi-frame seed band (for example `neb.con`), at least three images, interior images above `energy` |
 | `[Lineb] energy` | Required tunneling energy {math}`E` in eV |
-| `[Lineb] beads` | At least two harmonic quantum TST replicas, or `0` for the path only (`log_rate_over_reactant` is NaN) |
+| `[Lineb] beads` | At least two harmonic quantum TST replicas, or `0` for the path only (JSON rate is null) |
 | `[Lineb] molecular` | `false` expands atom masses to coordinates (adsorbate / fixed field); `true` uses molecule alignment and needs every atom free |
 
 Frozen atoms are dropped from the path degrees of freedom when
