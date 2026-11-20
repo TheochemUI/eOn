@@ -215,12 +215,22 @@ std::vector<std::string> LinebJob::run(void) {
     options |= RGSADDLE_LINEB_PROJECTED_VERLET;
   }
 #endif
+#if RGSADDLE_ABI_MINOR >= 50
+  rgsaddle_lineb_counts_t counts{};
+  const rgsaddle_status_t rc = rgsaddle_lineb_solve_counted(
+      &cfg, static_cast<int64_t>(band.size()),
+      static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
+      o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
+      &ctx, optimized.data(), &result,
+      o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options, &counts);
+#else
   const rgsaddle_status_t rc = rgsaddle_lineb_solve_options(
       &cfg, static_cast<int64_t>(band.size()),
       static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
       o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
       &ctx, optimized.data(), &result,
       o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options);
+#endif
 #elif RGSADDLE_ABI_MINOR >= 47
   const rgsaddle_status_t rc = rgsaddle_lineb_solve_with_kappa(
       &cfg, static_cast<int64_t>(band.size()),
@@ -259,22 +269,32 @@ std::vector<std::string> LinebJob::run(void) {
   for (size_t i = 0; i < band.size(); ++i) {
     metas[i].energy = band[i]->getPotentialEnergy();
   }
-  // rgsaddle reports post-seed phases. The callback counts every configuration,
-  // including the energy evaluations used to initialize the turning points.
-  const auto seedCalls = ctx.surfaceRows - result.optimizer_calls -
-                         result.measure_calls - result.dynamics_calls -
-                         result.rate_calls;
-  if (seedCalls < 0) {
-    throw std::runtime_error(
-        "lineb: reported phase counts exceed surface requests");
-  }
-  const std::map<std::string, int64_t> solverCalls{
-      {"seed_calls", seedCalls},
-      {"optimizer_calls", result.optimizer_calls},
-      {"measure_calls", result.measure_calls},
-      {"dynamics_calls", result.dynamics_calls},
-      {"rate_calls", result.rate_calls},
-      {"solver_calls", ctx.surfaceRows}};
+#if RGSADDLE_ABI_MINOR >= 50
+  std::map<std::string, int64_t> solverCalls{
+      {"seed", counts.seed},
+      {"optimization", counts.optimizer},
+      {"path_preparation", counts.preparation},
+      {"quadrature", counts.quadrature},
+      {"dynamics", counts.dynamics},
+      {"rate", counts.rate}};
+#else
+  std::map<std::string, int64_t> solverCalls{
+      {"optimizer_reported", result.optimizer_calls},
+      {"measure_reported", result.measure_calls},
+      {"dynamics", result.dynamics_calls},
+      {"rate", result.rate_calls}};
+#endif
+  int64_t classified = 0;
+  for (const auto &entry : solverCalls)
+    classified += entry.second;
+#if RGSADDLE_ABI_MINOR >= 50
+  if (classified != ctx.surfaceRows)
+    throw std::runtime_error("lineb: solver counts disagree with observed "
+                             "configuration evaluations");
+#else
+  solverCalls.emplace("unclassified", ctx.surfaceRows - classified);
+#endif
+  solverCalls.emplace("total", ctx.surfaceRows);
   const auto outputEnd = pot->forceCallCounter.load();
   const std::map<std::string, size_t> potentialCalls{
       {"setup", solveStart - jobStart},
@@ -287,6 +307,7 @@ std::vector<std::string> LinebJob::run(void) {
         {"energy", o.energy},
         {"beads", o.beads},
         {"optimizer", o.projected_verlet ? "projected_verlet" : "fire"},
+        {"surface_call_unit", "configuration"},
         {"surface_calls", solverCalls},
         {"potential_calls", potentialCalls}}}};
   const auto metadataJson = metadata.dump();
@@ -312,8 +333,16 @@ std::vector<std::string> LinebJob::run(void) {
   env.extras.emplace_back("log_rate_over_reactant",
                           result.log_rate_over_reactant);
   env.extras.emplace_back("iterations", static_cast<double>(result.iterations));
+  env.extras.emplace_back("optimizer_calls",
+                          static_cast<double>(result.optimizer_calls));
+  env.extras.emplace_back("measure_calls",
+                          static_cast<double>(result.measure_calls));
+  env.extras.emplace_back("dynamics_calls",
+                          static_cast<double>(result.dynamics_calls));
+  env.extras.emplace_back("rate_calls", static_cast<double>(result.rate_calls));
   for (const auto &[phase, count] : solverCalls) {
-    env.extras.emplace_back(phase, static_cast<double>(count));
+    env.extras.emplace_back("surface_calls_" + phase,
+                            static_cast<double>(count));
   }
   for (const auto &[phase, count] : potentialCalls) {
     env.extras.emplace_back("potential_calls_" + phase,
