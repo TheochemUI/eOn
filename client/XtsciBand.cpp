@@ -12,6 +12,7 @@
 #include "eon/XtsciBand.h"
 
 #include "eon/NudgedElasticBand.h"
+#include "eon/SolidStateNEB.h"
 
 #include "ForEachImage.h"
 
@@ -19,6 +20,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <format>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -371,11 +373,25 @@ int xtsciSolidBandSurface([[maybe_unused]] void *user,
     } else {
       return RGSADDLE_SHAPE;
     }
+    self->m_surfaceError.clear();
     const auto dof = static_cast<Eigen::Index>(3 * nAtoms);
     for (int64_t r = 0; r < rows; ++r) {
       const auto i = static_cast<size_t>(first + r);
       Matter &image = *neb->path[i];
       const Matrix3d cell = cellFromRowMajor(req->cells + 9 * r);
+      // A trial cell is refused before the image moves. At a tie the
+      // force jumps, and that force must not enter the line search. The
+      // accepted cell is checked again in projectSolidState.
+      if (const auto potential = image.getPotential()) {
+        try {
+          eonc::neb::requireMinimumImageCell(cell,
+                                             potential->minimumImageCutoff(),
+                                             std::format("band image {}", i));
+        } catch (const std::invalid_argument &err) {
+          self->m_surfaceError = err.what();
+          return RGSADDLE_SURFACE_FAILED;
+        }
+      }
       AtomMatrix pos = AtomMatrix::Map(req->positions + r * dof, nAtoms, 3);
       if (i < self->m_fixed.size()) {
         pinRows(self->m_fixed[i], image, &pos);
@@ -662,11 +678,17 @@ void XtsciBand::stepSolid() {
   for (int64_t i = 0; i < nImages; ++i) {
     m_fixed[static_cast<size_t>(i)] = m_neb->path[i]->getPositions();
   }
+  m_surfaceError.clear();
   rgsaddle_report_t report{};
   const int rc =
       rgsaddle_band_step_solid(m_band, solidSurfaceCallback, this, &report);
-  if (rc == RGSADDLE_STALLED) {
+  if (rc == RGSADDLE_STALLED && m_surfaceError.empty()) {
     return;
+  }
+  // A refused trial is an invalid_argument, the same error the host
+  // band raises, rather than a bare surface-failure status.
+  if (!m_surfaceError.empty()) {
+    throw std::invalid_argument(m_surfaceError);
   }
   checkStatus(rc, "rgsaddle_band_step_solid");
   const auto dof = static_cast<std::ptrdiff_t>(3 * nAtoms);

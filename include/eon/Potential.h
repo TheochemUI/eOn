@@ -246,6 +246,16 @@ public:
     }
   }
 
+  /// Cutoff of a kernel that sums one minimum image per atom pair, in
+  /// position length units. The energy stays continuous, but a half-cell
+  /// tie is an energy cusp: the force jumps and is not the energy
+  /// gradient, unless twice this cutoff is strictly inside every
+  /// perpendicular width of the cell. 0 means the potential has no such
+  /// limit.
+  [[nodiscard]] virtual double minimumImageCutoff() const noexcept {
+    return 0.0;
+  }
+
   /// Distance beyond which every Hessian block between two atoms is
   /// exactly zero, in position length units.
   ///
