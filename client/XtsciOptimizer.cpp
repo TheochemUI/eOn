@@ -341,8 +341,9 @@ bool XtsciOptimizer::usesWolfeLbfgs() const {
 #if RGMIN_ABI_VERSION_MINOR >= 34
   const auto &opts = m_optConfig.opts;
   return method_from_name(m_method) == RGMIN_LBFGS &&
-         m_objf->gradientMatchesEnergy() && opts.xtsci.manifold == "euclidean" &&
-         !opts.xtsci.highs && resolved_qn_step(opts) == "lbfgs" &&
+         m_objf->gradientMatchesEnergy() &&
+         opts.xtsci.manifold == "euclidean" && !opts.xtsci.highs &&
+         resolved_qn_step(opts) == "lbfgs" &&
          !is_host_precon(resolved_precon(opts));
 #else
   return false;
