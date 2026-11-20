@@ -180,7 +180,8 @@ TEST_CASE("LinebJob runs a fixed-energy seeded Morse band when available",
     REQUIRE(rate.at("spectrum").at("negative_modes").is_number_integer());
     REQUIRE(rate.at("log_rate_over_reactant").is_number());
 #ifdef RGSADDLE_HAS_LINEB_ORBIT
-    REQUIRE(std::find(rateFiles.begin(), rateFiles.end(), "lineb-orbit.con") != rateFiles.end());
+    REQUIRE(std::find(rateFiles.begin(), rateFiles.end(), "lineb-orbit.con") !=
+            rateFiles.end());
     const auto frames = readcon::read_all_frames("lineb-orbit.con");
     REQUIRE(frames.size() == static_cast<size_t>(lineb.beads));
     std::vector<std::array<double, 3>> coordinates, gradients;
