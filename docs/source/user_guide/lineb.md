@@ -43,6 +43,14 @@ the energy error in eV to give a force in mass-weighted action units. Its
 default of zero selects the gradient-normalized `endpoint_scale` restraint.
 A positive value requires rgsaddle ABI minor 47 or higher.
 
+For the initialization and convergence test used in the paper’s Cu(110)
+calculation, supply a full path between the minima and set both
+`linear_seed = true` and `endpoint_convergence = true`. The first option
+joins the two energy crossings with a straight line. The second tests the
+nudged force at each endpoint and the perpendicular action gradient at
+each interior image. Each option can be used independently with rgsaddle
+ABI minor 48 or higher.
+
 Tolerances `opt_tol` and `perp_tol` are mass-weighted force norms. The
 remaining keys (`spring`, `endpoint_scale`, `time_step`, `max_move`,
 `turning_width`, `quadrature_pairs`, `max_steps`) match rgsaddle's

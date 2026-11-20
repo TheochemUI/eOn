@@ -1037,6 +1037,8 @@ struct lineb_options_t {
   double spring{0.1};
   double endpoint_scale{0.2};
   double endpoint_kappa{0.0};
+  bool linear_seed{false};
+  bool endpoint_convergence{false};
   double time_step{0.1};
   double max_move{0.2};
   double turning_width{1e-3};

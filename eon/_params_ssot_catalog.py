@@ -372,6 +372,20 @@ CATALOG = {
           "ordinal": 15,
           "snake": "endpoint_kappa",
           "type": "Float64"
+        },
+        {
+          "capnp": "linear_seed",
+          "default": False,
+          "ordinal": 16,
+          "snake": "linear_seed",
+          "type": "Bool"
+        },
+        {
+          "capnp": "endpoint_convergence",
+          "default": False,
+          "ordinal": 17,
+          "snake": "endpoint_convergence",
+          "type": "Bool"
         }
       ],
       "json_name": "Lineb",

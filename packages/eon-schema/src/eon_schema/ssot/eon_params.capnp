@@ -300,6 +300,8 @@ struct LinebOptions {
   beads @13 :Int64 = 0;
   molecular @14 :Bool = false;
   endpoint_kappa @15 :Float64 = 0.0;
+  linear_seed @16 :Bool = false;
+  endpoint_convergence @17 :Bool = false;
 }
 
 # ---------------------------------------------------------------------

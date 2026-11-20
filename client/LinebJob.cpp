@@ -188,7 +188,20 @@ std::vector<std::string> LinebJob::run(void) {
   LinebSurface ctx{&probe, freeAtoms};
 
   rgsaddle_lineb_result_t result{};
-#if RGSADDLE_ABI_MINOR >= 47
+#if RGSADDLE_ABI_MINOR < 48
+  if (o.linear_seed || o.endpoint_convergence) {
+    throw std::runtime_error("lineb: linear_seed and endpoint_convergence require rgsaddle ABI minor 48");
+  }
+#endif
+#if RGSADDLE_ABI_MINOR >= 48
+  const uint32_t options = (o.linear_seed ? RGSADDLE_LINEB_LINEAR_SEED : 0u) |
+                           (o.endpoint_convergence ? RGSADDLE_LINEB_ENDPOINT_CONVERGENCE : 0u);
+  const rgsaddle_status_t rc = rgsaddle_lineb_solve_options(
+      &cfg, static_cast<int64_t>(band.size()),
+      static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
+      o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
+      &ctx, optimized.data(), &result, o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options);
+#elif RGSADDLE_ABI_MINOR >= 47
   const rgsaddle_status_t rc = rgsaddle_lineb_solve_with_kappa(
       &cfg, static_cast<int64_t>(band.size()),
       static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),

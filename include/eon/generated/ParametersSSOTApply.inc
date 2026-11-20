@@ -54,4 +54,6 @@
     o.beads = GD::LINEB_BEADS;
     o.molecular = GD::LINEB_MOLECULAR;
     o.endpoint_kappa = GD::LINEB_ENDPOINT_KAPPA;
+    o.linear_seed = GD::LINEB_LINEAR_SEED;
+    o.endpoint_convergence = GD::LINEB_ENDPOINT_CONVERGENCE;
   }

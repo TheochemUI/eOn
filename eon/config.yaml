@@ -1523,6 +1523,14 @@ Lineb:
             default: 0.1
 
         # Positive for a fixed turning-surface coefficient; zero selects endpoint_scale.
+        linear_seed:
+            kind: bool
+            default: false
+
+        endpoint_convergence:
+            kind: bool
+            default: false
+
         endpoint_kappa:
             kind: float
             default: 0.0
