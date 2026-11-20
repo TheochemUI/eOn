@@ -747,8 +747,7 @@ struct CutoffOnlyKernel {
       : cfg(c) {}
   [[nodiscard]] const Config &config() const noexcept { return cfg; }
   [[nodiscard]] rgpot::PotCaps caps() const noexcept { return {}; }
-  void forceImpl(const rgpot::ForceInput &, rgpot::ForceOut *) const {}
-  void forceBatchImpl(const rgpot::ForceBatch &) const {}
+  void forceBatch(const rgpot::ForceBatch &) const {}
   Config cfg{};
 };
 

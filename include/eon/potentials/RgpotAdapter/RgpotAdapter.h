@@ -5,7 +5,7 @@
 **
 ** Adapter over rgpot potential kernels. Migrated pair potentials live in
 ** librgpot (github.com/OmniPotentRPC/rgpot); eOn's config surface,
-** PotRegistry, force counters, and caching stay on this side.
+** PotRegistry, and driver request counters stay on this side.
 */
 #pragma once
 
@@ -24,11 +24,8 @@
 
 /// Wraps one rgpot kernel as an eOn Potential.
 ///
-/// force() passes eOn's flat arrays straight into the kernel's
-/// forceImpl — the layouts match field for field, including the
-/// row-major 3x3 box — bypassing rgpot's AtomMatrix wrapper and its
-/// optional result cache. Thread-sharing policy derives from the
-/// kernel's capability descriptor instead of per-type lists.
+/// Scalar and batched requests use rgpot's public batch interface so its
+/// result cache and kernel accounting apply to both paths.
 template <class RPot> class RgpotAdapter final : public eonc::Potential {
 public:
   /// Kernels construct in place from their config: several hold mutexes
@@ -78,7 +75,7 @@ public:
              double *U, double *variance, const double *box) override {
     rgpot::ForceInput in{static_cast<size_t>(N), R, atomicNrs, box};
     rgpot::ForceOut out{F, 0.0, 0.0};
-    pot_.forceImpl(in, &out);
+    pot_.forceBatch(rgpot::ForceBatch{.nSystems = 1, .in = &in, .out = &out});
     *U = out.energy;
     if (variance != nullptr) {
       *variance = out.variance;
@@ -111,10 +108,6 @@ public:
   /// system, so every system shares an atom count; rgpot allows them to
   /// differ, and filling nAtoms per system costs nothing and keeps the
   /// two contracts independent.
-  ///
-  /// Calls forceBatchImpl rather than forceBatch for the same reason
-  /// force() calls forceImpl: eOn owns caching, and routing through
-  /// rgpot's cache would key the same geometry twice.
   void forceBatch(long nSystems, long nAtoms, const double *const *positions,
                   const int *const *atomicNrs, double *const *forces,
                   double *energies, double *variances,
@@ -130,7 +123,7 @@ public:
       out.push_back(rgpot::ForceOut{forces[i], 0.0, 0.0});
     }
 
-    pot_.forceBatchImpl(
+    pot_.forceBatch(
         rgpot::ForceBatch{.nSystems = n, .in = in.data(), .out = out.data()});
 
     haveStress_ = false;
