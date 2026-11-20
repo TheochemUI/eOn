@@ -51,6 +51,25 @@ nudged force at each endpoint and the perpendicular action gradient at
 each interior image. Each option can be used independently with rgsaddle
 ABI minor 48 or higher.
 
+For a frozen Cu substrate with two mobile hydrogen atoms of mass
+1.00793 amu, the paper uses a spring of 20 Å⁻² and an endpoint coefficient
+of 1000 eV⁻¹ Å⁻¹ for the dimensionless action. With eOn’s default
+`hbar`, the corresponding input values are
+
+```ini
+[Lineb]
+linear_seed = true
+endpoint_convergence = true
+spring = 1.28291
+endpoint_kappa = 64.3993
+opt_tol = 0.000643993
+perp_tol = 0.000643993
+```
+
+Supply `initial_path` and an absolute `energy` from the same potential.
+These numbers use the fact that every mobile coordinate has the same mass.
+They convert the published controls and do not establish a converged rate.
+
 Tolerances `opt_tol` and `perp_tol` are mass-weighted force norms. The
 remaining keys (`spring`, `endpoint_scale`, `time_step`, `max_move`,
 `turning_width`, `quadrature_pairs`, `max_steps`) match rgsaddle's
