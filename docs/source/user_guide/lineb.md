@@ -68,12 +68,13 @@ at 0.05 eV below the barrier.
 For a frozen Cu substrate with two mobile hydrogen atoms of mass
 1.00793 amu, the paper uses a spring of 20 Å⁻² and an endpoint coefficient
 of 1000 eV⁻¹ Å⁻¹ for the dimensionless action. With eOn’s default
-`hbar`, the corresponding input values are
+`hbar`, the corresponding inputs for projected velocity Verlet are
 
 ```ini
 [Lineb]
 linear_seed = true
 endpoint_convergence = true
+projected_verlet = true
 spring = 1.28291
 endpoint_kappa = 64.3993
 opt_tol = 0.000643993
