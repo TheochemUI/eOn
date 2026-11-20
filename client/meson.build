@@ -408,6 +408,16 @@ if get_option('with_rgsaddle')
         dependencies: rgsaddle_dep,
     )
         _args += ['-DWITH_RGSADDLE_LINEB']
+        foreach api, flag : {
+            'rgsaddle_lineb_solve_counted': 'WITH_RGSADDLE_LINEB_COUNTS',
+            'rgsaddle_lineb_solve_with_kappa': 'WITH_RGSADDLE_LINEB_KAPPA',
+        }
+            if meson.get_compiler('cpp').has_function(
+                api, prefix: '#include <rgsaddle.h>', dependencies: rgsaddle_dep,
+            )
+                _args += ['-D' + flag]
+            endif
+        endforeach
     endif
 endif
 

@@ -257,28 +257,28 @@ std::vector<std::string> LinebJob::run(void) {
 #endif
   const auto solveStart = pot->forceCallCounter.load();
   rgsaddle_lineb_result_t result{};
-#if RGSADDLE_ABI_MINOR < 49
+#ifndef RGSADDLE_LINEB_PROJECTED_VERLET
   if (o.projected_verlet) {
     throw std::runtime_error(
-        "lineb: projected_verlet requires rgsaddle ABI minor 49");
+        "lineb: projected_verlet requires rgsaddle with RGSADDLE_LINEB_PROJECTED_VERLET");
   }
 #endif
-#if RGSADDLE_ABI_MINOR < 48
+#ifndef RGSADDLE_LINEB_LINEAR_SEED
   if (o.linear_seed || o.endpoint_convergence) {
     throw std::runtime_error("lineb: linear_seed and endpoint_convergence "
-                             "require rgsaddle ABI minor 48");
+                             "require rgsaddle with fixed-energy seed options");
   }
 #endif
-#if RGSADDLE_ABI_MINOR >= 48
+#ifdef RGSADDLE_LINEB_LINEAR_SEED
   uint32_t options =
       (o.linear_seed ? RGSADDLE_LINEB_LINEAR_SEED : 0u) |
       (o.endpoint_convergence ? RGSADDLE_LINEB_ENDPOINT_CONVERGENCE : 0u);
-#if RGSADDLE_ABI_MINOR >= 49
+#ifdef RGSADDLE_LINEB_PROJECTED_VERLET
   if (o.projected_verlet) {
     options |= RGSADDLE_LINEB_PROJECTED_VERLET;
   }
 #endif
-#if RGSADDLE_ABI_MINOR >= 50
+#ifdef WITH_RGSADDLE_LINEB_COUNTS
   rgsaddle_lineb_counts_t counts{};
 #ifdef RGSADDLE_HAS_LINEB_RATE_DIAGNOSTICS
   int64_t negativeModes = -1;
@@ -326,7 +326,7 @@ std::vector<std::string> LinebJob::run(void) {
       &ctx, optimized.data(), &result,
       o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options);
 #endif
-#elif RGSADDLE_ABI_MINOR >= 47
+#elif defined(WITH_RGSADDLE_LINEB_KAPPA)
   const rgsaddle_status_t rc = rgsaddle_lineb_solve_with_kappa(
       &cfg, static_cast<int64_t>(band.size()),
       static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
@@ -336,7 +336,7 @@ std::vector<std::string> LinebJob::run(void) {
 #else
   if (o.endpoint_kappa > 0.0) {
     throw std::runtime_error(
-        "lineb: endpoint_kappa requires rgsaddle ABI minor 47");
+        "lineb: endpoint_kappa requires rgsaddle_lineb_solve_with_kappa");
   }
   const rgsaddle_status_t rc = rgsaddle_lineb_solve(
       &cfg, static_cast<int64_t>(band.size()),
@@ -367,7 +367,7 @@ std::vector<std::string> LinebJob::run(void) {
   for (size_t i = 0; i < band.size(); ++i) {
     metas[i].energy = band[i]->getPotentialEnergy();
   }
-#if RGSADDLE_ABI_MINOR >= 50
+#ifdef WITH_RGSADDLE_LINEB_COUNTS
   std::map<std::string, int64_t> solverCalls{
       {"seed", counts.seed},
       {"optimization", counts.optimizer},
@@ -385,7 +385,7 @@ std::vector<std::string> LinebJob::run(void) {
   int64_t classified = 0;
   for (const auto &entry : solverCalls)
     classified += entry.second;
-#if RGSADDLE_ABI_MINOR >= 50
+#ifdef WITH_RGSADDLE_LINEB_COUNTS
   if (classified != ctx.surfaceRows)
     throw std::runtime_error("lineb: solver counts disagree with observed "
                              "configuration evaluations");

@@ -34,7 +34,7 @@ cp examples/lineb-morse/{config.ini,seed.con} run/lineb-morse/
 Two fixed Pt atoms sit 10 Å apart. A third Pt atom moves between two
 equivalent binding sites. The three seed frames bracket the barrier at
 the specified energy of −0.55436031 eV. The job writes the optimized
-path to `run/lineb-morse/lineb.con`. With ABI minor 50, the first frame
+path to `run/lineb-morse/lineb.con`. With the counted solve API, the first frame
 gives the action and the cost for the entire band:
 
 ```python
@@ -70,7 +70,7 @@ Set `endpoint_kappa` to a positive value for the fixed turning-surface force
 coefficient in Eqs. (19) and (21) of the paper. The coefficient multiplies
 the energy error in eV to give a force in mass-weighted action units. Its
 default of zero selects the gradient-normalized `endpoint_scale` restraint.
-A positive value requires rgsaddle ABI minor 47 or higher.
+A positive value requires the rgsaddle fixed-kappa solve API.
 
 For the initialization and convergence test used in the paper’s Cu(110)
 calculation, supply a path that crosses the target energy on both sides
@@ -78,12 +78,12 @@ of the saddle and set both
 `linear_seed = true` and `endpoint_convergence = true`. The first option
 joins the two energy crossings with a straight line. The second tests the
 nudged force at each endpoint and the perpendicular action gradient at
-each interior image. Each option can be used independently with rgsaddle
-ABI minor 48 or higher.
+each interior image. Each option can be used independently with a library that exposes the rgsaddle
+seed options.
 
 The paper also uses velocity-projected velocity Verlet for optimizing the
 band. Set `projected_verlet = true` to request that optimizer with
-rgsaddle ABI minor 49 or higher. The default optimizer is FIRE 2.0.
+a library that defines `RGSADDLE_LINEB_PROJECTED_VERLET`. The default optimizer is FIRE 2.0.
 
 The eOn job uses the number of frames in `initial_path` as the number of
 LI-NEB images. For a ten-image calculation with a densely sampled MEP,
@@ -140,7 +140,7 @@ backend = ledger["potential_calls"]
 print(counts)
 ```
 
-With rgsaddle ABI minor 50, the six disjoint counts sum to `total`.
+With `rgsaddle_lineb_solve_counted`, the six disjoint counts sum to `total`.
 Each surface call evaluates one atomic configuration.
 
 | Key | Evaluations counted |
