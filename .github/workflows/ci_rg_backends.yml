@@ -21,7 +21,7 @@ jobs:
             rgmin_rev: d76539dbe40695c0032e0d96a56e7932f2cc49ab
           - label: LI-NEB
             rgsaddle_repo: HaoZeke/rgsaddle
-            rgsaddle_rev: 03ebf79fd347f7c59f539a76a10d9aa75adf83cb
+            rgsaddle_rev: 98344e40112fb17fc69bf7c4e95b789a55e8de6c
             rgmin_rev: f3d18706c2b1ab380fd75f62449fdab46d01f5e2
     name: test (rgmin + rgsaddle, ${{ matrix.label }})
     env:
