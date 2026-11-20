@@ -172,6 +172,19 @@ public:
 
   [[nodiscard]] const RPot &kernel() const noexcept { return pot_; }
 
+  /// Periodic pair kernels (Lennard-Jones and Morse) take one minimum
+  /// image per pair, so their pair cutoff is the distance every
+  /// perpendicular width must exceed. A nonperiodic pair kernel such as
+  /// ZBL, and the many-body and message-passing kernels, report 0.
+  [[nodiscard]] double minimumImageCutoff() const noexcept override {
+    if constexpr (eonc::HessianRangeOf<RPot>::locality ==
+                  eonc::HessianLocality::Pair) {
+      return pot_.caps().periodic ? hessianRange() : 0.0;
+    } else {
+      return 0.0;
+    }
+  }
+
   /// Hessian block range from HessianRangeOf<RPot>, not from whether
   /// the kernel happens to have a cutoff field. 0 leaves coloring off.
   [[nodiscard]] double hessianRange() const noexcept override {
