@@ -1303,6 +1303,7 @@ eonclib_sources = [
     'HessianJob.cpp',
     'InstantonJob.cpp',
     'LinebJob.cpp',
+    'LinebSeed.cpp',
     'ReplicaDynamicsJob.cpp',
     'TADJob.cpp',
     'ProcessSearchJob.cpp',
@@ -2441,6 +2442,7 @@ if get_option('with_tests')
         test_array += [['test_rgsaddle_neb', 'RgsaddleNEBTest.cpp', 'neb_lj13']]
         test_array += [['test_rgsaddle_irc', 'RgsaddleIrcTest.cpp', 'neb_lj13']]
         test_array += [['test_lineb_job', 'LinebJobTest.cpp', 'neb_morse']]
+        test_array += [['test_lineb_seed', 'LinebSeedTest.cpp', 'neb_morse']]
     endif
     # Without rgsaddle it checks that prfo_refine is refused before a search.
     test_array += [['test_prfo_refine', 'PrfoRefineTest.cpp', 'neb_lj13']]

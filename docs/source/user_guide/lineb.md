@@ -32,7 +32,10 @@ temperature is in kelvin.
 
 Frozen atoms are dropped from the path degrees of freedom when
 `molecular = false`. A per-axis freeze (only some of x, y, z fixed) is
-refused. With `molecular = true`, any fixed atom is refused.
+refused. Keep atom order, masses, cell, fixed masks and frozen substrate
+positions consistent across the seed. Under periodic boundaries the job joins
+adjacent images by their minimum-image displacements. Use a nonperiodic system
+with all atoms free for molecular alignment.
 
 Tolerances `opt_tol` and `perp_tol` are mass-weighted force norms. The
 remaining keys (`spring`, `endpoint_scale`, `time_step`, `max_move`,

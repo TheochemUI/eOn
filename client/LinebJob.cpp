@@ -14,13 +14,12 @@
 #include "eon/ConFileIO.h"
 #include "eon/EonLogger.h"
 #include "eon/JobResult.h"
+#include "eon/LinebSeed.h"
 #include "eon/Matter.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 
-#include <algorithm>
 #include <cmath>
-#include <fstream>
 #include <limits>
 #include <stdexcept>
 #include <string>
@@ -99,84 +98,6 @@ rgsaddle_status_t surfaceCallback(void *user, rgsaddle_surface_request_t *req) {
   }
 }
 
-/// Free atoms that are free on every axis. Partial per-axis freezes are
-/// unsupported by the lineb C API (no mask).
-void collectFreeAtoms(const Matter &m, std::vector<long> &freeAtoms,
-                      std::vector<double> &masses) {
-  freeAtoms.clear();
-  masses.clear();
-  for (long i = 0; i < m.numberOfAtoms(); ++i) {
-    const int fx = m.getFixed(i, 0);
-    const int fy = m.getFixed(i, 1);
-    const int fz = m.getFixed(i, 2);
-    if (fx && fy && fz) {
-      continue;
-    }
-    if (fx || fy || fz) {
-      throw std::runtime_error(
-          "lineb: per-axis frozen coordinates are unsupported; fix or free "
-          "all three axes of each atom");
-    }
-    const double mass = m.getMass(i);
-    if (!(mass > 0.0) || !std::isfinite(mass)) {
-      throw std::runtime_error(
-          "lineb: every free atom needs a finite positive mass");
-    }
-    freeAtoms.push_back(i);
-    masses.push_back(mass);
-  }
-  if (freeAtoms.empty()) {
-    throw std::runtime_error("lineb: every atom is fixed");
-  }
-}
-
-std::vector<std::shared_ptr<Matter>>
-loadSeedBand(const Parameters &params, const std::shared_ptr<Potential> &pot,
-             const std::string &path) {
-  if (path.empty()) {
-    throw std::runtime_error(
-        "lineb: [Lineb] initial_path must name a multi-frame seed band");
-  }
-  const auto frames = readcon::read_all_frames(path);
-  if (frames.size() < 3) {
-    throw std::runtime_error(
-        "lineb: the seed band needs at least three images (endpoints and one "
-        "interior image)");
-  }
-  std::vector<std::shared_ptr<Matter>> band;
-  band.reserve(frames.size());
-  for (const auto &frame : frames) {
-    auto image = std::make_shared<Matter>(pot, params);
-    if (!io::io_ok(io::con2matter(*image, frame))) {
-      throw std::runtime_error("lineb: cannot read a frame of " + path);
-    }
-    if (!band.empty() &&
-        image->numberOfAtoms() != band.front()->numberOfAtoms()) {
-      throw std::runtime_error("lineb: seed images differ in atom count");
-    }
-    band.push_back(std::move(image));
-  }
-  return band;
-}
-
-void packPositions(const std::vector<std::shared_ptr<Matter>> &band,
-                   const std::vector<long> &freeAtoms,
-                   std::vector<double> &out) {
-  const auto nImages = band.size();
-  const auto nFree = freeAtoms.size();
-  out.assign(nImages * nFree * 3, 0.0);
-  for (size_t i = 0; i < nImages; ++i) {
-    const AtomMatrix pos = band[i]->getPositions();
-    for (size_t a = 0; a < nFree; ++a) {
-      const long atom = freeAtoms[a];
-      const size_t base = (i * nFree + a) * 3;
-      out[base + 0] = pos(atom, 0);
-      out[base + 1] = pos(atom, 1);
-      out[base + 2] = pos(atom, 2);
-    }
-  }
-}
-
 void unpackPositions(const std::vector<double> &flat,
                      const std::vector<long> &freeAtoms,
                      std::vector<std::shared_ptr<Matter>> &band) {
@@ -227,32 +148,23 @@ std::vector<std::string> LinebJob::run(void) {
         "lineb: [Lineb] beads must be nonnegative (0 is path only)");
   }
 
-  auto band = loadSeedBand(params, pot, o.initial_path);
+  auto band = lineb::loadSeedBand(params, pot, o.initial_path);
   std::vector<long> freeAtoms;
   std::vector<double> masses;
-  collectFreeAtoms(*band.front(), freeAtoms, masses);
+  lineb::collectFreeAtoms(*band.front(), freeAtoms, masses);
   for (size_t i = 1; i < band.size(); ++i) {
     std::vector<long> otherFree;
     std::vector<double> otherMasses;
-    collectFreeAtoms(*band[i], otherFree, otherMasses);
+    lineb::collectFreeAtoms(*band[i], otherFree, otherMasses);
     if (otherFree != freeAtoms) {
       throw std::runtime_error(
           "lineb: every seed image must share the same free-atom mask");
     }
   }
-  if (o.molecular &&
-      static_cast<long>(freeAtoms.size()) != band.front()->numberOfAtoms()) {
-    throw std::runtime_error(
-        "lineb: molecular alignment needs every atom free (no frozen "
-        "substrate atoms)");
-  }
-  if (o.molecular && freeAtoms.size() < 2) {
-    throw std::runtime_error(
-        "lineb: molecular alignment needs at least two free atoms");
-  }
 
   std::vector<double> positions;
-  packPositions(band, freeAtoms, positions);
+  // Unwrapped Cartesian for the C API only; Matter stays on its wrapped seed.
+  lineb::packSeedCartesian(band, freeAtoms, o.molecular, positions);
   std::vector<double> optimized(positions.size(), 0.0);
 
   rgsaddle_lineb_config_t cfg{};
