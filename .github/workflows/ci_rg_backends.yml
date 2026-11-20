@@ -79,6 +79,7 @@ jobs:
         if: matrix.label == 'LI-NEB'
         shell: pixi run bash -e {0}
         run: |
+          grep -q -- "-DWITH_RGSADDLE_LINEB" bbdir/compile_commands.json
           meson test -C bbdir --list > "$RUNNER_TEMP/eon-tests"
           grep -w test_lineb_job "$RUNNER_TEMP/eon-tests"
           grep -w test_lineb_seed "$RUNNER_TEMP/eon-tests"
