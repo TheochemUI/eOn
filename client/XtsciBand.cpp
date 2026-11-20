@@ -222,6 +222,21 @@ int xtsciBandSurface(void *user, void *request) {
     if (req->n_atoms != nAtoms) {
       return RGSADDLE_SHAPE;
     }
+#if RGSADDLE_ABI_MINOR >= 23
+    if ((req->flags & RGSADDLE_REQ_CLIMBING_IMAGE) != 0) {
+      const bool perImage = (req->flags & RGSADDLE_REQ_ONE_IMAGE) != 0;
+      if (req->n_images != (perImage ? band : 1) ||
+          req->image < 0 || req->image >= band) {
+        return RGSADDLE_SHAPE;
+      }
+      // The curvature probe displaces the climbing image off the band.
+      Matter probe(*neb->path[static_cast<size_t>(req->image)]);
+      moveTo(probe, AtomMatrix::Map(req->positions, nAtoms, 3));
+      req->energies[0] = probe.getPotentialEnergy();
+      AtomMatrix::Map(req->gradients, nAtoms, 3) = -probe.getForces();
+      return RGSADDLE_OK;
+    }
+#endif
     // Rows carried by this request and the band image of row 0. The
     // session sends the whole band on its first evaluation, the interior
     // images 1 .. band - 2 afterwards, or one image with
