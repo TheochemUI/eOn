@@ -166,7 +166,8 @@ TEST_CASE("LinebJob runs a fixed-energy seeded Morse band when available",
     eonc::LinebJob rateJob(pot, params);
     REQUIRE_FALSE(rateJob.run().empty());
     const auto rateFrame = readcon::read_first_frame("lineb.con");
-    const auto rate = nlohmann::json::parse(rateFrame.metadata_json()).at("lineb");
+    const auto rate =
+        nlohmann::json::parse(rateFrame.metadata_json()).at("lineb");
     // One mobile atom contributes three coordinates per replica. The
     // imaginary-time translation removes one mode from the full ring.
     REQUIRE(rate.at("spectrum").at("modes") == 3 * lineb.beads - 1);
