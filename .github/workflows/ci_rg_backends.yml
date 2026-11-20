@@ -21,7 +21,7 @@ jobs:
             rgmin_rev: d76539dbe40695c0032e0d96a56e7932f2cc49ab
           - label: LI-NEB
             rgsaddle_repo: HaoZeke/rgsaddle
-            rgsaddle_rev: e826a85f21ce9200b0ad7bc8c3ac3a334bfe07f2
+            rgsaddle_rev: 03ebf79fd347f7c59f539a76a10d9aa75adf83cb
             rgmin_rev: f3d18706c2b1ab380fd75f62449fdab46d01f5e2
     name: test (rgmin + rgsaddle, ${{ matrix.label }})
     env:
@@ -79,6 +79,7 @@ jobs:
         if: matrix.label == 'LI-NEB'
         shell: pixi run bash -e {0}
         run: |
+          grep -q "^#define RGSADDLE_HAS_LINEB_ORBIT 1" "$RG_PREFIX/include/rgsaddle.h"
           grep -q -- "-DWITH_RGSADDLE_LINEB" bbdir/compile_commands.json
           meson test -C bbdir --list > "$RUNNER_TEMP/eon-tests"
           grep -w test_lineb_job "$RUNNER_TEMP/eon-tests"
