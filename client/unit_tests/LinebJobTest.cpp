@@ -6,6 +6,7 @@
 #include "eon/LinebJob.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/LinebSeed.h"
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
 #include "eon/Tunneling.h"
@@ -15,6 +16,7 @@
 #endif
 
 #include <cmath>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <memory>
@@ -82,38 +84,7 @@ TEST_CASE("LinebJob runs a fixed-energy seeded Morse band when available",
 
   auto pot = eonc::helpers::sharePotential(
       eonc::helpers::makePotential(PotType::MORSE_PT, params));
-  auto reactant = std::make_shared<Matter>(pot, params);
-  auto product = std::make_shared<Matter>(pot, params);
-  REQUIRE(eonc::io::io_ok(reactant->con2matter(std::string("reactant.con"))));
-  REQUIRE(eonc::io::io_ok(product->con2matter(std::string("product.con"))));
-
-  // Three-image linear seed between the minima, energy below the mid-point.
-  std::vector<std::shared_ptr<Matter>> seed;
-  seed.push_back(std::make_shared<Matter>(*reactant));
-  auto mid = std::make_shared<Matter>(*reactant);
-  const AtomMatrix r0 = reactant->getPositions();
-  const AtomMatrix r1 = product->getPositions();
-  mid->setPositions(0.5 * (r0 + r1));
-  seed.push_back(mid);
-  seed.push_back(std::make_shared<Matter>(*product));
-
-  const double e0 = seed[0]->getPotentialEnergy();
-  const double e1 = seed[1]->getPotentialEnergy();
-  const double e2 = seed[2]->getPotentialEnergy();
-  const double barrier = std::max(e1 - e0, e1 - e2);
-  REQUIRE(barrier > 0.0);
-  const double energy = e0 + 0.25 * (e1 - e0);
-
-  std::vector<eonc::io::ConFrameMetadata> metas(seed.size());
-  for (size_t i = 0; i < seed.size(); ++i) {
-    metas[i].energy = seed[i]->getPotentialEnergy();
-  }
-  REQUIRE(
-      eonc::io::io_ok(eonc::io::writeNebPath("lineb_seed.con", seed, metas)));
-
   auto &lineb = ParametersLoadAccess::lineb_options(params);
-  lineb.initial_path = "lineb_seed.con";
-  lineb.energy = energy;
   lineb.opt_tol = 1e-2;
   lineb.perp_tol = 1e-2;
   lineb.max_steps = 200;
@@ -122,17 +93,71 @@ TEST_CASE("LinebJob runs a fixed-energy seeded Morse band when available",
   lineb.hbar = eonc::tunneling::kHbar;
   lineb.boltzmann = eonc::tunneling::kBoltzmann;
 
-  eonc::LinebJob job(pot, params);
-  const auto files = job.run();
-  REQUIRE_FALSE(files.empty());
+  SECTION("a one-sided cluster displacement cannot produce a tunneling path") {
+    auto reactant = std::make_shared<Matter>(pot, params);
+    auto product = std::make_shared<Matter>(pot, params);
+    REQUIRE(eonc::io::io_ok(reactant->con2matter(std::string("reactant.con"))));
+    REQUIRE(eonc::io::io_ok(product->con2matter(std::string("product.con"))));
 
-  std::ifstream results("results.dat");
-  REQUIRE(results.good());
-  std::string blob((std::istreambuf_iterator<char>(results)),
-                   std::istreambuf_iterator<char>());
-  REQUIRE(blob.find("action") != std::string::npos);
-  REQUIRE(blob.find("log_rate_over_reactant") != std::string::npos);
-  REQUIRE(std::filesystem::exists("lineb.con"));
+    // Interpolate the original cluster displacement under the Pt Morse
+    // potential.
+    std::vector<std::shared_ptr<Matter>> seed;
+    seed.push_back(std::make_shared<Matter>(*reactant));
+    auto mid = std::make_shared<Matter>(*reactant);
+    const AtomMatrix r0 = reactant->getPositions();
+    const AtomMatrix r1 = product->getPositions();
+    mid->setPositions(0.5 * (r0 + r1));
+    seed.push_back(mid);
+    seed.push_back(std::make_shared<Matter>(*product));
+
+    const double e0 = seed[0]->getPotentialEnergy();
+    const double e1 = seed[1]->getPotentialEnergy();
+    const double e2 = seed[2]->getPotentialEnergy();
+    lineb.energy = e0 + 0.25 * (e1 - e0);
+    REQUIRE(e0 < lineb.energy);
+    REQUIRE(e1 > lineb.energy);
+    REQUIRE(e2 > e1);
+    std::vector<eonc::io::ConFrameMetadata> metas(seed.size());
+    for (size_t i = 0; i < seed.size(); ++i) {
+      metas[i].energy = seed[i]->getPotentialEnergy();
+    }
+    REQUIRE(
+        eonc::io::io_ok(eonc::io::writeNebPath("lineb_seed.con", seed, metas)));
+
+    lineb.initial_path = "lineb_seed.con";
+    eonc::LinebJob job(pot, params);
+    REQUIRE_THROWS_WITH(
+        job.run(),
+        Catch::Matchers::ContainsSubstring("product-side crossing") ||
+            Catch::Matchers::ContainsSubstring("STALLED"));
+  }
+
+  SECTION("both sides of the Morse barrier reach the target energy") {
+    const char *systems = std::getenv("EON_TEST_SYSTEMS_DIR");
+    REQUIRE(systems != nullptr);
+    const auto example = std::filesystem::path(systems) /
+                         "../../../../examples/lineb-morse/seed.con";
+    lineb.initial_path = example.string();
+    auto seed = eonc::lineb::loadSeedBand(params, pot, lineb.initial_path);
+    REQUIRE(seed.size() == 3);
+    const double e0 = seed.front()->getPotentialEnergy();
+    const double e1 = seed[1]->getPotentialEnergy();
+    lineb.energy = e0 + 0.25 * (e1 - e0);
+    REQUIRE(e0 < lineb.energy);
+    REQUIRE(e1 > lineb.energy);
+    REQUIRE(seed.back()->getPotentialEnergy() < lineb.energy);
+    eonc::LinebJob job(pot, params);
+    const auto files = job.run();
+    REQUIRE_FALSE(files.empty());
+
+    std::ifstream results("results.dat");
+    REQUIRE(results.good());
+    std::string blob((std::istreambuf_iterator<char>(results)),
+                     std::istreambuf_iterator<char>());
+    REQUIRE(blob.find("action") != std::string::npos);
+    REQUIRE(blob.find("log_rate_over_reactant") != std::string::npos);
+    REQUIRE(std::filesystem::exists("lineb.con"));
+  }
 }
 
 } // namespace tests
