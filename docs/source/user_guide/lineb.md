@@ -1,7 +1,7 @@
 ---
 myst:
   html_meta:
-    "description": "Fixed-energy line-integral nudged elastic band (LI-NEB) in eOn through rgsaddle: optimal tunneling paths and optional harmonic quantum TST rates."
+    "description": "Fixed-energy line-integral nudged elastic band (LI-NEB) in eOn through rgsaddle: optimal tunneling paths and optional harmonic quantum TST prefactors and actions."
     "keywords": "eOn LI-NEB, lineb, instanton, tunneling path, rgsaddle, Ásgeirsson."
 ---
 
@@ -46,5 +46,9 @@ remaining keys (`spring`, `endpoint_scale`, `time_step`, `max_move`,
 | `lineb.con` | Optimized band |
 | `results.dat` | Action, both half periods and temperatures, optional `log_rate_over_reactant`, call counts |
 
-An unconverged solve returns the non-success status from rgsaddle; eOn
-propagates it and does not invent a new code.
+For positive replica counts, `log_rate_over_reactant` is the natural
+logarithm of the rate times the reactant partition function, {math}`\ln(k Z_r)`.
+To compare with a rate in inverse seconds, subtract {math}`\ln Z_r` evaluated
+at the same temperature, energy zero and rigid-mode convention, then convert
+from the eOn time unit (about 10.18 fs). A path-only run writes NaN for this
+field. A solver failure appears in the job log with the rgsaddle status.
