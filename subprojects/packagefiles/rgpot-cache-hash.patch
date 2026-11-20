@@ -2,14 +2,14 @@
 +++ b/CppCore/rgpot/Potential.hpp
 @@ -21,10 +21,8 @@
  // clang-format on
-
+ 
  #ifdef RGPOT_HAS_CACHE
 -#define XXH_INLINE_ALL
  #include "rgpot/CalculatorGroup.hpp"
  #include "rgpot/PotentialCache.hpp"
 -#include <xxhash.h>
  #endif
-
+ 
  #include "rgpot/ForceStructs.hpp"
 @@ -362,17 +360,7 @@
     * so neither a different config nor a different kernel can collide.
@@ -28,13 +28,13 @@
 -    return rgpot::cache::KeyHash(hash_val);
 +    return rgpot::cache::result_key(fi, m_type, paramsKey());
    }
-
+ 
    rgpot::cache::PotentialCache *_cache =
 --- a/CppCore/rgpot/PotentialCache.hpp
 +++ b/CppCore/rgpot/PotentialCache.hpp
 @@ -10,6 +10,7 @@
   */
-
+ 
  #include "rgpot/ForceStructs.hpp"
 +#include "rgpot/pot_types.hpp"
  #include "rgpot/types/AtomMatrix.hpp"
@@ -47,13 +47,13 @@
 +
 +/// Hash the ordered geometry, species, cell and potential identity.
 +KeyHash result_key(const ForceInput &input, PotType type, uint64_t parameters);
-
+ 
  /**
   * @brief Evaluations a cache handle has answered, split by origin.
 --- a/CppCore/rgpot/PotentialCache.cc
 +++ b/CppCore/rgpot/PotentialCache.cc
 @@ -11,6 +11,7 @@
-
+ 
  #include "rgpot/PotentialCache.hpp"
  #include <algorithm>
 +#include <array>
@@ -63,14 +63,14 @@
 @@ -18,9 +19,23 @@
  #include <stdexcept>
  #include <vector>
-
+ 
 +// memcpy-based word loads preserve C++ aliasing rules for typed input arrays.
 +#define XXH_FORCE_MEMORY_ACCESS 0
 +#define XXH_INLINE_ALL
 +#include <xxhash.h>
 +
  namespace rgpot::cache {
-
+ 
  namespace {
 +// Versioned storage keys keep entries formed with a different hash protocol
 +// in a separate RocksDB namespace.
@@ -103,7 +103,7 @@
 +  }
 +  return KeyHash(XXH3_64bits_digest(&state));
 +}
-
+ 
  bool PotentialCache::has_result_metadata(const std::string &value,
                                           size_t n_atoms) {
 @@ -76,7 +106,8 @@
@@ -115,16 +115,16 @@
 +  db_->Put(rocksdb::WriteOptions(), rocksdb::Slice(bytes.data(), bytes.size()),
             rocksdb::Slice(buffer.data(), buffer.size()));
  }
-
+ 
 @@ -174,7 +205,8 @@
                forces.size() * sizeof(double));
-
+ 
    rocksdb::Slice value(buffer.data(), buffer.size());
 -  db_->Put(rocksdb::WriteOptions(), kv.slice(), value);
 +  const auto bytes = storage_key(kv);
 +  db_->Put(rocksdb::WriteOptions(), rocksdb::Slice(bytes.data(), bytes.size()), value);
  }
-
+ 
  /**
 @@ -188,7 +220,8 @@
    if (!db_)
