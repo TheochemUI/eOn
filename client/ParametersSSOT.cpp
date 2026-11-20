@@ -5,6 +5,8 @@
 #include "eon/BaseStructures.h"
 #include "eon/generated/ParametersSSOTDefaults.h"
 
+#include <cmath>
+#include <stdexcept>
 #include <string>
 #include <unordered_set>
 
@@ -268,6 +270,53 @@ bool ssot_has_field(const char *section, const char *key) {
     return false;
   std::string id = std::string(section) + "." + key;
   return field_index().count(id) > 0;
+}
+
+void validate_lineb_options(const Parameters &params, bool energy_present) {
+  const auto &o = params.lineb_options();
+  if (!(o.opt_tol >= 0.0) || !std::isfinite(o.opt_tol) ||
+      !(o.perp_tol >= 0.0) || !std::isfinite(o.perp_tol)) {
+    throw std::invalid_argument(
+        "[Lineb] opt_tol and perp_tol must be finite and non-negative");
+  }
+  if (!(o.spring > 0.0) || !std::isfinite(o.spring) ||
+      !(o.endpoint_scale > 0.0) || !std::isfinite(o.endpoint_scale)) {
+    throw std::invalid_argument(
+        "[Lineb] spring and endpoint_scale must be finite and positive");
+  }
+  if (!(o.time_step > 0.0) || !std::isfinite(o.time_step) ||
+      !(o.max_move >= 0.0) || !std::isfinite(o.max_move)) {
+    throw std::invalid_argument(
+        "[Lineb] time_step must be positive and max_move non-negative");
+  }
+  if (!(o.turning_width > 0.0 && o.turning_width < 1.0)) {
+    throw std::invalid_argument(
+        "[Lineb] turning_width must be a fraction strictly between 0 and 1");
+  }
+  if (!(o.hbar > 0.0) || !std::isfinite(o.hbar) || !(o.boltzmann > 0.0) ||
+      !std::isfinite(o.boltzmann)) {
+    throw std::invalid_argument(
+        "[Lineb] hbar and boltzmann must be finite and positive");
+  }
+  if (o.quadrature_pairs < 1) {
+    throw std::invalid_argument(
+        "[Lineb] quadrature_pairs must be at least 1");
+  }
+  if (o.max_steps < 1) {
+    throw std::invalid_argument("[Lineb] max_steps must be at least 1");
+  }
+  if (o.beads < 0) {
+    throw std::invalid_argument(
+        "[Lineb] beads must be nonnegative (0 is path only)");
+  }
+  if (o.beads == 1) {
+    throw std::invalid_argument(
+        "[Lineb] beads must be 0 (path only) or at least 2 (harmonic QTST)");
+  }
+  if (params.main_options().job == JobType::Lineb && !energy_present) {
+    throw std::invalid_argument(
+        "[Lineb] energy must be set when job = lineb");
+  }
 }
 
 } // namespace eonc::config

@@ -106,6 +106,7 @@ def test_python_defaults_main_temperature():
         "Structure Comparison",
         "Process Search",
         "RgpotPot",
+        "Lineb",
     ],
 )
 def test_parity_yaml_keys_subset_of_ssot(section):
@@ -127,6 +128,7 @@ def test_parity_yaml_keys_subset_of_ssot(section):
         "Structure Comparison",
         "Process Search",
         "RgpotPot",
+        "Lineb",
     ],
 )
 def test_parity_yaml_defaults_match_ssot(section):
@@ -213,6 +215,80 @@ def test_rgpot_ini_is_projected():
 
     ssot = (REPO / "client" / "ParametersSSOT.cpp").read_text()
     assert "ParametersSSOTApply.inc" in ssot
+
+
+def test_lineb_is_projected_without_duplicate_adapter_gets():
+    """[Lineb] keys come from generated projections; adapters validate only."""
+    from eon import params_ssot
+
+    assert "Lineb" in params_ssot.COVERED_YAML_SECTIONS
+    catalog = params_ssot.catalog()["sections"]["Lineb"]
+    assert catalog["accessor"] == "lineb_options"
+    snakes = {f["snake"] for f in params_ssot.scalar_fields("Lineb")}
+    assert snakes == {
+        "initial_path",
+        "energy",
+        "opt_tol",
+        "perp_tol",
+        "spring",
+        "endpoint_scale",
+        "time_step",
+        "max_move",
+        "turning_width",
+        "hbar",
+        "boltzmann",
+        "quadrature_pairs",
+        "max_steps",
+        "beads",
+        "molecular",
+    }
+    assert params_ssot.defaults_for("Lineb")["beads"] == 0
+    assert params_ssot.defaults_for("Lineb")["spring"] == 0.1
+
+    ini_gen = (
+        REPO / "include" / "eon" / "generated" / "ParametersSSOTIni.inc"
+    ).read_text()
+    assert 'const char *sec = "Lineb"' in ini_gen
+    assert 'o.beads = ini.GetInteger(sec, "beads"' in ini_gen
+
+    js_gen = (
+        REPO / "include" / "eon" / "generated" / "ParametersSSOTJson.inc"
+    ).read_text()
+    assert 'j["Lineb"]' in js_gen
+    assert 'j.contains("Lineb")' in js_gen
+
+    field_index = (
+        REPO / "include" / "eon" / "generated" / "ParametersSSOTFieldIndex.inc"
+    ).read_text()
+    assert '"Lineb.energy"' in field_index
+    assert '"Lineb.beads"' in field_index
+
+    defaults_h = (
+        REPO / "include" / "eon" / "generated" / "ParametersSSOTDefaults.h"
+    ).read_text()
+    assert "LINEB_BEADS = 0" in defaults_h
+    assert "LINEB_ENERGY = 0.0" in defaults_h
+
+    capnp = (REPO / "schema" / "eon_params.capnp").read_text()
+    assert "lineb @9 :LinebOptions" in capnp
+    assert "instanton @8 :InstantonOptions" in capnp
+
+    cpp = (REPO / "client" / "ParametersINI.cpp").read_text()
+    assert "validate_lineb_options" in cpp
+    assert 'ini.Get("Lineb"' not in cpp
+    assert 'ini.GetReal("Lineb"' not in cpp
+    assert 'ini.GetInteger("Lineb"' not in cpp
+
+    js = (REPO / "client" / "ParametersJSON.cpp").read_text()
+    assert "validate_lineb_options" in js
+    assert 'j["Lineb"] =' not in js
+    assert 'JSON_OPT(s, "endpoint_scale"' not in js
+    assert 'JSON_OPT(s, "turning_width"' not in js
+
+    model_fields = _pydantic_model_fields(SCHEMA_MODELS, "LinebConfig")
+    assert not (model_fields - snakes), (
+        f"LinebConfig fields not in SSoT: {model_fields - snakes}"
+    )
 
 
 def test_parity_main_fields_in_schema_py():

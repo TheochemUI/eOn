@@ -1558,6 +1558,7 @@ Lineb:
             default: 1000
 
         # Harmonic quantum TST replicas. 0 writes the path only (log rate NaN).
+        # Must be 0 or at least 2; beads = 1 is refused.
         beads:
             kind: int
             default: 0

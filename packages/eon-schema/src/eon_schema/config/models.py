@@ -4,9 +4,9 @@ Authoritative home: ``eon_schema.config.models``. The eon-akmc module
 ``eon.schema`` re-exports this surface so Sphinx ``autopydantic_model``
 targets and existing imports keep working.
 
-For Main, Potential, Optimizer, Structure Comparison, and Process Search,
-field names must match schema/eon_params.capnp (Cap'n Proto L0 SSoT).
-Parity is enforced by tests/test_params_ssot.py.
+For Main, Potential, Optimizer, Structure Comparison, Process Search,
+RgpotPot, and Lineb, field names must match schema/eon_params.capnp
+(Cap'n Proto L0 SSoT). Parity is enforced by tests/test_params_ssot.py.
 """
 
 import math
@@ -2916,7 +2916,7 @@ class LinebConfig(BaseModel):
         ge=0,
         description=(
             "Harmonic quantum TST replicas. 0 writes the path only (log rate"
-            " NaN)."
+            " NaN). Must be 0 or at least 2; beads = 1 is refused."
         ),
     )
     molecular: bool = Field(
@@ -2926,6 +2926,14 @@ class LinebConfig(BaseModel):
             " alignment and needs every atom free."
         ),
     )
+
+    @validator("beads")
+    def beads_not_one(cls, v):
+        if v == 1:
+            raise ValueError(
+                "beads must be 0 (path only) or at least 2 (harmonic QTST)"
+            )
+        return v
 
 
 class InstantonConfig(BaseModel):

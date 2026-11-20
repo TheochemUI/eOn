@@ -123,5 +123,20 @@ struct GeneratedDefaults {
   static constexpr auto DYNAMICS_PATH_PILE_TAU = 100.0;
   static constexpr auto DYNAMICS_PATH_SEED = 1;
   static constexpr auto INSTANTON_SPRINGS = std::string_view{"trotter"};
+  static constexpr auto LINEB_INITIAL_PATH = std::string_view{""};
+  static constexpr auto LINEB_ENERGY = 0.0;
+  static constexpr auto LINEB_OPT_TOL = 0.001;
+  static constexpr auto LINEB_PERP_TOL = 0.001;
+  static constexpr auto LINEB_SPRING = 0.1;
+  static constexpr auto LINEB_ENDPOINT_SCALE = 0.2;
+  static constexpr auto LINEB_TIME_STEP = 0.1;
+  static constexpr auto LINEB_MAX_MOVE = 0.2;
+  static constexpr auto LINEB_TURNING_WIDTH = 0.001;
+  static constexpr auto LINEB_HBAR = 0.06465415129579072;
+  static constexpr auto LINEB_BOLTZMANN = 8.617333262145177e-05;
+  static constexpr auto LINEB_QUADRATURE_PAIRS = 4;
+  static constexpr auto LINEB_MAX_STEPS = 1000;
+  static constexpr auto LINEB_BEADS = 0;
+  static constexpr auto LINEB_MOLECULAR = false;
 };
 } // namespace eonc::params_ssot

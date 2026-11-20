@@ -16,6 +16,7 @@
 #include "eon/EpiCenters.h"
 #include "eon/HelperFunctions.h"
 #include "eon/Parameters.h"
+#include "eon/ParametersSSOT.h"
 #include "magic_enum/magic_enum.hpp"
 
 #include <INIReader.h>
@@ -1997,61 +1998,8 @@ int load_ini(const INIReader &ini, Parameters &params) {
     eonc::piqtst::validateOptions(o);
   }
 
-  // [Lineb] //
-  {
-    auto &o = ParametersLoadAccess::lineb_options(params);
-    o.initial_path = ini.Get("Lineb", "initial_path", o.initial_path);
-    o.energy = ini.GetReal("Lineb", "energy", o.energy);
-    o.opt_tol = ini.GetReal("Lineb", "opt_tol", o.opt_tol);
-    o.perp_tol = ini.GetReal("Lineb", "perp_tol", o.perp_tol);
-    o.spring = ini.GetReal("Lineb", "spring", o.spring);
-    o.endpoint_scale = ini.GetReal("Lineb", "endpoint_scale", o.endpoint_scale);
-    o.time_step = ini.GetReal("Lineb", "time_step", o.time_step);
-    o.max_move = ini.GetReal("Lineb", "max_move", o.max_move);
-    o.turning_width = ini.GetReal("Lineb", "turning_width", o.turning_width);
-    o.hbar = ini.GetReal("Lineb", "hbar", o.hbar);
-    o.boltzmann = ini.GetReal("Lineb", "boltzmann", o.boltzmann);
-    o.quadrature_pairs =
-        ini.GetInteger("Lineb", "quadrature_pairs", o.quadrature_pairs);
-    o.max_steps = ini.GetInteger("Lineb", "max_steps", o.max_steps);
-    o.beads = ini.GetInteger("Lineb", "beads", o.beads);
-    o.molecular = ini.GetBoolean("Lineb", "molecular", o.molecular);
-    if (!(o.opt_tol >= 0.0) || !std::isfinite(o.opt_tol) ||
-        !(o.perp_tol >= 0.0) || !std::isfinite(o.perp_tol)) {
-      throw std::invalid_argument(
-          "[Lineb] opt_tol and perp_tol must be finite and non-negative");
-    }
-    if (!(o.spring > 0.0) || !std::isfinite(o.spring) ||
-        !(o.endpoint_scale > 0.0) || !std::isfinite(o.endpoint_scale)) {
-      throw std::invalid_argument(
-          "[Lineb] spring and endpoint_scale must be finite and positive");
-    }
-    if (!(o.time_step > 0.0) || !std::isfinite(o.time_step) ||
-        !(o.max_move >= 0.0) || !std::isfinite(o.max_move)) {
-      throw std::invalid_argument(
-          "[Lineb] time_step must be positive and max_move non-negative");
-    }
-    if (!(o.turning_width > 0.0 && o.turning_width < 1.0)) {
-      throw std::invalid_argument(
-          "[Lineb] turning_width must be a fraction strictly between 0 and 1");
-    }
-    if (!(o.hbar > 0.0) || !std::isfinite(o.hbar) || !(o.boltzmann > 0.0) ||
-        !std::isfinite(o.boltzmann)) {
-      throw std::invalid_argument(
-          "[Lineb] hbar and boltzmann must be finite and positive");
-    }
-    if (o.quadrature_pairs < 1) {
-      throw std::invalid_argument(
-          "[Lineb] quadrature_pairs must be at least 1");
-    }
-    if (o.max_steps < 1) {
-      throw std::invalid_argument("[Lineb] max_steps must be at least 1");
-    }
-    if (o.beads < 0) {
-      throw std::invalid_argument(
-          "[Lineb] beads must be nonnegative (0 is path only)");
-    }
-  }
+  // [Lineb] keys are projected from schema/eon_params.capnp.
+  validate_lineb_options(params, ini.HasValue("Lineb", "energy"));
 
   // [OH_TST] //
 

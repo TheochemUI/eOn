@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://eondocs.org/schema/lineb.json",
   "title": "Lineb",
-  "description": "config.ini [Lineb] section (LinebConfig). Fixed-energy LI-NEB through rgsaddle_lineb_solve.",
+  "description": "config.ini [Lineb] section (LinebConfig). Keys, defaults, and allowed values.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -28,7 +28,7 @@
     },
     "spring": {
       "default": 0.1,
-      "description": "Parallel spacing spring constant.",
+      "description": "Parallel spacing spring.",
       "type": "number"
     },
     "endpoint_scale": {
@@ -57,7 +57,7 @@
       "type": "number"
     },
     "boltzmann": {
-      "default": 8.617333262145177e-5,
+      "default": 8.617333262145177e-05,
       "description": "Boltzmann constant in eV/K.",
       "type": "number"
     },
@@ -75,7 +75,7 @@
     },
     "beads": {
       "default": 0,
-      "description": "Harmonic quantum TST replicas. 0 writes the path only (log rate NaN).",
+      "description": "Harmonic quantum TST replicas. 0 writes the path only (log rate NaN). Must be 0 or at least 2; beads = 1 is refused.",
       "minimum": 0,
       "type": "integer"
     },

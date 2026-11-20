@@ -39,6 +39,26 @@ inline void project_ssot_json_write(json &j, const Parameters &p) {
         {"task_name", o.task_name}
     };
   }
+  {
+    const auto &o = ParametersLoadAccess::lineb_options(p);
+    j["Lineb"] = {
+        {"initial_path", o.initial_path},
+        {"energy", o.energy},
+        {"opt_tol", o.opt_tol},
+        {"perp_tol", o.perp_tol},
+        {"spring", o.spring},
+        {"endpoint_scale", o.endpoint_scale},
+        {"time_step", o.time_step},
+        {"max_move", o.max_move},
+        {"turning_width", o.turning_width},
+        {"hbar", o.hbar},
+        {"boltzmann", o.boltzmann},
+        {"quadrature_pairs", o.quadrature_pairs},
+        {"max_steps", o.max_steps},
+        {"beads", o.beads},
+        {"molecular", o.molecular}
+    };
+  }
 }
 
 inline void project_ssot_json_read(const json &j, Parameters &p) {
@@ -91,5 +111,24 @@ inline void project_ssot_json_read(const json &j, Parameters &p) {
     if (s.contains("task_name")) o.task_name = s.at("task_name").get<decltype(o.task_name)>();
     if (s.contains("xtb_charge")) o.xtb_charge = s.at("xtb_charge").get<decltype(o.xtb_charge)>();
     else o.xtb_charge = static_cast<double>(o.charge);
+  }
+  if (j.contains("Lineb")) {
+    auto &s = j.at("Lineb");
+    auto &o = ParametersLoadAccess::lineb_options(p);
+    if (s.contains("initial_path")) o.initial_path = s.at("initial_path").get<decltype(o.initial_path)>();
+    if (s.contains("energy")) o.energy = s.at("energy").get<decltype(o.energy)>();
+    if (s.contains("opt_tol")) o.opt_tol = s.at("opt_tol").get<decltype(o.opt_tol)>();
+    if (s.contains("perp_tol")) o.perp_tol = s.at("perp_tol").get<decltype(o.perp_tol)>();
+    if (s.contains("spring")) o.spring = s.at("spring").get<decltype(o.spring)>();
+    if (s.contains("endpoint_scale")) o.endpoint_scale = s.at("endpoint_scale").get<decltype(o.endpoint_scale)>();
+    if (s.contains("time_step")) o.time_step = s.at("time_step").get<decltype(o.time_step)>();
+    if (s.contains("max_move")) o.max_move = s.at("max_move").get<decltype(o.max_move)>();
+    if (s.contains("turning_width")) o.turning_width = s.at("turning_width").get<decltype(o.turning_width)>();
+    if (s.contains("hbar")) o.hbar = s.at("hbar").get<decltype(o.hbar)>();
+    if (s.contains("boltzmann")) o.boltzmann = s.at("boltzmann").get<decltype(o.boltzmann)>();
+    if (s.contains("quadrature_pairs")) o.quadrature_pairs = s.at("quadrature_pairs").get<decltype(o.quadrature_pairs)>();
+    if (s.contains("max_steps")) o.max_steps = s.at("max_steps").get<decltype(o.max_steps)>();
+    if (s.contains("beads")) o.beads = s.at("beads").get<decltype(o.beads)>();
+    if (s.contains("molecular")) o.molecular = s.at("molecular").get<decltype(o.molecular)>();
   }
 }

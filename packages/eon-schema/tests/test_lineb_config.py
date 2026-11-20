@@ -1,4 +1,7 @@
-"""LinebConfig round-trip."""
+"""LinebConfig round-trip and beads validation."""
+
+import pytest
+from pydantic import ValidationError
 
 from eon_schema.config.models import LinebConfig
 
@@ -27,3 +30,12 @@ def test_lineb_json_round_trip():
     assert restored.molecular is True
     assert restored.opt_tol == 1e-4
     assert restored.perp_tol == 2e-4
+
+
+def test_lineb_beads_one_refused():
+    with pytest.raises(ValidationError, match="beads must be 0"):
+        LinebConfig(beads=1)
+
+
+def test_lineb_beads_two_ok():
+    assert LinebConfig(beads=2).beads == 2

@@ -23,11 +23,13 @@ are authored in a Cap'n Proto schema.
 | **Docs / validation** | `eon/schema.py`, `eon/config.yaml` | Must stay field-parity with SSoT for covered groups (`tests/test_params_ssot.py`) |
 
 Covered groups today: **Main**, **Potential**, **Optimizer** (with LBFGS/CG/Quickmin/SD),
-**Structure Comparison**, **Process Search**, and **RgpotPot**. A struct tagged
+**Structure Comparison**, **Process Search**, **RgpotPot**, and **Lineb**. A struct tagged
 `# project: ini,json` is generated into the INI reader, the JSON codec, and
 `apply_ssot_defaults()`. RgpotPot carries alias order and the `[cpmd]` and
-`[XTBPot]` overlays as schema comments. Untagged groups still live primarily
-in `Parameters.h` until folded into the schema (see `schema/README.md`).
+`[XTBPot]` overlays as schema comments. Lineb validation (beads ≠ 1; energy
+required when `job = lineb`) lives in `validate_lineb_options()` after the
+projected load. Untagged groups still live primarily in `Parameters.h` until
+folded into the schema (see `schema/README.md`).
 
 ### Adding a covered option
 

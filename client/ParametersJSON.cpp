@@ -15,6 +15,7 @@
 #include "eon/PIQTST.h"
 #include "eon/Parameters.h"
 #include "eon/ParametersINI.h"
+#include "eon/ParametersSSOT.h"
 #include "magic_enum/magic_enum.hpp"
 
 #include <cctype>
@@ -389,27 +390,7 @@ json to_json(const Parameters &p) {
     };
   }
 
-  // [Lineb]
-  {
-    const auto &o = ParametersLoadAccess::lineb_options(p);
-    j["Lineb"] = {
-        {"initial_path", o.initial_path},
-        {"energy", o.energy},
-        {"opt_tol", o.opt_tol},
-        {"perp_tol", o.perp_tol},
-        {"spring", o.spring},
-        {"endpoint_scale", o.endpoint_scale},
-        {"time_step", o.time_step},
-        {"max_move", o.max_move},
-        {"turning_width", o.turning_width},
-        {"hbar", o.hbar},
-        {"boltzmann", o.boltzmann},
-        {"quadrature_pairs", o.quadrature_pairs},
-        {"max_steps", o.max_steps},
-        {"beads", o.beads},
-        {"molecular", o.molecular},
-    };
-  }
+  // [Lineb] is projected from schema/eon_params.capnp.
 
   // [Debug]
   j["Debug"] = {
@@ -1003,27 +984,6 @@ void from_json(const json &j, Parameters &p) {
     eonc::piqtst::validateOptions(o);
   }
 
-  // [Lineb]
-  if (j.contains("Lineb")) {
-    auto &s = j.at("Lineb");
-    auto &o = ParametersLoadAccess::lineb_options(p);
-    JSON_OPT(s, "initial_path", o.initial_path);
-    JSON_OPT(s, "energy", o.energy);
-    JSON_OPT(s, "opt_tol", o.opt_tol);
-    JSON_OPT(s, "perp_tol", o.perp_tol);
-    JSON_OPT(s, "spring", o.spring);
-    JSON_OPT(s, "endpoint_scale", o.endpoint_scale);
-    JSON_OPT(s, "time_step", o.time_step);
-    JSON_OPT(s, "max_move", o.max_move);
-    JSON_OPT(s, "turning_width", o.turning_width);
-    JSON_OPT(s, "hbar", o.hbar);
-    JSON_OPT(s, "boltzmann", o.boltzmann);
-    JSON_OPT(s, "quadrature_pairs", o.quadrature_pairs);
-    JSON_OPT(s, "max_steps", o.max_steps);
-    JSON_OPT(s, "beads", o.beads);
-    JSON_OPT(s, "molecular", o.molecular);
-  }
-
   // The ini loader derives these from the femtosecond inputs whether or
   // not the keys are present; validate_and_link does not.
   {
@@ -1033,7 +993,11 @@ void from_json(const json &j, Parameters &p) {
     th.path_pile_tau = timeUnit > 0.0 ? th.path_pile_tau_input / timeUnit : 0.0;
   }
 
+  // [Lineb] keys are projected from schema/eon_params.capnp.
   project_ssot_json_read(j, p);
+  const bool lineb_energy_present =
+      j.contains("Lineb") && j.at("Lineb").contains("energy");
+  validate_lineb_options(p, lineb_energy_present);
 
   // Resolve computed fields
   validate_and_link(p);

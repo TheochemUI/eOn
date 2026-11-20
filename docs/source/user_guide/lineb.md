@@ -26,8 +26,8 @@ temperature is in kelvin.
 |---|---|
 | `[Main] job = lineb` | Select the job |
 | `[Lineb] initial_path` | Multi-frame seed band (for example `neb.con`), at least three images, interior images above `energy` |
-| `[Lineb] energy` | Tunneling energy {math}`E` in eV |
-| `[Lineb] beads` | Harmonic quantum TST replicas; `0` writes the path only (`log_rate_over_reactant` is NaN) |
+| `[Lineb] energy` | Required tunneling energy {math}`E` in eV |
+| `[Lineb] beads` | At least two harmonic quantum TST replicas, or `0` for the path only (`log_rate_over_reactant` is NaN) |
 | `[Lineb] molecular` | `false` expands atom masses to coordinates (adsorbate / fixed field); `true` uses molecule alignment and needs every atom free |
 
 Frozen atoms are dropped from the path degrees of freedom when
