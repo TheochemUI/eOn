@@ -87,6 +87,42 @@ NWChem `inputBlocks` text. When `theory` is `dft` and `scf_type` names an
 exchange-correlation functional such as `b3lyp`, the client writes a short
 density functional theory (DFT) block.
 
+### ORCA molecular energies and gradients
+
+With `backend = orca`, eOn loads rgpot's `liborca_engine.so`. The plugin
+calls a locally installed ORCA executable for an isolated molecule. The
+plugin and executable have separate paths. Supply the electronic method,
+basis, charge, multiplicity and executable in a serialized `OrcaParams`
+message. Use the `Potentials.capnp` installed with the plugin.
+
+For example, the conventional-exchange ammonia-borane calculation uses
+the following neutral singlet setup. Set `RGPOT_PREFIX` to the plugin's
+installation prefix and replace `/opt/orca/orca` with the executable at
+your site. Run this command in the eOn job directory.
+
+```sh
+capnp encode "$RGPOT_PREFIX/include/rgpot/rpc/Potentials.capnp" OrcaParams >orca.params <<'EOF'
+(method = "B3LYP", basis = "def2-SV(P)", charge = 0, multiplicity = 1,
+ keywords = "GCP(DFT/SV(P)) TightSCF NoRI", executable = "/opt/orca/orca")
+EOF
+```
+
+Select the provider in `config.ini` and set the plugin path for your
+installation. The ORCA engine requests energy and gradient together.
+
+```ini
+[Potential]
+potential = rgpot
+
+[RgpotPot]
+backend = orca
+engine_path = /path/to/liborca_engine.so
+params_path = orca.params
+```
+
+For an isolated-molecule tunneling calculation, combine these sections
+with the seed and `[Lineb]` controls in [the LI-NEB guide](project:lineb.md).
+
 ### Metatomic
 
 ```{code-block} ini
