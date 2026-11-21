@@ -262,8 +262,9 @@ std::vector<std::string> LinebJob::run(void) {
   rgsaddle_lineb_result_t result{};
 #ifndef RGSADDLE_LINEB_INTERPOLATED_FORCE_CLOCK
   if (o.interpolated_force_clock) {
-    throw std::runtime_error("lineb: interpolated_force_clock requires rgsaddle with "
-                             "RGSADDLE_LINEB_INTERPOLATED_FORCE_CLOCK");
+    throw std::runtime_error(
+        "lineb: interpolated_force_clock requires rgsaddle with "
+        "RGSADDLE_LINEB_INTERPOLATED_FORCE_CLOCK");
   }
 #endif
 #ifndef RGSADDLE_LINEB_PROJECTED_VERLET
@@ -447,8 +448,9 @@ std::vector<std::string> LinebJob::run(void) {
          o.beads ? nlohmann::json(result.log_rate_over_reactant)
                  : nlohmann::json(nullptr)},
         {"optimizer", o.projected_verlet ? "projected_verlet" : "fire"},
-        {"replica_clock", o.interpolated_force_clock ? "interpolated_force_verlet"
-                                                     : "quadrature"},
+        {"replica_clock", o.interpolated_force_clock
+                              ? "interpolated_force_verlet"
+                              : "quadrature"},
         {"surface_call_unit", "configuration"},
         {"surface_calls", solverCalls},
         {"potential_calls", potentialCalls}}}};
@@ -458,9 +460,11 @@ std::vector<std::string> LinebJob::run(void) {
         {"launch_image", turning.launch_image},
         {"path_arc_length", turning.path_arc_length},
         {"return_arc", turning.return_arc},
-        {"max_cartesian_displacement_angstrom", turning.max_cartesian_displacement},
+        {"max_cartesian_displacement_angstrom",
+         turning.max_cartesian_displacement},
         {"return_energy_minus_target_eV", turning.energy_residual},
-        {"return_energy_minus_opposite_image_eV", turning.endpoint_energy_difference}};
+        {"return_energy_minus_opposite_image_eV",
+         turning.endpoint_energy_difference}};
   }
 #endif
   auto &spectrum = metadata["lineb"]["spectrum"];
