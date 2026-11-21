@@ -20,9 +20,8 @@
 #include "eon/Potential.h"
 #include "eon/potentials/RgpotAdapter/ResultCache.h"
 
-
-#include <exception>
 #include <cmath>
+#include <exception>
 #include <limits>
 #include <map>
 #include <nlohmann/json.hpp>

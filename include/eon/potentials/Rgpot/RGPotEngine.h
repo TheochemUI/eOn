@@ -54,7 +54,8 @@ std::string nwchemDftInputBlock(const std::string &theory,
                                 const std::string &scfType, int multiplicity,
                                 const std::string &existing);
 
-/** Opaque rgpot-backed engine (nwchemc / cpmdc / metatomic / orca / uma / xtb). */
+/** Opaque rgpot-backed engine (nwchemc / cpmdc / metatomic / orca / uma / xtb).
+ */
 class RGPotEngine {
 public:
   explicit RGPotEngine(const RGPotEngineOptions &opt);
