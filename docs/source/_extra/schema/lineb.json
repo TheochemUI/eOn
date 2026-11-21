@@ -46,14 +46,14 @@
       "description": "Path to the rgpot result cache for this LI-NEB job.",
       "type": "string"
     },
-    "interpolated_force_clock": {
-      "default": false,
-      "description": "Propagate imaginary time with velocity Verlet on the interpolated tangential image force.",
-      "type": "boolean"
-    },
     "projected_verlet": {
       "default": false,
       "description": "Optimize the band with velocity-projected velocity Verlet.",
+      "type": "boolean"
+    },
+    "interpolated_force_clock": {
+      "default": false,
+      "description": "Propagate imaginary time with velocity Verlet on the interpolated tangential image force.",
       "type": "boolean"
     },
     "endpoint_kappa": {
