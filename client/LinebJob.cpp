@@ -210,6 +210,7 @@ std::vector<std::string> LinebJob::run(void) {
   const auto cacheCounts = [&] {
     return resultCache ? resultCache->counts() : rgpot::cache::EvalCounts{};
   };
+  const auto cacheAtStart = cacheCounts();
 #else
   if (!o.result_cache.empty()) {
     throw std::runtime_error(
@@ -520,10 +521,9 @@ std::vector<std::string> LinebJob::run(void) {
       return nlohmann::json{{"computed", last.computed - first.computed},
                             {"served", last.served - first.served}};
     };
-    const rgpot::cache::EvalCounts zero{};
-    providerResults = delta(zero, end);
+    providerResults = delta(cacheAtStart, end);
     providerResults["scope"] = "job";
-    providerResults["phases"] = {{"setup", delta(zero, cacheAtSolve)},
+    providerResults["phases"] = {{"setup", delta(cacheAtStart, cacheAtSolve)},
                                  {"solve", delta(cacheAtSolve, cacheAtOutput)},
                                  {"output", delta(cacheAtOutput, end)}};
   }
