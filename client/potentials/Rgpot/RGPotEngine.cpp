@@ -251,12 +251,12 @@ namespace eon {
 } // namespace eon
 
 struct RGPotEngine::Impl {
-  enum class Backend { Nwchemc, Cpmdc, Metatomic, Uma, Xtb };
+  enum class Backend { Nwchemc, Cpmdc, Metatomic, Uma, Orca, Xtb };
   Backend backend{Backend::Nwchemc};
   std::unique_ptr<rgpot::NWChemPot> nwchem;
   std::unique_ptr<rgpot::CPMDPot> cpmd;
   std::unique_ptr<MetatomicEngineLoader> metatomic;
-  std::unique_ptr<GenericEngineLoader> uma;
+  std::unique_ptr<GenericEngineLoader> plugin;
   std::unique_ptr<XTBEngineLoader> xtb;
   // Calculator groups (cpmdc, ranks_per_image > 0). One group when off.
   int groups{1};
@@ -402,6 +402,19 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
       throw std::runtime_error(
           "RGPOT(metatomic): engine not available (set RGPOT_METATOMIC_ENGINE "
           "or [RgpotPot] engine_path to librgpot_metatomic_engine.so)");
+  } else if (backend_ == "orca") {
+    impl_->backend = Impl::Backend::Orca;
+    if (opt.params_path.empty())
+      throw std::runtime_error("RGPOT(orca): params_path needs a serialized OrcaParams message");
+    auto words = read_params_file(opt.params_path);
+    const auto bytes = kj::arrayPtr(words.data(), words.size()).asBytes();
+    GenericEngineOptions gopt;
+    gopt.library = "liborca_engine.so";
+    gopt.env_var = "RGPOT_ORCA_ENGINE";
+    gopt.engine_path = opt.engine_path.empty() ? opt.engine_library : opt.engine_path;
+    gopt.tag = "orca";
+    gopt.config.assign(bytes.begin(), bytes.end());
+    impl_->plugin = std::make_unique<GenericEngineLoader>(gopt);
   } else if (backend_ == "uma" || backend_ == "omol" || backend_ == "umapot") {
     backend_ = "uma";
     impl_->backend = Impl::Backend::Uma;
@@ -423,8 +436,8 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
       const auto bytes = words.asBytes();
       gopt.config.assign(bytes.begin(), bytes.end());
     }
-    impl_->uma = std::make_unique<GenericEngineLoader>(gopt);
-    if (!impl_->uma->available())
+    impl_->plugin = std::make_unique<GenericEngineLoader>(gopt);
+    if (!impl_->plugin->available())
       throw std::runtime_error(
           "RGPOT(uma): engine not available (set RGPOT_UMA_ENGINE or "
           "[RgpotPot] engine_path to libuma_engine.so)");
@@ -449,7 +462,7 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
   } else {
     throw std::runtime_error(
         "RGPOT: unknown backend '" + opt.backend +
-        "' (expected nwchemc, cpmdc, metatomic, uma, or xtb)");
+        "' (expected nwchemc, cpmdc, metatomic, orca, uma, or xtb)");
   }
 }
 
@@ -561,8 +574,8 @@ bool RGPotEngine::available() const {
     return impl_->cpmd->available();
   if (impl_->backend == Impl::Backend::Metatomic && impl_->metatomic)
     return impl_->metatomic->available();
-  if (impl_->backend == Impl::Backend::Uma && impl_->uma)
-    return impl_->uma->available();
+  if (impl_->plugin)
+    return impl_->plugin->available();
   if (impl_->backend == Impl::Backend::Xtb && impl_->xtb)
     return impl_->xtb->available();
   return false;
@@ -626,6 +639,11 @@ void RGPotEngine::forceEngine(long N, const double *R, const int *atomicNrs,
     impl_->metatomic->force(N, R, atomicNrs, F, U, nullptr, box);
     return;
   }
+  if (impl_->backend == Impl::Backend::Orca) {
+    const std::array<double, 9> isolatedBox{};
+    impl_->plugin->force(N, R, atomicNrs, F, U, nullptr, isolatedBox.data());
+    return;
+  }
   if (impl_->backend == Impl::Backend::Uma) {
     // A molecular .con may omit the cell. A 25 A diagonal stands in, so
     // a singular box does not reach the neighbor list.
@@ -636,7 +654,7 @@ void RGPotEngine::forceEngine(long N, const double *R, const int *atomicNrs,
       cell_sub[0] = cell_sub[4] = cell_sub[8] = 25.0;
       effective_box = cell_sub.data();
     }
-    impl_->uma->force(N, R, atomicNrs, F, U, nullptr, effective_box);
+    impl_->plugin->force(N, R, atomicNrs, F, U, nullptr, effective_box);
     return;
   }
   if (impl_->backend == Impl::Backend::Xtb) {
