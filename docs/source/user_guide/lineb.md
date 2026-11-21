@@ -354,6 +354,15 @@ the CON atom. Compare these values as the path images and bead count
 increase. A continuum residual requires differentiating the path in
 continuous imaginary time.
 
+The fixed-energy optimizer tests forces on the band images. The residual
+above tests the reconstructed equal-time ring used for the rate. A band
+can satisfy both optimizer tolerances while its ring exceeds the desired
+Cartesian force tolerance. For a convergence study, hold the target energy
+and potential fixed, refine the image count and bead count separately, and
+record the resulting temperature, residual and normalized rate for each run.
+Use the reported temperature when comparing to a temperature-indexed rate
+curve. Compare only within the reference curve's temperature range.
+
 To check both residuals from the saved gradients, run the following command
 in the job directory. It reads the ring through readcon and uses twice the
 recorded half-period. It requires no calculator or electronic evaluations.
