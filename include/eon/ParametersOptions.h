@@ -1057,6 +1057,9 @@ struct lineb_options_t {
   // false: expand atom masses to coordinates (adsorbate / fixed field).
   // true: molecule alignment; every atom must be free.
   bool molecular{false};
+  // With molecular: false fits every image to the first image, true fits
+  // each image to its neighbour along the band.
+  bool adjacent_alignment{false};
 };
 
 // [OH_TST] //
