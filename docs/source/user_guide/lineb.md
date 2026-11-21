@@ -68,7 +68,7 @@ pixi run ensure_cbindgen
 prefix="$PWD/build-lineb-deps"
 mkdir -p "$prefix"
 git clone https://github.com/HaoZeke/rgsaddle.git "$prefix/src/rgsaddle"
-git -C "$prefix/src/rgsaddle" checkout --detach c0e5287225f4e853e4756c94a5e28f8098440acf
+git -C "$prefix/src/rgsaddle" checkout --detach d1f5a3ccb16f9cb7e48abf9c9f056b6b82f831f8
 cargo install cargo-c --version 0.10.23 --locked --root "$prefix/tools"
 export PATH="$prefix/tools/bin:$PATH"
 (cd "$prefix/src/rgsaddle" && cargo cinstall --locked --release --features capi \
@@ -339,7 +339,9 @@ The fields `temperature_K` and `tau_over_beta` give the temperature and
 the bead's imaginary time as a fraction of the full period.
 The second-line JSON records the energy gradients of the mobile atoms at
 those coordinates, in the order of their CON atom IDs. Returning replicas
-reuse the measured outbound coordinates and gradients. The diagnostic
+repeat their outbound partner’s coordinates exactly. The image-Hessian
+rate requests all bead gradients and an rgpot cache can serve the repeated
+geometries. The direct bead-Hessian rate reuses its outbound measurements. The diagnostic
 uses the potential evaluations already counted in the rate.
 
 ```python
