@@ -264,8 +264,9 @@ at the same temperature, energy zero and rigid-mode convention, then convert
 from the eOn time unit (about 10.18 fs). A path-only run writes NaN for this
 field. A solver failure appears in the job log with the rgsaddle status. When the solver exhausts `max_steps`, the diagnostic reports both final force norms and the tolerance for each.
 
-For an unconstrained nonlinear molecule, the `rgpycrumbs eon
-molecular-instanton-rate` command can read the full orbit through readcon.
+For an unconstrained nonlinear molecule, `rgpycrumbs` can read the full
+orbit through readcon and normalize the rate. The command below pins the
+revision with native eOn orbit support.
 Supply the optimized reactant in extended XYZ format with matching species,
 atom order and isotope masses. Its spectrum JSON supplies the electronic
 energy in `electronic_energy_eV` and the $3N-6$ positive internal frequencies
@@ -274,7 +275,8 @@ conversion for the reactant and the instanton. The native frames record the
 run's `lineb.hbar`, `lineb.boltzmann` and `lineb.molecular` settings.
 
 ```sh
-rgpycrumbs eon molecular-instanton-rate lineb-orbit.con \
+uvx --from git+https://github.com/HaoZeke/rgpycrumbs.git@0bb8865339e540de643887baf1580b5755bcbbd0 \
+    rgpycrumbs eon molecular-instanton-rate lineb-orbit.con \
     reactant_spectrum.json reactant.extxyz --confirm-same-energy-zero
 ```
 
