@@ -135,6 +135,13 @@ std::string GenericEngineLoader::lastError(const char *operation) const {
          (detail[0] ? ": " + std::string(detail) : "");
 }
 
+std::string GenericEngineLoader::version() const {
+  const auto version = reinterpret_cast<const char *(*)()>(
+      load_sym(m_lib, "rgpot_engine_version"));
+  const char *value = version ? version() : nullptr;
+  return value ? value : "";
+}
+
 void GenericEngineLoader::attachCache(const std::string &path) {
   if (!m_set_cache || !m_cache_counts)
     throw std::runtime_error("RGPOT(" + m_tag +

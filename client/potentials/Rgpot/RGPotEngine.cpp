@@ -460,6 +460,10 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
   }
 }
 
+std::string RGPotEngine::pluginVersion() const {
+  return impl_->plugin ? impl_->plugin->version() : std::string{};
+}
+
 void RGPotEngine::attachCache(const std::string &path) {
   if (!impl_->plugin)
     throw std::runtime_error(

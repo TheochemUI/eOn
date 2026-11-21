@@ -42,6 +42,7 @@ std::vector<std::string> MinimizationJob::run() {
   std::vector<std::string> returnFiles;
   returnFiles.push_back(posOutFilename);
 
+  const auto provenance = provenanceForJob(params, ownedPot.get());
   auto pos = std::make_shared<Matter>(std::move(ownedPot), params);
   if (!eonc::io::io_ok(pos->inp2matter(posInFilename))) {
     QUILL_LOG_CRITICAL(log, "Failed to load {}", posInFilename);
@@ -90,7 +91,7 @@ std::vector<std::string> MinimizationJob::run() {
   auto env = JobResultEnvelope::fromMinimization(
       status, params.potential_options().potential,
       pos->getPotential()->forceCallCounter.load(), hasE, energy);
-  env.provenance = provenanceForJob(params);
+  env.provenance = provenance;
   env.tags.emplace_back("optimizer", std::string(magic_enum::enum_name(
                                          params.optimizer_options().method)));
   if (params.optimizer_options().method == OptType::XTSCI) {

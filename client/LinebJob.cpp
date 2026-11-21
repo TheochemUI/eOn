@@ -460,7 +460,7 @@ std::vector<std::string> LinebJob::run(void) {
       {"solve", solveEnd - solveStart},
       {"output", outputEnd - solveEnd},
       {"total", outputEnd - jobStart}};
-  const auto provenance = provenanceForJob(params);
+  const auto provenance = provenanceForJob(params, pot.get());
   nlohmann::json metadata = {
       {"evaluation_counts",
        {{"scope", "job"},
@@ -525,6 +525,9 @@ std::vector<std::string> LinebJob::run(void) {
                              {"kernel", "RgpotPot"},
                              {"backend", provenance.rgpot_backend},
                              {"revision", ""}};
+    metadata["potential"]["linked_version"] = provenance.rgpot_version;
+    if (!provenance.rgpot_engine_version.empty())
+      metadata["potential"]["engine_version"] = provenance.rgpot_engine_version;
   }
   auto &spectrum = metadata["lineb"]["spectrum"];
   spectrum = nullptr;

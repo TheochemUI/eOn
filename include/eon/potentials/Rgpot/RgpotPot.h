@@ -70,6 +70,7 @@ public:
   [[nodiscard]] bool requiresIsolatedMoleculeLayout() const noexcept override {
     return backend_ == "nwchemc" || isolatedMolecule_;
   }
+  [[nodiscard]] std::string pluginVersion() const;
   [[nodiscard]] const std::string &backend() const noexcept { return backend_; }
   [[nodiscard]] bool engineAvailable() const;
   /// Calculator-group accounting on the driver. The per-group columns are

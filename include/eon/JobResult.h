@@ -39,6 +39,7 @@ struct JobResultProvenance {
   std::string rgpot_name;
   std::string rgpot_backend;
   std::string rgpot_version;
+  std::string rgpot_engine_version;
   bool xtsci{false};
   std::uint16_t xts_abi_major{0};
   std::uint16_t xts_abi_minor{0};
@@ -90,6 +91,9 @@ struct JobResultProvenance {
       out << "eon.rgpot.v1 rgpot_schema\n";
       out << rgpot_version << " rgpot_version\n";
     }
+    if (!rgpot_engine_version.empty()) {
+      out << rgpot_engine_version << " rgpot_engine_version\n";
+    }
     if (xtsci) {
       out << "eon.objective compatibility_engine_protocol_family\n";
       out << "1 compatibility_engine_protocol_major\n";
@@ -116,10 +120,12 @@ struct JobResultProvenance {
 };
 
 class Parameters;
+class Potential;
 
 /// Optimizer backend, engine identity, rgpot pin, and xts ABI from a job.
 /// eindir fields stay at zero unless a real stamp filled them.
-JobResultProvenance provenanceForJob(const Parameters &params);
+JobResultProvenance provenanceForJob(const Parameters &params,
+                                     const Potential *potential = nullptr);
 
 /// In-memory JobResult scalars. Matches schema/eon_job_result.capnp
 /// field names as results.dat keys. Geometries stay on Matter until capnp

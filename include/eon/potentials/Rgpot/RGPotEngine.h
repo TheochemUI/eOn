@@ -58,6 +58,7 @@ std::string nwchemDftInputBlock(const std::string &theory,
 class RGPotEngine {
 public:
   explicit RGPotEngine(const RGPotEngineOptions &opt);
+  [[nodiscard]] std::string pluginVersion() const;
   void attachCache(const std::string &path);
   void detachCache() noexcept;
   [[nodiscard]] std::array<std::uint64_t, 2> cacheCounts() const;

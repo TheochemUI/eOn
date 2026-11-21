@@ -26,6 +26,7 @@ std::vector<std::string> PointJob::run() {
   std::string posInFilename = eonc::helpers::getRelevantFile("pos.con");
   std::string resultsFilename("results.dat");
 
+  const auto provenance = provenanceForJob(params, ownedPot.get());
   auto pos = std::make_unique<Matter>(std::move(ownedPot), params);
   if (!eonc::io::io_ok(pos->inp2matter(posInFilename))) {
     QUILL_LOG_CRITICAL(log, "Failed to load {}", posInFilename);
@@ -47,7 +48,7 @@ std::vector<std::string> PointJob::run() {
   auto env = JobResultEnvelope::fromMinimization(
       RunStatus::GOOD, params.potential_options().potential,
       pots().total_force_calls(), true, pos->getPotentialEnergy());
-  env.provenance = provenanceForJob(params);
+  env.provenance = provenance;
   env.job_type = "point";
   env.extras.emplace_back("Energy", pos->getPotentialEnergy());
   env.extras.emplace_back("Max_Force", pos->maxForce());

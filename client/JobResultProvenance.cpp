@@ -13,6 +13,9 @@
 
 #include "eon/Parameters.h"
 #include "eon/potentials/Rgpot/Backend.h"
+#ifdef WITH_RGPOT
+#include "eon/potentials/Rgpot/RgpotPot.h"
+#endif
 #include "version.h"
 
 #include <algorithm>
@@ -36,7 +39,8 @@ std::string lower_name(std::string name) {
 
 } // namespace
 
-JobResultProvenance provenanceForJob(const Parameters &params) {
+JobResultProvenance provenanceForJob(const Parameters &params,
+                                     const Potential *potential) {
   JobResultProvenance provenance;
   provenance.backend = lower_name(
       std::string(magic_enum::enum_name(params.optimizer_options().method)));
@@ -48,6 +52,10 @@ JobResultProvenance provenanceForJob(const Parameters &params) {
     provenance.rgpot_backend =
         configuredRgpotBackend(params.rgpot_options().backend);
   provenance.rgpot_version = LINKED_RGPOT_VERSION;
+#ifdef WITH_RGPOT
+  if (const auto *engine = dynamic_cast<const RgpotPot *>(potential))
+    provenance.rgpot_engine_version = engine->pluginVersion();
+#endif
 #ifdef WITH_RGMIN
   if (params.optimizer_options().method == OptType::XTSCI ||
       helpers::create::rgminBackendMethod(params.optimizer_options().method,

@@ -45,6 +45,7 @@ public:
   GenericEngineLoader &operator=(const GenericEngineLoader &) = delete;
 
   [[nodiscard]] bool available() const noexcept { return m_pot != nullptr; }
+  [[nodiscard]] std::string version() const;
   void attachCache(const std::string &path);
   void detachCache() noexcept;
   [[nodiscard]] std::array<std::uint64_t, 2> cacheCounts() const;

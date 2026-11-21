@@ -138,6 +138,8 @@ RgpotPot::~RgpotPot() {
     static_cast<void>(impl_.release());
 }
 
+std::string RgpotPot::pluginVersion() const { return impl_->pluginVersion(); }
+
 bool RgpotPot::engineAvailable() const { return impl_ && impl_->available(); }
 
 namespace {
