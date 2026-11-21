@@ -72,7 +72,8 @@ jobs:
             -Dwith_rgmin=enabled -Dwith_rgsaddle=true
           meson compile -C bbdir
           export LD_LIBRARY_PATH="$RG_PREFIX/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-          features=$(bbdir/client/eonclient --features)
+          # Strip the terminal colors around each enabled/disabled value.
+          features=$(bbdir/client/eonclient --features | sed -E $'s/\x1b\\[[0-9;]*m//g')
           echo "$features"
           grep -q "rgmin minimizers" <<<"$features"
           grep -q "rgsaddle band and min-mode" <<<"$features"
