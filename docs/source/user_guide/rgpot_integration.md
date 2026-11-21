@@ -98,3 +98,11 @@ through the plugin’s `rgpot_engine_set_cache` entry point. The job stores
 the differences in `rgpot_engine_cache_counts` for setup, solver and output
 in `evaluation_counts.rgpot_results.phases` in the CON frame metadata.
 A cache miss runs the provider and a cache hit returns its stored result.
+
+For a dynamic engine, the native job result records the version of the
+rgpot library selected by Meson as `rgpot_version`. An engine exporting
+`rgpot_engine_version()` also supplies its own build string, stored as
+`rgpot_engine_version`. LI-NEB path and replica CON frames carry these
+values in `potential.linked_version` and `potential.engine_version`.
+The ORCA executable is a separate program. Record its version and the
+encoded electronic-structure parameters with the calculation.
