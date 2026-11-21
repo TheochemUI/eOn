@@ -64,3 +64,37 @@ support.
 - Serve mode: [Serve mode](project:serve_mode.md)
 - Socket NWChem: [Potentials](project:potential.md)
 - External process pot pattern: [ExtPot](project:ext_pot.md)
+
+## Molecular ORCA energies and forces
+
+Select the in-process rgpot engine in `config.ini` using the path to
+the `orca_engine` Meson target and a flat Cap’n Proto `OrcaParams` message.
+
+```ini
+[Potential]
+potential = rgpot
+
+[RgpotPot]
+backend = orca
+engine_path = /path/to/liborca_engine.so
+params_path = /path/to/orca.params
+```
+
+Encode the message with the effective schema from the same rgpot build.
+For example, the following input specifies conventional hybrid DFT for a
+neutral singlet and requests a gCP correction.
+
+```sh
+printf '%s\n' '(method = "B3LYP", basis = "def2-SV(P)", keywords = "GCP(DFT/SV(P)) TightSCF NoRI", charge = 0, multiplicity = 1)' |
+    capnp encode /path/to/Potentials.capnp OrcaParams > orca.params
+export RGPOT_ORCA=/path/to/orca
+```
+
+The engine runs the ORCA executable for energy and gradient evaluations
+of an isolated molecule. Use a separate result-cache directory for each
+ORCA installation and calculation protocol. With cache-enabled builds
+of both eOn and the engine, `[Lineb] result_cache` attaches the database
+through the plugin’s `rgpot_engine_set_cache` entry point. The job stores
+the differences in `rgpot_engine_cache_counts` for setup, solver and output
+in `evaluation_counts.rgpot_results.phases` in the CON frame metadata.
+A cache miss runs the provider and a cache hit returns its stored result.
