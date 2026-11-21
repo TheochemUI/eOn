@@ -197,3 +197,4 @@ def test_rgpot_engine_survives_native_result_wire_round_trip():
     assert identity["name"] == "rgpot"
     assert identity["backend"] == "orca"
     assert job_result_from_wire(job_result_to_wire({"rgpot": identity}))["rgpot"] == identity
+    assert job_result_loads(job_result_dumps({"rgpot": identity}))["rgpot"] == identity

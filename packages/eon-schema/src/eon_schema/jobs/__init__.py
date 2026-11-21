@@ -546,7 +546,7 @@ def job_result_dumps(data: Mapping[str, Any]) -> bytes:
         import json
 
         return json.dumps(wire, separators=(",", ":")).encode("utf-8")
-    schema = capnp.load(str(job_result_capnp_path()))
+    schema = capnp.load(str(job_result_capnp_path()), imports=[str(Path(capnp.__file__).resolve().parent.parent)])
     msg = schema.JobResult.new_message()
     for key, val in wire.items():
         if key == "forceCalls" and isinstance(val, Mapping):
@@ -554,6 +554,12 @@ def job_result_dumps(data: Mapping[str, Any]) -> bytes:
             for sub, sval in val.items():
                 if hasattr(fc, sub):
                     setattr(fc, sub, sval)
+            continue
+        if key == "rgpot" and isinstance(val, Mapping):
+            node = msg.init("rgpot")
+            for field in ("schema", "name", "version", "backend"):
+                if field in val:
+                    setattr(node, field, val[field])
             continue
         if key == "landfoldArtifacts" and isinstance(val, list):
             _fill_landfold_artifacts(msg, val)
@@ -578,7 +584,7 @@ def job_result_loads(blob: bytes) -> Dict[str, Any]:
         import capnp  # type: ignore
     except ImportError as exc:
         raise ValueError("packed JobResult needs pycapnp") from exc
-    schema = capnp.load(str(job_result_capnp_path()))
+    schema = capnp.load(str(job_result_capnp_path()), imports=[str(Path(capnp.__file__).resolve().parent.parent)])
     msg = schema.JobResult.from_bytes_packed(blob)
     wire = msg.to_dict()
     return job_result_from_wire(wire)
