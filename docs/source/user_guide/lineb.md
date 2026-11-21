@@ -264,6 +264,25 @@ at the same temperature, energy zero and rigid-mode convention, then convert
 from the eOn time unit (about 10.18 fs). A path-only run writes NaN for this
 field. A solver failure appears in the job log with the rgsaddle status. When the solver exhausts `max_steps`, the diagnostic reports both final force norms and the tolerance for each.
 
+For an unconstrained nonlinear molecule, the `rgpycrumbs eon
+molecular-instanton-rate` command can read the full orbit through readcon.
+Supply the optimized reactant in extended XYZ format with matching species,
+atom order and isotope masses. Its spectrum JSON supplies the electronic
+energy in `electronic_energy_eV` and the $3N-6$ positive internal frequencies
+in `signed_wavenumbers_cm-1`. Use the same potential, energy zero and unit
+conversion for the reactant and the instanton. The native frames record the
+run's `lineb.hbar`, `lineb.boltzmann` and `lineb.molecular` settings.
+
+```sh
+rgpycrumbs eon molecular-instanton-rate lineb-orbit.con \
+    reactant_spectrum.json reactant.extxyz --confirm-same-energy-zero
+```
+
+The `log10_rate_per_s` output includes the finite-bead harmonic reactant
+partition function and the rotational inertia ratio for a single reaction
+path. Apply any symmetry-equivalent path multiplicity separately when
+comparing to a total experimental or published rate.
+
 The readcon field `lineb.spectrum` reports the number of retained ring
 modes and the number with negative eigenvalues when a backend with
 `RGSADDLE_HAS_LINEB_RATE_DIAGNOSTICS` evaluates the rate. It is null for a path-only run or a backend
