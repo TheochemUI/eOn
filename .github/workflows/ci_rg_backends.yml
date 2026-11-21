@@ -79,6 +79,7 @@ jobs:
           grep -q "rgsaddle band and min-mode" <<<"$features"
           grep -Fq "rgsaddle fixed-energy LI-NEB: $LINEB_FEATURE" <<<"$features"
           grep -Fq "LI-NEB phase-resolved counts: $LINEB_FEATURE" <<<"$features"
+          grep -Fq "LI-NEB rate orbit output: $LINEB_FEATURE" <<<"$features"
 
       - name: Verify LI-NEB test registration
         if: matrix.label == 'LI-NEB'

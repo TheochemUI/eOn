@@ -13,12 +13,13 @@ Jónsson, [J. Chem. Phys. 148, 102334 (2018)](https://doi.org/10.1063/1.5007180)
 The path is the mass-weighted band that minimizes the abbreviated action
 {math}`W(E) = \int \sqrt{2(V-E)}\,ds`, with endpoints held on {math}`V = E`.
 
-Run `eonclient --features` on the installed client. An LI-NEB build with
-the evaluation counters reports both of these lines:
+Run `eonclient --features` on the installed client. A build with
+phase-resolved counts and rate orbit output reports
 
 ```text
   rgsaddle fixed-energy LI-NEB: enabled
   LI-NEB phase-resolved counts: enabled
+  LI-NEB rate orbit output: enabled
 ```
 
 The search runs in rgsaddle. Build eOn with `-Dwith_rgsaddle=true` and

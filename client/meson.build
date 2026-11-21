@@ -342,6 +342,7 @@ features_list = [
     ['WITH_RGSADDLE_BAND_PRECON', 'rgsaddle band exp metric and ODE12r'],
     ['WITH_RGSADDLE_LINEB', 'rgsaddle fixed-energy LI-NEB'],
     ['WITH_RGSADDLE_LINEB_COUNTS', 'LI-NEB phase-resolved counts'],
+    ['WITH_RGSADDLE_LINEB_ORBIT', 'LI-NEB rate orbit output'],
 ]
 
 # features_string + version.h are assembled AFTER optional with_* blocks append
@@ -407,6 +408,14 @@ if get_option('with_rgsaddle')
     endif
     _deps += rgsaddle_dep
     _args += ['-DWITH_RGSADDLE']
+    cpp = meson.get_compiler('cpp')
+    orbit_header = cpp.has_header_symbol(
+        'rgsaddle.h', 'RGSADDLE_HAS_LINEB_ORBIT', dependencies: rgsaddle_dep,
+    )
+    orbit_library = cpp.has_function('rgsaddle_lineb_solve_counted_orbit', dependencies: rgsaddle_dep)
+    if orbit_header != orbit_library
+        error('The rgsaddle.h orbit capability (RGSADDLE_HAS_LINEB_ORBIT) disagrees with the installed library (rgsaddle_lineb_solve_counted_orbit). Install matching rgsaddle headers and library.')
+    endif
     # 0.3.0: rgsaddle_band_set_exp_precon and RGSADDLE_METHOD_ODE12R.
     if rgsaddle_dep.version().version_compare('>=0.3.0')
         _args += ['-DWITH_RGSADDLE_BAND_PRECON']
@@ -427,6 +436,9 @@ if get_option('with_rgsaddle')
                 _args += ['-D' + flag]
             endif
         endforeach
+    endif
+    if orbit_library
+        _args += ['-DWITH_RGSADDLE_LINEB_ORBIT']
     endif
 endif
 

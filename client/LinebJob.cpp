@@ -104,7 +104,7 @@ rgsaddle_status_t surfaceCallback(void *user, rgsaddle_surface_request_t *req) {
   }
 }
 
-#ifdef RGSADDLE_HAS_LINEB_ORBIT
+#ifdef WITH_RGSADDLE_LINEB_ORBIT
 void writeRateOrbit(const std::string &filename, const Matter &seed,
                     const std::vector<long> &freeAtoms,
                     const std::vector<double> &positions,
@@ -286,7 +286,7 @@ std::vector<std::string> LinebJob::run(void) {
 #ifdef RGSADDLE_HAS_LINEB_RATE_DIAGNOSTICS
   int64_t negativeModes = -1;
   int64_t retainedModes = -1;
-#ifdef RGSADDLE_HAS_LINEB_ORBIT
+#ifdef WITH_RGSADDLE_LINEB_ORBIT
   const size_t width = 3 * freeAtoms.size();
   if (static_cast<size_t>(o.beads) > std::vector<double>().max_size() / width) {
     throw std::length_error("lineb: orbit exceeds addressable memory");
@@ -453,7 +453,7 @@ std::vector<std::string> LinebJob::run(void) {
   }
 #endif
   std::vector<std::string> files{resultsFile, pathFile};
-#ifdef RGSADDLE_HAS_LINEB_ORBIT
+#ifdef WITH_RGSADDLE_LINEB_ORBIT
   if (o.beads > 0) {
     const auto component = static_cast<size_t>(orbit.max_coordinate);
     const long atom = freeAtoms.at(component / 3);
