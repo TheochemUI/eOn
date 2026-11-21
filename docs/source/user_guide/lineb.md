@@ -284,6 +284,15 @@ The remaining keys (`spring`, `endpoint_scale`, `time_step`, `max_move`,
 `turning_width`, `quadrature_pairs`, `max_steps`) match rgsaddle's
 `LinebConfig` defaults unless you change them.
 
+During optimization, rgsaddle smooths the square-root momentum near each
+turning point. The smoothing width in eV is `turning_width` times the height
+of the highest starting image above the target energy. The default fraction
+is 0.001. To check sensitivity, repeat the run from the same seed at the same
+energy with a smaller positive fraction and compare the optimized band and
+temperature. For a rate run, also compare the rate and the bead force
+residual. The `endpoint_convergence` switch controls the stopping criterion
+independently of this smoothing.
+
 ## Outputs
 
 | File | Contents |
