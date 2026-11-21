@@ -343,6 +343,8 @@ features_list = [
     ['WITH_RGSADDLE_LINEB', 'rgsaddle fixed-energy LI-NEB'],
     ['WITH_RGSADDLE_LINEB_COUNTS', 'LI-NEB phase-resolved counts'],
     ['WITH_RGSADDLE_LINEB_ORBIT', 'LI-NEB rate orbit output'],
+    ['WITH_RGSADDLE_LINEB_TURNING', 'LI-NEB measured turning point'],
+    ['WITH_RGSADDLE_LINEB_RATE', 'LI-NEB image Hessians and rate counts'],
 ]
 
 # features_string + version.h are assembled AFTER optional with_* blocks append

@@ -20,6 +20,8 @@ phase-resolved counts and rate orbit output reports
   rgsaddle fixed-energy LI-NEB: enabled
   LI-NEB phase-resolved counts: enabled
   LI-NEB rate orbit output: enabled
+  LI-NEB measured turning point: enabled
+  LI-NEB image Hessians and rate counts: enabled
 ```
 
 The search runs in rgsaddle. Build eOn with `-Dwith_rgsaddle=true` and
@@ -36,6 +38,9 @@ For phase-resolved counts, the library must also export
 use a matching header and library with `RGSADDLE_HAS_LINEB_ORBIT` and
 `rgsaddle_lineb_solve_counted_orbit`. These checks distinguish builds
 that share an ABI minor version but provide different entry points.
+The last two entries report support for `rgsaddle_lineb_solve_counted_turning`
+and `rgsaddle_lineb_solve_counted_rate`. Check the latter before submitting
+a rate job with `interpolated_hessian = true`.
 
 If Meson finds the pkg-config package but cannot link
 `rgsaddle_abi_stamp`, inspect the linker error in

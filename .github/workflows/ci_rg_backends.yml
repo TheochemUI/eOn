@@ -80,6 +80,8 @@ jobs:
           grep -Fq "rgsaddle fixed-energy LI-NEB: $LINEB_FEATURE" <<<"$features"
           grep -Fq "LI-NEB phase-resolved counts: $LINEB_FEATURE" <<<"$features"
           grep -Fq "LI-NEB rate orbit output: $LINEB_FEATURE" <<<"$features"
+          grep -Fq "LI-NEB measured turning point: $LINEB_FEATURE" <<<"$features"
+          grep -Fq "LI-NEB image Hessians and rate counts: $LINEB_FEATURE" <<<"$features"
 
       - name: Verify LI-NEB test registration
         if: matrix.label == 'LI-NEB'
