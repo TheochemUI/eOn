@@ -2877,6 +2877,7 @@ class LinebConfig(BaseModel):
     endpoint_convergence: bool = Field(default=False, description="Apply opt_tol to the endpoints and perp_tol to the interior.")
     result_cache: str = Field(default="", description="Path to the rgpot result cache for this LI-NEB job.")
     projected_verlet: bool = Field(default=False, description="Optimize the band with velocity-projected velocity Verlet.")
+    interpolated_force_clock: bool = Field(default=False, description="Propagate imaginary time with velocity Verlet on the interpolated tangential image force.")
     endpoint_kappa: float = Field(default=0.0, ge=0, allow_inf_nan=False,
                                   description="Fixed endpoint coefficient; zero selects endpoint_scale.")
     endpoint_scale: float = Field(

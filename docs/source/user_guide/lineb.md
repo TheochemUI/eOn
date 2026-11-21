@@ -146,6 +146,13 @@ The paper also uses velocity-projected velocity Verlet for optimizing the
 band. Set `projected_verlet = true` to request that optimizer with
 a library that defines `RGSADDLE_LINEB_PROJECTED_VERLET`. The default optimizer is FIRE 2.0.
 
+To select the imaginary-time propagation described in section II.C, set
+`interpolated_force_clock = true` with a library that defines
+`RGSADDLE_LINEB_INTERPOLATED_FORCE_CLOCK`. This uses a cubic interpolation
+of the signed tangential image forces to determine the half-period,
+temperature and bead positions. The default obtains them by quadrature.
+The `lineb.replica_clock` field in the CON frame metadata records the selection.
+
 The eOn job uses the number of frames in `initial_path` as the number of
 LI-NEB images. For a ten-image calculation with a densely sampled MEP,
 locate its two crossings of the target energy, interpolate ten frames

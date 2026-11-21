@@ -58,4 +58,5 @@
     o.endpoint_convergence = GD::LINEB_ENDPOINT_CONVERGENCE;
     o.projected_verlet = GD::LINEB_PROJECTED_VERLET;
     o.result_cache = std::string(GD::LINEB_RESULT_CACHE);
+    o.interpolated_force_clock = GD::LINEB_INTERPOLATED_FORCE_CLOCK;
   }

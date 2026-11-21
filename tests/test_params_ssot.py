@@ -236,6 +236,7 @@ def test_lineb_is_projected_without_duplicate_adapter_gets():
         "linear_seed",
         "endpoint_convergence",
         "projected_verlet",
+        "interpolated_force_clock",
         "result_cache",
         "time_step",
         "max_move",

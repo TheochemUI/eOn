@@ -400,6 +400,13 @@ CATALOG = {
           "ordinal": 19,
           "snake": "result_cache",
           "type": "Text"
+        },
+        {
+          "capnp": "interpolated_force_clock",
+          "default": False,
+          "ordinal": 20,
+          "snake": "interpolated_force_clock",
+          "type": "Bool"
         }
       ],
       "json_name": "Lineb",

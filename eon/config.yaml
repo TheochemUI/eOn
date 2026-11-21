@@ -1540,6 +1540,11 @@ Lineb:
             kind: bool
             default: false
 
+        # Propagate imaginary time with velocity Verlet on the interpolated tangential image force.
+        interpolated_force_clock:
+            kind: bool
+            default: false
+
         # Positive for a fixed turning-surface coefficient; zero selects endpoint_scale.
         endpoint_kappa:
             kind: float

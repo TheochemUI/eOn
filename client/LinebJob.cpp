@@ -260,6 +260,12 @@ std::vector<std::string> LinebJob::run(void) {
 #endif
   const auto solveStart = pot->forceCallCounter.load();
   rgsaddle_lineb_result_t result{};
+#ifndef RGSADDLE_LINEB_INTERPOLATED_FORCE_CLOCK
+  if (o.interpolated_force_clock) {
+    throw std::runtime_error("lineb: interpolated_force_clock requires rgsaddle with "
+                             "RGSADDLE_LINEB_INTERPOLATED_FORCE_CLOCK");
+  }
+#endif
 #ifndef RGSADDLE_LINEB_PROJECTED_VERLET
   if (o.projected_verlet) {
     throw std::runtime_error("lineb: projected_verlet requires rgsaddle with "
@@ -279,6 +285,11 @@ std::vector<std::string> LinebJob::run(void) {
 #ifdef RGSADDLE_LINEB_PROJECTED_VERLET
   if (o.projected_verlet) {
     options |= RGSADDLE_LINEB_PROJECTED_VERLET;
+  }
+#endif
+#ifdef RGSADDLE_LINEB_INTERPOLATED_FORCE_CLOCK
+  if (o.interpolated_force_clock) {
+    options |= RGSADDLE_LINEB_INTERPOLATED_FORCE_CLOCK;
   }
 #endif
 #ifdef WITH_RGSADDLE_LINEB_COUNTS
@@ -425,6 +436,8 @@ std::vector<std::string> LinebJob::run(void) {
          o.beads ? nlohmann::json(result.log_rate_over_reactant)
                  : nlohmann::json(nullptr)},
         {"optimizer", o.projected_verlet ? "projected_verlet" : "fire"},
+        {"replica_clock", o.interpolated_force_clock ? "interpolated_force_verlet"
+                                                     : "quadrature"},
         {"surface_call_unit", "configuration"},
         {"surface_calls", solverCalls},
         {"potential_calls", potentialCalls}}}};

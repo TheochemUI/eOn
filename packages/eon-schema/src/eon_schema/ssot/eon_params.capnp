@@ -304,6 +304,7 @@ struct LinebOptions {
   endpoint_convergence @17 :Bool = false;
   projected_verlet @18 :Bool = false;
   result_cache @19 :Text = "";
+  interpolated_force_clock @20 :Bool = false;
 }
 
 # ---------------------------------------------------------------------

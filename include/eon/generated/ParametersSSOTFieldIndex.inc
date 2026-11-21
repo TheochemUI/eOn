@@ -13,6 +13,7 @@
     "Lineb.energy",
     "Lineb.hbar",
     "Lineb.initial_path",
+    "Lineb.interpolated_force_clock",
     "Lineb.linear_seed",
     "Lineb.max_move",
     "Lineb.max_steps",

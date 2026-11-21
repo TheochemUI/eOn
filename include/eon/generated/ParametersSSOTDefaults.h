@@ -143,5 +143,6 @@ struct GeneratedDefaults {
   static constexpr auto LINEB_ENDPOINT_CONVERGENCE = false;
   static constexpr auto LINEB_PROJECTED_VERLET = false;
   static constexpr auto LINEB_RESULT_CACHE = std::string_view{""};
+  static constexpr auto LINEB_INTERPOLATED_FORCE_CLOCK = false;
 };
 } // namespace eonc::params_ssot

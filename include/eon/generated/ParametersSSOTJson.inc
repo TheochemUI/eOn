@@ -61,7 +61,8 @@ inline void project_ssot_json_write(json &j, const Parameters &p) {
         {"linear_seed", o.linear_seed},
         {"endpoint_convergence", o.endpoint_convergence},
         {"projected_verlet", o.projected_verlet},
-        {"result_cache", o.result_cache}
+        {"result_cache", o.result_cache},
+        {"interpolated_force_clock", o.interpolated_force_clock}
     };
   }
 }
@@ -140,5 +141,6 @@ inline void project_ssot_json_read(const json &j, Parameters &p) {
     if (s.contains("endpoint_convergence")) o.endpoint_convergence = s.at("endpoint_convergence").get<decltype(o.endpoint_convergence)>();
     if (s.contains("projected_verlet")) o.projected_verlet = s.at("projected_verlet").get<decltype(o.projected_verlet)>();
     if (s.contains("result_cache")) o.result_cache = s.at("result_cache").get<decltype(o.result_cache)>();
+    if (s.contains("interpolated_force_clock")) o.interpolated_force_clock = s.at("interpolated_force_clock").get<decltype(o.interpolated_force_clock)>();
   }
 }
