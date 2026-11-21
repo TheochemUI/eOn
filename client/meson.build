@@ -398,6 +398,13 @@ if get_option('with_rgsaddle')
         method: 'pkg-config',
         required: true,
     )
+    if not meson.get_compiler('cpp').has_function(
+        'rgsaddle_abi_stamp',
+        prefix: '#include <rgsaddle.h>',
+        dependencies: rgsaddle_dep,
+    )
+        error('Cannot link the required rgsaddle C ABI. Check the rgsaddle headers, library and compiler sysroot in meson-logs/meson-log.txt.')
+    endif
     _deps += rgsaddle_dep
     _args += ['-DWITH_RGSADDLE']
     # 0.3.0: rgsaddle_band_set_exp_precon and RGSADDLE_METHOD_ODE12R.

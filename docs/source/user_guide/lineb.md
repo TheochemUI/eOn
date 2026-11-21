@@ -36,6 +36,13 @@ use a matching header and library with `RGSADDLE_HAS_LINEB_ORBIT` and
 `rgsaddle_lineb_solve_counted_orbit`. These checks distinguish builds
 that share an ABI minor version but provide different entry points.
 
+If Meson finds the pkg-config package but cannot link
+`rgsaddle_abi_stamp`, inspect the linker error in
+`meson-logs/meson-log.txt`. Use matching headers and a library built
+for the C++ compiler's target and C library. For example, a system
+rgsaddle build may require a newer glibc than the compiler in a
+packaged environment can link against.
+
 Energies are in eV, lengths in Å and masses in amu. Defaults for
 `hbar` and `boltzmann` match eOn's tunneling constants so the reported
 temperature is in kelvin.
