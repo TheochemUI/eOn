@@ -68,7 +68,7 @@ pixi run ensure_cbindgen
 prefix="$PWD/build-lineb-deps"
 mkdir -p "$prefix"
 git clone https://github.com/HaoZeke/rgsaddle.git "$prefix/src/rgsaddle"
-git -C "$prefix/src/rgsaddle" checkout --detach 904d41ac57058b4a47fd990c4f9a5b1497fa6927
+git -C "$prefix/src/rgsaddle" checkout --detach e0b60add0968bb6b959338b6f5194b269cf49442
 cargo install cargo-c --version 0.10.23 --locked --root "$prefix/tools"
 export PATH="$prefix/tools/bin:$PATH"
 (cd "$prefix/src/rgsaddle" && cargo cinstall --locked --release --features capi \
