@@ -191,6 +191,23 @@ Cu(110) reconstruction, following the intrinsic reaction coordinate
 from the saddle in both directions resolved the first pair of crossings
 at 0.05 eV below the barrier.
 
+### Restart from a saved band
+
+A saved turning point can evaluate slightly above or below the target
+when an electronic-structure calculation starts from a different orbital
+guess. If the job reports a missing reactant- or product-side crossing,
+its error gives the target and both endpoint energies in eV. Subtract
+the target from each reported energy to see which end needs attention.
+
+To construct a bracketed seed, follow the reaction path outward on the
+affected side until its endpoint energy falls below the target. Keep an
+interior image above the target and verify the other crossing. To measure
+an endpoint separately, write that frame to `pos.con` with readcon and
+run an eOn `job = point` with the same potential and electronic-structure
+settings. Count these measurements as seed preparation when reporting
+the total cost. The LI-NEB run locates the turning points for the
+requested energy from the supplied band.
+
 For a frozen Cu substrate with two mobile hydrogen atoms of mass
 1.00793 amu, the paper uses a spring of 20 Å⁻² and an endpoint coefficient
 of 1000 eV⁻¹ Å⁻¹ for the dimensionless action. With eOn’s default
