@@ -563,7 +563,7 @@ def job_result_dumps(data: Mapping[str, Any]) -> bytes:
             continue
         if key == "rgpot" and isinstance(val, Mapping):
             node = msg.init("rgpot")
-            for field in ("schema", "name", "version", "backend"):
+            for field in ("schema", "name", "version", "backend", "engineVersion"):
                 if field in val:
                     setattr(node, field, val[field])
             continue
