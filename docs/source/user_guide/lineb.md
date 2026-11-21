@@ -13,6 +13,14 @@ Jónsson, [J. Chem. Phys. 148, 102334 (2018)](https://doi.org/10.1063/1.5007180)
 The path is the mass-weighted band that minimizes the abbreviated action
 {math}`W(E) = \int \sqrt{2(V-E)}\,ds`, with endpoints held on {math}`V = E`.
 
+Run `eonclient --features` on the installed client. An LI-NEB build with
+the evaluation counters reports both of these lines:
+
+```text
+  rgsaddle fixed-energy LI-NEB: enabled
+  LI-NEB phase-resolved counts: enabled
+```
+
 The search runs in rgsaddle. Build eOn with `-Dwith_rgsaddle=true` and
 an rgsaddle library that exports `rgsaddle_lineb_solve`. Meson checks
 the installed library during configuration. Look for the following result

@@ -340,6 +340,8 @@ features_list = [
     ['WITH_RGMIN', 'rgmin minimizers'],
     ['WITH_RGSADDLE', 'rgsaddle band and min-mode'],
     ['WITH_RGSADDLE_BAND_PRECON', 'rgsaddle band exp metric and ODE12r'],
+    ['WITH_RGSADDLE_LINEB', 'rgsaddle fixed-energy LI-NEB'],
+    ['WITH_RGSADDLE_LINEB_COUNTS', 'LI-NEB phase-resolved counts'],
 ]
 
 # features_string + version.h are assembled AFTER optional with_* blocks append

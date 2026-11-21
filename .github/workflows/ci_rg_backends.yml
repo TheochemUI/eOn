@@ -63,6 +63,8 @@ jobs:
           echo "RG_PREFIX=$prefix" >> "$GITHUB_ENV"
 
       - name: Compile
+        env:
+          LINEB_FEATURE: ${{ matrix.label == 'LI-NEB' && 'enabled' || 'disabled' }}
         shell: pixi run bash -e {0}
         run: |
           export PKG_CONFIG_PATH="$RG_PREFIX/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
@@ -74,6 +76,8 @@ jobs:
           echo "$features"
           grep -q "rgmin minimizers" <<<"$features"
           grep -q "rgsaddle band and min-mode" <<<"$features"
+          grep -Fq "rgsaddle fixed-energy LI-NEB: $LINEB_FEATURE" <<<"$features"
+          grep -Fq "LI-NEB phase-resolved counts: $LINEB_FEATURE" <<<"$features"
 
       - name: Verify LI-NEB test registration
         if: matrix.label == 'LI-NEB'
