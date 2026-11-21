@@ -185,6 +185,8 @@ and rate when increasing the number of replicas.
 For a rate job (`beads > 0`) with `RGSADDLE_HAS_LINEB_ORBIT`, open
 `lineb-orbit.con` with readcon. Each frame holds one replica of the
 full ring in continuous Cartesian coordinates, including the fixed atoms.
+The fields `temperature_K` and `tau_over_beta` give the temperature and
+the bead's imaginary time as a fraction of the full period.
 The second-line JSON records the energy gradients of the mobile atoms at
 those coordinates, in the order of their CON atom IDs. Returning replicas
 reuse the measured outbound coordinates and gradients. The diagnostic

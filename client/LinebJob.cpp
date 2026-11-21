@@ -117,7 +117,9 @@ void writeRateOrbit(const std::string &filename, const Matter &seed,
   AtomMatrix xyz = bead.getPositions();
   const size_t width = 3 * freeAtoms.size();
   std::vector<readcon::ConFrame> frames;
-  frames.reserve(positions.size() / width);
+  const auto numBeads = positions.size() / width;
+  frames.reserve(numBeads);
+  metadata["temperature_K"] = metadata.at("lineb").at("temperature");
   auto &observed = metadata["lineb_orbit"];
   for (const auto atom : freeAtoms) {
     observed["mobile_atom_ids"].push_back(bead.getAtomIndex(atom));
@@ -134,6 +136,7 @@ void writeRateOrbit(const std::string &filename, const Matter &seed,
     bead.setPositions(xyz);
     io::ConFrameMetadata frame;
     frame.frame_index = frames.size();
+    metadata["tau_over_beta"] = static_cast<double>(frames.size()) / numBeads;
     frame.write_con_forces = false;
     frame.raw_json = metadata.dump();
     frames.push_back(io::matterToConFrame(bead, &frame));

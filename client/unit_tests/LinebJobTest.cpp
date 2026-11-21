@@ -188,6 +188,10 @@ TEST_CASE("LinebJob runs a fixed-energy seeded Morse band when available",
     double mass = 0;
     for (const auto &bead : frames) {
       const auto info = nlohmann::json::parse(bead.metadata_json());
+      REQUIRE(info.at("temperature_K") == rate.at("temperature"));
+      REQUIRE(info.at("tau_over_beta").get<double>() ==
+              Catch::Approx(static_cast<double>(coordinates.size()) /
+                            frames.size()));
       REQUIRE(info.at("evaluation_counts") ==
               rateMetadata.at("evaluation_counts"));
       const auto &observed = info.at("lineb_orbit");
