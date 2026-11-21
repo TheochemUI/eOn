@@ -64,7 +64,8 @@ inline void project_ssot_json_write(json &j, const Parameters &p) {
         {"result_cache", o.result_cache},
         {"interpolated_force_clock", o.interpolated_force_clock},
         {"interpolated_hessian", o.interpolated_hessian},
-        {"image_hessian_step", o.image_hessian_step}
+        {"image_hessian_step", o.image_hessian_step},
+        {"adjacent_alignment", o.adjacent_alignment}
     };
   }
 }
@@ -146,5 +147,6 @@ inline void project_ssot_json_read(const json &j, Parameters &p) {
     if (s.contains("interpolated_force_clock")) o.interpolated_force_clock = s.at("interpolated_force_clock").get<decltype(o.interpolated_force_clock)>();
     if (s.contains("interpolated_hessian")) o.interpolated_hessian = s.at("interpolated_hessian").get<decltype(o.interpolated_hessian)>();
     if (s.contains("image_hessian_step")) o.image_hessian_step = s.at("image_hessian_step").get<decltype(o.image_hessian_step)>();
+    if (s.contains("adjacent_alignment")) o.adjacent_alignment = s.at("adjacent_alignment").get<decltype(o.adjacent_alignment)>();
   }
 }

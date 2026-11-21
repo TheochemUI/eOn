@@ -1,0 +1,1 @@
+`[Lineb] adjacent_alignment = true` fits each image of a molecular band to its neighbour instead of the first image. It needs `molecular = true` and rgsaddle with `RGSADDLE_LINEB_MASSES_MOLECULE_ADJACENT`.

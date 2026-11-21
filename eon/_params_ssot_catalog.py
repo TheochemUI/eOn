@@ -421,6 +421,13 @@ CATALOG = {
           "ordinal": 22,
           "snake": "image_hessian_step",
           "type": "Float64"
+        },
+        {
+          "capnp": "adjacent_alignment",
+          "default": False,
+          "ordinal": 23,
+          "snake": "adjacent_alignment",
+          "type": "Bool"
         }
       ],
       "json_name": "Lineb",

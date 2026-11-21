@@ -593,7 +593,8 @@
         "quadrature_pairs",
         "max_steps",
         "beads",
-        "molecular"
+        "molecular",
+        "adjacent_alignment"
       ]
     },
     "Serve": {

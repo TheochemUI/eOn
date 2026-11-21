@@ -125,6 +125,11 @@
       "default": false,
       "description": "false expands atom masses to coordinates. true uses molecule alignment and needs every atom free.",
       "type": "boolean"
+    },
+    "adjacent_alignment": {
+      "default": false,
+      "description": "With molecular = true, false fits every image to the first image and true fits each image to its neighbour along the band.",
+      "type": "boolean"
     }
   }
 }

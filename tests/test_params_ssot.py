@@ -249,6 +249,7 @@ def test_lineb_is_projected_without_duplicate_adapter_gets():
         "max_steps",
         "beads",
         "molecular",
+        "adjacent_alignment",
     }
     assert params_ssot.defaults_for("Lineb")["result_cache"] == ""
     assert params_ssot.defaults_for("Lineb")["beads"] == 0

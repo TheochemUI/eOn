@@ -146,5 +146,6 @@ struct GeneratedDefaults {
   static constexpr auto LINEB_INTERPOLATED_FORCE_CLOCK = false;
   static constexpr auto LINEB_INTERPOLATED_HESSIAN = false;
   static constexpr auto LINEB_IMAGE_HESSIAN_STEP = 0.0;
+  static constexpr auto LINEB_ADJACENT_ALIGNMENT = false;
 };
 } // namespace eonc::params_ssot

@@ -271,6 +271,24 @@ std::vector<std::string> LinebJob::run(void) {
                              "rgsaddle_lineb_solve_counted_rate");
   }
 #endif
+  if (o.adjacent_alignment && !o.molecular) {
+    throw std::runtime_error(
+        "lineb: adjacent_alignment requires molecular = true");
+  }
+#ifdef RGSADDLE_LINEB_MASSES_MOLECULE_ADJACENT
+  const int32_t massMode =
+      o.molecular ? (o.adjacent_alignment
+                         ? RGSADDLE_LINEB_MASSES_MOLECULE_ADJACENT
+                         : RGSADDLE_LINEB_MASSES_MOLECULE)
+                  : RGSADDLE_LINEB_MASSES_COORDINATES;
+#else
+  if (o.adjacent_alignment) {
+    throw std::runtime_error(
+        "lineb: adjacent_alignment requires rgsaddle with "
+        "RGSADDLE_LINEB_MASSES_MOLECULE_ADJACENT");
+  }
+  const int32_t massMode = o.molecular ? 1 : 0;
+#endif
 #ifndef RGSADDLE_LINEB_INTERPOLATED_FORCE_CLOCK
   if (o.interpolated_force_clock) {
     throw std::runtime_error(
@@ -325,7 +343,7 @@ std::vector<std::string> LinebJob::run(void) {
   const auto solveRate = [&](auto fn, auto... rateOptions) {
     return fn(&cfg, static_cast<int64_t>(band.size()),
               static_cast<int64_t>(freeAtoms.size()), positions.data(),
-              masses.data(), o.molecular ? 1 : 0, o.energy, o.max_steps,
+              masses.data(), massMode, o.energy, o.max_steps,
               o.beads, surfaceCallback, &ctx, optimized.data(), &result,
               o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options,
               &counts, &negativeModes, &retainedModes,
@@ -347,7 +365,7 @@ std::vector<std::string> LinebJob::run(void) {
   const rgsaddle_status_t rc = rgsaddle_lineb_solve_counted_orbit(
       &cfg, static_cast<int64_t>(band.size()),
       static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
-      o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
+      massMode, o.energy, o.max_steps, o.beads, surfaceCallback,
       &ctx, optimized.data(), &result,
       o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options, &counts,
       &negativeModes, &retainedModes, o.beads ? &orbit : nullptr);
@@ -356,7 +374,7 @@ std::vector<std::string> LinebJob::run(void) {
   const rgsaddle_status_t rc = rgsaddle_lineb_solve_counted_diagnostics(
       &cfg, static_cast<int64_t>(band.size()),
       static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
-      o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
+      massMode, o.energy, o.max_steps, o.beads, surfaceCallback,
       &ctx, optimized.data(), &result,
       o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options, &counts,
       &negativeModes, &retainedModes);
@@ -365,7 +383,7 @@ std::vector<std::string> LinebJob::run(void) {
   const rgsaddle_status_t rc = rgsaddle_lineb_solve_counted(
       &cfg, static_cast<int64_t>(band.size()),
       static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
-      o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
+      massMode, o.energy, o.max_steps, o.beads, surfaceCallback,
       &ctx, optimized.data(), &result,
       o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options, &counts);
 #endif
@@ -373,7 +391,7 @@ std::vector<std::string> LinebJob::run(void) {
   const rgsaddle_status_t rc = rgsaddle_lineb_solve_options(
       &cfg, static_cast<int64_t>(band.size()),
       static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
-      o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
+      massMode, o.energy, o.max_steps, o.beads, surfaceCallback,
       &ctx, optimized.data(), &result,
       o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options);
 #endif
@@ -381,7 +399,7 @@ std::vector<std::string> LinebJob::run(void) {
   const rgsaddle_status_t rc = rgsaddle_lineb_solve_with_kappa(
       &cfg, static_cast<int64_t>(band.size()),
       static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
-      o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
+      massMode, o.energy, o.max_steps, o.beads, surfaceCallback,
       &ctx, optimized.data(), &result,
       o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr);
 #else
@@ -392,7 +410,7 @@ std::vector<std::string> LinebJob::run(void) {
   const rgsaddle_status_t rc = rgsaddle_lineb_solve(
       &cfg, static_cast<int64_t>(band.size()),
       static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
-      o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
+      massMode, o.energy, o.max_steps, o.beads, surfaceCallback,
       &ctx, optimized.data(), &result);
 #endif
 
@@ -474,6 +492,7 @@ std::vector<std::string> LinebJob::run(void) {
         {"hbar", o.hbar},
         {"boltzmann", o.boltzmann},
         {"molecular", o.molecular},
+        {"adjacent_alignment", o.adjacent_alignment},
         {"beads", o.beads},
         {"iterations", result.iterations},
         {"action", result.action},

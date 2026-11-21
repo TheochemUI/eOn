@@ -68,7 +68,7 @@ pixi run ensure_cbindgen
 prefix="$PWD/build-lineb-deps"
 mkdir -p "$prefix"
 git clone https://github.com/HaoZeke/rgsaddle.git "$prefix/src/rgsaddle"
-git -C "$prefix/src/rgsaddle" checkout --detach b47b3961fc49ded2cbc2ce8faf9a76bbfa6fcb1c
+git -C "$prefix/src/rgsaddle" checkout --detach b516db5a9974c4ce7b5794f8f2a3593b2fb33e29
 cargo install cargo-c --version 0.10.23 --locked --root "$prefix/tools"
 export PATH="$prefix/tools/bin:$PATH"
 (cd "$prefix/src/rgsaddle" && cargo cinstall --locked --release --features capi \
@@ -141,6 +141,7 @@ once when comparing the cost of a reactive flux.
 | `[Lineb] energy` | Required tunneling energy {math}`E` in eV |
 | `[Lineb] beads` | At least two harmonic quantum TST replicas, or `0` for the path only (JSON rate is null) |
 | `[Lineb] molecular` | `false` expands atom masses to coordinates (adsorbate / fixed field); `true` uses molecule alignment and needs every atom free |
+| `[Lineb] adjacent_alignment` | With `molecular = true`: `false` fits every image to the first image; `true` fits each image to its neighbour along the band, the alignment of Ásgeirsson et al. (2018) |
 
 Frozen atoms are dropped from the path degrees of freedom when
 `molecular = false`. A per-axis freeze (only some of x, y, z fixed) is

@@ -81,4 +81,5 @@ inline void project_ssot_ini(const INIReader &ini, Parameters &params) {
   o.interpolated_force_clock = ini.GetBoolean(sec, "interpolated_force_clock", o.interpolated_force_clock);
   o.interpolated_hessian = ini.GetBoolean(sec, "interpolated_hessian", o.interpolated_hessian);
   o.image_hessian_step = ini.GetReal(sec, "image_hessian_step", o.image_hessian_step);
+  o.adjacent_alignment = ini.GetBoolean(sec, "adjacent_alignment", o.adjacent_alignment);
 }

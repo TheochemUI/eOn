@@ -2936,11 +2936,24 @@ class LinebConfig(BaseModel):
             " alignment and needs every atom free."
         ),
     )
+    adjacent_alignment: bool = Field(
+        default=False,
+        description=(
+            "With molecular = true, false fits every image to the first image"
+            " and true fits each image to its neighbour along the band."
+        ),
+    )
 
     @model_validator(mode="after")
     def validate_image_hessian_step(self):
         if self.image_hessian_step > 0 and not self.interpolated_hessian:
             raise ValueError("image_hessian_step requires interpolated_hessian")
+        return self
+
+    @model_validator(mode="after")
+    def validate_adjacent_alignment(self):
+        if self.adjacent_alignment and not self.molecular:
+            raise ValueError("adjacent_alignment requires molecular")
         return self
 
     @validator("beads")

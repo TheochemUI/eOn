@@ -307,6 +307,7 @@ struct LinebOptions {
   interpolated_force_clock @20 :Bool = false;
   interpolated_hessian @21 :Bool = false;
   image_hessian_step @22 :Float64 = 0.0;
+  adjacent_alignment @23 :Bool = false;
 }
 
 # ---------------------------------------------------------------------

@@ -61,4 +61,5 @@
     o.interpolated_force_clock = GD::LINEB_INTERPOLATED_FORCE_CLOCK;
     o.interpolated_hessian = GD::LINEB_INTERPOLATED_HESSIAN;
     o.image_hessian_step = GD::LINEB_IMAGE_HESSIAN_STEP;
+    o.adjacent_alignment = GD::LINEB_ADJACENT_ALIGNMENT;
   }

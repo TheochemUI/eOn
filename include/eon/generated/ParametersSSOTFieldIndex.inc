@@ -5,6 +5,7 @@
     "Dynamics.path_seed",
     "Dynamics.path_springs",
     "Instanton.springs",
+    "Lineb.adjacent_alignment",
     "Lineb.beads",
     "Lineb.boltzmann",
     "Lineb.endpoint_convergence",

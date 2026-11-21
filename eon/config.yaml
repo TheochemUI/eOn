@@ -1606,6 +1606,12 @@ Lineb:
             kind: bool
             default: false
 
+        # With molecular = true: false fits every image to the first image,
+        # true fits each image to its neighbour along the band.
+        adjacent_alignment:
+            kind: bool
+            default: false
+
 ################################################################################
 
 Lanczos:
