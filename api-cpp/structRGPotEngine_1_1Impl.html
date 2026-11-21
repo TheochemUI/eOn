@@ -246,7 +246,8 @@ Public Types</h2></td></tr>
 , <a class="el" href="#a8c07483b6acd962ff04455de5aecb848abb337e726c1713d93fac72a3badd64b8">Metatomic</a>
 , <a class="el" href="#a8c07483b6acd962ff04455de5aecb848a747fc9cc9a0245b4da2ea33437eaabd1">Uma</a>
 , <br />
-&#160;&#160;<a class="el" href="#a8c07483b6acd962ff04455de5aecb848ab8a6303c48d4a9a6e202734cbdd02bf2">Xtb</a>
+&#160;&#160;<a class="el" href="#a8c07483b6acd962ff04455de5aecb848a02f36cf6fe7b187306b2a7d423cafc2c">Orca</a>
+, <a class="el" href="#a8c07483b6acd962ff04455de5aecb848ab8a6303c48d4a9a6e202734cbdd02bf2">Xtb</a>
 <br />
  }</td></tr>
 </table><table class="memberdecls">
@@ -256,7 +257,7 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a2aff3cedd85db0cb57248ead9b05330b" id="r_a2aff3cedd85db0cb57248ead9b05330b"><td class="memItemLeft">std::unique_ptr&lt; rgpot::NWChemPot &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a2aff3cedd85db0cb57248ead9b05330b">nwchem</a></td></tr>
 <tr class="memitem:ab5fc03b001f334f35d55ebd1705d4001" id="r_ab5fc03b001f334f35d55ebd1705d4001"><td class="memItemLeft">std::unique_ptr&lt; rgpot::CPMDPot &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ab5fc03b001f334f35d55ebd1705d4001">cpmd</a></td></tr>
 <tr class="memitem:ac192a28548fe1882bae71024e607a142" id="r_ac192a28548fe1882bae71024e607a142"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classMetatomicEngineLoader.html">MetatomicEngineLoader</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ac192a28548fe1882bae71024e607a142">metatomic</a></td></tr>
-<tr class="memitem:af4e8ddfa65fd8f9d96adff423c72dc53" id="r_af4e8ddfa65fd8f9d96adff423c72dc53"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classGenericEngineLoader.html">GenericEngineLoader</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#af4e8ddfa65fd8f9d96adff423c72dc53">uma</a></td></tr>
+<tr class="memitem:af0e67c0fe94d5aa7bf1268697c12a21d" id="r_af0e67c0fe94d5aa7bf1268697c12a21d"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classGenericEngineLoader.html">GenericEngineLoader</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#af0e67c0fe94d5aa7bf1268697c12a21d">plugin</a></td></tr>
 <tr class="memitem:ad06f3ce3dd61e180abaff7a8665953e3" id="r_ad06f3ce3dd61e180abaff7a8665953e3"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classXTBEngineLoader.html">XTBEngineLoader</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ad06f3ce3dd61e180abaff7a8665953e3">xtb</a></td></tr>
 <tr class="memitem:af32a65a10d9966d31903bded78e273ae" id="r_af32a65a10d9966d31903bded78e273ae"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#af32a65a10d9966d31903bded78e273ae">groups</a> {1}</td></tr>
 <tr class="memitem:ab8552331b87d90c27f3eae3e6a029147" id="r_ab8552331b87d90c27f3eae3e6a029147"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ab8552331b87d90c27f3eae3e6a029147">group</a> {0}</td></tr>
@@ -265,7 +266,7 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00253">253</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00254">254</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
 </div><a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Member Enumeration Documentation</h2>
 <a id="a8c07483b6acd962ff04455de5aecb848" name="a8c07483b6acd962ff04455de5aecb848"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8c07483b6acd962ff04455de5aecb848">&#9670;&#160;</a></span>Backend</h2>
@@ -291,11 +292,12 @@ Public Attributes</h2></td></tr>
 <tr><td class="fieldname"><a id="a8c07483b6acd962ff04455de5aecb848a6821cd3ce80de46e41ba282f7a8f20f0" name="a8c07483b6acd962ff04455de5aecb848a6821cd3ce80de46e41ba282f7a8f20f0"></a>Cpmdc&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a8c07483b6acd962ff04455de5aecb848abb337e726c1713d93fac72a3badd64b8" name="a8c07483b6acd962ff04455de5aecb848abb337e726c1713d93fac72a3badd64b8"></a>Metatomic&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a8c07483b6acd962ff04455de5aecb848a747fc9cc9a0245b4da2ea33437eaabd1" name="a8c07483b6acd962ff04455de5aecb848a747fc9cc9a0245b4da2ea33437eaabd1"></a>Uma&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8c07483b6acd962ff04455de5aecb848a02f36cf6fe7b187306b2a7d423cafc2c" name="a8c07483b6acd962ff04455de5aecb848a02f36cf6fe7b187306b2a7d423cafc2c"></a>Orca&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a8c07483b6acd962ff04455de5aecb848ab8a6303c48d4a9a6e202734cbdd02bf2" name="a8c07483b6acd962ff04455de5aecb848ab8a6303c48d4a9a6e202734cbdd02bf2"></a>Xtb&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00254">254</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  254</span>{ Nwchemc, Cpmdc, Metatomic, Uma, Xtb };</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00255">255</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  255</span>{ Nwchemc, Cpmdc, Metatomic, Uma, Orca, Xtb };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -312,9 +314,9 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00255">255</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  255</span>{<a class="code hl_enumvalue" href="#a8c07483b6acd962ff04455de5aecb848a791835acc935f1b4722ba4c70c18bacc">Backend::Nwchemc</a>};</div>
-<div class="ttc" id="astructRGPotEngine_1_1Impl_html_a8c07483b6acd962ff04455de5aecb848a791835acc935f1b4722ba4c70c18bacc"><div class="ttname"><a href="#a8c07483b6acd962ff04455de5aecb848a791835acc935f1b4722ba4c70c18bacc">RGPotEngine::Impl::Backend::Nwchemc</a></div><div class="ttdeci">@ Nwchemc</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00254">RGPotEngine.cpp:254</a></div></div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00256">256</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  256</span>{<a class="code hl_enumvalue" href="#a8c07483b6acd962ff04455de5aecb848a791835acc935f1b4722ba4c70c18bacc">Backend::Nwchemc</a>};</div>
+<div class="ttc" id="astructRGPotEngine_1_1Impl_html_a8c07483b6acd962ff04455de5aecb848a791835acc935f1b4722ba4c70c18bacc"><div class="ttname"><a href="#a8c07483b6acd962ff04455de5aecb848a791835acc935f1b4722ba4c70c18bacc">RGPotEngine::Impl::Backend::Nwchemc</a></div><div class="ttdeci">@ Nwchemc</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00255">RGPotEngine.cpp:255</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -330,7 +332,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00257">257</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00258">258</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
 
 </div>
 </div>
@@ -346,8 +348,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00263">263</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  263</span>{0};</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00264">264</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  264</span>{0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -363,8 +365,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00262">262</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  262</span>{1};</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00263">263</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  263</span>{1};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -380,7 +382,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00258">258</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00259">259</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
 
 </div>
 </div>
@@ -396,8 +398,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00265">265</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  265</span>{<span class="keyword">false</span>};</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00266">266</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  266</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -413,23 +415,23 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00256">256</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00257">257</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
 
 </div>
 </div>
-<a id="af4e8ddfa65fd8f9d96adff423c72dc53" name="af4e8ddfa65fd8f9d96adff423c72dc53"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af4e8ddfa65fd8f9d96adff423c72dc53">&#9670;&#160;</a></span>uma</h2>
+<a id="af0e67c0fe94d5aa7bf1268697c12a21d" name="af0e67c0fe94d5aa7bf1268697c12a21d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0e67c0fe94d5aa7bf1268697c12a21d">&#9670;&#160;</a></span>plugin</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::unique_ptr&lt;<a class="el" href="classGenericEngineLoader.html">GenericEngineLoader</a>&gt; RGPotEngine::Impl::uma</td>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classGenericEngineLoader.html">GenericEngineLoader</a>&gt; RGPotEngine::Impl::plugin</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00259">259</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00260">260</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
 
 </div>
 </div>
@@ -445,8 +447,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00264">264</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  264</span>{1};</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00265">265</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  265</span>{1};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -462,7 +464,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00260">260</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00261">261</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
 
 </div>
 </div>

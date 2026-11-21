@@ -9,6 +9,7 @@ var classXtsciOptimizer =
     [ "refreshExpPrecon", "classXtsciOptimizer.html#a6f2f86862f7162cbaf9b9db9a239084a", null ],
     [ "run", "classXtsciOptimizer.html#a4928929091c0d1f588e04ac29a8a86b4", null ],
     [ "step", "classXtsciOptimizer.html#ac8fa0e20cc86e1240da7e50af7ccd249", null ],
+    [ "usesWolfeLbfgs", "classXtsciOptimizer.html#adcb0fffd876865195b4a624dfc443060", null ],
     [ "m_cached_x", "classXtsciOptimizer.html#a5854cdd11934a6f03d601c140b38563f", null ],
     [ "m_eindir", "classXtsciOptimizer.html#ad94bf9c63f6f403b0f1456124a4eef2c", null ],
     [ "m_method", "classXtsciOptimizer.html#a4c71e33562837319e9d56f592003d7e9", null ],

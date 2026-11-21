@@ -15,7 +15,8 @@ var namespaceeonc =
       [ "ssot_has_field", "namespaceeonc_1_1config.html#aae185ff05a0769209eef4e308712ce2e", null ],
       [ "temperaturesFromJson", "namespaceeonc_1_1config.html#a98eed26f4dca055f1d61cc0f883b9cc7", null ],
       [ "to_json", "namespaceeonc_1_1config.html#a77aada85affc5e6c5eec9ee1a63504c9", null ],
-      [ "validate_and_link", "namespaceeonc_1_1config.html#a78d7cf925cc0890b91729530015d1018", null ]
+      [ "validate_and_link", "namespaceeonc_1_1config.html#a78d7cf925cc0890b91729530015d1018", null ],
+      [ "validate_lineb_options", "namespaceeonc_1_1config.html#abe16ada10faf5a6639e6f9fec9b89096", null ]
     ] ],
     [ "detail", "namespaceeonc_1_1detail.html", "namespaceeonc_1_1detail" ],
     [ "dynlib", "namespaceeonc_1_1dynlib.html", [
@@ -60,6 +61,15 @@ var namespaceeonc =
     [ "geometry", "namespaceeonc_1_1geometry.html", "namespaceeonc_1_1geometry" ],
     [ "helpers", "namespaceeonc_1_1helpers.html", "namespaceeonc_1_1helpers" ],
     [ "io", "namespaceeonc_1_1io.html", "namespaceeonc_1_1io" ],
+    [ "lineb", "namespaceeonc_1_1lineb.html", [
+      [ "collectFreeAtoms", "namespaceeonc_1_1lineb.html#a51d2a48c2f7fcf5c76ba55005d547e52", null ],
+      [ "loadSeedBand", "namespaceeonc_1_1lineb.html#ace2671e73bd6cde4153d55f10cfe207d", null ],
+      [ "matchingSeedImage", "namespaceeonc_1_1lineb.html#a65939d7e358f3ac5163ddb16cb7a2704", null ],
+      [ "packSeedCartesian", "namespaceeonc_1_1lineb.html#abf4def61e1c485b61a08a4958388eae8", null ],
+      [ "requireMatchingSeedImage", "namespaceeonc_1_1lineb.html#ab817fff3a34c05b650c8ea99f113adbe", null ],
+      [ "requireMatchingSeedMasses", "namespaceeonc_1_1lineb.html#a9390dcb28d3266b83ce46e722d62b0c8", null ],
+      [ "kSeedMatchTol", "namespaceeonc_1_1lineb.html#abf5760694add1e3174cbba33551e1c44", null ]
+    ] ],
     [ "log", "namespaceeonc_1_1log.html", "namespaceeonc_1_1log" ],
     [ "neb", "namespaceeonc_1_1neb.html", "namespaceeonc_1_1neb" ],
     [ "pairhess", "namespaceeonc_1_1pairhess.html", [
@@ -236,6 +246,8 @@ var namespaceeonc =
     [ "Lanczos", "classeonc_1_1Lanczos.html", "classeonc_1_1Lanczos" ],
     [ "lanczos_options_t", "structeonc_1_1lanczos__options__t.html", "structeonc_1_1lanczos__options__t" ],
     [ "LBFGS", "classeonc_1_1LBFGS.html", "classeonc_1_1LBFGS" ],
+    [ "lineb_options_t", "structeonc_1_1lineb__options__t.html", "structeonc_1_1lineb__options__t" ],
+    [ "LinebJob", "classeonc_1_1LinebJob.html", "classeonc_1_1LinebJob" ],
     [ "LORRotation", "classeonc_1_1LORRotation.html", "classeonc_1_1LORRotation" ],
     [ "LowestEigenmode", "classeonc_1_1LowestEigenmode.html", "classeonc_1_1LowestEigenmode" ],
     [ "main_options_t", "structeonc_1_1main__options__t.html", "structeonc_1_1main__options__t" ],
@@ -354,7 +366,8 @@ var namespaceeonc =
       [ "Test", "namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a0cbc6611f5540bd0809a388dc95a615b", null ],
       [ "GP_Surrogate", "namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379aaff099e938d23e84611548dcfd6be790", null ],
       [ "OH_TST", "namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ac293911fe4119863c48c2c41e7cf1b6e", null ],
-      [ "Instanton", "namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ae9f086a13f4f6c7b47b2e6b9ea36f476", null ]
+      [ "Instanton", "namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ae9f086a13f4f6c7b47b2e6b9ea36f476", null ],
+      [ "Lineb", "namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a5591e32201ead50b22826d626a890975", null ]
     ] ],
     [ "NEBInit", "namespaceeonc.html#a323be6616e43feab55a65202288b9459", [
       [ "LINEAR", "namespaceeonc.html#a323be6616e43feab55a65202288b9459aaac544aacc3615aada24897a215f5046", null ],
@@ -428,12 +441,14 @@ var namespaceeonc =
     [ "buildEigenmodeStrategy", "namespaceeonc.html#a53a942db7f595f4023b790db6ca2758a", null ],
     [ "bundle", "namespaceeonc.html#a0d50d17b3b014d6aecf3292f553142c1", null ],
     [ "canComputeConcurrently", "namespaceeonc.html#afa25d65889a01852246fe4d2033b3e44", null ],
+    [ "canonicalRgpotBackend", "namespaceeonc.html#acb010f57d18b680ed9154f02b0c2a540", null ],
     [ "cartesianMode", "namespaceeonc.html#afa250e9d6e43e4d6b6573e0f390c9ef5", null ],
     [ "colorMobileCutoffGraph", "namespaceeonc.html#acadde9502e384d1b7898c6fa55a22b1a", null ],
     [ "commandLine", "namespaceeonc.html#a968ff6a4c1d4936e710e6fd3d108a7f9", null ],
     [ "complementEigenvalues", "namespaceeonc.html#ae04f3f63b0711057b71f16472e0bbb88", null ],
     [ "complementHarmonicFreeEnergy", "namespaceeonc.html#a013ccd97822f213f0716e0a81d21b87a", null ],
     [ "config_from_params", "namespaceeonc.html#a6652d0e25201d6a2881deb81f6f86998", null ],
+    [ "configuredRgpotBackend", "namespaceeonc.html#a40785ff3a7fac44fb2d1857279ff79d0", null ],
     [ "decode_div_insn", "namespaceeonc.html#ae6b4d913cbbc345faa8f1b014fbe4eff", null ],
     [ "deleteUnbundledFiles", "namespaceeonc.html#a2216ed20ff2e22ecca18afddd1713033", null ],
     [ "disableFPE", "namespaceeonc.html#af1498c1ea50b21c6c40b704ff85d867c", null ],
@@ -467,6 +482,7 @@ var namespaceeonc =
     [ "lammpsScreenCursor", "namespaceeonc.html#a25573da8a25eeb817db8ab5c3e84ba60", null ],
     [ "lammpsWorkerReaped", "namespaceeonc.html#a591dfc92514140e2a59b6444008a61c1", null ],
     [ "lattice_rows_to_fortran_box", "namespaceeonc.html#afbde0a233976150fadc6895653dc3cd0", null ],
+    [ "linebAvailable", "namespaceeonc.html#af4de4551154bb90f15a4861055cebfa9", null ],
     [ "maskWindowsMxcsrForContinue", "namespaceeonc.html#aba46d1d8df8488b185b2ed3d7d9379eb", null ],
     [ "maxFreeAtomForceNorm", "namespaceeonc.html#ad52e6fd72cd768445176672c88a48259", null ],
     [ "minImageRemoveRigidDrift", "namespaceeonc.html#a2b2dd3bb93935dc5ca7b997104a4bb14", null ],
@@ -482,7 +498,7 @@ var namespaceeonc =
     [ "potAllowsSharedInstance", "namespaceeonc.html#a7244d894793caf3c7b47a9dd67bb7ae7", null ],
     [ "potIsThreadSafe", "namespaceeonc.html#a6f3fd0d4a65744f80d3dbf4caa8e393d", null ],
     [ "prfoRefineSaddle", "namespaceeonc.html#a445089b0ba9136b4754a51a7938d5b06", null ],
-    [ "provenanceForJob", "namespaceeonc.html#aa67d050aa179f681c8792139d0b2fed8", null ],
+    [ "provenanceForJob", "namespaceeonc.html#a322a9699c5acfa6ff263a68e76c3011c", null ],
     [ "quantumFreeEnergies", "namespaceeonc.html#ac39276e0968b53c5fa4d689cde2707a5", null ],
     [ "readRpcServerCapabilities", "namespaceeonc.html#a9d2c9aa9f4cb1ca8c164eca33fc162e0", null ],
     [ "registerJob", "namespaceeonc.html#af345f5025d61b3d5368a765ff9c5d5e1", null ],

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://eondocs.org/schema/cpmd.json",
   "title": "cpmd",
-  "description": "Scalar CPMD message used when ``[RgpotPot] params_path`` is empty.\n\n    ``cutOffRy`` is the cutoff key. The C++ reader also accepts ``cutoff_ry``\n    and ``cpmd_cut_off_ry``, and ``cpmd_functional`` for ``functional``.\n    The aliases are accepted on input and never written by ``model_dump``,\n    so a written file carries one cutoff key. A ``params_path`` file owns\n    these fields, and ``input_block`` is still appended to that file's\n    blocks.",
+  "description": "Scalar CPMD message used when ``[RgpotPot] params_path`` is empty.\n\n``cutOffRy`` is the cutoff key. The C++ reader also accepts ``cutoff_ry``\nand ``cpmd_cut_off_ry``, and ``cpmd_functional`` for ``functional``.\nThe aliases are accepted on input and never written by ``model_dump``,\nso a written file carries one cutoff key. A ``params_path`` file owns\nthese fields, and ``input_block`` is still appended to that file's\nblocks.",
   "type": "object",
   "additionalProperties": false,
   "properties": {

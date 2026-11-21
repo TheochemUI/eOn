@@ -173,6 +173,8 @@ var annotated_dup =
       [ "Lanczos", "classeonc_1_1Lanczos.html", "classeonc_1_1Lanczos" ],
       [ "lanczos_options_t", "structeonc_1_1lanczos__options__t.html", "structeonc_1_1lanczos__options__t" ],
       [ "LBFGS", "classeonc_1_1LBFGS.html", "classeonc_1_1LBFGS" ],
+      [ "lineb_options_t", "structeonc_1_1lineb__options__t.html", "structeonc_1_1lineb__options__t" ],
+      [ "LinebJob", "classeonc_1_1LinebJob.html", "classeonc_1_1LinebJob" ],
       [ "LORRotation", "classeonc_1_1LORRotation.html", "classeonc_1_1LORRotation" ],
       [ "LowestEigenmode", "classeonc_1_1LowestEigenmode.html", "classeonc_1_1LowestEigenmode" ],
       [ "main_options_t", "structeonc_1_1main__options__t.html", "structeonc_1_1main__options__t" ],

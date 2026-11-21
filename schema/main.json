@@ -20,6 +20,7 @@
         "gp_surrogate",
         "hessian",
         "instanton",
+        "lineb",
         "minimization",
         "monte_carlo",
         "molecular_dynamics",

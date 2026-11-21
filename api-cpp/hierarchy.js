@@ -144,6 +144,7 @@ var hierarchy =
       [ "eonc::GlobalOptimizationJob", "classeonc_1_1GlobalOptimizationJob.html", null ],
       [ "eonc::HessianJob", "classeonc_1_1HessianJob.html", null ],
       [ "eonc::InstantonJob", "classeonc_1_1InstantonJob.html", null ],
+      [ "eonc::LinebJob", "classeonc_1_1LinebJob.html", null ],
       [ "eonc::MinimizationJob", "classeonc_1_1MinimizationJob.html", null ],
       [ "eonc::MonteCarloJob", "classeonc_1_1MonteCarloJob.html", null ],
       [ "eonc::NudgedElasticBandJob", "classeonc_1_1NudgedElasticBandJob.html", null ],
@@ -171,6 +172,7 @@ var hierarchy =
     [ "eonc::lanczos_options_t", "structeonc_1_1lanczos__options__t.html", null ],
     [ "eonc::optimizer_options_t::lbfgs_t", "structeonc_1_1optimizer__options__t_1_1lbfgs__t.html", null ],
     [ "eonc::tunneling::Levels", "structeonc_1_1tunneling_1_1Levels.html", null ],
+    [ "eonc::lineb_options_t", "structeonc_1_1lineb__options__t.html", null ],
     [ "eonc::LowestEigenmode", "classeonc_1_1LowestEigenmode.html", [
       [ "eonc::AtomicGPDimer", "classeonc_1_1AtomicGPDimer.html", null ],
       [ "eonc::Davidson", "classeonc_1_1Davidson.html", null ],

@@ -44,6 +44,8 @@ var structeonc_1_1ParametersLoadAccess =
     [ "ira_options", "structeonc_1_1ParametersLoadAccess.html#a41223e8d6e48d596fa4f0678d58f6f9b", null ],
     [ "lanczos_options", "structeonc_1_1ParametersLoadAccess.html#a314439aad5eb6e49909e0347b68c460d", null ],
     [ "lanczos_options", "structeonc_1_1ParametersLoadAccess.html#a055947aafd511900b13097e5004be3fb", null ],
+    [ "lineb_options", "structeonc_1_1ParametersLoadAccess.html#a981d36798a196529909d26c52760af05", null ],
+    [ "lineb_options", "structeonc_1_1ParametersLoadAccess.html#af94e8474b53d1e5e391eb29e88bff11e", null ],
     [ "main_options", "structeonc_1_1ParametersLoadAccess.html#a7663e35de36a70ba5709702ff2ca8bfa", null ],
     [ "main_options", "structeonc_1_1ParametersLoadAccess.html#a770c3256a5da218bb8f0fa834ed76658", null ],
     [ "metatomic_options", "structeonc_1_1ParametersLoadAccess.html#a9667f28b9136936241e313c529c8a430", null ],

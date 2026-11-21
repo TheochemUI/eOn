@@ -5,5 +5,6 @@ var ParametersSSOT_8cpp =
     [ "eonc::config::job_from_ssot", "namespaceeonc_1_1config.html#ad8aa86b865103214d13820bf493a40d9", null ],
     [ "eonc::config::opt_from_ssot", "namespaceeonc_1_1config.html#ae6d6373f76127190b948438b0987d7bb", null ],
     [ "eonc::config::pot_from_ssot", "namespaceeonc_1_1config.html#a88cd4a45d1707f8fa613d79365eac14e", null ],
-    [ "eonc::config::ssot_has_field", "namespaceeonc_1_1config.html#aae185ff05a0769209eef4e308712ce2e", null ]
+    [ "eonc::config::ssot_has_field", "namespaceeonc_1_1config.html#aae185ff05a0769209eef4e308712ce2e", null ],
+    [ "eonc::config::validate_lineb_options", "namespaceeonc_1_1config.html#abe16ada10faf5a6639e6f9fec9b89096", null ]
 ];

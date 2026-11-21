@@ -127,10 +127,17 @@ configure error. ``-Dwith_xtsci=true`` is the deprecated spelling of
 ``enabled``. The client needs rgmin 0.4.0 or newer, installed with
 
 ```{code-block} bash
-cargo cinstall --release --features capi --prefix=$PREFIX
-# cinstall regenerates rgmin.h; the C++ client needs the curated header
-cp include/rgmin.h $PREFIX/include/
-cp -r include/dlpack $PREFIX/include/
+cargo cinstall --release --features capi --prefix="$PREFIX"
+```
+
+rgmin 0.5.0 and 0.6.0, as well as the LI-NEB build's pinned 0.7.0
+candidate, install the C header and its DLPack dependency. With an
+older checkout that generates its header, copy the C++-compatible headers
+from that checkout into the same prefix:
+
+```{code-block} bash
+cp include/rgmin.h "$PREFIX/include/"
+cp -r include/dlpack "$PREFIX/include/"
 ```
 
 ``eonclient --features`` lists ``rgmin minimizers`` when it is linked.
@@ -165,8 +172,10 @@ an ``eindir_objective_t`` around the ``ObjectiveFunction``. The adapter
 checks the eindir ABI stamp, the gradient feature bit, and the semantic
 descriptor (eV, angstrom, analytic forces) before dispatch.
 ``Optimizer::run`` then calls ``rgmin_minimize_eindir`` unless the step
-needs a host Hessian, the method is ``fire2``, or ``precon`` is
-``rgmin_exp``. ``step()`` stays one
+needs a host Hessian, the method is ``fire2``, ``precon`` is
+``rgmin_exp``, or the session explicitly selects the L-BFGS line search.
+For ordinary Euclidean energy minimization eOn uses strong Wolfe L-BFGS
+with either the scalar or exponential inverse-Hessian seed. ``step()`` stays one
 ``rgmin_solver_t`` iteration. Both paths give ``fire``, ``fire2`` and
 ``quickmin`` the ``time_step`` as their time step, and give the other
 methods ``max_move`` as their first step.

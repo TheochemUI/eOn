@@ -238,6 +238,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('RGPotEngine_8c
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="RGPotEngine_8h_source.html">eon/potentials/Rgpot/RGPotEngine.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Backend_8h_source.html">eon/potentials/Rgpot/Backend.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="CpmdMessage_8h_source.html">eon/potentials/Rgpot/CpmdMessage.h</a>&quot;</code><br />
 <code>#include &lt;algorithm&gt;</code><br />
 <code>#include &lt;array&gt;</code><br />
@@ -333,23 +334,23 @@ Functions</h2></td></tr>
 <p>NWChem input block for a DFT theory. </p>
 <p>Empty when <span class="tt">existing</span> is set or the theory is not DFT. <span class="tt">theory</span> is matched without regard to case. </p>
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00181">181</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  183</span>                                                           {</div>
-<div class="line"><span class="lineno">  184</span>  <span class="keywordflow">if</span> (!existing.empty()) {</div>
-<div class="line"><span class="lineno">  185</span>    <span class="keywordflow">return</span> existing;</div>
-<div class="line"><span class="lineno">  186</span>  }</div>
-<div class="line"><span class="lineno">  187</span>  <span class="keyword">const</span> std::string theoryKey = to_lower(theory);</div>
-<div class="line"><span class="lineno">  188</span>  <span class="keyword">const</span> std::string scfKey = to_lower(scfType);</div>
-<div class="line"><span class="lineno">  189</span>  <span class="keywordflow">if</span> (theoryKey == <span class="stringliteral">&quot;dft&quot;</span> &amp;&amp; looks_like_dft_xc(scfKey)) {</div>
-<div class="line"><span class="lineno">  190</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;dft\n  xc &quot;</span> + scfType + <span class="stringliteral">&quot;\n  mult &quot;</span> + std::to_string(multiplicity) +</div>
-<div class="line"><span class="lineno">  191</span>           <span class="stringliteral">&quot;\nend&quot;</span>;</div>
-<div class="line"><span class="lineno">  192</span>  }</div>
-<div class="line"><span class="lineno">  193</span>  <span class="keywordflow">if</span> (looks_like_dft_xc(theoryKey)) {</div>
-<div class="line"><span class="lineno">  194</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;dft\n  xc &quot;</span> + theory + <span class="stringliteral">&quot;\n  mult &quot;</span> + std::to_string(multiplicity) +</div>
-<div class="line"><span class="lineno">  195</span>           <span class="stringliteral">&quot;\nend&quot;</span>;</div>
-<div class="line"><span class="lineno">  196</span>  }</div>
-<div class="line"><span class="lineno">  197</span>  <span class="keywordflow">return</span> {};</div>
-<div class="line"><span class="lineno">  198</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00182">182</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  184</span>                                                           {</div>
+<div class="line"><span class="lineno">  185</span>  <span class="keywordflow">if</span> (!existing.empty()) {</div>
+<div class="line"><span class="lineno">  186</span>    <span class="keywordflow">return</span> existing;</div>
+<div class="line"><span class="lineno">  187</span>  }</div>
+<div class="line"><span class="lineno">  188</span>  <span class="keyword">const</span> std::string theoryKey = to_lower(theory);</div>
+<div class="line"><span class="lineno">  189</span>  <span class="keyword">const</span> std::string scfKey = to_lower(scfType);</div>
+<div class="line"><span class="lineno">  190</span>  <span class="keywordflow">if</span> (theoryKey == <span class="stringliteral">&quot;dft&quot;</span> &amp;&amp; looks_like_dft_xc(scfKey)) {</div>
+<div class="line"><span class="lineno">  191</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;dft\n  xc &quot;</span> + scfType + <span class="stringliteral">&quot;\n  mult &quot;</span> + std::to_string(multiplicity) +</div>
+<div class="line"><span class="lineno">  192</span>           <span class="stringliteral">&quot;\nend&quot;</span>;</div>
+<div class="line"><span class="lineno">  193</span>  }</div>
+<div class="line"><span class="lineno">  194</span>  <span class="keywordflow">if</span> (looks_like_dft_xc(theoryKey)) {</div>
+<div class="line"><span class="lineno">  195</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;dft\n  xc &quot;</span> + theory + <span class="stringliteral">&quot;\n  mult &quot;</span> + std::to_string(multiplicity) +</div>
+<div class="line"><span class="lineno">  196</span>           <span class="stringliteral">&quot;\nend&quot;</span>;</div>
+<div class="line"><span class="lineno">  197</span>  }</div>
+<div class="line"><span class="lineno">  198</span>  <span class="keywordflow">return</span> {};</div>
+<div class="line"><span class="lineno">  199</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

@@ -24,6 +24,7 @@ var structeonc_1_1Parameters_1_1Impl =
     [ "lanczos_options_", "structeonc_1_1Parameters_1_1Impl.html#ab2537af678eb73b30cf13da582423875", null ],
     [ "last_error", "structeonc_1_1Parameters_1_1Impl.html#a3ffa78f86c588c57341487aae001f27f", null ],
     [ "last_source", "structeonc_1_1Parameters_1_1Impl.html#a9800b0a4ee19837778b59f3570067c24", null ],
+    [ "lineb_options_", "structeonc_1_1Parameters_1_1Impl.html#ab093ba961ba5a9de585fc9f0d8dab879", null ],
     [ "main_options_", "structeonc_1_1Parameters_1_1Impl.html#af83c990c4ef214dd48c7f33c6a66a172", null ],
     [ "metatomic_options_", "structeonc_1_1Parameters_1_1Impl.html#a317bd3c65ca7144ea64182be13d32f6e", null ],
     [ "monte_carlo_options_", "structeonc_1_1Parameters_1_1Impl.html#a828507f4d5817f7fc90b49ab21d06fe0", null ],

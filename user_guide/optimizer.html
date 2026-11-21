@@ -134,6 +134,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hessian.html">Hessian</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="finite_difference.html">Finite-difference curvature</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="lineb.html">Line-integral NEB (LI-NEB)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="akmc.html">Adaptive kinetic Monte Carlo</a></li>
@@ -1024,10 +1025,15 @@ default) links an rgmin found by pkg-config and changes nothing until an
 input selects it; <code class="docutils literal notranslate"><span class="pre">-Dwith_rgmin=enabled</span></code> makes a missing rgmin a
 configure error. <code class="docutils literal notranslate"><span class="pre">-Dwith_xtsci=true</span></code> is the deprecated spelling of
 <code class="docutils literal notranslate"><span class="pre">enabled</span></code>. The client needs rgmin 0.4.0 or newer, installed with</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">cargo<span class="w"> </span>cinstall<span class="w"> </span>--release<span class="w"> </span>--features<span class="w"> </span>capi<span class="w"> </span>--prefix<span class="o">=</span><span class="nv">$PREFIX</span>
-</span><span data-line="2"><span class="c1"># cinstall regenerates rgmin.h; the C++ client needs the curated header</span>
-</span><span data-line="3">cp<span class="w"> </span>include/rgmin.h<span class="w"> </span><span class="nv">$PREFIX</span>/include/
-</span><span data-line="4">cp<span class="w"> </span>-r<span class="w"> </span>include/dlpack<span class="w"> </span><span class="nv">$PREFIX</span>/include/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">cargo<span class="w"> </span>cinstall<span class="w"> </span>--release<span class="w"> </span>--features<span class="w"> </span>capi<span class="w"> </span>--prefix<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PREFIX</span><span class="s2">&quot;</span>
+</span></pre></div>
+</div>
+<p>rgmin 0.5.0 and 0.6.0, as well as the LI-NEB build’s pinned 0.7.0
+candidate, install the C header and its DLPack dependency. With an
+older checkout that generates its header, copy the C++-compatible headers
+from that checkout into the same prefix:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">cp<span class="w"> </span>include/rgmin.h<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PREFIX</span><span class="s2">/include/&quot;</span>
+</span><span data-line="2">cp<span class="w"> </span>-r<span class="w"> </span>include/dlpack<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PREFIX</span><span class="s2">/include/&quot;</span>
 </span></pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">eonclient</span> <span class="pre">--features</span></code> lists <code class="docutils literal notranslate"><span class="pre">rgmin</span> <span class="pre">minimizers</span></code> when it is linked.
@@ -1059,8 +1065,10 @@ an <code class="docutils literal notranslate"><span class="pre">eindir_objective
 checks the eindir ABI stamp, the gradient feature bit, and the semantic
 descriptor (eV, angstrom, analytic forces) before dispatch.
 <code class="docutils literal notranslate"><span class="pre">Optimizer::run</span></code> then calls <code class="docutils literal notranslate"><span class="pre">rgmin_minimize_eindir</span></code> unless the step
-needs a host Hessian, the method is <code class="docutils literal notranslate"><span class="pre">fire2</span></code>, or <code class="docutils literal notranslate"><span class="pre">precon</span></code> is
-<code class="docutils literal notranslate"><span class="pre">rgmin_exp</span></code>. <code class="docutils literal notranslate"><span class="pre">step()</span></code> stays one
+needs a host Hessian, the method is <code class="docutils literal notranslate"><span class="pre">fire2</span></code>, <code class="docutils literal notranslate"><span class="pre">precon</span></code> is
+<code class="docutils literal notranslate"><span class="pre">rgmin_exp</span></code>, or the session explicitly selects the L-BFGS line search.
+For ordinary Euclidean energy minimization eOn uses strong Wolfe L-BFGS
+with either the scalar or exponential inverse-Hessian seed. <code class="docutils literal notranslate"><span class="pre">step()</span></code> stays one
 <code class="docutils literal notranslate"><span class="pre">rgmin_solver_t</span></code> iteration. Both paths give <code class="docutils literal notranslate"><span class="pre">fire</span></code>, <code class="docutils literal notranslate"><span class="pre">fire2</span></code> and
 <code class="docutils literal notranslate"><span class="pre">quickmin</span></code> the <code class="docutils literal notranslate"><span class="pre">time_step</span></code> as their time step, and give the other
 methods <code class="docutils literal notranslate"><span class="pre">max_move</span></code> as their first step.</p>

@@ -154,6 +154,7 @@ lanczos
 artn
 hessian
 finite_difference
+lineb
 instanton
 prefactor
 ```

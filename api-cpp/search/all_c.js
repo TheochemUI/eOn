@@ -59,9 +59,10 @@ var searchData=
   ['kprotocolminor_56',['kProtocolMinor',['../namespaceeonc_1_1rpc.html#a453b2fc9570915e6d7dfa484ca2d7feb',1,'eonc::rpc']]],
   ['krotationzerofraction_57',['kRotationZeroFraction',['../namespaceeonc_1_1tunneling.html#a6a7e28068c8650ec8880a716e48e94ed',1,'eonc::tunneling']]],
   ['kschemaid_58',['kSchemaId',['../namespaceeonc_1_1rpc.html#a51e2642dfb8b3ea3c916b95f42e0cac8',1,'eonc::rpc::kSchemaId'],['../namespaceeonc_1_1xtsci__eindir.html#a3892ded03ff7ae137a4c5b7e4618b6fc',1,'eonc::xtsci_eindir::kSchemaId']]],
-  ['ksigma_59',['kSigma',['../structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#ae0e3cf3761f4ffa5ddf0cbde8d9a2e2e',1,'eonc::HessianRangeOf&lt; rgpot::fortranpots::SWPot &gt;']]],
-  ['ksp_60',['ksp',['../structeonc_1_1neb_1_1UniformSpring.html#a727a317587c6c59cd4f967153418d900',1,'eonc::neb::UniformSpring::ksp'],['../structeonc_1_1neb_1_1GeometricSpring.html#a06ffd1ad071832c78fb7679eba503a13',1,'eonc::neb::GeometricSpring::ksp'],['../classeonc_1_1NudgedElasticBand.html#a5f1edccdd1810d5e2af0121248ba3dd5',1,'eonc::NudgedElasticBand::ksp'],['../classNudgedElasticBand.html#a5f1edccdd1810d5e2af0121248ba3dd5',1,'NudgedElasticBand::ksp']]],
-  ['ktimeunitseconds_61',['kTimeUnitSeconds',['../namespaceeonc_1_1tunneling.html#a520ac3171661d0e32fa444d7cdd546c4',1,'eonc::tunneling']]],
-  ['ktracebackloggername_62',['kTracebackLoggerName',['../namespaceeonc_1_1log_1_1detail.html#a13ecaa4676a7d55b383cf89f9b3a68cc',1,'eonc::log::detail']]],
-  ['kwindowsmxcsrexceptionmasks_63',['kWindowsMxcsrExceptionMasks',['../namespaceeonc.html#a5326686c75d3fe7a05fa2a5b49bcd0ba',1,'eonc']]]
+  ['kseedmatchtol_59',['kSeedMatchTol',['../namespaceeonc_1_1lineb.html#abf5760694add1e3174cbba33551e1c44',1,'eonc::lineb']]],
+  ['ksigma_60',['kSigma',['../structeonc_1_1HessianRangeOf_3_01rgpot_1_1fortranpots_1_1SWPot_01_4.html#ae0e3cf3761f4ffa5ddf0cbde8d9a2e2e',1,'eonc::HessianRangeOf&lt; rgpot::fortranpots::SWPot &gt;']]],
+  ['ksp_61',['ksp',['../structeonc_1_1neb_1_1UniformSpring.html#a727a317587c6c59cd4f967153418d900',1,'eonc::neb::UniformSpring::ksp'],['../structeonc_1_1neb_1_1GeometricSpring.html#a06ffd1ad071832c78fb7679eba503a13',1,'eonc::neb::GeometricSpring::ksp'],['../classeonc_1_1NudgedElasticBand.html#a5f1edccdd1810d5e2af0121248ba3dd5',1,'eonc::NudgedElasticBand::ksp'],['../classNudgedElasticBand.html#a5f1edccdd1810d5e2af0121248ba3dd5',1,'NudgedElasticBand::ksp']]],
+  ['ktimeunitseconds_62',['kTimeUnitSeconds',['../namespaceeonc_1_1tunneling.html#a520ac3171661d0e32fa444d7cdd546c4',1,'eonc::tunneling']]],
+  ['ktracebackloggername_63',['kTracebackLoggerName',['../namespaceeonc_1_1log_1_1detail.html#a13ecaa4676a7d55b383cf89f9b3a68cc',1,'eonc::log::detail']]],
+  ['kwindowsmxcsrexceptionmasks_64',['kWindowsMxcsrExceptionMasks',['../namespaceeonc.html#a5326686c75d3fe7a05fa2a5b49bcd0ba',1,'eonc']]]
 ];

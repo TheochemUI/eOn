@@ -1,0 +1,731 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: eonc::lineb_options_t Struct Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn 3.2.0</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('structeonc_1_1lineb__options__t.html','','structeonc_1_1lineb__options__t-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eonc::lineb_options_t Struct Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a81a1f444236b7eb4540833ef26a862f9" id="r_a81a1f444236b7eb4540833ef26a862f9"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a81a1f444236b7eb4540833ef26a862f9">initial_path</a> {&quot;&quot;}</td></tr>
+<tr class="memitem:a30340e7fe7afc431149a239ea80a3bdd" id="r_a30340e7fe7afc431149a239ea80a3bdd"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a30340e7fe7afc431149a239ea80a3bdd">energy</a> {0.0}</td></tr>
+<tr class="memitem:acae3613cf2417e5637ee9871077bd952" id="r_acae3613cf2417e5637ee9871077bd952"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#acae3613cf2417e5637ee9871077bd952">opt_tol</a> {1e-3}</td></tr>
+<tr class="memitem:a71f25ebc665dd311704e3405c234d914" id="r_a71f25ebc665dd311704e3405c234d914"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a71f25ebc665dd311704e3405c234d914">perp_tol</a> {1e-3}</td></tr>
+<tr class="memitem:a1930de5a42f5e3cd729a21881a73060f" id="r_a1930de5a42f5e3cd729a21881a73060f"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a1930de5a42f5e3cd729a21881a73060f">spring</a> {0.1}</td></tr>
+<tr class="memitem:a99825b4f753dcdf5384f9a5fb4fbd03f" id="r_a99825b4f753dcdf5384f9a5fb4fbd03f"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a99825b4f753dcdf5384f9a5fb4fbd03f">endpoint_scale</a> {0.2}</td></tr>
+<tr class="memitem:a9717bee6cd23c3a6eee0b578fbbea8d3" id="r_a9717bee6cd23c3a6eee0b578fbbea8d3"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a9717bee6cd23c3a6eee0b578fbbea8d3">endpoint_kappa</a> {0.0}</td></tr>
+<tr class="memitem:ad57c0eba798b5604ed650960d5286c5c" id="r_ad57c0eba798b5604ed650960d5286c5c"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ad57c0eba798b5604ed650960d5286c5c">linear_seed</a> {false}</td></tr>
+<tr class="memitem:a8d96bf24c1f16037d35a6b2ffe922716" id="r_a8d96bf24c1f16037d35a6b2ffe922716"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a8d96bf24c1f16037d35a6b2ffe922716">endpoint_convergence</a> {false}</td></tr>
+<tr class="memitem:a72756f4cdb586e7c6d5f6cb3306f5056" id="r_a72756f4cdb586e7c6d5f6cb3306f5056"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a72756f4cdb586e7c6d5f6cb3306f5056">projected_verlet</a> {false}</td></tr>
+<tr class="memitem:aac6324aef11c74c36ec39e0409360513" id="r_aac6324aef11c74c36ec39e0409360513"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aac6324aef11c74c36ec39e0409360513">interpolated_force_clock</a> {false}</td></tr>
+<tr class="memitem:aeab452da853b4897d5a9fc137b2c74b6" id="r_aeab452da853b4897d5a9fc137b2c74b6"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aeab452da853b4897d5a9fc137b2c74b6">interpolated_hessian</a> {false}</td></tr>
+<tr class="memitem:a0bcd34d4ad2a087ba5ebd7d4b57b5ae7" id="r_a0bcd34d4ad2a087ba5ebd7d4b57b5ae7"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a0bcd34d4ad2a087ba5ebd7d4b57b5ae7">image_hessian_step</a> {0.0}</td></tr>
+<tr class="memitem:a4ccac4080a59c439471a2b1f0c9f83e1" id="r_a4ccac4080a59c439471a2b1f0c9f83e1"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a4ccac4080a59c439471a2b1f0c9f83e1">result_cache</a></td></tr>
+<tr class="memitem:aa769bdced71f1d4efffbafb53f82910f" id="r_aa769bdced71f1d4efffbafb53f82910f"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#aa769bdced71f1d4efffbafb53f82910f">time_step</a> {0.1}</td></tr>
+<tr class="memitem:a4c30008e900c4871dae232803c071fca" id="r_a4c30008e900c4871dae232803c071fca"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a4c30008e900c4871dae232803c071fca">max_move</a> {0.2}</td></tr>
+<tr class="memitem:a1790d8840ad2bc2770174f20e28dbc63" id="r_a1790d8840ad2bc2770174f20e28dbc63"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a1790d8840ad2bc2770174f20e28dbc63">turning_width</a> {1e-3}</td></tr>
+<tr class="memitem:af945056ff5e37467a50319665bb453e3" id="r_af945056ff5e37467a50319665bb453e3"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#af945056ff5e37467a50319665bb453e3">hbar</a> {0.06465415129579072}</td></tr>
+<tr class="memitem:ad66e5be836e95cc04db3d904c504ecc7" id="r_ad66e5be836e95cc04db3d904c504ecc7"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ad66e5be836e95cc04db3d904c504ecc7">boltzmann</a> {8.617333262145177e-5}</td></tr>
+<tr class="memitem:ae242e43a19e4ae2f3ce1b11b3026fa3e" id="r_ae242e43a19e4ae2f3ce1b11b3026fa3e"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#ae242e43a19e4ae2f3ce1b11b3026fa3e">quadrature_pairs</a> {4}</td></tr>
+<tr class="memitem:afb595c021f419ef29c2ebfce91832462" id="r_afb595c021f419ef29c2ebfce91832462"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#afb595c021f419ef29c2ebfce91832462">max_steps</a> {1000}</td></tr>
+<tr class="memitem:af3035cf3c18dec96f94e55ce9927340a" id="r_af3035cf3c18dec96f94e55ce9927340a"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#af3035cf3c18dec96f94e55ce9927340a">beads</a> {0}</td></tr>
+<tr class="memitem:a4ac32b55a75d78445f17c93349eeb3a0" id="r_a4ac32b55a75d78445f17c93349eeb3a0"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a4ac32b55a75d78445f17c93349eeb3a0">molecular</a> {false}</td></tr>
+<tr class="memitem:ae5dce9d35addb2c5594b5a94a7433a6f" id="r_ae5dce9d35addb2c5594b5a94a7433a6f"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ae5dce9d35addb2c5594b5a94a7433a6f">adjacent_alignment</a> {false}</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01029">1029</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+</div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="ae5dce9d35addb2c5594b5a94a7433a6f" name="ae5dce9d35addb2c5594b5a94a7433a6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5dce9d35addb2c5594b5a94a7433a6f">&#9670;&#160;</a></span>adjacent_alignment</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::lineb_options_t::adjacent_alignment {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01062">1062</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1062</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af3035cf3c18dec96f94e55ce9927340a" name="af3035cf3c18dec96f94e55ce9927340a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3035cf3c18dec96f94e55ce9927340a">&#9670;&#160;</a></span>beads</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::lineb_options_t::beads {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01056">1056</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1056</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad66e5be836e95cc04db3d904c504ecc7" name="ad66e5be836e95cc04db3d904c504ecc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad66e5be836e95cc04db3d904c504ecc7">&#9670;&#160;</a></span>boltzmann</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::lineb_options_t::boltzmann {8.617333262145177e-5}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01052">1052</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1052</span>{8.617333262145177e-5}; <span class="comment">// eV / K</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8d96bf24c1f16037d35a6b2ffe922716" name="a8d96bf24c1f16037d35a6b2ffe922716"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d96bf24c1f16037d35a6b2ffe922716">&#9670;&#160;</a></span>endpoint_convergence</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::lineb_options_t::endpoint_convergence {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01040">1040</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1040</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9717bee6cd23c3a6eee0b578fbbea8d3" name="a9717bee6cd23c3a6eee0b578fbbea8d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9717bee6cd23c3a6eee0b578fbbea8d3">&#9670;&#160;</a></span>endpoint_kappa</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::lineb_options_t::endpoint_kappa {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01038">1038</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1038</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a99825b4f753dcdf5384f9a5fb4fbd03f" name="a99825b4f753dcdf5384f9a5fb4fbd03f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99825b4f753dcdf5384f9a5fb4fbd03f">&#9670;&#160;</a></span>endpoint_scale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::lineb_options_t::endpoint_scale {0.2}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01037">1037</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1037</span>{0.2};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a30340e7fe7afc431149a239ea80a3bdd" name="a30340e7fe7afc431149a239ea80a3bdd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30340e7fe7afc431149a239ea80a3bdd">&#9670;&#160;</a></span>energy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::lineb_options_t::energy {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01033">1033</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1033</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af945056ff5e37467a50319665bb453e3" name="af945056ff5e37467a50319665bb453e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af945056ff5e37467a50319665bb453e3">&#9670;&#160;</a></span>hbar</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::lineb_options_t::hbar {0.06465415129579072}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01051">1051</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1051</span>{0.06465415129579072};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0bcd34d4ad2a087ba5ebd7d4b57b5ae7" name="a0bcd34d4ad2a087ba5ebd7d4b57b5ae7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bcd34d4ad2a087ba5ebd7d4b57b5ae7">&#9670;&#160;</a></span>image_hessian_step</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::lineb_options_t::image_hessian_step {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01044">1044</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1044</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a81a1f444236b7eb4540833ef26a862f9" name="a81a1f444236b7eb4540833ef26a862f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81a1f444236b7eb4540833ef26a862f9">&#9670;&#160;</a></span>initial_path</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::lineb_options_t::initial_path {&quot;&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01031">1031</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1031</span>{<span class="stringliteral">&quot;&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aac6324aef11c74c36ec39e0409360513" name="aac6324aef11c74c36ec39e0409360513"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac6324aef11c74c36ec39e0409360513">&#9670;&#160;</a></span>interpolated_force_clock</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::lineb_options_t::interpolated_force_clock {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01042">1042</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1042</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aeab452da853b4897d5a9fc137b2c74b6" name="aeab452da853b4897d5a9fc137b2c74b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeab452da853b4897d5a9fc137b2c74b6">&#9670;&#160;</a></span>interpolated_hessian</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::lineb_options_t::interpolated_hessian {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01043">1043</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1043</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad57c0eba798b5604ed650960d5286c5c" name="ad57c0eba798b5604ed650960d5286c5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad57c0eba798b5604ed650960d5286c5c">&#9670;&#160;</a></span>linear_seed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::lineb_options_t::linear_seed {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01039">1039</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1039</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a4c30008e900c4871dae232803c071fca" name="a4c30008e900c4871dae232803c071fca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c30008e900c4871dae232803c071fca">&#9670;&#160;</a></span>max_move</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::lineb_options_t::max_move {0.2}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01047">1047</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1047</span>{0.2};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="afb595c021f419ef29c2ebfce91832462" name="afb595c021f419ef29c2ebfce91832462"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb595c021f419ef29c2ebfce91832462">&#9670;&#160;</a></span>max_steps</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::lineb_options_t::max_steps {1000}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01054">1054</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1054</span>{1000};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a4ac32b55a75d78445f17c93349eeb3a0" name="a4ac32b55a75d78445f17c93349eeb3a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ac32b55a75d78445f17c93349eeb3a0">&#9670;&#160;</a></span>molecular</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::lineb_options_t::molecular {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01059">1059</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1059</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="acae3613cf2417e5637ee9871077bd952" name="acae3613cf2417e5637ee9871077bd952"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acae3613cf2417e5637ee9871077bd952">&#9670;&#160;</a></span>opt_tol</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::lineb_options_t::opt_tol {1e-3}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01034">1034</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1034</span>{1e-3};  <span class="comment">// mass-weighted nudged-force stop</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a71f25ebc665dd311704e3405c234d914" name="a71f25ebc665dd311704e3405c234d914"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71f25ebc665dd311704e3405c234d914">&#9670;&#160;</a></span>perp_tol</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::lineb_options_t::perp_tol {1e-3}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01035">1035</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1035</span>{1e-3}; <span class="comment">// mass-weighted perpendicular action-gradient stop</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a72756f4cdb586e7c6d5f6cb3306f5056" name="a72756f4cdb586e7c6d5f6cb3306f5056"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72756f4cdb586e7c6d5f6cb3306f5056">&#9670;&#160;</a></span>projected_verlet</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::lineb_options_t::projected_verlet {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01041">1041</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1041</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae242e43a19e4ae2f3ce1b11b3026fa3e" name="ae242e43a19e4ae2f3ce1b11b3026fa3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae242e43a19e4ae2f3ce1b11b3026fa3e">&#9670;&#160;</a></span>quadrature_pairs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::lineb_options_t::quadrature_pairs {4}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01053">1053</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1053</span>{4};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a4ccac4080a59c439471a2b1f0c9f83e1" name="a4ccac4080a59c439471a2b1f0c9f83e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ccac4080a59c439471a2b1f0c9f83e1">&#9670;&#160;</a></span>result_cache</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::lineb_options_t::result_cache</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01045">1045</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+
+</div>
+</div>
+<a id="a1930de5a42f5e3cd729a21881a73060f" name="a1930de5a42f5e3cd729a21881a73060f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1930de5a42f5e3cd729a21881a73060f">&#9670;&#160;</a></span>spring</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::lineb_options_t::spring {0.1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01036">1036</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1036</span>{0.1};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa769bdced71f1d4efffbafb53f82910f" name="aa769bdced71f1d4efffbafb53f82910f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa769bdced71f1d4efffbafb53f82910f">&#9670;&#160;</a></span>time_step</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::lineb_options_t::time_step {0.1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01046">1046</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1046</span>{0.1};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1790d8840ad2bc2770174f20e28dbc63" name="a1790d8840ad2bc2770174f20e28dbc63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1790d8840ad2bc2770174f20e28dbc63">&#9670;&#160;</a></span>turning_width</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::lineb_options_t::turning_width {1e-3}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l01048">1048</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1048</span>{1e-3};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/<a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceeonc.html">eonc</a></li><li class="navelem"><a href="structeonc_1_1lineb__options__t.html">lineb_options_t</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

@@ -1,18 +1,27 @@
 var classGenericEngineLoader =
 [
+    [ "cache_counts_fn", "classGenericEngineLoader.html#a15f59be4f1250a949c59afea8ba9da00", null ],
     [ "create_fn", "classGenericEngineLoader.html#a9bc91042b6d3f6331368561725de0401", null ],
     [ "destroy_fn", "classGenericEngineLoader.html#a28e2c4b1ca45dd731878901bd30a07f5", null ],
     [ "force_fn", "classGenericEngineLoader.html#a992b4f3fb3f4aae1dd7f04ef7140725a", null ],
+    [ "set_cache_fn", "classGenericEngineLoader.html#a9dd0616d2aa0e678a690b0ba6fd863cd", null ],
     [ "GenericEngineLoader", "classGenericEngineLoader.html#a7a7023eac6624ca315b7130807daa4a7", null ],
     [ "~GenericEngineLoader", "classGenericEngineLoader.html#a2f7cda7cc076e350ead1364573009bb5", null ],
     [ "GenericEngineLoader", "classGenericEngineLoader.html#a9c249de868872769fcbfc9d3ec048721", null ],
+    [ "attachCache", "classGenericEngineLoader.html#aaf4fe14dea747947f9642a84902f83d4", null ],
     [ "available", "classGenericEngineLoader.html#ae251f6d6b15d2451b5d4674aebbe2953", null ],
+    [ "cacheCounts", "classGenericEngineLoader.html#abdc9e4677448d81c9411b2a2906d7c6e", null ],
+    [ "detachCache", "classGenericEngineLoader.html#a1a572fa9dde9bff961f1a6ba01a9c4da", null ],
     [ "force", "classGenericEngineLoader.html#a933d4e1207a75bb53691244e94141a6f", null ],
+    [ "lastError", "classGenericEngineLoader.html#abd833cb9700fcd03e6524d860d588551", null ],
     [ "operator=", "classGenericEngineLoader.html#a691478edaf5957180e559098075c3eaf", null ],
+    [ "version", "classGenericEngineLoader.html#a0cd8a88030d2093c2561ddac89c7ac6b", null ],
+    [ "m_cache_counts", "classGenericEngineLoader.html#a0b075311f5840507d8bae65058615dcc", null ],
     [ "m_create", "classGenericEngineLoader.html#ae4f38020cf04586c35584e68ebfd9b14", null ],
     [ "m_destroy", "classGenericEngineLoader.html#a794d4537a4d0b2682e262ad44cc8fdae", null ],
     [ "m_force", "classGenericEngineLoader.html#aba068794bd2380aba3545974f9242238", null ],
     [ "m_lib", "classGenericEngineLoader.html#ab7620f457d2834aeb8fccdaa93623506", null ],
     [ "m_pot", "classGenericEngineLoader.html#a9aec7d322024187807dda6afc040da28", null ],
+    [ "m_set_cache", "classGenericEngineLoader.html#aa38865b168ae552a7ca5194bad77d7ff", null ],
     [ "m_tag", "classGenericEngineLoader.html#a1217f02966d6b16ee6717f7f92115c1e", null ]
 ];

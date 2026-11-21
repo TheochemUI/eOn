@@ -28,7 +28,7 @@ var searchData=
   ['haveforces_5f_25',['haveForces_',['../classeonc_1_1pathintegral_1_1RingPolymer.html#a1da753e22f7e9979ffc1d192f43c28d1',1,'eonc::pathintegral::RingPolymer']]],
   ['havestress_26',['haveStress',['../structeonc_1_1Matter_1_1Impl.html#a6021881ee543e56988341030a039b9a7',1,'eonc::Matter::Impl::haveStress'],['../structMatter_1_1Impl.html#a6021881ee543e56988341030a039b9a7',1,'Matter::Impl::haveStress']]],
   ['havestress_5f_27',['haveStress_',['../classLAMMPSPot.html#aa6551fef8fcd195cce4be9cdc3442116',1,'LAMMPSPot::haveStress_'],['../classRgpotAdapter.html#afb92c950dd425fab76f1f81d76749be2',1,'RgpotAdapter::haveStress_'],['../classSocketNWChemPot.html#a7fc6b689f1c7b6e9cb280131b36f64f2',1,'SocketNWChemPot::haveStress_']]],
-  ['hbar_28',['hbar',['../structeonc_1_1pathintegral_1_1Options.html#abfc70ee4f6ee8a424c931392f10c7de3',1,'eonc::pathintegral::Options']]],
+  ['hbar_28',['hbar',['../structeonc_1_1lineb__options__t.html#af945056ff5e37467a50319665bb453e3',1,'eonc::lineb_options_t::hbar'],['../structeonc_1_1pathintegral_1_1Options.html#abfc70ee4f6ee8a424c931392f10c7de3',1,'eonc::pathintegral::Options::hbar']]],
   ['hbaromega_29',['hbarOmega',['../namespaceeonc_1_1tunneling.html#ae0fe7d3746d8e82845cca6153413eb79',1,'eonc::tunneling']]],
   ['headercon_30',['headerCon',['../classeonc_1_1Matter.html#aa325fdebfaf34c23fde537e5cb456e25',1,'eonc::Matter::headerCon'],['../classMatter.html#aa325fdebfaf34c23fde537e5cb456e25',1,'Matter::headerCon']]],
   ['helperfunctions_2ecpp_31',['HelperFunctions.cpp',['../HelperFunctions_8cpp.html',1,'']]],

@@ -134,6 +134,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hessian.html">Hessian</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="finite_difference.html">Finite-difference curvature</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="lineb.html">Line-integral NEB (LI-NEB)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="akmc.html">Adaptive kinetic Monte Carlo</a></li>
@@ -354,6 +355,7 @@ data-aria-dark="Switch to auto color mode">
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#build-flags-summary">Build flags (summary)</a></li>
 <li><a class="reference internal" href="#docs-map">Docs map</a></li>
+<li><a class="reference internal" href="#molecular-orca-energies-and-forces">Molecular ORCA energies and forces</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
   data-type="github" data-user="TheochemUI" data-repo="eOn">
@@ -544,6 +546,43 @@ support.</p>
 <li><p>Socket NWChem: <a class="reference internal" href="potential.html"><span class="std std-doc">Potentials</span></a></p></li>
 <li><p>External process pot pattern: <a class="reference internal" href="ext_pot.html"><span class="std std-doc">ExtPot</span></a></p></li>
 </ul>
+</section>
+<section id="molecular-orca-energies-and-forces">
+<h2>Molecular ORCA energies and forces<a class="headerlink" href="#molecular-orca-energies-and-forces" title="Link to this heading">¶</a></h2>
+<p>Select the in-process rgpot engine in <code class="docutils literal notranslate"><span class="pre">config.ini</span></code> using the path to
+the <code class="docutils literal notranslate"><span class="pre">orca_engine</span></code> Meson target and a flat Cap’n Proto <code class="docutils literal notranslate"><span class="pre">OrcaParams</span></code> message.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Potential]</span>
+</span><span data-line="2"><span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">rgpot</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">[RgpotPot]</span>
+</span><span data-line="5"><span class="na">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">orca</span>
+</span><span data-line="6"><span class="na">engine_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/path/to/liborca_engine.so</span>
+</span><span data-line="7"><span class="na">params_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/path/to/orca.params</span>
+</span></pre></div>
+</div>
+<p>Encode the message with the effective schema from the same rgpot build.
+For example, the following input specifies conventional hybrid DFT for a
+neutral singlet and requests a gCP correction.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nb">printf</span><span class="w"> </span><span class="s1">&#39;%s\n&#39;</span><span class="w"> </span><span class="s1">&#39;(method = &quot;B3LYP&quot;, basis = &quot;def2-SV(P)&quot;, keywords = &quot;GCP(DFT/SV(P)) TightSCF NoRI&quot;, charge = 0, multiplicity = 1)&#39;</span><span class="w"> </span><span class="p">|</span>
+</span><span data-line="2"><span class="w">    </span>capnp<span class="w"> </span>encode<span class="w"> </span>/path/to/Potentials.capnp<span class="w"> </span>OrcaParams<span class="w"> </span>&gt;<span class="w"> </span>orca.params
+</span><span data-line="3"><span class="nb">export</span><span class="w"> </span><span class="nv">RGPOT_ORCA</span><span class="o">=</span>/path/to/orca
+</span></pre></div>
+</div>
+<p>The engine runs the ORCA executable for energy and gradient evaluations
+of an isolated molecule. Use a separate result-cache directory for each
+ORCA installation and calculation protocol. With cache-enabled builds
+of both eOn and the engine, <code class="docutils literal notranslate"><span class="pre">[Lineb]</span> <span class="pre">result_cache</span></code> attaches the database
+through the plugin’s <code class="docutils literal notranslate"><span class="pre">rgpot_engine_set_cache</span></code> entry point. The job stores
+the differences in <code class="docutils literal notranslate"><span class="pre">rgpot_engine_cache_counts</span></code> for setup, solver and output
+in <code class="docutils literal notranslate"><span class="pre">evaluation_counts.rgpot_results.phases</span></code> in the CON frame metadata.
+A cache miss runs the provider and a cache hit returns its stored result.</p>
+<p>For a dynamic engine, the native job result records the version of the
+rgpot library selected by Meson as <code class="docutils literal notranslate"><span class="pre">rgpot_version</span></code>. An engine exporting
+<code class="docutils literal notranslate"><span class="pre">rgpot_engine_version()</span></code> also supplies its own build string, stored as
+<code class="docutils literal notranslate"><span class="pre">rgpot_engine_version</span></code>. LI-NEB path and replica CON frames carry these
+values in <code class="docutils literal notranslate"><span class="pre">potential.linked_version</span></code> and <code class="docutils literal notranslate"><span class="pre">potential.engine_version</span></code>.
+The ORCA executable is a separate program. Record its version and the
+encoded electronic-structure parameters with the calculation.</p>
 </section>
 </section>
 

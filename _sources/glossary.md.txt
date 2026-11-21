@@ -120,6 +120,11 @@ NEB
   product relax under spring forces.
   See {doc}`user_guide/neb`.
 
+LI-NEB
+  Line-integral nudged elastic band. Fixed-energy optimal tunneling path
+  through rgsaddle (`job = lineb`).
+  See {doc}`user_guide/lineb`.
+
 NLCG
   Nonlinear conjugate gradient. rgmin keeps the conjugacy across
   outer steps.

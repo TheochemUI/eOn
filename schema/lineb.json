@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/lineb.json",
+  "title": "Lineb",
+  "description": "config.ini [Lineb] section (LinebConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "initial_path": {
+      "default": "",
+      "description": "Multi-frame seed band (neb.con). Interior images must start at or above energy plus the turning width.",
+      "type": "string"
+    },
+    "energy": {
+      "default": 0.0,
+      "description": "Tunneling energy E of the equipotential endpoints, eV.",
+      "type": "number"
+    },
+    "opt_tol": {
+      "default": 0.001,
+      "description": "Mass-weighted stop on the nudged force.",
+      "type": "number"
+    },
+    "perp_tol": {
+      "default": 0.001,
+      "description": "Mass-weighted stop on the perpendicular action gradient.",
+      "type": "number"
+    },
+    "spring": {
+      "default": 0.1,
+      "description": "Parallel spacing spring.",
+      "type": "number"
+    },
+    "linear_seed": {
+      "default": false,
+      "description": "Join the initial turning points with a straight path.",
+      "type": "boolean"
+    },
+    "endpoint_convergence": {
+      "default": false,
+      "description": "Apply opt_tol to the endpoints and perp_tol to the interior.",
+      "type": "boolean"
+    },
+    "result_cache": {
+      "default": "",
+      "description": "Path to the rgpot result cache for this LI-NEB job.",
+      "type": "string"
+    },
+    "projected_verlet": {
+      "default": false,
+      "description": "Optimize the band with velocity-projected velocity Verlet.",
+      "type": "boolean"
+    },
+    "interpolated_hessian": {
+      "default": false,
+      "description": "Interpolate path-image Hessians to the rate beads.",
+      "type": "boolean"
+    },
+    "image_hessian_step": {
+      "default": 0.0,
+      "description": "Cartesian displacement in angstrom for image Hessians. Zero selects the solver default.",
+      "minimum": 0,
+      "type": "number"
+    },
+    "interpolated_force_clock": {
+      "default": false,
+      "description": "Propagate imaginary time with velocity Verlet on the interpolated tangential image force.",
+      "type": "boolean"
+    },
+    "endpoint_kappa": {
+      "default": 0.0,
+      "description": "Fixed endpoint coefficient; zero selects endpoint_scale.",
+      "minimum": 0,
+      "type": "number"
+    },
+    "endpoint_scale": {
+      "default": 0.2,
+      "description": "Endpoint equipotential force scale.",
+      "type": "number"
+    },
+    "time_step": {
+      "default": 0.1,
+      "description": "Initial FIRE / quick-min time step.",
+      "type": "number"
+    },
+    "max_move": {
+      "default": 0.2,
+      "description": "Step cap; per atom when molecular, else whole-band Euclidean length. 0 leaves the step uncapped.",
+      "type": "number"
+    },
+    "turning_width": {
+      "default": 0.001,
+      "description": "Fraction of the highest seed height above E; interiors stay above E+w.",
+      "type": "number"
+    },
+    "hbar": {
+      "default": 0.06465415129579072,
+      "description": "hbar in eV^0.5 amu^0.5 Angstrom. Temperature is hbar/(k_B tau).",
+      "type": "number"
+    },
+    "boltzmann": {
+      "default": 8.617333262145177e-05,
+      "description": "Boltzmann constant in eV/K.",
+      "type": "number"
+    },
+    "quadrature_pairs": {
+      "default": 4,
+      "description": "Simpson pairs per chord for the period quadrature.",
+      "minimum": 1,
+      "type": "integer"
+    },
+    "max_steps": {
+      "default": 1000,
+      "description": "Optimizer step budget.",
+      "minimum": 1,
+      "type": "integer"
+    },
+    "beads": {
+      "default": 0,
+      "description": "Harmonic quantum TST replicas. 0 writes the path only (log rate NaN). Must be 0 or at least 2; beads = 1 is refused.",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "molecular": {
+      "default": false,
+      "description": "false expands atom masses to coordinates. true uses molecule alignment and needs every atom free.",
+      "type": "boolean"
+    },
+    "adjacent_alignment": {
+      "default": false,
+      "description": "With molecular = true, false fits every image to the first image and true fits each image to its neighbour along the band.",
+      "type": "boolean"
+    }
+  }
+}

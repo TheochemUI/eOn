@@ -134,6 +134,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/hessian.html">Hessian</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/finite_difference.html">Finite-difference curvature</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/lineb.html">Line-integral NEB (LI-NEB)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/akmc.html">Adaptive kinetic Monte Carlo</a></li>
@@ -656,6 +657,10 @@ data-aria-dark="Switch to auto color mode">
 <section id="added">
 <h3>Added<a class="headerlink" href="#added" title="Link to this heading">¶</a></h3>
 <ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">job</span> <span class="pre">=</span> <span class="pre">lineb</span></code> runs a fixed-energy line-integral NEB through rgsaddle’s
+<code class="docutils literal notranslate"><span class="pre">rgsaddle_lineb_solve</span></code> (Ásgeirsson et al., JCP 148, 102334): parameters in
+<code class="docutils literal notranslate"><span class="pre">[Lineb]</span></code>, docs under the user guide, and an integration test. Needs
+<code class="docutils literal notranslate"><span class="pre">-Dwith_rgsaddle=true</span></code> against rgsaddle C ABI 1.46 or a compatible later minor.</p></li>
 <li><p>A per-image potential such as ext_pot keeps its own exchange directory on each dimer image and on each process-search product minimization. An empty checkpoint lets a finite-difference Hessian share RgpotPot calculator groups. In-process results carry job_result, and cancel_state stops only a running batch. An even half-ring instanton with an odd unstable mode continues on the full ring. Structure comparison pairs atoms one to one, and Langevin and Nose-Hoover leave a frozen Cartesian component fixed.</p></li>
 <li><p>An RgpotPot run on calculator groups prints, when the driver stops the workers, each group’s evaluated systems, busy seconds and idle share, with the POP load balance, communication efficiency and parallel efficiency of the run.</p></li>
 <li><p>Dynamics movies load reactant frames from a read-only readcon-db corpus

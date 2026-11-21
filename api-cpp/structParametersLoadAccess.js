@@ -44,6 +44,8 @@ var structParametersLoadAccess =
     [ "ira_options", "structParametersLoadAccess.html#a41223e8d6e48d596fa4f0678d58f6f9b", null ],
     [ "lanczos_options", "structParametersLoadAccess.html#a314439aad5eb6e49909e0347b68c460d", null ],
     [ "lanczos_options", "structParametersLoadAccess.html#a055947aafd511900b13097e5004be3fb", null ],
+    [ "lineb_options", "structParametersLoadAccess.html#a981d36798a196529909d26c52760af05", null ],
+    [ "lineb_options", "structParametersLoadAccess.html#af94e8474b53d1e5e391eb29e88bff11e", null ],
     [ "main_options", "structParametersLoadAccess.html#a7663e35de36a70ba5709702ff2ca8bfa", null ],
     [ "main_options", "structParametersLoadAccess.html#a770c3256a5da218bb8f0fa834ed76658", null ],
     [ "metatomic_options", "structParametersLoadAccess.html#a9667f28b9136936241e313c529c8a430", null ],

@@ -76,7 +76,7 @@ var searchData=
   ['spin_73',['spin',['../structeonc_1_1mopac__options__t.html#a7edb8d1cb92100ceb2a21feb07893b5e',1,'eonc::mopac_options_t']]],
   ['spread_74',['spread',['../structeonc_1_1piqtst_1_1Plane.html#a443141f347d82ead1763508f2927604f',1,'eonc::piqtst::Plane']]],
   ['spreads_75',['spreads',['../structeonc_1_1io_1_1ConFrameMetadata.html#a1e1609724a95a29690f72798b5b51215',1,'eonc::io::ConFrameMetadata']]],
-  ['spring_76',['spring',['../structeonc_1_1neb__options__t.html#a7ddcef2df030ddca7e0ee7b7aedfe2da',1,'eonc::neb_options_t']]],
+  ['spring_76',['spring',['../structeonc_1_1neb__options__t.html#a7ddcef2df030ddca7e0ee7b7aedfe2da',1,'eonc::neb_options_t::spring'],['../structeonc_1_1lineb__options__t.html#a1930de5a42f5e3cd729a21881a73060f',1,'eonc::lineb_options_t::spring']]],
   ['spring_5f_77',['spring_',['../classeonc_1_1tunneling_1_1RingPolymerPotential.html#a52050d0e7edf76a592185fa7b787f951',1,'eonc::tunneling::RingPolymerPotential']]],
   ['springconstants_78',['springConstants',['../structeonc_1_1neb_1_1WeightedSpring.html#aa51478cee879266bdb6d545c5dbb8b89',1,'eonc::neb::WeightedSpring']]],
   ['springresult_79',['springResult',['../structeonc_1_1neb_1_1ImageForceData.html#a2654af5f15aad538eb61a7628f8aa88c',1,'eonc::neb::ImageForceData']]],

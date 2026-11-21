@@ -69,6 +69,7 @@ var ParametersOptions_8h =
     [ "eonc::ira_options_t", "structeonc_1_1ira__options__t.html", "structeonc_1_1ira__options__t" ],
     [ "eonc::debug_options_t", "structeonc_1_1debug__options__t.html", "structeonc_1_1debug__options__t" ],
     [ "eonc::instanton_options_t", "structeonc_1_1instanton__options__t.html", "structeonc_1_1instanton__options__t" ],
+    [ "eonc::lineb_options_t", "structeonc_1_1lineb__options__t.html", "structeonc_1_1lineb__options__t" ],
     [ "eonc::oh_tst_options_t", "structeonc_1_1oh__tst__options__t.html", "structeonc_1_1oh__tst__options__t" ],
     [ "eonc::structure_comparison_options_t", "namespaceeonc.html#a212f2d1f7e3dba9a689478884b514c7e", null ]
 ];

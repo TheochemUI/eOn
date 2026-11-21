@@ -12,5 +12,6 @@ var searchData=
   ['updatethresholdsuccess_9',['updateThresholdSuccess',['../classeonc_1_1neb_1_1OCINEBController.html#a5e9c48080ecadc019093094ce77fca91',1,'eonc::neb::OCINEBController']]],
   ['usablecores_10',['usableCores',['../namespaceeonc_1_1detail.html#ac2ceb90ed825a626f307749b887cf028',1,'eonc::detail']]],
   ['usesalternativerotation_11',['usesAlternativeRotation',['../namespaceeonc.html#a5b795f46811b90d51ec4a80335871aeb',1,'eonc']]],
-  ['usesprecon_12',['usesPrecon',['../classeonc_1_1LBFGS.html#a9d87a97212fc8d680e76cd59b1ecf1cc',1,'eonc::LBFGS']]]
+  ['usesprecon_12',['usesPrecon',['../classeonc_1_1LBFGS.html#a9d87a97212fc8d680e76cd59b1ecf1cc',1,'eonc::LBFGS']]],
+  ['useswolfelbfgs_13',['usesWolfeLbfgs',['../classeonc_1_1XtsciOptimizer.html#adcb0fffd876865195b4a624dfc443060',1,'eonc::XtsciOptimizer::usesWolfeLbfgs()'],['../classXtsciOptimizer.html#adcb0fffd876865195b4a624dfc443060',1,'XtsciOptimizer::usesWolfeLbfgs()']]]
 ];

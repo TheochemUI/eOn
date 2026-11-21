@@ -134,6 +134,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/hessian.html">Hessian</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/finite_difference.html">Finite-difference curvature</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/lineb.html">Line-integral NEB (LI-NEB)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/akmc.html">Adaptive kinetic Monte Carlo</a></li>
@@ -502,11 +503,13 @@ are authored in a Cap’n Proto schema.</p>
 </table>
 </div>
 <p>Covered groups today: <strong>Main</strong>, <strong>Potential</strong>, <strong>Optimizer</strong> (with LBFGS/CG/Quickmin/SD),
-<strong>Structure Comparison</strong>, <strong>Process Search</strong>, and <strong>RgpotPot</strong>. A struct tagged
+<strong>Structure Comparison</strong>, <strong>Process Search</strong>, <strong>RgpotPot</strong>, and <strong>Lineb</strong>. A struct tagged
 <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">project:</span> <span class="pre">ini,json</span></code> is generated into the INI reader, the JSON codec, and
 <code class="docutils literal notranslate"><span class="pre">apply_ssot_defaults()</span></code>. RgpotPot carries alias order and the <code class="docutils literal notranslate"><span class="pre">[cpmd]</span></code> and
-<code class="docutils literal notranslate"><span class="pre">[XTBPot]</span></code> overlays as schema comments. Untagged groups still live primarily
-in <code class="docutils literal notranslate"><span class="pre">Parameters.h</span></code> until folded into the schema (see <code class="docutils literal notranslate"><span class="pre">schema/README.md</span></code>).</p>
+<code class="docutils literal notranslate"><span class="pre">[XTBPot]</span></code> overlays as schema comments. Lineb validation (beads ≠ 1; energy
+required when <code class="docutils literal notranslate"><span class="pre">job</span> <span class="pre">=</span> <span class="pre">lineb</span></code>) lives in <code class="docutils literal notranslate"><span class="pre">validate_lineb_options()</span></code> after the
+projected load. Untagged groups still live primarily in <code class="docutils literal notranslate"><span class="pre">Parameters.h</span></code> until
+folded into the schema (see <code class="docutils literal notranslate"><span class="pre">schema/README.md</span></code>).</p>
 <section id="adding-a-covered-option">
 <h3>Adding a covered option<a class="headerlink" href="#adding-a-covered-option" title="Link to this heading">¶</a></h3>
 <ol class="arabic simple">

@@ -134,6 +134,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hessian.html">Hessian</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="finite_difference.html">Finite-difference curvature</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="lineb.html">Line-integral NEB (LI-NEB)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="akmc.html">Adaptive kinetic Monte Carlo</a></li>
@@ -403,6 +404,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li><a class="reference internal" href="#nwchem">NWChem</a></li>
+<li><a class="reference internal" href="#orca-molecular-energies-and-gradients">ORCA molecular energies and gradients</a></li>
 <li><a class="reference internal" href="#metatomic">Metatomic</a></li>
 <li><a class="reference internal" href="#xtb">xTB</a></li>
 <li><a class="reference internal" href="#uma">UMA</a></li>
@@ -630,7 +632,7 @@ reads those keys from <code class="docutils literal notranslate"><span class="pr
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.RgpotPot.backend">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">backend</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'nwchemc'</span></span><a class="headerlink" href="#eon.schema.RgpotPot.backend" title="Link to this definition">¶</a></dt>
-<dd><p>rgpot backend: ‘nwchemc’, ‘cpmdc’, ‘metatomic’, or ‘xtb’ (aliases: nwchem/cpmd/mta/gfn). metatomic/xtb dlopen libmetatomic_engine.so / libxtb_engine.so for packaging.</p>
+<dd><p>In-process rgpot backend. Choose nwchemc, cpmdc, metatomic, orca, uma, or xtb. The orca backend requires params_path.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -726,7 +728,7 @@ reads those keys from <code class="docutils literal notranslate"><span class="pr
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.RgpotPot.engine_path">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">engine_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.RgpotPot.engine_path" title="Link to this definition">¶</a></dt>
-<dd><p>Engine .so path (libnwchemc / libcpmdc / libmetatomic_engine / libxtb_engine).</p>
+<dd><p>Path to the selected backend’s shared library. For ORCA, use liborca_engine.so or set RGPOT_ORCA_ENGINE.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -888,7 +890,7 @@ reads those keys from <code class="docutils literal notranslate"><span class="pr
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.RgpotPot.params_path">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">params_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.RgpotPot.params_path" title="Link to this definition">¶</a></dt>
-<dd><p>Path to a Cap’n Proto CPMDParams message. The file owns the CPMD method, including inputSections and inputBlocks, and the scalar keys are not written over it. input_block is appended to inputBlocks. engine_path, engine_root, scratch_dir, and permanent_dir still place the run.</p>
+<dd><p>Path to an unpacked Cap’n Proto flat message. The orca backend requires OrcaParams and passes the message to its engine. For cpmdc, an optional CPMDParams file owns the CPMD method, including inputSections and inputBlocks, and the scalar keys are not written over it. input_block is appended to inputBlocks. engine_path, engine_root, scratch_dir, and permanent_dir still place the run.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -923,6 +925,37 @@ and <code class="docutils literal notranslate"><span class="pre">RGPOT_NWCHEMC_E
 NWChem <code class="docutils literal notranslate"><span class="pre">inputBlocks</span></code> text. When <code class="docutils literal notranslate"><span class="pre">theory</span></code> is <code class="docutils literal notranslate"><span class="pre">dft</span></code> and <code class="docutils literal notranslate"><span class="pre">scf_type</span></code> names an
 exchange-correlation functional such as <code class="docutils literal notranslate"><span class="pre">b3lyp</span></code>, the client writes a short
 density functional theory (DFT) block.</p>
+</section>
+<section id="orca-molecular-energies-and-gradients">
+<h3>ORCA molecular energies and gradients<a class="headerlink" href="#orca-molecular-energies-and-gradients" title="Link to this heading">¶</a></h3>
+<p>With <code class="docutils literal notranslate"><span class="pre">backend</span> <span class="pre">=</span> <span class="pre">orca</span></code>, eOn loads rgpot’s <code class="docutils literal notranslate"><span class="pre">liborca_engine.so</span></code>. The plugin
+calls a locally installed ORCA executable for an isolated molecule. The
+plugin and executable have separate paths. Supply the electronic method,
+basis, charge, multiplicity and executable in a serialized <code class="docutils literal notranslate"><span class="pre">OrcaParams</span></code>
+message. Use the <code class="docutils literal notranslate"><span class="pre">Potentials.capnp</span></code> installed with the plugin.</p>
+<p>For example, the conventional-exchange ammonia-borane calculation uses
+the following neutral singlet setup. Set <code class="docutils literal notranslate"><span class="pre">RGPOT_PREFIX</span></code> to the plugin’s
+installation prefix and replace <code class="docutils literal notranslate"><span class="pre">/opt/orca/orca</span></code> with the executable at
+your site. Run this command in the eOn job directory.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span data-line="1">capnp<span class="w"> </span>encode<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$RGPOT_PREFIX</span><span class="s2">/include/rgpot/rpc/Potentials.capnp&quot;</span><span class="w"> </span>OrcaParams<span class="w"> </span>&gt;orca.params<span class="w"> </span><span class="s">&lt;&lt;&#39;EOF&#39;</span>
+</span><span data-line="2"><span class="s">(method = &quot;B3LYP&quot;, basis = &quot;def2-SV(P)&quot;, charge = 0, multiplicity = 1,</span>
+</span><span data-line="3"><span class="s"> keywords = &quot;GCP(DFT/SV(P)) TightSCF NoRI&quot;, executable = &quot;/opt/orca/orca&quot;)</span>
+</span><span data-line="4"><span class="s">EOF</span>
+</span></pre></div>
+</div>
+<p>Select the provider in <code class="docutils literal notranslate"><span class="pre">config.ini</span></code> and set the plugin path for your
+installation. The ORCA engine requests energy and gradient together.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Potential]</span>
+</span><span data-line="2"><span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">rgpot</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">[RgpotPot]</span>
+</span><span data-line="5"><span class="na">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">orca</span>
+</span><span data-line="6"><span class="na">engine_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/path/to/liborca_engine.so</span>
+</span><span data-line="7"><span class="na">params_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">orca.params</span>
+</span></pre></div>
+</div>
+<p>For an isolated-molecule tunneling calculation, combine these sections
+with the seed and <code class="docutils literal notranslate"><span class="pre">[Lineb]</span></code> controls in <a class="reference internal" href="lineb.html"><span class="std std-doc">the LI-NEB guide</span></a>.</p>
 </section>
 <section id="metatomic">
 <h3>Metatomic<a class="headerlink" href="#metatomic" title="Link to this heading">¶</a></h3>

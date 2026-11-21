@@ -15,6 +15,7 @@ var classRgpotPot =
     [ "groupUse", "classRgpotPot.html#a2270e463ddc286b5b79f16cda8460f97", null ],
     [ "isThreadSafe", "classRgpotPot.html#aa3807f25df4a13d2563d53aac59e63cd", null ],
     [ "operator=", "classRgpotPot.html#abfa480aca32515b12159fb1779cef757", null ],
+    [ "pluginVersion", "classRgpotPot.html#a0ef0564fdfa97504b25437781d3a4532", null ],
     [ "releaseWorkersAtExit", "classRgpotPot.html#ae87ceb0b49847c3ae9e3d0773dc49478", null ],
     [ "requiresIsolatedMoleculeLayout", "classRgpotPot.html#a30439012a21f7aeae6a23c1cf66b1fc8", null ],
     [ "sendStop", "classRgpotPot.html#ae6c65b972ba91b1c5b4512fc03474e04", null ],

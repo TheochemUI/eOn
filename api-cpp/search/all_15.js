@@ -64,7 +64,7 @@ var searchData=
   ['time_61',['TIME',['../namespaceforcefields_1_1unit__system.html#a29d1166fbfe2c00738753963ddaedb22',1,'forcefields::unit_system']]],
   ['time_62',['time',['../structeonc_1_1io_1_1ConFrameMetadata.html#a6cb6baf1b7886d70774af5ea2dbaaeb9',1,'eonc::io::ConFrameMetadata::time'],['../classeonc_1_1DynamicsSaddleSearch.html#a44ef7ae48e1318516f24f0a802623aaa',1,'eonc::DynamicsSaddleSearch::time'],['../structeonc_1_1dynamics__options__t.html#a7038c79c24271f06bb74adf489378b22',1,'eonc::dynamics_options_t::time'],['../structeonc_1_1piqtst_1_1Recrossing.html#a1830f486cef6a38eb75b1929162d13e0',1,'eonc::piqtst::Recrossing::time'],['../classeonc_1_1ReplicaDynamicsJob.html#aeee8ccd5638f47488c72768c6a79ee06',1,'eonc::ReplicaDynamicsJob::time']]],
   ['time_5finput_63',['time_input',['../structeonc_1_1dynamics__options__t.html#a8b827446827657ebe8d4b9e559e58513',1,'eonc::dynamics_options_t']]],
-  ['time_5fstep_64',['time_step',['../structeonc_1_1DynamicsConfig.html#a56f1ec783f3ef2235bed5223392f5472',1,'eonc::DynamicsConfig::time_step'],['../structeonc_1_1optimizer__options__t.html#aa26d8a612871a6f19ddc8188c12279ce',1,'eonc::optimizer_options_t::time_step'],['../structeonc_1_1dynamics__options__t.html#a561e04757311a2fe038d29fea2ecf488',1,'eonc::dynamics_options_t::time_step'],['../structeonc_1_1oh__tst__options__t.html#a6eb1d0c02b90bec7f0519149526ad7ce',1,'eonc::oh_tst_options_t::time_step']]],
+  ['time_5fstep_64',['time_step',['../structeonc_1_1DynamicsConfig.html#a56f1ec783f3ef2235bed5223392f5472',1,'eonc::DynamicsConfig::time_step'],['../structeonc_1_1optimizer__options__t.html#aa26d8a612871a6f19ddc8188c12279ce',1,'eonc::optimizer_options_t::time_step'],['../structeonc_1_1dynamics__options__t.html#a561e04757311a2fe038d29fea2ecf488',1,'eonc::dynamics_options_t::time_step'],['../structeonc_1_1lineb__options__t.html#aa769bdced71f1d4efffbafb53f82910f',1,'eonc::lineb_options_t::time_step'],['../structeonc_1_1oh__tst__options__t.html#a6eb1d0c02b90bec7f0519149526ad7ce',1,'eonc::oh_tst_options_t::time_step']]],
   ['time_5fstep_5finput_65',['time_step_input',['../structeonc_1_1optimizer__options__t.html#af7f7f532f6163290c1ac378aec913d25',1,'eonc::optimizer_options_t::time_step_input'],['../structeonc_1_1dynamics__options__t.html#aba31fe7fda2c33bc439fcdeca9e9f8dc',1,'eonc::dynamics_options_t::time_step_input']]],
   ['timebuffer_66',['timeBuffer',['../classeonc_1_1SafeHyperJob.html#a586a4164522c27ddf5a7da1ec67059c1',1,'eonc::SafeHyperJob::timeBuffer'],['../classeonc_1_1TADJob.html#abebb672f3390f3d0faaacf236321d956',1,'eonc::TADJob::timeBuffer']]],
   ['timepoint_67',['TimePoint',['../classeonc_1_1IPotRegistry.html#ac7f7f3dcfab9e7706675e5852b2e441c',1,'eonc::IPotRegistry::TimePoint'],['../classeonc_1_1PotRegistry.html#aeeb990f618a5a28e051858b6c78b248c',1,'eonc::PotRegistry::TimePoint']]],
@@ -111,9 +111,10 @@ var searchData=
   ['tunnel_5fwall_5fpoints_108',['tunnel_wall_points',['../structeonc_1_1neb__options__t.html#ad6d61e71d9eac4e8e48acbd0d2846a4c',1,'eonc::neb_options_t']]],
   ['tunneling_2ecpp_109',['Tunneling.cpp',['../Tunneling_8cpp.html',1,'']]],
   ['tunneling_2eh_110',['Tunneling.h',['../Tunneling_8h.html',1,'']]],
-  ['two_5fpoint_111',['two_point',['../structeonc_1_1optimizer__options__t_1_1sd__t.html#aa9e39b411f3893ff060df3afc9890e58',1,'eonc::optimizer_options_t::sd_t']]],
-  ['type_112',['type',['../structeonc_1_1PotRegistry_1_1InstanceRecord.html#ae6ad39a155ef553ecf4fbd7b386e87ee',1,'eonc::PotRegistry::InstanceRecord']]],
-  ['type_5falive_113',['type_alive',['../classeonc_1_1PotRegistry.html#a9ede73a599d49dfeec6041efe0918a79',1,'eonc::PotRegistry']]],
-  ['type_5fforce_5fcalls_114',['type_force_calls',['../classeonc_1_1PotRegistry.html#a65a77d05d2ad8e2c59ff8829551e7431',1,'eonc::PotRegistry']]],
-  ['typestats_115',['TypeStats',['../structeonc_1_1PotRegistry_1_1TypeStats.html',1,'eonc::PotRegistry']]]
+  ['turning_5fwidth_111',['turning_width',['../structeonc_1_1lineb__options__t.html#a1790d8840ad2bc2770174f20e28dbc63',1,'eonc::lineb_options_t']]],
+  ['two_5fpoint_112',['two_point',['../structeonc_1_1optimizer__options__t_1_1sd__t.html#aa9e39b411f3893ff060df3afc9890e58',1,'eonc::optimizer_options_t::sd_t']]],
+  ['type_113',['type',['../structeonc_1_1PotRegistry_1_1InstanceRecord.html#ae6ad39a155ef553ecf4fbd7b386e87ee',1,'eonc::PotRegistry::InstanceRecord']]],
+  ['type_5falive_114',['type_alive',['../classeonc_1_1PotRegistry.html#a9ede73a599d49dfeec6041efe0918a79',1,'eonc::PotRegistry']]],
+  ['type_5fforce_5fcalls_115',['type_force_calls',['../classeonc_1_1PotRegistry.html#a65a77d05d2ad8e2c59ff8829551e7431',1,'eonc::PotRegistry']]],
+  ['typestats_116',['TypeStats',['../structeonc_1_1PotRegistry_1_1TypeStats.html',1,'eonc::PotRegistry']]]
 ];

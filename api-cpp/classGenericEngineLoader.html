@@ -247,6 +247,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9c249de868872769fcbfc9d3ec048721" id="r_a9c249de868872769fcbfc9d3ec048721"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a9c249de868872769fcbfc9d3ec048721">GenericEngineLoader</a> (const <a class="el" href="classGenericEngineLoader.html">GenericEngineLoader</a> &amp;)=delete</td></tr>
 <tr class="memitem:a691478edaf5957180e559098075c3eaf" id="r_a691478edaf5957180e559098075c3eaf"><td class="memItemLeft"><a class="el" href="classGenericEngineLoader.html">GenericEngineLoader</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a691478edaf5957180e559098075c3eaf">operator=</a> (const <a class="el" href="classGenericEngineLoader.html">GenericEngineLoader</a> &amp;)=delete</td></tr>
 <tr class="memitem:ae251f6d6b15d2451b5d4674aebbe2953" id="r_ae251f6d6b15d2451b5d4674aebbe2953"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ae251f6d6b15d2451b5d4674aebbe2953">available</a> () const noexcept</td></tr>
+<tr class="memitem:a0cd8a88030d2093c2561ddac89c7ac6b" id="r_a0cd8a88030d2093c2561ddac89c7ac6b"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a0cd8a88030d2093c2561ddac89c7ac6b">version</a> () const</td></tr>
+<tr class="memitem:aaf4fe14dea747947f9642a84902f83d4" id="r_aaf4fe14dea747947f9642a84902f83d4"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aaf4fe14dea747947f9642a84902f83d4">attachCache</a> (const std::string &amp;path)</td></tr>
+<tr class="memitem:a1a572fa9dde9bff961f1a6ba01a9c4da" id="r_a1a572fa9dde9bff961f1a6ba01a9c4da"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a1a572fa9dde9bff961f1a6ba01a9c4da">detachCache</a> () noexcept</td></tr>
+<tr class="memitem:abdc9e4677448d81c9411b2a2906d7c6e" id="r_abdc9e4677448d81c9411b2a2906d7c6e"><td class="memItemLeft">std::array&lt; std::uint64_t, 2 &gt;&#160;</td><td class="memItemRight"><a class="el" href="#abdc9e4677448d81c9411b2a2906d7c6e">cacheCounts</a> () const</td></tr>
 <tr class="memitem:a933d4e1207a75bb53691244e94141a6f" id="r_a933d4e1207a75bb53691244e94141a6f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a933d4e1207a75bb53691244e94141a6f">force</a> (long N, const double *R, const int *atomicNrs, double *F, double *U, double *variance, const double *box) const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-types" class="groupheader"><a id="pri-types" name="pri-types"></a>
@@ -254,20 +258,55 @@ Private Types</h2></td></tr>
 <tr class="memitem:a9bc91042b6d3f6331368561725de0401" id="r_a9bc91042b6d3f6331368561725de0401"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a9bc91042b6d3f6331368561725de0401">create_fn</a> = <a class="el" href="engine__c__abi_8h.html#a877587fc7dcf577a3a8d2d44c45672b8">RgpotEnginePot</a> *(*)(const void *, size_t, char *, size_t)</td></tr>
 <tr class="memitem:a28e2c4b1ca45dd731878901bd30a07f5" id="r_a28e2c4b1ca45dd731878901bd30a07f5"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a28e2c4b1ca45dd731878901bd30a07f5">destroy_fn</a> = void (*)(<a class="el" href="engine__c__abi_8h.html#a877587fc7dcf577a3a8d2d44c45672b8">RgpotEnginePot</a> *)</td></tr>
 <tr class="memitem:a992b4f3fb3f4aae1dd7f04ef7140725a" id="r_a992b4f3fb3f4aae1dd7f04ef7140725a"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a992b4f3fb3f4aae1dd7f04ef7140725a">force_fn</a></td></tr>
+<tr class="memitem:a9dd0616d2aa0e678a690b0ba6fd863cd" id="r_a9dd0616d2aa0e678a690b0ba6fd863cd"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a9dd0616d2aa0e678a690b0ba6fd863cd">set_cache_fn</a> = int (*)(<a class="el" href="engine__c__abi_8h.html#a877587fc7dcf577a3a8d2d44c45672b8">RgpotEnginePot</a> *, const char *)</td></tr>
+<tr class="memitem:a15f59be4f1250a949c59afea8ba9da00" id="r_a15f59be4f1250a949c59afea8ba9da00"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a15f59be4f1250a949c59afea8ba9da00">cache_counts_fn</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:abd833cb9700fcd03e6524d860d588551" id="r_abd833cb9700fcd03e6524d860d588551"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#abd833cb9700fcd03e6524d860d588551">lastError</a> (const char *operation) const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:ab7620f457d2834aeb8fccdaa93623506" id="r_ab7620f457d2834aeb8fccdaa93623506"><td class="memItemLeft">void *&#160;</td><td class="memItemRight"><a class="el" href="#ab7620f457d2834aeb8fccdaa93623506">m_lib</a> {nullptr}</td></tr>
 <tr class="memitem:a9aec7d322024187807dda6afc040da28" id="r_a9aec7d322024187807dda6afc040da28"><td class="memItemLeft"><a class="el" href="engine__c__abi_8h.html#a877587fc7dcf577a3a8d2d44c45672b8">RgpotEnginePot</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a9aec7d322024187807dda6afc040da28">m_pot</a> {nullptr}</td></tr>
 <tr class="memitem:a1217f02966d6b16ee6717f7f92115c1e" id="r_a1217f02966d6b16ee6717f7f92115c1e"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a1217f02966d6b16ee6717f7f92115c1e">m_tag</a></td></tr>
+<tr class="memitem:aa38865b168ae552a7ca5194bad77d7ff" id="r_aa38865b168ae552a7ca5194bad77d7ff"><td class="memItemLeft"><a class="el" href="#a9dd0616d2aa0e678a690b0ba6fd863cd">set_cache_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#aa38865b168ae552a7ca5194bad77d7ff">m_set_cache</a> {}</td></tr>
+<tr class="memitem:a0b075311f5840507d8bae65058615dcc" id="r_a0b075311f5840507d8bae65058615dcc"><td class="memItemLeft"><a class="el" href="#a15f59be4f1250a949c59afea8ba9da00">cache_counts_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a0b075311f5840507d8bae65058615dcc">m_cache_counts</a> {}</td></tr>
 <tr class="memitem:ae4f38020cf04586c35584e68ebfd9b14" id="r_ae4f38020cf04586c35584e68ebfd9b14"><td class="memItemLeft"><a class="el" href="#a9bc91042b6d3f6331368561725de0401">create_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#ae4f38020cf04586c35584e68ebfd9b14">m_create</a> {nullptr}</td></tr>
 <tr class="memitem:a794d4537a4d0b2682e262ad44cc8fdae" id="r_a794d4537a4d0b2682e262ad44cc8fdae"><td class="memItemLeft"><a class="el" href="#a28e2c4b1ca45dd731878901bd30a07f5">destroy_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a794d4537a4d0b2682e262ad44cc8fdae">m_destroy</a> {nullptr}</td></tr>
 <tr class="memitem:aba068794bd2380aba3545974f9242238" id="r_aba068794bd2380aba3545974f9242238"><td class="memItemLeft"><a class="el" href="#a992b4f3fb3f4aae1dd7f04ef7140725a">force_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#aba068794bd2380aba3545974f9242238">m_force</a> {nullptr}</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00038">38</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00040">40</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
 </div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
+<a id="a15f59be4f1250a949c59afea8ba9da00" name="a15f59be4f1250a949c59afea8ba9da00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15f59be4f1250a949c59afea8ba9da00">&#9670;&#160;</a></span>cache_counts_fn</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a15f59be4f1250a949c59afea8ba9da00">GenericEngineLoader::cache_counts_fn</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">int (*)(<a class="code hl_typedef" href="engine__c__abi_8h.html#a877587fc7dcf577a3a8d2d44c45672b8">RgpotEnginePot</a> *, std::uint64_t *,</div>
+<div class="line">                                 std::uint64_t *)</div>
+<div class="ttc" id="aengine__c__abi_8h_html_a877587fc7dcf577a3a8d2d44c45672b8"><div class="ttname"><a href="engine__c__abi_8h.html#a877587fc7dcf577a3a8d2d44c45672b8">RgpotEnginePot</a></div><div class="ttdeci">struct RgpotEnginePot RgpotEnginePot</div><div class="ttdef"><b>Definition</b> <a href="engine__c__abi_8h_source.html#l00059">engine_c_abi.h:59</a></div></div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00065">65</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
+
+</div>
+</div>
 <a id="a9bc91042b6d3f6331368561725de0401" name="a9bc91042b6d3f6331368561725de0401"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9bc91042b6d3f6331368561725de0401">&#9670;&#160;</a></span>create_fn</h2>
 
@@ -288,7 +327,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00053">53</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00059">59</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
 
 </div>
 </div>
@@ -312,7 +351,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00054">54</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00060">60</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
 
 </div>
 </div>
@@ -338,10 +377,33 @@ Private Attributes</h2></td></tr>
 <b>Initial value:</b><div class="fragment"><div class="line">int (*)(<a class="code hl_typedef" href="engine__c__abi_8h.html#a877587fc7dcf577a3a8d2d44c45672b8">RgpotEnginePot</a> *, long, <span class="keyword">const</span> <span class="keywordtype">double</span> *, <span class="keyword">const</span> <span class="keywordtype">int</span> *,</div>
 <div class="line">                          <span class="keywordtype">double</span> *, <span class="keywordtype">double</span> *, <span class="keywordtype">double</span> *, <span class="keyword">const</span> <span class="keywordtype">double</span> *,</div>
 <div class="line">                          <a class="code hl_typedef" href="engine__c__abi_8h.html#ab4f545283d91eb3fa1a596ecffe36568">rgpot_engine_coord_transform</a>, <span class="keywordtype">void</span> *)</div>
-<div class="ttc" id="aengine__c__abi_8h_html_a877587fc7dcf577a3a8d2d44c45672b8"><div class="ttname"><a href="engine__c__abi_8h.html#a877587fc7dcf577a3a8d2d44c45672b8">RgpotEnginePot</a></div><div class="ttdeci">struct RgpotEnginePot RgpotEnginePot</div><div class="ttdef"><b>Definition</b> <a href="engine__c__abi_8h_source.html#l00059">engine_c_abi.h:59</a></div></div>
 <div class="ttc" id="aengine__c__abi_8h_html_ab4f545283d91eb3fa1a596ecffe36568"><div class="ttname"><a href="engine__c__abi_8h.html#ab4f545283d91eb3fa1a596ecffe36568">rgpot_engine_coord_transform</a></div><div class="ttdeci">int(* rgpot_engine_coord_transform)(void *user, long nAtoms, double *positions, double *box)</div><div class="ttdoc">Optional host-side transform applied by the engine to its scratch copy of (positions,...</div><div class="ttdef"><b>Definition</b> <a href="engine__c__abi_8h_source.html#l00067">engine_c_abi.h:67</a></div></div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00055">55</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00061">61</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
+
+</div>
+</div>
+<a id="a9dd0616d2aa0e678a690b0ba6fd863cd" name="a9dd0616d2aa0e678a690b0ba6fd863cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dd0616d2aa0e678a690b0ba6fd863cd">&#9670;&#160;</a></span>set_cache_fn</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a9dd0616d2aa0e678a690b0ba6fd863cd">GenericEngineLoader::set_cache_fn</a> = int (*)(<a class="el" href="engine__c__abi_8h.html#a877587fc7dcf577a3a8d2d44c45672b8">RgpotEnginePot</a> *, const char *)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00064">64</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
 
 </div>
 </div>
@@ -430,30 +492,38 @@ Private Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  101</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT(&quot;</span> + <a class="code hl_variable" href="#a1217f02966d6b16ee6717f7f92115c1e">m_tag</a> +</div>
 <div class="line"><span class="lineno">  102</span>                             <span class="stringliteral">&quot;): engine C ABI missing/mismatch&quot;</span>);</div>
 <div class="line"><span class="lineno">  103</span>  }</div>
-<div class="line"><span class="lineno">  104</span>  <span class="keywordtype">char</span> err[1024]{};</div>
-<div class="line"><span class="lineno">  105</span>  <a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a> = <a class="code hl_variable" href="#ae4f38020cf04586c35584e68ebfd9b14">m_create</a>(opt.<a class="code hl_variable" href="structGenericEngineOptions.html#a43bccac3c8fd13c1a28c0f9a1e8ebe13">config</a>.data(), opt.<a class="code hl_variable" href="structGenericEngineOptions.html#a43bccac3c8fd13c1a28c0f9a1e8ebe13">config</a>.size(), err, <span class="keyword">sizeof</span> err);</div>
-<div class="line"><span class="lineno">  106</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a>) {</div>
-<div class="line"><span class="lineno">  107</span>    close_lib(<a class="code hl_variable" href="#ab7620f457d2834aeb8fccdaa93623506">m_lib</a>);</div>
-<div class="line"><span class="lineno">  108</span>    <a class="code hl_variable" href="#ab7620f457d2834aeb8fccdaa93623506">m_lib</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">  109</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT(&quot;</span> + <a class="code hl_variable" href="#a1217f02966d6b16ee6717f7f92115c1e">m_tag</a> +</div>
-<div class="line"><span class="lineno">  110</span>                             <span class="stringliteral">&quot;): create failed: &quot;</span> + std::string(err));</div>
-<div class="line"><span class="lineno">  111</span>  }</div>
-<div class="line"><span class="lineno">  112</span>}</div>
-<div class="ttc" id="aclassGenericEngineLoader_html_a1217f02966d6b16ee6717f7f92115c1e"><div class="ttname"><a href="#a1217f02966d6b16ee6717f7f92115c1e">GenericEngineLoader::m_tag</a></div><div class="ttdeci">std::string m_tag</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00052">GenericEngineLoader.h:52</a></div></div>
-<div class="ttc" id="aclassGenericEngineLoader_html_a28e2c4b1ca45dd731878901bd30a07f5"><div class="ttname"><a href="#a28e2c4b1ca45dd731878901bd30a07f5">GenericEngineLoader::destroy_fn</a></div><div class="ttdeci">void(*)(RgpotEnginePot *) destroy_fn</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00054">GenericEngineLoader.h:54</a></div></div>
-<div class="ttc" id="aclassGenericEngineLoader_html_a794d4537a4d0b2682e262ad44cc8fdae"><div class="ttname"><a href="#a794d4537a4d0b2682e262ad44cc8fdae">GenericEngineLoader::m_destroy</a></div><div class="ttdeci">destroy_fn m_destroy</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00059">GenericEngineLoader.h:59</a></div></div>
-<div class="ttc" id="aclassGenericEngineLoader_html_a992b4f3fb3f4aae1dd7f04ef7140725a"><div class="ttname"><a href="#a992b4f3fb3f4aae1dd7f04ef7140725a">GenericEngineLoader::force_fn</a></div><div class="ttdeci">int(*)(RgpotEnginePot *, long, const double *, const int *, double *, double *, double *, const double *, rgpot_engine_coord_transform, void *) force_fn</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00055">GenericEngineLoader.h:55</a></div></div>
-<div class="ttc" id="aclassGenericEngineLoader_html_a9aec7d322024187807dda6afc040da28"><div class="ttname"><a href="#a9aec7d322024187807dda6afc040da28">GenericEngineLoader::m_pot</a></div><div class="ttdeci">RgpotEnginePot * m_pot</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00051">GenericEngineLoader.h:51</a></div></div>
-<div class="ttc" id="aclassGenericEngineLoader_html_a9bc91042b6d3f6331368561725de0401"><div class="ttname"><a href="#a9bc91042b6d3f6331368561725de0401">GenericEngineLoader::create_fn</a></div><div class="ttdeci">RgpotEnginePot *(*)(const void *, size_t, char *, size_t) create_fn</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00053">GenericEngineLoader.h:53</a></div></div>
-<div class="ttc" id="aclassGenericEngineLoader_html_ab7620f457d2834aeb8fccdaa93623506"><div class="ttname"><a href="#ab7620f457d2834aeb8fccdaa93623506">GenericEngineLoader::m_lib</a></div><div class="ttdeci">void * m_lib</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00050">GenericEngineLoader.h:50</a></div></div>
-<div class="ttc" id="aclassGenericEngineLoader_html_aba068794bd2380aba3545974f9242238"><div class="ttname"><a href="#aba068794bd2380aba3545974f9242238">GenericEngineLoader::m_force</a></div><div class="ttdeci">force_fn m_force</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00060">GenericEngineLoader.h:60</a></div></div>
-<div class="ttc" id="aclassGenericEngineLoader_html_ae4f38020cf04586c35584e68ebfd9b14"><div class="ttname"><a href="#ae4f38020cf04586c35584e68ebfd9b14">GenericEngineLoader::m_create</a></div><div class="ttdeci">create_fn m_create</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00058">GenericEngineLoader.h:58</a></div></div>
+<div class="line"><span class="lineno">  104</span>  <a class="code hl_variable" href="#aa38865b168ae552a7ca5194bad77d7ff">m_set_cache</a> =</div>
+<div class="line"><span class="lineno">  105</span>      <span class="keyword">reinterpret_cast&lt;</span><a class="code hl_typedef" href="#a9dd0616d2aa0e678a690b0ba6fd863cd">set_cache_fn</a><span class="keyword">&gt;</span>(load_sym(<a class="code hl_variable" href="#ab7620f457d2834aeb8fccdaa93623506">m_lib</a>, <span class="stringliteral">&quot;rgpot_engine_set_cache&quot;</span>));</div>
+<div class="line"><span class="lineno">  106</span>  <a class="code hl_variable" href="#a0b075311f5840507d8bae65058615dcc">m_cache_counts</a> = <span class="keyword">reinterpret_cast&lt;</span><a class="code hl_typedef" href="#a15f59be4f1250a949c59afea8ba9da00">cache_counts_fn</a><span class="keyword">&gt;</span>(</div>
+<div class="line"><span class="lineno">  107</span>      load_sym(<a class="code hl_variable" href="#ab7620f457d2834aeb8fccdaa93623506">m_lib</a>, <span class="stringliteral">&quot;rgpot_engine_cache_counts&quot;</span>));</div>
+<div class="line"><span class="lineno">  108</span>  <span class="keywordtype">char</span> err[1024]{};</div>
+<div class="line"><span class="lineno">  109</span>  <a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a> = <a class="code hl_variable" href="#ae4f38020cf04586c35584e68ebfd9b14">m_create</a>(opt.<a class="code hl_variable" href="structGenericEngineOptions.html#a43bccac3c8fd13c1a28c0f9a1e8ebe13">config</a>.data(), opt.<a class="code hl_variable" href="structGenericEngineOptions.html#a43bccac3c8fd13c1a28c0f9a1e8ebe13">config</a>.size(), err, <span class="keyword">sizeof</span> err);</div>
+<div class="line"><span class="lineno">  110</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a>) {</div>
+<div class="line"><span class="lineno">  111</span>    close_lib(<a class="code hl_variable" href="#ab7620f457d2834aeb8fccdaa93623506">m_lib</a>);</div>
+<div class="line"><span class="lineno">  112</span>    <a class="code hl_variable" href="#ab7620f457d2834aeb8fccdaa93623506">m_lib</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  113</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT(&quot;</span> + <a class="code hl_variable" href="#a1217f02966d6b16ee6717f7f92115c1e">m_tag</a> +</div>
+<div class="line"><span class="lineno">  114</span>                             <span class="stringliteral">&quot;): create failed: &quot;</span> + std::string(err));</div>
+<div class="line"><span class="lineno">  115</span>  }</div>
+<div class="line"><span class="lineno">  116</span>}</div>
+<div class="ttc" id="aclassGenericEngineLoader_html_a0b075311f5840507d8bae65058615dcc"><div class="ttname"><a href="#a0b075311f5840507d8bae65058615dcc">GenericEngineLoader::m_cache_counts</a></div><div class="ttdeci">cache_counts_fn m_cache_counts</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00068">GenericEngineLoader.h:68</a></div></div>
+<div class="ttc" id="aclassGenericEngineLoader_html_a1217f02966d6b16ee6717f7f92115c1e"><div class="ttname"><a href="#a1217f02966d6b16ee6717f7f92115c1e">GenericEngineLoader::m_tag</a></div><div class="ttdeci">std::string m_tag</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00058">GenericEngineLoader.h:58</a></div></div>
+<div class="ttc" id="aclassGenericEngineLoader_html_a15f59be4f1250a949c59afea8ba9da00"><div class="ttname"><a href="#a15f59be4f1250a949c59afea8ba9da00">GenericEngineLoader::cache_counts_fn</a></div><div class="ttdeci">int(*)(RgpotEnginePot *, std::uint64_t *, std::uint64_t *) cache_counts_fn</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00065">GenericEngineLoader.h:65</a></div></div>
+<div class="ttc" id="aclassGenericEngineLoader_html_a28e2c4b1ca45dd731878901bd30a07f5"><div class="ttname"><a href="#a28e2c4b1ca45dd731878901bd30a07f5">GenericEngineLoader::destroy_fn</a></div><div class="ttdeci">void(*)(RgpotEnginePot *) destroy_fn</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00060">GenericEngineLoader.h:60</a></div></div>
+<div class="ttc" id="aclassGenericEngineLoader_html_a794d4537a4d0b2682e262ad44cc8fdae"><div class="ttname"><a href="#a794d4537a4d0b2682e262ad44cc8fdae">GenericEngineLoader::m_destroy</a></div><div class="ttdeci">destroy_fn m_destroy</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00071">GenericEngineLoader.h:71</a></div></div>
+<div class="ttc" id="aclassGenericEngineLoader_html_a992b4f3fb3f4aae1dd7f04ef7140725a"><div class="ttname"><a href="#a992b4f3fb3f4aae1dd7f04ef7140725a">GenericEngineLoader::force_fn</a></div><div class="ttdeci">int(*)(RgpotEnginePot *, long, const double *, const int *, double *, double *, double *, const double *, rgpot_engine_coord_transform, void *) force_fn</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00061">GenericEngineLoader.h:61</a></div></div>
+<div class="ttc" id="aclassGenericEngineLoader_html_a9aec7d322024187807dda6afc040da28"><div class="ttname"><a href="#a9aec7d322024187807dda6afc040da28">GenericEngineLoader::m_pot</a></div><div class="ttdeci">RgpotEnginePot * m_pot</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00057">GenericEngineLoader.h:57</a></div></div>
+<div class="ttc" id="aclassGenericEngineLoader_html_a9bc91042b6d3f6331368561725de0401"><div class="ttname"><a href="#a9bc91042b6d3f6331368561725de0401">GenericEngineLoader::create_fn</a></div><div class="ttdeci">RgpotEnginePot *(*)(const void *, size_t, char *, size_t) create_fn</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00059">GenericEngineLoader.h:59</a></div></div>
+<div class="ttc" id="aclassGenericEngineLoader_html_a9dd0616d2aa0e678a690b0ba6fd863cd"><div class="ttname"><a href="#a9dd0616d2aa0e678a690b0ba6fd863cd">GenericEngineLoader::set_cache_fn</a></div><div class="ttdeci">int(*)(RgpotEnginePot *, const char *) set_cache_fn</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00064">GenericEngineLoader.h:64</a></div></div>
+<div class="ttc" id="aclassGenericEngineLoader_html_aa38865b168ae552a7ca5194bad77d7ff"><div class="ttname"><a href="#aa38865b168ae552a7ca5194bad77d7ff">GenericEngineLoader::m_set_cache</a></div><div class="ttdeci">set_cache_fn m_set_cache</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00067">GenericEngineLoader.h:67</a></div></div>
+<div class="ttc" id="aclassGenericEngineLoader_html_ab7620f457d2834aeb8fccdaa93623506"><div class="ttname"><a href="#ab7620f457d2834aeb8fccdaa93623506">GenericEngineLoader::m_lib</a></div><div class="ttdeci">void * m_lib</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00056">GenericEngineLoader.h:56</a></div></div>
+<div class="ttc" id="aclassGenericEngineLoader_html_aba068794bd2380aba3545974f9242238"><div class="ttname"><a href="#aba068794bd2380aba3545974f9242238">GenericEngineLoader::m_force</a></div><div class="ttdeci">force_fn m_force</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00072">GenericEngineLoader.h:72</a></div></div>
+<div class="ttc" id="aclassGenericEngineLoader_html_ae4f38020cf04586c35584e68ebfd9b14"><div class="ttname"><a href="#ae4f38020cf04586c35584e68ebfd9b14">GenericEngineLoader::m_create</a></div><div class="ttdeci">create_fn m_create</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00070">GenericEngineLoader.h:70</a></div></div>
 <div class="ttc" id="aengine__c__abi_8h_html_a11ea1c5296399dbe5d95e7634e11c958"><div class="ttname"><a href="engine__c__abi_8h.html#a11ea1c5296399dbe5d95e7634e11c958">RGPOT_ENGINE_ABI_VERSION</a></div><div class="ttdeci">#define RGPOT_ENGINE_ABI_VERSION</div><div class="ttdef"><b>Definition</b> <a href="engine__c__abi_8h_source.html#l00070">engine_c_abi.h:70</a></div></div>
-<div class="ttc" id="astructGenericEngineOptions_html_a22e46625db58958645291f43d37af86a"><div class="ttname"><a href="structGenericEngineOptions.html#a22e46625db58958645291f43d37af86a">GenericEngineOptions::tag</a></div><div class="ttdeci">std::string tag</div><div class="ttdoc">Backend tag for error messages (&quot;uma&quot;, ...).</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00035">GenericEngineLoader.h:35</a></div></div>
-<div class="ttc" id="astructGenericEngineOptions_html_a3ab2ecc18392e697a33eff393ed95696"><div class="ttname"><a href="structGenericEngineOptions.html#a3ab2ecc18392e697a33eff393ed95696">GenericEngineOptions::env_var</a></div><div class="ttdeci">std::string env_var</div><div class="ttdoc">Optional env var naming an explicit .so path (checked first).</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00028">GenericEngineLoader.h:28</a></div></div>
-<div class="ttc" id="astructGenericEngineOptions_html_a43bccac3c8fd13c1a28c0f9a1e8ebe13"><div class="ttname"><a href="structGenericEngineOptions.html#a43bccac3c8fd13c1a28c0f9a1e8ebe13">GenericEngineOptions::config</a></div><div class="ttdeci">std::vector&lt; unsigned char &gt; config</div><div class="ttdoc">Cap&#39;n Proto flat-array message (the engine&#39;s params struct on the shared Potentials....</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00033">GenericEngineLoader.h:33</a></div></div>
-<div class="ttc" id="astructGenericEngineOptions_html_ab6fb6a03a8f2a8fb463dc8ee562c298c"><div class="ttname"><a href="structGenericEngineOptions.html#ab6fb6a03a8f2a8fb463dc8ee562c298c">GenericEngineOptions::engine_path</a></div><div class="ttdeci">std::string engine_path</div><div class="ttdoc">Optional explicit .so path from config.</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00030">GenericEngineLoader.h:30</a></div></div>
-<div class="ttc" id="astructGenericEngineOptions_html_adc7d78d3a9d4a92d009fbcc416d33ef3"><div class="ttname"><a href="structGenericEngineOptions.html#adc7d78d3a9d4a92d009fbcc416d33ef3">GenericEngineOptions::library</a></div><div class="ttdeci">std::string library</div><div class="ttdoc">Library basename to search for, e.g. &quot;libuma_engine.so&quot;.</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00026">GenericEngineLoader.h:26</a></div></div>
+<div class="ttc" id="astructGenericEngineOptions_html_a22e46625db58958645291f43d37af86a"><div class="ttname"><a href="structGenericEngineOptions.html#a22e46625db58958645291f43d37af86a">GenericEngineOptions::tag</a></div><div class="ttdeci">std::string tag</div><div class="ttdoc">Backend tag for error messages (&quot;uma&quot;, ...).</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00037">GenericEngineLoader.h:37</a></div></div>
+<div class="ttc" id="astructGenericEngineOptions_html_a3ab2ecc18392e697a33eff393ed95696"><div class="ttname"><a href="structGenericEngineOptions.html#a3ab2ecc18392e697a33eff393ed95696">GenericEngineOptions::env_var</a></div><div class="ttdeci">std::string env_var</div><div class="ttdoc">Optional env var naming an explicit .so path (checked first).</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00030">GenericEngineLoader.h:30</a></div></div>
+<div class="ttc" id="astructGenericEngineOptions_html_a43bccac3c8fd13c1a28c0f9a1e8ebe13"><div class="ttname"><a href="structGenericEngineOptions.html#a43bccac3c8fd13c1a28c0f9a1e8ebe13">GenericEngineOptions::config</a></div><div class="ttdeci">std::vector&lt; unsigned char &gt; config</div><div class="ttdoc">Cap&#39;n Proto flat-array message (the engine&#39;s params struct on the shared Potentials....</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00035">GenericEngineLoader.h:35</a></div></div>
+<div class="ttc" id="astructGenericEngineOptions_html_ab6fb6a03a8f2a8fb463dc8ee562c298c"><div class="ttname"><a href="structGenericEngineOptions.html#ab6fb6a03a8f2a8fb463dc8ee562c298c">GenericEngineOptions::engine_path</a></div><div class="ttdeci">std::string engine_path</div><div class="ttdoc">Optional explicit .so path from config.</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00032">GenericEngineLoader.h:32</a></div></div>
+<div class="ttc" id="astructGenericEngineOptions_html_adc7d78d3a9d4a92d009fbcc416d33ef3"><div class="ttname"><a href="structGenericEngineOptions.html#adc7d78d3a9d4a92d009fbcc416d33ef3">GenericEngineOptions::library</a></div><div class="ttdeci">std::string library</div><div class="ttdoc">Library basename to search for, e.g. &quot;libuma_engine.so&quot;.</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00028">GenericEngineLoader.h:28</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -472,15 +542,15 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8cpp_source.html#l00114">114</a> of file <a class="el" href="GenericEngineLoader_8cpp_source.html">GenericEngineLoader.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  114</span>                                          {</div>
-<div class="line"><span class="lineno">  115</span>  <span class="comment">// Destroy the pot while the engine is still mapped. Do not dlclose the</span></div>
-<div class="line"><span class="lineno">  116</span>  <span class="comment">// engine: torch static teardown after dlclose routinely SEGV on exit.</span></div>
-<div class="line"><span class="lineno">  117</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a> &amp;&amp; <a class="code hl_variable" href="#a794d4537a4d0b2682e262ad44cc8fdae">m_destroy</a>)</div>
-<div class="line"><span class="lineno">  118</span>    <a class="code hl_variable" href="#a794d4537a4d0b2682e262ad44cc8fdae">m_destroy</a>(<a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a>);</div>
-<div class="line"><span class="lineno">  119</span>  <a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">  120</span>  <a class="code hl_variable" href="#ab7620f457d2834aeb8fccdaa93623506">m_lib</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">  121</span>}</div>
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8cpp_source.html#l00118">118</a> of file <a class="el" href="GenericEngineLoader_8cpp_source.html">GenericEngineLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  118</span>                                          {</div>
+<div class="line"><span class="lineno">  119</span>  <span class="comment">// Destroy the pot while the engine is still mapped. Do not dlclose the</span></div>
+<div class="line"><span class="lineno">  120</span>  <span class="comment">// engine: torch static teardown after dlclose routinely SEGV on exit.</span></div>
+<div class="line"><span class="lineno">  121</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a> &amp;&amp; <a class="code hl_variable" href="#a794d4537a4d0b2682e262ad44cc8fdae">m_destroy</a>)</div>
+<div class="line"><span class="lineno">  122</span>    <a class="code hl_variable" href="#a794d4537a4d0b2682e262ad44cc8fdae">m_destroy</a>(<a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a>);</div>
+<div class="line"><span class="lineno">  123</span>  <a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  124</span>  <a class="code hl_variable" href="#ab7620f457d2834aeb8fccdaa93623506">m_lib</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  125</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -510,6 +580,33 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="aaf4fe14dea747947f9642a84902f83d4" name="aaf4fe14dea747947f9642a84902f83d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf4fe14dea747947f9642a84902f83d4">&#9670;&#160;</a></span>attachCache()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GenericEngineLoader::attachCache </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8cpp_source.html#l00145">145</a> of file <a class="el" href="GenericEngineLoader_8cpp_source.html">GenericEngineLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  145</span>                                                           {</div>
+<div class="line"><span class="lineno">  146</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa38865b168ae552a7ca5194bad77d7ff">m_set_cache</a> || !<a class="code hl_variable" href="#a0b075311f5840507d8bae65058615dcc">m_cache_counts</a>)</div>
+<div class="line"><span class="lineno">  147</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT(&quot;</span> + <a class="code hl_variable" href="#a1217f02966d6b16ee6717f7f92115c1e">m_tag</a> +</div>
+<div class="line"><span class="lineno">  148</span>                             <span class="stringliteral">&quot;): engine does not export the result cache ABI&quot;</span>);</div>
+<div class="line"><span class="lineno">  149</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa38865b168ae552a7ca5194bad77d7ff">m_set_cache</a>(<a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a>, path.c_str()) != 0)</div>
+<div class="line"><span class="lineno">  150</span>    <span class="keywordflow">throw</span> std::runtime_error(<a class="code hl_function" href="#abd833cb9700fcd03e6524d860d588551">lastError</a>(<span class="stringliteral">&quot;attach result cache&quot;</span>));</div>
+<div class="line"><span class="lineno">  151</span>}</div>
+<div class="ttc" id="aclassGenericEngineLoader_html_abd833cb9700fcd03e6524d860d588551"><div class="ttname"><a href="#abd833cb9700fcd03e6524d860d588551">GenericEngineLoader::lastError</a></div><div class="ttdeci">std::string lastError(const char *operation) const</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8cpp_source.html#l00127">GenericEngineLoader.cpp:127</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="ae251f6d6b15d2451b5d4674aebbe2953" name="ae251f6d6b15d2451b5d4674aebbe2953"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae251f6d6b15d2451b5d4674aebbe2953">&#9670;&#160;</a></span>available()</h2>
 
@@ -533,8 +630,72 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00045">45</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   45</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a> != <span class="keyword">nullptr</span>; }</div>
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00047">47</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   47</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a> != <span class="keyword">nullptr</span>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="abdc9e4677448d81c9411b2a2906d7c6e" name="abdc9e4677448d81c9411b2a2906d7c6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdc9e4677448d81c9411b2a2906d7c6e">&#9670;&#160;</a></span>cacheCounts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt; std::uint64_t, 2 &gt; GenericEngineLoader::cacheCounts </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8cpp_source.html#l00158">158</a> of file <a class="el" href="GenericEngineLoader_8cpp_source.html">GenericEngineLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  158</span>                                                                {</div>
+<div class="line"><span class="lineno">  159</span>  std::array&lt;std::uint64_t, 2&gt; counts{};</div>
+<div class="line"><span class="lineno">  160</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a0b075311f5840507d8bae65058615dcc">m_cache_counts</a> || <a class="code hl_variable" href="#a0b075311f5840507d8bae65058615dcc">m_cache_counts</a>(<a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a>, &amp;counts[0], &amp;counts[1]) != 0)</div>
+<div class="line"><span class="lineno">  161</span>    <span class="keywordflow">throw</span> std::runtime_error(<a class="code hl_function" href="#abd833cb9700fcd03e6524d860d588551">lastError</a>(<span class="stringliteral">&quot;read result cache counters&quot;</span>));</div>
+<div class="line"><span class="lineno">  162</span>  <span class="keywordflow">return</span> counts;</div>
+<div class="line"><span class="lineno">  163</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1a572fa9dde9bff961f1a6ba01a9c4da" name="a1a572fa9dde9bff961f1a6ba01a9c4da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a572fa9dde9bff961f1a6ba01a9c4da">&#9670;&#160;</a></span>detachCache()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GenericEngineLoader::detachCache </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8cpp_source.html#l00153">153</a> of file <a class="el" href="GenericEngineLoader_8cpp_source.html">GenericEngineLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  153</span>                                               {</div>
+<div class="line"><span class="lineno">  154</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa38865b168ae552a7ca5194bad77d7ff">m_set_cache</a>)</div>
+<div class="line"><span class="lineno">  155</span>    <a class="code hl_variable" href="#aa38865b168ae552a7ca5194bad77d7ff">m_set_cache</a>(<a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a>, <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">  156</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -582,16 +743,53 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8cpp_source.html#l00123">123</a> of file <a class="el" href="GenericEngineLoader_8cpp_source.html">GenericEngineLoader.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  125</span>                                                         {</div>
-<div class="line"><span class="lineno">  126</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a> || !<a class="code hl_variable" href="#aba068794bd2380aba3545974f9242238">m_force</a>)</div>
-<div class="line"><span class="lineno">  127</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT(&quot;</span> + <a class="code hl_variable" href="#a1217f02966d6b16ee6717f7f92115c1e">m_tag</a> + <span class="stringliteral">&quot;): engine not available&quot;</span>);</div>
-<div class="line"><span class="lineno">  128</span>  <span class="keywordtype">double</span> var = 0.0;</div>
-<div class="line"><span class="lineno">  129</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> rc = <a class="code hl_variable" href="#aba068794bd2380aba3545974f9242238">m_force</a>(<a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a>, N, R, atomicNrs, F, U,</div>
-<div class="line"><span class="lineno">  130</span>                         variance ? variance : &amp;var, box, <span class="keyword">nullptr</span>, <span class="keyword">nullptr</span>);</div>
-<div class="line"><span class="lineno">  131</span>  <span class="keywordflow">if</span> (rc != 0)</div>
-<div class="line"><span class="lineno">  132</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT(&quot;</span> + <a class="code hl_variable" href="#a1217f02966d6b16ee6717f7f92115c1e">m_tag</a> + <span class="stringliteral">&quot;): force failed&quot;</span>);</div>
-<div class="line"><span class="lineno">  133</span>}</div>
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8cpp_source.html#l00165">165</a> of file <a class="el" href="GenericEngineLoader_8cpp_source.html">GenericEngineLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  167</span>                                                         {</div>
+<div class="line"><span class="lineno">  168</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a> || !<a class="code hl_variable" href="#aba068794bd2380aba3545974f9242238">m_force</a>)</div>
+<div class="line"><span class="lineno">  169</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT(&quot;</span> + <a class="code hl_variable" href="#a1217f02966d6b16ee6717f7f92115c1e">m_tag</a> + <span class="stringliteral">&quot;): engine not available&quot;</span>);</div>
+<div class="line"><span class="lineno">  170</span>  <span class="keywordtype">double</span> var = 0.0;</div>
+<div class="line"><span class="lineno">  171</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> rc = <a class="code hl_variable" href="#aba068794bd2380aba3545974f9242238">m_force</a>(<a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a>, N, R, atomicNrs, F, U,</div>
+<div class="line"><span class="lineno">  172</span>                         variance ? variance : &amp;var, box, <span class="keyword">nullptr</span>, <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">  173</span>  <span class="keywordflow">if</span> (rc != 0)</div>
+<div class="line"><span class="lineno">  174</span>    <span class="keywordflow">throw</span> std::runtime_error(<a class="code hl_function" href="#abd833cb9700fcd03e6524d860d588551">lastError</a>(<span class="stringliteral">&quot;force failed&quot;</span>));</div>
+<div class="line"><span class="lineno">  175</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="abd833cb9700fcd03e6524d860d588551" name="abd833cb9700fcd03e6524d860d588551"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd833cb9700fcd03e6524d860d588551">&#9670;&#160;</a></span>lastError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string GenericEngineLoader::lastError </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>operation</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8cpp_source.html#l00127">127</a> of file <a class="el" href="GenericEngineLoader_8cpp_source.html">GenericEngineLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  127</span>                                                                    {</div>
+<div class="line"><span class="lineno">  128</span>  <span class="keyword">using </span>last_error_fn = size_t (*)(<span class="keyword">const</span> <a class="code hl_typedef" href="engine__c__abi_8h.html#a877587fc7dcf577a3a8d2d44c45672b8">RgpotEnginePot</a> *, <span class="keywordtype">char</span> *, size_t);</div>
+<div class="line"><span class="lineno">  129</span>  <span class="keyword">auto</span> last = <span class="keyword">reinterpret_cast&lt;</span>last_error_fn<span class="keyword">&gt;</span>(</div>
+<div class="line"><span class="lineno">  130</span>      load_sym(<a class="code hl_variable" href="#ab7620f457d2834aeb8fccdaa93623506">m_lib</a>, <span class="stringliteral">&quot;rgpot_engine_last_error&quot;</span>));</div>
+<div class="line"><span class="lineno">  131</span>  <span class="keywordtype">char</span> detail[1024]{};</div>
+<div class="line"><span class="lineno">  132</span>  <span class="keywordflow">if</span> (last)</div>
+<div class="line"><span class="lineno">  133</span>    last(<a class="code hl_variable" href="#a9aec7d322024187807dda6afc040da28">m_pot</a>, detail, <span class="keyword">sizeof</span> detail);</div>
+<div class="line"><span class="lineno">  134</span>  <span class="keywordflow">return</span> <span class="stringliteral">&quot;RGPOT(&quot;</span> + <a class="code hl_variable" href="#a1217f02966d6b16ee6717f7f92115c1e">m_tag</a> + <span class="stringliteral">&quot;): &quot;</span> + operation +</div>
+<div class="line"><span class="lineno">  135</span>         (detail[0] ? <span class="stringliteral">&quot;: &quot;</span> + std::string(detail) : <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><span class="lineno">  136</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -620,7 +818,66 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a0cd8a88030d2093c2561ddac89c7ac6b" name="a0cd8a88030d2093c2561ddac89c7ac6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cd8a88030d2093c2561ddac89c7ac6b">&#9670;&#160;</a></span>version()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string GenericEngineLoader::version </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8cpp_source.html#l00138">138</a> of file <a class="el" href="GenericEngineLoader_8cpp_source.html">GenericEngineLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  138</span>                                             {</div>
+<div class="line"><span class="lineno">  139</span>  <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_function" href="#a0cd8a88030d2093c2561ddac89c7ac6b">version</a> = <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *(*)()<span class="keyword">&gt;</span>(</div>
+<div class="line"><span class="lineno">  140</span>      load_sym(<a class="code hl_variable" href="#ab7620f457d2834aeb8fccdaa93623506">m_lib</a>, <span class="stringliteral">&quot;rgpot_engine_version&quot;</span>));</div>
+<div class="line"><span class="lineno">  141</span>  <span class="keyword">const</span> <span class="keywordtype">char</span> *value = <a class="code hl_function" href="#a0cd8a88030d2093c2561ddac89c7ac6b">version</a> ? <a class="code hl_function" href="#a0cd8a88030d2093c2561ddac89c7ac6b">version</a>() : nullptr;</div>
+<div class="line"><span class="lineno">  142</span>  <span class="keywordflow">return</span> value ? value : <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><span class="lineno">  143</span>}</div>
+<div class="ttc" id="aclassGenericEngineLoader_html_a0cd8a88030d2093c2561ddac89c7ac6b"><div class="ttname"><a href="#a0cd8a88030d2093c2561ddac89c7ac6b">GenericEngineLoader::version</a></div><div class="ttdeci">std::string version() const</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8cpp_source.html#l00138">GenericEngineLoader.cpp:138</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a0b075311f5840507d8bae65058615dcc" name="a0b075311f5840507d8bae65058615dcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b075311f5840507d8bae65058615dcc">&#9670;&#160;</a></span>m_cache_counts</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a15f59be4f1250a949c59afea8ba9da00">cache_counts_fn</a> GenericEngineLoader::m_cache_counts {}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00068">68</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   68</span>{};</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="ae4f38020cf04586c35584e68ebfd9b14" name="ae4f38020cf04586c35584e68ebfd9b14"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae4f38020cf04586c35584e68ebfd9b14">&#9670;&#160;</a></span>m_create</h2>
 
@@ -641,8 +898,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00058">58</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   58</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00070">70</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   70</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -666,8 +923,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00059">59</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   59</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00071">71</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   71</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -691,8 +948,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00060">60</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   60</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00072">72</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   72</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -716,8 +973,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00050">50</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   50</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00056">56</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   56</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -741,8 +998,33 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00051">51</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   51</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00057">57</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   57</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa38865b168ae552a7ca5194bad77d7ff" name="aa38865b168ae552a7ca5194bad77d7ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa38865b168ae552a7ca5194bad77d7ff">&#9670;&#160;</a></span>m_set_cache</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a9dd0616d2aa0e678a690b0ba6fd863cd">set_cache_fn</a> GenericEngineLoader::m_set_cache {}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00067">67</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   67</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -766,7 +1048,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00052">52</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GenericEngineLoader_8h_source.html#l00058">58</a> of file <a class="el" href="GenericEngineLoader_8h_source.html">GenericEngineLoader.h</a>.</p>
 
 </div>
 </div>

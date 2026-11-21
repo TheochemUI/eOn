@@ -566,6 +566,37 @@
         "pi_recrossing_spacing"
       ]
     },
+    "Lineb": {
+      "model": "LinebConfig",
+      "file": "lineb.json",
+      "id": "https://eondocs.org/schema/lineb.json",
+      "keys": [
+        "initial_path",
+        "energy",
+        "opt_tol",
+        "perp_tol",
+        "spring",
+        "linear_seed",
+        "endpoint_convergence",
+        "result_cache",
+        "projected_verlet",
+        "interpolated_hessian",
+        "image_hessian_step",
+        "interpolated_force_clock",
+        "endpoint_kappa",
+        "endpoint_scale",
+        "time_step",
+        "max_move",
+        "turning_width",
+        "hbar",
+        "boltzmann",
+        "quadrature_pairs",
+        "max_steps",
+        "beads",
+        "molecular",
+        "adjacent_alignment"
+      ]
+    },
     "Serve": {
       "model": "ServeConfig",
       "file": "serve.json",
