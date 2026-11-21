@@ -20,6 +20,8 @@
 #include "eon/Potential.h"
 #include "eon/potentials/RgpotAdapter/ResultCache.h"
 
+
+#include <exception>
 #include <cmath>
 #include <limits>
 #include <map>
@@ -53,6 +55,7 @@ struct LinebSurface {
   Matter *probe = nullptr;
   std::vector<long> freeAtoms;
   int64_t surfaceRows = 0;
+  std::exception_ptr failure{};
 };
 
 /// Map free-atom positions into the full Matter and write energy plus
@@ -100,6 +103,7 @@ rgsaddle_status_t surfaceCallback(void *user, rgsaddle_surface_request_t *req) {
     ctx->surfaceRows += nImages;
     return RGSADDLE_OK;
   } catch (...) {
+    ctx->failure = std::current_exception();
     return RGSADDLE_SURFACE_FAILED;
   }
 }
@@ -399,6 +403,15 @@ std::vector<std::string> LinebJob::run(void) {
     const char *detail = rgsaddle_last_error();
     if (detail && *detail) {
       message += std::string(" (") + detail + ")";
+    }
+    if (ctx.failure) {
+      try {
+        std::rethrow_exception(ctx.failure);
+      } catch (const std::exception &e) {
+        message += std::string(": ") + e.what();
+      } catch (...) {
+        message += ": unknown potential exception";
+      }
     }
     throw std::runtime_error(message);
   }
