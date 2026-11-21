@@ -58,7 +58,6 @@ struct JobResultProvenance {
   static constexpr std::string_view eon_schema_min_version = "0.2.3";
   static constexpr std::string_view rgpycrumbs_min_version = "1.10.4";
   static constexpr std::string_view chemparseplot_min_version = "1.9.17";
-  static constexpr std::string_view rgpot_pin = "3.2.0";
 
   std::string text() const {
     if (backend.empty()) {

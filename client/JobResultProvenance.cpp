@@ -47,9 +47,7 @@ JobResultProvenance provenanceForJob(const Parameters &params) {
   if (params.potential_options().potential == PotType::RGPOT)
     provenance.rgpot_backend =
         configuredRgpotBackend(params.rgpot_options().backend);
-#ifdef WITH_RGPOT
-  provenance.rgpot_version = std::string(JobResultProvenance::rgpot_pin);
-#endif
+  provenance.rgpot_version = LINKED_RGPOT_VERSION;
 #ifdef WITH_RGMIN
   if (params.optimizer_options().method == OptType::XTSCI ||
       helpers::create::rgminBackendMethod(params.optimizer_options().method,

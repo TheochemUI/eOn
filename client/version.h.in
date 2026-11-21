@@ -1,5 +1,6 @@
 #include<string>
 const std::string VERSION = "@VERSION@";
+const std::string LINKED_RGPOT_VERSION = "@LINKED_RGPOT_VERSION@";
 
 // Parse version into components for easy programmatic access
 const int VERSION_MAJOR = @VERSION_MAJOR@;

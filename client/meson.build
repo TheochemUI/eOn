@@ -2100,6 +2100,7 @@ version_template = configure_file(
     output: 'version-config.h.in',
     configuration: {
         'VERSION': version,
+        'LINKED_RGPOT_VERSION': rgpot_dep.version(),
         'VERSION_MAJOR': version_major,
         'VERSION_MINOR': version_minor,
         'VERSION_PATCH': version_patch,
