@@ -235,8 +235,16 @@ Supply `initial_path` and an absolute `energy` from the same potential.
 These numbers use the fact that every mobile coordinate has the same mass.
 They convert the published controls and do not establish a converged rate.
 
-Tolerances `opt_tol` and `perp_tol` are mass-weighted force norms. The
-remaining keys (`spring`, `endpoint_scale`, `time_step`, `max_move`,
+Both optimizer tolerances have units of √eV in eOn. They apply to
+derivatives of the abbreviated action with respect to mass-weighted
+coordinates. For equal mobile masses $m$, a tolerance $g$ on the
+Cartesian gradient of the dimensionless action converts to
+$g\hbar/\sqrt{m}$, as in the hydrogen example above. For a molecule
+with different atomic masses, each Cartesian gradient component carries
+its own factor $1/\sqrt{m_a}$ before the norm is taken. Use the
+force residual in `lineb-orbit.con` to check stationarity in eV/Å.
+
+The remaining keys (`spring`, `endpoint_scale`, `time_step`, `max_move`,
 `turning_width`, `quadrature_pairs`, `max_steps`) match rgsaddle's
 `LinebConfig` defaults unless you change them.
 
