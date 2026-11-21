@@ -234,6 +234,8 @@ def rgpot_identity(
     potential_type: str,
     *,
     backend: Optional[str] = None,
+    linked_version: Optional[str] = None,
+    engine_version: Optional[str] = None,
     revision: Optional[str] = None,
     config: Optional[Mapping[str, Any]] = None,
 ) -> Dict[str, Any]:
@@ -262,6 +264,11 @@ def rgpot_identity(
         "backend": resolved,
         "revision": rev,
     }
+    for key, value in (("linked_version", linked_version), ("engine_version", engine_version)):
+        if value is not None:
+            if not isinstance(value, str) or not value.strip():
+                raise TrajectoryManifestError(f"{key} needs a nonempty version string")
+            identity[key] = value
     if config:
         identity["config"] = _canon_config(config)
     return identity
@@ -360,6 +367,8 @@ def trajectory_manifest(
                 backend=potential.get("backend") or None,
                 revision=potential.get("revision") or None,
                 config=potential.get("config"),
+                linked_version=potential.get("linked_version"),
+                engine_version=potential.get("engine_version"),
             )
         else:
             identity = rgpot_identity(
@@ -367,6 +376,8 @@ def trajectory_manifest(
                 backend=potential.get("backend"),
                 revision=potential.get("revision"),
                 config=potential.get("config"),
+                linked_version=potential.get("linked_version"),
+                engine_version=potential.get("engine_version"),
             )
     else:
         raise TrajectoryManifestError("potential must be an rgpot identity")
@@ -449,6 +460,8 @@ def _verify(manifest: Mapping[str, Any]) -> Dict[str, Any]:
         backend=identity.get("backend") or None,
         revision=identity.get("revision") or None,
         config=identity.get("config"),
+        linked_version=identity.get("linked_version"),
+        engine_version=identity.get("engine_version"),
     )
     if checked_id.get("kernel") != identity.get("kernel"):
         raise TrajectoryManifestError("rgpot kernel does not match potential_type")

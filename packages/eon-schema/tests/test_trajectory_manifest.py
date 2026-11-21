@@ -159,3 +159,13 @@ def test_mixed_atom_counts_cannot_embed():
     manifest = trajectory_manifest([_frame(1.0, energy=1.0), wide], "ljcluster", source_run_id="run")
     with pytest.raises(TrajectoryManifestError, match="atom count"):
         landfold_embedding_inputs(manifest)
+
+
+def test_distinct_host_and_engine_versions_roundtrip_in_trajectory():
+    identity = {"potential_type": "rgpot", "backend": "orca",
+                "linked_version": "3.5.1", "engine_version": "orca/3.6.0"}
+    data = trajectory_manifest([_frame(1.0, energy=1.0)], identity, source_run_id="version")
+    restored = trajectory_manifest_loads(trajectory_manifest_dumps(data))
+    assert restored["potential"]["linked_version"] == "3.5.1"
+    assert restored["potential"]["engine_version"] == "orca/3.6.0"
+    assert restored["potential_digest"] == data["potential_digest"]
