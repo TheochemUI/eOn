@@ -163,6 +163,7 @@ TEST_CASE("LinebJob runs a fixed-energy seeded Morse band when available",
     const auto frame = readcon::read_first_frame("lineb.con");
     const auto metadata = nlohmann::json::parse(frame.metadata_json());
     REQUIRE(metadata.at("lineb").at("spectrum").is_null());
+    REQUIRE(metadata.at("lineb").at("replica_clock") == "quadrature");
 #ifdef RGSADDLE_HAS_LINEB_RATE_DIAGNOSTICS
     lineb.beads = 8;
     eonc::LinebJob rateJob(pot, params);
@@ -227,6 +228,23 @@ TEST_CASE("LinebJob runs a fixed-energy seeded Morse band when available",
             Catch::Approx(maxAbs).margin(1e-10));
     REQUIRE(summary.at("rms_eV_per_angstrom").get<double>() ==
             Catch::Approx(std::sqrt(sumSquares / (3 * n))).margin(1e-10));
+#ifdef WITH_RGSADDLE_LINEB_TURNING
+    lineb.interpolated_force_clock = true;
+    eonc::LinebJob clockJob(pot, params);
+    clockJob.run();
+    const auto clockFrame = readcon::read_first_frame("lineb-orbit.con");
+    const auto clockMetadata =
+        nlohmann::json::parse(clockFrame.metadata_json());
+    const auto &clock = clockMetadata.at("lineb");
+    REQUIRE(clock.at("replica_clock") == "interpolated_force_verlet");
+    REQUIRE(clock.at("surface_calls").at("dynamics").get<size_t>() ==
+            seed.size() + 1);
+    const auto &turn = clock.at("turning");
+    const auto launch = turn.at("launch_image").get<size_t>();
+    REQUIRE((launch == 0 || launch == seed.size() - 1));
+    REQUIRE(turn.at("return_energy_minus_target_eV").is_number());
+    REQUIRE(turn.at("max_cartesian_displacement_angstrom").is_number());
+#endif
 #endif
 #endif
   }

@@ -60,7 +60,7 @@ is the one selected by the `LI-NEB` row of
 prefix="$PWD/build-lineb-deps"
 mkdir -p "$prefix"
 git clone https://github.com/HaoZeke/rgsaddle.git "$prefix/src/rgsaddle"
-git -C "$prefix/src/rgsaddle" checkout --detach 98344e40112fb17fc69bf7c4e95b789a55e8de6c
+git -C "$prefix/src/rgsaddle" checkout --detach 0cf4ccc52fd3186bdbafb3dbf1907d282c1db586
 cargo install cargo-c --version 0.10.23 --locked --root "$prefix/tools"
 export PATH="$prefix/tools/bin:$PATH"
 (cd "$prefix/src/rgsaddle" && cargo cinstall --locked --release --features capi \
