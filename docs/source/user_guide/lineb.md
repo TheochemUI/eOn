@@ -57,11 +57,14 @@ temperature is in kelvin.
 
 Start in the eOn checkout containing `examples/lineb-morse`. Open the
 default Pixi shell as described in {doc}`../install/index`. In that shell,
-install the rgsaddle C library under a private prefix. The revision below
+run the project's `ensure_cbindgen` task for the readcon build, which
+requires cbindgen 0.29.0 or newer. Install the rgsaddle C library under
+a private prefix. The revision below
 is the one selected by the `LI-NEB` row of
 `.github/workflows/ci_rg_backends.yml` in this checkout.
 
 ```bash
+pixi run ensure_cbindgen
 prefix="$PWD/build-lineb-deps"
 mkdir -p "$prefix"
 git clone https://github.com/HaoZeke/rgsaddle.git "$prefix/src/rgsaddle"
