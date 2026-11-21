@@ -67,8 +67,8 @@ is the one selected by the `LI-NEB` row of
 pixi run ensure_cbindgen
 prefix="$PWD/build-lineb-deps"
 mkdir -p "$prefix"
-git clone https://github.com/HaoZeke/rgsaddle.git "$prefix/src/rgsaddle"
-git -C "$prefix/src/rgsaddle" checkout --detach b516db5a9974c4ce7b5794f8f2a3593b2fb33e29
+git clone https://github.com/OmniPotentRPC/rgsaddle.git "$prefix/src/rgsaddle"
+git -C "$prefix/src/rgsaddle" checkout --detach 29381c1202b8c25f4e4343d363b43164048ccedb
 cargo install cargo-c --version 0.10.23 --locked --root "$prefix/tools"
 export PATH="$prefix/tools/bin:$PATH"
 (cd "$prefix/src/rgsaddle" && cargo cinstall --locked --release --features capi \

@@ -21,9 +21,9 @@ jobs:
             rgmin_repo: OmniPotentRPC/rgmin
             rgmin_rev: d76539dbe40695c0032e0d96a56e7932f2cc49ab
           - label: LI-NEB
-            rgsaddle_repo: HaoZeke/rgsaddle
-            rgsaddle_rev: b516db5a9974c4ce7b5794f8f2a3593b2fb33e29
-            rgmin_repo: HaoZeke/rgmin
+            rgsaddle_repo: OmniPotentRPC/rgsaddle
+            rgsaddle_rev: 29381c1202b8c25f4e4343d363b43164048ccedb
+            rgmin_repo: OmniPotentRPC/rgmin
             rgmin_rev: f2527782713dcf4b4d5d91af9da1bba80c32bc0c
     name: test (rgmin + rgsaddle, ${{ matrix.label }})
     env:
