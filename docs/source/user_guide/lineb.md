@@ -183,13 +183,49 @@ These measurements show how closely the propagated orbit reaches the
 optimized turning point.
 
 The eOn job uses the number of frames in `initial_path` as the number of
-LI-NEB images. For a ten-image calculation with a densely sampled MEP,
+LI-NEB images. For the straight initial path used for H₂/Cu(110),
 locate its two crossings of the target energy, interpolate ten frames
 along the straight line between them, and pass those frames as the seed.
 The accuracy of the crossings matters near the saddle. For the frozen
 Cu(110) reconstruction, following the intrinsic reaction coordinate
 from the saddle in both directions resolved the first pair of crossings
 at 0.05 eV below the barrier.
+
+### Set up the ammonia-borane energy ladder
+
+For Figure 4, start from the molecular minimum-energy path (MEP). Use the
+saddle energy measured with the same potential and energy zero as the band.
+Set `energy` to that value minus 0.05 eV for the first level. Write ten
+ordered seed frames with readcon, spanning both crossings and following
+the shape of the MEP. Keep the B, N and six H atoms mobile. At each lower
+energy, use the preceding optimized band to seed the search and extend it
+along the reaction path far enough to bracket the new turning surfaces.
+
+The following entries supplement `initial_path` and `energy` in the
+molecular job. They express the paper’s dimensionless-action controls
+using a reference mass of 1 amu and eOn’s default `hbar = 0.06466`.
+
+```ini
+[Lineb]
+molecular = true
+linear_seed = false
+endpoint_convergence = true
+projected_verlet = true
+spring = 1.2932
+endpoint_kappa = 6.466
+opt_tol = 0.0006466
+perp_tol = 0.0006466
+interpolated_force_clock = true
+beads = 240
+interpolated_hessian = true
+image_hessian_step = 0.005
+```
+
+The 0.005 Å displacement is a reconstruction choice for the image
+Hessians. Read the temperature for each level from the computed period.
+A fixed-temperature comparison with another instanton solver should use
+that temperature. To compare fixed energies as well, evaluate both
+orbits on the same potential and check their inferred tunneling energies.
 
 ### Restart from a saved band
 
