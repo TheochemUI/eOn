@@ -500,7 +500,7 @@ void ProcessSearchJob::saveData(int status) {
       min1->getPotentialEnergy(), min2->getPotentialEnergy(), barriersValues[0],
       barriersValues[1], disp, prefactorsValues[0], prefactorsValues[1],
       dynamics, simTime, mdTemp);
-  env.provenance = provenanceForJob(params);
+  env.provenance = provenanceForJob(params, pot.get());
   env.reactant_frame = eonc::io::matterToConFrame(*min1);
   env.saddle_frame = eonc::io::matterToConFrame(*saddle);
   env.product_frame = eonc::io::matterToConFrame(*min2);

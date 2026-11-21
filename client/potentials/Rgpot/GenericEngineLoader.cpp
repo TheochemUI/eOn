@@ -101,6 +101,10 @@ GenericEngineLoader::GenericEngineLoader(const GenericEngineOptions &opt)
     throw std::runtime_error("RGPOT(" + m_tag +
                              "): engine C ABI missing/mismatch");
   }
+  m_set_cache =
+      reinterpret_cast<set_cache_fn>(load_sym(m_lib, "rgpot_engine_set_cache"));
+  m_cache_counts = reinterpret_cast<cache_counts_fn>(
+      load_sym(m_lib, "rgpot_engine_cache_counts"));
   char err[1024]{};
   m_pot = m_create(opt.config.data(), opt.config.size(), err, sizeof err);
   if (!m_pot) {
@@ -120,6 +124,44 @@ GenericEngineLoader::~GenericEngineLoader() {
   m_lib = nullptr;
 }
 
+std::string GenericEngineLoader::lastError(const char *operation) const {
+  using last_error_fn = size_t (*)(const RgpotEnginePot *, char *, size_t);
+  auto last = reinterpret_cast<last_error_fn>(
+      load_sym(m_lib, "rgpot_engine_last_error"));
+  char detail[1024]{};
+  if (last)
+    last(m_pot, detail, sizeof detail);
+  return "RGPOT(" + m_tag + "): " + operation +
+         (detail[0] ? ": " + std::string(detail) : "");
+}
+
+std::string GenericEngineLoader::version() const {
+  const auto version = reinterpret_cast<const char *(*)()>(
+      load_sym(m_lib, "rgpot_engine_version"));
+  const char *value = version ? version() : nullptr;
+  return value ? value : "";
+}
+
+void GenericEngineLoader::attachCache(const std::string &path) {
+  if (!m_set_cache || !m_cache_counts)
+    throw std::runtime_error("RGPOT(" + m_tag +
+                             "): engine does not export the result cache ABI");
+  if (m_set_cache(m_pot, path.c_str()) != 0)
+    throw std::runtime_error(lastError("attach result cache"));
+}
+
+void GenericEngineLoader::detachCache() noexcept {
+  if (m_set_cache)
+    m_set_cache(m_pot, nullptr);
+}
+
+std::array<std::uint64_t, 2> GenericEngineLoader::cacheCounts() const {
+  std::array<std::uint64_t, 2> counts{};
+  if (!m_cache_counts || m_cache_counts(m_pot, &counts[0], &counts[1]) != 0)
+    throw std::runtime_error(lastError("read result cache counters"));
+  return counts;
+}
+
 void GenericEngineLoader::force(long N, const double *R, const int *atomicNrs,
                                 double *F, double *U, double *variance,
                                 const double *box) const {
@@ -129,5 +171,5 @@ void GenericEngineLoader::force(long N, const double *R, const int *atomicNrs,
   const int rc = m_force(m_pot, N, R, atomicNrs, F, U,
                          variance ? variance : &var, box, nullptr, nullptr);
   if (rc != 0)
-    throw std::runtime_error("RGPOT(" + m_tag + "): force failed");
+    throw std::runtime_error(lastError("force failed"));
 }

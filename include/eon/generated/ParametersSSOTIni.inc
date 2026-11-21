@@ -56,4 +56,29 @@ inline void project_ssot_ini(const INIReader &ini, Parameters &params) {
       o.input_block = ini.Get("cpmd", "input_block", o.input_block);
     }
   }
+  auto &o = ParametersLoadAccess::lineb_options(params);
+  const char *sec = "Lineb";
+  o.initial_path = ini.Get(sec, "initial_path", o.initial_path);
+  o.energy = ini.GetReal(sec, "energy", o.energy);
+  o.opt_tol = ini.GetReal(sec, "opt_tol", o.opt_tol);
+  o.perp_tol = ini.GetReal(sec, "perp_tol", o.perp_tol);
+  o.spring = ini.GetReal(sec, "spring", o.spring);
+  o.endpoint_scale = ini.GetReal(sec, "endpoint_scale", o.endpoint_scale);
+  o.time_step = ini.GetReal(sec, "time_step", o.time_step);
+  o.max_move = ini.GetReal(sec, "max_move", o.max_move);
+  o.turning_width = ini.GetReal(sec, "turning_width", o.turning_width);
+  o.hbar = ini.GetReal(sec, "hbar", o.hbar);
+  o.boltzmann = ini.GetReal(sec, "boltzmann", o.boltzmann);
+  o.quadrature_pairs = ini.GetInteger(sec, "quadrature_pairs", o.quadrature_pairs);
+  o.max_steps = ini.GetInteger(sec, "max_steps", o.max_steps);
+  o.beads = ini.GetInteger(sec, "beads", o.beads);
+  o.molecular = ini.GetBoolean(sec, "molecular", o.molecular);
+  o.endpoint_kappa = ini.GetReal(sec, "endpoint_kappa", o.endpoint_kappa);
+  o.linear_seed = ini.GetBoolean(sec, "linear_seed", o.linear_seed);
+  o.endpoint_convergence = ini.GetBoolean(sec, "endpoint_convergence", o.endpoint_convergence);
+  o.projected_verlet = ini.GetBoolean(sec, "projected_verlet", o.projected_verlet);
+  o.result_cache = ini.Get(sec, "result_cache", o.result_cache);
+  o.interpolated_force_clock = ini.GetBoolean(sec, "interpolated_force_clock", o.interpolated_force_clock);
+  o.interpolated_hessian = ini.GetBoolean(sec, "interpolated_hessian", o.interpolated_hessian);
+  o.image_hessian_step = ini.GetReal(sec, "image_hessian_step", o.image_hessian_step);
 }

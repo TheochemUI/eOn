@@ -25,6 +25,7 @@ Main:
                 - gp_surrogate
                 - hessian
                 - instanton
+                - lineb
                 - minimization
                 - molecular_dynamics
                 - monte_carlo
@@ -1490,6 +1491,120 @@ Instanton:
         pi_recrossing_spacing:
             kind: int
             default: 50
+
+################################################################################
+
+Lineb:
+
+    options:
+
+        # Multi-frame seed band (neb.con). Interior images must start at or above energy plus the turning width.
+        initial_path:
+            kind: string
+            default: ""
+
+        # Persistent rgpot result database for LI-NEB geometry evaluations.
+        result_cache:
+            kind: string
+            default: ""
+
+        # Tunneling energy E of the equipotential endpoints, eV.
+        energy:
+            kind: float
+            default: 0.0
+
+        # Mass-weighted stop on the nudged force, eV^0.5 / Angstrom scale.
+        opt_tol:
+            kind: float
+            default: 1e-3
+
+        # Mass-weighted stop on the perpendicular action gradient.
+        perp_tol:
+            kind: float
+            default: 1e-3
+
+        spring:
+            kind: float
+            default: 0.1
+
+        linear_seed:
+            kind: bool
+            default: false
+
+        endpoint_convergence:
+            kind: bool
+            default: false
+
+        # Project the velocity of the band onto its nudged force at each Verlet step.
+        projected_verlet:
+            kind: bool
+            default: false
+
+        # Propagate imaginary time with velocity Verlet on the interpolated tangential image force.
+        interpolated_force_clock:
+            kind: bool
+            default: false
+
+        interpolated_hessian:
+            kind: bool
+            default: false
+
+        # Cartesian displacement in Angstrom; zero selects the solver default.
+        image_hessian_step:
+            kind: float
+            default: 0.0
+
+        # Positive for a fixed turning-surface coefficient; zero selects endpoint_scale.
+        endpoint_kappa:
+            kind: float
+            default: 0.0
+
+        endpoint_scale:
+            kind: float
+            default: 0.2
+
+        time_step:
+            kind: float
+            default: 0.1
+
+        max_move:
+            kind: float
+            default: 0.2
+
+        # Fraction of the highest seed height above E; interiors stay above E+w.
+        turning_width:
+            kind: float
+            default: 1e-3
+
+        # eV^0.5 amu^0.5 Angstrom; temperature is hbar / (k_B tau).
+        hbar:
+            kind: float
+            default: 0.06465415129579072
+
+        # eV / K
+        boltzmann:
+            kind: float
+            default: 8.617333262145177e-5
+
+        quadrature_pairs:
+            kind: int
+            default: 4
+
+        max_steps:
+            kind: int
+            default: 1000
+
+        # Harmonic quantum TST replicas. 0 writes the path only (log rate NaN).
+        # Must be 0 or at least 2; beads = 1 is refused.
+        beads:
+            kind: int
+            default: 0
+
+        # false: expand atom masses to coordinates. true: molecule alignment;
+        # every atom must be free.
+        molecular:
+            kind: bool
+            default: false
 
 ################################################################################
 

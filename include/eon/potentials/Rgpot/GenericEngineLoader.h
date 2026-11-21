@@ -17,7 +17,9 @@
 ** backends need no new loader code.
 */
 #include "engine_c_abi.h"
+#include <array>
 #include <cstddef>
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -43,6 +45,10 @@ public:
   GenericEngineLoader &operator=(const GenericEngineLoader &) = delete;
 
   [[nodiscard]] bool available() const noexcept { return m_pot != nullptr; }
+  [[nodiscard]] std::string version() const;
+  void attachCache(const std::string &path);
+  void detachCache() noexcept;
+  [[nodiscard]] std::array<std::uint64_t, 2> cacheCounts() const;
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) const;
 
@@ -55,6 +61,12 @@ private:
   using force_fn = int (*)(RgpotEnginePot *, long, const double *, const int *,
                            double *, double *, double *, const double *,
                            rgpot_engine_coord_transform, void *);
+  using set_cache_fn = int (*)(RgpotEnginePot *, const char *);
+  using cache_counts_fn = int (*)(RgpotEnginePot *, std::uint64_t *,
+                                  std::uint64_t *);
+  set_cache_fn m_set_cache{};
+  cache_counts_fn m_cache_counts{};
+  std::string lastError(const char *operation) const;
   create_fn m_create{nullptr};
   destroy_fn m_destroy{nullptr};
   force_fn m_force{nullptr};

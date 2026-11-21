@@ -186,7 +186,7 @@ def section_json_schema(
         properties[dst] = prop
         rename[src] = dst
 
-    cls_doc = (model.__doc__ or "").strip()
+    cls_doc = inspect.cleandoc(model.__doc__ or "")
     description = cls_doc or (
         f"config.ini [{section}] section ({model.__name__}). "
         "Keys, defaults, and allowed values."

@@ -44,7 +44,7 @@ std::vector<std::string> DynamicsJob::run(void) {
   auto env = JobResultEnvelope::fromMinimization(
       RunStatus::GOOD, params.potential_options().potential,
       pots().total_force_calls(), true, R->getPotentialEnergy());
-  env.provenance = provenanceForJob(params);
+  env.provenance = provenanceForJob(params, pot.get());
   env.job_type = "dynamics";
   env.writeResultsDat(resultsFilename);
 

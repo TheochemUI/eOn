@@ -346,7 +346,11 @@ Matrix3d Matter::getCell() const { return impl_->cell; }
 
 void Matter::setCell(const Matrix3d &newCell) {
   impl_->cell = newCell;
-  impl_->cellInverse = impl_->cell.inverse();
+  if (!usePeriodicBoundaries && newCell.isZero(0.0)) {
+    impl_->cellInverse.setZero();
+  } else {
+    impl_->cellInverse = impl_->cell.inverse();
+  }
   recomputePotential = true;
   recomputeMaskedForces = true;
 }

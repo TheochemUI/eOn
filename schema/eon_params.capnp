@@ -272,6 +272,44 @@ struct InstantonOptions {
 }
 
 # ---------------------------------------------------------------------
+# [Lineb]
+# Fixed-energy LI-NEB through rgsaddle (Ásgeirsson et al., JCP 148, 102334).
+# Names match lineb_options_t. beads = 0 is path only; harmonic QTST needs
+# at least two replicas (rgsaddle refuses beads < 2). hbar and boltzmann
+# are eOn's eV / amu / Angstrom / K tunneling constants.
+# ---------------------------------------------------------------------
+
+# section: Lineb
+# accessor: lineb_options
+# json: Lineb
+# project: ini,json
+struct LinebOptions {
+  initial_path @0 :Text = "";
+  energy @1 :Float64 = 0.0;
+  opt_tol @2 :Float64 = 1.0e-3;
+  perp_tol @3 :Float64 = 1.0e-3;
+  spring @4 :Float64 = 0.1;
+  endpoint_scale @5 :Float64 = 0.2;
+  time_step @6 :Float64 = 0.1;
+  max_move @7 :Float64 = 0.2;
+  turning_width @8 :Float64 = 1.0e-3;
+  hbar @9 :Float64 = 0.06465415129579072;
+  boltzmann @10 :Float64 = 8.617333262145177e-5;
+  quadrature_pairs @11 :Int64 = 4;
+  max_steps @12 :Int64 = 1000;
+  beads @13 :Int64 = 0;
+  molecular @14 :Bool = false;
+  endpoint_kappa @15 :Float64 = 0.0;
+  linear_seed @16 :Bool = false;
+  endpoint_convergence @17 :Bool = false;
+  projected_verlet @18 :Bool = false;
+  result_cache @19 :Text = "";
+  interpolated_force_clock @20 :Bool = false;
+  interpolated_hessian @21 :Bool = false;
+  image_hessian_step @22 :Float64 = 0.0;
+}
+
+# ---------------------------------------------------------------------
 # Root message: schema-backed parameters document
 # ---------------------------------------------------------------------
 struct EonParameters {
@@ -285,4 +323,5 @@ struct EonParameters {
   rgpot @6 :RgpotPotOptions;
   dynamics @7 :DynamicsOptions;
   instanton @8 :InstantonOptions;
+  lineb @9 :LinebOptions;
 }

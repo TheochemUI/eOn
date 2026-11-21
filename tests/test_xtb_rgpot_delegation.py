@@ -21,7 +21,9 @@ def test_xtb_delegates_and_the_engines_use_the_rgpot_soname():
     adapter = (
         ROOT / "include" / "eon" / "potentials" / "RgpotAdapter" / "RgpotAdapter.h"
     ).read_text(encoding="utf-8")
-    assert "pot_.forceBatchImpl(" in adapter
+    assert "pot_.forceBatch(" in adapter
+    assert "pot_.forceBatchImpl(" not in adapter
+    assert "pot_.forceImpl(" not in adapter
     xtb_loader = (
         ROOT / "client" / "potentials" / "Rgpot" / "XTBEngineLoader.cpp"
     ).read_text(encoding="utf-8")

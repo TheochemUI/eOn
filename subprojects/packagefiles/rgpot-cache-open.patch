@@ -1,0 +1,12 @@
+--- a/CppCore/rgpot/PotentialCache.hpp
++++ b/CppCore/rgpot/PotentialCache.hpp
+@@ -123,6 +123,9 @@
+   void add_serialized(const KeyHash &key, double energy,
+                       const rgpot::types::AtomMatrix &forces);
+ 
++  /// Whether a database is attached.
++  [[nodiscard]] bool is_open() const { return db_ != nullptr; }
++
+   /// Result records retain the energy/force prefix and append versioned
+   /// variance and stress metadata. Energy/force-only records remain readable.
+   static bool has_result_metadata(const std::string &value, size_t n_atoms);

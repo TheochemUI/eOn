@@ -71,6 +71,7 @@ TEST_CASE("schema names map onto job, potential, and optimizer types",
   REQUIRE(job_from_ssot("finite_differences") == JobType::Finite_Difference);
   REQUIRE(job_from_ssot("global_optimization") == JobType::Global_Optimization);
   REQUIRE(job_from_ssot("instanton") == JobType::Instanton);
+  REQUIRE(job_from_ssot("lineb") == JobType::Lineb);
   REQUIRE(job_from_ssot("no-such-job") == JobType::Process_Search);
   REQUIRE(pot_from_ssot("lj") == PotType::LJ);
   REQUIRE(pot_from_ssot("eam_al") == PotType::EAM_AL);
@@ -98,6 +99,8 @@ TEST_CASE("ssot_has_field knows covered catalog keys", "[params][ssot]") {
   REQUIRE(eonc::config::ssot_has_field("RgpotPot", "cutoff_ry"));
   REQUIRE(eonc::config::ssot_has_field("RgpotPot", "cutOffRy"));
   REQUIRE(eonc::config::ssot_has_field("RgpotPot", "params_path"));
+  REQUIRE(eonc::config::ssot_has_field("Lineb", "energy"));
+  REQUIRE(eonc::config::ssot_has_field("Lineb", "beads"));
   REQUIRE_FALSE(eonc::config::ssot_has_field("Main", "not_a_real_field"));
   REQUIRE_FALSE(eonc::config::ssot_has_field("Dimer", "rotation_angle"));
 }
@@ -510,6 +513,61 @@ TEST_CASE("pair_cutoff reaches the pair potentials",
   REQUIRE(negative.load_ini_text("[Potential]\npotential = lj\n"
                                  "pair_cutoff = -1.0\n") == 0);
   REQUIRE_THROWS(eonc::helpers::makePotential(PotType::LJ, negative));
+}
+
+TEST_CASE("Lineb projection loads defaults and refuses beads=1",
+          "[params][ssot][lineb]") {
+  Parameters defaults;
+  REQUIRE(defaults.lineb_options().beads == 0);
+  REQUIRE(defaults.lineb_options().spring == Catch::Approx(0.1));
+  REQUIRE(defaults.lineb_options().endpoint_scale == Catch::Approx(0.2));
+  REQUIRE(eonc::config::ssot_has_field("Lineb", "initial_path"));
+
+  Parameters pathOnly;
+  REQUIRE(pathOnly.load_ini_text("[Main]\njob = minimization\n"
+                                 "[Lineb]\nbeads = 0\nenergy = 0.25\n") == 0);
+  REQUIRE(pathOnly.lineb_options().beads == 0);
+  REQUIRE(pathOnly.lineb_options().energy == Catch::Approx(0.25));
+
+  Parameters qtst;
+  REQUIRE(qtst.load_ini_text("[Main]\njob = minimization\n"
+                             "[Lineb]\nbeads = 2\nenergy = 0.1\n") == 0);
+  REQUIRE(qtst.lineb_options().beads == 2);
+
+  Parameters beadsOne;
+  REQUIRE_THROWS_AS(
+      beadsOne.load_ini_text("[Main]\njob = minimization\n"
+                             "[Lineb]\nbeads = 1\nenergy = 0.1\n"),
+      std::invalid_argument);
+
+  Parameters missingEnergy;
+  REQUIRE_THROWS_AS(missingEnergy.load_ini_text("[Main]\njob = lineb\n"
+                                                "[Lineb]\nbeads = 0\n"),
+                    std::invalid_argument);
+
+  Parameters linebOk;
+  REQUIRE(linebOk.load_ini_text("[Main]\njob = lineb\n"
+                                "[Lineb]\nbeads = 0\nenergy = 0.15\n") == 0);
+  REQUIRE(linebOk.main_options().job == JobType::Lineb);
+  REQUIRE(linebOk.lineb_options().energy == Catch::Approx(0.15));
+
+  Parameters round;
+  eonc::config::from_json(eonc::config::to_json(linebOk), round);
+  REQUIRE(round.lineb_options().energy == Catch::Approx(0.15));
+  REQUIRE(round.lineb_options().beads == 0);
+
+  auto j = eonc::config::to_json(defaults);
+  j["Main"]["job"] = "lineb";
+  j["Lineb"].erase("energy");
+  Parameters missingJson;
+  REQUIRE_THROWS_AS(eonc::config::from_json(j, missingJson),
+                    std::invalid_argument);
+
+  j = eonc::config::to_json(defaults);
+  j["Lineb"]["beads"] = 1;
+  Parameters beadsOneJson;
+  REQUIRE_THROWS_AS(eonc::config::from_json(j, beadsOneJson),
+                    std::invalid_argument);
 }
 
 TEST_CASE("opt_backend reads, round-trips and rejects unknown backends",

@@ -258,6 +258,178 @@ CATALOG = {
       ],
       "struct": "InstantonOptions"
     },
+    "Lineb": {
+      "accessor": "lineb_options",
+      "fields": [
+        {
+          "capnp": "initial_path",
+          "default": "",
+          "ordinal": 0,
+          "snake": "initial_path",
+          "type": "Text"
+        },
+        {
+          "capnp": "energy",
+          "default": 0.0,
+          "ordinal": 1,
+          "snake": "energy",
+          "type": "Float64"
+        },
+        {
+          "capnp": "opt_tol",
+          "default": 0.001,
+          "ordinal": 2,
+          "snake": "opt_tol",
+          "type": "Float64"
+        },
+        {
+          "capnp": "perp_tol",
+          "default": 0.001,
+          "ordinal": 3,
+          "snake": "perp_tol",
+          "type": "Float64"
+        },
+        {
+          "capnp": "spring",
+          "default": 0.1,
+          "ordinal": 4,
+          "snake": "spring",
+          "type": "Float64"
+        },
+        {
+          "capnp": "endpoint_scale",
+          "default": 0.2,
+          "ordinal": 5,
+          "snake": "endpoint_scale",
+          "type": "Float64"
+        },
+        {
+          "capnp": "time_step",
+          "default": 0.1,
+          "ordinal": 6,
+          "snake": "time_step",
+          "type": "Float64"
+        },
+        {
+          "capnp": "max_move",
+          "default": 0.2,
+          "ordinal": 7,
+          "snake": "max_move",
+          "type": "Float64"
+        },
+        {
+          "capnp": "turning_width",
+          "default": 0.001,
+          "ordinal": 8,
+          "snake": "turning_width",
+          "type": "Float64"
+        },
+        {
+          "capnp": "hbar",
+          "default": 0.06465415129579072,
+          "ordinal": 9,
+          "snake": "hbar",
+          "type": "Float64"
+        },
+        {
+          "capnp": "boltzmann",
+          "default": 8.617333262145177e-05,
+          "ordinal": 10,
+          "snake": "boltzmann",
+          "type": "Float64"
+        },
+        {
+          "capnp": "quadrature_pairs",
+          "default": 4,
+          "ordinal": 11,
+          "snake": "quadrature_pairs",
+          "type": "Int64"
+        },
+        {
+          "capnp": "max_steps",
+          "default": 1000,
+          "ordinal": 12,
+          "snake": "max_steps",
+          "type": "Int64"
+        },
+        {
+          "capnp": "beads",
+          "default": 0,
+          "ordinal": 13,
+          "snake": "beads",
+          "type": "Int64"
+        },
+        {
+          "capnp": "molecular",
+          "default": False,
+          "ordinal": 14,
+          "snake": "molecular",
+          "type": "Bool"
+        },
+        {
+          "capnp": "endpoint_kappa",
+          "default": 0.0,
+          "ordinal": 15,
+          "snake": "endpoint_kappa",
+          "type": "Float64"
+        },
+        {
+          "capnp": "linear_seed",
+          "default": False,
+          "ordinal": 16,
+          "snake": "linear_seed",
+          "type": "Bool"
+        },
+        {
+          "capnp": "endpoint_convergence",
+          "default": False,
+          "ordinal": 17,
+          "snake": "endpoint_convergence",
+          "type": "Bool"
+        },
+        {
+          "capnp": "projected_verlet",
+          "default": False,
+          "ordinal": 18,
+          "snake": "projected_verlet",
+          "type": "Bool"
+        },
+        {
+          "capnp": "result_cache",
+          "default": "",
+          "ordinal": 19,
+          "snake": "result_cache",
+          "type": "Text"
+        },
+        {
+          "capnp": "interpolated_force_clock",
+          "default": False,
+          "ordinal": 20,
+          "snake": "interpolated_force_clock",
+          "type": "Bool"
+        },
+        {
+          "capnp": "interpolated_hessian",
+          "default": False,
+          "ordinal": 21,
+          "snake": "interpolated_hessian",
+          "type": "Bool"
+        },
+        {
+          "capnp": "image_hessian_step",
+          "default": 0.0,
+          "ordinal": 22,
+          "snake": "image_hessian_step",
+          "type": "Float64"
+        }
+      ],
+      "json_name": "Lineb",
+      "project": [
+        "ini",
+        "json"
+      ],
+      "struct": "LinebOptions"
+    },
     "Main": {
       "fields": [
         {

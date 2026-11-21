@@ -187,3 +187,17 @@ def test_xtsci_backend_round_trips_abi_fields():
     again = job_result_from_wire(wire)
     assert again["optimizer"]["backend"] == "xtsci"
     assert again["optimizer"]["has_eindir"] is True
+
+
+def test_rgpot_engine_survives_native_result_wire_round_trip():
+    parsed = job_result_scalars_from_results_dat(
+        "rgpot potential_type\nrgpot rgpot_name\norca rgpot_backend\n"
+        "3.5.1 rgpot_version\norca/3.6.0 rgpot_engine_version\n"
+    )
+    identity = parsed["rgpot"]
+    assert identity["name"] == "rgpot"
+    assert identity["backend"] == "orca"
+    assert identity["version"] == "3.5.1"
+    assert identity["engine_version"] == "orca/3.6.0"
+    assert job_result_from_wire(job_result_to_wire({"rgpot": identity}))["rgpot"] == identity
+    assert job_result_loads(job_result_dumps({"rgpot": identity}))["rgpot"] == identity

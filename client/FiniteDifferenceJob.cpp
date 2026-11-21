@@ -74,7 +74,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
   auto env = JobResultEnvelope::fromMinimization(
       RunStatus::GOOD, params.potential_options().potential,
       pots().total_force_calls(), false, 0.0);
-  env.provenance = provenanceForJob(params);
+  env.provenance = provenanceForJob(params, pot.get());
   env.job_type = "finite_difference";
 
   std::ofstream table("curvature.dat");

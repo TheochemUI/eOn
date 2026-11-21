@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -23,7 +24,7 @@ struct RGPotEngineOptions {
   // NWChem inputBlocks, or CPMD text appended to inputBlocks.
   std::string input_block;
   std::string permanent_dir; // CPMD FILEPATH for RESTART files (cpmdc)
-  // CPMDParams file. When set, scalar method keys are not written over it.
+  // Serialized OrcaParams for ORCA, or an optional CPMDParams for CPMD.
   std::string params_path;
   int ranks_per_image{0}; // cpmdc: ranks per calculator group, 0 = off
   // Metatomic (backend=metatomic): dlopen libmetatomic_engine.so
@@ -53,10 +54,15 @@ std::string nwchemDftInputBlock(const std::string &theory,
                                 const std::string &scfType, int multiplicity,
                                 const std::string &existing);
 
-/** Opaque rgpot-backed engine (nwchemc / cpmdc / metatomic / uma / xtb). */
+/** Opaque rgpot-backed engine (nwchemc / cpmdc / metatomic / orca / uma / xtb).
+ */
 class RGPotEngine {
 public:
   explicit RGPotEngine(const RGPotEngineOptions &opt);
+  [[nodiscard]] std::string pluginVersion() const;
+  void attachCache(const std::string &path);
+  void detachCache() noexcept;
+  [[nodiscard]] std::array<std::uint64_t, 2> cacheCounts() const;
   ~RGPotEngine();
   RGPotEngine(const RGPotEngine &) = delete;
   RGPotEngine &operator=(const RGPotEngine &) = delete;

@@ -224,6 +224,21 @@ int xtsciBandSurface(void *user, void *request) {
     if (req->n_atoms != nAtoms) {
       return RGSADDLE_SHAPE;
     }
+#if RGSADDLE_ABI_MINOR >= 23
+    if ((req->flags & RGSADDLE_REQ_CLIMBING_IMAGE) != 0) {
+      const bool perImage = (req->flags & RGSADDLE_REQ_ONE_IMAGE) != 0;
+      if (req->n_images != (perImage ? band : 1) || req->image < 0 ||
+          req->image >= band) {
+        return RGSADDLE_SHAPE;
+      }
+      // The curvature probe displaces the climbing image off the band.
+      Matter probe(*neb->path[static_cast<size_t>(req->image)]);
+      moveTo(probe, AtomMatrix::Map(req->positions, nAtoms, 3));
+      req->energies[0] = probe.getPotentialEnergy();
+      AtomMatrix::Map(req->gradients, nAtoms, 3) = -probe.getForces();
+      return RGSADDLE_OK;
+    }
+#endif
     // Rows carried by this request and the band image of row 0. The
     // session sends the whole band on its first evaluation, the interior
     // images 1 .. band - 2 afterwards, or one image with
@@ -509,6 +524,18 @@ XtsciBand::XtsciBand(NudgedElasticBand &neb, const Parameters &params)
   if (m_band == nullptr) {
     throw std::runtime_error("rgsaddle_band_create failed");
   }
+#if RGSADDLE_ABI_MINOR >= 40
+  // Plain CI-NEB stops on the band force. The optional curvature
+  // certification displaces the climbing image to probe its Hessian.
+  if (stamp.minor >= 40 && !nebOpt.climbing_image.ocineb.use_mmf) {
+    const int rc = rgsaddle_band_set_saddle_check(m_band, nullptr);
+    if (rc != RGSADDLE_OK) {
+      rgsaddle_band_free(m_band);
+      m_band = nullptr;
+      checkStatus(rc, "rgsaddle_band_set_saddle_check");
+    }
+  }
+#endif
 #ifdef WITH_RGSADDLE_BAND_PRECON
   if (nebOpt.band.precon == "exp") {
     // a, c_stab and r_cut_factor at 0 take rgsaddle's 3, 0.1 and 2.

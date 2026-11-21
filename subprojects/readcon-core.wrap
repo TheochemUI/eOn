@@ -4,6 +4,7 @@ url = https://github.com/lode-org/readcon-core.git
 revision = v0.20.0
 depth = 1
 patch_directory = readcon-core
+diff_files = readcon-frame-cache.patch
 
 [provide]
 readcon-core = readcon_dep

@@ -12,6 +12,10 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Matter.h"
+#include "eon/potentials/RgpotAdapter/ResultCache.h"
+
+#include <chrono>
+#include <filesystem>
 
 namespace tests {
 
@@ -142,5 +146,48 @@ TEST_CASE("Adapter forceBatch agrees with per-system force calls",
   REQUIRE((batchF0 - singleF0).cwiseAbs().maxCoeff() < 1e-10);
   REQUIRE((batchF1 - singleF1).cwiseAbs().maxCoeff() < 1e-10);
 }
+
+#ifdef RGPOT_HAS_CACHE
+TEST_CASE("A reopened rgpot result cache serves a scalar result to a batch",
+          "[pot][rgpot-adapter]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
+  auto &provider = dynamic_cast<eonc::RgpotCacheProvider &>(*pot);
+  const auto db =
+      std::filesystem::temp_directory_path() /
+      ("eon-rgpot-" +
+       std::to_string(
+           std::chrono::steady_clock::now().time_since_epoch().count()));
+  Matter m(pot, params);
+  REQUIRE(eonc::io::io_ok(m.con2matter(std::string("reactant.con"))));
+  const auto positions = m.getPositionsCopy();
+  const auto numbers = m.getAtomicNrs();
+  const auto cell = m.getCell();
+  AtomMatrix force(m.numberOfAtoms(), 3), batchForce(m.numberOfAtoms(), 3);
+  double energy{}, batchEnergy{};
+  {
+    eonc::ScopedRgpotCache cache(provider, db.string());
+    pot->force(m.numberOfAtoms(), positions.data(), numbers.data(),
+               force.data(), &energy, nullptr, cell.data());
+    REQUIRE(cache.counts().computed == 1);
+    REQUIRE(cache.counts().served == 0);
+  }
+  {
+    eonc::ScopedRgpotCache cache(provider, db.string());
+    const double *pos[] = {positions.data()}, *boxes[] = {cell.data()};
+    const int *species[] = {numbers.data()};
+    double *forces[] = {batchForce.data()};
+    pot->forceBatch(1, m.numberOfAtoms(), pos, species, forces, &batchEnergy,
+                    nullptr, boxes);
+    REQUIRE(batchEnergy == energy);
+    REQUIRE(batchForce == force);
+    REQUIRE(cache.counts().computed == 0);
+    REQUIRE(cache.counts().served == 1);
+  }
+  std::filesystem::remove_all(db);
+}
+#endif
 
 } /* namespace tests */

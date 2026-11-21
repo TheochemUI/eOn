@@ -36,3 +36,29 @@
     o.xtb_uhf = GD::RGPOTPOT_XTB_UHF;
     o.task_name = std::string(GD::RGPOTPOT_TASK_NAME);
   }
+  {
+    auto &o = ParametersLoadAccess::lineb_options(p);
+    o.initial_path = std::string(GD::LINEB_INITIAL_PATH);
+    o.energy = GD::LINEB_ENERGY;
+    o.opt_tol = GD::LINEB_OPT_TOL;
+    o.perp_tol = GD::LINEB_PERP_TOL;
+    o.spring = GD::LINEB_SPRING;
+    o.endpoint_scale = GD::LINEB_ENDPOINT_SCALE;
+    o.time_step = GD::LINEB_TIME_STEP;
+    o.max_move = GD::LINEB_MAX_MOVE;
+    o.turning_width = GD::LINEB_TURNING_WIDTH;
+    o.hbar = GD::LINEB_HBAR;
+    o.boltzmann = GD::LINEB_BOLTZMANN;
+    o.quadrature_pairs = GD::LINEB_QUADRATURE_PAIRS;
+    o.max_steps = GD::LINEB_MAX_STEPS;
+    o.beads = GD::LINEB_BEADS;
+    o.molecular = GD::LINEB_MOLECULAR;
+    o.endpoint_kappa = GD::LINEB_ENDPOINT_KAPPA;
+    o.linear_seed = GD::LINEB_LINEAR_SEED;
+    o.endpoint_convergence = GD::LINEB_ENDPOINT_CONVERGENCE;
+    o.projected_verlet = GD::LINEB_PROJECTED_VERLET;
+    o.result_cache = std::string(GD::LINEB_RESULT_CACHE);
+    o.interpolated_force_clock = GD::LINEB_INTERPOLATED_FORCE_CLOCK;
+    o.interpolated_hessian = GD::LINEB_INTERPOLATED_HESSIAN;
+    o.image_hessian_step = GD::LINEB_IMAGE_HESSIAN_STEP;
+  }

@@ -4,9 +4,9 @@ Authoritative home: ``eon_schema.config.models``. The eon-akmc module
 ``eon.schema`` re-exports this surface so Sphinx ``autopydantic_model``
 targets and existing imports keep working.
 
-For Main, Potential, Optimizer, Structure Comparison, and Process Search,
-field names must match schema/eon_params.capnp (Cap'n Proto L0 SSoT).
-Parity is enforced by tests/test_params_ssot.py.
+For Main, Potential, Optimizer, Structure Comparison, Process Search,
+RgpotPot, and Lineb, field names must match schema/eon_params.capnp
+(Cap'n Proto L0 SSoT). Parity is enforced by tests/test_params_ssot.py.
 """
 
 import math
@@ -38,6 +38,7 @@ class MainConfig(BaseModel):
         "gp_surrogate",
         "hessian",
         "instanton",
+        "lineb",
         "minimization",
         "monte_carlo",
         "molecular_dynamics",
@@ -851,9 +852,8 @@ class RgpotPot(BaseModel):
     backend: str = Field(
         default="nwchemc",
         description=(
-            "rgpot backend: 'nwchemc', 'cpmdc', 'metatomic', or 'xtb' "
-            "(aliases: nwchem/cpmd/mta/gfn). metatomic/xtb dlopen "
-            "libmetatomic_engine.so / libxtb_engine.so for packaging."
+            "In-process rgpot backend. Choose nwchemc, cpmdc, metatomic, "
+            "orca, uma, or xtb. The orca backend requires params_path."
         ),
     )
     basis: str = Field(
@@ -922,8 +922,8 @@ class RgpotPot(BaseModel):
     engine_path: str = Field(
         default="",
         description=(
-            "Engine .so path (libnwchemc / libcpmdc / "
-            "libmetatomic_engine / libxtb_engine)."
+            "Path to the selected backend's shared library. For ORCA, use "
+            "liborca_engine.so or set RGPOT_ORCA_ENGINE."
         ),
     )
     engine_library: str = Field(
@@ -1027,7 +1027,9 @@ class RgpotPot(BaseModel):
     params_path: str = Field(
         default="",
         description=(
-            "Path to a Cap'n Proto CPMDParams message. The file owns the"
+            "Path to an unpacked Cap'n Proto flat message. The orca backend"
+            " requires OrcaParams and passes the message to its engine. For"
+            " cpmdc, an optional CPMDParams file owns the"
             " CPMD method, including inputSections and inputBlocks, and the"
             " scalar keys are not written over it. input_block is appended"
             " to inputBlocks. engine_path, engine_root, scratch_dir, and"
@@ -2849,6 +2851,107 @@ class HessianConfig(BaseModel):
     )
 
 
+class LinebConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    initial_path: str = Field(
+        default="",
+        description=(
+            "Multi-frame seed band (neb.con). Interior images must start at or"
+            " above energy plus the turning width."
+        ),
+    )
+    energy: float = Field(
+        default=0.0,
+        description="Tunneling energy E of the equipotential endpoints, eV.",
+    )
+    opt_tol: float = Field(
+        default=1e-3,
+        description="Mass-weighted stop on the nudged force.",
+    )
+    perp_tol: float = Field(
+        default=1e-3,
+        description="Mass-weighted stop on the perpendicular action gradient.",
+    )
+    spring: float = Field(default=0.1, description="Parallel spacing spring.")
+    linear_seed: bool = Field(default=False, description="Join the initial turning points with a straight path.")
+    endpoint_convergence: bool = Field(default=False, description="Apply opt_tol to the endpoints and perp_tol to the interior.")
+    result_cache: str = Field(default="", description="Path to the rgpot result cache for this LI-NEB job.")
+    projected_verlet: bool = Field(default=False, description="Optimize the band with velocity-projected velocity Verlet.")
+    interpolated_hessian: bool = Field(default=False, description="Interpolate path-image Hessians to the rate beads.")
+    image_hessian_step: float = Field(default=0.0, ge=0, allow_inf_nan=False, description="Cartesian displacement in angstrom for image Hessians. Zero selects the solver default.")
+    interpolated_force_clock: bool = Field(default=False, description="Propagate imaginary time with velocity Verlet on the interpolated tangential image force.")
+    endpoint_kappa: float = Field(default=0.0, ge=0, allow_inf_nan=False,
+                                  description="Fixed endpoint coefficient; zero selects endpoint_scale.")
+    endpoint_scale: float = Field(
+        default=0.2, description="Endpoint equipotential force scale."
+    )
+    time_step: float = Field(
+        default=0.1, description="Initial FIRE / quick-min time step."
+    )
+    max_move: float = Field(
+        default=0.2,
+        description=(
+            "Step cap; per atom when molecular, else whole-band Euclidean"
+            " length. 0 leaves the step uncapped."
+        ),
+    )
+    turning_width: float = Field(
+        default=1e-3,
+        description=(
+            "Fraction of the highest seed height above E; interiors stay"
+            " above E+w."
+        ),
+    )
+    hbar: float = Field(
+        default=0.06465415129579072,
+        description=(
+            "hbar in eV^0.5 amu^0.5 Angstrom. Temperature is hbar/(k_B tau)."
+        ),
+    )
+    boltzmann: float = Field(
+        default=8.617333262145177e-5,
+        description="Boltzmann constant in eV/K.",
+    )
+    quadrature_pairs: int = Field(
+        default=4,
+        ge=1,
+        description="Simpson pairs per chord for the period quadrature.",
+    )
+    max_steps: int = Field(
+        default=1000, ge=1, description="Optimizer step budget."
+    )
+    beads: int = Field(
+        default=0,
+        ge=0,
+        description=(
+            "Harmonic quantum TST replicas. 0 writes the path only (log rate"
+            " NaN). Must be 0 or at least 2; beads = 1 is refused."
+        ),
+    )
+    molecular: bool = Field(
+        default=False,
+        description=(
+            "false expands atom masses to coordinates. true uses molecule"
+            " alignment and needs every atom free."
+        ),
+    )
+
+    @model_validator(mode="after")
+    def validate_image_hessian_step(self):
+        if self.image_hessian_step > 0 and not self.interpolated_hessian:
+            raise ValueError("image_hessian_step requires interpolated_hessian")
+        return self
+
+    @validator("beads")
+    def beads_not_one(cls, v):
+        if v == 1:
+            raise ValueError(
+                "beads must be 0 (path only) or at least 2 (harmonic QTST)"
+            )
+        return v
+
+
 class InstantonConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
@@ -3420,6 +3523,7 @@ class Config(BaseModel):
     davidson: DavidsonConfig
     hessian: HessianConfig
     instanton: InstantonConfig = Field(default_factory=InstantonConfig)
+    lineb: LinebConfig = Field(default_factory=LinebConfig)
     communicator: CommunicatorConfig
     process_search: ProcessSearchConfig
     prefactor: PrefactorConfig

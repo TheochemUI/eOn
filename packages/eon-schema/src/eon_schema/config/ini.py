@@ -65,6 +65,7 @@ MODEL_INI_SECTION: dict[str, str] = {
     "CoarseGrainingConfig": "Coarse Graining",
     "HessianConfig": "Hessian",
     "InstantonConfig": "Instanton",
+    "LinebConfig": "Lineb",
     "ServeConfig": "Serve",
     "RefineConfig": "Refine",
     "Metatomic": "Metatomic",

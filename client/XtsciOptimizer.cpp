@@ -337,6 +337,19 @@ XtsciOptimizer::~XtsciOptimizer() {
   m_eindir = nullptr;
 }
 
+bool XtsciOptimizer::usesWolfeLbfgs() const {
+#if RGMIN_ABI_VERSION_MINOR >= 34
+  const auto &opts = m_optConfig.opts;
+  return method_from_name(m_method) == RGMIN_LBFGS &&
+         m_objf->gradientMatchesEnergy() &&
+         opts.xtsci.manifold == "euclidean" && !opts.xtsci.highs &&
+         resolved_qn_step(opts) == "lbfgs" &&
+         !is_host_precon(resolved_precon(opts));
+#else
+  return false;
+#endif
+}
+
 void XtsciOptimizer::ensureSolver(double a_maxMove) {
   if (m_solver != nullptr) {
     return;
@@ -384,6 +397,18 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
   } else {
     rgmin_solver_set_qn_step(m_solver, RGMIN_QN_LBFGS);
   }
+#if RGMIN_ABI_VERSION_MINOR >= 34
+  if (usesWolfeLbfgs()) {
+    // Compare scalar and exponential inverse-Hessian seeds with the same
+    // strong Wolfe search. The host sets the per-atom move limit in step().
+    if (rgmin_solver_set_lbfgs_wolfe(m_solver) != 0) {
+      throw std::runtime_error(rgmin_last_error());
+    }
+#if RGMIN_ABI_VERSION_MINOR >= 36
+    rgmin_solver_set_geometry_step(m_solver, 0);
+#endif
+  }
+#endif
   const auto accept = m_objf->gradientMatchesEnergy()
                           ? resolved_accept(m_optConfig.opts)
                           : std::string("none");
@@ -574,7 +599,7 @@ int XtsciOptimizer::run(size_t a_maxIterations, double a_maxMove) {
   // session. rgmin_exp rebuilds its pair list from step(), so it stays
   // there too.
   if (m_eindir != nullptr && !want_hess && method != RGMIN_FIRE2 &&
-      precon != kRgminExp) {
+      precon != kRgminExp && !usesWolfeLbfgs()) {
     if (m_x.size() == 0) {
       m_x = m_objf->getPositions();
     }

@@ -6,6 +6,10 @@
 
 ### Added
 
+- `job = lineb` runs a fixed-energy line-integral NEB through rgsaddle's
+  `rgsaddle_lineb_solve` (Ásgeirsson et al., JCP 148, 102334): parameters in
+  `[Lineb]`, docs under the user guide, and an integration test. Needs
+  `-Dwith_rgsaddle=true` against rgsaddle C ABI 1.46 or a compatible later minor.
 - A per-image potential such as ext_pot keeps its own exchange directory on each dimer image and on each process-search product minimization. An empty checkpoint lets a finite-difference Hessian share RgpotPot calculator groups. In-process results carry job_result, and cancel_state stops only a running batch. An even half-ring instanton with an odd unstable mode continues on the full ring. Structure comparison pairs atoms one to one, and Langevin and Nose-Hoover leave a frozen Cartesian component fixed.
 - An RgpotPot run on calculator groups prints, when the driver stops the workers, each group's evaluated systems, busy seconds and idle share, with the POP load balance, communication efficiency and parallel efficiency of the run.
 - Dynamics movies load reactant frames from a read-only readcon-db corpus

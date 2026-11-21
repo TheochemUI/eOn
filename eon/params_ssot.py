@@ -18,6 +18,7 @@ COVERED_YAML_SECTIONS = frozenset(
         "Structure Comparison",
         "Process Search",
         "RgpotPot",
+        "Lineb",
     }
 )
 

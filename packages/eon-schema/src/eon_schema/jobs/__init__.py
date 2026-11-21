@@ -227,6 +227,10 @@ def _provenance_from_results(d: Mapping[str, Any]) -> Dict[str, Any]:
         "name": d.get("rgpot_name", d.get("potential_type", "")),
         "version": rgpot_version if isinstance(rgpot_version, str) else str(rgpot_version),
     }
+    if d.get("rgpot_backend"):
+        rgpot["backend"] = d["rgpot_backend"]
+    if d.get("rgpot_engine_version"):
+        rgpot["engine_version"] = d["rgpot_engine_version"]
     compatibility: Dict[str, Any] = {
         "schema": d.get("compatibility_schema", ""),
         "readcon": {
@@ -429,6 +433,10 @@ def job_result_to_wire(data: Mapping[str, Any]) -> Dict[str, Any]:
                 "name": val.get("name", ""),
                 "version": val.get("version", ""),
             }
+            if val.get("backend"):
+                wire["rgpot"]["backend"] = val["backend"]
+            if val.get("engine_version"):
+                wire["rgpot"]["engineVersion"] = val["engine_version"]
             continue
         if key == "compatibility" and isinstance(val, Mapping):
             stamp = val.get("engine_compatibility")
@@ -487,6 +495,10 @@ def job_result_from_wire(data: Mapping[str, Any]) -> Dict[str, Any]:
                 "name": val.get("name", ""),
                 "version": val.get("version", ""),
             }
+            if val.get("backend"):
+                out["rgpot"]["backend"] = val["backend"]
+            if val.get("engineVersion"):
+                out["rgpot"]["engine_version"] = val["engineVersion"]
             continue
         if key == "compatibility" and isinstance(val, Mapping):
             out["compatibility"] = {"engine_compatibility": dict(val)}
@@ -540,7 +552,7 @@ def job_result_dumps(data: Mapping[str, Any]) -> bytes:
         import json
 
         return json.dumps(wire, separators=(",", ":")).encode("utf-8")
-    schema = capnp.load(str(job_result_capnp_path()))
+    schema = capnp.load(str(job_result_capnp_path()), imports=[str(Path(capnp.__file__).resolve().parent.parent)])
     msg = schema.JobResult.new_message()
     for key, val in wire.items():
         if key == "forceCalls" and isinstance(val, Mapping):
@@ -548,6 +560,12 @@ def job_result_dumps(data: Mapping[str, Any]) -> bytes:
             for sub, sval in val.items():
                 if hasattr(fc, sub):
                     setattr(fc, sub, sval)
+            continue
+        if key == "rgpot" and isinstance(val, Mapping):
+            node = msg.init("rgpot")
+            for field in ("schema", "name", "version", "backend", "engineVersion"):
+                if field in val:
+                    setattr(node, field, val[field])
             continue
         if key == "landfoldArtifacts" and isinstance(val, list):
             _fill_landfold_artifacts(msg, val)
@@ -572,7 +590,7 @@ def job_result_loads(blob: bytes) -> Dict[str, Any]:
         import capnp  # type: ignore
     except ImportError as exc:
         raise ValueError("packed JobResult needs pycapnp") from exc
-    schema = capnp.load(str(job_result_capnp_path()))
+    schema = capnp.load(str(job_result_capnp_path()), imports=[str(Path(capnp.__file__).resolve().parent.parent)])
     msg = schema.JobResult.from_bytes_packed(blob)
     wire = msg.to_dict()
     return job_result_from_wire(wire)

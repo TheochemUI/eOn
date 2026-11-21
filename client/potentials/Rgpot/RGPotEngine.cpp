@@ -6,6 +6,7 @@
 #define _GNU_SOURCE
 #endif
 #include "eon/potentials/Rgpot/RGPotEngine.h"
+#include "eon/potentials/Rgpot/Backend.h"
 #include "eon/potentials/Rgpot/CpmdMessage.h"
 
 #include <algorithm>
@@ -251,12 +252,12 @@ namespace eon {
 } // namespace eon
 
 struct RGPotEngine::Impl {
-  enum class Backend { Nwchemc, Cpmdc, Metatomic, Uma, Xtb };
+  enum class Backend { Nwchemc, Cpmdc, Metatomic, Uma, Orca, Xtb };
   Backend backend{Backend::Nwchemc};
   std::unique_ptr<rgpot::NWChemPot> nwchem;
   std::unique_ptr<rgpot::CPMDPot> cpmd;
   std::unique_ptr<MetatomicEngineLoader> metatomic;
-  std::unique_ptr<GenericEngineLoader> uma;
+  std::unique_ptr<GenericEngineLoader> plugin;
   std::unique_ptr<XTBEngineLoader> xtb;
   // Calculator groups (cpmdc, ranks_per_image > 0). One group when off.
   int groups{1};
@@ -267,10 +268,8 @@ struct RGPotEngine::Impl {
 
 RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
     : impl_(std::make_unique<Impl>()) {
-  backend_ = to_lower(opt.backend);
-  if (backend_ == "nwchem" || backend_ == "nwchemc" ||
-      backend_ == "nwchempot") {
-    backend_ = "nwchemc";
+  backend_ = eonc::canonicalRgpotBackend(opt.backend);
+  if (backend_ == "nwchemc") {
     impl_->backend = Impl::Backend::Nwchemc;
     ::capnp::MallocMessageBuilder msg;
     auto params = msg.initRoot<::NWChemParams>();
@@ -310,9 +309,7 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
       throw std::runtime_error(
           "RGPOT(nwchemc): engine not available (set NWCHEMC_LIBRARY / "
           "RGPOT_NWCHEMC_ENGINE or [RgpotPot] engine_path)");
-  } else if (backend_ == "cpmd" || backend_ == "cpmdc" ||
-             backend_ == "cpmdpot") {
-    backend_ = "cpmdc";
+  } else if (backend_ == "cpmdc") {
     impl_->backend = Impl::Backend::Cpmdc;
     std::string local_error;
     ::capnp::MallocMessageBuilder msg;
@@ -383,9 +380,7 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
               : local_error);
     if (!local_error.empty())
       throw std::runtime_error(local_error);
-  } else if (backend_ == "metatomic" || backend_ == "mta" ||
-             backend_ == "metatomicpot") {
-    backend_ = "metatomic";
+  } else if (backend_ == "metatomic") {
     impl_->backend = Impl::Backend::Metatomic;
     MetatomicEngineOptions mopt;
     mopt.model_path = opt.model_path;
@@ -402,8 +397,22 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
       throw std::runtime_error(
           "RGPOT(metatomic): engine not available (set RGPOT_METATOMIC_ENGINE "
           "or [RgpotPot] engine_path to librgpot_metatomic_engine.so)");
-  } else if (backend_ == "uma" || backend_ == "omol" || backend_ == "umapot") {
-    backend_ = "uma";
+  } else if (backend_ == "orca") {
+    impl_->backend = Impl::Backend::Orca;
+    if (opt.params_path.empty())
+      throw std::runtime_error(
+          "RGPOT(orca): params_path needs a serialized OrcaParams message");
+    auto words = read_params_file(opt.params_path);
+    const auto bytes = kj::arrayPtr(words.data(), words.size()).asBytes();
+    GenericEngineOptions gopt;
+    gopt.library = "liborca_engine.so";
+    gopt.env_var = "RGPOT_ORCA_ENGINE";
+    gopt.engine_path =
+        opt.engine_path.empty() ? opt.engine_library : opt.engine_path;
+    gopt.tag = "orca";
+    gopt.config.assign(bytes.begin(), bytes.end());
+    impl_->plugin = std::make_unique<GenericEngineLoader>(gopt);
+  } else if (backend_ == "uma") {
     impl_->backend = Impl::Backend::Uma;
     GenericEngineOptions gopt;
     gopt.library = "libuma_engine.so";
@@ -423,14 +432,12 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
       const auto bytes = words.asBytes();
       gopt.config.assign(bytes.begin(), bytes.end());
     }
-    impl_->uma = std::make_unique<GenericEngineLoader>(gopt);
-    if (!impl_->uma->available())
+    impl_->plugin = std::make_unique<GenericEngineLoader>(gopt);
+    if (!impl_->plugin->available())
       throw std::runtime_error(
           "RGPOT(uma): engine not available (set RGPOT_UMA_ENGINE or "
           "[RgpotPot] engine_path to libuma_engine.so)");
-  } else if (backend_ == "xtb" || backend_ == "xtbpot" || backend_ == "gfn" ||
-             backend_ == "gfnxtb") {
-    backend_ = "xtb";
+  } else if (backend_ == "xtb") {
     impl_->backend = Impl::Backend::Xtb;
     XTBEngineOptions xopt;
     xopt.method = xtb_method_from_paramset(opt.xtb_paramset);
@@ -449,8 +456,31 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
   } else {
     throw std::runtime_error(
         "RGPOT: unknown backend '" + opt.backend +
-        "' (expected nwchemc, cpmdc, metatomic, uma, or xtb)");
+        "' (expected nwchemc, cpmdc, metatomic, orca, uma, or xtb)");
   }
+}
+
+std::string RGPotEngine::pluginVersion() const {
+  return impl_->plugin ? impl_->plugin->version() : std::string{};
+}
+
+void RGPotEngine::attachCache(const std::string &path) {
+  if (!impl_->plugin)
+    throw std::runtime_error(
+        "RGPOT(" + backend_ +
+        "): result cache requires an engine with the cache ABI");
+  impl_->plugin->attachCache(path);
+}
+
+void RGPotEngine::detachCache() noexcept {
+  if (impl_->plugin)
+    impl_->plugin->detachCache();
+}
+
+std::array<std::uint64_t, 2> RGPotEngine::cacheCounts() const {
+  if (!impl_->plugin)
+    throw std::runtime_error("RGPOT(" + backend_ + "): no engine cache");
+  return impl_->plugin->cacheCounts();
 }
 
 RGPotEngine::~RGPotEngine() = default;
@@ -561,8 +591,8 @@ bool RGPotEngine::available() const {
     return impl_->cpmd->available();
   if (impl_->backend == Impl::Backend::Metatomic && impl_->metatomic)
     return impl_->metatomic->available();
-  if (impl_->backend == Impl::Backend::Uma && impl_->uma)
-    return impl_->uma->available();
+  if (impl_->plugin)
+    return impl_->plugin->available();
   if (impl_->backend == Impl::Backend::Xtb && impl_->xtb)
     return impl_->xtb->available();
   return false;
@@ -626,6 +656,11 @@ void RGPotEngine::forceEngine(long N, const double *R, const int *atomicNrs,
     impl_->metatomic->force(N, R, atomicNrs, F, U, nullptr, box);
     return;
   }
+  if (impl_->backend == Impl::Backend::Orca) {
+    const std::array<double, 9> isolatedBox{};
+    impl_->plugin->force(N, R, atomicNrs, F, U, nullptr, isolatedBox.data());
+    return;
+  }
   if (impl_->backend == Impl::Backend::Uma) {
     // A molecular .con may omit the cell. A 25 A diagonal stands in, so
     // a singular box does not reach the neighbor list.
@@ -636,7 +671,7 @@ void RGPotEngine::forceEngine(long N, const double *R, const int *atomicNrs,
       cell_sub[0] = cell_sub[4] = cell_sub[8] = 25.0;
       effective_box = cell_sub.data();
     }
-    impl_->uma->force(N, R, atomicNrs, F, U, nullptr, effective_box);
+    impl_->plugin->force(N, R, atomicNrs, F, U, nullptr, effective_box);
     return;
   }
   if (impl_->backend == Impl::Backend::Xtb) {

@@ -6,15 +6,31 @@ on: [push, pull_request]
 permissions:
   contents: read
 env:
-  # rgsaddle 06c55c5 pins rgmin d76539d; build the C ABI of both from there.
-  RGMIN_REV: d76539dbe40695c0032e0d96a56e7932f2cc49ab
-  RGSADDLE_REV: 06c55c5c9e8308daac2c1d5860d828ecc9fa7be9
   CARGO_C_VERSION: 0.10.23
 jobs:
   rg_backends:
     runs-on: ubuntu-22.04
     timeout-minutes: 90
-    name: test (rgmin + rgsaddle)
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: baseline
+            rgsaddle_repo: OmniPotentRPC/rgsaddle
+            rgsaddle_rev: 06c55c5c9e8308daac2c1d5860d828ecc9fa7be9
+            rgmin_repo: OmniPotentRPC/rgmin
+            rgmin_rev: d76539dbe40695c0032e0d96a56e7932f2cc49ab
+          - label: LI-NEB
+            rgsaddle_repo: HaoZeke/rgsaddle
+            rgsaddle_rev: b47b3961fc49ded2cbc2ce8faf9a76bbfa6fcb1c
+            rgmin_repo: HaoZeke/rgmin
+            rgmin_rev: f2527782713dcf4b4d5d91af9da1bba80c32bc0c
+    name: test (rgmin + rgsaddle, ${{ matrix.label }})
+    env:
+      RGMIN_REPO: ${{ matrix.rgmin_repo }}
+      RGMIN_REV: ${{ matrix.rgmin_rev }}
+      RGSADDLE_REV: ${{ matrix.rgsaddle_rev }}
+      RGSADDLE_REPO: ${{ matrix.rgsaddle_repo }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -28,6 +44,8 @@ jobs:
         run: command -v cbindgen || cargo install cbindgen
 
       - name: Install the rgmin and rgsaddle C ABI
+        env:
+          BACKEND_CASE: ${{ matrix.label }}
         shell: pixi run bash -e {0}
         run: |
           set -euo pipefail
@@ -35,23 +53,26 @@ jobs:
           cargo install cargo-c --version "$CARGO_C_VERSION" --locked \
             --root "$RUNNER_TEMP/cargo-c"
           export PATH="$RUNNER_TEMP/cargo-c/bin:$PATH"
-          for repo in rgmin rgsaddle; do
-            git clone --filter=blob:none "https://github.com/OmniPotentRPC/$repo" \
-              "$RUNNER_TEMP/$repo"
-          done
+          git clone --filter=blob:none "https://github.com/$RGMIN_REPO" "$RUNNER_TEMP/rgmin"
+          git clone --filter=blob:none "https://github.com/$RGSADDLE_REPO" "$RUNNER_TEMP/rgsaddle"
           git -C "$RUNNER_TEMP/rgmin" checkout --detach "$RGMIN_REV"
           git -C "$RUNNER_TEMP/rgsaddle" checkout --detach "$RGSADDLE_REV"
           (cd "$RUNNER_TEMP/rgmin" && cargo cinstall --release --features capi \
             --prefix="$prefix" --libdir="$prefix/lib")
-          # cinstall writes a cbindgen-regenerated rgmin.h that C++ cannot
-          # compile; the curated header and its dlpack.h live in include/.
-          cp "$RUNNER_TEMP/rgmin/include/rgmin.h" "$prefix/include/"
-          cp -r "$RUNNER_TEMP/rgmin/include/dlpack" "$prefix/include/"
+          # The baseline rgmin revision requires the source headers.
+          if [[ "$BACKEND_CASE" == baseline ]]; then
+            cp "$RUNNER_TEMP/rgmin/include/rgmin.h" "$prefix/include/"
+            cp -r "$RUNNER_TEMP/rgmin/include/dlpack" "$prefix/include/"
+          fi
+          cmp "$RUNNER_TEMP/rgmin/include/rgmin.h" "$prefix/include/rgmin.h"
+          cmp "$RUNNER_TEMP/rgmin/include/dlpack/dlpack.h" "$prefix/include/dlpack/dlpack.h"
           (cd "$RUNNER_TEMP/rgsaddle" && cargo cinstall --release --features capi \
             --prefix="$prefix" --libdir="$prefix/lib")
           echo "RG_PREFIX=$prefix" >> "$GITHUB_ENV"
 
       - name: Compile
+        env:
+          LINEB_FEATURE: ${{ matrix.label == 'LI-NEB' && 'enabled' || 'disabled' }}
         shell: pixi run bash -e {0}
         run: |
           export PKG_CONFIG_PATH="$RG_PREFIX/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
@@ -59,10 +80,28 @@ jobs:
             -Dwith_rgmin=enabled -Dwith_rgsaddle=true
           meson compile -C bbdir
           export LD_LIBRARY_PATH="$RG_PREFIX/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-          features=$(bbdir/client/eonclient --features)
+          # Strip the terminal colors around each enabled/disabled value.
+          features=$(bbdir/client/eonclient --features | sed -E $'s/\x1b\\[[0-9;]*m//g')
           echo "$features"
           grep -q "rgmin minimizers" <<<"$features"
           grep -q "rgsaddle band and min-mode" <<<"$features"
+          grep -Fq "rgsaddle fixed-energy LI-NEB: $LINEB_FEATURE" <<<"$features"
+          grep -Fq "LI-NEB phase-resolved counts: $LINEB_FEATURE" <<<"$features"
+          grep -Fq "LI-NEB rate orbit output: $LINEB_FEATURE" <<<"$features"
+          grep -Fq "LI-NEB measured turning point: $LINEB_FEATURE" <<<"$features"
+          grep -Fq "LI-NEB image Hessians and rate counts: $LINEB_FEATURE" <<<"$features"
+
+      - name: Verify LI-NEB test registration
+        if: matrix.label == 'LI-NEB'
+        shell: pixi run bash -e {0}
+        run: |
+          grep -q "^#define RGSADDLE_HAS_LINEB_ORBIT 1" "$RG_PREFIX/include/rgsaddle.h"
+          grep -q -- "-DWITH_RGSADDLE_LINEB" bbdir/compile_commands.json
+          grep -q -- "-DWITH_RGSADDLE_LINEB_RATE" bbdir/compile_commands.json
+          grep -q -- "-DWITH_RGSADDLE_LINEB_TURNING" bbdir/compile_commands.json
+          meson test -C bbdir --list > "$RUNNER_TEMP/eon-tests"
+          grep -w test_lineb_job "$RUNNER_TEMP/eon-tests"
+          grep -w test_lineb_seed "$RUNNER_TEMP/eon-tests"
 
       - name: Run Catch2 unit tests
         shell: pixi run bash -e {0}

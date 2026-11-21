@@ -12,6 +12,7 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/JobResult.h"
 #include "eon/Parameters.h"
+#include "version.h"
 
 TEST_CASE("legacy optimizer provenance omits xtsci and eindir stamps",
           "[jobresult][provenance]") {
@@ -44,7 +45,7 @@ TEST_CASE("xtsci optimizer provenance records xts and eindir ABI",
   provenance.engine_version = "3.3.1";
   provenance.engine_build_identity = "abc123";
   provenance.rgpot_name = "morse_pt";
-  provenance.rgpot_version = std::string(eonc::JobResultProvenance::rgpot_pin);
+  provenance.rgpot_version = "3.2.0";
   provenance.has_eindir = true;
   provenance.eindir_abi_major = 1;
   provenance.eindir_abi_minor = 0;
@@ -103,11 +104,9 @@ TEST_CASE("a job envelope takes optimizer provenance from Parameters",
   REQUIRE_FALSE(xts.xtsci);
   REQUIRE(xts_text.find("optimizer_xts_abi_major") == std::string::npos);
 #endif
-#ifdef WITH_RGPOT
-  REQUIRE(xts.rgpot_version ==
-          std::string(eonc::JobResultProvenance::rgpot_pin));
-  REQUIRE(xts_text.find("3.2.0 rgpot_version\n") != std::string::npos);
-#endif
+  REQUIRE(xts.rgpot_version == LINKED_RGPOT_VERSION);
+  REQUIRE(xts_text.find(LINKED_RGPOT_VERSION + " rgpot_version\n") !=
+          std::string::npos);
 
   eonc::JobResultEnvelope search;
   search.process_search_layout = true;
@@ -116,4 +115,15 @@ TEST_CASE("a job envelope takes optimizer provenance from Parameters",
   search.provenance = xts;
   REQUIRE(search.toString().find("xtsci optimizer_backend\n") !=
           std::string::npos);
+}
+
+TEST_CASE("native job results retain the configured rgpot engine",
+          "[jobresult][provenance]") {
+  eonc::Parameters params;
+  eonc::ParametersLoadAccess::potential_options(params).potential =
+      eonc::PotType::RGPOT;
+  eonc::ParametersLoadAccess::rgpot_options(params).backend = "ORCA";
+  auto provenance = eonc::provenanceForJob(params);
+  REQUIRE(provenance.rgpot_backend == "orca");
+  REQUIRE(provenance.text().find("orca rgpot_backend\n") != std::string::npos);
 }

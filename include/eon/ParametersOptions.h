@@ -204,7 +204,7 @@ struct socket_nwchem_options_t {
 // [RgpotPot] — in-process rgpot (dlopen engines; no potserv). Packaging
 // prefers metatomic/xtb via RGPOT over fat -Dwith_metatomic / -Dwith_xtb.
 struct rgpot_options_t {
-  /// "nwchemc", "cpmdc", "metatomic", or "xtb"
+  /// nwchemc, cpmdc, metatomic, orca, uma, or xtb.
   std::string backend{"nwchemc"};
   std::string basis{"sto-3g"};
   std::string theory{"scf"};
@@ -225,9 +225,8 @@ struct rgpot_options_t {
   // The text is appended to inputBlocks and does not replace inputSections.
   std::string input_block{};
   std::string permanent_dir{};
-  // Serialized Cap'n Proto CPMDParams. When set, it is the method and the
-  // scalar keys above are not written over it. [cpmd] supplies those
-  // scalars when this path is empty.
+  // ORCA requires a serialized OrcaParams message. For CPMD an optional
+  // CPMDParams message supplies the method in place of the scalar keys.
   std::string params_path{};
   // cpmdc: split the MPI world into groups of this many ranks, one CPMD
   // session per group, and spread NEB images over the groups. 0 keeps one
@@ -1018,6 +1017,46 @@ struct instanton_options_t {
   long pi_recrossing_children{20};
   double pi_recrossing_time{100.0}; // fs
   long pi_recrossing_spacing{50};
+};
+
+// [Lineb] //
+// Fixed-energy line-integral nudged elastic band through rgsaddle
+// (Ásgeirsson, Arnaldsson and Jónsson, J. Chem. Phys. 148, 102334 (2018)).
+// Needs a rgsaddle that exports rgsaddle_lineb_solve. Defaults for the
+// spring, endpoint scale, time step, max move, turning width and
+// quadrature match LinebConfig::new; hbar and boltzmann are eOn's eV /
+// amu / Angstrom / K units.
+struct lineb_options_t {
+  // Multi-frame seed band (neb.con); interior images must clear the turning width above energy.
+  std::string initial_path{""};
+  // Tunneling energy E of the equipotential endpoints, eV.
+  double energy{0.0};
+  double opt_tol{1e-3};  // mass-weighted nudged-force stop
+  double perp_tol{1e-3}; // mass-weighted perpendicular action-gradient stop
+  double spring{0.1};
+  double endpoint_scale{0.2};
+  double endpoint_kappa{0.0};
+  bool linear_seed{false};
+  bool endpoint_convergence{false};
+  bool projected_verlet{false};
+  bool interpolated_force_clock{false};
+  bool interpolated_hessian{false};
+  double image_hessian_step{0.0};
+  std::string result_cache;
+  double time_step{0.1};
+  double max_move{0.2};
+  double turning_width{1e-3};
+  // eV^0.5 amu^0.5 Angstrom; temperature is hbar / (k_B tau).
+  // Same values as eonc::tunneling::kHbar and kBoltzmann.
+  double hbar{0.06465415129579072};
+  double boltzmann{8.617333262145177e-5}; // eV / K
+  long quadrature_pairs{4};
+  long max_steps{1000};
+  // Harmonic quantum TST replicas; 0 writes the path only (log rate NaN).
+  long beads{0};
+  // false: expand atom masses to coordinates (adsorbate / fixed field).
+  // true: molecule alignment; every atom must be free.
+  bool molecular{false};
 };
 
 // [OH_TST] //

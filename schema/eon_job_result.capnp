@@ -97,6 +97,8 @@ struct RgpotIdentity {
   schema @0 :Text;
   name @1 :Text;
   version @2 :Text;
+  backend @3 :Text;
+  engineVersion @4 :Text;
 }
 
 struct OptimizerProvenance {

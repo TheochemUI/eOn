@@ -15,6 +15,7 @@
 #include "eon/PIQTST.h"
 #include "eon/Parameters.h"
 #include "eon/ParametersINI.h"
+#include "eon/ParametersSSOT.h"
 #include "magic_enum/magic_enum.hpp"
 
 #include <cctype>
@@ -388,6 +389,8 @@ json to_json(const Parameters &p) {
         {"pi_recrossing_spacing", o.pi_recrossing_spacing},
     };
   }
+
+  // [Lineb] is projected from schema/eon_params.capnp.
 
   // [Debug]
   j["Debug"] = {
@@ -990,7 +993,11 @@ void from_json(const json &j, Parameters &p) {
     th.path_pile_tau = timeUnit > 0.0 ? th.path_pile_tau_input / timeUnit : 0.0;
   }
 
+  // [Lineb] keys are projected from schema/eon_params.capnp.
   project_ssot_json_read(j, p);
+  const bool lineb_energy_present =
+      j.contains("Lineb") && j.at("Lineb").contains("energy");
+  validate_lineb_options(p, lineb_energy_present);
 
   // Resolve computed fields
   validate_and_link(p);

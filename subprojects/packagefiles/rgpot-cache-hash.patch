@@ -1,0 +1,138 @@
+--- a/CppCore/rgpot/Potential.hpp
++++ b/CppCore/rgpot/Potential.hpp
+@@ -21,10 +21,8 @@
+ // clang-format on
+ 
+ #ifdef RGPOT_HAS_CACHE
+-#define XXH_INLINE_ALL
+ #include "rgpot/CalculatorGroup.hpp"
+ #include "rgpot/PotentialCache.hpp"
+-#include <xxhash.h>
+ #endif
+ 
+ #include "rgpot/ForceStructs.hpp"
+@@ -362,17 +360,7 @@
+    * so neither a different config nor a different kernel can collide.
+    */
+   [[nodiscard]] rgpot::cache::KeyHash cacheKey(const ForceInput &fi) const {
+-    size_t hash_val = 0;
+-    hash_val ^= XXH3_64bits(fi.pos, fi.nAtoms * 3 * sizeof(double));
+-    hash_val ^= XXH3_64bits(fi.atmnrs, fi.nAtoms * sizeof(int));
+-    hash_val ^= XXH3_64bits(fi.box, 9 * sizeof(double));
+-    size_t type_val = static_cast<size_t>(m_type);
+-    hash_val ^= XXH3_64bits(&type_val, sizeof(size_t));
+-    // Parameter fingerprint: two instances of one PotType with different
+-    // configs must never share cache entries.
+-    uint64_t params_val = paramsKey();
+-    hash_val ^= XXH3_64bits(&params_val, sizeof(params_val));
+-    return rgpot::cache::KeyHash(hash_val);
++    return rgpot::cache::result_key(fi, m_type, paramsKey());
+   }
+ 
+   rgpot::cache::PotentialCache *_cache =
+--- a/CppCore/rgpot/PotentialCache.hpp
++++ b/CppCore/rgpot/PotentialCache.hpp
+@@ -10,6 +10,7 @@
+  */
+ 
+ #include "rgpot/ForceStructs.hpp"
++#include "rgpot/pot_types.hpp"
+ #include "rgpot/types/AtomMatrix.hpp"
+ #include <atomic>
+ #include <cstdint>
+@@ -50,6 +51,9 @@
+     return rocksdb::Slice(reinterpret_cast<const char *>(&hash), sizeof(hash));
+   }
+ };
++
++/// Hash the ordered geometry, species, cell and potential identity.
++KeyHash result_key(const ForceInput &input, PotType type, uint64_t parameters);
+ 
+ /**
+  * @brief Evaluations a cache handle has answered, split by origin.
+--- a/CppCore/rgpot/PotentialCache.cc
++++ b/CppCore/rgpot/PotentialCache.cc
+@@ -11,6 +11,7 @@
+ 
+ #include "rgpot/PotentialCache.hpp"
+ #include <algorithm>
++#include <array>
+ #include <cstring>
+ #include <iostream>
+ #include <memory>
+@@ -18,9 +19,23 @@
+ #include <stdexcept>
+ #include <vector>
+ 
++// memcpy-based word loads preserve C++ aliasing rules for typed input arrays.
++#define XXH_FORCE_MEMORY_ACCESS 0
++#define XXH_INLINE_ALL
++#include <xxhash.h>
++
+ namespace rgpot::cache {
+ 
+ namespace {
++// Versioned storage keys keep entries formed with a different hash protocol
++// in a separate RocksDB namespace.
++std::array<char, 1 + sizeof(size_t)> storage_key(const KeyHash &key) {
++  std::array<char, 1 + sizeof(size_t)> bytes{};
++  bytes[0] = 2;
++  std::memcpy(bytes.data() + 1, &key.hash, sizeof(key.hash));
++  return bytes;
++}
++
+ constexpr char result_marker[] = "RGPOTR1";
+ constexpr size_t result_metadata_bytes =
+     sizeof(result_marker) + 10 * sizeof(double) + 1;
+@@ -29,6 +44,21 @@
+   return (1 + 3 * n_atoms) * sizeof(double);
+ }
+ } // namespace
++
++KeyHash result_key(const ForceInput &input, PotType type, uint64_t parameters) {
++  const std::array<uint64_t, 4> identity{
++      input.nAtoms, static_cast<uint64_t>(type), parameters, input.box != nullptr};
++  XXH3_state_t state;
++  XXH3_INITSTATE(&state);
++  XXH3_64bits_reset(&state);
++  XXH3_64bits_update(&state, identity.data(), sizeof(identity));
++  XXH3_64bits_update(&state, input.pos, input.nAtoms * 3 * sizeof(double));
++  XXH3_64bits_update(&state, input.atmnrs, input.nAtoms * sizeof(int));
++  if (input.box) {
++    XXH3_64bits_update(&state, input.box, 9 * sizeof(double));
++  }
++  return KeyHash(XXH3_64bits_digest(&state));
++}
+ 
+ bool PotentialCache::has_result_metadata(const std::string &value,
+                                          size_t n_atoms) {
+@@ -76,7 +106,8 @@
+     std::memcpy(metadata + sizeof(double), out.stress, sizeof(out.stress));
+     buffer.back() = 1;
+   }
+-  db_->Put(rocksdb::WriteOptions(), key.slice(),
++  const auto bytes = storage_key(key);
++  db_->Put(rocksdb::WriteOptions(), rocksdb::Slice(bytes.data(), bytes.size()),
+            rocksdb::Slice(buffer.data(), buffer.size()));
+ }
+ 
+@@ -174,7 +205,8 @@
+               forces.size() * sizeof(double));
+ 
+   rocksdb::Slice value(buffer.data(), buffer.size());
+-  db_->Put(rocksdb::WriteOptions(), kv.slice(), value);
++  const auto bytes = storage_key(kv);
++  db_->Put(rocksdb::WriteOptions(), rocksdb::Slice(bytes.data(), bytes.size()), value);
+ }
+ 
+ /**
+@@ -188,7 +220,8 @@
+   if (!db_)
+     return std::nullopt;
+   std::string value;
+-  rocksdb::Status s = db_->Get(rocksdb::ReadOptions(), kv.slice(), &value);
++  const auto bytes = storage_key(kv);
++  rocksdb::Status s = db_->Get(rocksdb::ReadOptions(), rocksdb::Slice(bytes.data(), bytes.size()), &value);
+   if (s.ok()) {
+     return value;
+   }

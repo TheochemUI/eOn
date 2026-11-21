@@ -16,6 +16,7 @@
 #include "eon/EpiCenters.h"
 #include "eon/HelperFunctions.h"
 #include "eon/Parameters.h"
+#include "eon/ParametersSSOT.h"
 #include "magic_enum/magic_enum.hpp"
 
 #include <INIReader.h>
@@ -1996,6 +1997,9 @@ int load_ini(const INIReader &ini, Parameters &params) {
         "Instanton", "pi_recrossing_spacing", o.pi_recrossing_spacing);
     eonc::piqtst::validateOptions(o);
   }
+
+  // [Lineb] keys are projected from schema/eon_params.capnp.
+  validate_lineb_options(params, ini.HasValue("Lineb", "energy"));
 
   // [OH_TST] //
 

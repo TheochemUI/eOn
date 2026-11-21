@@ -14,6 +14,7 @@
 #include "eon/CalculatorGroupUse.h"
 #include "eon/Potential.h"
 #include "eon/potentials/Rgpot/GroupSchedule.h"
+#include "eon/potentials/RgpotAdapter/ResultCache.h"
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -21,15 +22,24 @@
 class RGPotEngine;
 
 /**
- * Potential backed by rgpot NWChemPot / CPMDPot (in-process dlopen of
- * libnwchemc / libcpmdc). Not potserv RPC. Configure via [RgpotPot] INI;
- * energy eV, forces eV/Angstrom.
+ * In-process rgpot engine selected by [RgpotPot]. The engine returns
+ * energies in eV and forces in eV/Angstrom.
  */
-class RgpotPot final : public eonc::Potential {
+class RgpotPot final : public eonc::Potential
+#ifdef RGPOT_HAS_CACHE
+    ,
+                       public eonc::RgpotEngineCacheProvider
+#endif
+{
 public:
   explicit RgpotPot(const eonc::Parameters &p);
   ~RgpotPot() override;
 
+#ifdef RGPOT_HAS_CACHE
+  void attachEngineCache(const std::string &path) override;
+  void detachEngineCache() noexcept override;
+  [[nodiscard]] rgpot::cache::EvalCounts engineCacheCounts() const override;
+#endif
   RgpotPot(const RgpotPot &) = delete;
   RgpotPot &operator=(const RgpotPot &) = delete;
 
@@ -60,6 +70,7 @@ public:
   [[nodiscard]] bool requiresIsolatedMoleculeLayout() const noexcept override {
     return backend_ == "nwchemc" || isolatedMolecule_;
   }
+  [[nodiscard]] std::string pluginVersion() const;
   [[nodiscard]] const std::string &backend() const noexcept { return backend_; }
   [[nodiscard]] bool engineAvailable() const;
   /// Calculator-group accounting on the driver. The per-group columns are

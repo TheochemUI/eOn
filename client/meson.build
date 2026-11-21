@@ -340,6 +340,11 @@ features_list = [
     ['WITH_RGMIN', 'rgmin minimizers'],
     ['WITH_RGSADDLE', 'rgsaddle band and min-mode'],
     ['WITH_RGSADDLE_BAND_PRECON', 'rgsaddle band exp metric and ODE12r'],
+    ['WITH_RGSADDLE_LINEB', 'rgsaddle fixed-energy LI-NEB'],
+    ['WITH_RGSADDLE_LINEB_COUNTS', 'LI-NEB phase-resolved counts'],
+    ['WITH_RGSADDLE_LINEB_ORBIT', 'LI-NEB rate orbit output'],
+    ['WITH_RGSADDLE_LINEB_TURNING', 'LI-NEB measured turning point'],
+    ['WITH_RGSADDLE_LINEB_RATE', 'LI-NEB image Hessians and rate counts'],
 ]
 
 # features_string + version.h are assembled AFTER optional with_* blocks append
@@ -396,11 +401,48 @@ if get_option('with_rgsaddle')
         method: 'pkg-config',
         required: true,
     )
+    if not meson.get_compiler('cpp').has_function(
+        'rgsaddle_abi_stamp',
+        prefix: '#include <rgsaddle.h>',
+        dependencies: rgsaddle_dep,
+    )
+        error('Cannot link the required rgsaddle C ABI. Check the rgsaddle headers, library and compiler sysroot in meson-logs/meson-log.txt.')
+    endif
     _deps += rgsaddle_dep
     _args += ['-DWITH_RGSADDLE']
+    cpp = meson.get_compiler('cpp')
+    orbit_header = cpp.has_header_symbol(
+        'rgsaddle.h', 'RGSADDLE_HAS_LINEB_ORBIT', dependencies: rgsaddle_dep,
+    )
+    orbit_library = cpp.has_function('rgsaddle_lineb_solve_counted_orbit', dependencies: rgsaddle_dep)
+    if orbit_header != orbit_library
+        error('The rgsaddle.h orbit capability (RGSADDLE_HAS_LINEB_ORBIT) disagrees with the installed library (rgsaddle_lineb_solve_counted_orbit). Install matching rgsaddle headers and library.')
+    endif
     # 0.3.0: rgsaddle_band_set_exp_precon and RGSADDLE_METHOD_ODE12R.
     if rgsaddle_dep.version().version_compare('>=0.3.0')
         _args += ['-DWITH_RGSADDLE_BAND_PRECON']
+    endif
+    if meson.get_compiler('cpp').has_function(
+        'rgsaddle_lineb_solve',
+        prefix: '#include <rgsaddle.h>',
+        dependencies: rgsaddle_dep,
+    )
+        _args += ['-DWITH_RGSADDLE_LINEB']
+        foreach api, flag : {
+            'rgsaddle_lineb_solve_counted': 'WITH_RGSADDLE_LINEB_COUNTS',
+            'rgsaddle_lineb_solve_counted_rate': 'WITH_RGSADDLE_LINEB_RATE',
+            'rgsaddle_lineb_solve_counted_turning': 'WITH_RGSADDLE_LINEB_TURNING',
+            'rgsaddle_lineb_solve_with_kappa': 'WITH_RGSADDLE_LINEB_KAPPA',
+        }
+            if meson.get_compiler('cpp').has_function(
+                api, prefix: '#include <rgsaddle.h>', dependencies: rgsaddle_dep,
+            )
+                _args += ['-D' + flag]
+            endif
+        endforeach
+    endif
+    if orbit_library
+        _args += ['-DWITH_RGSADDLE_LINEB_ORBIT']
     endif
 endif
 
@@ -1295,6 +1337,8 @@ eonclib_sources = [
     'MobileAtoms.cpp',
     'HessianJob.cpp',
     'InstantonJob.cpp',
+    'LinebJob.cpp',
+    'LinebSeed.cpp',
     'ReplicaDynamicsJob.cpp',
     'TADJob.cpp',
     'ProcessSearchJob.cpp',
@@ -2056,6 +2100,7 @@ version_template = configure_file(
     output: 'version-config.h.in',
     configuration: {
         'VERSION': version,
+        'LINKED_RGPOT_VERSION': rgpot_dep.version(),
         'VERSION_MAJOR': version_major,
         'VERSION_MINOR': version_minor,
         'VERSION_PATCH': version_patch,
@@ -2433,6 +2478,8 @@ if get_option('with_tests')
         test_array += [['test_rgsaddle_band', 'RgsaddleBandTest.cpp', 'neb_morse']]
         test_array += [['test_rgsaddle_neb', 'RgsaddleNEBTest.cpp', 'neb_lj13']]
         test_array += [['test_rgsaddle_irc', 'RgsaddleIrcTest.cpp', 'neb_lj13']]
+        test_array += [['test_lineb_job', 'LinebJobTest.cpp', 'neb_morse']]
+        test_array += [['test_lineb_seed', 'LinebSeedTest.cpp', 'neb_morse']]
     endif
     # Without rgsaddle it checks that prfo_refine is refused before a search.
     test_array += [['test_prfo_refine', 'PrfoRefineTest.cpp', 'neb_lj13']]
@@ -2655,7 +2702,22 @@ if get_option('with_tests')
         )
         _test_prog = _test_exe
         _test_args = []
-        if test.get(0) == 'test_relax_engine' and _relax_front.length() > 0
+        if test.get(0) in ['test_hessian', 'test_lineb_job']
+            # These suites write job outputs alongside their input geometries.
+            _test_prog = py
+            _test_args = [
+                meson.current_source_dir() / 'unit_tests' / 'run_in_fixture_copy.py',
+                _test_exe.full_path(),
+                'neb_morse/reactant.con',
+            ]
+            if test.get(0) == 'test_hessian'
+                _test_args += ['Pt_Heptamer_FrozenLayers/pos.con']
+            else
+                _test_args += ['neb_morse/product.con']
+            endif
+            _test_args += ['--']
+            _case_depends += [_test_exe]
+        elif test.get(0) == 'test_relax_engine' and _relax_front.length() > 0
             _test_prog = py
             _test_args = [
                 meson.project_source_root() / 'scripts' / 'ci' / 'win_relax_engine_test.py',
