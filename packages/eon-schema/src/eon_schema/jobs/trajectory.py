@@ -41,11 +41,20 @@ _KERNELS = {
 }
 _BACKEND_ALIASES = {
     "nwchem": "nwchemc",
+    "nwchempot": "nwchemc",
     "nwchemc": "nwchemc",
     "cpmd": "cpmdc",
+    "cpmdpot": "cpmdc",
     "cpmdc": "cpmdc",
     "mta": "metatomic",
+    "metatomicpot": "metatomic",
     "metatomic": "metatomic",
+    "orca": "orca",
+    "uma": "uma",
+    "umapot": "uma",
+    "omol": "uma",
+    "xtbpot": "xtb",
+    "gfnxtb": "xtb",
     "gfn": "xtb",
     "xtb": "xtb",
 }

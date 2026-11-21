@@ -122,6 +122,21 @@ def test_rgpot_backend_alias_and_config_are_part_of_identity():
     assert restored["potential_digest"] == other["potential_digest"]
 
 
+@pytest.mark.parametrize("backend, canonical", [
+    ("ORCA", "orca"), ("omol", "uma"), ("umapot", "uma"), ("uma", "uma"),
+    ("nwchempot", "nwchemc"), ("cpmdpot", "cpmdc"),
+    ("metatomicpot", "metatomic"), ("xtbpot", "xtb"), ("gfnxtb", "xtb"),
+])
+def test_native_backend_identity_survives_trajectory_roundtrip(backend, canonical):
+    trajectory = trajectory_manifest(
+        [_frame(1.0, energy=-0.5)], {"potential_type": "rgpot", "backend": backend},
+        source_run_id="run",
+    )
+    restored = trajectory_manifest_loads(trajectory_manifest_dumps(trajectory))
+    assert landfold_consume(restored)["potential"]["backend"] == canonical
+    assert restored["potential_digest"] == trajectory["potential_digest"]
+
+
 def test_tampered_frame_and_incomplete_fes_are_rejected():
     manifest = trajectory_manifest(
         [_frame(1.0, energy=1.0), _frame(2.0)],

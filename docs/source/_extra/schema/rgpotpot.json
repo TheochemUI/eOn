@@ -8,7 +8,7 @@
   "properties": {
     "backend": {
       "default": "nwchemc",
-      "description": "rgpot backend: 'nwchemc', 'cpmdc', 'metatomic', or 'xtb' (aliases: nwchem/cpmd/mta/gfn). metatomic/xtb dlopen libmetatomic_engine.so / libxtb_engine.so for packaging.",
+      "description": "In-process rgpot backend. Choose nwchemc, cpmdc, metatomic, orca, uma, or xtb. The orca backend requires params_path.",
       "type": "string"
     },
     "basis": {
@@ -88,7 +88,7 @@
     },
     "engine_path": {
       "default": "",
-      "description": "Engine .so path (libnwchemc / libcpmdc / libmetatomic_engine / libxtb_engine).",
+      "description": "Path to the selected backend's shared library. For ORCA, use liborca_engine.so or set RGPOT_ORCA_ENGINE.",
       "type": "string"
     },
     "engine_library": {
@@ -235,7 +235,7 @@
     },
     "params_path": {
       "default": "",
-      "description": "Path to a Cap'n Proto CPMDParams message. The file owns the CPMD method, including inputSections and inputBlocks, and the scalar keys are not written over it. input_block is appended to inputBlocks. engine_path, engine_root, scratch_dir, and permanent_dir still place the run.",
+      "description": "Path to an unpacked Cap'n Proto flat message. The orca backend requires OrcaParams and passes the message to its engine. For cpmdc, an optional CPMDParams file owns the CPMD method, including inputSections and inputBlocks, and the scalar keys are not written over it. input_block is appended to inputBlocks. engine_path, engine_root, scratch_dir, and permanent_dir still place the run.",
       "type": "string"
     },
     "ranks_per_image": {

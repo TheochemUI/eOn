@@ -852,9 +852,8 @@ class RgpotPot(BaseModel):
     backend: str = Field(
         default="nwchemc",
         description=(
-            "rgpot backend: 'nwchemc', 'cpmdc', 'metatomic', or 'xtb' "
-            "(aliases: nwchem/cpmd/mta/gfn). metatomic/xtb dlopen "
-            "libmetatomic_engine.so / libxtb_engine.so for packaging."
+            "In-process rgpot backend. Choose nwchemc, cpmdc, metatomic, "
+            "orca, uma, or xtb. The orca backend requires params_path."
         ),
     )
     basis: str = Field(
@@ -923,8 +922,8 @@ class RgpotPot(BaseModel):
     engine_path: str = Field(
         default="",
         description=(
-            "Engine .so path (libnwchemc / libcpmdc / "
-            "libmetatomic_engine / libxtb_engine)."
+            "Path to the selected backend's shared library. For ORCA, use "
+            "liborca_engine.so or set RGPOT_ORCA_ENGINE."
         ),
     )
     engine_library: str = Field(
@@ -1028,7 +1027,9 @@ class RgpotPot(BaseModel):
     params_path: str = Field(
         default="",
         description=(
-            "Path to a Cap'n Proto CPMDParams message. The file owns the"
+            "Path to an unpacked Cap'n Proto flat message. The orca backend"
+            " requires OrcaParams and passes the message to its engine. For"
+            " cpmdc, an optional CPMDParams file owns the"
             " CPMD method, including inputSections and inputBlocks, and the"
             " scalar keys are not written over it. input_block is appended"
             " to inputBlocks. engine_path, engine_root, scratch_dir, and"
