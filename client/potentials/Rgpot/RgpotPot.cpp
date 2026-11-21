@@ -4,8 +4,8 @@
 #include "eon/potentials/Rgpot/RgpotPot.h"
 #include "eon/Parameters.h"
 #include "eon/PotRegistry.h"
-#include "eon/potentials/Rgpot/RGPotEngine.h"
 #include "eon/potentials/Rgpot/Backend.h"
+#include "eon/potentials/Rgpot/RGPotEngine.h"
 
 #include <algorithm>
 #include <cctype>
@@ -96,11 +96,10 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
   }
 
   // Dual-read [Metatomic] when RGPOT backend is metatomic
-  if (opt.backend == "metatomic" &&
-      opt.model_path.empty())
+  if (opt.backend == "metatomic" && opt.model_path.empty())
     opt.model_path = p.metatomic_options().model_path;
-  if (opt.backend == "metatomic" &&
-      opt.device == "cpu" && !p.metatomic_options().device.empty())
+  if (opt.backend == "metatomic" && opt.device == "cpu" &&
+      !p.metatomic_options().device.empty())
     opt.device = p.metatomic_options().device;
 
   impl_ = std::make_unique<RGPotEngine>(opt);

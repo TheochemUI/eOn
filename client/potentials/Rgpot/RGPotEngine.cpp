@@ -474,6 +474,8 @@ void RGPotEngine::detachCache() noexcept {
 }
 
 std::array<std::uint64_t, 2> RGPotEngine::cacheCounts() const {
+  if (!impl_->plugin)
+    throw std::runtime_error("RGPOT(" + backend_ + "): no engine cache");
   return impl_->plugin->cacheCounts();
 }
 
