@@ -195,7 +195,14 @@ at 0.05 eV below the barrier.
 
 A saved turning point can evaluate slightly above or below the target
 when an electronic-structure calculation starts from a different orbital
-guess. If the job reports a missing reactant- or product-side crossing,
+guess. If both endpoint energies are at or above the target, rgsaddle
+treats the input as a prepared band and relaxes its endpoints toward
+the turning surfaces. If one end is above and the other below, the
+prepared-band restart requires both gaps to fit within the solver’s
+energy roundoff tolerance. A seed extending below the target on both
+sides lets the solver locate both crossings around the barrier.
+
+If the job reports a missing reactant- or product-side crossing,
 its error gives the target and both endpoint energies in eV. Subtract
 the target from each reported energy to see which end needs attention.
 
