@@ -6,6 +6,7 @@
 #define _GNU_SOURCE
 #endif
 #include "eon/potentials/Rgpot/RGPotEngine.h"
+#include "eon/potentials/Rgpot/Backend.h"
 #include "eon/potentials/Rgpot/CpmdMessage.h"
 
 #include <algorithm>
@@ -267,10 +268,8 @@ struct RGPotEngine::Impl {
 
 RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
     : impl_(std::make_unique<Impl>()) {
-  backend_ = to_lower(opt.backend);
-  if (backend_ == "nwchem" || backend_ == "nwchemc" ||
-      backend_ == "nwchempot") {
-    backend_ = "nwchemc";
+  backend_ = eonc::canonicalRgpotBackend(opt.backend);
+  if (backend_ == "nwchemc") {
     impl_->backend = Impl::Backend::Nwchemc;
     ::capnp::MallocMessageBuilder msg;
     auto params = msg.initRoot<::NWChemParams>();
@@ -310,9 +309,7 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
       throw std::runtime_error(
           "RGPOT(nwchemc): engine not available (set NWCHEMC_LIBRARY / "
           "RGPOT_NWCHEMC_ENGINE or [RgpotPot] engine_path)");
-  } else if (backend_ == "cpmd" || backend_ == "cpmdc" ||
-             backend_ == "cpmdpot") {
-    backend_ = "cpmdc";
+  } else if (backend_ == "cpmdc") {
     impl_->backend = Impl::Backend::Cpmdc;
     std::string local_error;
     ::capnp::MallocMessageBuilder msg;
@@ -383,9 +380,7 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
               : local_error);
     if (!local_error.empty())
       throw std::runtime_error(local_error);
-  } else if (backend_ == "metatomic" || backend_ == "mta" ||
-             backend_ == "metatomicpot") {
-    backend_ = "metatomic";
+  } else if (backend_ == "metatomic") {
     impl_->backend = Impl::Backend::Metatomic;
     MetatomicEngineOptions mopt;
     mopt.model_path = opt.model_path;
@@ -417,8 +412,7 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
     gopt.tag = "orca";
     gopt.config.assign(bytes.begin(), bytes.end());
     impl_->plugin = std::make_unique<GenericEngineLoader>(gopt);
-  } else if (backend_ == "uma" || backend_ == "omol" || backend_ == "umapot") {
-    backend_ = "uma";
+  } else if (backend_ == "uma") {
     impl_->backend = Impl::Backend::Uma;
     GenericEngineOptions gopt;
     gopt.library = "libuma_engine.so";
@@ -443,9 +437,7 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
       throw std::runtime_error(
           "RGPOT(uma): engine not available (set RGPOT_UMA_ENGINE or "
           "[RgpotPot] engine_path to libuma_engine.so)");
-  } else if (backend_ == "xtb" || backend_ == "xtbpot" || backend_ == "gfn" ||
-             backend_ == "gfnxtb") {
-    backend_ = "xtb";
+  } else if (backend_ == "xtb") {
     impl_->backend = Impl::Backend::Xtb;
     XTBEngineOptions xopt;
     xopt.method = xtb_method_from_paramset(opt.xtb_paramset);

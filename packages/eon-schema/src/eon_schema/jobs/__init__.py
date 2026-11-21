@@ -227,6 +227,8 @@ def _provenance_from_results(d: Mapping[str, Any]) -> Dict[str, Any]:
         "name": d.get("rgpot_name", d.get("potential_type", "")),
         "version": rgpot_version if isinstance(rgpot_version, str) else str(rgpot_version),
     }
+    if d.get("rgpot_backend"):
+        rgpot["backend"] = d["rgpot_backend"]
     compatibility: Dict[str, Any] = {
         "schema": d.get("compatibility_schema", ""),
         "readcon": {
@@ -429,6 +431,8 @@ def job_result_to_wire(data: Mapping[str, Any]) -> Dict[str, Any]:
                 "name": val.get("name", ""),
                 "version": val.get("version", ""),
             }
+            if val.get("backend"):
+                wire["rgpot"]["backend"] = val["backend"]
             continue
         if key == "compatibility" and isinstance(val, Mapping):
             stamp = val.get("engine_compatibility")
@@ -487,6 +491,8 @@ def job_result_from_wire(data: Mapping[str, Any]) -> Dict[str, Any]:
                 "name": val.get("name", ""),
                 "version": val.get("version", ""),
             }
+            if val.get("backend"):
+                out["rgpot"]["backend"] = val["backend"]
             continue
         if key == "compatibility" and isinstance(val, Mapping):
             out["compatibility"] = {"engine_compatibility": dict(val)}

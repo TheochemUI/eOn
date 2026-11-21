@@ -12,6 +12,7 @@
 #include "eon/JobResult.h"
 
 #include "eon/Parameters.h"
+#include "eon/potentials/Rgpot/Backend.h"
 #include "version.h"
 
 #include <algorithm>
@@ -43,6 +44,8 @@ JobResultProvenance provenanceForJob(const Parameters &params) {
   provenance.engine_build_identity = GIT_HASH;
   provenance.rgpot_name = lower_name(
       std::string(magic_enum::enum_name(params.potential_options().potential)));
+  if (params.potential_options().potential == PotType::RGPOT)
+    provenance.rgpot_backend = configuredRgpotBackend(params.rgpot_options().backend);
 #ifdef WITH_RGPOT
   provenance.rgpot_version = std::string(JobResultProvenance::rgpot_pin);
 #endif

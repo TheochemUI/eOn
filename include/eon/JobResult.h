@@ -37,6 +37,7 @@ struct JobResultProvenance {
   std::string engine_version;
   std::string engine_build_identity;
   std::string rgpot_name;
+  std::string rgpot_backend;
   std::string rgpot_version;
   bool xtsci{false};
   std::uint16_t xts_abi_major{0};
@@ -82,6 +83,9 @@ struct JobResultProvenance {
     }
     if (!rgpot_name.empty()) {
       out << rgpot_name << " rgpot_name\n";
+    }
+    if (!rgpot_backend.empty()) {
+      out << rgpot_backend << " rgpot_backend\n";
     }
     if (!rgpot_version.empty()) {
       out << "eon.rgpot.v1 rgpot_schema\n";

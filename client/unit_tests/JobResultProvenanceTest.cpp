@@ -117,3 +117,14 @@ TEST_CASE("a job envelope takes optimizer provenance from Parameters",
   REQUIRE(search.toString().find("xtsci optimizer_backend\n") !=
           std::string::npos);
 }
+
+TEST_CASE("native job results retain the configured rgpot engine",
+          "[jobresult][provenance]") {
+  eonc::Parameters params;
+  eonc::ParametersLoadAccess::potential_options(params).potential =
+      eonc::PotType::RGPOT;
+  eonc::ParametersLoadAccess::rgpot_options(params).backend = "ORCA";
+  auto provenance = eonc::provenanceForJob(params);
+  REQUIRE(provenance.rgpot_backend == "orca");
+  REQUIRE(provenance.text().find("orca rgpot_backend\n") != std::string::npos);
+}

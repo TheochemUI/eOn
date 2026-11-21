@@ -5,6 +5,7 @@
 #include "eon/Parameters.h"
 #include "eon/PotRegistry.h"
 #include "eon/potentials/Rgpot/RGPotEngine.h"
+#include "eon/potentials/Rgpot/Backend.h"
 
 #include <algorithm>
 #include <cctype>
@@ -20,7 +21,7 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
     : eonc::Potential(eonc::PotType::RGPOT, p) {
   RGPotEngineOptions opt;
   const auto &o = p.rgpot_options();
-  opt.backend = o.backend;
+  opt.backend = eonc::configuredRgpotBackend(o.backend);
   opt.basis = o.basis;
   opt.theory = o.theory;
   opt.scf_type = o.scf_type;
@@ -54,8 +55,6 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
   opt.task_name = o.task_name;
 
   // Env overrides (CI / benchmarks)
-  if (const char *e = std::getenv("RGPOT_BACKEND"))
-    opt.backend = e;
   if (const char *e = std::getenv("RGPOT_NWCHEM_BASIS"))
     opt.basis = e;
   if (const char *e = std::getenv("RGPOT_NWCHEM_THEORY"))
@@ -66,30 +65,26 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
     opt.params_path = e;
   // Engine-path env overrides are backend-scoped: NWCHEMC_LIBRARY must not
   // leak into a cpmdc configure (CPMDPot resolves CPMDC_LIBRARY itself).
-  std::string backend_lc = opt.backend;
-  std::ranges::transform(backend_lc, backend_lc.begin(),
-                         [](unsigned char c) { return std::tolower(c); });
-  if (backend_lc.rfind("nwchem", 0) == 0) {
+  if (opt.backend == "nwchemc") {
     if (const char *e = std::getenv("NWCHEMC_LIBRARY"))
       opt.engine_path = e;
     else if (const char *e = std::getenv("RGPOT_NWCHEMC_ENGINE"))
       opt.engine_path = e;
     else if (const char *e = std::getenv("RGPOT_NWCHEM_ENGINE"))
       opt.engine_path = e;
-  } else if (backend_lc.rfind("cpmd", 0) == 0) {
+  } else if (opt.backend == "cpmdc") {
     if (const char *e = std::getenv("CPMDC_LIBRARY"))
       opt.engine_path = e;
     else if (const char *e = std::getenv("RGPOT_CPMDC_ENGINE"))
       opt.engine_path = e;
-  } else if (backend_lc.rfind("meta", 0) == 0 || backend_lc == "mta") {
+  } else if (opt.backend == "metatomic") {
     if (const char *e = std::getenv("RGPOT_METATOMIC_ENGINE"))
       opt.engine_path = e;
     else if (const char *e = std::getenv("METATOMIC_ENGINE"))
       opt.engine_path = e;
     if (const char *e = std::getenv("RGPOT_METATOMIC_MODEL"))
       opt.model_path = e;
-  } else if (backend_lc == "xtb" || backend_lc == "xtbpot" ||
-             backend_lc == "gfn" || backend_lc == "gfnxtb") {
+  } else if (opt.backend == "xtb") {
     if (const char *e = std::getenv("RGPOT_XTB_ENGINE"))
       opt.engine_path = e;
     else if (const char *e = std::getenv("XTB_ENGINE"))
@@ -101,10 +96,10 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
   }
 
   // Dual-read [Metatomic] when RGPOT backend is metatomic
-  if ((backend_lc.rfind("meta", 0) == 0 || backend_lc == "mta") &&
+  if (opt.backend == "metatomic" &&
       opt.model_path.empty())
     opt.model_path = p.metatomic_options().model_path;
-  if ((backend_lc.rfind("meta", 0) == 0 || backend_lc == "mta") &&
+  if (opt.backend == "metatomic" &&
       opt.device == "cpu" && !p.metatomic_options().device.empty())
     opt.device = p.metatomic_options().device;
 
@@ -113,11 +108,7 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
   isolatedMolecule_ =
       backend_ == "orca" || (backend_ == "uma" && opt.task_name == "omol");
   driver_ = impl_->worldRank() == 0;
-  std::cout
-      << "RgpotPot: in-process rgpot backend=" << backend_
-      << " (dlopen: "
-         "libnwchemc/libcpmdc/librgpot_metatomic_engine/librgpot_xtb_engine)"
-      << '\n';
+  std::cout << "RgpotPot: in-process rgpot backend=" << backend_ << '\n';
   // Finalize is registered first. The grouped-exit handler is next, and
   // the stop handler is last, so exit runs stop, then Finalize, then _Exit.
   impl_->finalizeMpiAtExit();

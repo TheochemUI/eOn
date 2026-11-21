@@ -505,6 +505,11 @@ std::vector<std::string> LinebJob::run(void) {
     }
 #endif
   }
+  if (!provenance.rgpot_backend.empty()) {
+    metadata["potential"] = {{"schema", "eon.rgpot.v1"}, {"provider", "rgpot"},
+                             {"potential_type", provenance.rgpot_name}, {"kernel", "RgpotPot"},
+                             {"backend", provenance.rgpot_backend}, {"revision", ""}};
+  }
   auto &spectrum = metadata["lineb"]["spectrum"];
   spectrum = nullptr;
 #ifdef RGSADDLE_HAS_LINEB_RATE_DIAGNOSTICS

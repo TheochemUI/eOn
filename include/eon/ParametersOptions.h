@@ -204,7 +204,7 @@ struct socket_nwchem_options_t {
 // [RgpotPot] — in-process rgpot (dlopen engines; no potserv). Packaging
 // prefers metatomic/xtb via RGPOT over fat -Dwith_metatomic / -Dwith_xtb.
 struct rgpot_options_t {
-  /// "nwchemc", "cpmdc", "metatomic", or "xtb"
+  /// nwchemc, cpmdc, metatomic, orca, uma, or xtb.
   std::string backend{"nwchemc"};
   std::string basis{"sto-3g"};
   std::string theory{"scf"};
@@ -225,9 +225,8 @@ struct rgpot_options_t {
   // The text is appended to inputBlocks and does not replace inputSections.
   std::string input_block{};
   std::string permanent_dir{};
-  // Serialized Cap'n Proto CPMDParams. When set, it is the method and the
-  // scalar keys above are not written over it. [cpmd] supplies those
-  // scalars when this path is empty.
+  // ORCA requires a serialized OrcaParams message. For CPMD an optional
+  // CPMDParams message supplies the method in place of the scalar keys.
   std::string params_path{};
   // cpmdc: split the MPI world into groups of this many ranks, one CPMD
   // session per group, and spread NEB images over the groups. 0 keeps one

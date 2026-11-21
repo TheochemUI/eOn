@@ -22,9 +22,8 @@
 class RGPotEngine;
 
 /**
- * Potential backed by rgpot NWChemPot / CPMDPot (in-process dlopen of
- * libnwchemc / libcpmdc). Not potserv RPC. Configure via [RgpotPot] INI;
- * energy eV, forces eV/Angstrom.
+ * In-process rgpot engine selected by [RgpotPot]. The engine returns
+ * energies in eV and forces in eV/Angstrom.
  */
 class RgpotPot final : public eonc::Potential
 #ifdef RGPOT_HAS_CACHE
