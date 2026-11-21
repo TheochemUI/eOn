@@ -2702,7 +2702,22 @@ if get_option('with_tests')
         )
         _test_prog = _test_exe
         _test_args = []
-        if test.get(0) == 'test_relax_engine' and _relax_front.length() > 0
+        if test.get(0) in ['test_hessian', 'test_lineb_job']
+            # These suites write job outputs alongside their input geometries.
+            _test_prog = py
+            _test_args = [
+                meson.current_source_dir() / 'unit_tests' / 'run_in_fixture_copy.py',
+                _test_exe.full_path(),
+                'neb_morse/reactant.con',
+            ]
+            if test.get(0) == 'test_hessian'
+                _test_args += ['Pt_Heptamer_FrozenLayers/pos.con']
+            else
+                _test_args += ['neb_morse/product.con']
+            endif
+            _test_args += ['--']
+            _case_depends += [_test_exe]
+        elif test.get(0) == 'test_relax_engine' and _relax_front.length() > 0
             _test_prog = py
             _test_args = [
                 meson.project_source_root() / 'scripts' / 'ci' / 'win_relax_engine_test.py',
