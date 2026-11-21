@@ -36,7 +36,10 @@ def test_jobs_fill_optimizer_provenance():
     )
     assert "provenance.text()" in search
 
-    filled = "env.provenance = provenanceForJob(params);"
+    # A job that holds its potential passes it as a second argument, so the
+    # record names the engine that was loaded. Some jobs build the record
+    # once and assign it to every envelope they return.
+    filled = "provenanceForJob(params"
     for rel in JOBS:
         text = (ROOT / rel).read_text(encoding="utf-8")
         assert text.count(filled) >= 1, rel
@@ -48,7 +51,8 @@ def test_jobs_fill_optimizer_provenance():
     assert "OptType::XTSCI" in src
     assert "WITH_RGMIN" in src
     assert "WITH_RGPOT" in src
-    assert "rgpot_pin" in src
+    assert "rgpot_version" in src
+    assert "rgpot_engine_version" in src
     assert "'JobResultProvenance.cpp'" in (
         ROOT / "client/meson.build"
     ).read_text(encoding="utf-8")
