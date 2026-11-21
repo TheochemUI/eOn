@@ -18,13 +18,16 @@ jobs:
           - label: baseline
             rgsaddle_repo: OmniPotentRPC/rgsaddle
             rgsaddle_rev: 06c55c5c9e8308daac2c1d5860d828ecc9fa7be9
+            rgmin_repo: OmniPotentRPC/rgmin
             rgmin_rev: d76539dbe40695c0032e0d96a56e7932f2cc49ab
           - label: LI-NEB
             rgsaddle_repo: HaoZeke/rgsaddle
-            rgsaddle_rev: 9ac3607724ea97f40bb27c5172b2492e7ee782d6
-            rgmin_rev: f3d18706c2b1ab380fd75f62449fdab46d01f5e2
+            rgsaddle_rev: 904d41ac57058b4a47fd990c4f9a5b1497fa6927
+            rgmin_repo: HaoZeke/rgmin
+            rgmin_rev: f2527782713dcf4b4d5d91af9da1bba80c32bc0c
     name: test (rgmin + rgsaddle, ${{ matrix.label }})
     env:
+      RGMIN_REPO: ${{ matrix.rgmin_repo }}
       RGMIN_REV: ${{ matrix.rgmin_rev }}
       RGSADDLE_REV: ${{ matrix.rgsaddle_rev }}
       RGSADDLE_REPO: ${{ matrix.rgsaddle_repo }}
@@ -48,7 +51,7 @@ jobs:
           cargo install cargo-c --version "$CARGO_C_VERSION" --locked \
             --root "$RUNNER_TEMP/cargo-c"
           export PATH="$RUNNER_TEMP/cargo-c/bin:$PATH"
-          git clone --filter=blob:none https://github.com/OmniPotentRPC/rgmin "$RUNNER_TEMP/rgmin"
+          git clone --filter=blob:none "https://github.com/$RGMIN_REPO" "$RUNNER_TEMP/rgmin"
           git clone --filter=blob:none "https://github.com/$RGSADDLE_REPO" "$RUNNER_TEMP/rgsaddle"
           git -C "$RUNNER_TEMP/rgmin" checkout --detach "$RGMIN_REV"
           git -C "$RUNNER_TEMP/rgsaddle" checkout --detach "$RGSADDLE_REV"
