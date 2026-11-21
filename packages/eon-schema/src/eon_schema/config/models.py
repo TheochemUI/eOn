@@ -2877,6 +2877,8 @@ class LinebConfig(BaseModel):
     endpoint_convergence: bool = Field(default=False, description="Apply opt_tol to the endpoints and perp_tol to the interior.")
     result_cache: str = Field(default="", description="Path to the rgpot result cache for this LI-NEB job.")
     projected_verlet: bool = Field(default=False, description="Optimize the band with velocity-projected velocity Verlet.")
+    interpolated_hessian: bool = Field(default=False, description="Interpolate path-image Hessians to the rate beads.")
+    image_hessian_step: float = Field(default=0.0, ge=0, allow_inf_nan=False, description="Cartesian displacement in angstrom for image Hessians. Zero selects the solver default.")
     interpolated_force_clock: bool = Field(default=False, description="Propagate imaginary time with velocity Verlet on the interpolated tangential image force.")
     endpoint_kappa: float = Field(default=0.0, ge=0, allow_inf_nan=False,
                                   description="Fixed endpoint coefficient; zero selects endpoint_scale.")
@@ -2933,6 +2935,12 @@ class LinebConfig(BaseModel):
             " alignment and needs every atom free."
         ),
     )
+
+    @model_validator(mode="after")
+    def validate_image_hessian_step(self):
+        if self.image_hessian_step > 0 and not self.interpolated_hessian:
+            raise ValueError("image_hessian_step requires interpolated_hessian")
+        return self
 
     @validator("beads")
     def beads_not_one(cls, v):

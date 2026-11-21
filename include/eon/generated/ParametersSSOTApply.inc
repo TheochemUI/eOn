@@ -59,4 +59,6 @@
     o.projected_verlet = GD::LINEB_PROJECTED_VERLET;
     o.result_cache = std::string(GD::LINEB_RESULT_CACHE);
     o.interpolated_force_clock = GD::LINEB_INTERPOLATED_FORCE_CLOCK;
+    o.interpolated_hessian = GD::LINEB_INTERPOLATED_HESSIAN;
+    o.image_hessian_step = GD::LINEB_IMAGE_HESSIAN_STEP;
   }

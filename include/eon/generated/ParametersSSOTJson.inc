@@ -62,7 +62,9 @@ inline void project_ssot_json_write(json &j, const Parameters &p) {
         {"endpoint_convergence", o.endpoint_convergence},
         {"projected_verlet", o.projected_verlet},
         {"result_cache", o.result_cache},
-        {"interpolated_force_clock", o.interpolated_force_clock}
+        {"interpolated_force_clock", o.interpolated_force_clock},
+        {"interpolated_hessian", o.interpolated_hessian},
+        {"image_hessian_step", o.image_hessian_step}
     };
   }
 }
@@ -142,5 +144,7 @@ inline void project_ssot_json_read(const json &j, Parameters &p) {
     if (s.contains("projected_verlet")) o.projected_verlet = s.at("projected_verlet").get<decltype(o.projected_verlet)>();
     if (s.contains("result_cache")) o.result_cache = s.at("result_cache").get<decltype(o.result_cache)>();
     if (s.contains("interpolated_force_clock")) o.interpolated_force_clock = s.at("interpolated_force_clock").get<decltype(o.interpolated_force_clock)>();
+    if (s.contains("interpolated_hessian")) o.interpolated_hessian = s.at("interpolated_hessian").get<decltype(o.interpolated_hessian)>();
+    if (s.contains("image_hessian_step")) o.image_hessian_step = s.at("image_hessian_step").get<decltype(o.image_hessian_step)>();
   }
 }

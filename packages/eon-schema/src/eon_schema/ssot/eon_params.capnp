@@ -305,6 +305,8 @@ struct LinebOptions {
   projected_verlet @18 :Bool = false;
   result_cache @19 :Text = "";
   interpolated_force_clock @20 :Bool = false;
+  interpolated_hessian @21 :Bool = false;
+  image_hessian_step @22 :Float64 = 0.0;
 }
 
 # ---------------------------------------------------------------------

@@ -23,6 +23,8 @@ def test_lineb_json_round_trip():
         endpoint_kappa=2.5,
         molecular=True,
         interpolated_force_clock=True,
+        interpolated_hessian=True,
+        image_hessian_step=0.005,
         opt_tol=1e-4,
         perp_tol=2e-4,
     )
@@ -33,6 +35,8 @@ def test_lineb_json_round_trip():
     assert restored.beads == 32
     assert restored.molecular is True
     assert restored.interpolated_force_clock is True
+    assert restored.interpolated_hessian is True
+    assert restored.image_hessian_step == 0.005
     assert restored.opt_tol == 1e-4
     assert restored.perp_tol == 2e-4
 
@@ -44,3 +48,8 @@ def test_lineb_beads_one_refused():
 
 def test_lineb_beads_two_ok():
     assert LinebConfig(beads=2).beads == 2
+
+
+def test_image_displacement_requires_image_hessians():
+    with pytest.raises(ValidationError, match="requires interpolated_hessian"):
+        LinebConfig(image_hessian_step=0.005)

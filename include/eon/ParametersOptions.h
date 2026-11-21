@@ -1041,6 +1041,8 @@ struct lineb_options_t {
   bool endpoint_convergence{false};
   bool projected_verlet{false};
   bool interpolated_force_clock{false};
+  bool interpolated_hessian{false};
+  double image_hessian_step{0.0};
   std::string result_cache;
   double time_step{0.1};
   double max_move{0.2};

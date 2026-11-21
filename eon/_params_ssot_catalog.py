@@ -407,6 +407,20 @@ CATALOG = {
           "ordinal": 20,
           "snake": "interpolated_force_clock",
           "type": "Bool"
+        },
+        {
+          "capnp": "interpolated_hessian",
+          "default": False,
+          "ordinal": 21,
+          "snake": "interpolated_hessian",
+          "type": "Bool"
+        },
+        {
+          "capnp": "image_hessian_step",
+          "default": 0.0,
+          "ordinal": 22,
+          "snake": "image_hessian_step",
+          "type": "Float64"
         }
       ],
       "json_name": "Lineb",

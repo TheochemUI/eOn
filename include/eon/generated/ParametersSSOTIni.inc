@@ -79,4 +79,6 @@ inline void project_ssot_ini(const INIReader &ini, Parameters &params) {
   o.projected_verlet = ini.GetBoolean(sec, "projected_verlet", o.projected_verlet);
   o.result_cache = ini.Get(sec, "result_cache", o.result_cache);
   o.interpolated_force_clock = ini.GetBoolean(sec, "interpolated_force_clock", o.interpolated_force_clock);
+  o.interpolated_hessian = ini.GetBoolean(sec, "interpolated_hessian", o.interpolated_hessian);
+  o.image_hessian_step = ini.GetReal(sec, "image_hessian_step", o.image_hessian_step);
 }

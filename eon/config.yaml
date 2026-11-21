@@ -1545,6 +1545,15 @@ Lineb:
             kind: bool
             default: false
 
+        interpolated_hessian:
+            kind: bool
+            default: false
+
+        # Cartesian displacement in Angstrom; zero selects the solver default.
+        image_hessian_step:
+            kind: float
+            default: 0.0
+
         # Positive for a fixed turning-surface coefficient; zero selects endpoint_scale.
         endpoint_kappa:
             kind: float

@@ -60,7 +60,7 @@ is the one selected by the `LI-NEB` row of
 prefix="$PWD/build-lineb-deps"
 mkdir -p "$prefix"
 git clone https://github.com/HaoZeke/rgsaddle.git "$prefix/src/rgsaddle"
-git -C "$prefix/src/rgsaddle" checkout --detach 0cf4ccc52fd3186bdbafb3dbf1907d282c1db586
+git -C "$prefix/src/rgsaddle" checkout --detach 9ac3607724ea97f40bb27c5172b2492e7ee782d6
 cargo install cargo-c --version 0.10.23 --locked --root "$prefix/tools"
 export PATH="$prefix/tools/bin:$PATH"
 (cd "$prefix/src/rgsaddle" && cargo cinstall --locked --release --features capi \
@@ -109,6 +109,20 @@ To try the rate diagnostic, set `beads = 8` in the copied `[Lineb]`
 section and run the client in the same directory. The reference run
 wrote eight frames to `lineb-orbit.con`. It used 35 rate evaluations,
 bringing the solver total to 1,119 and the job total to 1,122.
+
+For the image-Hessian approximation in section II.D of the 2018 paper,
+set `interpolated_hessian = true` in `[Lineb]`. The solver computes
+Cartesian Hessians by central differences at the optimized path images
+and interpolates them to the rate beads. The default computes the
+curvature at the beads. The choice is independent of the orbit clock.
+Set `image_hessian_step` to a positive displacement in Å to control
+the finite differences at the images. Zero selects the solver default.
+
+The job records the chosen method in `lineb.hessian`. With the counted
+rate interface, `lineb.rate_calls.curvature` and `lineb.rate_calls.bead`
+separate curvature evaluations from bead energy/gradient evaluations.
+These are subdivisions of `surface_calls.rate`. Include that rate total
+once when comparing the cost of a reactive flux.
 
 ## Inputs
 

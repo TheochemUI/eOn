@@ -51,6 +51,17 @@
       "description": "Optimize the band with velocity-projected velocity Verlet.",
       "type": "boolean"
     },
+    "interpolated_hessian": {
+      "default": false,
+      "description": "Interpolate path-image Hessians to the rate beads.",
+      "type": "boolean"
+    },
+    "image_hessian_step": {
+      "default": 0.0,
+      "description": "Cartesian displacement in angstrom for image Hessians. Zero selects the solver default.",
+      "minimum": 0,
+      "type": "number"
+    },
     "interpolated_force_clock": {
       "default": false,
       "description": "Propagate imaginary time with velocity Verlet on the interpolated tangential image force.",

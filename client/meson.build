@@ -428,6 +428,7 @@ if get_option('with_rgsaddle')
         _args += ['-DWITH_RGSADDLE_LINEB']
         foreach api, flag : {
             'rgsaddle_lineb_solve_counted': 'WITH_RGSADDLE_LINEB_COUNTS',
+            'rgsaddle_lineb_solve_counted_rate': 'WITH_RGSADDLE_LINEB_RATE',
             'rgsaddle_lineb_solve_counted_turning': 'WITH_RGSADDLE_LINEB_TURNING',
             'rgsaddle_lineb_solve_with_kappa': 'WITH_RGSADDLE_LINEB_KAPPA',
         }

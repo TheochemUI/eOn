@@ -580,6 +580,8 @@
         "endpoint_convergence",
         "result_cache",
         "projected_verlet",
+        "interpolated_hessian",
+        "image_hessian_step",
         "interpolated_force_clock",
         "endpoint_kappa",
         "endpoint_scale",

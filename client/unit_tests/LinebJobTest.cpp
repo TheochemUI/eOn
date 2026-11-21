@@ -244,6 +244,24 @@ TEST_CASE("LinebJob runs a fixed-energy seeded Morse band when available",
     REQUIRE((launch == 0 || launch == seed.size() - 1));
     REQUIRE(turn.at("return_energy_minus_target_eV").is_number());
     REQUIRE(turn.at("max_cartesian_displacement_angstrom").is_number());
+#ifdef WITH_RGSADDLE_LINEB_RATE
+    lineb.interpolated_hessian = true;
+    lineb.image_hessian_step = 0.005;
+    eonc::LinebJob imageRateJob(pot, params);
+    imageRateJob.run();
+    const auto imageFrame = readcon::read_first_frame("lineb-orbit.con");
+    const auto imageMetadata =
+        nlohmann::json::parse(imageFrame.metadata_json());
+    const auto &imageRate = imageMetadata.at("lineb");
+    REQUIRE(imageRate.at("hessian") == "interpolated_images");
+    REQUIRE(imageRate.at("image_hessian_step_angstrom").get<double>() ==
+            Catch::Approx(lineb.image_hessian_step));
+    const auto &cost = imageRate.at("rate_calls");
+    REQUIRE(cost.at("curvature").get<size_t>() == 2 * 3 * seed.size());
+    REQUIRE(cost.at("bead").get<long>() == lineb.beads);
+    REQUIRE(imageRate.at("surface_calls").at("rate").get<size_t>() ==
+            cost.at("curvature").get<size_t>() + cost.at("bead").get<size_t>());
+#endif
 #endif
 #endif
 #endif

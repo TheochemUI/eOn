@@ -260,6 +260,12 @@ std::vector<std::string> LinebJob::run(void) {
 #endif
   const auto solveStart = pot->forceCallCounter.load();
   rgsaddle_lineb_result_t result{};
+#ifndef WITH_RGSADDLE_LINEB_RATE
+  if (o.interpolated_hessian) {
+    throw std::runtime_error("lineb: interpolated_hessian requires "
+                             "rgsaddle_lineb_solve_counted_rate");
+  }
+#endif
 #ifndef RGSADDLE_LINEB_INTERPOLATED_FORCE_CLOCK
   if (o.interpolated_force_clock) {
     throw std::runtime_error(
@@ -311,13 +317,27 @@ std::vector<std::string> LinebJob::run(void) {
   orbit.gradients = orbitGradients.data();
 #ifdef WITH_RGSADDLE_LINEB_TURNING
   rgsaddle_lineb_turning_t turning{};
-  const rgsaddle_status_t rc = rgsaddle_lineb_solve_counted_turning(
-      &cfg, static_cast<int64_t>(band.size()),
-      static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
-      o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
-      &ctx, optimized.data(), &result,
-      o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options, &counts,
-      &negativeModes, &retainedModes, o.beads ? &orbit : nullptr, &turning);
+  const auto solveRate = [&](auto fn, auto... rateOptions) {
+    return fn(&cfg, static_cast<int64_t>(band.size()),
+              static_cast<int64_t>(freeAtoms.size()), positions.data(),
+              masses.data(), o.molecular ? 1 : 0, o.energy, o.max_steps,
+              o.beads, surfaceCallback, &ctx, optimized.data(), &result,
+              o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options,
+              &counts, &negativeModes, &retainedModes,
+              o.beads ? &orbit : nullptr, &turning, rateOptions...);
+  };
+#ifdef WITH_RGSADDLE_LINEB_RATE
+  if (o.interpolated_hessian) {
+    options |= RGSADDLE_LINEB_INTERPOLATED_HESSIAN;
+  }
+  rgsaddle_lineb_rate_diagnostics_t rateDiagnostics{};
+  const auto rc =
+      solveRate(rgsaddle_lineb_solve_counted_rate,
+                o.image_hessian_step > 0 ? &o.image_hessian_step : nullptr,
+                &rateDiagnostics);
+#else
+  const auto rc = solveRate(rgsaddle_lineb_solve_counted_turning);
+#endif
 #else
   const rgsaddle_status_t rc = rgsaddle_lineb_solve_counted_orbit(
       &cfg, static_cast<int64_t>(band.size()),
@@ -467,6 +487,19 @@ std::vector<std::string> LinebJob::run(void) {
          turning.endpoint_energy_difference}};
   }
 #endif
+  if (o.beads > 0) {
+    metadata["lineb"]["hessian"] =
+        o.interpolated_hessian ? "interpolated_images" : "beads";
+#ifdef WITH_RGSADDLE_LINEB_RATE
+    metadata["lineb"]["rate_calls"] = {
+        {"curvature", rateDiagnostics.curvature_evaluations},
+        {"bead", rateDiagnostics.bead_evaluations}};
+    if (o.interpolated_hessian) {
+      metadata["lineb"]["image_hessian_step_angstrom"] =
+          rateDiagnostics.image_hessian_step;
+    }
+#endif
+  }
   auto &spectrum = metadata["lineb"]["spectrum"];
   spectrum = nullptr;
 #ifdef RGSADDLE_HAS_LINEB_RATE_DIAGNOSTICS
