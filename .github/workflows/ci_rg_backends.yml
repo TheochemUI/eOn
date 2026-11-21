@@ -44,6 +44,8 @@ jobs:
         run: command -v cbindgen || cargo install cbindgen
 
       - name: Install the rgmin and rgsaddle C ABI
+        env:
+          BACKEND_CASE: ${{ matrix.label }}
         shell: pixi run bash -e {0}
         run: |
           set -euo pipefail
@@ -57,10 +59,13 @@ jobs:
           git -C "$RUNNER_TEMP/rgsaddle" checkout --detach "$RGSADDLE_REV"
           (cd "$RUNNER_TEMP/rgmin" && cargo cinstall --release --features capi \
             --prefix="$prefix" --libdir="$prefix/lib")
-          # cinstall writes a cbindgen-regenerated rgmin.h that C++ cannot
-          # compile; the curated header and its dlpack.h live in include/.
-          cp "$RUNNER_TEMP/rgmin/include/rgmin.h" "$prefix/include/"
-          cp -r "$RUNNER_TEMP/rgmin/include/dlpack" "$prefix/include/"
+          # The baseline rgmin revision requires the source headers.
+          if [[ "$BACKEND_CASE" == baseline ]]; then
+            cp "$RUNNER_TEMP/rgmin/include/rgmin.h" "$prefix/include/"
+            cp -r "$RUNNER_TEMP/rgmin/include/dlpack" "$prefix/include/"
+          fi
+          cmp "$RUNNER_TEMP/rgmin/include/rgmin.h" "$prefix/include/rgmin.h"
+          cmp "$RUNNER_TEMP/rgmin/include/dlpack/dlpack.h" "$prefix/include/dlpack/dlpack.h"
           (cd "$RUNNER_TEMP/rgsaddle" && cargo cinstall --release --features capi \
             --prefix="$prefix" --libdir="$prefix/lib")
           echo "RG_PREFIX=$prefix" >> "$GITHUB_ENV"

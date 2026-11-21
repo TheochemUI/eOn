@@ -127,10 +127,17 @@ configure error. ``-Dwith_xtsci=true`` is the deprecated spelling of
 ``enabled``. The client needs rgmin 0.4.0 or newer, installed with
 
 ```{code-block} bash
-cargo cinstall --release --features capi --prefix=$PREFIX
-# cinstall regenerates rgmin.h; the C++ client needs the curated header
-cp include/rgmin.h $PREFIX/include/
-cp -r include/dlpack $PREFIX/include/
+cargo cinstall --release --features capi --prefix="$PREFIX"
+```
+
+rgmin 0.5.0 and 0.6.0, as well as the LI-NEB build's pinned 0.7.0
+candidate, install the C header and its DLPack dependency. With an
+older checkout that generates its header, copy the C++-compatible headers
+from that checkout into the same prefix:
+
+```{code-block} bash
+cp include/rgmin.h "$PREFIX/include/"
+cp -r include/dlpack "$PREFIX/include/"
 ```
 
 ``eonclient --features`` lists ``rgmin minimizers`` when it is linked.
