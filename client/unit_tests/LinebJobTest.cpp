@@ -173,6 +173,9 @@ TEST_CASE("LinebJob runs a fixed-energy seeded Morse band when available",
     const auto rateFrame = readcon::read_first_frame("lineb.con");
     const auto rateMetadata = nlohmann::json::parse(rateFrame.metadata_json());
     const auto &rate = rateMetadata.at("lineb");
+    REQUIRE(rate.at("hbar") == lineb.hbar);
+    REQUIRE(rate.at("boltzmann") == lineb.boltzmann);
+    REQUIRE(rate.at("molecular") == lineb.molecular);
     REQUIRE(rate.at("potential_calls").at("total").get<size_t>() ==
             pot->forceCallCounter.load() - callsBeforeRateJob);
     // One mobile atom contributes three coordinates per replica. The
