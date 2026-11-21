@@ -13,8 +13,20 @@ Jónsson, [J. Chem. Phys. 148, 102334 (2018)](https://doi.org/10.1063/1.5007180)
 The path is the mass-weighted band that minimizes the abbreviated action
 {math}`W(E) = \int \sqrt{2(V-E)}\,ds`, with endpoints held on {math}`V = E`.
 
-The search runs in rgsaddle through the lineb C API
-(`rgsaddle_lineb_solve`). Build with `-Dwith_rgsaddle=true` against rgsaddle with C ABI 1.46 or compatible later minor.
+The search runs in rgsaddle. Build eOn with `-Dwith_rgsaddle=true` and
+an rgsaddle library that exports `rgsaddle_lineb_solve`. Meson checks
+the installed library during configuration. Look for the following result
+in the setup log. A cached check also ends in `YES (cached)`.
+
+```text
+Checking for function "rgsaddle_lineb_solve" with dependency rgsaddle: YES
+```
+
+For phase-resolved counts, the library must also export
+`rgsaddle_lineb_solve_counted`. For bead-resolved gradients and residuals,
+use a matching header and library with `RGSADDLE_HAS_LINEB_ORBIT` and
+`rgsaddle_lineb_solve_counted_orbit`. These checks distinguish builds
+that share an ABI minor version but provide different entry points.
 
 Energies are in eV, lengths in Å and masses in amu. Defaults for
 `hbar` and `boltzmann` match eOn's tunneling constants so the reported
@@ -48,6 +60,11 @@ print(frame.metadata["evaluation_counts"]["potential_calls"])
 A reference run gave an action of 36.6004 and used 1084 potential
 evaluations for the solve and three to write the image energies.
 The example requests the path only. Its JSON rate field is null.
+
+To try the rate diagnostic, set `beads = 8` in the copied `[Lineb]`
+section and run the client in the same directory. The reference run
+wrote eight frames to `lineb-orbit.con`. It used 35 rate evaluations,
+bringing the solver total to 1,119 and the job total to 1,122.
 
 ## Inputs
 
