@@ -47,6 +47,34 @@ Energies are in eV, lengths in Å and masses in amu. Defaults for
 `hbar` and `boltzmann` match eOn's tunneling constants so the reported
 temperature is in kelvin.
 
+## Build the Linux client from source
+
+Start in the eOn checkout containing `examples/lineb-morse`. Open the
+default Pixi shell as described in {doc}`../install/index`. In that shell,
+install the rgsaddle C library under a private prefix. The revision below
+is the one selected by the `LI-NEB` row of
+`.github/workflows/ci_rg_backends.yml` in this checkout.
+
+```bash
+prefix="$PWD/build-lineb-deps"
+mkdir -p "$prefix"
+git clone https://github.com/HaoZeke/rgsaddle.git "$prefix/src/rgsaddle"
+git -C "$prefix/src/rgsaddle" checkout --detach 98344e40112fb17fc69bf7c4e95b789a55e8de6c
+cargo install cargo-c --version 0.10.23 --locked --root "$prefix/tools"
+export PATH="$prefix/tools/bin:$PATH"
+(cd "$prefix/src/rgsaddle" && cargo cinstall --locked --release --features capi \
+  --prefix="$prefix" --libdir="$prefix/lib")
+export PKG_CONFIG_PATH="$prefix/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+export LD_LIBRARY_PATH="$prefix/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+meson setup build-lineb --buildtype=release -Dwith_rgsaddle=true
+meson compile -C build-lineb
+export PATH="$PWD/build-lineb/client:$PATH"
+eonclient --features
+```
+
+Keep this shell open for the Morse example so the client can load the
+same library that Meson checked.
+
 ## Run a Morse barrier example
 
 From the repository root, copy the example to a run directory and invoke
