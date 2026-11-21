@@ -280,7 +280,7 @@ conversion for the reactant and the instanton. The native frames record the
 run's `lineb.hbar`, `lineb.boltzmann` and `lineb.molecular` settings.
 
 ```sh
-uvx --from git+https://github.com/HaoZeke/rgpycrumbs.git@0bb8865339e540de643887baf1580b5755bcbbd0 \
+uvx --from git+https://github.com/HaoZeke/rgpycrumbs.git@0c8cbb32a6060b5670af91a93d790f234e54ef9e \
     rgpycrumbs eon molecular-instanton-rate lineb-orbit.con \
     reactant_spectrum.json reactant.extxyz --confirm-same-energy-zero
 ```
@@ -326,3 +326,16 @@ twice the reported half period. `max_abs_eV_per_angstrom` and
 the CON atom. Compare these values as the path images and bead count
 increase. A continuum residual requires differentiating the path in
 continuous imaginary time.
+
+To check both residuals from the saved gradients, run the following command
+in the job directory. It reads the ring through readcon and uses twice the
+recorded half-period. It requires no calculator or electronic evaluations.
+
+```sh
+uvx --from git+https://github.com/HaoZeke/rgpycrumbs.git@0c8cbb32a6060b5670af91a93d790f234e54ef9e \
+    rgpycrumbs eon orbit-residual lineb-orbit.con --compare-discretizations
+```
+
+For the eight-bead Morse example, the largest finite-bead residual is
+0.0229891 eV/Å, which agrees with the native `lineb.stationarity` field.
+Fourier differentiation on the same eight coordinates gives 0.0234458 eV/Å.
