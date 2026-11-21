@@ -14,6 +14,7 @@
 #include "eon/CalculatorGroupUse.h"
 #include "eon/Potential.h"
 #include "eon/potentials/Rgpot/GroupSchedule.h"
+#include "eon/potentials/RgpotAdapter/ResultCache.h"
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -25,11 +26,21 @@ class RGPotEngine;
  * libnwchemc / libcpmdc). Not potserv RPC. Configure via [RgpotPot] INI;
  * energy eV, forces eV/Angstrom.
  */
-class RgpotPot final : public eonc::Potential {
+class RgpotPot final : public eonc::Potential
+#ifdef RGPOT_HAS_CACHE
+    ,
+                       public eonc::RgpotEngineCacheProvider
+#endif
+{
 public:
   explicit RgpotPot(const eonc::Parameters &p);
   ~RgpotPot() override;
 
+#ifdef RGPOT_HAS_CACHE
+  void attachEngineCache(const std::string &path) override;
+  void detachEngineCache() noexcept override;
+  [[nodiscard]] rgpot::cache::EvalCounts engineCacheCounts() const override;
+#endif
   RgpotPot(const RgpotPot &) = delete;
   RgpotPot &operator=(const RgpotPot &) = delete;
 

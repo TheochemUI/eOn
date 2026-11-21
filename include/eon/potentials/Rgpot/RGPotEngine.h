@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -57,6 +58,9 @@ std::string nwchemDftInputBlock(const std::string &theory,
 class RGPotEngine {
 public:
   explicit RGPotEngine(const RGPotEngineOptions &opt);
+  void attachCache(const std::string &path);
+  void detachCache() noexcept;
+  [[nodiscard]] std::array<std::uint64_t, 2> cacheCounts() const;
   ~RGPotEngine();
   RGPotEngine(const RGPotEngine &) = delete;
   RGPotEngine &operator=(const RGPotEngine &) = delete;

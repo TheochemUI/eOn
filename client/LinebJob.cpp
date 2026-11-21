@@ -200,11 +200,12 @@ std::vector<std::string> LinebJob::run(void) {
 #ifdef RGPOT_HAS_CACHE
   std::optional<ScopedRgpotCache> resultCache;
   if (!o.result_cache.empty()) {
-    auto *provider = dynamic_cast<RgpotCacheProvider *>(pot.get());
-    if (!provider) {
+    if (auto *provider = dynamic_cast<RgpotCacheProvider *>(pot.get()))
+      resultCache.emplace(*provider, o.result_cache);
+    else if (auto *engine = dynamic_cast<RgpotEngineCacheProvider *>(pot.get()))
+      resultCache.emplace(*engine, o.result_cache);
+    else
       throw std::runtime_error("lineb: result_cache requires an rgpot adapter");
-    }
-    resultCache.emplace(*provider, o.result_cache);
   }
   const auto cacheCounts = [&] {
     return resultCache ? resultCache->counts() : rgpot::cache::EvalCounts{};

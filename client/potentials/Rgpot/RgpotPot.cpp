@@ -110,7 +110,8 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
 
   impl_ = std::make_unique<RGPotEngine>(opt);
   backend_ = impl_->backend();
-  isolatedMolecule_ = backend_ == "orca" || (backend_ == "uma" && opt.task_name == "omol");
+  isolatedMolecule_ =
+      backend_ == "orca" || (backend_ == "uma" && opt.task_name == "omol");
   driver_ = impl_->worldRank() == 0;
   std::cout
       << "RgpotPot: in-process rgpot backend=" << backend_
@@ -125,6 +126,17 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
   if (!driver_)
     serveWorker();
 }
+
+#ifdef RGPOT_HAS_CACHE
+void RgpotPot::attachEngineCache(const std::string &path) {
+  impl_->attachCache(path);
+}
+void RgpotPot::detachEngineCache() noexcept { impl_->detachCache(); }
+rgpot::cache::EvalCounts RgpotPot::engineCacheCounts() const {
+  const auto counts = impl_->cacheCounts();
+  return {counts[0], counts[1]};
+}
+#endif
 
 RgpotPot::~RgpotPot() {
   const bool grouped = impl_ && impl_->calculatorWorld() > 1;

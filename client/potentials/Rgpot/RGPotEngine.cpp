@@ -405,13 +405,15 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
   } else if (backend_ == "orca") {
     impl_->backend = Impl::Backend::Orca;
     if (opt.params_path.empty())
-      throw std::runtime_error("RGPOT(orca): params_path needs a serialized OrcaParams message");
+      throw std::runtime_error(
+          "RGPOT(orca): params_path needs a serialized OrcaParams message");
     auto words = read_params_file(opt.params_path);
     const auto bytes = kj::arrayPtr(words.data(), words.size()).asBytes();
     GenericEngineOptions gopt;
     gopt.library = "liborca_engine.so";
     gopt.env_var = "RGPOT_ORCA_ENGINE";
-    gopt.engine_path = opt.engine_path.empty() ? opt.engine_library : opt.engine_path;
+    gopt.engine_path =
+        opt.engine_path.empty() ? opt.engine_library : opt.engine_path;
     gopt.tag = "orca";
     gopt.config.assign(bytes.begin(), bytes.end());
     impl_->plugin = std::make_unique<GenericEngineLoader>(gopt);
@@ -464,6 +466,23 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
         "RGPOT: unknown backend '" + opt.backend +
         "' (expected nwchemc, cpmdc, metatomic, orca, uma, or xtb)");
   }
+}
+
+void RGPotEngine::attachCache(const std::string &path) {
+  if (!impl_->plugin)
+    throw std::runtime_error(
+        "RGPOT(" + backend_ +
+        "): result cache requires an engine with the cache ABI");
+  impl_->plugin->attachCache(path);
+}
+
+void RGPotEngine::detachCache() noexcept {
+  if (impl_->plugin)
+    impl_->plugin->detachCache();
+}
+
+std::array<std::uint64_t, 2> RGPotEngine::cacheCounts() const {
+  return impl_->plugin->cacheCounts();
 }
 
 RGPotEngine::~RGPotEngine() = default;
