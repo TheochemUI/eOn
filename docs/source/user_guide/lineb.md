@@ -152,6 +152,13 @@ To select the imaginary-time propagation described in section II.C, set
 of the signed tangential image forces to determine the half-period,
 temperature and bead positions. The default obtains them by quadrature.
 The `lineb.replica_clock` field in the CON frame metadata records the selection.
+With a library exporting `rgsaddle_lineb_solve_counted_turning`, the
+`lineb.turning` object also gives the zero-based launch image, the
+mass-weighted path length and return arc coordinate (√amu Å), the largest
+Cartesian component of the displacement from the opposite image (Å), and
+the return energy relative to the target and to the opposite image (eV).
+These measurements show how closely the propagated orbit reaches the
+optimized turning point.
 
 The eOn job uses the number of frames in `initial_path` as the number of
 LI-NEB images. For a ten-image calculation with a densely sampled MEP,

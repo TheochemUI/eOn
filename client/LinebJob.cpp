@@ -308,6 +308,16 @@ std::vector<std::string> LinebJob::run(void) {
   orbit.capacity = orbitPositions.size();
   orbit.positions = orbitPositions.data();
   orbit.gradients = orbitGradients.data();
+#ifdef WITH_RGSADDLE_LINEB_TURNING
+  rgsaddle_lineb_turning_t turning{};
+  const rgsaddle_status_t rc = rgsaddle_lineb_solve_counted_turning(
+      &cfg, static_cast<int64_t>(band.size()),
+      static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
+      o.molecular ? 1 : 0, o.energy, o.max_steps, o.beads, surfaceCallback,
+      &ctx, optimized.data(), &result,
+      o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options, &counts,
+      &negativeModes, &retainedModes, o.beads ? &orbit : nullptr, &turning);
+#else
   const rgsaddle_status_t rc = rgsaddle_lineb_solve_counted_orbit(
       &cfg, static_cast<int64_t>(band.size()),
       static_cast<int64_t>(freeAtoms.size()), positions.data(), masses.data(),
@@ -315,6 +325,7 @@ std::vector<std::string> LinebJob::run(void) {
       &ctx, optimized.data(), &result,
       o.endpoint_kappa > 0.0 ? &o.endpoint_kappa : nullptr, options, &counts,
       &negativeModes, &retainedModes, o.beads ? &orbit : nullptr);
+#endif
 #else
   const rgsaddle_status_t rc = rgsaddle_lineb_solve_counted_diagnostics(
       &cfg, static_cast<int64_t>(band.size()),
@@ -441,6 +452,17 @@ std::vector<std::string> LinebJob::run(void) {
         {"surface_call_unit", "configuration"},
         {"surface_calls", solverCalls},
         {"potential_calls", potentialCalls}}}};
+#ifdef WITH_RGSADDLE_LINEB_TURNING
+  if (o.interpolated_force_clock && turning.launch_image >= 0) {
+    metadata["lineb"]["turning"] = {
+        {"launch_image", turning.launch_image},
+        {"path_arc_length", turning.path_arc_length},
+        {"return_arc", turning.return_arc},
+        {"max_cartesian_displacement_angstrom", turning.max_cartesian_displacement},
+        {"return_energy_minus_target_eV", turning.energy_residual},
+        {"return_energy_minus_opposite_image_eV", turning.endpoint_energy_difference}};
+  }
+#endif
   auto &spectrum = metadata["lineb"]["spectrum"];
   spectrum = nullptr;
 #ifdef RGSADDLE_HAS_LINEB_RATE_DIAGNOSTICS
