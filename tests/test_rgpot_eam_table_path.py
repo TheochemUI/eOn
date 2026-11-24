@@ -90,6 +90,7 @@ neighbor_skin = 0.5
 
 
 def _matter(params, positions: np.ndarray):
+    pot = pyec.make_potential(params)
     matter = pyec.Matter(pot, params)
     matter.resize(len(positions))
     matter.cell = np.eye(3, dtype=np.float64) * 20.0
@@ -145,5 +146,5 @@ def test_rgpot_eam_table_path_is_required(tmp_path: Path) -> None:
 def test_rgpot_eam_unknown_table_format_is_refused() -> None:
     refused = pyec.Parameters()
     refused.load_ini_text(_ini(TABLE, "not-a-format"))
-    with pytest.raises(ValueError, match="unknown table format"):
+    with pytest.raises(RuntimeError, match="unknown table format"):
         pyec.make_potential(refused)
