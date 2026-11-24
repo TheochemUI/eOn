@@ -4,6 +4,7 @@ py.install_sources(
         'approach.py',
         'akmcstatelist.py',
         'akmcstate.py',
+        'amsel_confidence.py',
         'amsel_superbasin_gate.py',
         'askmc.py',
         'atoms.py',

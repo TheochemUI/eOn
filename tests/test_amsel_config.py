@@ -16,6 +16,8 @@ _AMSEL_KEYS = (
     "e_min_floor",
     "cv_threshold",
     "on_error",
+    "state_confidence",
+    "reverse_barrier_tolerance",
 )
 
 

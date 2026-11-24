@@ -1,0 +1,1 @@
+`[AKMC] confidence_scheme = amsel` takes the state confidence from the `amsel` package. `[amsel] state_confidence` selects `heuristic`, `good-turing`, `reverse-capped` or `two-sided`, and `reverse_barrier_tolerance` sets the match energy.

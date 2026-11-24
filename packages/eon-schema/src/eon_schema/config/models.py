@@ -210,7 +210,7 @@ class AKMCConfig(BaseModel):
         default=0,
         description="The maximum number of KMC transitions in a row. In MPI or continuous mode, eOn will exit after performing this many KMC steps. If this is set to 0, eOn will run forever.",
     )
-    confidence_scheme: Literal["old", "new", "sampling", "dynamics"] = Field(
+    confidence_scheme: Literal["old", "new", "sampling", "dynamics", "amsel"] = Field(
         default="new", description="The scheme used for confidence calculation."
     )
     """
@@ -219,6 +219,7 @@ class AKMCConfig(BaseModel):
     - ``new``: Enhanced confidence scheme using a mathematical function to account for the ratio of :math:`Nf` to :math:`Ns`.
     - ``sampling``: Confidence based on sampling probabilities derived from the repeat counts of processes.
     - ``dynamics``: Confidence derived from molecular dynamics, considering time extrapolation and rates at different temperatures.
+    - ``amsel``: The score :any:`eon.schema.AmselConfig.state_confidence` names, from the ``amsel`` package.
     """
     confidence_correction: bool = Field(
         default=False,
@@ -1725,6 +1726,24 @@ class AmselConfig(BaseModel):
     ``unavailable`` with ``available`` true is not a status this model
     names.
     """
+    state_confidence: Literal[
+        "heuristic", "good-turing", "reverse-capped", "two-sided"
+    ] = Field(
+        default="heuristic",
+        description="Score that ``[AKMC] confidence_scheme = amsel`` uses.",
+    )
+    """
+    ``heuristic`` rises with the number of processes. ``good-turing`` is one
+    minus singletons over hits, the coverage of the search distribution.
+    ``reverse-capped`` bounds the heuristic by the exit rate this state's own
+    searches found over that rate plus the rate known only from the far side.
+    ``two-sided`` is the share of saddles known from the far side that the
+    searches recover, pooled over all states, with the same bound.
+    """
+    reverse_barrier_tolerance: float = Field(
+        default=0.02,
+        description="Energy, in eV, within which a process matches a saddle known from the far side.",
+    )
 
 
 class CoarseGrainingConfig(BaseModel):

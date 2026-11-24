@@ -394,6 +394,16 @@ class AKMCState(state.State):
             else:
                 alpha = float(mn)/mx
 
+        if self.config.akmc_confidence_scheme == 'amsel':
+            from eon.amsel_confidence import amsel_state_confidence
+
+            return amsel_state_confidence(
+                self,
+                scheme=self.config.amsel_state_confidence,
+                barrier_tolerance=self.config.amsel_reverse_barrier_tolerance,
+                ids=[entry[0] for entry in rt],
+            )
+
         if self.config.akmc_confidence_scheme == 'new':
             Nf = 0.0
             Ns = 0.0

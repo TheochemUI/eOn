@@ -1768,6 +1768,7 @@ AKMC:
                 - old
                 - sampling
                 - dynamics
+                - amsel
 
         thermally_accessible_window:
             kind: float
@@ -2207,6 +2208,19 @@ amsel:
                 - fallback_single
                 - unavailable_mcamc
                 - raise
+
+        state_confidence:
+            kind: string
+            default: heuristic
+            values:
+                - heuristic
+                - good-turing
+                - reverse-capped
+                - two-sided
+
+        reverse_barrier_tolerance:
+            kind: float
+            default: 0.02
 
 
 Optimizer:
