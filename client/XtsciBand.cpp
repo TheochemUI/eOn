@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -117,8 +118,11 @@ int xtsciBandSurface(void *user, void *request) {
     // RGSADDLE_REQ_ONE_IMAGE.
     int64_t rows = 0;
     int64_t first = 0;
-    if ((req->flags & RGSADDLE_REQ_ONE_IMAGE) != 0) {
-      if (req->n_images != band || req->image < 0 || req->image >= band) {
+    const bool one_image =
+        (req->flags &
+         (RGSADDLE_REQ_ONE_IMAGE | RGSADDLE_REQ_CLIMBING_IMAGE)) != 0;
+    if (one_image) {
+      if (req->n_images != 1 || req->image < 0 || req->image >= band) {
         return RGSADDLE_SHAPE;
       }
       rows = 1;
@@ -159,7 +163,13 @@ int xtsciBandSurface(void *user, void *request) {
       }
     }
     return RGSADDLE_OK;
+  } catch (const std::exception &error) {
+    std::cerr << "rgsaddle surface evaluation failed: " << error.what()
+              << '\n';
+    return RGSADDLE_SURFACE_FAILED;
   } catch (...) {
+    std::cerr << "rgsaddle surface evaluation failed with a non-standard "
+                 "exception\n";
     return RGSADDLE_SURFACE_FAILED;
   }
 }
