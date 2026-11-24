@@ -14,7 +14,12 @@ from eon.config import ConfigClass
 
 class _State:
     def __init__(self, number, procs, counts, states):
-        self.number, self.procs, self._counts, self.statelist = number, procs, counts, states
+        self.number, self.procs, self._counts, self.statelist = (
+            number,
+            procs,
+            counts,
+            states,
+        )
 
     def load_process_table(self):
         pass
@@ -34,7 +39,11 @@ class _List(list):
 def _network():
     states = _List()
     # 0 -> 1 was found by searching 0; 1 holds its reverse but never found it.
-    states.append(_State(0, {7: {"product": 1, "rate": 3.2e11, "barrier": 0.0895}}, {7: 5}, states))
+    states.append(
+        _State(
+            0, {7: {"product": 1, "rate": 3.2e11, "barrier": 0.0895}}, {7: 5}, states
+        )
+    )
     states.append(
         _State(
             1,
@@ -101,7 +110,9 @@ def test_far_side_saddles_and_own_finds_are_separated(monkeypatch):
         sys.modules, "amsel", types.SimpleNamespace(state_confidence=state_confidence)
     )
     states = _network()
-    value = amsel_state_confidence(states[1], scheme="two-sided", barrier_tolerance=0.02)
+    value = amsel_state_confidence(
+        states[1], scheme="two-sided", barrier_tolerance=0.02
+    )
     assert value == 0.25
     scheme, kw = seen[-1]
     assert scheme == "two-sided"
