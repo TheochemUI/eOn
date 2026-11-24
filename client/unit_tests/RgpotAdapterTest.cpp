@@ -56,16 +56,18 @@ TEST_CASE("Adapter LJCluster matches the pinned reference",
   REQUIRE(matter->getPositions()(0, 2) == Catch::Approx(-1.0e-6).margin(1e-12));
 }
 
-TEST_CASE("Adapter Morse evaluates and reports shared-safe",
+TEST_CASE("Adapter Morse evaluates and reports per-instance reentrancy",
           "[pot][rgpot-adapter]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
   auto pot =
       eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
 
-  REQUIRE(pot->isThreadSafe());
-  REQUIRE(pot->isSharedInstanceThreadSafe());
-  REQUIRE_FALSE(pot->needsPerImageInstance());
+  // rgpot 3.6 and later keep a pair list inside the kernel, so every
+  // thread takes its own instance.
+  REQUIRE_FALSE(pot->isThreadSafe());
+  REQUIRE_FALSE(pot->isSharedInstanceThreadSafe());
+  REQUIRE(pot->needsPerImageInstance());
 
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
