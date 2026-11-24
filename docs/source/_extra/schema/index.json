@@ -476,7 +476,9 @@
         "e_min_step",
         "e_min_floor",
         "cv_threshold",
-        "on_error"
+        "on_error",
+        "state_confidence",
+        "reverse_barrier_tolerance"
       ]
     },
     "Coarse Graining": {
