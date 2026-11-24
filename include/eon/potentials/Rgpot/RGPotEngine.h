@@ -45,9 +45,13 @@ struct RGPotEngineOptions {
   // C ABI. model_path is the AOTI package; charge and multiplicity ride
   // the shared fields.
   std::string task_name{"omol"};
+  // Native rgpot EAMTable (backend=eam).
+  std::string table_path;
+  std::string table_format{"setfl"};
+  double neighbor_skin{1.0};
 };
 
-/** Opaque rgpot-backed engine (nwchemc / cpmdc / metatomic / uma / xtb). */
+/** Opaque rgpot-backed engine. */
 class RGPotEngine {
 public:
   explicit RGPotEngine(const RGPotEngineOptions &opt);

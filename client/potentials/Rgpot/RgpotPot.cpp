@@ -52,6 +52,9 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
   opt.xtb_charge = o.xtb_charge;
   opt.xtb_uhf = o.xtb_uhf;
   opt.task_name = o.task_name;
+  opt.table_path = o.table_path;
+  opt.table_format = o.table_format;
+  opt.neighbor_skin = o.neighbor_skin;
 
   // Env overrides (CI / benchmarks)
   if (const char *e = std::getenv("RGPOT_BACKEND"))
