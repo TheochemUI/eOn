@@ -789,8 +789,8 @@ class RgpotPot(BaseModel):
     backend: str = Field(
         default="nwchemc",
         description=(
-            "rgpot backend: 'nwchemc', 'cpmdc', 'metatomic', or 'xtb' "
-            "(aliases: nwchem/cpmd/mta/gfn). metatomic/xtb dlopen "
+            "rgpot backend: 'nwchemc', 'cpmdc', 'eam', 'metatomic', or 'xtb' "
+            "(aliases: nwchem/cpmd/eamtable/mta/gfn). metatomic/xtb dlopen "
             "libmetatomic_engine.so / libxtb_engine.so for packaging."
         ),
     )
@@ -849,6 +849,28 @@ class RgpotPot(BaseModel):
     task_name: str = Field(
         default="omol",
         description="UMA task head when backend=uma.",
+    )
+    table_path: str = Field(
+        default="",
+        description=(
+            "Path to a DYNAMO EAM table (LAMMPS funcfl, setfl, or eam/fs "
+            "layout) when backend=eam."
+        ),
+    )
+    table_format: str = Field(
+        default="setfl",
+        description=(
+            "Table layout when backend=eam: 'funcfl' (alias eam), 'setfl' "
+            "(aliases eam/alloy, alloy), or 'fs' (aliases eam/fs, "
+            "finnis-sinclair)."
+        ),
+    )
+    neighbor_skin: float = Field(
+        default=1.0,
+        description=(
+            "Verlet skin of the EAM pair list in Angstrom when backend=eam. "
+            "It changes when the list is rebuilt, not the result."
+        ),
     )
     device: str = Field(
         default="cpu", description="Metatomic device when backend=metatomic."
