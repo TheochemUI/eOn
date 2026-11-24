@@ -180,6 +180,10 @@ struct rgpot_options_t {
   double xtb_charge{0.0};
   int xtb_uhf{0};
   std::string task_name{"omol"};
+  // Native EAMTable (backend=eam).
+  std::string table_path{};
+  std::string table_format{"setfl"};
+  double neighbor_skin{1.0};
 };
 
 // [Structure Comparison] //
