@@ -167,3 +167,22 @@ labelprefix: CG_
 keyprefix: cg-
 ---
 ```
+
+## amsel state confidence
+
+`[AKMC] confidence_scheme = amsel` takes the confidence of a state from the
+`amsel` package. `[amsel] state_confidence` selects the score:
+
+- `heuristic` rises with the number of processes
+- `good-turing` is one minus singletons over hits
+- `reverse-capped` bounds the heuristic by the exit rate the state's own searches found over that rate plus the rate known only from the far side
+- `two-sided` is the share of saddles known from the far side that the searches recover, pooled over all states, with the same bound
+
+```{code-block} ini
+[AKMC]
+confidence_scheme = amsel
+
+[amsel]
+state_confidence = two-sided
+reverse_barrier_tolerance = 0.02
+```

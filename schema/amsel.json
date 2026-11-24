@@ -40,6 +40,22 @@
         "raise"
       ],
       "type": "string"
+    },
+    "state_confidence": {
+      "default": "heuristic",
+      "description": "Score that ``[AKMC] confidence_scheme = amsel`` uses.\n\n``heuristic`` rises with the number of processes. ``good-turing`` is one\nminus singletons over hits, the coverage of the search distribution.\n``reverse-capped`` bounds the heuristic by the exit rate this state's own\nsearches found over that rate plus the rate known only from the far side.\n``two-sided`` is the share of saddles known from the far side that the\nsearches recover, pooled over all states, with the same bound.",
+      "enum": [
+        "heuristic",
+        "good-turing",
+        "reverse-capped",
+        "two-sided"
+      ],
+      "type": "string"
+    },
+    "reverse_barrier_tolerance": {
+      "default": 0.02,
+      "description": "Energy, in eV, within which a process matches a saddle known from the far side.",
+      "type": "number"
     }
   }
 }

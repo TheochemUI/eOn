@@ -224,6 +224,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.approach.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.approach</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_confidence.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_confidence</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
@@ -363,6 +364,8 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#eon.schema.AmselConfig.e_min_floor"><code class="docutils literal notranslate">e_min_floor</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.AmselConfig.cv_threshold"><code class="docutils literal notranslate">cv_threshold</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.AmselConfig.on_error"><code class="docutils literal notranslate">on_error</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.AmselConfig.state_confidence"><code class="docutils literal notranslate">state_confidence</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.AmselConfig.reverse_barrier_tolerance"><code class="docutils literal notranslate">reverse_barrier_tolerance</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -388,6 +391,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#amsel-state-confidence">amsel state confidence</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
   data-type="github" data-user="TheochemUI" data-repo="eOn">
@@ -604,6 +608,8 @@ ordinary kinetic Monte Carlo.</p>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">e_min_floor</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cv_threshold</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_error</span> <span class="pre">(Literal['fallback_single',</span> <span class="pre">'unavailable_mcamc',</span> <span class="pre">'raise'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">state_confidence</span> <span class="pre">(Literal['heuristic',</span> <span class="pre">'good-turing',</span> <span class="pre">'reverse-capped',</span> <span class="pre">'two-sided'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reverse_barrier_tolerance</span> <span class="pre">(float)</span></code></p></li>
 </ul>
 </dd>
 </dl>
@@ -659,6 +665,24 @@ product state from the process id.</p>
 <code class="docutils literal notranslate"><span class="pre">unavailable</span></code> with <code class="docutils literal notranslate"><span class="pre">available</span></code> true is not a status this model
 names.</p>
 <p>Result of a failed amsel call.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AmselConfig.state_confidence">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">state_confidence</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.15)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'heuristic'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'good-turing'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'reverse-capped'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'two-sided'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'heuristic'</span></span><a class="headerlink" href="#eon.schema.AmselConfig.state_confidence" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">heuristic</span></code> rises with the number of processes. <code class="docutils literal notranslate"><span class="pre">good-turing</span></code> is one
+minus singletons over hits, the coverage of the search distribution.
+<code class="docutils literal notranslate"><span class="pre">reverse-capped</span></code> bounds the heuristic by the exit rate this state’s own
+searches found over that rate plus the rate known only from the far side.
+<code class="docutils literal notranslate"><span class="pre">two-sided</span></code> is the share of saddles known from the far side that the
+searches recover, pooled over all states, with the same bound.</p>
+<p>Score that <code class="docutils literal notranslate"><span class="pre">[AKMC]</span> <span class="pre">confidence_scheme</span> <span class="pre">=</span> <span class="pre">amsel</span></code> uses.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AmselConfig.reverse_barrier_tolerance">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">reverse_barrier_tolerance</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.02</span></span><a class="headerlink" href="#eon.schema.AmselConfig.reverse_barrier_tolerance" title="Link to this definition">¶</a></dt>
+<dd><p>Energy, in eV, within which a process matches a saddle known from the far side.</p>
 </dd></dl>
 
 </dd></dl>
@@ -847,6 +871,25 @@ have to be made when finding product states of unvisited processes.</p>
 <p>Arthur F. Voter. Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events. <em>Physical Review Letters</em>, 78(20):3908–3911, May 1997. <a class="reference external" href="https://doi.org/10.1103/PhysRevLett.78.3908">doi:10.1103/PhysRevLett.78.3908</a>.</p>
 </div>
 </div>
+</div>
+</section>
+<section id="amsel-state-confidence">
+<h2>amsel state confidence<a class="headerlink" href="#amsel-state-confidence" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">[AKMC]</span> <span class="pre">confidence_scheme</span> <span class="pre">=</span> <span class="pre">amsel</span></code> takes the confidence of a state from the
+<code class="docutils literal notranslate"><span class="pre">amsel</span></code> package. <code class="docutils literal notranslate"><span class="pre">[amsel]</span> <span class="pre">state_confidence</span></code> selects the score:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">heuristic</span></code> rises with the number of processes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">good-turing</span></code> is one minus singletons over hits</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reverse-capped</span></code> bounds the heuristic by the exit rate the state’s own searches found over that rate plus the rate known only from the far side</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">two-sided</span></code> is the share of saddles known from the far side that the searches recover, pooled over all states, with the same bound</p></li>
+</ul>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[AKMC]</span>
+</span><span data-line="2"><span class="na">confidence_scheme</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">amsel</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">[amsel]</span>
+</span><span data-line="5"><span class="na">state_confidence</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">two-sided</span>
+</span><span data-line="6"><span class="na">reverse_barrier_tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.02</span>
+</span></pre></div>
 </div>
 </section>
 </section>

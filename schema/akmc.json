@@ -33,12 +33,13 @@
     },
     "confidence_scheme": {
       "default": "new",
-      "description": "The scheme used for confidence calculation.\n\nOptions:\n- ``old``: Traditional confidence scheme based on the number of unique processes (:math:`Nf`) and the number of searches (:math:`Ns`).\n- ``new``: Enhanced confidence scheme using a mathematical function to account for the ratio of :math:`Nf` to :math:`Ns`.\n- ``sampling``: Confidence based on sampling probabilities derived from the repeat counts of processes.\n- ``dynamics``: Confidence derived from molecular dynamics, considering time extrapolation and rates at different temperatures.",
+      "description": "The scheme used for confidence calculation.\n\nOptions:\n- ``old``: Traditional confidence scheme based on the number of unique processes (:math:`Nf`) and the number of searches (:math:`Ns`).\n- ``new``: Enhanced confidence scheme using a mathematical function to account for the ratio of :math:`Nf` to :math:`Ns`.\n- ``sampling``: Confidence based on sampling probabilities derived from the repeat counts of processes.\n- ``dynamics``: Confidence derived from molecular dynamics, considering time extrapolation and rates at different temperatures.\n- ``amsel``: The score :any:`eon.schema.AmselConfig.state_confidence` names, from the ``amsel`` package.",
       "enum": [
         "old",
         "new",
         "sampling",
-        "dynamics"
+        "dynamics",
+        "amsel"
       ],
       "type": "string"
     },

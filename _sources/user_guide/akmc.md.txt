@@ -116,6 +116,8 @@ That test accepts `[akmc]`.
 The server reads `[AKMC]`, so keys under `[akmc]` are ignored.
 On the server, `confidence_scheme` defaults to `old`.
 The schema class below defaults `confidence_scheme` to `new`.
+`confidence_scheme = amsel` takes the score from the `amsel` package, and
+`[amsel] state_confidence` selects it. See the coarse-graining page.
 
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.AKMCConfig
