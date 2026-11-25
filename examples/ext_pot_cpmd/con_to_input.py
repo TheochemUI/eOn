@@ -36,7 +36,7 @@ def prepare(source, output, requested=0):
         atoms.append(readcon.Atom(atom.symbol, atom.x, atom.y, atom.z,
                                   fixed=atom.fixed, atom_id=atom.atom_id, mass=atom.mass))
     clean = readcon.ConFrame(cell=frame.cell, angles=frame.angles, atoms=atoms)
-    readcon.write_con(str(output), [clean], precision=17)
+    readcon.write_con(str(output), [clean])
     written = readcon.read_first_frame(str(output))
     assert written.energy is None and not written.has_forces
     assert all(not atom.has_energy for atom in written.atoms)
