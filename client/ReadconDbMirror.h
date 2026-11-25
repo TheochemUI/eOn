@@ -66,8 +66,8 @@ const char *readcon_db_loaded_version();
 /// At 64 frames the batch is extended once. A missing extend symbol
 /// soft-skips. A path with no generation in this process resumes the
 /// newest one for the file's first frame and brings it up to disk_frames,
-/// which already hold this frame; stored frames that disagree with the
-/// file start a new generation.
+/// which already hold this frame. A stored frame that disagrees with the
+/// file starts a new generation.
 void note_corpus_append(const std::string &path, const std::string &frame_text,
                         const CorpusDiskFrames &disk_frames);
 

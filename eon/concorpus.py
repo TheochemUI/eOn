@@ -242,8 +242,8 @@ def _disk_frame_texts(resolved: str) -> list[str]:
 def _resume_generation(resolved: str) -> int | None:
     """Bring the generation of an appended file this process did not start up to disk.
 
-    The newest generation for the file's first frame is used unless its
-    last stored frame disagrees with the file, which starts a new one.
+    The newest generation for the file's first frame is used unless a
+    stored frame disagrees with the file, which starts a new one.
     The just-appended frame is on disk, so it is stored here too.
     """
     db = _corpus(corpus_dir(Path(resolved)))
@@ -258,9 +258,7 @@ def _resume_generation(resolved: str) -> int | None:
         generation += 1
     tid = generation_id(resolved, first, generation)
     stored = _stored_frames(db, tid, len(texts))
-    if stored > len(texts) or (
-        stored > 0 and _frame_text(db, tid, stored - 1) != texts[stored - 1]
-    ):
+    if not _stored_prefix_matches(db, tid, texts, stored):
         tid = generation_id(resolved, first, generation + 1)
         stored = 0
     if stored == 0:
@@ -278,6 +276,16 @@ def _frame_text(db, tid: int, frame_idx: int) -> str | None:
         return db.get_frame_text(int(tid), int(frame_idx))
     except Exception:
         return None
+
+
+def _stored_prefix_matches(db, tid: int, texts: list[str], stored: int) -> bool:
+    """True when the stored frames are a prefix of ``texts``."""
+    if stored > len(texts):
+        return False
+    for index in range(stored):
+        if _frame_text(db, tid, index) != texts[index]:
+            return False
+    return True
 
 
 def note_corpus_append(path, frame_text: str) -> None:

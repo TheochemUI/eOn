@@ -26,6 +26,18 @@
 #include <string>
 #include <vector>
 
+#if defined(_WIN32)
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#else
+#include <dlfcn.h>
+#endif
+
 namespace {
 
 namespace fs = std::filesystem;
@@ -189,6 +201,49 @@ std::vector<double> text_xs(const std::vector<std::string> &texts,
   return xs;
 }
 
+struct RawCorpus {
+  int (*open)(const char *, std::size_t *) = nullptr;
+  int (*close)(std::size_t) = nullptr;
+  int (*append)(std::size_t, std::uint64_t, const char *, const char *,
+                std::uint32_t *) = nullptr;
+};
+
+void *raw_corpus_symbol(const char *name) {
+#if defined(_WIN32)
+  HMODULE lib = GetModuleHandleA("readcon_db.dll");
+  if (lib == nullptr) {
+    lib = LoadLibraryA("readcon_db.dll");
+  }
+  return lib == nullptr ? nullptr
+                        : reinterpret_cast<void *>(GetProcAddress(lib, name));
+#else
+  if (void *found = dlsym(RTLD_DEFAULT, name)) {
+    return found;
+  }
+  static void *lib = dlopen("libreadcon_db.so", RTLD_LAZY | RTLD_LOCAL);
+  return lib == nullptr ? nullptr : dlsym(lib, name);
+#endif
+}
+
+bool load_raw_corpus(RawCorpus &api) {
+  api.open = reinterpret_cast<int (*)(const char *, std::size_t *)>(
+      raw_corpus_symbol("rkrdb_open"));
+  api.close =
+      reinterpret_cast<int (*)(std::size_t)>(raw_corpus_symbol("rkrdb_close"));
+  api.append = reinterpret_cast<int (*)(
+      std::size_t, std::uint64_t, const char *, const char *, std::uint32_t *)>(
+      raw_corpus_symbol("rkrdb_append_trajectory_str"));
+  return api.open != nullptr && api.close != nullptr && api.append != nullptr;
+}
+
+void write_frames(const fs::path &path, const std::vector<std::string> &texts) {
+  std::ofstream out(path, std::ios::binary | std::ios::trunc);
+  REQUIRE(static_cast<bool>(out));
+  for (const auto &text : texts) {
+    out.write(text.data(), static_cast<std::streamsize>(text.size()));
+  }
+}
+
 } // namespace
 
 TEST_CASE("corpus generation 0 is the blob id and later ones add the number",
@@ -295,6 +350,70 @@ TEST_CASE("an append without a held generation extends the one on disk",
   REQUIRE(text_xs(eonc::io::corpus_generation_frame_texts(path),
                   dir / "scratch.con") == expect);
   std::error_code ec;
+  fs::remove_all(dir, ec);
+}
+
+TEST_CASE("a changed middle frame does not extend the corpus generation",
+          "[con][corpus]") {
+  if (!eonc::io::corpus_extend_ok()) {
+    SKIP("libreadcon_db cannot extend a trajectory");
+  }
+  RawCorpus api;
+  REQUIRE(load_raw_corpus(api));
+  const auto dir = corpus_job("eon-corpus-generation-middle");
+  MatterHolder hold;
+  // A whole-file seed stores each frame's own text. Extending a generation
+  // rewrites later frames, so those texts no longer match a reread and the
+  // last-frame check never runs. This seed is the resume that keeps them.
+  std::vector<std::string> texts;
+  const double written[] = {1.0, 2.0, 3.0, 4.0, 6.0};
+  for (double x : written) {
+    place_cu(*hold.matter, x);
+    std::vector<readcon::ConFrame> one;
+    one.push_back(eonc::io::matterToConFrame(*hold.matter, nullptr));
+    texts.push_back(readcon::write_frames_to_string(one));
+  }
+  const auto file = dir / "movie.con";
+  write_frames(file, texts);
+  {
+    auto frames = readcon::read_all_frames(file);
+    REQUIRE(frames.size() == texts.size());
+    for (std::size_t i = 0; i < frames.size(); ++i) {
+      std::vector<readcon::ConFrame> one;
+      one.push_back(std::move(frames[i]));
+      REQUIRE(readcon::write_frames_to_string(one) == texts[i]);
+    }
+  }
+  std::error_code ec;
+  const auto canonical = fs::weakly_canonical(file, ec);
+  REQUIRE_FALSE(ec);
+  const std::string path = canonical.string();
+  const auto tid = eonc::io::corpus_generation_id(path, texts.front());
+  const auto db = (canonical.parent_path() / "readcon.db").string();
+  std::string whole;
+  for (const auto &text : texts) {
+    whole += text;
+  }
+  std::size_t id = 0;
+  std::uint32_t nframes = 0;
+  REQUIRE(api.open(db.c_str(), &id) == 0);
+  REQUIRE(api.append(id, tid, whole.c_str(), path.c_str(), &nframes) == 0);
+  REQUIRE(nframes == texts.size());
+  REQUIRE(api.close(id) == 0);
+
+  place_cu(*hold.matter, 5.0);
+  std::vector<readcon::ConFrame> middle;
+  middle.push_back(eonc::io::matterToConFrame(*hold.matter, nullptr));
+  texts[1] = readcon::write_frames_to_string(middle);
+  write_frames(path, texts);
+  eonc::io::forget_corpus_generation(path);
+  eonc::io::resetConAppendState();
+  place_cu(*hold.matter, 7.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
+  const std::vector<double> expect{1.0, 5.0, 3.0, 4.0, 6.0, 7.0};
+  REQUIRE(disk_xs(path) == expect);
+  REQUIRE(text_xs(eonc::io::corpus_generation_frame_texts(path),
+                  dir / "scratch.con") == expect);
   fs::remove_all(dir, ec);
 }
 

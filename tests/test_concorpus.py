@@ -208,3 +208,42 @@ def test_a_new_process_does_not_extend_a_generation_the_file_left(
     )
     io.savecon(str(dest), _cu_atom(6.0), "a")
     assert _xs(generation_frame_texts(dest)) == [1.0, 5.0, 6.0]
+
+
+def test_a_changed_middle_frame_starts_a_new_generation(
+    tmp_path: Path, monkeypatch
+):
+    from eon import concorpus
+    from eon.concorpus import generation_frame_texts, generation_id, load_frame_text
+
+    (tmp_path / "config.ini").write_text("[Main]\n")
+    dest = tmp_path / "movie.con"
+    # A whole-file seed stores each frame's own text. Extending a
+    # generation rewrites later frames, so those texts no longer match a
+    # reread and the last-frame check never runs. This seed is the resume
+    # that keeps them.
+    texts = [
+        readcon.write_con_string([_cu_atom(x).to_conframe()])
+        for x in (1.0, 2.0, 3.0, 4.0, 6.0)
+    ]
+    dest.write_text("".join(texts))
+    resolved = str(dest.resolve())
+    db = concorpus._corpus(corpus_dir(dest))
+    assert db is not None
+    old = generation_id(resolved, texts[0])
+    db.append_trajectory_str(old, "".join(texts), source=resolved)
+    monkeypatch.setattr(concorpus, "_generations", {})
+    replaced = list(texts)
+    replaced[1] = readcon.write_con_string([_cu_atom(5.0).to_conframe()])
+    dest.write_text("".join(replaced))
+    io.savecon(str(dest), _cu_atom(7.0), "a")
+    assert _disk_xs(dest) == [1.0, 5.0, 3.0, 4.0, 6.0, 7.0]
+    assert _xs(generation_frame_texts(dest)) == [1.0, 5.0, 3.0, 4.0, 6.0, 7.0]
+    assert _xs([load_frame_text(corpus_dir(dest), old, i) for i in range(5)]) == [
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        6.0,
+    ]
+    assert load_frame_text(corpus_dir(dest), old, 5) is None

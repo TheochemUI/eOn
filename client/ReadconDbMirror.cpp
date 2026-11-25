@@ -434,6 +434,21 @@ std::optional<std::string> stored_frame_text(std::size_t id, std::uint64_t tid,
   return buf;
 }
 
+bool stored_prefix_matches(std::size_t id, std::uint64_t tid,
+                           const std::vector<std::string> &texts,
+                           std::uint32_t stored) {
+  if (stored > texts.size()) {
+    return false;
+  }
+  for (std::uint32_t index = 0; index < stored; ++index) {
+    const std::string &disk = texts[index];
+    if (stored_frame_text(id, tid, index, disk.size()) != disk) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool seed_trajectory(std::size_t id, std::uint64_t tid, const std::string &text,
                      const std::string &canonical) {
   if (has_frame(id, tid, 0)) {
@@ -470,10 +485,7 @@ void resume_generation(const std::string &canonical,
   std::uint64_t tid = corpus_generation_id(canonical, first, generation);
   const auto on_disk = static_cast<std::uint32_t>(texts.size());
   std::uint32_t stored = stored_frames(id, tid, on_disk);
-  if (stored > on_disk ||
-      (stored > 0 &&
-       stored_frame_text(id, tid, stored - 1, texts[stored - 1].size()) !=
-           texts[stored - 1])) {
+  if (!stored_prefix_matches(id, tid, texts, stored)) {
     tid = corpus_generation_id(canonical, first, generation + 1);
     stored = 0;
   }
@@ -505,7 +517,6 @@ void arm_corpus_flush() {
   static std::once_flag once;
   std::call_once(once, [] { std::atexit(flush_corpus_appends); });
 }
-
 } // namespace
 
 std::uint64_t corpus_blob_id(std::string_view canonical_path,
