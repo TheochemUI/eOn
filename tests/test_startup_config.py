@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_missing_config_is_rejected_before_the_logger():
     source = (ROOT / "client" / "ClientEON.cpp").read_text(encoding="utf-8")
     guard = source.find("problem loading parameter file, stopping")
-    logger = source.find("eonc::log::init_client()")
+    logger = source.find("eonc::log::init_client_loggers()")
     assert guard != -1 and logger != -1
     assert guard < logger
 

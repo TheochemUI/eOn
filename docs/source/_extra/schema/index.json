@@ -22,7 +22,8 @@
         "input_format",
         "cell",
         "pbc",
-        "default_vacuum"
+        "default_vacuum",
+        "single_threaded_client"
       ]
     },
     "Potential": {

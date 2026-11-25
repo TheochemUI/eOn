@@ -2453,6 +2453,17 @@ if get_option('with_tests')
             ['test_socket_nwchem_listen', 'SocketNWChemListenTest.cpp', ''],
         ]
     endif
+    # Samples /proc/<pid>/task of a spawned eonclient.
+    if host_machine.system() == 'linux'
+        test_array += [
+            [
+                'test_process_search_threading',
+                'ProcessSearchThreadingTest.cpp',
+                'saddle_search',
+                120,
+            ],
+        ]
+    endif
     # Fortran potential tests: require Fortran shared libs at runtime
     if get_option('with_fortran')
         test_array += [
@@ -2675,7 +2686,7 @@ if get_option('with_tests')
             _case_env.set('RGPOT_CPMD_ENGINE', cpmd_interface_fixture.full_path())
             _case_depends += [cpmd_interface_fixture]
         endif
-        if test.get(0) == 'test_client_timing'
+        if test.get(0) in ['test_client_timing', 'test_process_search_threading']
             _case_depends += [ec]
         elif test.get(0) == 'test_serve_spec'
             # Spawn eonclient. The shared test env is one object, so this

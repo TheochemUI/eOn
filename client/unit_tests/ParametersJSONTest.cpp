@@ -53,6 +53,51 @@ TEST_CASE("Parameters round-trips through JSON", "[params][json]") {
   REQUIRE(p2.neb_options().image_count == 7);
 }
 
+TEST_CASE("Main parallel survives JSON and INI", "[params][json][threads]") {
+  Parameters defaults;
+  REQUIRE(defaults.main_options().parallel);
+
+  Parameters fromJson;
+  REQUIRE(fromJson.load_json(R"({"Main": {"parallel": false}})") == 0);
+  REQUIRE_FALSE(fromJson.main_options().parallel);
+
+  Parameters absent;
+  REQUIRE(absent.load_json(R"({"Main": {"temperature": 310.0}})") == 0);
+  REQUIRE(absent.main_options().parallel);
+
+  Parameters again;
+  eonc::config::from_json(eonc::config::to_json(fromJson), again);
+  REQUIRE_FALSE(again.main_options().parallel);
+
+  Parameters fromIni;
+  REQUIRE(fromIni.load_ini_text("[Main]\nparallel = false\n") == 0);
+  REQUIRE_FALSE(fromIni.main_options().parallel);
+}
+
+TEST_CASE("Main single_threaded_client survives JSON and INI",
+          "[params][json][threads]") {
+  Parameters defaults;
+  REQUIRE_FALSE(defaults.main_options().singleThreadedClient);
+
+  Parameters fromJson;
+  REQUIRE(fromJson.load_json(R"({"Main": {"single_threaded_client": true}})") ==
+          0);
+  REQUIRE(fromJson.main_options().singleThreadedClient);
+
+  Parameters absent;
+  REQUIRE(absent.load_json(R"({"Main": {"temperature": 310.0}})") == 0);
+  REQUIRE_FALSE(absent.main_options().singleThreadedClient);
+
+  Parameters again;
+  eonc::config::from_json(eonc::config::to_json(fromJson), again);
+  REQUIRE(again.main_options().singleThreadedClient);
+
+  Parameters fromIni;
+  REQUIRE(fromIni.load_ini_text("[Main]\nsingle_threaded_client = true\n") ==
+          0);
+  REQUIRE(fromIni.main_options().singleThreadedClient);
+}
+
 TEST_CASE("JSON to_json produces valid JSON string", "[params][json]") {
   Parameters p;
   ParametersLoadAccess::potential_options(p).potential = PotType::LJ;

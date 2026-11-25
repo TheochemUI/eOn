@@ -1,0 +1,1 @@
+The manual Quill backend test waits for its helper thread to leave `/proc/self/task` before it counts threads again. `join()` can return while the kernel still lists the exiting thread, so on a loaded runner the count was one too high.

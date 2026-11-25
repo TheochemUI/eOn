@@ -1739,4 +1739,47 @@ TEST_CASE("Linkcell cutoff rows preserve periodic atom-image semantics",
   }
 }
 
+TEST_CASE("Cutoff coloring of a periodic box does not depend on the thread "
+          "setting",
+          "[Hessian][Linkcell][threads]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  constexpr int kN = 40;
+  constexpr double kCutoff = 2.2;
+  auto lj = std::make_shared<RgpotAdapter<rgpot::LJPot>>(
+      PotType::LJ, params, rgpot::LJConfig{.cutoff = kCutoff});
+  const bool skew = GENERATE(false, true);
+  auto matter = std::make_shared<Matter>(lj, params);
+  matter->resize(kN);
+  AtomMatrix pos(kN, 3);
+  unsigned state = 12345u;
+  auto next = [&state] {
+    state = state * 1664525u + 1013904223u;
+    return static_cast<double>(state >> 8) / static_cast<double>(1u << 24);
+  };
+  for (long i = 0; i < kN; ++i) {
+    matter->setAtomicNr(i, 1);
+    matter->setMass(i, 1.0);
+    pos.row(i) << 5.0 * next(), 5.0 * next(), 5.0 * next();
+  }
+  Matrix3d cell = Matrix3d::Identity() * 5.0;
+  if (skew)
+    cell << 5.0, 0, 0, 1.7, 5.0, 0, 0.5, 1.0, 5.5;
+  matter->setPositions(pos);
+  matter->setCell(cell);
+  matter->setPeriodic(true);
+  VectorXi all(kN);
+  for (int i = 0; i < kN; ++i) {
+    all(i) = i;
+  }
+  const auto viaLinkcell = eonc::colorMobileCutoffGraph(*matter, all, kCutoff);
+  const auto viaVesin =
+      eonc::colorMobileCutoffGraph(*matter, all, kCutoff, false);
+  REQUIRE(viaLinkcell.size() == kN);
+  const int colors =
+      1 + *std::max_element(viaLinkcell.begin(), viaLinkcell.end());
+  REQUIRE(colors > 2);
+  REQUIRE(viaVesin == viaLinkcell);
+}
+
 } // namespace tests
