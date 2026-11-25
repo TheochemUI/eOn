@@ -258,6 +258,8 @@ Public Types</h2></td></tr>
 <tr class="memitem:ab6b059834896068aac9bb935fd982d1f" id="r_ab6b059834896068aac9bb935fd982d1f"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#ab6b059834896068aac9bb935fd982d1f">file_fn</a> = void (*)(void *, const char *)</td></tr>
 <tr class="memitem:ae4ea57e92256dc639676c0c3edb290c5" id="r_ae4ea57e92256dc639676c0c3edb290c5"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#ae4ea57e92256dc639676c0c3edb290c5">scatter_atoms_fn</a> = void (*)(void *, const char *, int, int, void *)</td></tr>
 <tr class="memitem:a3955061d6a1785626df22405088c9add" id="r_a3955061d6a1785626df22405088c9add"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a3955061d6a1785626df22405088c9add">extract_var_fn</a> = void *(*)(void *, const char *, const char *)</td></tr>
+<tr class="memitem:a18358190cc0810def6a03b7b9c6630a9" id="r_a18358190cc0810def6a03b7b9c6630a9"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a18358190cc0810def6a03b7b9c6630a9">has_error_fn</a> = int (*)(void *)</td></tr>
+<tr class="memitem:a0f992ec9481612839480bef04bfcf219" id="r_a0f992ec9481612839480bef04bfcf219"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a0f992ec9481612839480bef04bfcf219">error_message_fn</a> = int (*)(void *, char *, int)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -266,6 +268,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad0ec5ea9b92a125d7d1521fe0607d7c3" id="r_ad0ec5ea9b92a125d7d1521fe0607d7c3"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#ad0ec5ea9b92a125d7d1521fe0607d7c3">is_loaded</a> () const noexcept=0</td></tr>
 <tr class="memitem:a9442cd224e8b94ed5368756562047660" id="r_a9442cd224e8b94ed5368756562047660"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a9442cd224e8b94ed5368756562047660">available</a> () const =0</td></tr>
 <tr class="memitem:afce586f5382b13962a4af4481fdb0dff" id="r_afce586f5382b13962a4af4481fdb0dff"><td class="memItemLeft">virtual const std::string &amp;&#160;</td><td class="memItemRight"><a class="el" href="#afce586f5382b13962a4af4481fdb0dff">last_error</a> () const noexcept=0</td></tr>
+<tr class="memitem:a442e3031e284faab5c10b3360e163c80" id="r_a442e3031e284faab5c10b3360e163c80"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a442e3031e284faab5c10b3360e163c80">check_error</a> (void *handle, const char *what) const</td></tr>
+<tr class="memdesc:a442e3031e284faab5c10b3360e163c80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Throw when LAMMPS recorded an error.  <br /></td></tr>
 <tr class="memitem:a5641dcc667df7a44361837bc7af4e0b2" id="r_a5641dcc667df7a44361837bc7af4e0b2"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a5641dcc667df7a44361837bc7af4e0b2">ILammpsLoader</a> (const ILammpsLoader &amp;)=delete</td></tr>
 <tr class="memitem:afe7e86f896cc187947f7d6142ba3e952" id="r_afe7e86f896cc187947f7d6142ba3e952"><td class="memItemLeft"><a class="el" href="#a5641dcc667df7a44361837bc7af4e0b2">ILammpsLoader</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#afe7e86f896cc187947f7d6142ba3e952">operator=</a> (const <a class="el" href="#a5641dcc667df7a44361837bc7af4e0b2">ILammpsLoader</a> &amp;)=delete</td></tr>
 </table><table class="memberdecls">
@@ -277,6 +281,9 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a2a256dd6bcbdbaef8024a145a810a667" id="r_a2a256dd6bcbdbaef8024a145a810a667"><td class="memItemLeft"><a class="el" href="#ab6b059834896068aac9bb935fd982d1f">file_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a2a256dd6bcbdbaef8024a145a810a667">file</a> {nullptr}</td></tr>
 <tr class="memitem:ac3f2f8c5128206dfae3363e1254afbd6" id="r_ac3f2f8c5128206dfae3363e1254afbd6"><td class="memItemLeft"><a class="el" href="#ae4ea57e92256dc639676c0c3edb290c5">scatter_atoms_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#ac3f2f8c5128206dfae3363e1254afbd6">scatter_atoms</a> {nullptr}</td></tr>
 <tr class="memitem:ab65946c3035ca37cfc757869c762458e" id="r_ab65946c3035ca37cfc757869c762458e"><td class="memItemLeft"><a class="el" href="#a3955061d6a1785626df22405088c9add">extract_var_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#ab65946c3035ca37cfc757869c762458e">extract_variable</a> {nullptr}</td></tr>
+<tr class="memitem:aef7c87f190d899b18f9e0b6f27b44277" id="r_aef7c87f190d899b18f9e0b6f27b44277"><td class="memItemLeft"><a class="el" href="#a18358190cc0810def6a03b7b9c6630a9">has_error_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#aef7c87f190d899b18f9e0b6f27b44277">has_error</a> {nullptr}</td></tr>
+<tr class="memdesc:aef7c87f190d899b18f9e0b6f27b44277"><td class="mdescLeft">&#160;</td><td class="mdescRight">Absent from builds of LAMMPS without exceptions.  <br /></td></tr>
+<tr class="memitem:af90c2d1a307086ee4500b42722875d26" id="r_af90c2d1a307086ee4500b42722875d26"><td class="memItemLeft"><a class="el" href="#a0f992ec9481612839480bef04bfcf219">error_message_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#af90c2d1a307086ee4500b42722875d26">get_last_error_message</a> {nullptr}</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -318,6 +325,22 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a0f992ec9481612839480bef04bfcf219" name="a0f992ec9481612839480bef04bfcf219"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f992ec9481612839480bef04bfcf219">&#9670;&#160;</a></span>error_message_fn</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a0f992ec9481612839480bef04bfcf219">eonc::ILammpsLoader::error_message_fn</a> = int (*)(void *, char *, int)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00044">44</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
+
+</div>
+</div>
 <a id="a3955061d6a1785626df22405088c9add" name="a3955061d6a1785626df22405088c9add"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3955061d6a1785626df22405088c9add">&#9670;&#160;</a></span>extract_var_fn</h2>
 
@@ -347,6 +370,22 @@ Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00040">40</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
+
+</div>
+</div>
+<a id="a18358190cc0810def6a03b7b9c6630a9" name="a18358190cc0810def6a03b7b9c6630a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18358190cc0810def6a03b7b9c6630a9">&#9670;&#160;</a></span>has_error_fn</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a18358190cc0810def6a03b7b9c6630a9">eonc::ILammpsLoader::has_error_fn</a> = int (*)(void *)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00043">43</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
 
 </div>
 </div>
@@ -486,6 +525,44 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a442e3031e284faab5c10b3360e163c80" name="a442e3031e284faab5c10b3360e163c80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a442e3031e284faab5c10b3360e163c80">&#9670;&#160;</a></span>check_error()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::ILammpsLoader::check_error </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>what</em></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Throw when LAMMPS recorded an error. </p>
+<p>A library call returns normally after one, and the energy and forces it leaves are zero. </p>
+
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8cpp_source.html#l00079">79</a> of file <a class="el" href="LammpsLoader_8cpp_source.html">LammpsLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   79</span>                                                                    {</div>
+<div class="line"><span class="lineno">   80</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aef7c87f190d899b18f9e0b6f27b44277">has_error</a> || <a class="code hl_variable" href="#aef7c87f190d899b18f9e0b6f27b44277">has_error</a>(handle) == 0) {</div>
+<div class="line"><span class="lineno">   81</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   82</span>  }</div>
+<div class="line"><span class="lineno">   83</span>  <span class="keywordtype">char</span> text[512] = {};</div>
+<div class="line"><span class="lineno">   84</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#af90c2d1a307086ee4500b42722875d26">get_last_error_message</a>) {</div>
+<div class="line"><span class="lineno">   85</span>    <a class="code hl_variable" href="#af90c2d1a307086ee4500b42722875d26">get_last_error_message</a>(handle, text, <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<span class="keyword">sizeof</span>(text)));</div>
+<div class="line"><span class="lineno">   86</span>  }</div>
+<div class="line"><span class="lineno">   87</span>  <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;LAMMPS: &quot;</span>) + what + <span class="stringliteral">&quot;: &quot;</span> + text);</div>
+<div class="line"><span class="lineno">   88</span>}</div>
+<div class="ttc" id="aclasseonc_1_1ILammpsLoader_html_aef7c87f190d899b18f9e0b6f27b44277"><div class="ttname"><a href="#aef7c87f190d899b18f9e0b6f27b44277">eonc::ILammpsLoader::has_error</a></div><div class="ttdeci">has_error_fn has_error</div><div class="ttdoc">Absent from builds of LAMMPS without exceptions.</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8h_source.html#l00056">LammpsLoader.h:56</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ILammpsLoader_html_af90c2d1a307086ee4500b42722875d26"><div class="ttname"><a href="#af90c2d1a307086ee4500b42722875d26">eonc::ILammpsLoader::get_last_error_message</a></div><div class="ttdeci">error_message_fn get_last_error_message</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8h_source.html#l00057">LammpsLoader.h:57</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="ad0ec5ea9b92a125d7d1521fe0607d7c3" name="ad0ec5ea9b92a125d7d1521fe0607d7c3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad0ec5ea9b92a125d7d1521fe0607d7c3">&#9670;&#160;</a></span>is_loaded()</h2>
 
@@ -605,8 +682,8 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00048">48</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   48</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00050">50</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   50</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -622,8 +699,8 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00049">49</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   49</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00051">51</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   51</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -639,8 +716,8 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00052">52</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   52</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00054">54</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   54</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -656,8 +733,44 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00050">50</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   50</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00052">52</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   52</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af90c2d1a307086ee4500b42722875d26" name="af90c2d1a307086ee4500b42722875d26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af90c2d1a307086ee4500b42722875d26">&#9670;&#160;</a></span>get_last_error_message</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a0f992ec9481612839480bef04bfcf219">error_message_fn</a> eonc::ILammpsLoader::get_last_error_message {nullptr}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00057">57</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   57</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aef7c87f190d899b18f9e0b6f27b44277" name="aef7c87f190d899b18f9e0b6f27b44277"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef7c87f190d899b18f9e0b6f27b44277">&#9670;&#160;</a></span>has_error</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a18358190cc0810def6a03b7b9c6630a9">has_error_fn</a> eonc::ILammpsLoader::has_error {nullptr}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Absent from builds of LAMMPS without exceptions. </p>
+
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00056">56</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   56</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -673,8 +786,8 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00047">47</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   47</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00049">49</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   49</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -690,13 +803,14 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00051">51</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   51</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00053">53</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   53</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>/home/runner/work/eOn/eOn/include/eon/potentials/LAMMPS/<a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a></li>
+<li>/home/runner/work/eOn/eOn/client/potentials/LAMMPS/<a class="el" href="LammpsLoader_8cpp_source.html">LammpsLoader.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
