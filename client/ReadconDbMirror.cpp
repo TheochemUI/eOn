@@ -15,8 +15,10 @@
 
 #include <atomic>
 #include <cctype>
-#include <charconv>
+#include <cerrno>
+#include <cmath>
 #include <cstdint>
+#include <cstdio>
 #include <cstdlib>
 #include <filesystem>
 #include <format>
@@ -451,6 +453,48 @@ std::optional<std::string> whole_frame_text(std::size_t id, std::uint64_t tid,
 
 constexpr int kStoredDecimals = 6;
 
+// libc++ deletes floating-point from_chars. strtod on a NUL-terminated
+// copy matches that C++20 parse: the whole token converts, a leading '+'
+// or a hex float does not, and ERANGE rejects only a zero or non-finite
+// result. A subnormal sets ERANGE and still counts.
+std::optional<double> parse_stored_double(const std::string &word) {
+  if (word.empty() || std::isspace(static_cast<unsigned char>(word.front())) ||
+      word.front() == '+') {
+    return std::nullopt;
+  }
+  const std::size_t body = word.front() == '-' ? 1 : 0;
+  if (body + 1 < word.size() && word[body] == '0' &&
+      (word[body + 1] == 'x' || word[body + 1] == 'X')) {
+    return std::nullopt;
+  }
+  const std::string terminated(word);
+  char *end = nullptr;
+  errno = 0;
+  const double value = std::strtod(terminated.c_str(), &end);
+  if (end != terminated.c_str() + terminated.size()) {
+    return std::nullopt;
+  }
+  if (errno == ERANGE && (value == 0.0 || !std::isfinite(value))) {
+    return std::nullopt;
+  }
+  return value;
+}
+
+// %.6f, the same six-decimal text std::format prints for this value.
+std::optional<std::string> six_decimal_text(double value) {
+  const int needed = std::snprintf(nullptr, 0, "%.*f", kStoredDecimals, value);
+  if (needed < 0) {
+    return std::nullopt;
+  }
+  std::string text(static_cast<std::size_t>(needed), '\0');
+  const int wrote = std::snprintf(text.data(), text.size() + 1, "%.*f",
+                                  kStoredDecimals, value);
+  if (wrote != needed) {
+    return std::nullopt;
+  }
+  return text;
+}
+
 std::vector<std::vector<std::string>>
 six_decimal_tokens(std::string_view text) {
   std::vector<std::vector<std::string>> lines;
@@ -463,12 +507,14 @@ six_decimal_tokens(std::string_view text) {
     std::istringstream words{std::string(text.substr(start, stop - start))};
     std::vector<std::string> &line = lines.emplace_back();
     for (std::string word; words >> word;) {
-      double value = 0.0;
-      const char *end = word.data() + word.size();
-      const auto [ptr, ec] = std::from_chars(word.data(), end, value);
-      line.push_back(ec == std::errc{} && ptr == end
-                         ? std::format("{:.{}f}", value, kStoredDecimals)
-                         : std::move(word));
+      const std::optional<double> value = parse_stored_double(word);
+      if (value) {
+        if (std::optional<std::string> formatted = six_decimal_text(*value)) {
+          line.push_back(std::move(*formatted));
+          continue;
+        }
+      }
+      line.push_back(std::move(word));
     }
     start = stop + 1;
   }
