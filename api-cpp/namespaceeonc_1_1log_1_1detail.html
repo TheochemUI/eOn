@@ -238,14 +238,135 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('namespaceeonc_
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:afc476b0f785ec42b5b5aa212b847cb6f" id="r_afc476b0f785ec42b5b5aa212b847cb6f"><td class="memItemLeft">quill::ManualBackendWorker *&#160;</td><td class="memItemRight"><a class="el" href="#afc476b0f785ec42b5b5aa212b847cb6f">manual_worker_for_caller</a> ()</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-var-members" class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:a98fff7a6b38782d04baafd43880b7b83" id="r_a98fff7a6b38782d04baafd43880b7b83"><td class="memItemLeft">constexpr std::string_view&#160;</td><td class="memItemRight"><a class="el" href="#a98fff7a6b38782d04baafd43880b7b83">kDefaultLoggerName</a> {&quot;combi&quot;}</td></tr>
 <tr class="memitem:a13ecaa4676a7d55b383cf89f9b3a68cc" id="r_a13ecaa4676a7d55b383cf89f9b3a68cc"><td class="memItemLeft">constexpr std::string_view&#160;</td><td class="memItemRight"><a class="el" href="#a13ecaa4676a7d55b383cf89f9b3a68cc">kTracebackLoggerName</a> {&quot;_traceback&quot;}</td></tr>
 <tr class="memitem:a7326a45cc38c80c7ab6e4b5f97cd0e2b" id="r_a7326a45cc38c80c7ab6e4b5f97cd0e2b"><td class="memItemLeft">constexpr std::chrono::milliseconds&#160;</td><td class="memItemRight"><a class="el" href="#a7326a45cc38c80c7ab6e4b5f97cd0e2b">kBackendSleep</a> {1}</td></tr>
 <tr class="memdesc:a7326a45cc38c80c7ab6e4b5f97cd0e2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Idle sleep of the client's logging backend thread.  <br /></td></tr>
+<tr class="memitem:a5447c22b203b640f8eab0dbdd7aea15c" id="r_a5447c22b203b640f8eab0dbdd7aea15c"><td class="memItemLeft">std::atomic&lt; quill::ManualBackendWorker * &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a5447c22b203b640f8eab0dbdd7aea15c">g_manual_worker</a> {nullptr}</td></tr>
+<tr class="memitem:a7322a61c2cf5820cc45167c940c8973a" id="r_a7322a61c2cf5820cc45167c940c8973a"><td class="memItemLeft">std::atomic&lt; std::thread::id &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a7322a61c2cf5820cc45167c940c8973a">g_manual_owner</a> {}</td></tr>
+<tr class="memitem:abbb99554cd95f65d5e2053a90ea60e61" id="r_abbb99554cd95f65d5e2053a90ea60e61"><td class="memItemLeft">std::atomic&lt; std::chrono::steady_clock::rep &gt;&#160;</td><td class="memItemRight"><a class="el" href="#abbb99554cd95f65d5e2053a90ea60e61">g_last_poll</a> {0}</td></tr>
+<tr class="memitem:addfce34d3a51907bfb278a4cfada7a25" id="r_addfce34d3a51907bfb278a4cfada7a25"><td class="memItemLeft">constexpr std::chrono::milliseconds&#160;</td><td class="memItemRight"><a class="el" href="#addfce34d3a51907bfb278a4cfada7a25">kManualPollInterval</a> {100}</td></tr>
+<tr class="memdesc:addfce34d3a51907bfb278a4cfada7a25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Poll no more often than this in Manual mode.  <br /></td></tr>
 </table>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="afc476b0f785ec42b5b5aa212b847cb6f" name="afc476b0f785ec42b5b5aa212b847cb6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc476b0f785ec42b5b5aa212b847cb6f">&#9670;&#160;</a></span>manual_worker_for_caller()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">quill::ManualBackendWorker * eonc::log::detail::manual_worker_for_caller </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00058">58</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   58</span>                                                                          {</div>
+<div class="line"><span class="lineno">   59</span>  <span class="keyword">auto</span> *worker = <a class="code hl_variable" href="#a5447c22b203b640f8eab0dbdd7aea15c">g_manual_worker</a>.load(std::memory_order_acquire);</div>
+<div class="line"><span class="lineno">   60</span>  <span class="keywordflow">if</span> (worker &amp;&amp; <a class="code hl_variable" href="#a7322a61c2cf5820cc45167c940c8973a">g_manual_owner</a>.load() == std::this_thread::get_id()) {</div>
+<div class="line"><span class="lineno">   61</span>    <span class="keywordflow">return</span> worker;</div>
+<div class="line"><span class="lineno">   62</span>  }</div>
+<div class="line"><span class="lineno">   63</span>  <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   64</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1log_1_1detail_html_a5447c22b203b640f8eab0dbdd7aea15c"><div class="ttname"><a href="#a5447c22b203b640f8eab0dbdd7aea15c">eonc::log::detail::g_manual_worker</a></div><div class="ttdeci">std::atomic&lt; quill::ManualBackendWorker * &gt; g_manual_worker</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00050">EonLogger.h:50</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1log_1_1detail_html_a7322a61c2cf5820cc45167c940c8973a"><div class="ttname"><a href="#a7322a61c2cf5820cc45167c940c8973a">eonc::log::detail::g_manual_owner</a></div><div class="ttdeci">std::atomic&lt; std::thread::id &gt; g_manual_owner</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00051">EonLogger.h:51</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
 <a name="doc-var-members" id="doc-var-members"></a><h2 id="header-doc-var-members" class="groupheader">Variable Documentation</h2>
+<a id="abbb99554cd95f65d5e2053a90ea60e61" name="abbb99554cd95f65d5e2053a90ea60e61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbb99554cd95f65d5e2053a90ea60e61">&#9670;&#160;</a></span>g_last_poll</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::atomic&lt;std::chrono::steady_clock::rep&gt; eonc::log::detail::g_last_poll {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00052">52</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   52</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7322a61c2cf5820cc45167c940c8973a" name="a7322a61c2cf5820cc45167c940c8973a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7322a61c2cf5820cc45167c940c8973a">&#9670;&#160;</a></span>g_manual_owner</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::atomic&lt;std::thread::id&gt; eonc::log::detail::g_manual_owner {}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00051">51</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   51</span>{};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5447c22b203b640f8eab0dbdd7aea15c" name="a5447c22b203b640f8eab0dbdd7aea15c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5447c22b203b640f8eab0dbdd7aea15c">&#9670;&#160;</a></span>g_manual_worker</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::atomic&lt;quill::ManualBackendWorker *&gt; eonc::log::detail::g_manual_worker {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00050">50</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   50</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="a7326a45cc38c80c7ab6e4b5f97cd0e2b" name="a7326a45cc38c80c7ab6e4b5f97cd0e2b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7326a45cc38c80c7ab6e4b5f97cd0e2b">&#9670;&#160;</a></span>kBackendSleep</h2>
 
@@ -268,8 +389,8 @@ Variables</h2></td></tr>
 
 <p>Idle sleep of the client's logging backend thread. </p>
 
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00036">36</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   36</span>{1};</div>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00037">37</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   37</span>{1};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -293,8 +414,36 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00033">33</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   33</span>{<span class="stringliteral">&quot;combi&quot;</span>};</div>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00034">34</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   34</span>{<span class="stringliteral">&quot;combi&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="addfce34d3a51907bfb278a4cfada7a25" name="addfce34d3a51907bfb278a4cfada7a25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addfce34d3a51907bfb278a4cfada7a25">&#9670;&#160;</a></span>kManualPollInterval</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::chrono::milliseconds eonc::log::detail::kManualPollInterval {100}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Poll no more often than this in Manual mode. </p>
+<p>Matches the flush interval of the Thread backend, so output is as timely. </p>
+
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00056">56</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   56</span>{100};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -318,8 +467,8 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00034">34</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   34</span>{<span class="stringliteral">&quot;_traceback&quot;</span>};</div>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00035">35</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   35</span>{<span class="stringliteral">&quot;_traceback&quot;</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>

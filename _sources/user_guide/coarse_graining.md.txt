@@ -186,3 +186,8 @@ confidence_scheme = amsel
 state_confidence = two-sided
 reverse_barrier_tolerance = 0.02
 ```
+
+With `discover_decide` on, an amsel exit is taken as soon as one process leaves
+the basin, even when the state is not confident. Set
+`discover_wait_for_confidence = true` to search until `[AKMC] confidence` is met
+and take the exit from that table.

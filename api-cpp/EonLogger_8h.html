@@ -251,6 +251,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('EonLogger_8h.h
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;string_view&gt;</code><br />
 <code>#include &lt;system_error&gt;</code><br />
+<code>#include &lt;thread&gt;</code><br />
 </div>
 <p><a href="EonLogger_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -279,10 +280,30 @@ Macros</h2></td></tr>
 <tr class="memitem:a4cf9b473cf6a1d850b3725fca6805f86" id="r_a4cf9b473cf6a1d850b3725fca6805f86"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(...)</td></tr>
 <tr class="memitem:afe4077bbe89c5bc6e818b057a692e64a" id="r_afe4077bbe89c5bc6e818b057a692e64a"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a>(...)</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a3f027e6eb6e57d84a067673e8050f8d4" id="r_a3f027e6eb6e57d84a067673e8050f8d4"><td class="memItemLeft">enum class &#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1log.html#a3f027e6eb6e57d84a067673e8050f8d4">eonc::log::BackendMode</a> { <a class="el" href="namespaceeonc_1_1log.html#a3f027e6eb6e57d84a067673e8050f8d4ad97477d6d8a838ead9348185bb5b6742">eonc::log::Thread</a>
+, <a class="el" href="namespaceeonc_1_1log.html#a3f027e6eb6e57d84a067673e8050f8d4ae1ba155a9f2e8c3be94020eef32a0301">eonc::log::Manual</a>
+ }</td></tr>
+<tr class="memdesc:a3f027e6eb6e57d84a067673e8050f8d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">How queued log records reach the sinks.  <a href="namespaceeonc_1_1log.html#a3f027e6eb6e57d84a067673e8050f8d4">More...</a><br /></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:afc476b0f785ec42b5b5aa212b847cb6f" id="r_afc476b0f785ec42b5b5aa212b847cb6f"><td class="memItemLeft">quill::ManualBackendWorker *&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1log_1_1detail.html#afc476b0f785ec42b5b5aa212b847cb6f">eonc::log::detail::manual_worker_for_caller</a> ()</td></tr>
+<tr class="memitem:a5d74db189a672cb0a2d593d6f80926a2" id="r_a5d74db189a672cb0a2d593d6f80926a2"><td class="memItemLeft"><a class="el" href="namespaceeonc_1_1log.html#a3f027e6eb6e57d84a067673e8050f8d4">BackendMode</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1log.html#a5d74db189a672cb0a2d593d6f80926a2">eonc::log::start_client_backend</a> (<a class="el" href="namespaceeonc_1_1log.html#a3f027e6eb6e57d84a067673e8050f8d4">BackendMode</a> mode) noexcept</td></tr>
+<tr class="memdesc:a5d74db189a672cb0a2d593d6f80926a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start draining the client queue, once.  <br /></td></tr>
+<tr class="memitem:aa6bbcab5b160686849914ab909b0aaeb" id="r_aa6bbcab5b160686849914ab909b0aaeb"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1log.html#aa6bbcab5b160686849914ab909b0aaeb">eonc::log::manual_backend</a> () noexcept</td></tr>
+<tr class="memdesc:aa6bbcab5b160686849914ab909b0aaeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">True once the client queue is drained by its own thread.  <br /></td></tr>
+<tr class="memitem:ad39a546a8bea2e53fabe19c95e01a0c5" id="r_ad39a546a8bea2e53fabe19c95e01a0c5"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1log.html#ad39a546a8bea2e53fabe19c95e01a0c5">eonc::log::flush</a> (quill::Logger *logger) noexcept</td></tr>
+<tr class="memdesc:ad39a546a8bea2e53fabe19c95e01a0c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write every queued record to the sinks and flush the sinks.  <br /></td></tr>
+<tr class="memitem:aa9e389d09af0a7606c7721bde315e93f" id="r_aa9e389d09af0a7606c7721bde315e93f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1log.html#aa9e389d09af0a7606c7721bde315e93f">eonc::log::poll_if_due</a> () noexcept</td></tr>
+<tr class="memdesc:aa9e389d09af0a7606c7721bde315e93f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drain the queue now and then, from the polling thread.  <br /></td></tr>
+<tr class="memitem:af5b538ec233e35f4dfe3fc9acc181981" id="r_af5b538ec233e35f4dfe3fc9acc181981"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1log.html#af5b538ec233e35f4dfe3fc9acc181981">eonc::log::shutdown</a> () noexcept</td></tr>
+<tr class="memdesc:af5b538ec233e35f4dfe3fc9acc181981"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drain the queue and stop the backend. Safe to call twice.  <br /></td></tr>
+<tr class="memitem:a72114ac5e9af0db299eb4ac4b974dadf" id="r_a72114ac5e9af0db299eb4ac4b974dadf"><td class="memItemLeft">quill::Logger *&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1log.html#a72114ac5e9af0db299eb4ac4b974dadf">eonc::log::init_client_loggers</a> () noexcept</td></tr>
+<tr class="memdesc:a72114ac5e9af0db299eb4ac4b974dadf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the combi and traceback loggers once, without a backend.  <br /></td></tr>
 <tr class="memitem:a15257d2e98b666900cf9bc37ca4084f3" id="r_a15257d2e98b666900cf9bc37ca4084f3"><td class="memItemLeft">quill::Logger *&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1log.html#a15257d2e98b666900cf9bc37ca4084f3">eonc::log::init_client</a> () noexcept</td></tr>
-<tr class="memdesc:a15257d2e98b666900cf9bc37ca4084f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start the client backend and the combi / traceback loggers once.  <br /></td></tr>
+<tr class="memdesc:a15257d2e98b666900cf9bc37ca4084f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start the client backend thread and the combi / traceback loggers once.  <br /></td></tr>
 <tr class="memitem:a4e7c8b5e4189cf657384f1c4bbf14dab" id="r_a4e7c8b5e4189cf657384f1c4bbf14dab"><td class="memItemLeft">quill::Logger *&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a> () noexcept</td></tr>
 <tr class="memdesc:a4e7c8b5e4189cf657384f1c4bbf14dab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the default "combi" logger.  <br /></td></tr>
 <tr class="memitem:aad1a942f68ca20cc5bc1d7601b4cf816" id="r_aad1a942f68ca20cc5bc1d7601b4cf816"><td class="memItemLeft">quill::Logger *&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1log.html#aad1a942f68ca20cc5bc1d7601b4cf816">eonc::log::traceback</a> () noexcept</td></tr>
@@ -296,6 +317,11 @@ Variables</h2></td></tr>
 <tr class="memitem:a13ecaa4676a7d55b383cf89f9b3a68cc" id="r_a13ecaa4676a7d55b383cf89f9b3a68cc"><td class="memItemLeft">constexpr std::string_view&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1log_1_1detail.html#a13ecaa4676a7d55b383cf89f9b3a68cc">eonc::log::detail::kTracebackLoggerName</a> {&quot;_traceback&quot;}</td></tr>
 <tr class="memitem:a7326a45cc38c80c7ab6e4b5f97cd0e2b" id="r_a7326a45cc38c80c7ab6e4b5f97cd0e2b"><td class="memItemLeft">constexpr std::chrono::milliseconds&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1log_1_1detail.html#a7326a45cc38c80c7ab6e4b5f97cd0e2b">eonc::log::detail::kBackendSleep</a> {1}</td></tr>
 <tr class="memdesc:a7326a45cc38c80c7ab6e4b5f97cd0e2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Idle sleep of the client's logging backend thread.  <br /></td></tr>
+<tr class="memitem:a5447c22b203b640f8eab0dbdd7aea15c" id="r_a5447c22b203b640f8eab0dbdd7aea15c"><td class="memItemLeft">std::atomic&lt; quill::ManualBackendWorker * &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1log_1_1detail.html#a5447c22b203b640f8eab0dbdd7aea15c">eonc::log::detail::g_manual_worker</a> {nullptr}</td></tr>
+<tr class="memitem:a7322a61c2cf5820cc45167c940c8973a" id="r_a7322a61c2cf5820cc45167c940c8973a"><td class="memItemLeft">std::atomic&lt; std::thread::id &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1log_1_1detail.html#a7322a61c2cf5820cc45167c940c8973a">eonc::log::detail::g_manual_owner</a> {}</td></tr>
+<tr class="memitem:abbb99554cd95f65d5e2053a90ea60e61" id="r_abbb99554cd95f65d5e2053a90ea60e61"><td class="memItemLeft">std::atomic&lt; std::chrono::steady_clock::rep &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1log_1_1detail.html#abbb99554cd95f65d5e2053a90ea60e61">eonc::log::detail::g_last_poll</a> {0}</td></tr>
+<tr class="memitem:addfce34d3a51907bfb278a4cfada7a25" id="r_addfce34d3a51907bfb278a4cfada7a25"><td class="memItemLeft">constexpr std::chrono::milliseconds&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1log_1_1detail.html#addfce34d3a51907bfb278a4cfada7a25">eonc::log::detail::kManualPollInterval</a> {100}</td></tr>
+<tr class="memdesc:addfce34d3a51907bfb278a4cfada7a25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Poll no more often than this in Manual mode.  <br /></td></tr>
 </table>
 <a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
 <a id="ae7f47d7e071d7756fc700db100c5a006" name="ae7f47d7e071d7756fc700db100c5a006"></a>
@@ -314,7 +340,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">x</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00294">294</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00438">438</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
 
 </div>
 </div>
@@ -337,15 +363,15 @@ Variables</h2></td></tr>
 <div class="line">    EONC_EXPAND(QUILL_LOG_CRITICAL(l, __VA_ARGS__));                         \</div>
 <div class="line">  }                                                                          \</div>
 <div class="line">} <span class="keywordflow">while</span> (0)</div>
-<div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00111">EonLogger.h:111</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00255">EonLogger.h:255</a></div></div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00334">334</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  334</span><span class="preprocessor">#define EONC_LOG_CRITICAL(...)                                                 \</span></div>
-<div class="line"><span class="lineno">  335</span><span class="preprocessor">  do {                                                                         \</span></div>
-<div class="line"><span class="lineno">  336</span><span class="preprocessor">    if (auto *l = eonc::log::get()) {                                          \</span></div>
-<div class="line"><span class="lineno">  337</span><span class="preprocessor">      EONC_EXPAND(QUILL_LOG_CRITICAL(l, __VA_ARGS__));                         \</span></div>
-<div class="line"><span class="lineno">  338</span><span class="preprocessor">    }                                                                          \</span></div>
-<div class="line"><span class="lineno">  339</span><span class="preprocessor">  } while (0)</span></div>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00478">478</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  478</span><span class="preprocessor">#define EONC_LOG_CRITICAL(...)                                                 \</span></div>
+<div class="line"><span class="lineno">  479</span><span class="preprocessor">  do {                                                                         \</span></div>
+<div class="line"><span class="lineno">  480</span><span class="preprocessor">    if (auto *l = eonc::log::get()) {                                          \</span></div>
+<div class="line"><span class="lineno">  481</span><span class="preprocessor">      EONC_EXPAND(QUILL_LOG_CRITICAL(l, __VA_ARGS__));                         \</span></div>
+<div class="line"><span class="lineno">  482</span><span class="preprocessor">    }                                                                          \</span></div>
+<div class="line"><span class="lineno">  483</span><span class="preprocessor">  } while (0)</span></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -369,13 +395,13 @@ Variables</h2></td></tr>
 <div class="line">  }                                                                          \</div>
 <div class="line">} <span class="keywordflow">while</span> (0)</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00310">310</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  310</span><span class="preprocessor">#define EONC_LOG_DEBUG(...)                                                    \</span></div>
-<div class="line"><span class="lineno">  311</span><span class="preprocessor">  do {                                                                         \</span></div>
-<div class="line"><span class="lineno">  312</span><span class="preprocessor">    if (auto *l = eonc::log::get()) {                                          \</span></div>
-<div class="line"><span class="lineno">  313</span><span class="preprocessor">      EONC_EXPAND(QUILL_LOG_DEBUG(l, __VA_ARGS__));                            \</span></div>
-<div class="line"><span class="lineno">  314</span><span class="preprocessor">    }                                                                          \</span></div>
-<div class="line"><span class="lineno">  315</span><span class="preprocessor">  } while (0)</span></div>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00454">454</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  454</span><span class="preprocessor">#define EONC_LOG_DEBUG(...)                                                    \</span></div>
+<div class="line"><span class="lineno">  455</span><span class="preprocessor">  do {                                                                         \</span></div>
+<div class="line"><span class="lineno">  456</span><span class="preprocessor">    if (auto *l = eonc::log::get()) {                                          \</span></div>
+<div class="line"><span class="lineno">  457</span><span class="preprocessor">      EONC_EXPAND(QUILL_LOG_DEBUG(l, __VA_ARGS__));                            \</span></div>
+<div class="line"><span class="lineno">  458</span><span class="preprocessor">    }                                                                          \</span></div>
+<div class="line"><span class="lineno">  459</span><span class="preprocessor">  } while (0)</span></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -399,13 +425,13 @@ Variables</h2></td></tr>
 <div class="line">  }                                                                          \</div>
 <div class="line">} <span class="keywordflow">while</span> (0)</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00328">328</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  328</span><span class="preprocessor">#define EONC_LOG_ERROR(...)                                                    \</span></div>
-<div class="line"><span class="lineno">  329</span><span class="preprocessor">  do {                                                                         \</span></div>
-<div class="line"><span class="lineno">  330</span><span class="preprocessor">    if (auto *l = eonc::log::get()) {                                          \</span></div>
-<div class="line"><span class="lineno">  331</span><span class="preprocessor">      EONC_EXPAND(QUILL_LOG_ERROR(l, __VA_ARGS__));                            \</span></div>
-<div class="line"><span class="lineno">  332</span><span class="preprocessor">    }                                                                          \</span></div>
-<div class="line"><span class="lineno">  333</span><span class="preprocessor">  } while (0)</span></div>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00472">472</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  472</span><span class="preprocessor">#define EONC_LOG_ERROR(...)                                                    \</span></div>
+<div class="line"><span class="lineno">  473</span><span class="preprocessor">  do {                                                                         \</span></div>
+<div class="line"><span class="lineno">  474</span><span class="preprocessor">    if (auto *l = eonc::log::get()) {                                          \</span></div>
+<div class="line"><span class="lineno">  475</span><span class="preprocessor">      EONC_EXPAND(QUILL_LOG_ERROR(l, __VA_ARGS__));                            \</span></div>
+<div class="line"><span class="lineno">  476</span><span class="preprocessor">    }                                                                          \</span></div>
+<div class="line"><span class="lineno">  477</span><span class="preprocessor">  } while (0)</span></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -429,13 +455,13 @@ Variables</h2></td></tr>
 <div class="line">  }                                                                          \</div>
 <div class="line">} <span class="keywordflow">while</span> (0)</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00316">316</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  316</span><span class="preprocessor">#define EONC_LOG_INFO(...)                                                     \</span></div>
-<div class="line"><span class="lineno">  317</span><span class="preprocessor">  do {                                                                         \</span></div>
-<div class="line"><span class="lineno">  318</span><span class="preprocessor">    if (auto *l = eonc::log::get()) {                                          \</span></div>
-<div class="line"><span class="lineno">  319</span><span class="preprocessor">      EONC_EXPAND(QUILL_LOG_INFO(l, __VA_ARGS__));                             \</span></div>
-<div class="line"><span class="lineno">  320</span><span class="preprocessor">    }                                                                          \</span></div>
-<div class="line"><span class="lineno">  321</span><span class="preprocessor">  } while (0)</span></div>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00460">460</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  460</span><span class="preprocessor">#define EONC_LOG_INFO(...)                                                     \</span></div>
+<div class="line"><span class="lineno">  461</span><span class="preprocessor">  do {                                                                         \</span></div>
+<div class="line"><span class="lineno">  462</span><span class="preprocessor">    if (auto *l = eonc::log::get()) {                                          \</span></div>
+<div class="line"><span class="lineno">  463</span><span class="preprocessor">      EONC_EXPAND(QUILL_LOG_INFO(l, __VA_ARGS__));                             \</span></div>
+<div class="line"><span class="lineno">  464</span><span class="preprocessor">    }                                                                          \</span></div>
+<div class="line"><span class="lineno">  465</span><span class="preprocessor">  } while (0)</span></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -463,13 +489,13 @@ Variables</h2></td></tr>
 <p>Use when you only need to log once or twice in a function and don't want to declare a logger variable.</p>
 <p>Example: EONC_LOG_INFO("quick message"); EONC_LOG_DEBUG("value: {}", x); </p>
 
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00304">304</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  304</span><span class="preprocessor">#define EONC_LOG_TRACE(...)                                                    \</span></div>
-<div class="line"><span class="lineno">  305</span><span class="preprocessor">  do {                                                                         \</span></div>
-<div class="line"><span class="lineno">  306</span><span class="preprocessor">    if (auto *l = eonc::log::get()) {                                          \</span></div>
-<div class="line"><span class="lineno">  307</span><span class="preprocessor">      EONC_EXPAND(QUILL_LOG_TRACE_L1(l, __VA_ARGS__));                         \</span></div>
-<div class="line"><span class="lineno">  308</span><span class="preprocessor">    }                                                                          \</span></div>
-<div class="line"><span class="lineno">  309</span><span class="preprocessor">  } while (0)</span></div>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00448">448</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  448</span><span class="preprocessor">#define EONC_LOG_TRACE(...)                                                    \</span></div>
+<div class="line"><span class="lineno">  449</span><span class="preprocessor">  do {                                                                         \</span></div>
+<div class="line"><span class="lineno">  450</span><span class="preprocessor">    if (auto *l = eonc::log::get()) {                                          \</span></div>
+<div class="line"><span class="lineno">  451</span><span class="preprocessor">      EONC_EXPAND(QUILL_LOG_TRACE_L1(l, __VA_ARGS__));                         \</span></div>
+<div class="line"><span class="lineno">  452</span><span class="preprocessor">    }                                                                          \</span></div>
+<div class="line"><span class="lineno">  453</span><span class="preprocessor">  } while (0)</span></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -493,13 +519,13 @@ Variables</h2></td></tr>
 <div class="line">  }                                                                          \</div>
 <div class="line">} <span class="keywordflow">while</span> (0)</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00322">322</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  322</span><span class="preprocessor">#define EONC_LOG_WARNING(...)                                                  \</span></div>
-<div class="line"><span class="lineno">  323</span><span class="preprocessor">  do {                                                                         \</span></div>
-<div class="line"><span class="lineno">  324</span><span class="preprocessor">    if (auto *l = eonc::log::get()) {                                          \</span></div>
-<div class="line"><span class="lineno">  325</span><span class="preprocessor">      EONC_EXPAND(QUILL_LOG_WARNING(l, __VA_ARGS__));                          \</span></div>
-<div class="line"><span class="lineno">  326</span><span class="preprocessor">    }                                                                          \</span></div>
-<div class="line"><span class="lineno">  327</span><span class="preprocessor">  } while (0)</span></div>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00466">466</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  466</span><span class="preprocessor">#define EONC_LOG_WARNING(...)                                                  \</span></div>
+<div class="line"><span class="lineno">  467</span><span class="preprocessor">  do {                                                                         \</span></div>
+<div class="line"><span class="lineno">  468</span><span class="preprocessor">    if (auto *l = eonc::log::get()) {                                          \</span></div>
+<div class="line"><span class="lineno">  469</span><span class="preprocessor">      EONC_EXPAND(QUILL_LOG_WARNING(l, __VA_ARGS__));                          \</span></div>
+<div class="line"><span class="lineno">  470</span><span class="preprocessor">    }                                                                          \</span></div>
+<div class="line"><span class="lineno">  471</span><span class="preprocessor">  } while (0)</span></div>
 </div><!-- fragment -->
 </div>
 </div>

@@ -362,6 +362,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#collective-sampling">Collective sampling</a></li>
 <li><a class="reference internal" href="#pes-traversal">PES traversal</a></li>
 <li><a class="reference internal" href="#miscellaneous">Miscellaneous</a></li>
+<li><a class="reference internal" href="#threads">Threads</a></li>
 <li><a class="reference internal" href="#configuration">Configuration</a><ul>
 <li><a class="reference internal" href="#eon.schema.MainConfig"><code class="docutils literal notranslate"><span class="pre">MainConfig</span></code></a><ul>
 <li><a class="reference internal" href="#eon.schema.MainConfig.job"><code class="docutils literal notranslate">job</span></code></a></li>
@@ -378,6 +379,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#eon.schema.MainConfig.cell"><code class="docutils literal notranslate">cell</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.MainConfig.pbc"><code class="docutils literal notranslate">pbc</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.MainConfig.default_vacuum"><code class="docutils literal notranslate">default_vacuum</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.MainConfig.single_threaded_client"><code class="docutils literal notranslate">single_threaded_client</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -581,6 +583,25 @@ and general parameters which are shared between job types.</p>
 </dd>
 </dl>
 </section>
+<section id="threads">
+<h2>Threads<a class="headerlink" href="#threads" title="Link to this heading">¶</a></h2>
+<p>By default <code class="docutils literal notranslate"><span class="pre">eonclient</span></code> runs a logging thread next to the compute thread, and
+<code class="docutils literal notranslate"><span class="pre">parallel</span> <span class="pre">=</span> <span class="pre">true</span></code> lets the dimer, NEB, and process search endpoint
+minimizations start worker threads. A client that must stay on a single thread,
+for example under a scheduler that counts threads, sets both options:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Main]</span>
+</span><span data-line="2"><span class="na">parallel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+</span><span data-line="3"><span class="na">single_threaded_client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
+</span></pre></div>
+</div>
+<p>The compute thread then drains the log queue itself, about every 100
+milliseconds and again whenever the client flushes or exits, so the records and
+their order match a default run. <code class="docutils literal notranslate"><span class="pre">single_threaded_client</span> <span class="pre">=</span> <span class="pre">true</span></code> with
+<code class="docutils literal notranslate"><span class="pre">parallel</span> <span class="pre">=</span> <span class="pre">true</span></code> stops the client with an error. The option is read once, from
+the first parameter file the client loads (<code class="docutils literal notranslate"><span class="pre">config_0.ini</span></code> when a standalone
+MPI client has one), and applies to the whole process. Command line jobs such as <code class="docutils literal notranslate"><span class="pre">--help</span></code> do
+not read a parameter file and keep the logging thread.</p>
+</section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">input_format</span></code>, <code class="docutils literal notranslate"><span class="pre">cell</span></code>, <code class="docutils literal notranslate"><span class="pre">pbc</span></code>, and <code class="docutils literal notranslate"><span class="pre">default_vacuum</span></code> select a foreign
@@ -608,6 +629,7 @@ structure file and its fallback cell. See <a class="reference internal" href="st
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cell</span> <span class="pre">(str)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pbc</span> <span class="pre">(bool)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_vacuum</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">single_threaded_client</span> <span class="pre">(bool)</span></code></p></li>
 </ul>
 </dd>
 </dl>
@@ -718,6 +740,12 @@ structure file and its fallback cell. See <a class="reference internal" href="st
 <dt class="sig sig-object py" id="eon.schema.MainConfig.default_vacuum">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">default_vacuum</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10.0</span></span><a class="headerlink" href="#eon.schema.MainConfig.default_vacuum" title="Link to this definition">¶</a></dt>
 <dd><p>Angstrom of vacuum on every side of the non-periodic box built when a foreign file and cell both omit a cell.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.MainConfig.single_threaded_client">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">single_threaded_client</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.MainConfig.single_threaded_client" title="Link to this definition">¶</a></dt>
+<dd><p>Run eonclient on one thread. The logger then has no backend thread and is drained by the compute thread, so the process shows a single thread for the whole job. Requires <code class="docutils literal notranslate"><span class="pre">parallel</span> <span class="pre">=</span> <span class="pre">false</span></code> in the same section, otherwise the client stops with an error. Read once, from the first parameter file the client loads. Off by default, which keeps Quill’s logging thread.</p>
 </dd></dl>
 
 </dd></dl>

@@ -366,6 +366,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#eon.schema.AmselConfig.on_error"><code class="docutils literal notranslate">on_error</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.AmselConfig.state_confidence"><code class="docutils literal notranslate">state_confidence</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.AmselConfig.reverse_barrier_tolerance"><code class="docutils literal notranslate">reverse_barrier_tolerance</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.AmselConfig.discover_wait_for_confidence"><code class="docutils literal notranslate">discover_wait_for_confidence</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -610,6 +611,7 @@ ordinary kinetic Monte Carlo.</p>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_error</span> <span class="pre">(Literal['fallback_single',</span> <span class="pre">'unavailable_mcamc',</span> <span class="pre">'raise'])</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">state_confidence</span> <span class="pre">(Literal['heuristic',</span> <span class="pre">'good-turing',</span> <span class="pre">'reverse-capped',</span> <span class="pre">'two-sided'])</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reverse_barrier_tolerance</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">discover_wait_for_confidence</span> <span class="pre">(bool)</span></code></p></li>
 </ul>
 </dd>
 </dl>
@@ -683,6 +685,14 @@ searches recover, pooled over all states, with the same bound.</p>
 <dt class="sig sig-object py" id="eon.schema.AmselConfig.reverse_barrier_tolerance">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">reverse_barrier_tolerance</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.02</span></span><a class="headerlink" href="#eon.schema.AmselConfig.reverse_barrier_tolerance" title="Link to this definition">¶</a></dt>
 <dd><p>Energy, in eV, within which a process matches a saddle known from the far side.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AmselConfig.discover_wait_for_confidence">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">discover_wait_for_confidence</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.AmselConfig.discover_wait_for_confidence" title="Link to this definition">¶</a></dt>
+<dd><p>Off, an exit is taken as soon as one process leaves the basin, whatever
+else the searches would have found.</p>
+<p>Hold the <code class="docutils literal notranslate"><span class="pre">discover_decide</span></code> exit until the state meets <code class="docutils literal notranslate"><span class="pre">[AKMC]</span> <span class="pre">confidence</span></code>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -891,6 +901,10 @@ have to be made when finding product states of unvisited processes.</p>
 </span><span data-line="6"><span class="na">reverse_barrier_tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.02</span>
 </span></pre></div>
 </div>
+<p>With <code class="docutils literal notranslate"><span class="pre">discover_decide</span></code> on, an amsel exit is taken as soon as one process leaves
+the basin, even when the state is not confident. Set
+<code class="docutils literal notranslate"><span class="pre">discover_wait_for_confidence</span> <span class="pre">=</span> <span class="pre">true</span></code> to search until <code class="docutils literal notranslate"><span class="pre">[AKMC]</span> <span class="pre">confidence</span></code> is met
+and take the exit from that table.</p>
 </section>
 </section>
 

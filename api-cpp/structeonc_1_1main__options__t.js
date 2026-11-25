@@ -14,6 +14,7 @@ var structeonc_1_1main__options__t =
     [ "quiet", "structeonc_1_1main__options__t.html#a9908a3dbe63335438de873d544b59751", null ],
     [ "randomSeed", "structeonc_1_1main__options__t.html#af7e0f3e4226b68e3a8cead0ba5fc8094", null ],
     [ "removeNetForce", "structeonc_1_1main__options__t.html#a9a6bc04595f0dad16fd63a3cc153db4a", null ],
+    [ "singleThreadedClient", "structeonc_1_1main__options__t.html#a125b179b6ca59c7906228d3d2e4a3a23", null ],
     [ "temperature", "structeonc_1_1main__options__t.html#a702a957086004cec291d2061ef5dd228", null ],
     [ "writeConForces", "structeonc_1_1main__options__t.html#aa57c1460be9c49412ff27c1e267c743c", null ],
     [ "writeLog", "structeonc_1_1main__options__t.html#a89b185761dc76f3c943b2363eba3f2c6", null ]

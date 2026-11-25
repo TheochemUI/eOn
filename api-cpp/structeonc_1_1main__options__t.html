@@ -264,6 +264,8 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:a286d12f6d93dc230e3fac7bf02dbcf2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Periodicity of that fallback cell.  <br /></td></tr>
 <tr class="memitem:a0030907d5a7b59584d2680db794924be" id="r_a0030907d5a7b59584d2680db794924be"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a0030907d5a7b59584d2680db794924be">defaultVacuum</a> {10.0}</td></tr>
 <tr class="memdesc:a0030907d5a7b59584d2680db794924be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vacuum (Angstrom) on every side of the box built when neither the file nor <span class="tt"><a class="el" href="#af9b82e17632dec8ad11bd15eb56d0d82" title="Fallback cell when a foreign file carries none: &quot;a b c&quot; or nine row-major lattice numbers.">cell</a></span> supplies one.  <br /></td></tr>
+<tr class="memitem:a125b179b6ca59c7906228d3d2e4a3a23" id="r_a125b179b6ca59c7906228d3d2e4a3a23"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a125b179b6ca59c7906228d3d2e4a3a23">singleThreadedClient</a> {false}</td></tr>
+<tr class="memdesc:a125b179b6ca59c7906228d3d2e4a3a23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run the client on one thread: no Quill backend thread and, since <span class="tt"><a class="el" href="#a75af4b974ecda59c75b5425a71001e32">parallel</a></span> must be false with it, no worker threads.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -513,6 +515,26 @@ Public Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00092">92</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">   92</span>{<span class="keyword">true</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a125b179b6ca59c7906228d3d2e4a3a23" name="a125b179b6ca59c7906228d3d2e4a3a23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a125b179b6ca59c7906228d3d2e4a3a23">&#9670;&#160;</a></span>singleThreadedClient</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::main_options_t::singleThreadedClient {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Run the client on one thread: no Quill backend thread and, since <span class="tt"><a class="el" href="#a75af4b974ecda59c75b5425a71001e32">parallel</a></span> must be false with it, no worker threads. </p>
+<p>The logger is polled by the compute thread. Read once at startup. </p>
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00112">112</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  112</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>

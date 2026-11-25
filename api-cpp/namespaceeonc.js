@@ -443,7 +443,7 @@ var namespaceeonc =
     [ "canComputeConcurrently", "namespaceeonc.html#afa25d65889a01852246fe4d2033b3e44", null ],
     [ "canonicalRgpotBackend", "namespaceeonc.html#acb010f57d18b680ed9154f02b0c2a540", null ],
     [ "cartesianMode", "namespaceeonc.html#afa250e9d6e43e4d6b6573e0f390c9ef5", null ],
-    [ "colorMobileCutoffGraph", "namespaceeonc.html#acadde9502e384d1b7898c6fa55a22b1a", null ],
+    [ "colorMobileCutoffGraph", "namespaceeonc.html#aa85abfc1f66c7f2319010762db83e95e", null ],
     [ "commandLine", "namespaceeonc.html#a968ff6a4c1d4936e710e6fd3d108a7f9", null ],
     [ "complementEigenvalues", "namespaceeonc.html#ae04f3f63b0711057b71f16472e0bbb88", null ],
     [ "complementHarmonicFreeEnergy", "namespaceeonc.html#a013ccd97822f213f0716e0a81d21b87a", null ],

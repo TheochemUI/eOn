@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['manual_0',['Manual',['../structeonc_1_1neb__options__t_1_1zoom__options__t.html#a11710c18d78ff8802774f0df474e5604ae1ba155a9f2e8c3be94020eef32a0301',1,'eonc::neb_options_t::zoom_options_t']]],
+  ['manual_0',['Manual',['../structeonc_1_1neb__options__t_1_1zoom__options__t.html#a11710c18d78ff8802774f0df474e5604ae1ba155a9f2e8c3be94020eef32a0301',1,'eonc::neb_options_t::zoom_options_t::Manual'],['../namespaceeonc_1_1log.html#a3f027e6eb6e57d84a067673e8050f8d4ae1ba155a9f2e8c3be94020eef32a0301',1,'eonc::log::Manual']]],
   ['max_5funcertainty_1',['MAX_UNCERTAINTY',['../classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016ac45d59fc6c6e8e3d9f5468639ba94278',1,'eonc::NudgedElasticBand']]],
   ['messagepassing_2',['MessagePassing',['../namespaceeonc.html#a82566c8e8569fa6abbcdb01e8710eb51ae3215de9017444f2fe1c6998925bebc9',1,'eonc']]],
   ['metatomic_3',['METATOMIC',['../namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a2da9f88c4946c305ed6794006f56e8f3',1,'eonc']]],

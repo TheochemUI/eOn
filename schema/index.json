@@ -22,7 +22,8 @@
         "input_format",
         "cell",
         "pbc",
-        "default_vacuum"
+        "default_vacuum",
+        "single_threaded_client"
       ]
     },
     "Potential": {
@@ -478,7 +479,8 @@
         "cv_threshold",
         "on_error",
         "state_confidence",
-        "reverse_barrier_tolerance"
+        "reverse_barrier_tolerance",
+        "discover_wait_for_confidence"
       ]
     },
     "Coarse Graining": {

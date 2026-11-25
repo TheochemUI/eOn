@@ -56,6 +56,11 @@
       "default": 0.02,
       "description": "Energy, in eV, within which a process matches a saddle known from the far side.",
       "type": "number"
+    },
+    "discover_wait_for_confidence": {
+      "default": false,
+      "description": "Hold the ``discover_decide`` exit until the state meets ``[AKMC] confidence``.\n\nOff, an exit is taken as soon as one process leaves the basin, whatever\nelse the searches would have found.",
+      "type": "boolean"
     }
   }
 }
