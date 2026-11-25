@@ -119,8 +119,8 @@ int xtsciBandSurface(void *user, void *request) {
     int64_t rows = 0;
     int64_t first = 0;
     const bool one_image =
-        (req->flags &
-         (RGSADDLE_REQ_ONE_IMAGE | RGSADDLE_REQ_CLIMBING_IMAGE)) != 0;
+        (req->flags & (RGSADDLE_REQ_ONE_IMAGE | RGSADDLE_REQ_CLIMBING_IMAGE)) !=
+        0;
     if (one_image) {
       if (req->n_images != 1 || req->image < 0 || req->image >= band) {
         return RGSADDLE_SHAPE;
@@ -164,8 +164,7 @@ int xtsciBandSurface(void *user, void *request) {
     }
     return RGSADDLE_OK;
   } catch (const std::exception &error) {
-    std::cerr << "rgsaddle surface evaluation failed: " << error.what()
-              << '\n';
+    std::cerr << "rgsaddle surface evaluation failed: " << error.what() << '\n';
     return RGSADDLE_SURFACE_FAILED;
   } catch (...) {
     std::cerr << "rgsaddle surface evaluation failed with a non-standard "

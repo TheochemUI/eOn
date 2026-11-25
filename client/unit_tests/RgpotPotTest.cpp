@@ -333,10 +333,9 @@ double eamReference(const AtomMatrix &pos, AtomMatrix &forces) {
     for (int j = i + 1; j < n; ++j) {
       const Eigen::RowVector3d d = pos.row(i) - pos.row(j);
       const double r = d.norm();
-      const double slope =
-          eamPair(r).slope + (eamEmbedding(rho(i)).slope +
-                              eamEmbedding(rho(j)).slope) *
-                                 eamDensity(r).slope;
+      const double slope = eamPair(r).slope + (eamEmbedding(rho(i)).slope +
+                                               eamEmbedding(rho(j)).slope) *
+                                                  eamDensity(r).slope;
       energy += eamPair(r).value;
       forces.row(i) -= slope * d / r;
       forces.row(j) += slope * d / r;
@@ -441,9 +440,8 @@ TEST_CASE("RgpotPot eam refuses a table it cannot read or understand",
   Parameters absent;
   REQUIRE(absent.load_ini_text(eamIni("/nonexistent/table.setfl", "setfl")) ==
           0);
-  REQUIRE_THROWS_WITH(
-      eonc::helpers::makePotential(PotType::RGPOT, absent),
-      ContainsSubstring("cannot open"));
+  REQUIRE_THROWS_WITH(eonc::helpers::makePotential(PotType::RGPOT, absent),
+                      ContainsSubstring("cannot open"));
 
   Parameters unknown;
   REQUIRE(unknown.load_ini_text(eamIni(eamFixturePath(), "no-such-layout")) ==
