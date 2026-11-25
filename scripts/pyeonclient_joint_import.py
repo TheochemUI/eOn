@@ -65,6 +65,22 @@ def mapped_libraries() -> list[str]:
     )
 
 
+def bundled_rgpot_mapped(
+    maps: list[str], private: list[str], shipped: dict[str, pathlib.Path]
+) -> bool:
+    """Whether a shipped libeon_rgpot.so.N itself is mapped.
+
+    Other libraries from the same directory, libeonclib.so among them, do
+    not count.
+    """
+    wanted = set()
+    for lib in private:
+        if lib in shipped:
+            wanted.add(shipped[lib].absolute())
+            wanted.add(shipped[lib].resolve())
+    return any(pathlib.Path(m) in wanted for m in maps)
+
+
 def main() -> int:
     import pyeonclient
     import rgpot
@@ -117,11 +133,9 @@ def main() -> int:
         ok = False
 
     maps = mapped_libraries()
-    if maps and private:
-        libs_dirs = {shipped[lib].parent for lib in private if lib in shipped}
-        if not any(pathlib.Path(m).parent in libs_dirs for m in maps):
-            print("the bundled libeon_rgpot is not loaded", file=sys.stderr)
-            ok = False
+    if maps and private and not bundled_rgpot_mapped(maps, private, shipped):
+        print("the bundled libeon_rgpot is not loaded", file=sys.stderr)
+        ok = False
     if not ok:
         return 1
     print("JOINT_IMPORT_OK", pyeonclient.__version__)
