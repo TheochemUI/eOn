@@ -2,7 +2,10 @@
 # One Born-Oppenheimer point through the external CPMD executable.
 set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
-input=$(readlink -f "${1:-$here/pos.con}")
+# BSD readlink has no -f. Resolve an existing input with pwd -P.
+input=${1:-$here/pos.con}
+test -f "$input" || { echo "Input missing: $input" >&2; exit 2; }
+input=$(printf '%s/%s\n' "$(cd "$(dirname "$input")" && pwd -P)" "$(basename "$input")")
 export EON_ENV_FILE=${EON_ENV_FILE:-$here/.env}
 set -a
 source "$EON_ENV_FILE"

@@ -74,7 +74,7 @@ def convert(source, output):
     if len(angles) != 3 or any(not math.isfinite(a) or abs(a - 90) > 1e-8 for a in angles):
         raise ValueError("This CPMD example requires an orthorhombic cell; use a validated custom deck for other cells")
     converted = readcon.ConFrame(cell=lengths, angles=[90.0] * 3, atoms=atoms)
-    readcon.write_con(str(output), [converted], precision=17)
+    readcon.write_con(str(output), [converted])
     written = readcon.read_con(str(output))[0]
     input_indices = {atom.atom_id: i for i, atom in enumerate(atoms)}
     record = {

@@ -106,7 +106,7 @@ def prepare(reactant, product, outdir):
             raise FileExistsError(f"Refusing to overwrite endpoint: {output}")
     for filename, atoms in (("reactant.con", left), ("product.con", right)):
         frame = readcon.ConFrame(cell=cell, angles=[90.0] * 3, atoms=atoms)
-        readcon.write_con(str(outdir / filename), [frame], precision=17)
+        readcon.write_con(str(outdir / filename), [frame])
     input_indices = {a.atom_id: i for i, a in enumerate(left)}
     written = readcon.read_con(str(outdir / "reactant.con"))[0]
     record = {"reader": "readcon-chemfiles==0.17.1", "reactant": left_record,
