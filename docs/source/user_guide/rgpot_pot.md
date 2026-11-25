@@ -98,9 +98,12 @@ neighbor_skin = 1.0
 `setfl` (aliases `eam/alloy`, `alloy`), or `fs` (aliases `eam/fs`,
 `finnis-sinclair`). `neighbor_skin` is the Verlet skin of the pair list in
 angstrom. It changes when the list is rebuilt, not the result. Energies are in
-the units of the table, eV for the LAMMPS metal files. An unreadable
-`table_path` or an unknown `table_format` stops the run when the potential is
-built.
+the units of the table, eV for the LAMMPS metal files. A relative `table_path`
+is resolved against the directory of the `config.ini` it was read from; when
+the parameters come from INI text or JSON (`Parameters.load_ini_text`,
+`load_json`) there is no such directory and it is relative to the working
+directory. An empty or omitted `table_path`, an unreadable file, or an unknown
+`table_format` stops the run when the potential is built.
 
 ### Metatomic
 

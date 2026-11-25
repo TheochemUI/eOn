@@ -357,6 +357,10 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
   } else if (backend_ == "eam" || backend_ == "eamtable") {
     backend_ = "eam";
     impl_->backend = Impl::Backend::Eam;
+    if (opt.table_path.empty())
+      throw std::runtime_error(
+          "RGPOT(eam): [RgpotPot] table_path is empty or missing; set it to "
+          "the EAM table file");
     rgpot::EAMTableConfig config;
     config.path = opt.table_path;
     config.skin = opt.neighbor_skin;

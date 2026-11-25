@@ -8,6 +8,7 @@
 #include <filesystem>
 #include <fstream>
 #include <memory>
+#include <stdexcept>
 #include <string>
 
 using namespace Catch::Matchers;
@@ -448,6 +449,100 @@ TEST_CASE("RgpotPot eam refuses a table it cannot read or understand",
           0);
   REQUIRE_THROWS_WITH(eonc::helpers::makePotential(PotType::RGPOT, unknown),
                       ContainsSubstring("unknown table format"));
+  REQUIRE_THROWS_AS(eonc::helpers::makePotential(PotType::RGPOT, unknown),
+                    std::runtime_error);
+#endif
+}
+
+TEST_CASE("RgpotPot eam names [RgpotPot] table_path when it is empty or "
+          "omitted",
+          "[PotTest][RGPOT][eam]") {
+#ifndef WITH_RGPOT
+  SKIP("built without WITH_RGPOT");
+#else
+  clear_env("RGPOT_BACKEND");
+  Parameters empty;
+  REQUIRE(empty.load_ini_text(eamIni("", "setfl")) == 0);
+  REQUIRE(empty.rgpot_options().table_path.empty());
+  REQUIRE_THROWS_AS(eonc::helpers::makePotential(PotType::RGPOT, empty),
+                    std::runtime_error);
+  REQUIRE_THROWS_WITH(eonc::helpers::makePotential(PotType::RGPOT, empty),
+                      ContainsSubstring("[RgpotPot] table_path") &&
+                          ContainsSubstring("empty or missing"));
+
+  Parameters omitted;
+  REQUIRE(omitted.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                                "[RgpotPot]\nbackend = eam\n") == 0);
+  REQUIRE(omitted.rgpot_options().table_path.empty());
+  REQUIRE_THROWS_AS(eonc::helpers::makePotential(PotType::RGPOT, omitted),
+                    std::runtime_error);
+  REQUIRE_THROWS_WITH(eonc::helpers::makePotential(PotType::RGPOT, omitted),
+                      ContainsSubstring("[RgpotPot] table_path") &&
+                          ContainsSubstring("empty or missing"));
+#endif
+}
+
+TEST_CASE("RgpotPot eam resolves a relative table_path against the "
+          "config.ini directory",
+          "[PotTest][RGPOT][eam]") {
+#ifndef WITH_RGPOT
+  SKIP("built without WITH_RGPOT");
+#else
+  clear_env("RGPOT_BACKEND");
+  namespace fs = std::filesystem;
+  const fs::path root =
+      fs::temp_directory_path() / "eon_rgpot_eam_relative_table_path";
+  fs::remove_all(root);
+  fs::create_directories(root / "job" / "tables");
+  fs::create_directories(root / "elsewhere");
+  fs::copy_file(eamFixturePath(), root / "job" / "tables" / "one.setfl");
+  {
+    std::ofstream ini(root / "job" / "config.ini");
+    ini << eamIni("tables/one.setfl", "setfl");
+  }
+
+  const fs::path cwd = fs::current_path();
+  fs::current_path(root / "elsewhere");
+  constexpr int n = 2;
+  AtomMatrix pos(n, 3);
+  pos << 0.0, 0.0, 0.0, 1.5, 0.0, 0.0;
+  Eigen::Matrix3d cell = Eigen::Matrix3d::Identity() * 20.0;
+  const int nrs[n] = {18, 18};
+  AtomMatrix expected;
+  const double expectedEnergy = eamReference(pos, expected);
+  double energy = 0.0;
+  AtomMatrix forces = AtomMatrix::Zero(n, 3);
+  bool built = false;
+  std::string textError;
+  try {
+    Parameters fromFile;
+    REQUIRE(fromFile.load((root / "job" / "config.ini").string()) == 0);
+    REQUIRE(fromFile.rgpot_options().table_path == "tables/one.setfl");
+    auto pot = eonc::helpers::makePotential(PotType::RGPOT, fromFile);
+    built = pot != nullptr;
+    if (built)
+      pot->force(n, pos.data(), nrs, forces.data(), &energy, nullptr,
+                 cell.data());
+
+    // Text has no config directory: the same path is relative to the cwd.
+    Parameters fromText;
+    REQUIRE(fromText.load_ini_text(eamIni("tables/one.setfl", "setfl")) == 0);
+    try {
+      (void)eonc::helpers::makePotential(PotType::RGPOT, fromText);
+    } catch (const std::exception &ex) {
+      textError = ex.what();
+    }
+  } catch (...) {
+    fs::current_path(cwd);
+    fs::remove_all(root);
+    throw;
+  }
+  fs::current_path(cwd);
+  fs::remove_all(root);
+
+  REQUIRE(built);
+  REQUIRE(energy == Catch::Approx(expectedEnergy).epsilon(1e-4));
+  REQUIRE_THAT(textError, ContainsSubstring("cannot open"));
 #endif
 }
 

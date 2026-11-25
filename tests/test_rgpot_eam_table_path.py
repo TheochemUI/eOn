@@ -77,7 +77,7 @@ def _reference(positions: np.ndarray) -> tuple[float, np.ndarray]:
     return energy, forces
 
 
-def _ini(table: Path, table_format: str = "setfl") -> str:
+def _ini(table: Path | str, table_format: str = "setfl") -> str:
     return f"""[Potential]
 potential = rgpot
 
@@ -148,3 +148,49 @@ def test_rgpot_eam_unknown_table_format_is_refused() -> None:
     refused.load_ini_text(_ini(TABLE, "not-a-format"))
     with pytest.raises(RuntimeError, match="unknown table format"):
         pyec.make_potential(refused)
+
+
+@pytest.mark.parametrize(
+    "ini",
+    [
+        pytest.param(_ini(""), id="empty"),
+        pytest.param(
+            "[Potential]\npotential = rgpot\n\n[RgpotPot]\nbackend = eam\n",
+            id="omitted",
+        ),
+    ],
+)
+def test_rgpot_eam_empty_or_omitted_table_path_is_named(ini: str) -> None:
+    refused = pyec.Parameters()
+    refused.load_ini_text(ini)
+    with pytest.raises(
+        RuntimeError, match=r"\[RgpotPot\] table_path is empty or missing"
+    ):
+        pyec.make_potential(refused)
+
+
+def test_rgpot_eam_relative_table_path_follows_the_config_file(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    job = tmp_path / "job"
+    (job / "tables").mkdir(parents=True)
+    (job / "tables" / "one.setfl").write_bytes(TABLE.read_bytes())
+    (job / "config.ini").write_text(_ini("tables/one.setfl"))
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    monkeypatch.chdir(elsewhere)
+
+    params = pyec.Parameters()
+    params.load(str(job / "config.ini"))
+    positions = POSITIONS[:2]
+    energy = float(_matter(params, positions).potential_energy)
+    assert energy == pytest.approx(_reference(positions)[0], rel=1e-4)
+
+    # Text has no config directory, so the same path is relative to the cwd.
+    from_text = pyec.Parameters()
+    from_text.load_ini_text(_ini("tables/one.setfl"))
+    with pytest.raises(ValueError, match="cannot open"):
+        pyec.make_potential(from_text)
+    monkeypatch.chdir(job)
+    energy = float(_matter(from_text, positions).potential_energy)
+    assert energy == pytest.approx(_reference(positions)[0], rel=1e-4)
