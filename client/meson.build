@@ -553,14 +553,15 @@ _deps += dl_dep
 # with *default* options before eOn can pass its own; get_variable() then
 # fails for anything the default profile skipped. Force pkg-config-only.
 _rgpot_proj = []
-# rgpot 3.5.1 is the minimum. 3.5.0 changed the C++ layout of
-# PotCaps, LJConfig, LJClusterConfig and MorseConfig but kept
-# soversion 3, so a caller built against 3.4.0 crashes. 3.5.1
-# publishes that layout as librgpot.so.4. eOn compiles the inline
-# caps() into librgpot_pot.so.
+# rgpot 3.7.0 is the minimum. The eam backend uses rgpot::EAMTablePot and
+# EAMTableConfig::skin: 3.6.0 added the EAMTable potential without skin, and
+# 3.5.1 has neither. 3.5.0 changed the C++ layout of PotCaps, LJConfig,
+# LJClusterConfig and MorseConfig but kept soversion 3, so a caller built
+# against 3.4.0 crashes. eOn compiles the inline caps() into
+# librgpot_pot.so.
 _rgpot_pkg = dependency(
     'rgpot',
-    version: '>=3.5.1',
+    version: '>=3.7.0',
     method: 'pkg-config',
     required: false,
     allow_fallback: false,
@@ -584,6 +585,9 @@ if not _rgpot_pkg.found()
         # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H are
         # Fortran kernels inside librgpot.
         'with_fortran_pots': 'enabled',
+        # The eam backend of [RgpotPot] reads LAMMPS funcfl, setfl and eam/fs
+        # tables through rgpot::EAMTablePot, which is opt-in upstream.
+        'with_eam_table': true,
     }
     # Direct RGPOT is mandatory off Windows; serve still opts into RPC there.
     if not is_windows or get_option('with_serve')
@@ -806,6 +810,14 @@ if _rgpot_pkg.found()
             + 'PKG_CONFIG_PATH at one that has them.',
         )
     endif
+    if cppc.get_define('RGPOT_HAS_EAM_TABLE', dependencies: _rgpot_pkg) == ''
+        error(
+            'installed rgpot was built without the EAM table potential '
+            + '(rgpot.pc does not define RGPOT_HAS_EAM_TABLE). '
+            + 'Rebuild rgpot with -Dwith_eam_table=true, or point '
+            + 'PKG_CONFIG_PATH at one that has it.',
+        )
+    endif
 else
     # 2) wrap / multi-source fallback, configured next to the vesin choice
     # above; here it only takes on its eOn roles.
@@ -825,6 +837,13 @@ else
         error(
             'rgpot subproject built without Fortran potentials. '
             + 'Reconfigure with -Drgpot:with_fortran_pots=enabled, '
+            + 'or wipe the build directory.',
+        )
+    endif
+    if not _rgpot_proj.get_variable('has_eam_table')
+        error(
+            'rgpot subproject built without the EAM table potential. '
+            + 'Reconfigure with -Drgpot:with_eam_table=true, '
             + 'or wipe the build directory.',
         )
     endif

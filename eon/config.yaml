@@ -2390,6 +2390,19 @@ RgpotPot:
             kind: string
             default: "omol"
 
+        # backend = eam: tabulated embedded-atom potential read by rgpot.
+        table_path:
+            kind: string
+            default: ""
+
+        table_format:
+            kind: string
+            default: "setfl"
+
+        neighbor_skin:
+            kind: float
+            default: 1.0
+
         device:
             kind: string
             default: "cpu"

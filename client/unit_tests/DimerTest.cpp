@@ -953,11 +953,13 @@ struct CountingBatchLJ final : Potential {
   long rounds{0};
   long systems{0};
   long largestBatch{0};
+  bool batching{true};
 
-  explicit CountingBatchLJ(const Parameters &p)
+  explicit CountingBatchLJ(const Parameters &p, bool batchEvaluation = true)
       : Potential(PotType::LJ),
         inner{eonc::helpers::sharePotential(
-            eonc::helpers::makePotential(PotType::LJ, p))} {}
+            eonc::helpers::makePotential(PotType::LJ, p))},
+        batching{batchEvaluation} {}
 
   using Potential::force;
   void force(long nAtoms, const double *positions, const int *atomicNrs,
@@ -970,7 +972,7 @@ struct CountingBatchLJ final : Potential {
   }
 
   [[nodiscard]] bool supportsBatchEvaluation() const noexcept override {
-    return true;
+    return batching;
   }
 
   void forceBatch(long nSystems, long nAtoms, const double *const *positions,
@@ -1009,14 +1011,17 @@ TEST_CASE_METHOD(DimerFixture,
   const long steps = 6;
   const AtomMatrix seed = softModeSeed(matter->numberOfAtoms());
 
-  // Lazy reference: every evaluation is its own potential call.
+  // Lazy reference: every evaluation is its own potential call. The same
+  // wrapper counts them, because rgpot LJ hands a search its own instance
+  // per thread and the fixture potential would miss those calls.
+  auto serialPot = std::make_shared<CountingBatchLJ>(params, false);
   auto serialMatter = std::make_shared<Matter>(*matter);
+  serialMatter->setPotential(serialPot);
   const double serialE0 = serialMatter->getPotentialEnergy();
-  const size_t serialBefore = pot->forceCallCounter;
-  MinModeSaddleSearch serial(serialMatter, seed, serialE0, params, pot);
+  serialPot->rounds = 0;
+  MinModeSaddleSearch serial(serialMatter, seed, serialE0, params, serialPot);
   serial.run(steps);
-  const long serialCalls =
-      static_cast<long>(pot->forceCallCounter - serialBefore);
+  const long serialCalls = serialPot->rounds;
 
   auto batchPot = std::make_shared<CountingBatchLJ>(params);
   auto batchMatter = std::make_shared<Matter>(*matter);

@@ -1,9 +1,11 @@
 [wrap-git]
 directory = rgpot
 url = https://github.com/OmniPotentRPC/rgpot.git
-# rgpot 3.5.1 (signed tag v3.5.1, commit 4b24f1b). 3.5.0 shipped the
-# new C++ layout under soversion 3. 3.5.1 is soversion 4 (librgpot.so.4).
-# eOn compiles the inline caps() into librgpot_pot.so.
-revision = 4b24f1b7bcff988178e6b184abcfaa408f149914
+# rgpot 3.7.0 (tag v3.7.0, commit 672aef4). eOn's eam backend needs
+# rgpot::EAMTablePot and EAMTableConfig::skin. v3.6.0 is the first release
+# with EAMTable but has no skin, and 3.5.1 has neither. 3.6.0 and 3.7.0
+# are soversion 6 (librgpot.so.6). eOn compiles the inline caps() into
+# librgpot_pot.so.
+revision = 672aef430855036125c902ace024756d682e180a
 depth = 1
 diff_files = rgpot-capnp-includes.patch

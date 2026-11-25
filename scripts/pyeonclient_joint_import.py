@@ -2,43 +2,141 @@
 """Import pip rgpot and a bundled pyeonclient wheel in one process.
 
 pyeonclient vendors librgpot as libeon_rgpot.so.N. N is the SONAME
-rgpot was linked with. rgpot 3.5.1 is libeon_rgpot.so.4. The rgpot
+rgpot was linked with. rgpot 3.7.0 is libeon_rgpot.so.6. The rgpot
 wheel keeps the public librgpot SONAME. Both imports must succeed,
-and neither extension may satisfy the other's NEEDED entry.
+and neither package may satisfy the other's NEEDED entry.
+
+With rgpot 3.7.0 _core.abi3.so does not NEED librgpot itself;
+libeonclib.so does, and the repair step rewrites that entry and leaves
+_core alone. So the check walks the NEEDED closure of the pyeonclient
+extension modules through the libraries the wheel ships, including
+.pyeonclient.mesonpy.libs, and every shared object in the wheel is
+checked for a public librgpot entry.
 """
 
 from __future__ import annotations
 
+import importlib.metadata
 import pathlib
 import re
 import subprocess
 import sys
 
+PRIVATE_RGPOT = re.compile(r"^libeon_rgpot\.so\.[0-9]+$")
+PUBLIC_RGPOT = re.compile(r"^librgpot\.so(\.|$)")
 
-def needed(path: pathlib.Path) -> str:
-    return subprocess.check_output(["readelf", "-d", str(path)], text=True)
+
+def is_shared_object(path: pathlib.Path) -> bool:
+    return path.is_file() and re.search(r"\.so(\.[0-9]+)*$", path.name) is not None
+
+
+def needed(path: pathlib.Path) -> list[str]:
+    out = subprocess.check_output(["readelf", "-d", str(path)], text=True)
+    return re.findall(r"\(NEEDED\)\s+Shared library: \[([^\]]+)\]", out)
+
+
+def wheel_shared_objects(dist: str) -> list[pathlib.Path]:
+    files = importlib.metadata.files(dist) or []
+    found = {pathlib.Path(f.locate()).absolute() for f in files}
+    return sorted(p for p in found if is_shared_object(p))
+
+
+def closure(
+    roots: list[pathlib.Path], shipped: dict[str, pathlib.Path]
+) -> dict[pathlib.Path, list[str]]:
+    """NEEDED entries of roots and of every shipped library they reach."""
+    seen: dict[pathlib.Path, list[str]] = {}
+    todo = list(roots)
+    while todo:
+        so = todo.pop()
+        if so in seen:
+            continue
+        seen[so] = needed(so)
+        todo.extend(shipped[lib] for lib in seen[so] if lib in shipped)
+    return seen
+
+
+def mapped_libraries() -> list[str]:
+    maps = pathlib.Path("/proc/self/maps")
+    if not maps.exists():
+        return []
+    return sorted(
+        {line.split()[-1] for line in maps.read_text().splitlines() if "/" in line}
+    )
+
+
+def bundled_rgpot_mapped(
+    maps: list[str], private: list[str], shipped: dict[str, pathlib.Path]
+) -> bool:
+    """Whether a shipped libeon_rgpot.so.N itself is mapped.
+
+    Other libraries from the same directory, libeonclib.so among them, do
+    not count.
+    """
+    wanted = set()
+    for lib in private:
+        if lib in shipped:
+            wanted.add(shipped[lib].absolute())
+            wanted.add(shipped[lib].resolve())
+    return any(pathlib.Path(m) in wanted for m in maps)
 
 
 def main() -> int:
     import pyeonclient
     import rgpot
 
-    py_core = next(pathlib.Path(pyeonclient.__file__).parent.rglob("_core*.so"))
-    rg_core = next(pathlib.Path(rgpot.__file__).parent.rglob("_core*.so"))
-    py_need = needed(py_core)
-    rg_need = needed(rg_core)
-    print(py_core)
-    print(py_need)
-    print(rg_core)
-    print(rg_need)
-    if not re.search(r"\[libeon_rgpot\.so\.[0-9]+\]", py_need):
-        print("pyeonclient did not bundle libeon_rgpot", file=sys.stderr)
+    print("pyeonclient", pyeonclient.__version__, pyeonclient.__file__)
+    print("rgpot", rgpot.__file__)
+
+    py_sos = wheel_shared_objects("pyeonclient")
+    rg_sos = wheel_shared_objects("rgpot")
+    extensions = [so for so in py_sos if so.name.startswith("_core")]
+    if not extensions:
+        print("pyeonclient installed no _core extension", file=sys.stderr)
         return 1
-    if re.search(r"\[librgpot\.so", py_need):
-        print("pyeonclient still NEEDs the pip rgpot SONAME", file=sys.stderr)
+    if not rg_sos:
+        print("rgpot installed no shared objects", file=sys.stderr)
         return 1
-    if not re.search(r"\[librgpot\.so", rg_need):
+
+    shipped = {so.name: so for so in py_sos}
+    reached = closure(extensions, shipped)
+    for so, libs in reached.items():
+        print(so)
+        for lib in libs:
+            print("  NEEDED", lib)
+
+    ok = True
+    private = sorted(
+        {lib for libs in reached.values() for lib in libs if PRIVATE_RGPOT.match(lib)}
+    )
+    if not private:
+        print(
+            "pyeonclient did not bundle libeon_rgpot: no libeon_rgpot.so.N in "
+            "the NEEDED closure of " + ", ".join(so.name for so in extensions),
+            file=sys.stderr,
+        )
+        ok = False
+    for lib in private:
+        if lib not in shipped:
+            print(f"pyeonclient NEEDs {lib} but does not ship it", file=sys.stderr)
+            ok = False
+    for so in py_sos:
+        for lib in reached.get(so) or needed(so):
+            if PUBLIC_RGPOT.match(lib):
+                print(
+                    f"{so.name} still NEEDs the pip rgpot SONAME {lib}",
+                    file=sys.stderr,
+                )
+                ok = False
+    if not any(PUBLIC_RGPOT.match(lib) for so in rg_sos for lib in needed(so)):
         print("rgpot wheel lost the librgpot SONAME", file=sys.stderr)
+        ok = False
+
+    maps = mapped_libraries()
+    if maps and private and not bundled_rgpot_mapped(maps, private, shipped):
+        print("the bundled libeon_rgpot is not loaded", file=sys.stderr)
+        ok = False
+    if not ok:
         return 1
     print("JOINT_IMPORT_OK", pyeonclient.__version__)
     return 0

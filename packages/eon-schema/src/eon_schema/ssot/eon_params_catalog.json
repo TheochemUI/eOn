@@ -1024,6 +1024,27 @@
           "ordinal": 31,
           "snake": "task_name",
           "type": "Text"
+        },
+        {
+          "capnp": "table_path",
+          "default": "",
+          "ordinal": 32,
+          "snake": "table_path",
+          "type": "Text"
+        },
+        {
+          "capnp": "table_format",
+          "default": "setfl",
+          "ordinal": 33,
+          "snake": "table_format",
+          "type": "Text"
+        },
+        {
+          "capnp": "neighbor_skin",
+          "default": 1.0,
+          "ordinal": 34,
+          "snake": "neighbor_skin",
+          "type": "Float64"
         }
       ],
       "ini_when": "potential=RGPOT",

@@ -147,13 +147,16 @@ TEST_CASE("rgsaddle band surface serves whole, interior and one-image "
     std::copy(p.data(), p.data() + dof, all.begin() + i * dof);
   }
 
-  auto request = [&](long rows, long first, uint64_t flags, long image) {
+  auto request = [&](long rows, long first, uint64_t flags, long image,
+                     long n_images = -1) {
     std::vector<double> e(static_cast<size_t>(rows));
     std::vector<double> g(static_cast<size_t>(rows * dof));
     rgsaddle_surface_request_t req{};
     req.version = RGSADDLE_VERSION_INIT;
     req.flags = flags;
-    req.n_images = (flags & RGSADDLE_REQ_ONE_IMAGE) != 0 ? band_n : rows;
+    if (n_images < 0)
+      n_images = (flags & RGSADDLE_REQ_ONE_IMAGE) != 0 ? band_n : rows;
+    req.n_images = n_images;
     req.n_atoms = atoms;
     req.positions = all.data() + first * dof;
     req.energies = e.data();
@@ -181,6 +184,24 @@ TEST_CASE("rgsaddle band surface serves whole, interior and one-image "
   auto [rcOne, eOne] = request(1, 2, RGSADDLE_REQ_ONE_IMAGE, 2);
   REQUIRE(rcOne == RGSADDLE_OK);
   REQUIRE(eOne[0] == Catch::Approx(reference[2]));
+  // RGSADDLE_REQ_ONE_IMAGE keeps n_images at the band length.
+  auto [rcOneShort, eOneShort] = request(1, 2, RGSADDLE_REQ_ONE_IMAGE, 2, 1);
+  REQUIRE(rcOneShort == RGSADDLE_SHAPE);
+  // The climbing image of a per-image band: both bits, n_images = band.
+  auto [rcClimbOne, eClimbOne] =
+      request(1, 1, RGSADDLE_REQ_ONE_IMAGE | RGSADDLE_REQ_CLIMBING_IMAGE, 1);
+  REQUIRE(rcClimbOne == RGSADDLE_OK);
+  REQUIRE(eClimbOne[0] == Catch::Approx(reference[1]));
+  // The climbing image of a batched band: the bit alone, n_images = 1.
+  auto [rcClimb, eClimb] = request(1, 3, RGSADDLE_REQ_CLIMBING_IMAGE, 3, 1);
+  REQUIRE(rcClimb == RGSADDLE_OK);
+  REQUIRE(eClimb[0] == Catch::Approx(reference[3]));
+  auto [rcClimbLong, eClimbLong] =
+      request(1, 3, RGSADDLE_REQ_CLIMBING_IMAGE, 3, band_n);
+  REQUIRE(rcClimbLong == RGSADDLE_SHAPE);
+  auto [rcClimbOut, eClimbOut] =
+      request(1, 0, RGSADDLE_REQ_CLIMBING_IMAGE, band_n, 1);
+  REQUIRE(rcClimbOut == RGSADDLE_SHAPE);
   // Any other row count is a shape error, not a silent mismatch.
   auto [rcBad, eBad] = request(band_n - 1, 0, 0, -1);
   REQUIRE(rcBad == RGSADDLE_SHAPE);

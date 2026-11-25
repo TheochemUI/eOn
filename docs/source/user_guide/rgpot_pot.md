@@ -32,8 +32,9 @@ Cap'n Proto messages passed into the C ABI. The `rgpot` Meson subproject is
 `subprojects/rgpot.wrap`, and the build pulls `nwchempot_dep` and
 `cpmdpot_dep`. Serve mode uses `ptlrpc_dep` under `-Dwith_serve`.
 
-`dependency('rgpot')` prefers an installed rgpot at 3.5.1 or newer. The Meson
-wrap is the fallback. A CPMD run that splits ranks uses the flag in the CPMD
+`dependency('rgpot')` prefers an installed rgpot at 3.7.0 or newer that was
+built with `-Dwith_eam_table=true`. The Meson wrap is the fallback, and it
+turns that option on. A CPMD run that splits ranks uses the flag in the CPMD
 section.
 
 ## Configuration
@@ -75,6 +76,35 @@ and `RGPOT_NWCHEMC_ENGINE`.
 NWChem `inputBlocks` text. When `theory` is `dft` and `scf_type` names an
 exchange-correlation functional such as `b3lyp`, the client writes a short
 density functional theory (DFT) block.
+
+### EAM table
+
+`backend = eam` reads a tabulated embedded-atom potential through
+`rgpot::EAMTablePot`. It needs no engine library, and nothing in it names an
+element: the table decides which atomic numbers it covers.
+
+```{code-block} ini
+[Potential]
+potential = rgpot
+
+[RgpotPot]
+backend = eam
+table_path = /path/to/table.eam.alloy
+table_format = setfl
+neighbor_skin = 1.0
+```
+
+`table_path` is a LAMMPS table file. `table_format` is `funcfl` (alias `eam`),
+`setfl` (aliases `eam/alloy`, `alloy`), or `fs` (aliases `eam/fs`,
+`finnis-sinclair`). `neighbor_skin` is the Verlet skin of the pair list in
+angstrom. It changes when the list is rebuilt, not the result. Energies are in
+the units of the table, eV for the LAMMPS metal files. A relative `table_path`
+is resolved against the directory of the `config.ini` it was read from when
+that file is loaded, so changing the working directory afterwards does not
+move it; when the parameters come from INI text or JSON
+(`Parameters.load_ini_text`, `load_json`) there is no such directory and it is
+relative to the working directory when the potential is built. An empty or omitted `table_path`, an unreadable file, or an unknown
+`table_format` stops the run when the potential is built.
 
 ### Metatomic
 

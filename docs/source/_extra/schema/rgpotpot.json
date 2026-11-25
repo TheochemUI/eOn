@@ -8,7 +8,7 @@
   "properties": {
     "backend": {
       "default": "nwchemc",
-      "description": "rgpot backend: 'nwchemc', 'cpmdc', 'metatomic', or 'xtb' (aliases: nwchem/cpmd/mta/gfn). metatomic/xtb dlopen libmetatomic_engine.so / libxtb_engine.so for packaging.",
+      "description": "rgpot backend: 'nwchemc', 'cpmdc', 'eam', 'metatomic', or 'xtb' (aliases: nwchem/cpmd/eamtable/mta/gfn). metatomic/xtb dlopen libmetatomic_engine.so / libxtb_engine.so for packaging.",
       "type": "string"
     },
     "basis": {
@@ -28,12 +28,27 @@
     },
     "functional": {
       "default": "BLYP",
-      "description": "XC functional for the CPMD backend.",
+      "description": "XC functional for the CPMD backend. [cpmd] functional overrides this key when params_path is empty.",
+      "type": "string"
+    },
+    "cpmd_functional": {
+      "default": "BLYP",
+      "description": "Alias of functional, read when functional is absent.",
       "type": "string"
     },
     "cutoff_ry": {
       "default": 70.0,
-      "description": "Plane-wave cutoff (Ry) for the CPMD backend.",
+      "description": "Plane-wave cutoff (Ry) for the CPMD backend. [cpmd] cutOffRy overrides this key when params_path is empty.",
+      "type": "number"
+    },
+    "cutOffRy": {
+      "default": 70.0,
+      "description": "Alias of cutoff_ry that wins over it when both are set.",
+      "type": "number"
+    },
+    "cpmd_cut_off_ry": {
+      "default": 70.0,
+      "description": "Alias of cutoff_ry, read when cutOffRy and cutoff_ry are absent.",
       "type": "number"
     },
     "charge": {
@@ -60,6 +75,26 @@
       "default": "",
       "description": "Metatomic model path when backend=metatomic.",
       "type": "string"
+    },
+    "task_name": {
+      "default": "omol",
+      "description": "UMA task head when backend=uma.",
+      "type": "string"
+    },
+    "table_path": {
+      "default": "",
+      "description": "Path to a DYNAMO EAM table (LAMMPS funcfl, setfl, or eam/fs layout) when backend=eam.",
+      "type": "string"
+    },
+    "table_format": {
+      "default": "setfl",
+      "description": "Table layout when backend=eam: 'funcfl' (alias eam), 'setfl' (aliases eam/alloy, alloy), or 'fs' (aliases eam/fs, finnis-sinclair).",
+      "type": "string"
+    },
+    "neighbor_skin": {
+      "default": 1.0,
+      "description": "Verlet skin of the EAM pair list in Angstrom when backend=eam. It changes when the list is rebuilt, not the result.",
+      "type": "number"
     },
     "device": {
       "default": "cpu",
@@ -122,6 +157,11 @@
       "description": "XTB unpaired electrons when backend=xtb.",
       "type": "integer"
     },
+    "xtb_charge": {
+      "default": 0.0,
+      "description": "XTB total charge when backend=xtb. An omitted key uses charge.",
+      "type": "number"
+    },
     "engine_root": {
       "default": "",
       "description": "Engine installation root (NWCHEM_ROOT / CPMD_ROOT).",
@@ -144,13 +184,23 @@
     },
     "input_block": {
       "default": "",
-      "description": "Verbatim input block for the engine: NWChem inputBlocks, or CPMD &SECTION text placed ahead of the sections cpmdc generates.",
+      "description": "Verbatim input block. For NWChem this is inputBlocks. For CPMD, [cpmd] input_block overrides this key and the text is appended to the message inputBlocks.",
       "type": "string"
     },
     "permanent_dir": {
       "default": "",
       "description": "CPMD FILEPATH directory for RESTART files (backend=cpmdc).",
       "type": "string"
+    },
+    "params_path": {
+      "default": "",
+      "description": "Path to a Cap'n Proto CPMDParams message. The file owns the CPMD method, including inputSections and inputBlocks, and the scalar keys are not written over it. input_block is appended to inputBlocks. engine_path, engine_root, scratch_dir, and permanent_dir still place the run.",
+      "type": "string"
+    },
+    "ranks_per_image": {
+      "default": 0,
+      "description": "Ranks per CPMD calculator group. The MPI world is split into groups of this size, with one CPMD session per group. Rank 0 drives eOn and the other ranks serve force requests. 0 is one group of all ranks.",
+      "type": "integer"
     }
   }
 }

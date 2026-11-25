@@ -3,7 +3,7 @@
 
 rgpot sets install: not meson.is_subproject(). eOn CI uses
 meson install --skip-subprojects. eonclient then looks for the
-SONAME (librgpot.so.4 from rgpot 3.5.1) next to the prefix.
+SONAME (librgpot.so.6 from rgpot 3.7.0) next to the prefix.
 """
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from pathlib import Path
 def elf_soname(path: Path) -> str | None:
     """DT_SONAME of an ELF shared object.
 
-    rgpot 3.5.1 writes librgpot.so.3.5.1 and records librgpot.so.4.
+    rgpot 3.7.0 writes librgpot.so.3.7.0 and records librgpot.so.6.
     The filename major is the project version, not the SONAME.
     """
     readelf = shutil.which("readelf")

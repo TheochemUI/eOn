@@ -22,6 +22,7 @@
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 #include "eon/api.h"
+#include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -628,23 +629,47 @@ TEST_CASE_METHOD(NEBLJFixture,
   REQUIRE_FALSE(last.isApprox(dropped, 1e-6));
 }
 
+namespace {
+
+// Keeps every Potential default: nothing overrides the thread-safety queries.
+struct DefaultReentrancyPot final : Potential {
+  explicit DefaultReentrancyPot(const Parameters &p)
+      : Potential(PotType::LJ, p) {}
+  using Potential::force;
+  void force(long nAtoms, const double *, const int *, double *forces,
+             double *energy, double *, const double *) override {
+    std::fill(forces, forces + 3 * nAtoms, 0.0);
+    *energy = 0.0;
+  }
+};
+
+} // namespace
+
 TEST_CASE("Potential isThreadSafe defaults to true",
           "[potential][thread_safety]") {
   Parameters params;
-  auto pot = eonc::helpers::sharePotential(
-      eonc::helpers::makePotential(PotType::LJ, params));
+  auto pot = std::make_shared<DefaultReentrancyPot>(params);
   REQUIRE(pot->isThreadSafe() == true);
   REQUIRE(pot->isSharedInstanceThreadSafe() == true);
   REQUIRE(eonc::potIsThreadSafe(*pot));
   REQUIRE(eonc::potAllowsSharedInstance(*pot));
 }
 
+TEST_CASE("rgpot LJ asks for an instance per thread",
+          "[potential][thread_safety]") {
+  Parameters params;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  REQUIRE(pot->isThreadSafe() == false);
+  REQUIRE(pot->isSharedInstanceThreadSafe() == false);
+  REQUIRE(pot->needsPerImageInstance());
+}
+
 TEST_CASE("Potential thread_safe=false forces serial sharing",
           "[potential][thread_safety][gjg]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).thread_safe = false;
-  auto pot = eonc::helpers::sharePotential(
-      eonc::helpers::makePotential(PotType::LJ, params));
+  auto pot = std::make_shared<DefaultReentrancyPot>(params);
   REQUIRE(pot->isThreadSafe() == true);
   REQUIRE(pot->isSharedInstanceThreadSafe() == false);
 }

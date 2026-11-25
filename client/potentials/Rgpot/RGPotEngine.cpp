@@ -35,6 +35,7 @@
 #include "eon/potentials/Rgpot/XTBEngineLoader.h"
 #include "rgpot/CPMDPot/CPMDPot.hpp"
 #include "rgpot/CalculatorGroup.hpp"
+#include "rgpot/EAMTable/EAMTablePot.hpp"
 #include "rgpot/NWChemPot/NWChemPot.hpp"
 #include "rgpot/rpc/Potentials.capnp.h"
 
@@ -233,10 +234,11 @@ namespace eon {
 } // namespace eon
 
 struct RGPotEngine::Impl {
-  enum class Backend { Nwchemc, Cpmdc, Metatomic, Uma, Xtb };
+  enum class Backend { Nwchemc, Cpmdc, Eam, Metatomic, Uma, Xtb };
   Backend backend{Backend::Nwchemc};
   std::unique_ptr<rgpot::NWChemPot> nwchem;
   std::unique_ptr<rgpot::CPMDPot> cpmd;
+  std::unique_ptr<rgpot::EAMTablePot> eam;
   std::unique_ptr<MetatomicEngineLoader> metatomic;
   std::unique_ptr<GenericEngineLoader> uma;
   std::unique_ptr<XTBEngineLoader> xtb;
@@ -352,6 +354,28 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
           "RGPOT(cpmdc): ranks_per_image needs rgpot built with MPI "
           "(-Drgpot:with_mpi=enabled)");
     }
+  } else if (backend_ == "eam" || backend_ == "eamtable") {
+    backend_ = "eam";
+    impl_->backend = Impl::Backend::Eam;
+    if (opt.table_path.empty())
+      throw std::runtime_error(
+          "RGPOT(eam): [RgpotPot] table_path is empty or missing; set it to "
+          "the EAM table file");
+    rgpot::EAMTableConfig config;
+    config.path = opt.table_path;
+    config.skin = opt.neighbor_skin;
+    const std::string format = to_lower(opt.table_format);
+    if (format == "funcfl" || format == "eam")
+      config.format = rgpot::EAMTableFormat::Funcfl;
+    else if (format == "setfl" || format == "eam/alloy" || format == "alloy")
+      config.format = rgpot::EAMTableFormat::Setfl;
+    else if (format == "fs" || format == "eam/fs" ||
+             format == "finnis-sinclair")
+      config.format = rgpot::EAMTableFormat::FinnisSinclair;
+    else
+      throw std::runtime_error("RGPOT(eam): unknown table format '" +
+                               opt.table_format + "'");
+    impl_->eam = std::make_unique<rgpot::EAMTablePot>(config);
   } else if (backend_ == "metatomic" || backend_ == "mta" ||
              backend_ == "metatomicpot") {
     backend_ = "metatomic";
@@ -418,7 +442,7 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
   } else {
     throw std::runtime_error(
         "RGPOT: unknown backend '" + opt.backend +
-        "' (expected nwchemc, cpmdc, metatomic, uma, or xtb)");
+        "' (expected nwchemc, cpmdc, eam, metatomic, uma, or xtb)");
   }
 }
 
@@ -526,6 +550,8 @@ bool RGPotEngine::available() const {
     return impl_->nwchem->available();
   if (impl_->backend == Impl::Backend::Cpmdc && impl_->cpmd)
     return impl_->cpmd->available();
+  if (impl_->backend == Impl::Backend::Eam && impl_->eam)
+    return true;
   if (impl_->backend == Impl::Backend::Metatomic && impl_->metatomic)
     return impl_->metatomic->available();
   if (impl_->backend == Impl::Backend::Uma && impl_->uma)
@@ -615,6 +641,8 @@ void RGPotEngine::forceEngine(long N, const double *R, const int *atomicNrs,
   std::tuple<double, AtomMatrix, double> result;
   if (impl_->backend == Impl::Backend::Nwchemc)
     result = (*impl_->nwchem)(positions, atmtypes, cell);
+  else if (impl_->backend == Impl::Backend::Eam)
+    result = (*impl_->eam)(positions, atmtypes, cell);
   else
     result = (*impl_->cpmd)(positions, atmtypes, cell);
 

@@ -1,8 +1,9 @@
 [wrap-git]
 directory = potentials-schema
 url = https://github.com/OmniPotentRPC/potentials-schema.git
-revision = e825c207886b336b4b9c1197e968f184c1b2eb47
-# Overlay rgpot 3.5.1's vendored Potentials.capnp (schema-sync compares
-# those files to this wrap). Source blob
-# cc62949876827ca351b2922d3687b3a950c91d70.
-patch_directory = potentials-schema
+# 190fee6 is the potentials-schema commit rgpot 3.7.0 pins (upstream
+# feat/cp2k-arm: main 7fa9046 plus the CP2K arm). Its Potentials.capnp is
+# byte-identical to the one rgpot 3.7.0 vendors, which the schema-sync tests
+# of the rgpot suite compare, so the checkout needs no overlay.
+revision = 190fee68f3fb99e0b99ac200d25c7d484b7dac9e
+depth = 1

@@ -192,8 +192,8 @@ py.install_sources(
 # an install script into prefix/lib. custom_target+install ships the
 # SONAME next to _core.so so the wheel dlopens it.
 if not _rgpot_pkg.found()
-    # kCxxSoversion. rgpot 3.5.1 is 4 (librgpot.so.4). The project
-    # version is 3.5.1, so the filename major is not the SONAME.
+    # kCxxSoversion. rgpot 3.7.0 is 6 (librgpot.so.6). The project
+    # version is 3.7.0, so the filename major is not the SONAME.
     _rgpot_sover = _rgpot_proj.get_variable('rgpot_cxx_soversion')
     _rgpot_for_py = custom_target(
         'librgpot-soname-for-pyeonclient',

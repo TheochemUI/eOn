@@ -21,6 +21,8 @@
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
+#include <filesystem>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -40,6 +42,18 @@ bool ams_engine_name_is(std::string_view got, std::string_view name) {
     }
   }
   return true;
+}
+
+// A relative path in a config file names a file next to that file. It is
+// made absolute while loading, so a later change of the working directory
+// does not move it.
+std::string resolve_beside(const std::string &path,
+                           std::string_view config_file) {
+  if (path.empty() || std::filesystem::path{path}.is_absolute()) {
+    return path;
+  }
+  const auto dir = std::filesystem::path{config_file}.parent_path();
+  return std::filesystem::absolute(dir / path).lexically_normal().string();
 }
 
 } // namespace
@@ -64,6 +78,10 @@ int Parameters::load(std::string_view filename) {
   }
 
   int error = eonc::config::load_ini(ini, *this);
+  if (ini.HasValue("RgpotPot", "table_path")) {
+    auto &table_path = impl_->rgpot_options_.table_path;
+    table_path = resolve_beside(table_path, filename);
+  }
 
   // Sanity Checks
   if (impl_->parallel_replica_options_.state_check_interval >
