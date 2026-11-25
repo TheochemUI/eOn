@@ -10,7 +10,7 @@ Install Pixi, then create the example environment:
 ```bash
 curl -fsSL https://pixi.sh/install.sh | sh
 export PATH="$HOME/.pixi/bin:$PATH"
-git clone --branch main https://github.com/TheochemUI/eOn.git
+git clone --branch develop https://github.com/TheochemUI/eOn.git
 cd eOn/examples/ext_pot_cpmd
 pixi install
 cp .env.example .env
