@@ -19,8 +19,15 @@
 namespace eonc::io {
 
 /// FNV-1a 64 of the canonical path bytes. No NUL and no file text.
-/// A zero digest becomes 1. Shared with eon/concorpus.py.
+/// Appended frames extend this trajectory. A zero digest becomes 1.
+/// Shared with eon/concorpus.py traj_id.
 [[nodiscard]] std::uint64_t corpus_path_id(std::string_view canonical_path);
+
+/// FNV-1a 64 of the canonical path, a NUL, and the con text. A whole-file
+/// blob is keyed by content because the corpus has no replace: a rewrite
+/// stores a new blob. Shared with eon/concorpus.py blob_id.
+[[nodiscard]] std::uint64_t corpus_blob_id(std::string_view canonical_path,
+                                           std::string_view text);
 
 /// Copy a con file into the run readcon-db corpus when libreadcon_db loads.
 /// An overwrite (w='w') inserts immediately. Failure to load the library or

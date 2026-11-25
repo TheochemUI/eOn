@@ -154,6 +154,12 @@ TEST_CASE("corpus path id is FNV-1a of the path only", "[con][corpus]") {
           14164577628502097180ull);
 }
 
+TEST_CASE("corpus blob id is FNV-1a of the path, a NUL and the text",
+          "[con][corpus]") {
+  REQUIRE(eonc::io::corpus_blob_id("/var/eon/restart_exact.con", "frame\n") ==
+          10713101950971778497ull);
+}
+
 TEST_CASE("appended corpus frames flush in groups of 64", "[con][corpus]") {
   const auto dir =
       fs::temp_directory_path() / "eon-corpus-buffer-restart-exact";

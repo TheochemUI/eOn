@@ -33,19 +33,33 @@ _pending: dict[str, list[str]] = {}
 _pending_lock = threading.Lock()
 
 
-def traj_id(path: str, text: str | None = None) -> int:
-    """FNV-1a 64 of the canonical path bytes.
-
-    ``text`` is ignored. The id is the path alone, the same offset and
-    prime as the C++ mirror. A zero digest becomes 1. Old corpora stay
-    under the keys they already have.
-    """
-    del text
+def _fnv1a(data: bytes) -> int:
     h = _FNV_OFFSET
-    for byte in path.encode():
+    for byte in data:
         h ^= byte
         h = (h * _FNV_PRIME) & _MASK
     return h or 1
+
+
+def traj_id(path: str, text: str | None = None) -> int:
+    """FNV-1a 64 of the canonical path bytes, the append trajectory's id.
+
+    ``text`` is ignored. Appended frames extend this trajectory. The C++
+    mirror uses the same offset and prime. A zero digest becomes 1.
+    """
+    del text
+    return _fnv1a(path.encode())
+
+
+def blob_id(path: str, text: str) -> int:
+    """FNV-1a 64 over the canonical path, a NUL, and the con text.
+
+    Whole-file blobs are keyed by content. The corpus has no replace, so
+    a rewrite of a path stores a new blob under a new id, and a reader
+    finds the current one from the file's text. The C++ mirror uses the
+    same bytes.
+    """
+    return _fnv1a((path + "\0" + text).encode())
 
 
 def corpus_dir(con_path: Path) -> Path:
@@ -176,7 +190,7 @@ atexit.register(flush_corpus_appends)
 
 
 def mirror_con_text(path, text: str) -> None:
-    """Insert one con blob under the path id. A second insert is TrajExists."""
+    """Insert one con blob. Identical path-and-text pairs are stored once."""
     if not text or not text.strip():
         return
     resolved = _resolved(path)
@@ -184,7 +198,7 @@ def mirror_con_text(path, text: str) -> None:
     if db is None:
         return
     try:
-        db.append_trajectory_str(traj_id(resolved), text, source=resolved)
+        db.append_trajectory_str(blob_id(resolved, text), text, source=resolved)
     except Exception as exc:
         if "already exists" in str(exc):
             return
@@ -204,7 +218,7 @@ def store_frame_text(path, text: str) -> tuple[int, int] | None:
     db = _corpus(corpus_dir(Path(resolved)))
     if db is None:
         return None
-    key = traj_id(resolved)
+    key = blob_id(resolved, text)
     try:
         db.append_trajectory_str(key, text, source=resolved)
     except Exception as exc:
@@ -238,14 +252,15 @@ def stored_frame_text(path) -> str | None:
     flush_corpus_appends()
     con_path = Path(path)
     try:
+        text = con_path.read_text()
         resolved = str(con_path.resolve())
-    except OSError:
+    except (OSError, UnicodeDecodeError):
         return None
     db = _corpus(corpus_dir(con_path))
     if db is None:
         return None
     try:
-        return db.get_frame_text(traj_id(resolved), 0)
+        return db.get_frame_text(blob_id(resolved, text), 0)
     except Exception:
         return None
 

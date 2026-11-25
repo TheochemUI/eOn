@@ -12,6 +12,7 @@ import pytest
 from eon import fileio as io
 from eon import process_catalog
 from eon.concorpus import (
+    blob_id,
     corpus_buffered_frames,
     flush_corpus_appends,
     note_corpus_append,
@@ -29,6 +30,7 @@ _GOLDEN = (
     / "restart"
 )
 _PATH_ID = 14164577628502097180
+_BLOB_ID = 10713101950971778497
 
 
 def _subnormal() -> float:
@@ -142,6 +144,12 @@ def test_traj_id_is_the_path_only():
     path = "/var/eon/restart_exact.con"
     assert traj_id(path) == _PATH_ID
     assert traj_id(path, text="ignored") == _PATH_ID
+
+
+def test_blob_id_is_the_path_a_nul_and_the_text():
+    path = "/var/eon/restart_exact.con"
+    assert blob_id(path, "frame\n") == _BLOB_ID
+    assert blob_id(path, "frame 2\n") != _BLOB_ID
 
 
 def test_corpus_appends_flush_in_groups_of_64(tmp_path: Path, monkeypatch):

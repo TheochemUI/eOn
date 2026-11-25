@@ -373,6 +373,16 @@ std::uint64_t corpus_path_id(std::string_view canonical_path) {
   return fnv1a(canonical_path);
 }
 
+std::uint64_t corpus_blob_id(std::string_view canonical_path,
+                             std::string_view text) {
+  std::string bytes;
+  bytes.reserve(canonical_path.size() + 1 + text.size());
+  bytes.append(canonical_path);
+  bytes.push_back('\0');
+  bytes.append(text);
+  return fnv1a(bytes);
+}
+
 void mirror_con_corpus(const std::string &path) {
   arm_corpus_flush();
   namespace fs = std::filesystem;
@@ -399,7 +409,7 @@ void mirror_con_corpus(const std::string &path) {
   if (id == static_cast<std::size_t>(-1)) {
     return;
   }
-  const std::uint64_t tid = fnv1a(resolved);
+  const std::uint64_t tid = corpus_blob_id(resolved, text);
   std::uint32_t nframes = 0;
   api().append_str(id, tid, text.c_str(), resolved.c_str(), &nframes);
 }
