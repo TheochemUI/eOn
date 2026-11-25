@@ -7,11 +7,15 @@
   "folders": [
     "docs/source",
     "examples",
-    "eon"
+    "eon",
+    "benchmarks",
+    "client/potentials",
+    "client/python",
+    "packages",
+    "schema"
   ],
   "excludeFolders": [
     "docs/newsfragments",
-    "benchmarks",
     "bench",
     "subprojects",
     "tests",
@@ -22,7 +26,7 @@
     "eessi",
     "condaEnvs",
     "nativeFiles",
-    "packages"
+    "packages/eon-schema/src/eon_schema/ssot"
   ],
   "excludeFiles": [
     "CHANGELOG.md",
