@@ -123,6 +123,52 @@ void runLammpsForce(const eonc::Parameters &params, MockLammpsLoader &mock,
   REQUIRE(std::isfinite(energy));
 }
 
+int lammpsHasErrorStub(void *) { return 1; }
+int lammpsErrorMessageStub(void *, char *text, int size) {
+  std::strncpy(text, "Units command after simulation box is defined",
+               static_cast<size_t>(size) - 1);
+  return 1;
+}
+
+TEST_CASE("a LAMMPS error rejects the geometry instead of returning zero",
+          "[lammps][worker][error]") {
+  namespace fs = std::filesystem;
+  const fs::path previous = fs::current_path();
+  const fs::path dir = fs::temp_directory_path() / "eon-lmp-error";
+  fs::create_directories(dir);
+  fs::current_path(dir);
+  {
+    std::ofstream input("in.lammps");
+    input << "units metal\n";
+  }
+  MockLammpsLoader mock;
+  mock.open_no_mpi = lammpsOpenStub;
+  mock.close = lammpsCloseStub;
+  mock.command = lammpsCommandStub;
+  mock.scatter_atoms = lammpsScatterStub;
+  mock.file = lammpsFileStub;
+  mock.extract_variable = lammpsExtractValues;
+  REQUIRE_NOTHROW(mock.check_error(nullptr, "no error symbols"));
+  mock.has_error = lammpsHasErrorStub;
+  mock.get_last_error_message = lammpsErrorMessageStub;
+  REQUIRE_THROWS_AS(mock.check_error(nullptr, "in.lammps"), std::runtime_error);
+  eonc::Parameters params;
+  const double box[9] = {10.0, 0.0, 0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 10.0};
+  {
+    LAMMPSPot pot(params, mock);
+    const double positions[6] = {0.0, 0.0, 0.0, 1.5, 0.0, 0.0};
+    const int atomic[2] = {1, 1};
+    double forces[6] = {};
+    double energy = 0.0;
+    pot.force(2, positions, atomic, forces, &energy, nullptr, box);
+    REQUIRE(energy == Catch::Approx(1.0e6));
+    REQUIRE(forces[0] == Catch::Approx(1.0));
+  }
+  fs::current_path(previous);
+  std::error_code ec;
+  fs::remove_all(dir, ec);
+}
+
 TEST_CASE("real LAMMPS units convert a finite stress",
           "[lammps][worker][real]") {
   namespace fs = std::filesystem;

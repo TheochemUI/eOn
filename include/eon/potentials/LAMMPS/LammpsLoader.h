@@ -40,6 +40,8 @@ public:
   using file_fn = void (*)(void *, const char *);
   using scatter_atoms_fn = void (*)(void *, const char *, int, int, void *);
   using extract_var_fn = void *(*)(void *, const char *, const char *);
+  using has_error_fn = int (*)(void *);
+  using error_message_fn = int (*)(void *, char *, int);
 #ifdef EONMPI
   using open_mpi_fn = void *(*)(int, char **, MPI_Comm, void **);
 #endif
@@ -50,6 +52,9 @@ public:
   file_fn file{nullptr};
   scatter_atoms_fn scatter_atoms{nullptr};
   extract_var_fn extract_variable{nullptr};
+  /// Absent from builds of LAMMPS without exceptions.
+  has_error_fn has_error{nullptr};
+  error_message_fn get_last_error_message{nullptr};
 #ifdef EONMPI
   open_mpi_fn open_mpi{nullptr};
 #endif
@@ -59,6 +64,10 @@ public:
   [[nodiscard]] virtual bool is_loaded() const noexcept = 0;
   [[nodiscard]] virtual bool available() const = 0;
   [[nodiscard]] virtual const std::string &last_error() const noexcept = 0;
+
+  /// Throw when LAMMPS recorded an error. A library call returns normally
+  /// after one, and the energy and forces it leaves are zero.
+  void check_error(void *handle, const char *what) const;
 
   ILammpsLoader(const ILammpsLoader &) = delete;
   ILammpsLoader &operator=(const ILammpsLoader &) = delete;

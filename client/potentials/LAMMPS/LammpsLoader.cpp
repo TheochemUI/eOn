@@ -76,6 +76,17 @@ bool lib_file_visible(const char *const *names) {
 
 } // namespace
 
+void ILammpsLoader::check_error(void *handle, const char *what) const {
+  if (!has_error || has_error(handle) == 0) {
+    return;
+  }
+  char text[512] = {};
+  if (get_last_error_message) {
+    get_last_error_message(handle, text, static_cast<int>(sizeof(text)));
+  }
+  throw std::runtime_error(std::string("LAMMPS: ") + what + ": " + text);
+}
+
 LammpsLoader &LammpsLoader::instance() {
   static LammpsLoader loader;
   return loader;
@@ -114,6 +125,9 @@ void LammpsLoader::ensure_loaded() {
       dynlib::loadSym<scatter_atoms_fn>(m_handle, "lammps_scatter_atoms");
   extract_variable =
       dynlib::loadSym<extract_var_fn>(m_handle, "lammps_extract_variable");
+  has_error = dynlib::loadSym<has_error_fn>(m_handle, "lammps_has_error");
+  get_last_error_message = dynlib::loadSym<error_message_fn>(
+      m_handle, "lammps_get_last_error_message");
 
 #ifdef EONMPI
   open_mpi = dynlib::loadSym<open_mpi_fn>(m_handle, "lammps_open");

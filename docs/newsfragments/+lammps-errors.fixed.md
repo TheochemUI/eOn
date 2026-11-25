@@ -1,0 +1,1 @@
+An error from LAMMPS, such as a rejected line in `in.lammps`, now rejects the geometry and is written to stderr. It was ignored before: energy and forces stayed zero and the structure counted as converged.

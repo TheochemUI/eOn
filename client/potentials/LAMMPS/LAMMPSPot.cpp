@@ -27,6 +27,7 @@
 
 #if !defined(EONMPI) && !defined(IS_WINDOWS)
 #include <cerrno>
+#include <cstdio>
 #include <cstdlib>
 #include <vector>
 
@@ -333,6 +334,11 @@ void LAMMPSPot::runWorkerLoop() {
     int status = 0;
     try {
       forceLocal(N, R.data(), atomicNrs.data(), F.data(), &U, box);
+    } catch (const std::exception &e) {
+      // The worker must not call the process logger.
+      std::fprintf(stderr, "[LAMMPSPot] %s\n", e.what());
+      status = 1;
+      haveStress_ = false;
     } catch (...) {
       status = 1;
       haveStress_ = false;
@@ -585,6 +591,7 @@ void LAMMPSPot::forceLocal(long N, const double *R, const int *atomicNrs,
     }
 
     lmp.scatter_atoms(LAMMPSObj, "x", 1, 3, const_cast<double *>(R));
+    lmp.check_error(LAMMPSObj, "scatter_atoms");
     applySetforce(N);
     // New instance / box change: rebuild neighbors. create_atoms sits at
     // the origin; pre no would evaluate on that neighbor list.
@@ -686,6 +693,13 @@ void LAMMPSPot::forceLocal(long N, const double *R, const int *atomicNrs,
       release();
     }
   } catch (...) {
+    // The next call rebuilds: an instance that failed part way keeps its box
+    // and atom count and would be taken as ready.
+    if (LAMMPSObj != nullptr) {
+      loader_.close(LAMMPSObj);
+      LAMMPSObj = nullptr;
+    }
+    numberOfAtoms = 0;
     fpeh.restore_fpe();
     throw;
   }
@@ -731,6 +745,7 @@ void LAMMPSPot::drainLammpsScreen() {
 
 void LAMMPSPot::lammpsCommand(const char *cmd) {
   loader_.command(LAMMPSObj, cmd);
+  loader_.check_error(LAMMPSObj, cmd);
   // The forked worker must not call the process logger. The parent copies
   // the screen file after the child returns the force.
   if (!workerChild_) {
@@ -863,6 +878,7 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
 
   // Load user LAMMPS input script
   lmp.file(LAMMPSObj, "in.lammps");
+  lmp.check_error(LAMMPSObj, "in.lammps");
 
   // Define variables for force/energy extraction
   lammpsCommand("variable fx atom fx");
