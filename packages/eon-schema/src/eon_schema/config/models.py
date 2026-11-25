@@ -144,6 +144,18 @@ class MainConfig(BaseModel):
             " built when a foreign file and cell both omit a cell."
         ),
     )
+    single_threaded_client: bool = Field(
+        default=False,
+        description=(
+            "Run eonclient on one thread. The logger then has no backend"
+            " thread and is drained by the compute thread, so the process"
+            " shows a single thread for the whole job. Requires"
+            " ``parallel = false`` in the same section, otherwise the client"
+            " stops with an error. Read once, from the first parameter file"
+            " the client loads. Off by default, which keeps Quill's logging"
+            " thread."
+        ),
+    )
 
 
 class StructureComparisonConfig(BaseModel):

@@ -106,6 +106,10 @@ struct main_options_t {
   /// Vacuum (Angstrom) on every side of the box built when neither the
   /// file nor `cell` supplies one.
   double defaultVacuum{10.0};
+  /// Run the client on one thread: no Quill backend thread and, since
+  /// `parallel` must be false with it, no worker threads. The logger is
+  /// polled by the compute thread. Read once at startup.
+  bool singleThreadedClient{false};
 };
 
 // [Potential] //

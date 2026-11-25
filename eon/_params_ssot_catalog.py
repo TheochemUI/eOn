@@ -557,6 +557,13 @@ CATALOG = {
           "ordinal": 16,
           "snake": "default_vacuum",
           "type": "Float64"
+        },
+        {
+          "capnp": "singleThreadedClient",
+          "default": False,
+          "ordinal": 17,
+          "snake": "single_threaded_client",
+          "type": "Bool"
         }
       ],
       "struct": "MainOptions"
