@@ -150,8 +150,8 @@ repair_one() {
           # still missing — try find under search roots (SONAME or so.N.X.Y)
           resolved="$(find ${search//:/ } -maxdepth 6 \( -name "$needed" -o -name "${needed}.*" \) 2>/dev/null | head -1 || true)"
         fi
-        # rgpot 3.5.1's file is librgpot.so.3.5.1 and its SONAME is
-        # librgpot.so.4. A copy named for the project version does not
+        # rgpot 3.7.0's file is librgpot.so.3.7.0 and its SONAME is
+        # librgpot.so.6. A copy named for the project version does not
         # match the NEEDED entry. Take the file whose SONAME does.
         if [[ -z "${resolved:-}" || ! -f "$resolved" ]] && [[ "$needed" == librgpot.so.* ]]; then
           local cand soname
@@ -252,7 +252,7 @@ repair_one() {
   # `import pyeonclient` failed with an undefined rgpot::D3Pot typeinfo.
   # pyeonclient bundles librgpot. It does not link the pip rgpot wheel.
   # The bundled copy takes one private SONAME, libeon_rgpot.so.N, with the
-  # same N the link recorded. rgpot 3.5.1 records librgpot.so.4.
+  # same N the link recorded. rgpot 3.7.0 records librgpot.so.6.
   local old_soname new_soname so needed
   declare -A soname_map=()
   while IFS= read -r -d '' so; do
