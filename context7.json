@@ -4,34 +4,32 @@
   "public_key": "pk_gq0VEaRq7MjJWbmNFu1Se",
   "projectTitle": "eOn",
   "description": "eOn models the long-time evolution of atomic systems: saddle searches, NEB, OCI-NEB, parallel replica dynamics and adaptive kinetic Monte Carlo.",
-  "folders": [
-    "docs/source",
-    "examples",
-    "eon",
-    "benchmarks",
-    "client/potentials",
-    "client/python",
-    "packages",
-    "schema"
-  ],
   "excludeFolders": [
     "docs/newsfragments",
+    "docs/old_docs",
+    "docs/source/_extra",
+    "docs/source/_templates",
+    "packages/eon-schema/src/eon_schema/ssot",
+    "benchmarks/data",
+    "client/unit_tests",
     "bench",
     "subprojects",
     "tests",
     "scripts",
     "ci",
     ".github",
-    "docs/old_docs",
-    "eessi",
+    ".proseguard",
     "condaEnvs",
-    "nativeFiles",
-    "packages/eon-schema/src/eon_schema/ssot"
+    "nativeFiles"
   ],
   "excludeFiles": [
     "CHANGELOG.md",
     "CODE_OF_CONDUCT.md",
-    "LICENSE"
+    "LICENSE",
+    "CMakeLists.txt",
+    "meson_options.txt",
+    "Deprecated_Docs.org",
+    ".dynamics.txt"
   ],
   "rules": [
     "Install with pixi or conda-forge (eon); see eondocs.org."
