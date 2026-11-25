@@ -1764,6 +1764,23 @@ class AmselConfig(BaseModel):
     Off, an exit is taken as soon as one process leaves the basin, whatever
     else the searches would have found.
     """
+    displacement: Literal["eon", "direction_cover"] = Field(
+        default="eon",
+        description="Source of the saddle-search starts of an AKMC state.",
+    )
+    """
+    ``eon`` uses the ``[Saddle Search]`` displacement weights.
+    ``direction_cover`` takes the atom and the direction of each start from
+    ``amsel.plan_generic_directions``.
+    """
+    active_atoms: Literal["decaf_clustering", "median_outlier"] = Field(
+        default="decaf_clustering",
+        description="Rule of ``amsel.select_active_atoms`` for ``direction_cover``.",
+    )
+    direction_seed: int = Field(
+        default=0,
+        description="Seed of the direction plan. The state number is added to it.",
+    )
 
 
 class CoarseGrainingConfig(BaseModel):

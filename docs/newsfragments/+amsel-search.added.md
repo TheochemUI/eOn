@@ -1,0 +1,1 @@
+`[amsel] displacement = direction_cover` takes the saddle-search starts of an AKMC state from `amsel`: atoms from `[amsel] active_atoms` (`decaf_clustering` or `median_outlier`) and directions from its direction cover.

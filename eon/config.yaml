@@ -2230,6 +2230,24 @@ amsel:
             kind: boolean
             default: False
 
+        displacement:
+            kind: string
+            default: eon
+            values:
+                - eon
+                - direction_cover
+
+        active_atoms:
+            kind: string
+            default: decaf_clustering
+            values:
+                - decaf_clustering
+                - median_outlier
+
+        direction_seed:
+            kind: int
+            default: 0
+
 
 Optimizer:
 

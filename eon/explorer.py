@@ -136,6 +136,9 @@ class MinModeExplorer(Explorer):
 
         self.reactant = self.state.get_reactant()
         self.displace = displace.DisplacementManager(self.reactant, moved_atoms, config = self.config)
+        if self.config.amsel_displacement == 'direction_cover':
+            from eon.amsel_search import AmselSearch
+            self.amsel_search = AmselSearch(self.state, self.reactant, self.config)
 
     def explore(self):
         self.register_results()
@@ -164,6 +167,10 @@ class MinModeExplorer(Explorer):
 
         if self.config.saddle_method == 'dynamics':
             return None, None, 'dynamics'
+
+        if self.config.amsel_displacement == 'direction_cover':
+            displacement, mode = self.amsel_search.make_displacement()
+            return displacement, mode, 'amsel'
 
         displacement, mode = self.displace.make_displacement()
         return displacement, mode, 'random'

@@ -429,6 +429,9 @@ class ConfigClass:
         self.amsel_state_confidence = parser.get('amsel', 'state_confidence')
         self.amsel_reverse_barrier_tolerance = parser.getfloat(
             'amsel', 'reverse_barrier_tolerance')
+        self.amsel_displacement = parser.get('amsel', 'displacement')
+        self.amsel_active_atoms = parser.get('amsel', 'active_atoms')
+        self.amsel_direction_seed = parser.getint('amsel', 'direction_seed')
         self.amsel_discover_wait_for_confidence = parser.getboolean(
             'amsel', 'discover_wait_for_confidence')
         # Back-compat aliases used by Superbasin.step getattr

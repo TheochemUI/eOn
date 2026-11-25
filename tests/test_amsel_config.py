@@ -19,6 +19,9 @@ _AMSEL_KEYS = (
     "state_confidence",
     "reverse_barrier_tolerance",
     "discover_wait_for_confidence",
+    "displacement",
+    "active_atoms",
+    "direction_seed",
 )
 
 
