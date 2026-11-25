@@ -18,7 +18,7 @@
     },
     "lammps_threads": {
       "default": 0,
-      "description": "LAMMPS threads.",
+      "description": "LAMMPS threads.\n\nMore than one needs a LAMMPS with the OPENMP package.",
       "type": "integer"
     },
     "ext_pot_path": {

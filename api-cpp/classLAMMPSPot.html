@@ -1413,86 +1413,88 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  814</span>  <span class="comment">// -screen opens with truncation. The next copy starts at the new file.</span></div>
 <div class="line"><span class="lineno">  815</span>  <a class="code hl_variable" href="#a1d6468ea3d7923f904b09eb8e7632330">lammpsScreenRestart_</a> = <span class="keyword">true</span>;</div>
 <div class="line"><span class="lineno">  816</span> </div>
-<div class="line"><span class="lineno">  817</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a48260530a46550f4542fdc28e4041b6a">lammpsThr</a> &gt; 0) {</div>
-<div class="line"><span class="lineno">  818</span>    std::string cmd = std::format(<span class="stringliteral">&quot;package omp {} force/neigh&quot;</span>, <a class="code hl_variable" href="#a48260530a46550f4542fdc28e4041b6a">lammpsThr</a>);</div>
-<div class="line"><span class="lineno">  819</span>    <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(cmd.c_str());</div>
-<div class="line"><span class="lineno">  820</span>  }</div>
-<div class="line"><span class="lineno">  821</span> </div>
-<div class="line"><span class="lineno">  822</span>  <span class="comment">// Detect units from in.lammps: look for &quot;#!units real&quot; marker</span></div>
-<div class="line"><span class="lineno">  823</span>  <a class="code hl_variable" href="#a9857c230ea9d56b4728d2383789c769a">realunits</a> = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  824</span>  <span class="keywordflow">if</span> (std::filesystem::exists(<span class="stringliteral">&quot;in.lammps&quot;</span>)) {</div>
-<div class="line"><span class="lineno">  825</span>    std::ifstream infile(<span class="stringliteral">&quot;in.lammps&quot;</span>);</div>
-<div class="line"><span class="lineno">  826</span>    std::string line;</div>
-<div class="line"><span class="lineno">  827</span>    <span class="keywordflow">while</span> (std::getline(infile, line)) {</div>
-<div class="line"><span class="lineno">  828</span>      <span class="keywordflow">if</span> (line == <span class="stringliteral">&quot;#!units real&quot;</span>) {</div>
-<div class="line"><span class="lineno">  829</span>        <a class="code hl_variable" href="#a9857c230ea9d56b4728d2383789c769a">realunits</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  830</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  831</span>      }</div>
-<div class="line"><span class="lineno">  832</span>    }</div>
-<div class="line"><span class="lineno">  833</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  834</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a> != <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">  835</span>      <a class="code hl_function" href="#a4083427205be0c03182a8cfd9c0ad25a">drainLammpsScreen</a>();</div>
-<div class="line"><span class="lineno">  836</span>      lmp.close(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>);</div>
-<div class="line"><span class="lineno">  837</span>      <a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">  838</span>    }</div>
-<div class="line"><span class="lineno">  839</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  840</span>        <span class="stringliteral">&quot;LAMMPS: in.lammps not found in working directory&quot;</span>);</div>
-<div class="line"><span class="lineno">  841</span>  }</div>
-<div class="line"><span class="lineno">  842</span> </div>
-<div class="line"><span class="lineno">  843</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a9857c230ea9d56b4728d2383789c769a">realunits</a>) {</div>
-<div class="line"><span class="lineno">  844</span>    <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;units real&quot;</span>);</div>
-<div class="line"><span class="lineno">  845</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  846</span>    <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;units metal&quot;</span>);</div>
-<div class="line"><span class="lineno">  847</span>  }</div>
-<div class="line"><span class="lineno">  848</span> </div>
-<div class="line"><span class="lineno">  849</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;atom_style charge&quot;</span>);</div>
-<div class="line"><span class="lineno">  850</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;atom_modify map array sort 0 0&quot;</span>);</div>
-<div class="line"><span class="lineno">  851</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;neigh_modify delay 1&quot;</span>);</div>
-<div class="line"><span class="lineno">  852</span> </div>
-<div class="line"><span class="lineno">  853</span>  <span class="comment">// LAMMPS restricted triclinic: (ax, by, cz, bx, cx, cy).</span></div>
-<div class="line"><span class="lineno">  854</span>  <span class="comment">// Row-major Matter cell also has ay, az, bz at box[1], box[2], box[5].</span></div>
-<div class="line"><span class="lineno">  855</span>  <span class="keyword">constexpr</span> <span class="keywordtype">double</span> kTiltCut = 1.0e-8;</div>
-<div class="line"><span class="lineno">  856</span>  <span class="keywordflow">if</span> (std::abs(box[1]) &gt; kTiltCut || std::abs(box[2]) &gt; kTiltCut ||</div>
-<div class="line"><span class="lineno">  857</span>      std::abs(box[5]) &gt; kTiltCut) {</div>
-<div class="line"><span class="lineno">  858</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  859</span>        <span class="stringliteral">&quot;LAMMPS: cell is not restricted triclinic (ay/az/bz must be ~0)&quot;</span>);</div>
-<div class="line"><span class="lineno">  860</span>  }</div>
-<div class="line"><span class="lineno">  861</span>  std::string region_cmd =</div>
-<div class="line"><span class="lineno">  862</span>      std::format(<span class="stringliteral">&quot;region cell prism 0 {} 0 {} 0 {} {} {} {} units box&quot;</span>, box[0],</div>
-<div class="line"><span class="lineno">  863</span>                  box[4], box[8], box[3], box[6], box[7]);</div>
-<div class="line"><span class="lineno">  864</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(region_cmd.c_str());</div>
-<div class="line"><span class="lineno">  865</span> </div>
-<div class="line"><span class="lineno">  866</span>  std::string create_box_cmd = std::format(<span class="stringliteral">&quot;create_box {} cell&quot;</span>, ntypes);</div>
-<div class="line"><span class="lineno">  867</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(create_box_cmd.c_str());</div>
-<div class="line"><span class="lineno">  868</span> </div>
-<div class="line"><span class="lineno">  869</span>  <span class="comment">// Initialize atoms</span></div>
-<div class="line"><span class="lineno">  870</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; i++) {</div>
-<div class="line"><span class="lineno">  871</span>    std::string atom_cmd =</div>
-<div class="line"><span class="lineno">  872</span>        std::format(<span class="stringliteral">&quot;create_atoms {} single {} {} {} units box&quot;</span>,</div>
-<div class="line"><span class="lineno">  873</span>                    type_map[atomicNrs[i]], 0.0, 0.0, 0.0);</div>
-<div class="line"><span class="lineno">  874</span>    <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(atom_cmd.c_str());</div>
-<div class="line"><span class="lineno">  875</span>  }</div>
-<div class="line"><span class="lineno">  876</span> </div>
-<div class="line"><span class="lineno">  877</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;mass * 1.0&quot;</span>);</div>
+<div class="line"><span class="lineno">  817</span>  <span class="comment">// One thread is LAMMPS&#39;s default. The command needs the OPENMP package, and a</span></div>
+<div class="line"><span class="lineno">  818</span>  <span class="comment">// build without it answers with an error.</span></div>
+<div class="line"><span class="lineno">  819</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a48260530a46550f4542fdc28e4041b6a">lammpsThr</a> &gt; 1) {</div>
+<div class="line"><span class="lineno">  820</span>    std::string cmd = std::format(<span class="stringliteral">&quot;package omp {} force/neigh&quot;</span>, <a class="code hl_variable" href="#a48260530a46550f4542fdc28e4041b6a">lammpsThr</a>);</div>
+<div class="line"><span class="lineno">  821</span>    <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(cmd.c_str());</div>
+<div class="line"><span class="lineno">  822</span>  }</div>
+<div class="line"><span class="lineno">  823</span> </div>
+<div class="line"><span class="lineno">  824</span>  <span class="comment">// Detect units from in.lammps: look for &quot;#!units real&quot; marker</span></div>
+<div class="line"><span class="lineno">  825</span>  <a class="code hl_variable" href="#a9857c230ea9d56b4728d2383789c769a">realunits</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  826</span>  <span class="keywordflow">if</span> (std::filesystem::exists(<span class="stringliteral">&quot;in.lammps&quot;</span>)) {</div>
+<div class="line"><span class="lineno">  827</span>    std::ifstream infile(<span class="stringliteral">&quot;in.lammps&quot;</span>);</div>
+<div class="line"><span class="lineno">  828</span>    std::string line;</div>
+<div class="line"><span class="lineno">  829</span>    <span class="keywordflow">while</span> (std::getline(infile, line)) {</div>
+<div class="line"><span class="lineno">  830</span>      <span class="keywordflow">if</span> (line == <span class="stringliteral">&quot;#!units real&quot;</span>) {</div>
+<div class="line"><span class="lineno">  831</span>        <a class="code hl_variable" href="#a9857c230ea9d56b4728d2383789c769a">realunits</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  832</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  833</span>      }</div>
+<div class="line"><span class="lineno">  834</span>    }</div>
+<div class="line"><span class="lineno">  835</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  836</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a> != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  837</span>      <a class="code hl_function" href="#a4083427205be0c03182a8cfd9c0ad25a">drainLammpsScreen</a>();</div>
+<div class="line"><span class="lineno">  838</span>      lmp.close(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>);</div>
+<div class="line"><span class="lineno">  839</span>      <a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  840</span>    }</div>
+<div class="line"><span class="lineno">  841</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  842</span>        <span class="stringliteral">&quot;LAMMPS: in.lammps not found in working directory&quot;</span>);</div>
+<div class="line"><span class="lineno">  843</span>  }</div>
+<div class="line"><span class="lineno">  844</span> </div>
+<div class="line"><span class="lineno">  845</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a9857c230ea9d56b4728d2383789c769a">realunits</a>) {</div>
+<div class="line"><span class="lineno">  846</span>    <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;units real&quot;</span>);</div>
+<div class="line"><span class="lineno">  847</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  848</span>    <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;units metal&quot;</span>);</div>
+<div class="line"><span class="lineno">  849</span>  }</div>
+<div class="line"><span class="lineno">  850</span> </div>
+<div class="line"><span class="lineno">  851</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;atom_style charge&quot;</span>);</div>
+<div class="line"><span class="lineno">  852</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;atom_modify map array sort 0 0&quot;</span>);</div>
+<div class="line"><span class="lineno">  853</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;neigh_modify delay 1&quot;</span>);</div>
+<div class="line"><span class="lineno">  854</span> </div>
+<div class="line"><span class="lineno">  855</span>  <span class="comment">// LAMMPS restricted triclinic: (ax, by, cz, bx, cx, cy).</span></div>
+<div class="line"><span class="lineno">  856</span>  <span class="comment">// Row-major Matter cell also has ay, az, bz at box[1], box[2], box[5].</span></div>
+<div class="line"><span class="lineno">  857</span>  <span class="keyword">constexpr</span> <span class="keywordtype">double</span> kTiltCut = 1.0e-8;</div>
+<div class="line"><span class="lineno">  858</span>  <span class="keywordflow">if</span> (std::abs(box[1]) &gt; kTiltCut || std::abs(box[2]) &gt; kTiltCut ||</div>
+<div class="line"><span class="lineno">  859</span>      std::abs(box[5]) &gt; kTiltCut) {</div>
+<div class="line"><span class="lineno">  860</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  861</span>        <span class="stringliteral">&quot;LAMMPS: cell is not restricted triclinic (ay/az/bz must be ~0)&quot;</span>);</div>
+<div class="line"><span class="lineno">  862</span>  }</div>
+<div class="line"><span class="lineno">  863</span>  std::string region_cmd =</div>
+<div class="line"><span class="lineno">  864</span>      std::format(<span class="stringliteral">&quot;region cell prism 0 {} 0 {} 0 {} {} {} {} units box&quot;</span>, box[0],</div>
+<div class="line"><span class="lineno">  865</span>                  box[4], box[8], box[3], box[6], box[7]);</div>
+<div class="line"><span class="lineno">  866</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(region_cmd.c_str());</div>
+<div class="line"><span class="lineno">  867</span> </div>
+<div class="line"><span class="lineno">  868</span>  std::string create_box_cmd = std::format(<span class="stringliteral">&quot;create_box {} cell&quot;</span>, ntypes);</div>
+<div class="line"><span class="lineno">  869</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(create_box_cmd.c_str());</div>
+<div class="line"><span class="lineno">  870</span> </div>
+<div class="line"><span class="lineno">  871</span>  <span class="comment">// Initialize atoms</span></div>
+<div class="line"><span class="lineno">  872</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; i++) {</div>
+<div class="line"><span class="lineno">  873</span>    std::string atom_cmd =</div>
+<div class="line"><span class="lineno">  874</span>        std::format(<span class="stringliteral">&quot;create_atoms {} single {} {} {} units box&quot;</span>,</div>
+<div class="line"><span class="lineno">  875</span>                    type_map[atomicNrs[i]], 0.0, 0.0, 0.0);</div>
+<div class="line"><span class="lineno">  876</span>    <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(atom_cmd.c_str());</div>
+<div class="line"><span class="lineno">  877</span>  }</div>
 <div class="line"><span class="lineno">  878</span> </div>
-<div class="line"><span class="lineno">  879</span>  <span class="comment">// Load user LAMMPS input script</span></div>
-<div class="line"><span class="lineno">  880</span>  lmp.file(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;in.lammps&quot;</span>);</div>
-<div class="line"><span class="lineno">  881</span>  lmp.check_error(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;in.lammps&quot;</span>);</div>
-<div class="line"><span class="lineno">  882</span> </div>
-<div class="line"><span class="lineno">  883</span>  <span class="comment">// Define variables for force/energy extraction</span></div>
-<div class="line"><span class="lineno">  884</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable fx atom fx&quot;</span>);</div>
-<div class="line"><span class="lineno">  885</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable fy atom fy&quot;</span>);</div>
-<div class="line"><span class="lineno">  886</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable fz atom fz&quot;</span>);</div>
-<div class="line"><span class="lineno">  887</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable pe equal pe&quot;</span>);</div>
-<div class="line"><span class="lineno">  888</span>  <span class="comment">// Kinetic part omitted. The six components are pxx pyy pzz pxy pxz pyz.</span></div>
-<div class="line"><span class="lineno">  889</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;compute eon_press all pressure NULL virial&quot;</span>);</div>
-<div class="line"><span class="lineno">  890</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable eon_sxx equal c_eon_press[1]&quot;</span>);</div>
-<div class="line"><span class="lineno">  891</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable eon_syy equal c_eon_press[2]&quot;</span>);</div>
-<div class="line"><span class="lineno">  892</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable eon_szz equal c_eon_press[3]&quot;</span>);</div>
-<div class="line"><span class="lineno">  893</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable eon_sxy equal c_eon_press[4]&quot;</span>);</div>
-<div class="line"><span class="lineno">  894</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable eon_sxz equal c_eon_press[5]&quot;</span>);</div>
-<div class="line"><span class="lineno">  895</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable eon_syz equal c_eon_press[6]&quot;</span>);</div>
-<div class="line"><span class="lineno">  896</span>}</div>
+<div class="line"><span class="lineno">  879</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;mass * 1.0&quot;</span>);</div>
+<div class="line"><span class="lineno">  880</span> </div>
+<div class="line"><span class="lineno">  881</span>  <span class="comment">// Load user LAMMPS input script</span></div>
+<div class="line"><span class="lineno">  882</span>  lmp.file(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;in.lammps&quot;</span>);</div>
+<div class="line"><span class="lineno">  883</span>  lmp.check_error(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;in.lammps&quot;</span>);</div>
+<div class="line"><span class="lineno">  884</span> </div>
+<div class="line"><span class="lineno">  885</span>  <span class="comment">// Define variables for force/energy extraction</span></div>
+<div class="line"><span class="lineno">  886</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable fx atom fx&quot;</span>);</div>
+<div class="line"><span class="lineno">  887</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable fy atom fy&quot;</span>);</div>
+<div class="line"><span class="lineno">  888</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable fz atom fz&quot;</span>);</div>
+<div class="line"><span class="lineno">  889</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable pe equal pe&quot;</span>);</div>
+<div class="line"><span class="lineno">  890</span>  <span class="comment">// Kinetic part omitted. The six components are pxx pyy pzz pxy pxz pyz.</span></div>
+<div class="line"><span class="lineno">  891</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;compute eon_press all pressure NULL virial&quot;</span>);</div>
+<div class="line"><span class="lineno">  892</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable eon_sxx equal c_eon_press[1]&quot;</span>);</div>
+<div class="line"><span class="lineno">  893</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable eon_syy equal c_eon_press[2]&quot;</span>);</div>
+<div class="line"><span class="lineno">  894</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable eon_szz equal c_eon_press[3]&quot;</span>);</div>
+<div class="line"><span class="lineno">  895</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable eon_sxy equal c_eon_press[4]&quot;</span>);</div>
+<div class="line"><span class="lineno">  896</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable eon_sxz equal c_eon_press[5]&quot;</span>);</div>
+<div class="line"><span class="lineno">  897</span>  <a class="code hl_function" href="#a7dfe2269ad72bde53c962096bd713007">lammpsCommand</a>(<span class="stringliteral">&quot;variable eon_syz equal c_eon_press[6]&quot;</span>);</div>
+<div class="line"><span class="lineno">  898</span>}</div>
 <div class="ttc" id="anamespaceeonc_html_a683c88f3c96430d9a3217a3eaf21c020"><div class="ttname"><a href="namespaceeonc.html#a683c88f3c96430d9a3217a3eaf21c020">eonc::lammpsOpenArgs</a></div><div class="ttdeci">std::vector&lt; std::string &gt; lammpsOpenArgs(bool logging, bool with_omp, const std::string &amp;screen)</div><div class="ttdoc">LAMMPS argv.</div><div class="ttdef"><b>Definition</b> <a href="LAMMPSPot_8h_source.html#l00051">LAMMPSPot.h:51</a></div></div>
 </div><!-- fragment -->
 </div>
