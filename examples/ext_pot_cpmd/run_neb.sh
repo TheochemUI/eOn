@@ -2,8 +2,14 @@
 # Two endpoint structures, one shared cell, and one CPMD oracle for the band.
 set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
-reactant=$(readlink -f "${1:?usage: run_neb.sh REACTANT.xyz PRODUCT.xyz}")
-product=$(readlink -f "${2:?usage: run_neb.sh REACTANT.xyz PRODUCT.xyz}")
+test $# -eq 2 || { echo 'usage: run_neb.sh REACTANT.xyz PRODUCT.xyz' >&2; exit 2; }
+# BSD readlink has no -f, and GNU readlink -f accepts a missing file.
+endpoint() {
+  test -f "$1" || { echo "No endpoint file: $1" >&2; exit 2; }
+  printf '%s/%s\n' "$(cd "$(dirname "$1")" && pwd -P)" "$(basename "$1")"
+}
+reactant=$(endpoint "$1")
+product=$(endpoint "$2")
 set -a
 source "${EON_ENV_FILE:-$here/.env}"
 set +a
