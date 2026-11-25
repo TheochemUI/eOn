@@ -21,8 +21,8 @@
 #include <chrono>
 #include <cstdlib>
 #include <filesystem>
-#include <iterator>
 #include <fstream>
+#include <iterator>
 #include <map>
 #include <set>
 #include <sstream>
@@ -77,7 +77,8 @@ size_t ownThreadCount() {
 
 struct CwdGuard {
   fs::path previous;
-  explicit CwdGuard(const fs::path &next) : previous(fs::current_path()) {
+  explicit CwdGuard(const fs::path &next)
+      : previous(fs::current_path()) {
     fs::current_path(next);
   }
   ~CwdGuard() {
@@ -241,8 +242,9 @@ void requireInOrder(const std::string &text,
 }
 
 const std::vector<std::string> kRunOrder = {
-    "eOn Client",   "Loading parameter file config.ini",
-    "Timing Information:", "Real time:", "User time:", "System time:"};
+    "eOn Client",          "Loading parameter file config.ini",
+    "Timing Information:", "Real time:",
+    "User time:",          "System time:"};
 
 } // namespace
 
