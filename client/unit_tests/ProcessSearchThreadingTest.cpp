@@ -33,6 +33,7 @@
 #ifdef __linux__
 #include <fcntl.h>
 #include <spawn.h>
+#include <sys/syscall.h>
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
@@ -73,6 +74,25 @@ void writeText(const fs::path &path, const std::string &text) {
 size_t ownThreadCount() {
   return static_cast<size_t>(std::distance(
       fs::directory_iterator("/proc/self/task"), fs::directory_iterator{}));
+}
+
+long ownThreadId() { return static_cast<long>(::syscall(SYS_gettid)); }
+
+// join() returns once the kernel clears the thread's tid, which happens
+// before the exiting thread is removed from /proc/self/task. On a busy
+// machine it can stay listed for a while after join. Wait for it to go.
+bool waitUntilThreadGone(long tid) {
+  const fs::path entry = fs::path("/proc/self/task") / std::to_string(tid);
+  const auto deadline =
+      std::chrono::steady_clock::now() + std::chrono::seconds(10);
+  std::error_code ec;
+  while (fs::exists(entry, ec)) {
+    if (std::chrono::steady_clock::now() > deadline) {
+      return false;
+    }
+    std::this_thread::sleep_for(std::chrono::microseconds(100));
+  }
+  return true;
 }
 
 struct CwdGuard {
@@ -466,8 +486,14 @@ TEST_CASE("the manual Quill backend drains on the logging thread",
   // Another thread cannot poll. It returns instead of waiting for a backend
   // that does not exist, and the record stays queued for the owner.
   QUILL_LOG_INFO(logger, "queued");
-  std::thread other([&] { eonc::log::flush(logger); });
+  long otherTid = 0;
+  std::thread other([&] {
+    otherTid = ownThreadId();
+    eonc::log::flush(logger);
+  });
   other.join();
+  REQUIRE(otherTid > 0);
+  REQUIRE(waitUntilThreadGone(otherTid));
   REQUIRE(lines(slurp(file)).back() == "timed");
   eonc::log::flush(logger);
   REQUIRE(lines(slurp(file)).back() == "queued");
