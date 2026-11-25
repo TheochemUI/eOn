@@ -194,3 +194,21 @@ def test_rgpot_eam_relative_table_path_follows_the_config_file(
     monkeypatch.chdir(job)
     energy = float(_matter(from_text, positions).potential_energy)
     assert energy == pytest.approx(_reference(positions)[0], rel=1e-4)
+
+
+def test_rgpot_eam_relative_table_path_is_fixed_when_the_config_loads(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    job = tmp_path / "job"
+    (job / "tables").mkdir(parents=True)
+    (job / "tables" / "one.setfl").write_bytes(TABLE.read_bytes())
+    (job / "config.ini").write_text(_ini("tables/one.setfl"))
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+
+    monkeypatch.chdir(tmp_path)
+    params = pyec.Parameters()
+    params.load("job/config.ini")
+    monkeypatch.chdir(elsewhere)
+    energy = float(_matter(params, POSITIONS).potential_energy)
+    assert energy == pytest.approx(_reference(POSITIONS)[0], rel=1e-4)

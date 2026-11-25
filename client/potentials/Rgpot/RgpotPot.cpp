@@ -11,29 +11,10 @@
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
-#include <filesystem>
 #include <iostream>
 #include <ranges>
 #include <string>
-#include <string_view>
 #include <vector>
-
-namespace {
-// A relative path names a file next to the config file the parameters were
-// loaded from. Parameters loaded from text, JSON or a FILE* record a
-// "<...>" source and have no directory, so their paths stay relative to the
-// working directory.
-std::string resolve_against_config(const std::string &path,
-                                   const eonc::Parameters &p) {
-  const std::string_view source = p.last_load_source();
-  if (path.empty() || source.empty() || source.front() == '<')
-    return path;
-  const std::filesystem::path relative{path};
-  if (relative.is_absolute())
-    return path;
-  return (std::filesystem::path{source}.parent_path() / relative).string();
-}
-} // namespace
 
 RgpotPot::RgpotPot(const eonc::Parameters &p)
     : eonc::Potential(eonc::PotType::RGPOT, p) {
@@ -129,9 +110,6 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
   if ((backend_lc.rfind("meta", 0) == 0 || backend_lc == "mta") &&
       opt.device == "cpu" && !p.metatomic_options().device.empty())
     opt.device = p.metatomic_options().device;
-
-  if (backend_lc == "eam" || backend_lc == "eamtable")
-    opt.table_path = resolve_against_config(opt.table_path, p);
 
   impl_ = std::make_unique<RGPotEngine>(opt);
   backend_ = impl_->backend();

@@ -502,7 +502,6 @@ TEST_CASE("RgpotPot eam resolves a relative table_path against the "
   }
 
   const fs::path cwd = fs::current_path();
-  fs::current_path(root / "elsewhere");
   constexpr int n = 3;
   AtomMatrix pos(n, 3);
   pos << 0.0, 0.0, 0.0, 1.5, 0.0, 0.0, 0.4, 1.3, 0.2;
@@ -515,9 +514,15 @@ TEST_CASE("RgpotPot eam resolves a relative table_path against the "
   bool built = false;
   std::string textError;
   try {
+    // The config path is relative to the cwd of the load, and the potential
+    // is built from another cwd.
+    fs::current_path(root);
     Parameters fromFile;
-    REQUIRE(fromFile.load((root / "job" / "config.ini").string()) == 0);
-    REQUIRE(fromFile.rgpot_options().table_path == "tables/one.setfl");
+    REQUIRE(fromFile.load("job/config.ini") == 0);
+    fs::current_path(root / "elsewhere");
+    const fs::path loaded{fromFile.rgpot_options().table_path};
+    REQUIRE(loaded.is_absolute());
+    REQUIRE(fs::equivalent(loaded, root / "job" / "tables" / "one.setfl"));
     auto pot = eonc::helpers::makePotential(PotType::RGPOT, fromFile);
     built = pot != nullptr;
     if (built)
