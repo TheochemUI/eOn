@@ -15,8 +15,8 @@ from eon.concorpus import (
     blob_id,
     corpus_buffered_frames,
     flush_corpus_appends,
+    generation_id,
     note_corpus_append,
-    traj_id,
 )
 from eon.structure import Structure
 
@@ -29,8 +29,8 @@ _GOLDEN = (
     / "data"
     / "restart"
 )
-_PATH_ID = 14164577628502097180
 _BLOB_ID = 10713101950971778497
+_GENERATION_1_ID = 16863591607129263014
 
 
 def _subnormal() -> float:
@@ -140,10 +140,11 @@ def test_two_cu_masses_collapse_to_the_first(caplog: pytest.LogCaptureFixture):
     assert any("Collapsed mass" in rec.message for rec in caplog.records)
 
 
-def test_traj_id_is_the_path_only():
+def test_generation_zero_is_the_blob_and_later_ones_add_the_number():
     path = "/var/eon/restart_exact.con"
-    assert traj_id(path) == _PATH_ID
-    assert traj_id(path, text="ignored") == _PATH_ID
+    assert generation_id(path, "frame\n") == _BLOB_ID
+    assert generation_id(path, "frame\n", 1) == _GENERATION_1_ID
+    assert generation_id(path, "frame\n", 2) != _GENERATION_1_ID
 
 
 def test_blob_id_is_the_path_a_nul_and_the_text():
@@ -152,15 +153,22 @@ def test_blob_id_is_the_path_a_nul_and_the_text():
     assert blob_id(path, "frame 2\n") != _BLOB_ID
 
 
-def test_corpus_appends_flush_in_groups_of_64(tmp_path: Path, monkeypatch):
-    calls: list[tuple[str, list[str]]] = []
+def _hold_generation(monkeypatch, path: Path, tid: int = 7) -> None:
+    from eon import concorpus
 
-    def _fake(resolved: str, frames: list[str]) -> None:
-        calls.append((resolved, list(frames)))
+    monkeypatch.setitem(concorpus._generations, str(path.resolve()), tid)
+
+
+def test_corpus_appends_flush_in_groups_of_64(tmp_path: Path, monkeypatch):
+    calls: list[tuple[str, int, list[str]]] = []
+
+    def _fake(resolved: str, tid: int, frames: list[str]) -> None:
+        calls.append((resolved, tid, list(frames)))
 
     flush_corpus_appends()
     monkeypatch.setattr("eon.concorpus._extend_batch", _fake)
     path = tmp_path / "movie.con"
+    _hold_generation(monkeypatch, path)
     for _ in range(63):
         note_corpus_append(path, "frame\n")
     assert corpus_buffered_frames(path) == 63
@@ -168,13 +176,14 @@ def test_corpus_appends_flush_in_groups_of_64(tmp_path: Path, monkeypatch):
     note_corpus_append(path, "frame\n")
     assert corpus_buffered_frames(path) == 0
     assert len(calls) == 1
-    assert len(calls[0][1]) == 64
+    assert calls[0][1] == 7
+    assert len(calls[0][2]) == 64
     note_corpus_append(path, "frame\n")
     assert corpus_buffered_frames(path) == 1
     flush_corpus_appends()
     assert corpus_buffered_frames(path) == 0
     assert len(calls) == 2
-    assert len(calls[1][1]) == 1
+    assert len(calls[1][2]) == 1
 
 
 def test_reading_the_corpus_flushes(tmp_path: Path, monkeypatch):
@@ -182,12 +191,13 @@ def test_reading_the_corpus_flushes(tmp_path: Path, monkeypatch):
 
     calls: list[int] = []
 
-    def _fake(_resolved: str, frames: list[str]) -> None:
+    def _fake(_resolved: str, _tid: int, frames: list[str]) -> None:
         calls.append(len(frames))
 
     flush_corpus_appends()
     monkeypatch.setattr("eon.concorpus._extend_batch", _fake)
     path = tmp_path / "one.con"
+    _hold_generation(monkeypatch, path)
     note_corpus_append(path, "frame\n")
     assert corpus_buffered_frames(path) == 1
     stored_frame_text(path)

@@ -120,3 +120,91 @@ def test_a_compressed_append_stays_out_of_the_corpus(tmp_path: Path):
     assert dest.stat().st_size > len(frame_text.encode())
     assert len(readcon.read_con(str(dest))) == 2
     assert not (tmp_path / "readcon.db").exists()
+
+
+def _xs(texts: list[str]) -> list[float]:
+    return [readcon.read_con_string(text)[0].atoms[0].x for text in texts]
+
+
+def _disk_xs(path: Path) -> list[float]:
+    return [frame.atoms[0].x for frame in readcon.read_con(str(path))]
+
+
+def test_the_generation_holds_the_initial_frame_and_the_appends(tmp_path: Path):
+    from eon.concorpus import generation_frame_texts
+
+    (tmp_path / "config.ini").write_text("[Main]\n")
+    dest = tmp_path / "movie.con"
+    io.savecon(str(dest), _cu_atom(1.0))
+    io.savecon(str(dest), _cu_atom(2.0), "a")
+    assert _disk_xs(dest) == [1.0, 2.0]
+    assert _xs(generation_frame_texts(dest)) == [1.0, 2.0]
+
+
+def test_an_overwrite_with_the_same_first_frame_starts_a_new_generation(
+    tmp_path: Path,
+):
+    from eon.concorpus import generation_frame_texts, generation_id, load_frame_text
+
+    (tmp_path / "config.ini").write_text("[Main]\n")
+    dest = tmp_path / "movie.con"
+    io.savecon(str(dest), _cu_atom(1.0))
+    first = dest.read_text()
+    io.savecon(str(dest), _cu_atom(2.0), "a")
+    io.savecon(str(dest), _cu_atom(1.0))
+    io.savecon(str(dest), _cu_atom(3.0), "a")
+    assert _disk_xs(dest) == [1.0, 3.0]
+    assert _xs(generation_frame_texts(dest)) == [1.0, 3.0]
+    old = generation_id(str(dest.resolve()), first)
+    assert _xs([load_frame_text(corpus_dir(dest), old, i) for i in (0, 1)]) == [
+        1.0,
+        2.0,
+    ]
+    assert load_frame_text(corpus_dir(dest), old, 2) is None
+
+
+def test_a_repeated_overwrite_without_appends_reuses_the_generation(tmp_path: Path):
+    from eon.concorpus import generation_id, start_generation
+
+    (tmp_path / "config.ini").write_text("[Main]\n")
+    dest = tmp_path / "pos.con"
+    io.savecon(str(dest), _cu_atom(1.0))
+    text = dest.read_text()
+    assert start_generation(dest, text) == generation_id(str(dest.resolve()), text)
+
+
+def test_an_append_in_a_new_process_extends_the_generation_on_disk(
+    tmp_path: Path, monkeypatch
+):
+    from eon import concorpus
+    from eon.concorpus import generation_frame_texts
+
+    (tmp_path / "config.ini").write_text("[Main]\n")
+    dest = tmp_path / "movie.con"
+    io.savecon(str(dest), _cu_atom(1.0))
+    io.savecon(str(dest), _cu_atom(2.0), "a")
+    concorpus.flush_corpus_appends()
+    monkeypatch.setattr(concorpus, "_generations", {})
+    io.savecon(str(dest), _cu_atom(3.0), "a")
+    assert _xs(generation_frame_texts(dest)) == [1.0, 2.0, 3.0]
+
+
+def test_a_new_process_does_not_extend_a_generation_the_file_left(
+    tmp_path: Path, monkeypatch
+):
+    from eon import concorpus
+    from eon.concorpus import generation_frame_texts
+
+    (tmp_path / "config.ini").write_text("[Main]\n")
+    dest = tmp_path / "movie.con"
+    io.savecon(str(dest), _cu_atom(1.0))
+    io.savecon(str(dest), _cu_atom(2.0), "a")
+    concorpus.flush_corpus_appends()
+    monkeypatch.setattr(concorpus, "_generations", {})
+    dest.write_text(
+        readcon.write_con_string(
+            [_cu_atom(1.0).to_conframe(), _cu_atom(5.0).to_conframe()]
+        )
+    )
+    io.savecon(str(dest), _cu_atom(6.0), "a")
+    assert _xs(generation_frame_texts(dest)) == [1.0, 5.0, 6.0]

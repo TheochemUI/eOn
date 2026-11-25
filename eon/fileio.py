@@ -316,6 +316,14 @@ def _note_corpus_append(path, text):
     note_corpus_append(path, text)
 
 
+def _start_corpus_generation(path, text):
+    try:
+        from eon.concorpus import start_generation
+    except ImportError:
+        return
+    start_generation(path, text)
+
+
 def loadcons(filename):
     frames = readcon.read_con(filename)
     _mirror_con_path(filename)
@@ -470,7 +478,8 @@ def savecon(fileout, p, w = 'w'):
     stays compressed, and os.replace moves it over the destination. A
     writer that raises leaves the previous file.
 
-    A compressed target stays out of the corpus.
+    An overwrite starts a corpus generation and an uncompressed append
+    extends it. A compressed target stays out of the corpus.
     '''
     frame = _atoms_to_frame(p)
     frame_text = readcon.write_con_string([frame])
@@ -492,7 +501,7 @@ def savecon(fileout, p, w = 'w'):
     if append:
         _note_corpus_append(fileout, frame_text)
     else:
-        _mirror_con_path(fileout)
+        _start_corpus_generation(fileout, frame_text)
 
 
 def load_mode(modefilein):

@@ -5,6 +5,10 @@ trajectory per distinct path plus blob, next to the run when ``config.ini``
 is at most eight directories up, otherwise beside the con file. A missing
 ``readcon_db`` install leaves the con file as the only copy.
 
+An overwrite of a path starts a generation, a trajectory whose frame 0 is
+the written frame, and later appends extend that trajectory. Compressed
+con files stay out of the corpus.
+
 A dynamics movie can also ingest each directory of a simulation tree and
 read those frames back with one read-only ``get_frame_texts`` call. The
 ``.con`` files remain the store.
@@ -29,7 +33,8 @@ _MASK = (1 << 64) - 1
 _GROUP = 64
 _unavailable = False
 _corpora: dict[str, object] = {}
-_pending: dict[str, list[str]] = {}
+_pending: dict[str, tuple[int, list[str]]] = {}
+_generations: dict[str, int] = {}
 _pending_lock = threading.Lock()
 
 
@@ -41,16 +46,6 @@ def _fnv1a(data: bytes) -> int:
     return h or 1
 
 
-def traj_id(path: str, text: str | None = None) -> int:
-    """FNV-1a 64 of the canonical path bytes, the append trajectory's id.
-
-    ``text`` is ignored. Appended frames extend this trajectory. The C++
-    mirror uses the same offset and prime. A zero digest becomes 1.
-    """
-    del text
-    return _fnv1a(path.encode())
-
-
 def blob_id(path: str, text: str) -> int:
     """FNV-1a 64 over the canonical path, a NUL, and the con text.
 
@@ -60,6 +55,21 @@ def blob_id(path: str, text: str) -> int:
     same bytes.
     """
     return _fnv1a((path + "\0" + text).encode())
+
+
+def generation_id(path: str, first_text: str, generation: int = 0) -> int:
+    """Trajectory id of one generation of ``path`` whose frame 0 is ``first_text``.
+
+    Generation 0 is ``blob_id(path, first_text)``, so the blob an overwrite
+    stores is the trajectory its appends extend. The corpus cannot drop
+    frames, so an overwrite that repeats the first frame of an extended
+    generation takes the next one: FNV-1a 64 over the path, a NUL, the
+    text, a NUL and the decimal generation. The C++ mirror uses the same
+    bytes.
+    """
+    if generation == 0:
+        return blob_id(path, first_text)
+    return _fnv1a(f"{path}\0{first_text}\0{generation}".encode())
 
 
 def corpus_dir(con_path: Path) -> Path:
@@ -123,7 +133,7 @@ def _resolved(path) -> str:
         return str(con_path)
 
 
-def _extend_batch(resolved: str, frames: list[str]) -> None:
+def _extend_batch(resolved: str, tid: int, frames: list[str]) -> None:
     """Extend one batch. A missing symbol or library is a soft skip."""
     if not frames:
         return
@@ -131,7 +141,6 @@ def _extend_batch(resolved: str, frames: list[str]) -> None:
     db = _corpus(corpus_dir(Path(resolved)))
     if db is None:
         return
-    tid = traj_id(resolved)
     extend_str = getattr(db, "extend_trajectory_str", None)
     try:
         if extend_str is not None:
@@ -155,20 +164,141 @@ def _extend_batch(resolved: str, frames: list[str]) -> None:
         logger.debug("readcon-db extend skipped for %s: %s", resolved, exc)
 
 
+def _has_frame(db, tid: int, frame_idx: int) -> bool:
+    try:
+        db.frame_hash(int(tid), int(frame_idx))
+    except Exception:
+        return False
+    return True
+
+
+def _stored_frames(db, tid: int, limit: int) -> int:
+    """Frames under ``tid``, or ``limit + 1`` when there are more than ``limit``."""
+    lo, hi = 0, limit + 1
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if _has_frame(db, tid, mid):
+            lo = mid + 1
+        else:
+            hi = mid
+    return lo
+
+
+def _seed(db, tid: int, text: str, resolved: str) -> bool:
+    try:
+        db.append_trajectory_str(tid, text, source=resolved)
+    except Exception as exc:
+        if "already exists" not in str(exc):
+            logger.debug("readcon-db seed skipped for %s: %s", resolved, exc)
+            return False
+    return True
+
+
+def _flush_path(resolved: str) -> None:
+    with _pending_lock:
+        slot = _pending.pop(resolved, None)
+    if slot is not None:
+        _extend_batch(resolved, *slot)
+
+
+def start_generation(path, text: str) -> int | None:
+    """Start the trajectory an overwrite of ``path`` with one frame ``text`` begins.
+
+    Frames still buffered for the previous generation go to it first.
+    A generation that holds only this frame is reused. Returns the
+    trajectory id, or None when no corpus takes the frame.
+    """
+    resolved = _resolved(path)
+    _flush_path(resolved)
+    with _pending_lock:
+        _generations.pop(resolved, None)
+    if not text or not text.strip():
+        return None
+    db = _corpus(corpus_dir(Path(resolved)))
+    if db is None:
+        return None
+    generation = 0
+    while _has_frame(db, generation_id(resolved, text, generation), 1):
+        generation += 1
+    tid = generation_id(resolved, text, generation)
+    if not _seed(db, tid, text, resolved):
+        return None
+    with _pending_lock:
+        _generations[resolved] = tid
+    return tid
+
+
+def _disk_frame_texts(resolved: str) -> list[str]:
+    try:
+        import readcon
+
+        frames = readcon.read_con(resolved)
+        return [readcon.write_con_string([frame]) for frame in frames]
+    except Exception as exc:
+        logger.debug("readcon-db resume skipped for %s: %s", resolved, exc)
+        return []
+
+
+def _resume_generation(resolved: str) -> int | None:
+    """Bring the generation of an appended file this process did not start up to disk.
+
+    The newest generation for the file's first frame is used unless its
+    last stored frame disagrees with the file, which starts a new one.
+    The just-appended frame is on disk, so it is stored here too.
+    """
+    db = _corpus(corpus_dir(Path(resolved)))
+    if db is None:
+        return None
+    texts = _disk_frame_texts(resolved)
+    if not texts:
+        return None
+    first = texts[0]
+    generation = 0
+    while _has_frame(db, generation_id(resolved, first, generation + 1), 0):
+        generation += 1
+    tid = generation_id(resolved, first, generation)
+    stored = _stored_frames(db, tid, len(texts))
+    if stored > len(texts) or (
+        stored > 0 and _frame_text(db, tid, stored - 1) != texts[stored - 1]
+    ):
+        tid = generation_id(resolved, first, generation + 1)
+        stored = 0
+    if stored == 0:
+        if not _seed(db, tid, "".join(texts), resolved):
+            return None
+    else:
+        _extend_batch(resolved, tid, texts[stored:])
+    with _pending_lock:
+        _generations[resolved] = tid
+    return tid
+
+
+def _frame_text(db, tid: int, frame_idx: int) -> str | None:
+    try:
+        return db.get_frame_text(int(tid), int(frame_idx))
+    except Exception:
+        return None
+
+
 def note_corpus_append(path, frame_text: str) -> None:
-    """Buffer one appended frame. Flush at 64 frames."""
+    """Buffer one appended frame for the path's generation. Flush at 64 frames."""
     if not frame_text or not frame_text.strip():
         return
     resolved = _resolved(path)
-    ready: list[str] | None = None
     with _pending_lock:
-        slot = _pending.setdefault(resolved, [])
-        slot.append(frame_text)
-        if len(slot) >= _GROUP:
+        tid = _generations.get(resolved)
+    if tid is None:
+        _resume_generation(resolved)
+        return
+    ready: tuple[int, list[str]] | None = None
+    with _pending_lock:
+        slot = _pending.setdefault(resolved, (tid, []))
+        slot[1].append(frame_text)
+        if len(slot[1]) >= _GROUP:
             ready = slot
             del _pending[resolved]
     if ready is not None:
-        _extend_batch(resolved, ready)
+        _extend_batch(resolved, *ready)
 
 
 def flush_corpus_appends() -> None:
@@ -176,14 +306,36 @@ def flush_corpus_appends() -> None:
     with _pending_lock:
         pending = list(_pending.items())
         _pending.clear()
-    for resolved, frames in pending:
-        _extend_batch(resolved, frames)
+    for resolved, (tid, frames) in pending:
+        _extend_batch(resolved, tid, frames)
 
 
 def corpus_buffered_frames(path) -> int:
     resolved = _resolved(path)
     with _pending_lock:
-        return len(_pending.get(resolved, ()))
+        slot = _pending.get(resolved)
+    return len(slot[1]) if slot is not None else 0
+
+
+def generation_frame_texts(path) -> list[str]:
+    """Frame texts of the path's current generation, oldest first.
+
+    Empty when this process holds no generation for the path or no
+    corpus is loaded.
+    """
+    flush_corpus_appends()
+    resolved = _resolved(path)
+    with _pending_lock:
+        tid = _generations.get(resolved)
+    if tid is None:
+        return []
+    db = _corpus(corpus_dir(Path(resolved)))
+    if db is None:
+        return []
+    texts = []
+    while (text := _frame_text(db, tid, len(texts))) is not None:
+        texts.append(text)
+    return texts
 
 
 atexit.register(flush_corpus_appends)
