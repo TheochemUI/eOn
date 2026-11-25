@@ -14,6 +14,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -87,5 +88,10 @@ void flush_corpus_appends();
 /// this process holds no generation for the path.
 [[nodiscard]] std::vector<std::string>
 corpus_generation_frame_texts(const std::string &path);
+
+/// Trajectory id of the path's current generation. Empty when this process
+/// holds no generation for the path.
+[[nodiscard]] std::optional<std::uint64_t>
+corpus_generation_of(const std::string &path);
 
 } // namespace eonc::io

@@ -173,20 +173,88 @@ def test_a_repeated_overwrite_without_appends_reuses_the_generation(tmp_path: Pa
     assert start_generation(dest, text) == generation_id(str(dest.resolve()), text)
 
 
+def _held_generation(dest: Path) -> int | None:
+    from eon import concorpus
+
+    return concorpus._generations.get(str(dest.resolve()))
+
+
+@pytest.mark.parametrize(
+    "xs",
+    [(1.0, 2.0, 3.0), (1.0, 2.123456789, 3.987654321), (1.0, 1.25, 1.5, 1.75)],
+)
 def test_an_append_in_a_new_process_extends_the_generation_on_disk(
+    tmp_path: Path, monkeypatch, xs
+):
+    from eon import concorpus
+    from eon.concorpus import generation_frame_texts, generation_id
+
+    (tmp_path / "config.ini").write_text("[Main]\n")
+    dest = tmp_path / "movie.con"
+    io.savecon(str(dest), _cu_atom(xs[0]))
+    first = dest.read_text()
+    for x in xs[1:-1]:
+        io.savecon(str(dest), _cu_atom(x), "a")
+    concorpus.flush_corpus_appends()
+    monkeypatch.setattr(concorpus, "_generations", {})
+    io.savecon(str(dest), _cu_atom(xs[-1]), "a")
+    assert _held_generation(dest) == generation_id(str(dest.resolve()), first)
+    assert _xs(generation_frame_texts(dest)) == pytest.approx(list(xs), abs=1e-6)
+
+
+def test_a_resume_matches_frames_readcon_db_wrote_with_six_decimals(
     tmp_path: Path, monkeypatch
 ):
     from eon import concorpus
-    from eon.concorpus import generation_frame_texts
+    from eon.concorpus import generation_id, load_frame_text
 
     (tmp_path / "config.ini").write_text("[Main]\n")
     dest = tmp_path / "movie.con"
     io.savecon(str(dest), _cu_atom(1.0))
-    io.savecon(str(dest), _cu_atom(2.0), "a")
+    first = dest.read_text()
+    io.savecon(str(dest), _cu_atom(2.123456789), "a")
     concorpus.flush_corpus_appends()
+    tid = generation_id(str(dest.resolve()), first)
+    stored = load_frame_text(corpus_dir(dest), tid, 1)
+    disk = readcon.write_con_string(readcon.read_con(str(dest))[1:2])
+    assert "2.123457" in stored and "2.123456789" in disk
     monkeypatch.setattr(concorpus, "_generations", {})
     io.savecon(str(dest), _cu_atom(3.0), "a")
-    assert _xs(generation_frame_texts(dest)) == [1.0, 2.0, 3.0]
+    assert _held_generation(dest) == tid
+    assert load_frame_text(corpus_dir(dest), generation_id(
+        str(dest.resolve()), first, 1), 0) is None
+
+
+def test_a_file_shorter_than_its_generation_starts_a_new_one(
+    tmp_path: Path, monkeypatch
+):
+    from eon import concorpus
+    from eon.concorpus import generation_frame_texts, generation_id, load_frame_text
+
+    (tmp_path / "config.ini").write_text("[Main]\n")
+    dest = tmp_path / "movie.con"
+    io.savecon(str(dest), _cu_atom(1.0))
+    first = dest.read_text()
+    for x in (2.0, 3.0, 4.0):
+        io.savecon(str(dest), _cu_atom(x), "a")
+    concorpus.flush_corpus_appends()
+    monkeypatch.setattr(concorpus, "_generations", {})
+    dest.write_text(
+        readcon.write_con_string(
+            [_cu_atom(1.0).to_conframe(), _cu_atom(2.0).to_conframe()]
+        )
+    )
+    io.savecon(str(dest), _cu_atom(5.0), "a")
+    resolved = str(dest.resolve())
+    assert _held_generation(dest) == generation_id(resolved, first, 1)
+    assert _xs(generation_frame_texts(dest)) == [1.0, 2.0, 5.0]
+    old = generation_id(resolved, first)
+    assert _xs([load_frame_text(corpus_dir(dest), old, i) for i in range(4)]) == [
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+    ]
 
 
 def test_a_new_process_does_not_extend_a_generation_the_file_left(
@@ -218,10 +286,8 @@ def test_a_changed_middle_frame_starts_a_new_generation(
 
     (tmp_path / "config.ini").write_text("[Main]\n")
     dest = tmp_path / "movie.con"
-    # A whole-file seed stores each frame's own text. Extending a
-    # generation rewrites later frames, so those texts no longer match a
-    # reread and the last-frame check never runs. This seed is the resume
-    # that keeps them.
+    # A whole-file seed stores each frame's own text, so every stored
+    # frame here is round-trip text rather than six-decimal text.
     texts = [
         readcon.write_con_string([_cu_atom(x).to_conframe()])
         for x in (1.0, 2.0, 3.0, 4.0, 6.0)

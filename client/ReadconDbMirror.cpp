@@ -15,6 +15,7 @@
 
 #include <atomic>
 #include <cctype>
+#include <charconv>
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
@@ -435,6 +436,58 @@ std::optional<std::string> stored_frame_text(std::size_t id, std::uint64_t tid,
   return buf;
 }
 
+/// A too-small buffer is a lookup error, so grow until the frame fits.
+std::optional<std::string> whole_frame_text(std::size_t id, std::uint64_t tid,
+                                            std::uint32_t frame_idx,
+                                            std::size_t first_capacity) {
+  constexpr std::size_t kMaxFrameBytes = std::size_t{1} << 26;
+  std::optional<std::string> text;
+  for (std::size_t capacity = first_capacity;
+       !text && capacity <= kMaxFrameBytes; capacity *= 4) {
+    text = stored_frame_text(id, tid, frame_idx, capacity);
+  }
+  return text;
+}
+
+constexpr int kStoredDecimals = 6;
+
+std::vector<std::vector<std::string>> six_decimal_tokens(std::string_view text) {
+  std::vector<std::vector<std::string>> lines;
+  std::size_t start = 0;
+  while (start <= text.size()) {
+    std::size_t stop = text.find('\n', start);
+    if (stop == std::string_view::npos) {
+      stop = text.size();
+    }
+    std::istringstream words{std::string(text.substr(start, stop - start))};
+    std::vector<std::string> &line = lines.emplace_back();
+    for (std::string word; words >> word;) {
+      double value = 0.0;
+      const char *end = word.data() + word.size();
+      const auto [ptr, ec] = std::from_chars(word.data(), end, value);
+      line.push_back(ec == std::errc{} && ptr == end
+                         ? std::format("{:.{}f}", value, kStoredDecimals)
+                         : std::move(word));
+    }
+    start = stop + 1;
+  }
+  while (!lines.empty() && lines.back().empty()) {
+    lines.pop_back();
+  }
+  return lines;
+}
+
+/// readcon-db 0.1.6 writes extended frames with six decimals, while a reread
+/// writes round-trip text. Numbers compare at six decimals on both sides, so
+/// a difference below that does not count.
+bool same_frame(const std::optional<std::string> &stored,
+                const std::string &disk) {
+  if (!stored) {
+    return false;
+  }
+  return *stored == disk || six_decimal_tokens(*stored) == six_decimal_tokens(disk);
+}
+
 bool stored_prefix_matches(std::size_t id, std::uint64_t tid,
                            const std::vector<std::string> &texts,
                            std::uint32_t stored) {
@@ -443,7 +496,8 @@ bool stored_prefix_matches(std::size_t id, std::uint64_t tid,
   }
   for (std::uint32_t index = 0; index < stored; ++index) {
     const std::string &disk = texts[index];
-    if (stored_frame_text(id, tid, index, disk.size()) != disk) {
+    if (!same_frame(whole_frame_text(id, tid, index, 2 * disk.size() + 256),
+                    disk)) {
       return false;
     }
   }
@@ -702,19 +756,25 @@ corpus_generation_frame_texts(const std::string &path) {
     return {};
   }
   std::vector<std::string> texts;
-  constexpr std::size_t kMaxFrameBytes = std::size_t{1} << 26;
   for (std::uint32_t idx = 0; has_frame(id, tid, idx); ++idx) {
-    std::optional<std::string> text;
-    for (std::size_t capacity = std::size_t{1} << 16;
-         !text && capacity <= kMaxFrameBytes; capacity *= 4) {
-      text = stored_frame_text(id, tid, idx, capacity);
-    }
+    std::optional<std::string> text =
+        whole_frame_text(id, tid, idx, std::size_t{1} << 16);
     if (!text) {
       break;
     }
     texts.push_back(std::move(*text));
   }
   return texts;
+}
+
+std::optional<std::uint64_t> corpus_generation_of(const std::string &path) {
+  const std::string resolved = canonical_path(path);
+  std::lock_guard<std::mutex> guard(batch_mu());
+  const auto found = generations().find(resolved);
+  if (found == generations().end()) {
+    return std::nullopt;
+  }
+  return found->second;
 }
 
 bool corpus_extend_ok() {

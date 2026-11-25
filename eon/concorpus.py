@@ -278,12 +278,41 @@ def _frame_text(db, tid: int, frame_idx: int) -> str | None:
         return None
 
 
+_STORED_PRECISION = 6
+
+
+def _normalized_frame(text: str) -> str | None:
+    try:
+        import readcon
+
+        return readcon.write_con_string(
+            readcon.read_con_string(text), precision=_STORED_PRECISION
+        )
+    except Exception:
+        return None
+
+
+def _same_frame(stored: str | None, disk: str) -> bool:
+    """True when a stored frame and a reread disk frame hold the same values.
+
+    readcon-db 0.1.6 writes extended frames with six decimals, while a
+    reread writes round-trip text. Both sides go through that six-decimal
+    writer, so a difference below it does not count.
+    """
+    if stored is None:
+        return False
+    if stored == disk:
+        return True
+    normalized = _normalized_frame(stored)
+    return normalized is not None and normalized == _normalized_frame(disk)
+
+
 def _stored_prefix_matches(db, tid: int, texts: list[str], stored: int) -> bool:
     """True when the stored frames are a prefix of ``texts``."""
     if stored > len(texts):
         return False
     for index in range(stored):
-        if _frame_text(db, tid, index) != texts[index]:
+        if not _same_frame(_frame_text(db, tid, index), texts[index]):
             return False
     return True
 

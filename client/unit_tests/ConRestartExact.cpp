@@ -336,20 +336,79 @@ TEST_CASE("an append without a held generation extends the one on disk",
   if (!eonc::io::corpus_extend_ok()) {
     SKIP("libreadcon_db cannot extend a trajectory");
   }
-  const auto dir = corpus_job("eon-corpus-generation-resume");
+  const auto [name, xs] = GENERATE(table<const char *, std::vector<double>>({
+      {"eon-corpus-generation-resume", {1.0, 2.0, 3.0}},
+      {"eon-corpus-generation-resume-digits", {1.0, 2.123456789, 3.987654321}},
+      {"eon-corpus-generation-resume-four", {1.0, 1.25, 1.5, 1.75}},
+  }));
+  const auto dir = corpus_job(name);
+  const auto path = (dir / "movie.con").string();
+  MatterHolder hold;
+  place_cu(*hold.matter, xs.front());
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, false)));
+  const std::string first = read_bytes(path);
+  for (std::size_t i = 1; i + 1 < xs.size(); ++i) {
+    place_cu(*hold.matter, xs[i]);
+    REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
+  }
+  eonc::io::forget_corpus_generation(path);
+  place_cu(*hold.matter, xs.back());
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
+  std::error_code ec;
+  const std::string canonical = fs::weakly_canonical(path, ec).string();
+  REQUIRE_FALSE(ec);
+  REQUIRE(eonc::io::corpus_generation_of(path) ==
+          eonc::io::corpus_generation_id(canonical, first));
+  const auto texts = eonc::io::corpus_generation_frame_texts(path);
+  const auto stored = text_xs(texts, dir / "scratch.con");
+  REQUIRE(stored.size() == xs.size());
+  for (std::size_t i = 0; i < xs.size(); ++i) {
+    REQUIRE_THAT(stored[i], Catch::Matchers::WithinAbs(xs[i], 1e-6));
+  }
+  if (xs[1] == 2.123456789) {
+    // The extend stored six decimals; the file holds round-trip text.
+    REQUIRE(texts[1].find("2.123457 ") != std::string::npos);
+    REQUIRE(read_bytes(path).find("2.123456789 ") != std::string::npos);
+  }
+  fs::remove_all(dir, ec);
+}
+
+TEST_CASE("a con file shorter than its corpus generation starts a new one",
+          "[con][corpus]") {
+  if (!eonc::io::corpus_extend_ok()) {
+    SKIP("libreadcon_db cannot extend a trajectory");
+  }
+  const auto dir = corpus_job("eon-corpus-generation-truncated");
   const auto path = (dir / "movie.con").string();
   MatterHolder hold;
   place_cu(*hold.matter, 1.0);
   REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, false)));
-  place_cu(*hold.matter, 2.0);
-  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
+  const std::string first = read_bytes(path);
+  for (double x : {2.0, 3.0, 4.0}) {
+    place_cu(*hold.matter, x);
+    REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
+  }
   eonc::io::forget_corpus_generation(path);
-  place_cu(*hold.matter, 3.0);
+  std::vector<std::string> texts;
+  for (double x : {1.0, 2.0}) {
+    place_cu(*hold.matter, x);
+    std::vector<readcon::ConFrame> one;
+    one.push_back(eonc::io::matterToConFrame(*hold.matter, nullptr));
+    texts.push_back(readcon::write_frames_to_string(one));
+  }
+  write_frames(path, texts);
+  eonc::io::resetConAppendState();
+  place_cu(*hold.matter, 5.0);
   REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
-  const std::vector<double> expect{1.0, 2.0, 3.0};
+  std::error_code ec;
+  const std::string canonical = fs::weakly_canonical(path, ec).string();
+  REQUIRE_FALSE(ec);
+  REQUIRE(eonc::io::corpus_generation_of(path) ==
+          eonc::io::corpus_generation_id(canonical, first, 1));
+  const std::vector<double> expect{1.0, 2.0, 5.0};
+  REQUIRE(disk_xs(path) == expect);
   REQUIRE(text_xs(eonc::io::corpus_generation_frame_texts(path),
                   dir / "scratch.con") == expect);
-  std::error_code ec;
   fs::remove_all(dir, ec);
 }
 
@@ -362,9 +421,8 @@ TEST_CASE("a changed middle frame does not extend the corpus generation",
   REQUIRE(load_raw_corpus(api));
   const auto dir = corpus_job("eon-corpus-generation-middle");
   MatterHolder hold;
-  // A whole-file seed stores each frame's own text. Extending a generation
-  // rewrites later frames, so those texts no longer match a reread and the
-  // last-frame check never runs. This seed is the resume that keeps them.
+  // A whole-file seed stores each frame's own text, so every stored frame
+  // here is round-trip text rather than six-decimal text.
   std::vector<std::string> texts;
   const double written[] = {1.0, 2.0, 3.0, 4.0, 6.0};
   for (double x : written) {

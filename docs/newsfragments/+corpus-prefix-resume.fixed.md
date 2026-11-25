@@ -1,1 +1,1 @@
-Resuming a con trajectory compares every stored frame with the file, so a changed middle frame starts a new generation instead of extending the old one.
+Resuming a con trajectory compares every stored frame with the file, so a changed middle frame starts a new generation instead of extending the old one. Frames readcon-db stored with six decimals match the round-trip text in the file, so resuming a trajectory of two or more frames extends its generation instead of starting a duplicate, in both the Python server and the client.
