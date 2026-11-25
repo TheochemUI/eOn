@@ -318,6 +318,17 @@ eonc::io::IoStatus append_frames(const fs::path &path,
   }
 }
 
+/// Each frame of a .con serialized on its own, as an append serializes it.
+std::vector<std::string> con_frame_texts(const fs::path &path) {
+  std::vector<std::string> texts;
+  for (auto &frame : readcon::read_all_frames(path)) {
+    std::vector<readcon::ConFrame> one;
+    one.push_back(std::move(frame));
+    texts.push_back(readcon::write_frames_to_string(one));
+  }
+  return texts;
+}
+
 /// Seed a builder with identity fields (symbol/fixed/mass/id) and cell headers.
 /// Geometry filled via positions_data() / set_*_from_flat.
 readcon::ConFrameBuilder seed_builder(eonc::Matter &m,
@@ -601,20 +612,24 @@ IoStatus matter2con(Matter &m, std::string filename, bool append,
       concatenate ? append_frames(path, frames) : write_frames(path, frames);
   if (io_ok(status)) {
     remember_stamp(key, path);
-    if (concatenate) {
-      // The writer appends in place, so the corpus copy is serialized
-      // separately, and only when the loaded readcon-db can extend.
-      if (corpus_extend_ok()) {
-        try {
-          note_corpus_append(path.string(),
-                             readcon::write_frames_to_string(frames));
-        } catch (const std::exception &e) {
-          EONC_LOG_DEBUG("readcon-db corpus append skipped for {}: {}",
-                         filename, e.what());
+    // A compressed con stays out of the corpus. An overwrite starts the
+    // generation that later appends extend.
+    try {
+      if (concatenate && corpus_extend_ok()) {
+        note_corpus_append(path.string(),
+                           readcon::write_frames_to_string(frames),
+                           [&path] { return con_frame_texts(path); });
+      } else if (!append || !exists) {
+        if (streamable && readcon_db_mirror_ok()) {
+          start_corpus_generation(path.string(),
+                                  readcon::write_frames_to_string(frames));
+        } else {
+          forget_corpus_generation(path.string());
         }
       }
-    } else {
-      mirror_con_corpus(path.string());
+    } catch (const std::exception &e) {
+      EONC_LOG_DEBUG("readcon-db corpus copy skipped for {}: {}", filename,
+                     e.what());
     }
   } else {
     append_stamps().erase(key);
@@ -976,6 +991,7 @@ IoStatus writeConFrames(std::string filename,
   const auto status = write_frames(path, frames);
   if (io_ok(status)) {
     remember_stamp(key, path);
+    forget_corpus_generation(path.string());
     mirror_con_corpus(path.string());
   } else {
     append_stamps().erase(key);

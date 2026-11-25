@@ -110,6 +110,10 @@ using ExtendPathFn = int (*)(std::size_t, std::uint64_t, const char *,
                              std::uint32_t *);
 using ExtendStrFn = int (*)(std::size_t, std::uint64_t, const char *,
                             const char *, std::uint32_t *);
+using FrameHashFn = int (*)(std::size_t, std::uint64_t, std::uint32_t,
+                            std::uint8_t *);
+using FrameTextFn = int (*)(std::size_t, std::uint64_t, std::uint32_t, char *,
+                            std::size_t);
 
 struct Api {
   LibHandle lib = nullptr;
@@ -117,6 +121,8 @@ struct Api {
   AppendFn append_str = nullptr;
   ExtendPathFn extend_path = nullptr;
   ExtendStrFn extend_str = nullptr;
+  FrameHashFn frame_hash = nullptr;
+  FrameTextFn frame_text = nullptr;
   bool missing = false;
   bool from_process = false;
   int epoch = -1;
@@ -173,10 +179,13 @@ void clear_symbols(Api &out) {
   out.append_str = nullptr;
   out.extend_path = nullptr;
   out.extend_str = nullptr;
+  out.frame_hash = nullptr;
+  out.frame_text = nullptr;
 }
 
-// The extend entry points are optional. Older readcon-db builds lack them
-// and appended frames then skip the corpus.
+// The extend and lookup entry points are optional. Older readcon-db builds
+// lack them: appended frames then skip the corpus, and without a lookup
+// every overwrite reuses generation 0.
 bool resolve_symbols(Api &out, LibHandle handle) {
   out.open = reinterpret_cast<OpenFn>(symbol(handle, "rkrdb_open"));
   out.append_str =
@@ -185,6 +194,10 @@ bool resolve_symbols(Api &out, LibHandle handle) {
       reinterpret_cast<ExtendPathFn>(symbol(handle, "rkrdb_extend_trajectory"));
   out.extend_str = reinterpret_cast<ExtendStrFn>(
       symbol(handle, "rkrdb_extend_trajectory_str"));
+  out.frame_hash =
+      reinterpret_cast<FrameHashFn>(symbol(handle, "rkrdb_frame_hash"));
+  out.frame_text =
+      reinterpret_cast<FrameTextFn>(symbol(handle, "rkrdb_get_frame_text"));
   return out.open != nullptr && out.append_str != nullptr;
 }
 
@@ -283,6 +296,7 @@ std::size_t corpus_handle(const std::filesystem::path &dir) {
 struct Batch {
   std::string canonical;
   std::filesystem::path db;
+  std::uint64_t tid = 0;
   std::vector<std::string> frames;
 };
 
@@ -298,8 +312,14 @@ std::unordered_map<std::string, Batch> &batches() {
   return map;
 }
 
+/// Canonical path to the trajectory id of its current generation.
+std::unordered_map<std::string, std::uint64_t> &generations() {
+  static std::unordered_map<std::string, std::uint64_t> map;
+  return map;
+}
+
 void extend_batch(const std::string &canonical, const std::filesystem::path &db,
-                  const std::vector<std::string> &frames) {
+                  std::uint64_t tid, const std::vector<std::string> &frames) {
   if (frames.empty()) {
     return;
   }
@@ -321,7 +341,6 @@ void extend_batch(const std::string &canonical, const std::filesystem::path &db,
   for (const auto &frame : frames) {
     text += frame;
   }
-  const std::uint64_t tid = fnv1a(canonical);
   std::uint32_t nframes = 0;
   if (fns.extend_str != nullptr) {
     fns.extend_str(id, tid, text.c_str(), canonical.c_str(), &nframes);
@@ -350,8 +369,127 @@ void extend_batch(const std::string &canonical, const std::filesystem::path &db,
 
 void flush_ready(std::vector<Batch> ready) {
   for (const auto &batch : ready) {
-    extend_batch(batch.canonical, batch.db, batch.frames);
+    extend_batch(batch.canonical, batch.db, batch.tid, batch.frames);
   }
+}
+
+/// Extend the path's buffered frames and drop its generation.
+void retire_generation(const std::string &canonical) {
+  std::vector<Batch> ready;
+  {
+    std::lock_guard<std::mutex> guard(batch_mu());
+    const auto found = batches().find(canonical);
+    if (found != batches().end()) {
+      ready.push_back(std::move(found->second));
+      batches().erase(found);
+    }
+    generations().erase(canonical);
+  }
+  flush_ready(std::move(ready));
+}
+
+void remember_generation(const std::string &canonical, std::uint64_t tid) {
+  std::lock_guard<std::mutex> guard(batch_mu());
+  generations()[canonical] = tid;
+}
+
+bool has_frame(std::size_t id, std::uint64_t tid, std::uint32_t frame_idx) {
+  const Api &fns = api();
+  if (fns.frame_hash == nullptr) {
+    return false;
+  }
+  std::uint8_t hash[16];
+  return fns.frame_hash(id, tid, frame_idx, hash) == 0;
+}
+
+/// Frames under tid, or limit + 1 when there are more than limit.
+std::uint32_t stored_frames(std::size_t id, std::uint64_t tid,
+                            std::uint32_t limit) {
+  std::uint32_t lo = 0;
+  std::uint32_t hi = limit + 1;
+  while (lo < hi) {
+    const std::uint32_t mid = lo + (hi - lo) / 2;
+    if (has_frame(id, tid, mid)) {
+      lo = mid + 1;
+    } else {
+      hi = mid;
+    }
+  }
+  return lo;
+}
+
+std::optional<std::string> stored_frame_text(std::size_t id, std::uint64_t tid,
+                                             std::uint32_t frame_idx,
+                                             std::size_t capacity) {
+  const Api &fns = api();
+  if (fns.frame_text == nullptr) {
+    return std::nullopt;
+  }
+  std::string buf(capacity + 1, '\0');
+  const int len = fns.frame_text(id, tid, frame_idx, buf.data(), buf.size());
+  if (len < 0) {
+    return std::nullopt;
+  }
+  buf.resize(static_cast<std::size_t>(len));
+  return buf;
+}
+
+bool seed_trajectory(std::size_t id, std::uint64_t tid, const std::string &text,
+                     const std::string &canonical) {
+  if (has_frame(id, tid, 0)) {
+    return true;
+  }
+  std::uint32_t nframes = 0;
+  return api().append_str(id, tid, text.c_str(), canonical.c_str(), &nframes) ==
+         0;
+}
+
+void resume_generation(const std::string &canonical,
+                       const std::filesystem::path &db,
+                       const CorpusDiskFrames &disk_frames) {
+  const std::size_t id = corpus_handle(db);
+  if (id == static_cast<std::size_t>(-1) || !disk_frames) {
+    return;
+  }
+  std::vector<std::string> texts;
+  try {
+    texts = disk_frames();
+  } catch (const std::exception &e) {
+    EONC_LOG_DEBUG("readcon-db resume skipped for {}: {}", canonical, e.what());
+    return;
+  }
+  if (texts.empty()) {
+    return;
+  }
+  const std::string &first = texts.front();
+  std::uint64_t generation = 0;
+  while (has_frame(id, corpus_generation_id(canonical, first, generation + 1),
+                   0)) {
+    ++generation;
+  }
+  std::uint64_t tid = corpus_generation_id(canonical, first, generation);
+  const auto on_disk = static_cast<std::uint32_t>(texts.size());
+  std::uint32_t stored = stored_frames(id, tid, on_disk);
+  if (stored > on_disk ||
+      (stored > 0 &&
+       stored_frame_text(id, tid, stored - 1, texts[stored - 1].size()) !=
+           texts[stored - 1])) {
+    tid = corpus_generation_id(canonical, first, generation + 1);
+    stored = 0;
+  }
+  if (stored == 0) {
+    std::string whole;
+    for (const auto &text : texts) {
+      whole += text;
+    }
+    if (!seed_trajectory(id, tid, whole, canonical)) {
+      return;
+    }
+  } else {
+    extend_batch(canonical, db, tid,
+                 std::vector<std::string>(texts.begin() + stored, texts.end()));
+  }
+  remember_generation(canonical, tid);
 }
 
 void arm_corpus_flush() {
@@ -360,6 +498,7 @@ void arm_corpus_flush() {
   // are destroyed.
   static_cast<void>(batch_mu());
   static_cast<void>(batches());
+  static_cast<void>(generations());
   static_cast<void>(handles_mu());
   static_cast<void>(handles());
   static_cast<void>(api());
@@ -369,10 +508,6 @@ void arm_corpus_flush() {
 
 } // namespace
 
-std::uint64_t corpus_path_id(std::string_view canonical_path) {
-  return fnv1a(canonical_path);
-}
-
 std::uint64_t corpus_blob_id(std::string_view canonical_path,
                              std::string_view text) {
   std::string bytes;
@@ -380,6 +515,22 @@ std::uint64_t corpus_blob_id(std::string_view canonical_path,
   bytes.append(canonical_path);
   bytes.push_back('\0');
   bytes.append(text);
+  return fnv1a(bytes);
+}
+
+std::uint64_t corpus_generation_id(std::string_view canonical_path,
+                                   std::string_view first_text,
+                                   std::uint64_t generation) {
+  if (generation == 0) {
+    return corpus_blob_id(canonical_path, first_text);
+  }
+  std::string bytes;
+  bytes.reserve(canonical_path.size() + first_text.size() + 22);
+  bytes.append(canonical_path);
+  bytes.push_back('\0');
+  bytes.append(first_text);
+  bytes.push_back('\0');
+  bytes.append(std::to_string(generation));
   return fnv1a(bytes);
 }
 
@@ -414,8 +565,38 @@ void mirror_con_corpus(const std::string &path) {
   api().append_str(id, tid, text.c_str(), resolved.c_str(), &nframes);
 }
 
-void note_corpus_append(const std::string &path,
-                        const std::string &frame_text) {
+void start_corpus_generation(const std::string &path, const std::string &text) {
+  arm_corpus_flush();
+  const std::string resolved = canonical_path(path);
+  retire_generation(resolved);
+  if (text.find_first_not_of(" \t\r\n") == std::string::npos) {
+    return;
+  }
+  const auto corpus = corpus_dir(resolved);
+  if (!corpus) {
+    return;
+  }
+  const std::size_t id = corpus_handle(*corpus);
+  if (id == static_cast<std::size_t>(-1)) {
+    return;
+  }
+  std::uint64_t generation = 0;
+  while (has_frame(id, corpus_generation_id(resolved, text, generation), 1)) {
+    ++generation;
+  }
+  const std::uint64_t tid = corpus_generation_id(resolved, text, generation);
+  if (seed_trajectory(id, tid, text, resolved)) {
+    remember_generation(resolved, tid);
+  }
+}
+
+void forget_corpus_generation(const std::string &path) {
+  arm_corpus_flush();
+  retire_generation(canonical_path(path));
+}
+
+void note_corpus_append(const std::string &path, const std::string &frame_text,
+                        const CorpusDiskFrames &disk_frames) {
   arm_corpus_flush();
   if (frame_text.find_first_not_of(" \t\r\n") == std::string::npos) {
     return;
@@ -426,16 +607,26 @@ void note_corpus_append(const std::string &path,
     return;
   }
   std::vector<Batch> ready;
+  bool known = false;
   {
     std::lock_guard<std::mutex> guard(batch_mu());
-    Batch &slot = batches()[resolved];
-    slot.canonical = resolved;
-    slot.db = *corpus;
-    slot.frames.push_back(frame_text);
-    if (slot.frames.size() >= kCorpusGroup) {
-      ready.push_back(std::move(slot));
-      batches().erase(resolved);
+    const auto generation = generations().find(resolved);
+    known = generation != generations().end();
+    if (known) {
+      Batch &slot = batches()[resolved];
+      slot.canonical = resolved;
+      slot.db = *corpus;
+      slot.tid = generation->second;
+      slot.frames.push_back(frame_text);
+      if (slot.frames.size() >= kCorpusGroup) {
+        ready.push_back(std::move(slot));
+        batches().erase(resolved);
+      }
     }
+  }
+  if (!known) {
+    resume_generation(resolved, *corpus, disk_frames);
+    return;
   }
   flush_ready(std::move(ready));
 }
@@ -463,6 +654,43 @@ std::size_t corpus_buffered_frames(const std::string &path) {
     return 0;
   }
   return found->second.frames.size();
+}
+
+std::vector<std::string>
+corpus_generation_frame_texts(const std::string &path) {
+  flush_corpus_appends();
+  const std::string resolved = canonical_path(path);
+  std::uint64_t tid = 0;
+  {
+    std::lock_guard<std::mutex> guard(batch_mu());
+    const auto found = generations().find(resolved);
+    if (found == generations().end()) {
+      return {};
+    }
+    tid = found->second;
+  }
+  const auto corpus = corpus_dir(resolved);
+  if (!corpus) {
+    return {};
+  }
+  const std::size_t id = corpus_handle(*corpus);
+  if (id == static_cast<std::size_t>(-1)) {
+    return {};
+  }
+  std::vector<std::string> texts;
+  constexpr std::size_t kMaxFrameBytes = std::size_t{1} << 26;
+  for (std::uint32_t idx = 0; has_frame(id, tid, idx); ++idx) {
+    std::optional<std::string> text;
+    for (std::size_t capacity = std::size_t{1} << 16;
+         !text && capacity <= kMaxFrameBytes; capacity *= 4) {
+      text = stored_frame_text(id, tid, idx, capacity);
+    }
+    if (!text) {
+      break;
+    }
+    texts.push_back(std::move(*text));
+  }
+  return texts;
 }
 
 bool corpus_extend_ok() {

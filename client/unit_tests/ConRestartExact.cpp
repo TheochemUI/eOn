@@ -147,11 +147,57 @@ void write_run(Matter &m, int steps, bool resume) {
   }
 }
 
+void place_cu(Matter &m, double x) {
+  m.resize(1);
+  m.setPeriodic(false);
+  m.setCell(Matrix3d::Identity() * 10.0);
+  m.setAtomicNr(0, 29);
+  m.setMass(0, 63.546);
+  m.setAtomIndex(0, 1);
+  m.setFixed(0, false);
+  m.setPosition(0, 0, x);
+  m.setPosition(0, 1, 2.0);
+  m.setPosition(0, 2, 3.0);
+}
+
+/// A job directory, so the mirror opens readcon.db inside it. Each test
+/// takes its own name: the mirror keeps a corpus open for the process.
+fs::path corpus_job(const char *name) {
+  const auto dir = fs::temp_directory_path() / name;
+  std::error_code ec;
+  fs::remove_all(dir, ec);
+  fs::create_directories(dir);
+  std::ofstream(dir / "config.ini") << "[Main]\n";
+  return dir;
+}
+
+std::vector<double> disk_xs(const fs::path &path) {
+  std::vector<double> xs;
+  for (const auto &frame : readcon::read_all_frames(path)) {
+    xs.push_back(frame.atoms().at(0).x);
+  }
+  return xs;
+}
+
+std::vector<double> text_xs(const std::vector<std::string> &texts,
+                            const fs::path &scratch) {
+  std::vector<double> xs;
+  for (const auto &text : texts) {
+    std::ofstream(scratch, std::ios::binary | std::ios::trunc) << text;
+    xs.push_back(readcon::read_first_frame(scratch).atoms().at(0).x);
+  }
+  return xs;
+}
+
 } // namespace
 
-TEST_CASE("corpus path id is FNV-1a of the path only", "[con][corpus]") {
-  REQUIRE(eonc::io::corpus_path_id("/var/eon/restart_exact.con") ==
-          14164577628502097180ull);
+TEST_CASE("corpus generation 0 is the blob id and later ones add the number",
+          "[con][corpus]") {
+  REQUIRE(eonc::io::corpus_generation_id("/var/eon/restart_exact.con",
+                                         "frame\n") == 10713101950971778497ull);
+  REQUIRE(eonc::io::corpus_generation_id("/var/eon/restart_exact.con",
+                                         "frame\n",
+                                         1) == 16863591607129263014ull);
 }
 
 TEST_CASE("corpus blob id is FNV-1a of the path, a NUL and the text",
@@ -161,26 +207,95 @@ TEST_CASE("corpus blob id is FNV-1a of the path, a NUL and the text",
 }
 
 TEST_CASE("appended corpus frames flush in groups of 64", "[con][corpus]") {
-  const auto dir =
-      fs::temp_directory_path() / "eon-corpus-buffer-restart-exact";
-  fs::remove_all(dir);
-  fs::create_directories(dir);
-  // Only a job directory gets a corpus.
-  std::ofstream(dir / "config.ini") << "[Main]\n";
+  if (!eonc::io::readcon_db_mirror_ok()) {
+    SKIP("libreadcon_db is not loaded");
+  }
+  const auto dir = corpus_job("eon-corpus-buffer-restart-exact");
   const auto path = (dir / "movie.con").string();
+  MatterHolder hold;
+  place_cu(*hold.matter, 1.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, false)));
   eonc::io::flush_corpus_appends();
   const std::string frame = "frame\n";
+  const auto no_disk = [] { return std::vector<std::string>{}; };
   for (int i = 0; i < 63; ++i) {
-    eonc::io::note_corpus_append(path, frame);
+    eonc::io::note_corpus_append(path, frame, no_disk);
   }
   REQUIRE(eonc::io::corpus_buffered_frames(path) == 63);
-  eonc::io::note_corpus_append(path, frame);
+  eonc::io::note_corpus_append(path, frame, no_disk);
   REQUIRE(eonc::io::corpus_buffered_frames(path) == 0);
-  eonc::io::note_corpus_append(path, frame);
+  eonc::io::note_corpus_append(path, frame, no_disk);
   REQUIRE(eonc::io::corpus_buffered_frames(path) == 1);
   eonc::io::flush_corpus_appends();
   REQUIRE(eonc::io::corpus_buffered_frames(path) == 0);
-  fs::remove_all(dir);
+  std::error_code ec;
+  fs::remove_all(dir, ec);
+}
+
+TEST_CASE("the corpus generation holds the initial frame and the appends",
+          "[con][corpus]") {
+  if (!eonc::io::corpus_extend_ok()) {
+    SKIP("libreadcon_db cannot extend a trajectory");
+  }
+  const auto dir = corpus_job("eon-corpus-generation-initial");
+  const auto path = (dir / "movie.con").string();
+  MatterHolder hold;
+  place_cu(*hold.matter, 1.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, false)));
+  place_cu(*hold.matter, 2.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
+  const std::vector<double> expect{1.0, 2.0};
+  REQUIRE(disk_xs(path) == expect);
+  REQUIRE(text_xs(eonc::io::corpus_generation_frame_texts(path),
+                  dir / "scratch.con") == expect);
+  std::error_code ec;
+  fs::remove_all(dir, ec);
+}
+
+TEST_CASE("an overwrite with the same first frame starts a corpus generation",
+          "[con][corpus]") {
+  if (!eonc::io::corpus_extend_ok()) {
+    SKIP("libreadcon_db cannot extend a trajectory");
+  }
+  const auto dir = corpus_job("eon-corpus-generation-overwrite");
+  const auto path = (dir / "movie.con").string();
+  MatterHolder hold;
+  place_cu(*hold.matter, 1.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, false)));
+  place_cu(*hold.matter, 2.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
+  place_cu(*hold.matter, 1.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, false)));
+  place_cu(*hold.matter, 3.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
+  const std::vector<double> expect{1.0, 3.0};
+  REQUIRE(disk_xs(path) == expect);
+  REQUIRE(text_xs(eonc::io::corpus_generation_frame_texts(path),
+                  dir / "scratch.con") == expect);
+  std::error_code ec;
+  fs::remove_all(dir, ec);
+}
+
+TEST_CASE("an append without a held generation extends the one on disk",
+          "[con][corpus]") {
+  if (!eonc::io::corpus_extend_ok()) {
+    SKIP("libreadcon_db cannot extend a trajectory");
+  }
+  const auto dir = corpus_job("eon-corpus-generation-resume");
+  const auto path = (dir / "movie.con").string();
+  MatterHolder hold;
+  place_cu(*hold.matter, 1.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, false)));
+  place_cu(*hold.matter, 2.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
+  eonc::io::forget_corpus_generation(path);
+  place_cu(*hold.matter, 3.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
+  const std::vector<double> expect{1.0, 2.0, 3.0};
+  REQUIRE(text_xs(eonc::io::corpus_generation_frame_texts(path),
+                  dir / "scratch.con") == expect);
+  std::error_code ec;
+  fs::remove_all(dir, ec);
 }
 
 TEST_CASE("matter2con matches the restart golden", "[con][restart]") {
