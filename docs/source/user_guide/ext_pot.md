@@ -152,7 +152,7 @@ and executable lookup.
 
 ## Run CPMD through eOn
 
-Use the runnable example in `examples/ext_pot_cpmd` on the **main** branch.
+Use the runnable example in `examples/ext_pot_cpmd` on the **develop** branch.
 It evaluates a geometry with your existing CPMD executable and
 pseudopotentials. Pixi supplies eOn, Python and uv; no cpmdc library or eOn
 source compilation is needed for this external route.
@@ -179,7 +179,7 @@ example's environment:
 ```bash
 curl -fsSL https://pixi.sh/install.sh | sh
 export PATH="$HOME/.pixi/bin:$PATH"
-git clone --branch main https://github.com/TheochemUI/eOn.git
+git clone --branch develop https://github.com/TheochemUI/eOn.git
 cd eOn/examples/ext_pot_cpmd
 pixi install
 pixi run eonclient --version
