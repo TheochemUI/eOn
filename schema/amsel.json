@@ -61,6 +61,29 @@
       "default": false,
       "description": "Hold the ``discover_decide`` exit until the state meets ``[AKMC] confidence``.\n\nOff, an exit is taken as soon as one process leaves the basin, whatever\nelse the searches would have found.",
       "type": "boolean"
+    },
+    "displacement": {
+      "default": "eon",
+      "description": "Source of the saddle-search starts of an AKMC state.\n\n``eon`` uses the ``[Saddle Search]`` displacement weights.\n``direction_cover`` takes the atom and the direction of each start from\n``amsel.plan_generic_directions``.",
+      "enum": [
+        "eon",
+        "direction_cover"
+      ],
+      "type": "string"
+    },
+    "active_atoms": {
+      "default": "decaf_clustering",
+      "description": "Rule of ``amsel.select_active_atoms`` for ``direction_cover``.",
+      "enum": [
+        "decaf_clustering",
+        "median_outlier"
+      ],
+      "type": "string"
+    },
+    "direction_seed": {
+      "default": 0,
+      "description": "Seed of the direction plan. The state number is added to it.",
+      "type": "integer"
     }
   }
 }

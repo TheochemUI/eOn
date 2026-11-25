@@ -480,7 +480,10 @@
         "on_error",
         "state_confidence",
         "reverse_barrier_tolerance",
-        "discover_wait_for_confidence"
+        "discover_wait_for_confidence",
+        "displacement",
+        "active_atoms",
+        "direction_seed"
       ]
     },
     "Coarse Graining": {

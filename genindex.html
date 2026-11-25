@@ -123,6 +123,8 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="apidocs/eon/eon.locking.html#eon.locking.LockFile.acquirelock">acquirelock() (eon.locking.LockFile method)</a>
 </li>
+      <li><a href="user_guide/coarse_graining.html#eon.schema.AmselConfig.active_atoms">active_atoms (eon.schema.AmselConfig attribute)</a>
+</li>
       <li><a href="user_guide/recycling.html#eon.schema.RecyclingConfig.active_region">active_region (eon.schema.RecyclingConfig attribute)</a>
 </li>
       <li><a href="apidocs/eon/eon.movie.html#eon.movie.Graph.add_edge">add_edge() (eon.movie.Graph method)</a>
@@ -178,6 +180,8 @@ data-aria-dark="Switch to auto color mode">
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/eon/eon.amsel_superbasin_gate.html#eon.amsel_superbasin_gate.AmselExit">AmselExit (class in eon.amsel_superbasin_gate)</a>
+</li>
+      <li><a href="apidocs/eon/eon.amsel_search.html#eon.amsel_search.AmselSearch">AmselSearch (class in eon.amsel_search)</a>
 </li>
       <li><a href="apidocs/eon/eon.amsel_superbasin_gate.html#eon.amsel_superbasin_gate.AmselSuperbasinReject">AmselSuperbasinReject</a>
 </li>
@@ -577,6 +581,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="user_guide/dimer.html#eon.schema.DimerConfig.dimer_torque_min">dimer_torque_min (eon.schema.DimerConfig attribute)</a>
 </li>
+      <li><a href="user_guide/coarse_graining.html#eon.schema.AmselConfig.direction_seed">direction_seed (eon.schema.AmselConfig attribute)</a>
+</li>
       <li><a href="apidocs/eon/eon.concorpus.html#eon.concorpus.directories_with_con">directories_with_con() (in module eon.concorpus)</a>
 </li>
       <li><a href="user_guide/coarse_graining.html#eon.schema.AmselConfig.discover_decide">discover_decide (eon.schema.AmselConfig attribute)</a>
@@ -633,8 +639,12 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="apidocs/eon/eon.displace.html#eon.displace.DisplaceError">DisplaceError</a>
 </li>
-      <li><a href="user_guide/basin_hopping.html#eon.schema.BasinHoppingConfig.displacement">displacement (eon.schema.BasinHoppingConfig attribute)</a>
+      <li><a href="user_guide/coarse_graining.html#eon.schema.AmselConfig.displacement">displacement (eon.schema.AmselConfig attribute)</a>
+
+      <ul>
+        <li><a href="user_guide/basin_hopping.html#eon.schema.BasinHoppingConfig.displacement">(eon.schema.BasinHoppingConfig attribute)</a>
 </li>
+      </ul></li>
       <li><a href="user_guide/basin_hopping.html#eon.schema.BasinHoppingConfig.displacement_algorithm">displacement_algorithm (eon.schema.BasinHoppingConfig attribute)</a>
 </li>
       <li><a href="user_guide/basin_hopping.html#eon.schema.BasinHoppingConfig.displacement_distribution">displacement_distribution (eon.schema.BasinHoppingConfig attribute)</a>
@@ -782,6 +792,13 @@ data-aria-dark="Switch to auto color mode">
 
       <ul>
         <li><a href="apidocs/eon/eon.amsel_confidence.html#module-eon.amsel_confidence">module</a>
+</li>
+      </ul></li>
+      <li>
+    eon.amsel_search
+
+      <ul>
+        <li><a href="apidocs/eon/eon.amsel_search.html#module-eon.amsel_search">module</a>
 </li>
       </ul></li>
       <li>
@@ -1682,10 +1699,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="apidocs/eon/eon.fileio.html#eon.fileio.load_mode">load_mode() (in module eon.fileio)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/eon/eon.contracts.load_outcome.html#eon.contracts.load_outcome.load_outcome">load_outcome() (in module eon.contracts.load_outcome)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/eon/eon.amsel_superbasin_gate.html#eon.amsel_superbasin_gate.load_persisted_split">load_persisted_split() (in module eon.amsel_superbasin_gate)</a>
 </li>
       <li><a href="apidocs/eon/eon.fileio.html#eon.fileio.load_potfiles">load_potfiles() (in module eon.fileio)</a>
@@ -1728,6 +1745,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="apidocs/eon/eon.akmcstate.html#eon.akmcstate.logger">(in module eon.akmcstate)</a>
 </li>
         <li><a href="apidocs/eon/eon.akmcstatelist.html#eon.akmcstatelist.logger">(in module eon.akmcstatelist)</a>
+</li>
+        <li><a href="apidocs/eon/eon.amsel_search.html#eon.amsel_search.logger">(in module eon.amsel_search)</a>
 </li>
         <li><a href="apidocs/eon/eon.amsel_superbasin_gate.html#eon.amsel_superbasin_gate.logger">(in module eon.amsel_superbasin_gate)</a>
 </li>
@@ -1798,9 +1817,11 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="apidocs/eon/eon.communicator.html#eon.communicator.Communicator.make_bundles">make_bundles() (eon.communicator.Communicator method)</a>
 </li>
-      <li><a href="apidocs/eon/eon.displace.html#eon.displace.Displace.make_displacement">make_displacement() (eon.displace.Displace method)</a>
+      <li><a href="apidocs/eon/eon.amsel_search.html#eon.amsel_search.AmselSearch.make_displacement">make_displacement() (eon.amsel_search.AmselSearch method)</a>
 
       <ul>
+        <li><a href="apidocs/eon/eon.displace.html#eon.displace.Displace.make_displacement">(eon.displace.Displace method)</a>
+</li>
         <li><a href="apidocs/eon/eon.displace.html#eon.displace.DisplacementManager.make_displacement">(eon.displace.DisplacementManager method)</a>
 </li>
         <li><a href="apidocs/eon/eon.displace.html#eon.displace.Leastcoordinated.make_displacement">(eon.displace.Leastcoordinated method)</a>
@@ -1981,6 +2002,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="apidocs/eon/eon.akmcstatelist.html#module-eon.akmcstatelist">eon.akmcstatelist</a>
 </li>
         <li><a href="apidocs/eon/eon.amsel_confidence.html#module-eon.amsel_confidence">eon.amsel_confidence</a>
+</li>
+        <li><a href="apidocs/eon/eon.amsel_search.html#module-eon.amsel_search">eon.amsel_search</a>
 </li>
         <li><a href="apidocs/eon/eon.amsel_superbasin_gate.html#module-eon.amsel_superbasin_gate">eon.amsel_superbasin_gate</a>
 </li>

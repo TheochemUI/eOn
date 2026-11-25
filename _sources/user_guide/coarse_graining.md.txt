@@ -191,3 +191,20 @@ With `discover_decide` on, an amsel exit is taken as soon as one process leaves
 the basin, even when the state is not confident. Set
 `discover_wait_for_confidence = true` to search until `[AKMC] confidence` is met
 and take the exit from that table.
+
+## amsel search starts
+
+`[amsel] displacement = direction_cover` takes every saddle-search start of an
+AKMC state from `amsel`: `active_atoms` selects the atoms and the direction
+cover orders the directions on them. Recycling and the kinetic database still
+come first. The `[Saddle Search]` displacement weights are then not used, and
+`displace_magnitude` is the length of the start along the direction. A state
+with no free active atom raises an error.
+
+```{code-block} ini
+[amsel]
+displacement = direction_cover
+active_atoms = decaf_clustering
+```
+
+`amsel` has to be built with the `direction-cover` feature.
