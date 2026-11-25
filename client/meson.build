@@ -542,7 +542,8 @@ _deps += nlohmann_json_dep
 # --force-fallback-for=hwy and --force-fallback-for=highway select that
 # wrap. dependency('libhwy') does not: pkg-config can find libhwy and
 # the wrap is never configured. A found hwy whose prefix is /usr is
-# rejected. cmake.subproject imports hwy_list_targets. Meson
+# rejected; the CMake lookup ignores /usr and / (/lib links to /usr/lib),
+# because its result has no prefix to check. cmake.subproject imports hwy_list_targets. Meson
 # PGICompiler (nvc++) has no get_pie_args, so that exe dies
 # ninja-write. The cmake subproject's .a archives are not readable by
 # MSVC link.exe, so Windows does not fall back to the wrap.
@@ -551,7 +552,12 @@ _hwy_wrap_ok = (
     host_machine.system() != 'windows'
     and _cxx_id not in ['nvidia_hpc', 'pgi']
 )
-hwy_dep = dependency('hwy', allow_fallback: _hwy_wrap_ok, required: false)
+hwy_dep = dependency(
+    'hwy',
+    allow_fallback: _hwy_wrap_ok,
+    required: false,
+    cmake_args: ['-DCMAKE_IGNORE_PREFIX_PATH=/usr;/'],
+)
 _hwy_prefix = ''
 _hwy_inc = ''
 if hwy_dep.found()
