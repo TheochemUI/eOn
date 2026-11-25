@@ -417,6 +417,46 @@ TEST_CASE("a changed middle frame does not extend the corpus generation",
   fs::remove_all(dir, ec);
 }
 
+TEST_CASE("a compressed con read does not create a corpus", "[con][corpus]") {
+  if (!eonc::io::readcon_db_mirror_ok()) {
+    SKIP("libreadcon_db is not loaded");
+  }
+  const auto dir = corpus_job("eon-corpus-compressed-read");
+  MatterHolder hold;
+  place_cu(*hold.matter, 1.0);
+  std::vector<std::string> names{"movie.con.gz"};
+#if defined(READCON_CORE_HAS_ZSTD)
+  names.emplace_back("movie.con.zst");
+#endif
+  for (const auto &name : names) {
+    const auto file = (dir / name).string();
+    REQUIRE(eonc::io::io_ok(hold.matter->matter2con(file, false)));
+    REQUIRE_FALSE(fs::exists(dir / "readcon.db"));
+    MatterHolder back;
+    back.matter->setPeriodic(false);
+    REQUIRE(eonc::io::io_ok(back.matter->con2matter(file)));
+    REQUIRE(back.matter->getPositions()(0, 0) == 1.0);
+    REQUIRE_FALSE(fs::exists(dir / "readcon.db"));
+  }
+#if !defined(READCON_CORE_HAS_ZSTD)
+  // This build has no zstd writer. The mirror still has to ignore the
+  // suffix, so ordinary con text named .con.zst must not open readcon.db.
+  std::vector<readcon::ConFrame> one;
+  one.push_back(eonc::io::matterToConFrame(*hold.matter, nullptr));
+  const auto zst = dir / "movie.con.zst";
+  {
+    std::ofstream out(zst, std::ios::binary | std::ios::trunc);
+    REQUIRE(static_cast<bool>(out));
+    const auto text = readcon::write_frames_to_string(one);
+    out.write(text.data(), static_cast<std::streamsize>(text.size()));
+  }
+  eonc::io::mirror_con_corpus(zst.string());
+  REQUIRE_FALSE(fs::exists(dir / "readcon.db"));
+#endif
+  std::error_code ec;
+  fs::remove_all(dir, ec);
+}
+
 TEST_CASE("matter2con matches the restart golden", "[con][restart]") {
   MatterHolder hold;
   fill_restart_matter(*hold.matter, false);

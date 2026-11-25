@@ -14,6 +14,7 @@
 #include "eon/EonLogger.h"
 
 #include <atomic>
+#include <cctype>
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
@@ -517,6 +518,15 @@ void arm_corpus_flush() {
   static std::once_flag once;
   std::call_once(once, [] { std::atexit(flush_corpus_appends); });
 }
+
+bool compressed_con_path(const std::filesystem::path &path) {
+  std::string name = path.filename().string();
+  for (char &ch : name) {
+    ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+  }
+  return name.ends_with(".gz") || name.ends_with(".zst");
+}
+
 } // namespace
 
 std::uint64_t corpus_blob_id(std::string_view canonical_path,
@@ -547,6 +557,9 @@ std::uint64_t corpus_generation_id(std::string_view canonical_path,
 
 void mirror_con_corpus(const std::string &path) {
   arm_corpus_flush();
+  if (compressed_con_path(path)) {
+    return;
+  }
   namespace fs = std::filesystem;
   std::error_code ec;
   if (!fs::is_regular_file(path, ec) || ec) {
