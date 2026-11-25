@@ -48,8 +48,8 @@ void forget_corpus_generation(const std::string &path);
 using CorpusDiskFrames = std::function<std::vector<std::string>()>;
 
 /// Copy a con file into the run readcon-db corpus when libreadcon_db loads.
-/// Reads and multi-frame snapshots insert immediately. Failure to load the
-/// library or to insert the blob does not change IoStatus.
+/// Reads and multi-frame snapshots insert immediately.
+/// Failure to load the library or to insert the blob does not change IoStatus.
 void mirror_con_corpus(const std::string &path);
 
 /// True when the loaded rkrdb_open belongs to the linked readcon-db.
