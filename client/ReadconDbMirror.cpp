@@ -451,7 +451,8 @@ std::optional<std::string> whole_frame_text(std::size_t id, std::uint64_t tid,
 
 constexpr int kStoredDecimals = 6;
 
-std::vector<std::vector<std::string>> six_decimal_tokens(std::string_view text) {
+std::vector<std::vector<std::string>>
+six_decimal_tokens(std::string_view text) {
   std::vector<std::vector<std::string>> lines;
   std::size_t start = 0;
   while (start <= text.size()) {
@@ -485,7 +486,8 @@ bool same_frame(const std::optional<std::string> &stored,
   if (!stored) {
     return false;
   }
-  return *stored == disk || six_decimal_tokens(*stored) == six_decimal_tokens(disk);
+  return *stored == disk ||
+         six_decimal_tokens(*stored) == six_decimal_tokens(disk);
 }
 
 bool stored_prefix_matches(std::size_t id, std::uint64_t tid,
