@@ -454,8 +454,15 @@ def stored_frame_text(path) -> str | None:
         return None
 
 
+def _path_is_compressed_con(path) -> bool:
+    name = Path(path).name.lower()
+    return name.endswith(".gz") or name.endswith(".zst")
+
+
 def mirror_con_path(path) -> None:
-    """Insert the con file's current bytes."""
+    """Insert the con file's current bytes. A .gz or .zst path is skipped."""
+    if _path_is_compressed_con(path):
+        return
     con_path = Path(path)
     try:
         text = con_path.read_text()

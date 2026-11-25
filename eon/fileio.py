@@ -20,6 +20,7 @@ import shutil
 import stat
 import tempfile
 
+from eon.concorpus import _path_is_compressed_con
 from eon.structure import Structure
 
 logger = logging.getLogger('io')
@@ -411,11 +412,6 @@ def _atoms_to_frame(p):
     if not isinstance(p, Structure):
         p = _as_structure(p)
     return p.to_conframe()
-
-
-def _path_is_compressed_con(path):
-    name = Path(path).name.lower()
-    return name.endswith(".gz") or name.endswith(".zst")
 
 
 def save_known_saddles(fileout, saddles, reactant):

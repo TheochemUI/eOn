@@ -122,6 +122,32 @@ def test_a_compressed_append_stays_out_of_the_corpus(tmp_path: Path):
     assert not (tmp_path / "readcon.db").exists()
 
 
+@pytest.mark.parametrize("suffix", [".con.gz", ".con.zst"])
+@pytest.mark.parametrize("latin1", [False, True], ids=["utf8", "latin1"])
+def test_loading_a_compressed_con_creates_no_corpus(
+    tmp_path: Path, monkeypatch, suffix: str, latin1: bool
+):
+    (tmp_path / "config.ini").write_text("[Main]\n")
+    dest = tmp_path / f"movie{suffix}"
+    try:
+        readcon.write_con(
+            str(dest), [_cu_atom(1.0).to_conframe(), _cu_atom(2.0).to_conframe()]
+        )
+    except OSError as exc:
+        pytest.skip(str(exc))
+    assert dest.read_bytes()[:2] != b"\n{"
+    if latin1:
+        # A single-byte locale decodes any compressed bytes without error.
+        monkeypatch.setattr(
+            Path,
+            "read_text",
+            lambda self, *args, **kwargs: self.read_bytes().decode("latin-1"),
+        )
+    assert io.loadcon(str(dest)).r[0][0] == 1.0
+    assert [s.r[0][0] for s in io.loadcons(str(dest))] == [1.0, 2.0]
+    assert not (tmp_path / "readcon.db").exists()
+
+
 def _xs(texts: list[str]) -> list[float]:
     return [readcon.read_con_string(text)[0].atoms[0].x for text in texts]
 
