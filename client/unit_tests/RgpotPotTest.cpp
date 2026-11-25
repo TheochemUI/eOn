@@ -503,11 +503,11 @@ TEST_CASE("RgpotPot eam resolves a relative table_path against the "
 
   const fs::path cwd = fs::current_path();
   fs::current_path(root / "elsewhere");
-  constexpr int n = 2;
+  constexpr int n = 3;
   AtomMatrix pos(n, 3);
-  pos << 0.0, 0.0, 0.0, 1.5, 0.0, 0.0;
+  pos << 0.0, 0.0, 0.0, 1.5, 0.0, 0.0, 0.4, 1.3, 0.2;
   Eigen::Matrix3d cell = Eigen::Matrix3d::Identity() * 20.0;
-  const int nrs[n] = {18, 18};
+  const int nrs[n] = {18, 18, 18};
   AtomMatrix expected;
   const double expectedEnergy = eamReference(pos, expected);
   double energy = 0.0;

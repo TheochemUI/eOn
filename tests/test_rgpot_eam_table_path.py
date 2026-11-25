@@ -182,7 +182,7 @@ def test_rgpot_eam_relative_table_path_follows_the_config_file(
 
     params = pyec.Parameters()
     params.load(str(job / "config.ini"))
-    positions = POSITIONS[:2]
+    positions = POSITIONS
     energy = float(_matter(params, positions).potential_energy)
     assert energy == pytest.approx(_reference(positions)[0], rel=1e-4)
 
