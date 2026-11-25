@@ -136,11 +136,14 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
   impl_ = std::make_unique<RGPotEngine>(opt);
   backend_ = impl_->backend();
   driver_ = impl_->worldRank() == 0;
-  std::cout
-      << "RgpotPot: in-process rgpot backend=" << backend_
-      << " (dlopen: "
-         "libnwchemc/libcpmdc/librgpot_metatomic_engine/librgpot_xtb_engine)"
-      << std::endl;
+  std::cout << "RgpotPot: in-process rgpot backend=" << backend_;
+  if (backend_ == "eam")
+    std::cout << " (table: " << opt.table_path << ")";
+  else
+    std::cout << " (dlopen: "
+                 "libnwchemc/libcpmdc/librgpot_metatomic_engine/"
+                 "librgpot_xtb_engine)";
+  std::cout << std::endl;
   // Finalize is registered first. The grouped-exit handler is next, and
   // the stop handler is last, so exit runs stop, then Finalize, then _Exit.
   impl_->finalizeMpiAtExit();
