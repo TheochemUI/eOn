@@ -17,14 +17,14 @@ test -x "$client" || { echo 'eonclient missing; run pixi install or set EON_CLIE
 : "${CPMD_PP:?Set CPMD_PP species mapping in .env}"
 : "${CPMD_MPI_LAUNCH:?Set CPMD_MPI_LAUNCH in .env}"
 test -x "$CPMD_BIN" || { echo "CPMD not executable: $CPMD_BIN" >&2; exit 2; }
-test -f "$input" || { echo "Input missing: $input" >&2; exit 2; }
 mkdir -p "$here/runs"
 work=$(mktemp -d "$here/runs/point-$(date +%Y%m%dT%H%M%S)-XXXXXX")
-if [[ ${input,,} == *.xyz ]]; then
-    uv run --script "$here/xyz_to_con.py" "$input" "$work/pos.con"
-else
-    uv run --script "$here/con_to_input.py" "$input" "$work/pos.con"
-fi
+# macOS ships Bash 3.2, which has no ${var,,}. Keep this block POSIX sh.
+case $(printf '%s\n' "$input" | tr '[:upper:]' '[:lower:]') in
+    *.xyz) converter=xyz_to_con.py ;;
+    *) converter=con_to_input.py ;;
+esac
+uv run --script "$here/$converter" "$input" "$work/pos.con"
 cat > "$work/config.ini" <<CONFIG
 [Main]
 job = point
