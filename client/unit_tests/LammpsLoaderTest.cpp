@@ -130,6 +130,50 @@ int lammpsErrorMessageStub(void *, char *text, int size) {
   return 1;
 }
 
+bool lammpsSawOmp = false;
+char *lammpsCommandOmp(void *, const char *cmd) {
+  lammpsSawOmp = std::strncmp(cmd, "package omp", 11) == 0;
+  return nullptr;
+}
+int lammpsHasOmpError(void *) { return lammpsSawOmp ? 1 : 0; }
+
+TEST_CASE("one LAMMPS thread does not ask for the OPENMP package",
+          "[lammps][worker][threads]") {
+  namespace fs = std::filesystem;
+  const fs::path previous = fs::current_path();
+  const fs::path dir = fs::temp_directory_path() / "eon-lmp-threads";
+  fs::create_directories(dir);
+  fs::current_path(dir);
+  {
+    std::ofstream input("in.lammps");
+    input << "pair_style none\n";
+  }
+  const double box[9] = {10.0, 0.0, 0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 10.0};
+  const double positions[6] = {0.0, 0.0, 0.0, 1.5, 0.0, 0.0};
+  const int atomic[2] = {1, 1};
+  for (const int threads : {0, 1}) {
+    MockLammpsLoader mock;
+    mock.open_no_mpi = lammpsOpenStub;
+    mock.close = lammpsCloseStub;
+    mock.command = lammpsCommandOmp;
+    mock.scatter_atoms = lammpsScatterStub;
+    mock.file = lammpsFileStub;
+    mock.extract_variable = lammpsExtractValues;
+    mock.has_error = lammpsHasOmpError;
+    eonc::Parameters params;
+    eonc::ParametersLoadAccess::potential_options(params).LAMMPSThreads =
+        threads;
+    double forces[6] = {};
+    double energy = 0.0;
+    LAMMPSPot pot(params, mock);
+    pot.force(2, positions, atomic, forces, &energy, nullptr, box);
+    REQUIRE(energy < 1.0e5);
+  }
+  fs::current_path(previous);
+  std::error_code ec;
+  fs::remove_all(dir, ec);
+}
+
 TEST_CASE("a LAMMPS error rejects the geometry instead of returning zero",
           "[lammps][worker][error]") {
   namespace fs = std::filesystem;

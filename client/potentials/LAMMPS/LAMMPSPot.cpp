@@ -814,7 +814,9 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   // -screen opens with truncation. The next copy starts at the new file.
   lammpsScreenRestart_ = true;
 
-  if (lammpsThr > 0) {
+  // One thread is LAMMPS's default. The command needs the OPENMP package, and a
+  // build without it answers with an error.
+  if (lammpsThr > 1) {
     std::string cmd = std::format("package omp {} force/neigh", lammpsThr);
     lammpsCommand(cmd.c_str());
   }

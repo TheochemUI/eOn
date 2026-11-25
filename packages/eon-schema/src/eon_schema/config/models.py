@@ -608,6 +608,9 @@ class PotentialConfig(BaseModel):
     # TODO(rg): move these around
     lammps_logging: bool = Field(default=False, description="Logging LAMMPS calls.")
     lammps_threads: int = Field(default=0, description="LAMMPS threads.")
+    """
+    More than one needs a LAMMPS with the OPENMP package.
+    """
     ext_pot_path: str = Field(
         default="ext_pot", description="Path for the external potential."
     )
