@@ -13,15 +13,19 @@
 
 #include "eon/EonLogger.h"
 
+#include <atomic>
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <mutex>
 #include <optional>
 #include <sstream>
 #include <string>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
 #ifndef EON_READCON_DB_VERSION
 #define EON_READCON_DB_VERSION ""
@@ -52,8 +56,9 @@ namespace {
 
 constexpr std::uint64_t kFnvOffset = 14695981039346656037ull;
 constexpr std::uint64_t kFnvPrime = 1099511628211ull;
+constexpr std::size_t kCorpusGroup = 64;
 
-std::uint64_t fnv1a(const std::string &bytes) {
+std::uint64_t fnv1a(std::string_view bytes) {
   std::uint64_t h = kFnvOffset;
   for (unsigned char c : bytes) {
     h ^= static_cast<std::uint64_t>(c);
@@ -85,14 +90,33 @@ corpus_dir(const std::filesystem::path &con_path) {
   return std::nullopt;
 }
 
+std::string canonical_path(const std::filesystem::path &con_path) {
+  namespace fs = std::filesystem;
+  std::error_code ec;
+  fs::path canonical = fs::weakly_canonical(con_path, ec);
+  if (ec) {
+    canonical = fs::absolute(con_path, ec);
+    if (ec) {
+      canonical = con_path;
+    }
+  }
+  return canonical.string();
+}
+
 using OpenFn = int (*)(const char *, std::size_t *);
 using AppendFn = int (*)(std::size_t, std::uint64_t, const char *, const char *,
                          std::uint32_t *);
+using ExtendPathFn = int (*)(std::size_t, std::uint64_t, const char *,
+                             std::uint32_t *);
+using ExtendStrFn = int (*)(std::size_t, std::uint64_t, const char *,
+                            const char *, std::uint32_t *);
 
 struct Api {
   LibHandle lib = nullptr;
   OpenFn open = nullptr;
   AppendFn append_str = nullptr;
+  ExtendPathFn extend_path = nullptr;
+  ExtendStrFn extend_str = nullptr;
   bool missing = false;
   bool from_process = false;
   int epoch = -1;
@@ -144,10 +168,23 @@ void clear_api(Api &out) {
   out = Api{};
 }
 
+void clear_symbols(Api &out) {
+  out.open = nullptr;
+  out.append_str = nullptr;
+  out.extend_path = nullptr;
+  out.extend_str = nullptr;
+}
+
+// The extend entry points are optional. Older readcon-db builds lack them
+// and appended frames then skip the corpus.
 bool resolve_symbols(Api &out, LibHandle handle) {
   out.open = reinterpret_cast<OpenFn>(symbol(handle, "rkrdb_open"));
   out.append_str =
       reinterpret_cast<AppendFn>(symbol(handle, "rkrdb_append_trajectory_str"));
+  out.extend_path =
+      reinterpret_cast<ExtendPathFn>(symbol(handle, "rkrdb_extend_trajectory"));
+  out.extend_str = reinterpret_cast<ExtendStrFn>(
+      symbol(handle, "rkrdb_extend_trajectory_str"));
   return out.open != nullptr && out.append_str != nullptr;
 }
 
@@ -176,8 +213,7 @@ Api &api() {
       out.from_process = true;
       return out;
     }
-    out.open = nullptr;
-    out.append_str = nullptr;
+    clear_symbols(out);
     const char *names[] = {"libreadcon_db.so", "libreadcon_db.so.0",
                            "libreadcon_db.dylib"};
 #else
@@ -190,8 +226,7 @@ Api &api() {
       out.from_process = true;
       return out;
     }
-    out.open = nullptr;
-    out.append_str = nullptr;
+    clear_symbols(out);
     const char *names[] = {"readcon_db.dll"};
 #endif
     for (const char *name : names) {
@@ -210,8 +245,7 @@ Api &api() {
   if (!resolve_symbols(out, out.lib)) {
     release_lib(out.lib, false);
     out.lib = nullptr;
-    out.open = nullptr;
-    out.append_str = nullptr;
+    clear_symbols(out);
     out.missing = true;
   }
   return out;
@@ -246,9 +280,101 @@ std::size_t corpus_handle(const std::filesystem::path &dir) {
   return id;
 }
 
+struct Batch {
+  std::string canonical;
+  std::filesystem::path db;
+  std::vector<std::string> frames;
+};
+
+std::atomic<std::uint64_t> scratch_counter{0};
+
+std::mutex &batch_mu() {
+  static std::mutex mu;
+  return mu;
+}
+
+std::unordered_map<std::string, Batch> &batches() {
+  static std::unordered_map<std::string, Batch> map;
+  return map;
+}
+
+void extend_batch(const std::string &canonical, const std::filesystem::path &db,
+                  const std::vector<std::string> &frames) {
+  if (frames.empty()) {
+    return;
+  }
+  Api &fns = api();
+  if (fns.missing ||
+      (fns.extend_str == nullptr && fns.extend_path == nullptr)) {
+    return;
+  }
+  const std::size_t id = corpus_handle(db);
+  if (id == static_cast<std::size_t>(-1)) {
+    return;
+  }
+  std::string text;
+  std::size_t bytes = 0;
+  for (const auto &frame : frames) {
+    bytes += frame.size();
+  }
+  text.reserve(bytes);
+  for (const auto &frame : frames) {
+    text += frame;
+  }
+  const std::uint64_t tid = fnv1a(canonical);
+  std::uint32_t nframes = 0;
+  if (fns.extend_str != nullptr) {
+    fns.extend_str(id, tid, text.c_str(), canonical.c_str(), &nframes);
+    return;
+  }
+  const auto scratch =
+      std::filesystem::temp_directory_path() /
+      std::format("eon-corpus-{}-{}.con", tid,
+                  scratch_counter.fetch_add(1, std::memory_order_relaxed));
+  {
+    std::ofstream out(scratch, std::ios::binary | std::ios::trunc);
+    if (!out) {
+      return;
+    }
+    out.write(text.data(), static_cast<std::streamsize>(text.size()));
+    if (!out) {
+      std::error_code ec;
+      std::filesystem::remove(scratch, ec);
+      return;
+    }
+  }
+  fns.extend_path(id, tid, scratch.string().c_str(), &nframes);
+  std::error_code ec;
+  std::filesystem::remove(scratch, ec);
+}
+
+void flush_ready(std::vector<Batch> ready) {
+  for (const auto &batch : ready) {
+    extend_batch(batch.canonical, batch.db, batch.frames);
+  }
+}
+
+void arm_corpus_flush() {
+  // The exit handler must run while these caches are still alive.
+  // A handler registered before they are constructed runs after they
+  // are destroyed.
+  static_cast<void>(batch_mu());
+  static_cast<void>(batches());
+  static_cast<void>(handles_mu());
+  static_cast<void>(handles());
+  static_cast<void>(api());
+  static std::once_flag once;
+  std::call_once(once, [] { std::atexit(flush_corpus_appends); });
+}
+
 } // namespace
 
+std::uint64_t corpus_path_id(std::string_view canonical_path) {
+  return fnv1a(canonical_path);
+}
+
 void mirror_con_corpus(const std::string &path) {
+  arm_corpus_flush();
   namespace fs = std::filesystem;
   std::error_code ec;
   if (!fs::is_regular_file(path, ec) || ec) {
@@ -264,12 +390,8 @@ void mirror_con_corpus(const std::string &path) {
   if (text.find_first_not_of(" \t\r\n") == std::string::npos) {
     return;
   }
-  fs::path canonical = fs::weakly_canonical(path, ec);
-  if (ec) {
-    canonical = fs::absolute(path);
-  }
-  const std::string resolved = canonical.string();
-  const auto corpus = corpus_dir(canonical);
+  const std::string resolved = canonical_path(path);
+  const auto corpus = corpus_dir(resolved);
   if (!corpus) {
     return;
   }
@@ -277,9 +399,66 @@ void mirror_con_corpus(const std::string &path) {
   if (id == static_cast<std::size_t>(-1)) {
     return;
   }
-  const std::uint64_t tid = fnv1a(resolved + '\0' + text);
+  const std::uint64_t tid = fnv1a(resolved);
   std::uint32_t nframes = 0;
   api().append_str(id, tid, text.c_str(), resolved.c_str(), &nframes);
+}
+
+void note_corpus_append(const std::string &path,
+                        const std::string &frame_text) {
+  arm_corpus_flush();
+  if (frame_text.find_first_not_of(" \t\r\n") == std::string::npos) {
+    return;
+  }
+  const std::string resolved = canonical_path(path);
+  const auto corpus = corpus_dir(resolved);
+  if (!corpus) {
+    return;
+  }
+  std::vector<Batch> ready;
+  {
+    std::lock_guard<std::mutex> guard(batch_mu());
+    Batch &slot = batches()[resolved];
+    slot.canonical = resolved;
+    slot.db = *corpus;
+    slot.frames.push_back(frame_text);
+    if (slot.frames.size() >= kCorpusGroup) {
+      ready.push_back(std::move(slot));
+      batches().erase(resolved);
+    }
+  }
+  flush_ready(std::move(ready));
+}
+
+void flush_corpus_appends() {
+  std::vector<Batch> ready;
+  {
+    std::lock_guard<std::mutex> guard(batch_mu());
+    ready.reserve(batches().size());
+    for (auto &entry : batches()) {
+      if (!entry.second.frames.empty()) {
+        ready.push_back(std::move(entry.second));
+      }
+    }
+    batches().clear();
+  }
+  flush_ready(std::move(ready));
+}
+
+std::size_t corpus_buffered_frames(const std::string &path) {
+  const std::string resolved = canonical_path(path);
+  std::lock_guard<std::mutex> guard(batch_mu());
+  const auto found = batches().find(resolved);
+  if (found == batches().end()) {
+    return 0;
+  }
+  return found->second.frames.size();
+}
+
+bool corpus_extend_ok() {
+  const Api &fns = api();
+  return !fns.missing && fns.open != nullptr &&
+         (fns.extend_str != nullptr || fns.extend_path != nullptr);
 }
 
 bool readcon_db_mirror_ok() {

@@ -2,7 +2,12 @@
 
 from __future__ import annotations
 
+import math
+
 import numpy as np
+
+# Same constant as eonc::helpers::pi. The CON writer divides by this.
+_PI = 3.14159265358979323846
 
 
 def length_angle_to_box(boxlengths, angles) -> np.ndarray:
@@ -29,16 +34,42 @@ def length_angle_to_box(boxlengths, angles) -> np.ndarray:
 
 
 def box_to_length_angle(box) -> tuple[np.ndarray, np.ndarray]:
-    """Inverse of :func:`length_angle_to_box`: lengths and (alpha, beta, gamma)."""
+    """Inverse of :func:`length_angle_to_box`: lengths and (alpha, beta, gamma).
+
+    The cosine is the raw dot product over the product of the lengths,
+    clamped to [-1, 1], then ``libm`` ``acos``. That is the same map the
+    C++ writer uses, so both sides spell the same angle bytes.
+    """
     box = np.asarray(box, dtype=float)
-    lengths = np.zeros(3, dtype=float)
-    lengths[0] = np.linalg.norm(box[0, :])
-    lengths[1] = np.linalg.norm(box[1, :])
-    lengths[2] = np.linalg.norm(box[2, :])
-    angles = np.zeros(3, dtype=float)
+    lengths = np.empty(3, dtype=float)
+
+    def row_norm(i: int) -> float:
+        return math.sqrt(
+            float(box[i, 0]) ** 2 + float(box[i, 1]) ** 2 + float(box[i, 2]) ** 2
+        )
+
+    lengths[0] = row_norm(0)
+    lengths[1] = row_norm(1)
+    lengths[2] = row_norm(2)
+
+    def angle_deg(i: int, j: int) -> float:
+        denom = float(lengths[i]) * float(lengths[j])
+        if abs(denom) < 1e-300:
+            cosine = 0.0
+        else:
+            cosine = (
+                float(box[i, 0]) * float(box[j, 0])
+                + float(box[i, 1]) * float(box[j, 1])
+                + float(box[i, 2]) * float(box[j, 2])
+            ) / denom
+        if cosine > 1.0:
+            cosine = 1.0
+        elif cosine < -1.0:
+            cosine = -1.0
+        return math.acos(cosine) * 180.0 / _PI
+
     # alpha = angle(b, c), beta = angle(a, c), gamma = angle(a, b)
-    angles[0] = np.arccos(np.dot(box[1, :] / lengths[1], box[2, :] / lengths[2]))
-    angles[1] = np.arccos(np.dot(box[0, :] / lengths[0], box[2, :] / lengths[2]))
-    angles[2] = np.arccos(np.dot(box[0, :] / lengths[0], box[1, :] / lengths[1]))
-    angles *= 180.0 / np.pi
+    angles = np.array(
+        [angle_deg(1, 2), angle_deg(0, 2), angle_deg(0, 1)], dtype=float
+    )
     return lengths, angles
