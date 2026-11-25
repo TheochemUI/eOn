@@ -114,15 +114,17 @@ int xtsciBandSurface(void *user, void *request) {
     }
     // Rows carried by this request and the band image of row 0. The
     // session sends the whole band on its first evaluation, the interior
-    // images 1 .. band - 2 afterwards, or one image with
-    // RGSADDLE_REQ_ONE_IMAGE.
+    // images 1 .. band - 2 afterwards, or one image named by its band
+    // index: with RGSADDLE_REQ_ONE_IMAGE n_images stays the band length,
+    // and the min-mode refinement's RGSADDLE_REQ_CLIMBING_IMAGE request
+    // without it carries n_images = 1.
     int64_t rows = 0;
     int64_t first = 0;
-    const bool one_image =
-        (req->flags & (RGSADDLE_REQ_ONE_IMAGE | RGSADDLE_REQ_CLIMBING_IMAGE)) !=
-        0;
-    if (one_image) {
-      if (req->n_images != 1 || req->image < 0 || req->image >= band) {
+    const bool one_image = (req->flags & RGSADDLE_REQ_ONE_IMAGE) != 0;
+    const bool climbing = (req->flags & RGSADDLE_REQ_CLIMBING_IMAGE) != 0;
+    if (one_image || climbing) {
+      const int64_t expected = one_image ? band : 1;
+      if (req->n_images != expected || req->image < 0 || req->image >= band) {
         return RGSADDLE_SHAPE;
       }
       rows = 1;
