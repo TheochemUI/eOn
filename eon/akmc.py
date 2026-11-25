@@ -246,7 +246,12 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
     # discover_decide does not wait on the repeat-count confidence.
     # One exit is taken and the product is left for the outer search.
     # A state that already meets the threshold keeps the multi-step loop.
+    # discover_wait_for_confidence holds that exit back until the state meets
+    # the confidence, so the table it reads is not a first saddle only.
     discover_decide = bool(getattr(config, "amsel_discover_decide", False))
+    wait_for_confidence = bool(
+        getattr(config, "amsel_discover_wait_for_confidence", False)
+    )
     unconfident_exit_taken = False
 
     while steps < config.akmc_max_kmc_steps or config.akmc_max_kmc_steps == 0:
@@ -256,7 +261,7 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
             (not sb and current_state.get_confidence() >= config.akmc_confidence)
             or (sb and sb.get_confidence() >= config.akmc_confidence)
         )
-        if not confident and not discover_decide:
+        if not confident and (wait_for_confidence or not discover_decide):
             break
 
         used_superbasin = False

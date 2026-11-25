@@ -1744,6 +1744,14 @@ class AmselConfig(BaseModel):
         default=0.02,
         description="Energy, in eV, within which a process matches a saddle known from the far side.",
     )
+    discover_wait_for_confidence: bool = Field(
+        default=False,
+        description="Hold the ``discover_decide`` exit until the state meets ``[AKMC] confidence``.",
+    )
+    """
+    Off, an exit is taken as soon as one process leaves the basin, whatever
+    else the searches would have found.
+    """
 
 
 class CoarseGrainingConfig(BaseModel):

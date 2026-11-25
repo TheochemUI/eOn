@@ -2,9 +2,10 @@
 
 import sys
 from pathlib import Path
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 
 import numpy as np
+import pytest
 
 from eon import fileio as io
 from eon.akmc import kmc_step
@@ -100,3 +101,29 @@ def test_similar_rates_compare_the_product_geometry(tmp_path):
         type("S", (), {"get_containing_superbasin": lambda self, state: basin})(),
     )
     assert recycling.sb_state_nums[0][0] == previous.number
+
+
+@pytest.mark.parametrize("wait", [False, True])
+def test_the_amsel_exit_can_wait_for_the_confidence(tmp_path, monkeypatch, wait):
+    cfg, states, state, product, proc, _reactant = _states(tmp_path)
+    cfg.sb_on = False
+    cfg.askmc_on = False
+    cfg.akmc_max_kmc_steps = 1
+    cfg.amsel_discover_decide = True
+    cfg.amsel_discover_wait_for_confidence = wait
+    monkeypatch.setattr(type(state), "get_confidence", lambda self, *a, **k: 0.0)
+    monkeypatch.setattr(
+        "eon.amsel_superbasin_gate.amsel_discover_exit",
+        lambda *a, **k: SimpleNamespace(
+            mean_time=1.0, exit_number=state.number, proc_id=proc, time_is_sample=False
+        ),
+    )
+    current, _previous, _time, steps = kmc_step(
+        state, states, 0.0, states.kT, None, config=cfg
+    )
+    if wait:
+        assert steps == 0
+        assert current.number == state.number
+    else:
+        assert steps == 1
+        assert current.number == product.number

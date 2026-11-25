@@ -429,6 +429,8 @@ class ConfigClass:
         self.amsel_state_confidence = parser.get('amsel', 'state_confidence')
         self.amsel_reverse_barrier_tolerance = parser.getfloat(
             'amsel', 'reverse_barrier_tolerance')
+        self.amsel_discover_wait_for_confidence = parser.getboolean(
+            'amsel', 'discover_wait_for_confidence')
         # Back-compat aliases used by Superbasin.step getattr
         self.sb_amsel_discover_decide = self.amsel_discover_decide
         self.sb_amsel_e_min_init = self.amsel_e_min_init

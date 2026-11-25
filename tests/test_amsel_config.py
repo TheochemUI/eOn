@@ -18,6 +18,7 @@ _AMSEL_KEYS = (
     "on_error",
     "state_confidence",
     "reverse_barrier_tolerance",
+    "discover_wait_for_confidence",
 )
 
 

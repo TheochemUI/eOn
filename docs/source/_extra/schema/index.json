@@ -478,7 +478,8 @@
         "cv_threshold",
         "on_error",
         "state_confidence",
-        "reverse_barrier_tolerance"
+        "reverse_barrier_tolerance",
+        "discover_wait_for_confidence"
       ]
     },
     "Coarse Graining": {
