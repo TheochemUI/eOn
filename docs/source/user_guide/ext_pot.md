@@ -25,6 +25,131 @@ The [ASE](project:ase_pot.md) potentials require additional compile-time flags
 that are **not** enabled in the `conda-forge` build.
 ```
 
+## Start with a complete working example
+
+This example needs Python and the eOn client only. It evaluates a harmonic
+potential, so it needs no electronic-structure executable, model download or
+pseudopotentials. The commands below target Linux, including Ubuntu under WSL.
+Run calculations inside your site's compute allocation, not on its login node.
+
+Install [Pixi](https://pixi.sh), then create a separate workspace:
+
+```bash
+curl -fsSL https://pixi.sh/install.sh | sh
+export PATH="$HOME/.pixi/bin:$PATH"
+mkdir eon-external-demo
+cd eon-external-demo
+pixi init --channel conda-forge
+pixi add eon python
+pixi run eonclient --version
+```
+
+`pixi add` installs the client and Python and records their resolved packages
+in `pixi.lock`. Keep `pixi.toml` and `pixi.lock` together; a recipient can
+recreate the environment with `pixi install --locked`. No compiler or MPI
+installation is needed for this file-interface example.
+
+Save the following executable as `harmonic_extpot.py`:
+
+```python
+#!/usr/bin/env python3
+"""Harmonic energy in eV and its negative derivative in eV/Angstrom."""
+import math
+from pathlib import Path
+
+rows = [line.split() for line in
+        Path("from_eon_to_extpot").read_text().splitlines() if line.strip()]
+if len(rows) < 4 or any(len(row) != 3 for row in rows[:3]):
+    raise ValueError("Expected three box rows followed by at least one atom")
+positions = []
+for row in rows[3:]:
+    if len(row) != 4:
+        raise ValueError("Expected atomic_number x y z")
+    int(row[0])
+    xyz = [float(value) for value in row[1:]]
+    if not all(math.isfinite(value) for value in xyz):
+        raise ValueError("Non-finite coordinate")
+    positions.append(xyz)
+k = 1.0  # eV/Angstrom squared
+energy = 0.5 * k * sum(x*x for xyz in positions for x in xyz)
+forces = [[-k*x for x in xyz] for xyz in positions]
+with Path("from_extpot_to_eon").open("w") as output:
+    output.write(f"{energy:.15g}\n")
+    for force in forces:
+        output.write(" ".join(f"{value:.15g}" for value in force) + "\n")
+```
+
+Create `pos.con`, with one silicon atom at (1, 0, 0) Angstrom in a 20 Angstrom
+cube. The two blank lines between the cell angles and component count are
+part of this structure format:
+
+```text
+One atom harmonic example
+0.0
+20.0 20.0 20.0
+90.0 90.0 90.0
+
+
+1
+1
+28.0855
+Si
+Coordinates of Component 1
+1.0 0.0 0.0 0 0
+```
+
+Make the wrapper executable, create the configuration and evaluate the point:
+
+```bash
+chmod +x harmonic_extpot.py
+cat > config.ini <<EOF
+[Main]
+job = point
+
+[Potential]
+potential = ext_pot
+ext_pot_path = $PWD/harmonic_extpot.py
+EOF
+pixi run eonclient > eon.log 2>&1
+cat results.dat
+```
+
+The `potential_energy` result is **0.5 eV**. The wrapper returns one force,
+**(-1, 0, 0) eV/Angstrom**. This potential is a protocol demonstration:
+its origin is fixed and it does not model periodic interatomic interactions.
+The exact result-file formatting depends on the installed eOn release.
+
+For example, the point check prints these result entries:
+
+```text
+GOOD termination_reason_text
+EXT_POT potential_type
+1 total_force_calls
+5.000000000000e-01 potential_energy
+1.000000000000e+00 Max_Force
+```
+
+To check the wrapper independently, run it from a separate directory
+containing this `from_eon_to_extpot` file:
+
+```text
+20 0 0
+0 20 0
+0 0 20
+14 1 0 0
+```
+
+Its `from_extpot_to_eon` must contain:
+
+```text
+0.5
+-1 -0 -0
+```
+
+Signed zero is equivalent to zero. A successful wrapper-only check tests
+the file protocol; the client run also tests the structure, configuration
+and executable lookup.
+
 ## Run CPMD through eOn
 
 Use the runnable example in `examples/ext_pot_cpmd` on the **main** branch.
