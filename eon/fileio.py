@@ -469,30 +469,30 @@ def savecon(fileout, p, w = 'w'):
     file in the same directory, keeping the suffix so a compressed target
     stays compressed, and os.replace moves it over the destination. A
     writer that raises leaves the previous file.
+
+    A compressed target stays out of the corpus.
     '''
     frame = _atoms_to_frame(p)
     frame_text = readcon.write_con_string([frame])
     if hasattr(fileout, 'write'):
         fileout.write(frame_text)
-    elif w == 'a' and Path(fileout).exists() and Path(fileout).stat().st_size > 0:
-        if _path_is_compressed_con(fileout):
-            existing = list(readcon.read_con(fileout))
-            existing.append(frame)
-            _write_con_replace(fileout, existing)
-        else:
-            readcon.write_con(fileout, [frame], append=True)
+        return
+    compressed = _path_is_compressed_con(fileout)
+    append = w == 'a' and Path(fileout).exists() and Path(fileout).stat().st_size > 0
+    if append and compressed:
+        existing = list(readcon.read_con(fileout))
+        existing.append(frame)
+        _write_con_replace(fileout, existing)
+    elif append:
+        readcon.write_con(fileout, [frame], append=True)
     else:
         _write_con_replace(fileout, [frame])
-    if not hasattr(fileout, 'write'):
-        appended = (
-            w == 'a'
-            and Path(fileout).exists()
-            and Path(fileout).stat().st_size > len(frame_text.encode())
-        )
-        if appended:
-            _note_corpus_append(fileout, frame_text)
-        else:
-            _mirror_con_path(fileout)
+    if compressed:
+        return
+    if append:
+        _note_corpus_append(fileout, frame_text)
+    else:
+        _mirror_con_path(fileout)
 
 
 def load_mode(modefilein):

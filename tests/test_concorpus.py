@@ -95,3 +95,28 @@ def test_a_second_store_of_one_path_returns_the_new_text(tmp_path: Path):
     assert first_key is not None and second_key is not None
     assert second_key != first_key
     assert load_frame_text(corpus_dir(dest), *second_key) == second
+
+
+def test_a_compressed_append_stays_out_of_the_corpus(tmp_path: Path):
+    import numpy as np
+
+    from eon.concorpus import flush_corpus_appends
+    from eon.structure import Structure
+
+    def _scattered(seed: int) -> Structure:
+        structure = Structure(32)
+        structure.names = ["Cu"] * 32
+        structure.mass[:] = 63.546
+        structure.box = np.eye(3) * 10.0
+        structure.r[:] = np.random.default_rng(seed).uniform(0.0, 10.0, (32, 3))
+        return structure
+
+    (tmp_path / "config.ini").write_text("[Main]\n")
+    dest = tmp_path / "movie.con.gz"
+    io.savecon(str(dest), _scattered(0))
+    io.savecon(str(dest), _scattered(1), "a")
+    flush_corpus_appends()
+    frame_text = readcon.write_con_string([_scattered(1).to_conframe()])
+    assert dest.stat().st_size > len(frame_text.encode())
+    assert len(readcon.read_con(str(dest))) == 2
+    assert not (tmp_path / "readcon.db").exists()
