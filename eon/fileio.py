@@ -20,6 +20,7 @@ import shutil
 import stat
 import tempfile
 
+from eon.concorpus import _path_is_compressed_con
 from eon.structure import Structure
 
 logger = logging.getLogger('io')
@@ -308,6 +309,22 @@ def _mirror_con_text(path, text):
     mirror_con_text(path, text)
 
 
+def _note_corpus_append(path, text):
+    try:
+        from eon.concorpus import note_corpus_append
+    except ImportError:
+        return
+    note_corpus_append(path, text)
+
+
+def _start_corpus_generation(path, text):
+    try:
+        from eon.concorpus import start_generation
+    except ImportError:
+        return
+    start_generation(path, text)
+
+
 def loadcons(filename):
     frames = readcon.read_con(filename)
     _mirror_con_path(filename)
@@ -397,11 +414,6 @@ def _atoms_to_frame(p):
     return p.to_conframe()
 
 
-def _path_is_compressed_con(path):
-    name = Path(path).name.lower()
-    return name.endswith(".gz") or name.endswith(".zst")
-
-
 def save_known_saddles(fileout, saddles, reactant):
     '''
     Write the known saddles of a state for a process search client.
@@ -461,25 +473,31 @@ def savecon(fileout, p, w = 'w'):
     file in the same directory, keeping the suffix so a compressed target
     stays compressed, and os.replace moves it over the destination. A
     writer that raises leaves the previous file.
+
+    An overwrite starts a corpus generation and an uncompressed append
+    extends it. A compressed target stays out of the corpus.
     '''
     frame = _atoms_to_frame(p)
     frame_text = readcon.write_con_string([frame])
     if hasattr(fileout, 'write'):
         fileout.write(frame_text)
-    elif w == 'a' and Path(fileout).exists() and Path(fileout).stat().st_size > 0:
-        if _path_is_compressed_con(fileout):
-            existing = list(readcon.read_con(fileout))
-            existing.append(frame)
-            _write_con_replace(fileout, existing)
-        else:
-            readcon.write_con(fileout, [frame], append=True)
+        return
+    compressed = _path_is_compressed_con(fileout)
+    append = w == 'a' and Path(fileout).exists() and Path(fileout).stat().st_size > 0
+    if append and compressed:
+        existing = list(readcon.read_con(fileout))
+        existing.append(frame)
+        _write_con_replace(fileout, existing)
+    elif append:
+        readcon.write_con(fileout, [frame], append=True)
     else:
         _write_con_replace(fileout, [frame])
-    if not hasattr(fileout, 'write'):
-        if w == 'a':
-            _mirror_con_text(fileout, frame_text)
-        else:
-            _mirror_con_path(fileout)
+    if compressed:
+        return
+    if append:
+        _note_corpus_append(fileout, frame_text)
+    else:
+        _start_corpus_generation(fileout, frame_text)
 
 
 def load_mode(modefilein):

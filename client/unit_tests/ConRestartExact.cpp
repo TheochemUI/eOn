@@ -1,0 +1,705 @@
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
+#include "ReadconDbMirror.h"
+#include "TestUtils.hpp"
+#include "catch2/catch_amalgamated.hpp"
+#include "eon/ConFileIO.h"
+#include "eon/HelperFunctions.h"
+#include "eon/Matter.h"
+#include "eon/Parameters.h"
+
+#include <cmath>
+#include <cstdint>
+#include <cstring>
+#include <filesystem>
+#include <fstream>
+#include <memory>
+#include <string>
+#include <vector>
+
+#if defined(_WIN32)
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#else
+#include <dlfcn.h>
+#endif
+
+namespace {
+
+namespace fs = std::filesystem;
+
+static eonc::helpers::test::QuillTestLogger _quill_setup;
+
+std::uint64_t bits_of(double value) {
+  std::uint64_t out = 0;
+  std::memcpy(&out, &value, sizeof(out));
+  return out;
+}
+
+double from_bits(std::uint64_t bits) {
+  double out = 0.0;
+  std::memcpy(&out, &bits, sizeof(out));
+  return out;
+}
+
+std::string read_bytes(const fs::path &path) {
+  std::ifstream in(path, std::ios::binary);
+  REQUIRE(in.good());
+  return std::string(std::istreambuf_iterator<char>(in),
+                     std::istreambuf_iterator<char>());
+}
+
+fs::path golden_path(const char *name) {
+  return fs::path("../../restart") / name;
+}
+
+Matrix3d cell_from_lengths_angles() {
+  constexpr double kPi = 3.14159265358979323846;
+  // Beta is one ulp above 75 degrees. Lengths 10, 11, 12 and these
+  // angles are a fixed point of the cell map, so a read then write
+  // keeps the same length and angle bytes.
+  const double alpha = 80.0 * kPi / 180.0;
+  const double beta = 0x1.2c00000000001p+6 * kPi / 180.0;
+  const double gamma = 100.0 * kPi / 180.0;
+  Matrix3d cell = Matrix3d::Zero();
+  cell(0, 0) = 1.0;
+  cell(1, 0) = std::cos(gamma);
+  cell(1, 1) = std::sin(gamma);
+  cell(2, 0) = std::cos(beta);
+  cell(2, 1) = (std::cos(alpha) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
+  cell(2, 2) =
+      std::sqrt(1.0 - cell(2, 0) * cell(2, 0) - cell(2, 1) * cell(2, 1));
+  cell.row(0) *= 10.0;
+  cell.row(1) *= 11.0;
+  cell.row(2) *= 12.0;
+  return cell;
+}
+
+struct MatterHolder {
+  Parameters params;
+  std::shared_ptr<Potential> pot;
+  std::shared_ptr<Matter> matter;
+
+  MatterHolder() {
+    ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+    pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
+    matter = std::make_shared<Matter>(pot, params);
+  }
+};
+
+void fill_restart_matter(Matter &m, bool with_velocities) {
+  m.resize(4);
+  m.setPeriodic(false);
+  m.setCell(cell_from_lengths_angles());
+  const int z[4] = {29, 1, 29, 1};
+  const double mass[4] = {63.546, 1.008, 63.546, 1.008};
+  const double sub = from_bits(1);
+  const double x[4] = {-0.0, 1.0, 2.0, 3.0};
+  const double y[4] = {0.5, 1.5, 2.5, 3.5};
+  const double zpos[4] = {sub, 1.5, 2.5, 3.5};
+  for (long i = 0; i < 4; ++i) {
+    m.setAtomicNr(i, z[i]);
+    m.setMass(i, mass[i]);
+    m.setAtomIndex(i, i + 1);
+    m.setFixed(i, false);
+    m.setPosition(i, 0, x[i]);
+    m.setPosition(i, 1, y[i]);
+    m.setPosition(i, 2, zpos[i]);
+  }
+  m.setFixed(0, 0, true);
+
+  AtomMatrix forces(4, 3);
+  forces << 0.0, 0.1, -0.2, 0.3, -0.0, 0.4, -0.5, 0.2, 0.1, 0.05, -0.3, 0.25;
+  m.setEvaluation(forces, -1.25);
+
+  if (with_velocities) {
+    AtomMatrix vel(4, 3);
+    vel << 0.0, -0.0, sub, 0.01, -0.02, 0.03, -0.04, 0.05, -0.06, 0.07, 0.08,
+        -0.09;
+    m.setVelocities(vel);
+  }
+}
+
+struct CwdGuard {
+  fs::path previous;
+  explicit CwdGuard(const fs::path &dir)
+      : previous(fs::current_path()) {
+    fs::create_directories(dir);
+    fs::current_path(dir);
+  }
+  ~CwdGuard() {
+    std::error_code ec;
+    fs::current_path(previous, ec);
+  }
+};
+
+void write_run(Matter &m, int steps, bool resume) {
+  for (int i = 0; i < steps; ++i) {
+    auto pos = m.getPositions();
+    pos(0, 0) += 0.01;
+    m.setPositions(pos);
+    REQUIRE(eonc::io::io_ok(m.matter2con("pos_cp.con", false)));
+    const bool append = resume || i > 0 || fs::exists("movie.con");
+    REQUIRE(eonc::io::io_ok(m.matter2con("movie.con", append)));
+  }
+}
+
+void place_cu(Matter &m, double x) {
+  m.resize(1);
+  m.setPeriodic(false);
+  m.setCell(Matrix3d::Identity() * 10.0);
+  m.setAtomicNr(0, 29);
+  m.setMass(0, 63.546);
+  m.setAtomIndex(0, 1);
+  m.setFixed(0, false);
+  m.setPosition(0, 0, x);
+  m.setPosition(0, 1, 2.0);
+  m.setPosition(0, 2, 3.0);
+}
+
+/// A job directory, so the mirror opens readcon.db inside it. Each test
+/// takes its own name: the mirror keeps a corpus open for the process.
+fs::path corpus_job(const char *name) {
+  const auto dir = fs::temp_directory_path() / name;
+  std::error_code ec;
+  fs::remove_all(dir, ec);
+  fs::create_directories(dir);
+  std::ofstream(dir / "config.ini") << "[Main]\n";
+  return dir;
+}
+
+std::vector<double> disk_xs(const fs::path &path) {
+  std::vector<double> xs;
+  for (const auto &frame : readcon::read_all_frames(path)) {
+    xs.push_back(frame.atoms().at(0).x);
+  }
+  return xs;
+}
+
+std::vector<double> text_xs(const std::vector<std::string> &texts,
+                            const fs::path &scratch) {
+  std::vector<double> xs;
+  for (const auto &text : texts) {
+    std::ofstream(scratch, std::ios::binary | std::ios::trunc) << text;
+    xs.push_back(readcon::read_first_frame(scratch).atoms().at(0).x);
+  }
+  return xs;
+}
+
+struct RawCorpus {
+  int (*open)(const char *, std::size_t *) = nullptr;
+  int (*close)(std::size_t) = nullptr;
+  int (*append)(std::size_t, std::uint64_t, const char *, const char *,
+                std::uint32_t *) = nullptr;
+};
+
+void *raw_corpus_symbol(const char *name) {
+#if defined(_WIN32)
+  HMODULE lib = GetModuleHandleA("readcon_db.dll");
+  if (lib == nullptr) {
+    lib = LoadLibraryA("readcon_db.dll");
+  }
+  return lib == nullptr ? nullptr
+                        : reinterpret_cast<void *>(GetProcAddress(lib, name));
+#else
+  if (void *found = dlsym(RTLD_DEFAULT, name)) {
+    return found;
+  }
+  static void *lib = dlopen("libreadcon_db.so", RTLD_LAZY | RTLD_LOCAL);
+  return lib == nullptr ? nullptr : dlsym(lib, name);
+#endif
+}
+
+bool load_raw_corpus(RawCorpus &api) {
+  api.open = reinterpret_cast<int (*)(const char *, std::size_t *)>(
+      raw_corpus_symbol("rkrdb_open"));
+  api.close =
+      reinterpret_cast<int (*)(std::size_t)>(raw_corpus_symbol("rkrdb_close"));
+  api.append = reinterpret_cast<int (*)(
+      std::size_t, std::uint64_t, const char *, const char *, std::uint32_t *)>(
+      raw_corpus_symbol("rkrdb_append_trajectory_str"));
+  return api.open != nullptr && api.close != nullptr && api.append != nullptr;
+}
+
+void write_frames(const fs::path &path, const std::vector<std::string> &texts) {
+  std::ofstream out(path, std::ios::binary | std::ios::trunc);
+  REQUIRE(static_cast<bool>(out));
+  for (const auto &text : texts) {
+    out.write(text.data(), static_cast<std::streamsize>(text.size()));
+  }
+}
+
+} // namespace
+
+TEST_CASE("corpus generation 0 is the blob id and later ones add the number",
+          "[con][corpus]") {
+  REQUIRE(eonc::io::corpus_generation_id("/var/eon/restart_exact.con",
+                                         "frame\n") == 10713101950971778497ull);
+  REQUIRE(eonc::io::corpus_generation_id("/var/eon/restart_exact.con",
+                                         "frame\n",
+                                         1) == 16863591607129263014ull);
+}
+
+TEST_CASE("corpus blob id is FNV-1a of the path, a NUL and the text",
+          "[con][corpus]") {
+  REQUIRE(eonc::io::corpus_blob_id("/var/eon/restart_exact.con", "frame\n") ==
+          10713101950971778497ull);
+}
+
+TEST_CASE("appended corpus frames flush in groups of 64", "[con][corpus]") {
+  if (!eonc::io::readcon_db_mirror_ok()) {
+    SKIP("libreadcon_db is not loaded");
+  }
+  const auto dir = corpus_job("eon-corpus-buffer-restart-exact");
+  const auto path = (dir / "movie.con").string();
+  MatterHolder hold;
+  place_cu(*hold.matter, 1.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, false)));
+  eonc::io::flush_corpus_appends();
+  const std::string frame = "frame\n";
+  const auto no_disk = [] { return std::vector<std::string>{}; };
+  for (int i = 0; i < 63; ++i) {
+    eonc::io::note_corpus_append(path, frame, no_disk);
+  }
+  REQUIRE(eonc::io::corpus_buffered_frames(path) == 63);
+  eonc::io::note_corpus_append(path, frame, no_disk);
+  REQUIRE(eonc::io::corpus_buffered_frames(path) == 0);
+  eonc::io::note_corpus_append(path, frame, no_disk);
+  REQUIRE(eonc::io::corpus_buffered_frames(path) == 1);
+  eonc::io::flush_corpus_appends();
+  REQUIRE(eonc::io::corpus_buffered_frames(path) == 0);
+  std::error_code ec;
+  fs::remove_all(dir, ec);
+}
+
+TEST_CASE("the corpus generation holds the initial frame and the appends",
+          "[con][corpus]") {
+  if (!eonc::io::corpus_extend_ok()) {
+    SKIP("libreadcon_db cannot extend a trajectory");
+  }
+  const auto dir = corpus_job("eon-corpus-generation-initial");
+  const auto path = (dir / "movie.con").string();
+  MatterHolder hold;
+  place_cu(*hold.matter, 1.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, false)));
+  place_cu(*hold.matter, 2.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
+  const std::vector<double> expect{1.0, 2.0};
+  REQUIRE(disk_xs(path) == expect);
+  REQUIRE(text_xs(eonc::io::corpus_generation_frame_texts(path),
+                  dir / "scratch.con") == expect);
+  std::error_code ec;
+  fs::remove_all(dir, ec);
+}
+
+TEST_CASE("an overwrite with the same first frame starts a corpus generation",
+          "[con][corpus]") {
+  if (!eonc::io::corpus_extend_ok()) {
+    SKIP("libreadcon_db cannot extend a trajectory");
+  }
+  const auto dir = corpus_job("eon-corpus-generation-overwrite");
+  const auto path = (dir / "movie.con").string();
+  MatterHolder hold;
+  place_cu(*hold.matter, 1.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, false)));
+  place_cu(*hold.matter, 2.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
+  place_cu(*hold.matter, 1.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, false)));
+  place_cu(*hold.matter, 3.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
+  const std::vector<double> expect{1.0, 3.0};
+  REQUIRE(disk_xs(path) == expect);
+  REQUIRE(text_xs(eonc::io::corpus_generation_frame_texts(path),
+                  dir / "scratch.con") == expect);
+  std::error_code ec;
+  fs::remove_all(dir, ec);
+}
+
+TEST_CASE("an append without a held generation extends the one on disk",
+          "[con][corpus]") {
+  if (!eonc::io::corpus_extend_ok()) {
+    SKIP("libreadcon_db cannot extend a trajectory");
+  }
+  const auto [name, xs] = GENERATE(table<const char *, std::vector<double>>({
+      {"eon-corpus-generation-resume", {1.0, 2.0, 3.0}},
+      {"eon-corpus-generation-resume-digits", {1.0, 2.123456789, 3.987654321}},
+      {"eon-corpus-generation-resume-four", {1.0, 1.25, 1.5, 1.75}},
+  }));
+  const auto dir = corpus_job(name);
+  const auto path = (dir / "movie.con").string();
+  MatterHolder hold;
+  place_cu(*hold.matter, xs.front());
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, false)));
+  const std::string first = read_bytes(path);
+  for (std::size_t i = 1; i + 1 < xs.size(); ++i) {
+    place_cu(*hold.matter, xs[i]);
+    REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
+  }
+  eonc::io::forget_corpus_generation(path);
+  place_cu(*hold.matter, xs.back());
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
+  std::error_code ec;
+  const std::string canonical = fs::weakly_canonical(path, ec).string();
+  REQUIRE_FALSE(ec);
+  REQUIRE(eonc::io::corpus_generation_of(path) ==
+          eonc::io::corpus_generation_id(canonical, first));
+  const auto texts = eonc::io::corpus_generation_frame_texts(path);
+  const auto stored = text_xs(texts, dir / "scratch.con");
+  REQUIRE(stored.size() == xs.size());
+  for (std::size_t i = 0; i < xs.size(); ++i) {
+    REQUIRE_THAT(stored[i], Catch::Matchers::WithinAbs(xs[i], 1e-6));
+  }
+  if (xs[1] == 2.123456789) {
+    // The extend stored six decimals; the file holds round-trip text.
+    REQUIRE(texts[1].find("2.123457 ") != std::string::npos);
+    REQUIRE(read_bytes(path).find("2.123456789 ") != std::string::npos);
+  }
+  fs::remove_all(dir, ec);
+}
+
+TEST_CASE("a con file shorter than its corpus generation starts a new one",
+          "[con][corpus]") {
+  if (!eonc::io::corpus_extend_ok()) {
+    SKIP("libreadcon_db cannot extend a trajectory");
+  }
+  const auto dir = corpus_job("eon-corpus-generation-truncated");
+  const auto path = (dir / "movie.con").string();
+  MatterHolder hold;
+  place_cu(*hold.matter, 1.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, false)));
+  const std::string first = read_bytes(path);
+  for (double x : {2.0, 3.0, 4.0}) {
+    place_cu(*hold.matter, x);
+    REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
+  }
+  eonc::io::forget_corpus_generation(path);
+  std::vector<std::string> texts;
+  for (double x : {1.0, 2.0}) {
+    place_cu(*hold.matter, x);
+    std::vector<readcon::ConFrame> one;
+    one.push_back(eonc::io::matterToConFrame(*hold.matter, nullptr));
+    texts.push_back(readcon::write_frames_to_string(one));
+  }
+  write_frames(path, texts);
+  eonc::io::resetConAppendState();
+  place_cu(*hold.matter, 5.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
+  std::error_code ec;
+  const std::string canonical = fs::weakly_canonical(path, ec).string();
+  REQUIRE_FALSE(ec);
+  REQUIRE(eonc::io::corpus_generation_of(path) ==
+          eonc::io::corpus_generation_id(canonical, first, 1));
+  const std::vector<double> expect{1.0, 2.0, 5.0};
+  REQUIRE(disk_xs(path) == expect);
+  REQUIRE(text_xs(eonc::io::corpus_generation_frame_texts(path),
+                  dir / "scratch.con") == expect);
+  fs::remove_all(dir, ec);
+}
+
+TEST_CASE("a changed middle frame does not extend the corpus generation",
+          "[con][corpus]") {
+  if (!eonc::io::corpus_extend_ok()) {
+    SKIP("libreadcon_db cannot extend a trajectory");
+  }
+  RawCorpus api;
+  REQUIRE(load_raw_corpus(api));
+  const auto dir = corpus_job("eon-corpus-generation-middle");
+  MatterHolder hold;
+  // A whole-file seed stores each frame's own text, so every stored frame
+  // here is round-trip text rather than six-decimal text.
+  std::vector<std::string> texts;
+  const double written[] = {1.0, 2.0, 3.0, 4.0, 6.0};
+  for (double x : written) {
+    place_cu(*hold.matter, x);
+    std::vector<readcon::ConFrame> one;
+    one.push_back(eonc::io::matterToConFrame(*hold.matter, nullptr));
+    texts.push_back(readcon::write_frames_to_string(one));
+  }
+  const auto file = dir / "movie.con";
+  write_frames(file, texts);
+  {
+    auto frames = readcon::read_all_frames(file);
+    REQUIRE(frames.size() == texts.size());
+    for (std::size_t i = 0; i < frames.size(); ++i) {
+      std::vector<readcon::ConFrame> one;
+      one.push_back(std::move(frames[i]));
+      REQUIRE(readcon::write_frames_to_string(one) == texts[i]);
+    }
+  }
+  std::error_code ec;
+  const auto canonical = fs::weakly_canonical(file, ec);
+  REQUIRE_FALSE(ec);
+  const std::string path = canonical.string();
+  const auto tid = eonc::io::corpus_generation_id(path, texts.front());
+  const auto db = (canonical.parent_path() / "readcon.db").string();
+  std::string whole;
+  for (const auto &text : texts) {
+    whole += text;
+  }
+  std::size_t id = 0;
+  std::uint32_t nframes = 0;
+  REQUIRE(api.open(db.c_str(), &id) == 0);
+  REQUIRE(api.append(id, tid, whole.c_str(), path.c_str(), &nframes) == 0);
+  REQUIRE(nframes == texts.size());
+  REQUIRE(api.close(id) == 0);
+
+  place_cu(*hold.matter, 5.0);
+  std::vector<readcon::ConFrame> middle;
+  middle.push_back(eonc::io::matterToConFrame(*hold.matter, nullptr));
+  texts[1] = readcon::write_frames_to_string(middle);
+  write_frames(path, texts);
+  eonc::io::forget_corpus_generation(path);
+  eonc::io::resetConAppendState();
+  place_cu(*hold.matter, 7.0);
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(path, true)));
+  const std::vector<double> expect{1.0, 5.0, 3.0, 4.0, 6.0, 7.0};
+  REQUIRE(disk_xs(path) == expect);
+  REQUIRE(text_xs(eonc::io::corpus_generation_frame_texts(path),
+                  dir / "scratch.con") == expect);
+  fs::remove_all(dir, ec);
+}
+
+TEST_CASE("a compressed con read does not create a corpus", "[con][corpus]") {
+  if (!eonc::io::readcon_db_mirror_ok()) {
+    SKIP("libreadcon_db is not loaded");
+  }
+  const auto dir = corpus_job("eon-corpus-compressed-read");
+  MatterHolder hold;
+  place_cu(*hold.matter, 1.0);
+  std::vector<std::string> names{"movie.con.gz"};
+#if defined(READCON_CORE_HAS_ZSTD)
+  names.emplace_back("movie.con.zst");
+#endif
+  for (const auto &name : names) {
+    const auto file = (dir / name).string();
+    REQUIRE(eonc::io::io_ok(hold.matter->matter2con(file, false)));
+    REQUIRE_FALSE(fs::exists(dir / "readcon.db"));
+    MatterHolder back;
+    back.matter->setPeriodic(false);
+    REQUIRE(eonc::io::io_ok(back.matter->con2matter(file)));
+    REQUIRE(back.matter->getPositions()(0, 0) == 1.0);
+    REQUIRE_FALSE(fs::exists(dir / "readcon.db"));
+  }
+#if !defined(READCON_CORE_HAS_ZSTD)
+  // This build has no zstd writer. The mirror still has to ignore the
+  // suffix, so ordinary con text named .con.zst must not open readcon.db.
+  std::vector<readcon::ConFrame> one;
+  one.push_back(eonc::io::matterToConFrame(*hold.matter, nullptr));
+  const auto zst = dir / "movie.con.zst";
+  {
+    std::ofstream out(zst, std::ios::binary | std::ios::trunc);
+    REQUIRE(static_cast<bool>(out));
+    const auto text = readcon::write_frames_to_string(one);
+    out.write(text.data(), static_cast<std::streamsize>(text.size()));
+  }
+  eonc::io::mirror_con_corpus(zst.string());
+  REQUIRE_FALSE(fs::exists(dir / "readcon.db"));
+#endif
+  std::error_code ec;
+  fs::remove_all(dir, ec);
+}
+
+TEST_CASE("matter2con matches the restart golden", "[con][restart]") {
+  MatterHolder hold;
+  fill_restart_matter(*hold.matter, false);
+  const auto tmp = fs::temp_directory_path() / "eon_restart_exact_out.con";
+  eonc::io::ConFrameMetadata meta;
+  meta.energy = -1.25;
+  meta.write_con_forces = true;
+  REQUIRE(eonc::io::io_ok(hold.matter->matter2con(tmp.string(), false, &meta)));
+  const auto golden = golden_path("restart_exact.con");
+  REQUIRE(read_bytes(tmp) == read_bytes(golden));
+
+  MatterHolder back;
+  back.matter->setPeriodic(false);
+  REQUIRE(eonc::io::io_ok(back.matter->con2matter(golden.string())));
+  const auto wrote = hold.matter->getPositions();
+  const auto read = back.matter->getPositions();
+  REQUIRE(wrote.rows() == read.rows());
+  REQUIRE(std::memcmp(wrote.data(), read.data(),
+                      static_cast<std::size_t>(wrote.size()) *
+                          sizeof(double)) == 0);
+  REQUIRE(bits_of(read(0, 0)) == bits_of(-0.0));
+  REQUIRE(bits_of(read(0, 2)) == 1ull);
+
+  eonc::io::set_write_con_forces(true);
+  const auto again = fs::temp_directory_path() / "eon_restart_exact_again.con";
+  REQUIRE(eonc::io::io_ok(back.matter->matter2con(again.string(), false)));
+  eonc::io::set_write_con_forces(false);
+  REQUIRE(read_bytes(again) == read_bytes(golden));
+  fs::remove(tmp);
+  fs::remove(again);
+}
+
+TEST_CASE("matter2convel matches the velocity golden", "[con][restart]") {
+  MatterHolder hold;
+  fill_restart_matter(*hold.matter, true);
+  const auto tmp = fs::temp_directory_path() / "eon_restart_exact_vel.convel";
+  REQUIRE(eonc::io::io_ok(eonc::io::matter2convel(*hold.matter, tmp.string())));
+  const auto golden = golden_path("restart_exact_vel.con");
+  REQUIRE(read_bytes(tmp) == read_bytes(golden));
+
+  MatterHolder back;
+  back.matter->setPeriodic(false);
+  // The golden keeps a .con name. convel2matter would append another
+  // .convel suffix. The frame is the convel writer output either way.
+  REQUIRE(eonc::io::io_ok(back.matter->con2matter(golden.string())));
+  const auto wrote = hold.matter->getVelocities();
+  const auto read = back.matter->getVelocities();
+  REQUIRE(std::memcmp(wrote.data(), read.data(),
+                      static_cast<std::size_t>(wrote.size()) *
+                          sizeof(double)) == 0);
+  REQUIRE(bits_of(read(0, 1)) == bits_of(-0.0));
+  REQUIRE(bits_of(read(0, 2)) == 1ull);
+  fs::remove(tmp);
+}
+
+TEST_CASE("two Cu masses collapse to the first mass", "[con][mass]") {
+  MatterHolder hold;
+  auto &m = *hold.matter;
+  m.resize(2);
+  m.setPeriodic(false);
+  m.setCell(Matrix3d::Identity() * 10.0);
+  m.setAtomicNr(0, 29);
+  m.setAtomicNr(1, 29);
+  m.setMass(0, 63.5);
+  m.setMass(1, 62.0);
+  m.setAtomIndex(0, 1);
+  m.setAtomIndex(1, 2);
+  const auto tmp = fs::temp_directory_path() / "eon_two_cu_mass.con";
+  REQUIRE(eonc::io::io_ok(m.matter2con(tmp.string(), false)));
+  MatterHolder back;
+  REQUIRE(eonc::io::io_ok(back.matter->con2matter(tmp.string())));
+  REQUIRE(back.matter->getMass(0) == 63.5);
+  REQUIRE(back.matter->getMass(1) == 63.5);
+  fs::remove(tmp);
+}
+
+TEST_CASE("mid-run pos_cp restart matches an uninterrupted run",
+          "[con][restart]") {
+  const auto root = fs::temp_directory_path() / "eon-mid-run-restart";
+  fs::remove_all(root);
+  const auto full = root / "full";
+  const auto stopped = root / "stopped";
+
+  {
+    MatterHolder hold;
+    auto &m = *hold.matter;
+    m.resize(2);
+    m.setPeriodic(false);
+    m.setCell(Matrix3d::Identity() * 20.0);
+    m.setAtomicNr(0, 29);
+    m.setAtomicNr(1, 1);
+    m.setMass(0, 63.546);
+    m.setMass(1, 1.008);
+    m.setAtomIndex(0, 1);
+    m.setAtomIndex(1, 2);
+    CwdGuard guard(full);
+    write_run(m, 4, false);
+  }
+  {
+    MatterHolder hold;
+    auto &m = *hold.matter;
+    m.resize(2);
+    m.setPeriodic(false);
+    m.setCell(Matrix3d::Identity() * 20.0);
+    m.setAtomicNr(0, 29);
+    m.setAtomicNr(1, 1);
+    m.setMass(0, 63.546);
+    m.setMass(1, 1.008);
+    m.setAtomIndex(0, 1);
+    m.setAtomIndex(1, 2);
+    CwdGuard guard(stopped);
+    write_run(m, 2, false);
+    eonc::io::resetConAppendState();
+    MatterHolder resumed;
+    auto &next = *resumed.matter;
+    next.setPeriodic(false);
+    REQUIRE(eonc::io::io_ok(next.con2matter("pos_cp.con")));
+    write_run(next, 2, true);
+  }
+
+  REQUIRE(read_bytes(full / "movie.con") == read_bytes(stopped / "movie.con"));
+  REQUIRE(read_bytes(full / "pos_cp.con") ==
+          read_bytes(stopped / "pos_cp.con"));
+
+  MatterHolder a;
+  MatterHolder b;
+  {
+    CwdGuard guard(full);
+    REQUIRE(eonc::io::io_ok(a.matter->con2matter("pos_cp.con")));
+  }
+  {
+    CwdGuard guard(stopped);
+    REQUIRE(eonc::io::io_ok(b.matter->con2matter("pos_cp.con")));
+  }
+  const auto pa = a.matter->getPositions();
+  const auto pb = b.matter->getPositions();
+  REQUIRE(std::memcmp(pa.data(), pb.data(),
+                      static_cast<std::size_t>(pa.size()) * sizeof(double)) ==
+          0);
+  fs::remove_all(root);
+}
+
+TEST_CASE("saddle resume loads displacement_cp.con and mode_cp.dat",
+          "[con][restart]") {
+  const auto dir = fs::temp_directory_path() / "eon-saddle-resume";
+  fs::remove_all(dir);
+  MatterHolder hold;
+  auto &m = *hold.matter;
+  m.resize(2);
+  m.setPeriodic(false);
+  m.setCell(Matrix3d::Identity() * 15.0);
+  m.setAtomicNr(0, 29);
+  m.setAtomicNr(1, 1);
+  m.setMass(0, 63.546);
+  m.setMass(1, 1.008);
+  m.setAtomIndex(0, 1);
+  m.setAtomIndex(1, 2);
+  m.setPosition(0, 0, 1.25);
+  m.setPosition(1, 1, -0.5);
+  AtomMatrix mode(2, 3);
+  mode << 0.25, 0.0, -0.5, 0.0, 0.5, 0.25;
+
+  {
+    CwdGuard guard(dir);
+    REQUIRE(eonc::io::io_ok(m.matter2con("displacement_cp.con", false)));
+    eonc::helpers::saveMode("mode_cp.dat", hold.matter, mode);
+  }
+
+  MatterHolder back;
+  back.matter->setPeriodic(false);
+  AtomMatrix loaded(2, 3);
+  {
+    CwdGuard guard(dir);
+    REQUIRE(eonc::io::io_ok(back.matter->con2matter("displacement_cp.con")));
+    loaded = eonc::helpers::loadMode("mode_cp.dat", 2);
+  }
+  const auto wrote = m.getPositions();
+  const auto read = back.matter->getPositions();
+  REQUIRE(std::memcmp(wrote.data(), read.data(),
+                      static_cast<std::size_t>(wrote.size()) *
+                          sizeof(double)) == 0);
+  REQUIRE(loaded(0, 0) == 0.25);
+  REQUIRE(loaded(0, 2) == -0.5);
+  REQUIRE(loaded(1, 1) == 0.5);
+  REQUIRE(fs::exists(dir / "displacement_cp.con"));
+  REQUIRE(fs::exists(dir / "mode_cp.dat"));
+  fs::remove_all(dir);
+}

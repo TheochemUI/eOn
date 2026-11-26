@@ -13,15 +13,23 @@
 
 #include "eon/EonLogger.h"
 
+#include <atomic>
+#include <cctype>
+#include <cerrno>
+#include <cmath>
 #include <cstdint>
+#include <cstdio>
 #include <cstdlib>
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <mutex>
 #include <optional>
 #include <sstream>
 #include <string>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
 #ifndef EON_READCON_DB_VERSION
 #define EON_READCON_DB_VERSION ""
@@ -52,8 +60,9 @@ namespace {
 
 constexpr std::uint64_t kFnvOffset = 14695981039346656037ull;
 constexpr std::uint64_t kFnvPrime = 1099511628211ull;
+constexpr std::size_t kCorpusGroup = 64;
 
-std::uint64_t fnv1a(const std::string &bytes) {
+std::uint64_t fnv1a(std::string_view bytes) {
   std::uint64_t h = kFnvOffset;
   for (unsigned char c : bytes) {
     h ^= static_cast<std::uint64_t>(c);
@@ -85,14 +94,39 @@ corpus_dir(const std::filesystem::path &con_path) {
   return std::nullopt;
 }
 
+std::string canonical_path(const std::filesystem::path &con_path) {
+  namespace fs = std::filesystem;
+  std::error_code ec;
+  fs::path canonical = fs::weakly_canonical(con_path, ec);
+  if (ec) {
+    canonical = fs::absolute(con_path, ec);
+    if (ec) {
+      canonical = con_path;
+    }
+  }
+  return canonical.string();
+}
+
 using OpenFn = int (*)(const char *, std::size_t *);
 using AppendFn = int (*)(std::size_t, std::uint64_t, const char *, const char *,
                          std::uint32_t *);
+using ExtendPathFn = int (*)(std::size_t, std::uint64_t, const char *,
+                             std::uint32_t *);
+using ExtendStrFn = int (*)(std::size_t, std::uint64_t, const char *,
+                            const char *, std::uint32_t *);
+using FrameHashFn = int (*)(std::size_t, std::uint64_t, std::uint32_t,
+                            std::uint8_t *);
+using FrameTextFn = int (*)(std::size_t, std::uint64_t, std::uint32_t, char *,
+                            std::size_t);
 
 struct Api {
   LibHandle lib = nullptr;
   OpenFn open = nullptr;
   AppendFn append_str = nullptr;
+  ExtendPathFn extend_path = nullptr;
+  ExtendStrFn extend_str = nullptr;
+  FrameHashFn frame_hash = nullptr;
+  FrameTextFn frame_text = nullptr;
   bool missing = false;
   bool from_process = false;
   int epoch = -1;
@@ -144,10 +178,30 @@ void clear_api(Api &out) {
   out = Api{};
 }
 
+void clear_symbols(Api &out) {
+  out.open = nullptr;
+  out.append_str = nullptr;
+  out.extend_path = nullptr;
+  out.extend_str = nullptr;
+  out.frame_hash = nullptr;
+  out.frame_text = nullptr;
+}
+
+// The extend and lookup entry points are optional. Older readcon-db builds
+// lack them: appended frames then skip the corpus, and without a lookup
+// every overwrite reuses generation 0.
 bool resolve_symbols(Api &out, LibHandle handle) {
   out.open = reinterpret_cast<OpenFn>(symbol(handle, "rkrdb_open"));
   out.append_str =
       reinterpret_cast<AppendFn>(symbol(handle, "rkrdb_append_trajectory_str"));
+  out.extend_path =
+      reinterpret_cast<ExtendPathFn>(symbol(handle, "rkrdb_extend_trajectory"));
+  out.extend_str = reinterpret_cast<ExtendStrFn>(
+      symbol(handle, "rkrdb_extend_trajectory_str"));
+  out.frame_hash =
+      reinterpret_cast<FrameHashFn>(symbol(handle, "rkrdb_frame_hash"));
+  out.frame_text =
+      reinterpret_cast<FrameTextFn>(symbol(handle, "rkrdb_get_frame_text"));
   return out.open != nullptr && out.append_str != nullptr;
 }
 
@@ -176,8 +230,7 @@ Api &api() {
       out.from_process = true;
       return out;
     }
-    out.open = nullptr;
-    out.append_str = nullptr;
+    clear_symbols(out);
     const char *names[] = {"libreadcon_db.so", "libreadcon_db.so.0",
                            "libreadcon_db.dylib"};
 #else
@@ -190,8 +243,7 @@ Api &api() {
       out.from_process = true;
       return out;
     }
-    out.open = nullptr;
-    out.append_str = nullptr;
+    clear_symbols(out);
     const char *names[] = {"readcon_db.dll"};
 #endif
     for (const char *name : names) {
@@ -210,8 +262,7 @@ Api &api() {
   if (!resolve_symbols(out, out.lib)) {
     release_lib(out.lib, false);
     out.lib = nullptr;
-    out.open = nullptr;
-    out.append_str = nullptr;
+    clear_symbols(out);
     out.missing = true;
   }
   return out;
@@ -246,9 +297,371 @@ std::size_t corpus_handle(const std::filesystem::path &dir) {
   return id;
 }
 
+struct Batch {
+  std::string canonical;
+  std::filesystem::path db;
+  std::uint64_t tid = 0;
+  std::vector<std::string> frames;
+};
+
+std::atomic<std::uint64_t> scratch_counter{0};
+
+std::mutex &batch_mu() {
+  static std::mutex mu;
+  return mu;
+}
+
+std::unordered_map<std::string, Batch> &batches() {
+  static std::unordered_map<std::string, Batch> map;
+  return map;
+}
+
+/// Canonical path to the trajectory id of its current generation.
+std::unordered_map<std::string, std::uint64_t> &generations() {
+  static std::unordered_map<std::string, std::uint64_t> map;
+  return map;
+}
+
+void extend_batch(const std::string &canonical, const std::filesystem::path &db,
+                  std::uint64_t tid, const std::vector<std::string> &frames) {
+  if (frames.empty()) {
+    return;
+  }
+  Api &fns = api();
+  if (fns.missing ||
+      (fns.extend_str == nullptr && fns.extend_path == nullptr)) {
+    return;
+  }
+  const std::size_t id = corpus_handle(db);
+  if (id == static_cast<std::size_t>(-1)) {
+    return;
+  }
+  std::string text;
+  std::size_t bytes = 0;
+  for (const auto &frame : frames) {
+    bytes += frame.size();
+  }
+  text.reserve(bytes);
+  for (const auto &frame : frames) {
+    text += frame;
+  }
+  std::uint32_t nframes = 0;
+  if (fns.extend_str != nullptr) {
+    fns.extend_str(id, tid, text.c_str(), canonical.c_str(), &nframes);
+    return;
+  }
+  const auto scratch =
+      std::filesystem::temp_directory_path() /
+      std::format("eon-corpus-{}-{}.con", tid,
+                  scratch_counter.fetch_add(1, std::memory_order_relaxed));
+  {
+    std::ofstream out(scratch, std::ios::binary | std::ios::trunc);
+    if (!out) {
+      return;
+    }
+    out.write(text.data(), static_cast<std::streamsize>(text.size()));
+    if (!out) {
+      std::error_code ec;
+      std::filesystem::remove(scratch, ec);
+      return;
+    }
+  }
+  fns.extend_path(id, tid, scratch.string().c_str(), &nframes);
+  std::error_code ec;
+  std::filesystem::remove(scratch, ec);
+}
+
+void flush_ready(std::vector<Batch> ready) {
+  for (const auto &batch : ready) {
+    extend_batch(batch.canonical, batch.db, batch.tid, batch.frames);
+  }
+}
+
+/// Extend the path's buffered frames and drop its generation.
+void retire_generation(const std::string &canonical) {
+  std::vector<Batch> ready;
+  {
+    std::lock_guard<std::mutex> guard(batch_mu());
+    const auto found = batches().find(canonical);
+    if (found != batches().end()) {
+      ready.push_back(std::move(found->second));
+      batches().erase(found);
+    }
+    generations().erase(canonical);
+  }
+  flush_ready(std::move(ready));
+}
+
+void remember_generation(const std::string &canonical, std::uint64_t tid) {
+  std::lock_guard<std::mutex> guard(batch_mu());
+  generations()[canonical] = tid;
+}
+
+bool has_frame(std::size_t id, std::uint64_t tid, std::uint32_t frame_idx) {
+  const Api &fns = api();
+  if (fns.frame_hash == nullptr) {
+    return false;
+  }
+  std::uint8_t hash[16];
+  return fns.frame_hash(id, tid, frame_idx, hash) == 0;
+}
+
+/// Frames under tid, or limit + 1 when there are more than limit.
+std::uint32_t stored_frames(std::size_t id, std::uint64_t tid,
+                            std::uint32_t limit) {
+  std::uint32_t lo = 0;
+  std::uint32_t hi = limit + 1;
+  while (lo < hi) {
+    const std::uint32_t mid = lo + (hi - lo) / 2;
+    if (has_frame(id, tid, mid)) {
+      lo = mid + 1;
+    } else {
+      hi = mid;
+    }
+  }
+  return lo;
+}
+
+std::optional<std::string> stored_frame_text(std::size_t id, std::uint64_t tid,
+                                             std::uint32_t frame_idx,
+                                             std::size_t capacity) {
+  const Api &fns = api();
+  if (fns.frame_text == nullptr) {
+    return std::nullopt;
+  }
+  std::string buf(capacity + 1, '\0');
+  const int len = fns.frame_text(id, tid, frame_idx, buf.data(), buf.size());
+  if (len < 0) {
+    return std::nullopt;
+  }
+  buf.resize(static_cast<std::size_t>(len));
+  return buf;
+}
+
+/// A too-small buffer is a lookup error, so grow until the frame fits.
+std::optional<std::string> whole_frame_text(std::size_t id, std::uint64_t tid,
+                                            std::uint32_t frame_idx,
+                                            std::size_t first_capacity) {
+  constexpr std::size_t kMaxFrameBytes = std::size_t{1} << 26;
+  std::optional<std::string> text;
+  for (std::size_t capacity = first_capacity;
+       !text && capacity <= kMaxFrameBytes; capacity *= 4) {
+    text = stored_frame_text(id, tid, frame_idx, capacity);
+  }
+  return text;
+}
+
+constexpr int kStoredDecimals = 6;
+
+// libc++ deletes floating-point from_chars. strtod on a NUL-terminated
+// copy matches that C++20 parse: the whole token converts, a leading '+'
+// or a hex float does not, and ERANGE rejects only a zero or non-finite
+// result. A subnormal sets ERANGE and still counts.
+std::optional<double> parse_stored_double(const std::string &word) {
+  if (word.empty() || std::isspace(static_cast<unsigned char>(word.front())) ||
+      word.front() == '+') {
+    return std::nullopt;
+  }
+  const std::size_t body = word.front() == '-' ? 1 : 0;
+  if (body + 1 < word.size() && word[body] == '0' &&
+      (word[body + 1] == 'x' || word[body + 1] == 'X')) {
+    return std::nullopt;
+  }
+  const std::string terminated(word);
+  char *end = nullptr;
+  errno = 0;
+  const double value = std::strtod(terminated.c_str(), &end);
+  if (end != terminated.c_str() + terminated.size()) {
+    return std::nullopt;
+  }
+  if (errno == ERANGE && (value == 0.0 || !std::isfinite(value))) {
+    return std::nullopt;
+  }
+  return value;
+}
+
+// %.6f, the same six-decimal text std::format prints for this value.
+std::optional<std::string> six_decimal_text(double value) {
+  const int needed = std::snprintf(nullptr, 0, "%.*f", kStoredDecimals, value);
+  if (needed < 0) {
+    return std::nullopt;
+  }
+  std::string text(static_cast<std::size_t>(needed), '\0');
+  const int wrote = std::snprintf(text.data(), text.size() + 1, "%.*f",
+                                  kStoredDecimals, value);
+  if (wrote != needed) {
+    return std::nullopt;
+  }
+  return text;
+}
+
+std::vector<std::vector<std::string>>
+six_decimal_tokens(std::string_view text) {
+  std::vector<std::vector<std::string>> lines;
+  std::size_t start = 0;
+  while (start <= text.size()) {
+    std::size_t stop = text.find('\n', start);
+    if (stop == std::string_view::npos) {
+      stop = text.size();
+    }
+    std::istringstream words{std::string(text.substr(start, stop - start))};
+    std::vector<std::string> &line = lines.emplace_back();
+    for (std::string word; words >> word;) {
+      const std::optional<double> value = parse_stored_double(word);
+      if (value) {
+        if (std::optional<std::string> formatted = six_decimal_text(*value)) {
+          line.push_back(std::move(*formatted));
+          continue;
+        }
+      }
+      line.push_back(std::move(word));
+    }
+    start = stop + 1;
+  }
+  while (!lines.empty() && lines.back().empty()) {
+    lines.pop_back();
+  }
+  return lines;
+}
+
+/// readcon-db 0.1.6 writes extended frames with six decimals, while a reread
+/// writes round-trip text. Numbers compare at six decimals on both sides, so
+/// a difference below that does not count.
+bool same_frame(const std::optional<std::string> &stored,
+                const std::string &disk) {
+  if (!stored) {
+    return false;
+  }
+  return *stored == disk ||
+         six_decimal_tokens(*stored) == six_decimal_tokens(disk);
+}
+
+bool stored_prefix_matches(std::size_t id, std::uint64_t tid,
+                           const std::vector<std::string> &texts,
+                           std::uint32_t stored) {
+  if (stored > texts.size()) {
+    return false;
+  }
+  for (std::uint32_t index = 0; index < stored; ++index) {
+    const std::string &disk = texts[index];
+    if (!same_frame(whole_frame_text(id, tid, index, 2 * disk.size() + 256),
+                    disk)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool seed_trajectory(std::size_t id, std::uint64_t tid, const std::string &text,
+                     const std::string &canonical) {
+  if (has_frame(id, tid, 0)) {
+    return true;
+  }
+  std::uint32_t nframes = 0;
+  return api().append_str(id, tid, text.c_str(), canonical.c_str(), &nframes) ==
+         0;
+}
+
+void resume_generation(const std::string &canonical,
+                       const std::filesystem::path &db,
+                       const CorpusDiskFrames &disk_frames) {
+  const std::size_t id = corpus_handle(db);
+  if (id == static_cast<std::size_t>(-1) || !disk_frames) {
+    return;
+  }
+  std::vector<std::string> texts;
+  try {
+    texts = disk_frames();
+  } catch (const std::exception &e) {
+    EONC_LOG_DEBUG("readcon-db resume skipped for {}: {}", canonical, e.what());
+    return;
+  }
+  if (texts.empty()) {
+    return;
+  }
+  const std::string &first = texts.front();
+  std::uint64_t generation = 0;
+  while (has_frame(id, corpus_generation_id(canonical, first, generation + 1),
+                   0)) {
+    ++generation;
+  }
+  std::uint64_t tid = corpus_generation_id(canonical, first, generation);
+  const auto on_disk = static_cast<std::uint32_t>(texts.size());
+  std::uint32_t stored = stored_frames(id, tid, on_disk);
+  if (!stored_prefix_matches(id, tid, texts, stored)) {
+    tid = corpus_generation_id(canonical, first, generation + 1);
+    stored = 0;
+  }
+  if (stored == 0) {
+    std::string whole;
+    for (const auto &text : texts) {
+      whole += text;
+    }
+    if (!seed_trajectory(id, tid, whole, canonical)) {
+      return;
+    }
+  } else {
+    extend_batch(canonical, db, tid,
+                 std::vector<std::string>(texts.begin() + stored, texts.end()));
+  }
+  remember_generation(canonical, tid);
+}
+
+void arm_corpus_flush() {
+  // The exit handler must run while these caches are still alive.
+  // A handler registered before they are constructed runs after they
+  // are destroyed.
+  static_cast<void>(batch_mu());
+  static_cast<void>(batches());
+  static_cast<void>(generations());
+  static_cast<void>(handles_mu());
+  static_cast<void>(handles());
+  static_cast<void>(api());
+  static std::once_flag once;
+  std::call_once(once, [] { std::atexit(flush_corpus_appends); });
+}
+
+bool compressed_con_path(const std::filesystem::path &path) {
+  std::string name = path.filename().string();
+  for (char &ch : name) {
+    ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+  }
+  return name.ends_with(".gz") || name.ends_with(".zst");
+}
+
 } // namespace
 
+std::uint64_t corpus_blob_id(std::string_view canonical_path,
+                             std::string_view text) {
+  std::string bytes;
+  bytes.reserve(canonical_path.size() + 1 + text.size());
+  bytes.append(canonical_path);
+  bytes.push_back('\0');
+  bytes.append(text);
+  return fnv1a(bytes);
+}
+
+std::uint64_t corpus_generation_id(std::string_view canonical_path,
+                                   std::string_view first_text,
+                                   std::uint64_t generation) {
+  if (generation == 0) {
+    return corpus_blob_id(canonical_path, first_text);
+  }
+  std::string bytes;
+  bytes.reserve(canonical_path.size() + first_text.size() + 22);
+  bytes.append(canonical_path);
+  bytes.push_back('\0');
+  bytes.append(first_text);
+  bytes.push_back('\0');
+  bytes.append(std::to_string(generation));
+  return fnv1a(bytes);
+}
+
 void mirror_con_corpus(const std::string &path) {
+  arm_corpus_flush();
+  if (compressed_con_path(path)) {
+    return;
+  }
   namespace fs = std::filesystem;
   std::error_code ec;
   if (!fs::is_regular_file(path, ec) || ec) {
@@ -264,12 +677,8 @@ void mirror_con_corpus(const std::string &path) {
   if (text.find_first_not_of(" \t\r\n") == std::string::npos) {
     return;
   }
-  fs::path canonical = fs::weakly_canonical(path, ec);
-  if (ec) {
-    canonical = fs::absolute(path);
-  }
-  const std::string resolved = canonical.string();
-  const auto corpus = corpus_dir(canonical);
+  const std::string resolved = canonical_path(path);
+  const auto corpus = corpus_dir(resolved);
   if (!corpus) {
     return;
   }
@@ -277,9 +686,149 @@ void mirror_con_corpus(const std::string &path) {
   if (id == static_cast<std::size_t>(-1)) {
     return;
   }
-  const std::uint64_t tid = fnv1a(resolved + '\0' + text);
+  const std::uint64_t tid = corpus_blob_id(resolved, text);
   std::uint32_t nframes = 0;
   api().append_str(id, tid, text.c_str(), resolved.c_str(), &nframes);
+}
+
+void start_corpus_generation(const std::string &path, const std::string &text) {
+  arm_corpus_flush();
+  const std::string resolved = canonical_path(path);
+  retire_generation(resolved);
+  if (text.find_first_not_of(" \t\r\n") == std::string::npos) {
+    return;
+  }
+  const auto corpus = corpus_dir(resolved);
+  if (!corpus) {
+    return;
+  }
+  const std::size_t id = corpus_handle(*corpus);
+  if (id == static_cast<std::size_t>(-1)) {
+    return;
+  }
+  std::uint64_t generation = 0;
+  while (has_frame(id, corpus_generation_id(resolved, text, generation), 1)) {
+    ++generation;
+  }
+  const std::uint64_t tid = corpus_generation_id(resolved, text, generation);
+  if (seed_trajectory(id, tid, text, resolved)) {
+    remember_generation(resolved, tid);
+  }
+}
+
+void forget_corpus_generation(const std::string &path) {
+  arm_corpus_flush();
+  retire_generation(canonical_path(path));
+}
+
+void note_corpus_append(const std::string &path, const std::string &frame_text,
+                        const CorpusDiskFrames &disk_frames) {
+  arm_corpus_flush();
+  if (frame_text.find_first_not_of(" \t\r\n") == std::string::npos) {
+    return;
+  }
+  const std::string resolved = canonical_path(path);
+  const auto corpus = corpus_dir(resolved);
+  if (!corpus) {
+    return;
+  }
+  std::vector<Batch> ready;
+  bool known = false;
+  {
+    std::lock_guard<std::mutex> guard(batch_mu());
+    const auto generation = generations().find(resolved);
+    known = generation != generations().end();
+    if (known) {
+      Batch &slot = batches()[resolved];
+      slot.canonical = resolved;
+      slot.db = *corpus;
+      slot.tid = generation->second;
+      slot.frames.push_back(frame_text);
+      if (slot.frames.size() >= kCorpusGroup) {
+        ready.push_back(std::move(slot));
+        batches().erase(resolved);
+      }
+    }
+  }
+  if (!known) {
+    resume_generation(resolved, *corpus, disk_frames);
+    return;
+  }
+  flush_ready(std::move(ready));
+}
+
+void flush_corpus_appends() {
+  std::vector<Batch> ready;
+  {
+    std::lock_guard<std::mutex> guard(batch_mu());
+    ready.reserve(batches().size());
+    for (auto &entry : batches()) {
+      if (!entry.second.frames.empty()) {
+        ready.push_back(std::move(entry.second));
+      }
+    }
+    batches().clear();
+  }
+  flush_ready(std::move(ready));
+}
+
+std::size_t corpus_buffered_frames(const std::string &path) {
+  const std::string resolved = canonical_path(path);
+  std::lock_guard<std::mutex> guard(batch_mu());
+  const auto found = batches().find(resolved);
+  if (found == batches().end()) {
+    return 0;
+  }
+  return found->second.frames.size();
+}
+
+std::vector<std::string>
+corpus_generation_frame_texts(const std::string &path) {
+  flush_corpus_appends();
+  const std::string resolved = canonical_path(path);
+  std::uint64_t tid = 0;
+  {
+    std::lock_guard<std::mutex> guard(batch_mu());
+    const auto found = generations().find(resolved);
+    if (found == generations().end()) {
+      return {};
+    }
+    tid = found->second;
+  }
+  const auto corpus = corpus_dir(resolved);
+  if (!corpus) {
+    return {};
+  }
+  const std::size_t id = corpus_handle(*corpus);
+  if (id == static_cast<std::size_t>(-1)) {
+    return {};
+  }
+  std::vector<std::string> texts;
+  for (std::uint32_t idx = 0; has_frame(id, tid, idx); ++idx) {
+    std::optional<std::string> text =
+        whole_frame_text(id, tid, idx, std::size_t{1} << 16);
+    if (!text) {
+      break;
+    }
+    texts.push_back(std::move(*text));
+  }
+  return texts;
+}
+
+std::optional<std::uint64_t> corpus_generation_of(const std::string &path) {
+  const std::string resolved = canonical_path(path);
+  std::lock_guard<std::mutex> guard(batch_mu());
+  const auto found = generations().find(resolved);
+  if (found == generations().end()) {
+    return std::nullopt;
+  }
+  return found->second;
+}
+
+bool corpus_extend_ok() {
+  const Api &fns = api();
+  return !fns.missing && fns.open != nullptr &&
+         (fns.extend_str != nullptr || fns.extend_path != nullptr);
 }
 
 bool readcon_db_mirror_ok() {

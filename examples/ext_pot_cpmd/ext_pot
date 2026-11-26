@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+here=$(cd "$(dirname "$0")" && pwd)
+set -a
+source "${EON_ENV_FILE:-$here/.env}"
+set +a
+export CPMD_LAUNCH="$here/cpmd_launch.sh"
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
+exec python3 "$here/cpmd_extpot.py"

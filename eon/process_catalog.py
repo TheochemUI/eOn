@@ -209,7 +209,7 @@ def _saddle_text_with_mode(saddle_text: str, mode) -> str:
         atom.dx = float(vec[struct_i, 0])
         atom.dy = float(vec[struct_i, 1])
         atom.dz = float(vec[struct_i, 2])
-    return readcon.write_con_string([frame], 17)
+    return readcon.write_con_string([frame])
 
 
 def _suggestion_mode(

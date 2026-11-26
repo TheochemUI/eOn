@@ -2418,6 +2418,7 @@ if get_option('with_tests')
         ['test_approve_confileio', 'ApproveConFileIO.cpp', 'neb_morse'],
         # Runs without chemfiles too: the .con path and the clear refusal.
         ['test_chemfiles_io', 'ChemfilesIOTest.cpp', 'neb_morse', 300],
+        ['test_con_restart_exact', 'ConRestartExact.cpp', 'neb_morse'],
         ['test_minimization', 'MinimizationTest.cpp', 'neb_morse'],
         ['test_rgmin_backend', 'RgminBackendTest.cpp', 'neb_morse'],
         ['test_optimizer', 'OptimizerTest.cpp', ''],

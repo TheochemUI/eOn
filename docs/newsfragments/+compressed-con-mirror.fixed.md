@@ -1,1 +1,1 @@
-A compressed con file stays out of the text corpus.
+A compressed con file stays out of the text corpus, including frames appended to it. The server's loadcon and loadcons skip a .gz or .zst path by name before reading it, so the check does not depend on the locale's text encoding.

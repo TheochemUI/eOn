@@ -1,0 +1,2 @@
+# Byte-compared restart fixtures. Checkout keeps LF on every platform.
+restart/*.con text eol=lf

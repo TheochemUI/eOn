@@ -1,0 +1,258 @@
+cff-version: 1.2.0
+message: "If you use eOn, please cite the Zenodo record below. Method papers to cite alongside it are listed in the readme."
+title: eOn
+type: software
+authors:
+  - name: "Rohit Goswami"
+    orcid: "https://orcid.org/0000-0002-2393-8056"
+  - name: "Sam Chill"
+  - name: "Rye Terrell"
+  - name: "Graeme Henkelman"
+  - name: "Matthew Welborn"
+  - name: "Liang Zhang"
+  - name: "Andreas Pedersen"
+  - name: "t-brink"
+  - name: "Erik Edelmann"
+  - name: "Jean Claude"
+  - name: "Alejandro"
+  - name: "Sung Hoon Jung"
+  - name: "Seyed Alireza Ghasemi"
+  - name: "chemist29"
+  - name: "satishskamath"
+  - name: "Maxim"
+  - name: "Tobias Dijkhuis"
+  - name: "via9a"
+doi: 10.5281/zenodo.18529495
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.18529495
+    description: Concept DOI for all releases; resolves to the latest one.
+  - type: url
+    value: "https://zenodo.org/records/23166734"
+    description: Zenodo record for v3.6.0.
+repository-code: "https://github.com/TheochemUI/eOn"
+url: "https://eondocs.org"
+license: BSD-3-Clause
+preferred-citation:
+  type: software
+  title: "TheochemUI/eOn"
+  authors:
+    - name: "Rohit Goswami"
+      orcid: "https://orcid.org/0000-0002-2393-8056"
+    - name: "Sam Chill"
+    - name: "Rye Terrell"
+    - name: "Graeme Henkelman"
+    - name: "Matthew Welborn"
+    - name: "Liang Zhang"
+    - name: "Andreas Pedersen"
+    - name: "t-brink"
+    - name: "Erik Edelmann"
+    - name: "Jean Claude"
+    - name: "Alejandro"
+    - name: "Sung Hoon Jung"
+    - name: "Seyed Alireza Ghasemi"
+    - name: "chemist29"
+    - name: "satishskamath"
+    - name: "Maxim"
+    - name: "Tobias Dijkhuis"
+    - name: "via9a"
+  publisher:
+    name: Zenodo
+  doi: 10.5281/zenodo.18529495
+  url: "https://doi.org/10.5281/zenodo.18529495"
+references:
+  - type: generic
+    title: "Efficient Exploration of Chemical Kinetics"
+    authors:
+      - family-names: Goswami
+        given-names: Rohit
+        orcid: "https://orcid.org/0000-0002-2393-8056"
+    publisher:
+      name: arXiv
+    year: 2025
+    doi: 10.48550/arXiv.2510.21368
+  - type: article
+    title: "Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions"
+    authors:
+      - family-names: Goswami
+        given-names: Rohit
+        orcid: "https://orcid.org/0000-0002-2393-8056"
+      - family-names: Masterov
+        given-names: Maxim
+      - family-names: Kamath
+        given-names: Satish
+      - family-names: Peña-Torres
+        given-names: Alejandro
+      - family-names: Jónsson
+        given-names: Hannes
+    journal: "Journal of Chemical Theory and Computation"
+    volume: 21
+    issue: 16
+    start: "7935"
+    end: "7943"
+    year: 2025
+    doi: 10.1021/acs.jctc.5c00866
+  - type: article
+    title: "Adaptive Pruning for Increased Robustness and Reduced Computational Overhead in Gaussian Process Accelerated Saddle Point Searches"
+    authors:
+      - family-names: Goswami
+        given-names: Rohit
+        orcid: "https://orcid.org/0000-0002-2393-8056"
+      - family-names: Jónsson
+        given-names: Hannes
+    journal: "ChemPhysChem"
+    volume: 27
+    issue: 4
+    start: "e202500730"
+    year: 2026
+    doi: 10.1002/cphc.202500730
+  - type: article
+    title: "Enhanced climbing image nudged elastic band method with Hessian eigenmode alignment"
+    authors:
+      - family-names: Goswami
+        given-names: Rohit
+        orcid: "https://orcid.org/0000-0002-2393-8056"
+      - family-names: Gunde
+        given-names: Miha
+      - family-names: Jónsson
+        given-names: Hannes
+    journal: "Frontiers in Chemistry"
+    volume: 14
+    start: "1807063"
+    year: 2026
+    doi: 10.3389/fchem.2026.1807063
+  - type: article
+    title: "Bayesian hierarchical models for quantitative estimates for performance metrics applied to saddle search algorithms"
+    authors:
+      - family-names: Goswami
+        given-names: Rohit
+        orcid: "https://orcid.org/0000-0002-2393-8056"
+    journal: "AIP Advances"
+    volume: 15
+    issue: 8
+    start: "085210"
+    year: 2025
+    doi: 10.1063/5.0283639
+  - type: article
+    title: "A Tutorial Review of Bayesian Optimization with Gaussian Processes to Accelerate Stationary Point Searches"
+    authors:
+      - family-names: Goswami
+        given-names: Rohit
+        orcid: "https://orcid.org/0000-0002-2393-8056"
+    journal: "ACS Physical Chemistry Au"
+    volume: 6
+    issue: 4
+    start: "633"
+    end: "664"
+    year: 2026
+    doi: 10.1021/acsphyschemau.6c00038
+  - type: article
+    title: "Reproducible orchestration of best practices for reaction path optimization with the nudged elastic band"
+    authors:
+      - family-names: Goswami
+        given-names: Rohit
+        orcid: "https://orcid.org/0000-0002-2393-8056"
+    journal: "MethodsX"
+    volume: 16
+    start: "103899"
+    year: 2026
+    doi: 10.1016/j.mex.2026.103899
+  - type: article
+    title: "Two-dimensional RMSD projections for reaction path visualization and validation"
+    authors:
+      - family-names: Goswami
+        given-names: Rohit
+        orcid: "https://orcid.org/0000-0002-2393-8056"
+    journal: "MethodsX"
+    volume: 16
+    start: "103851"
+    year: 2026
+    doi: 10.1016/j.mex.2026.103851
+  - type: article
+    title: "Long time scale kinetic Monte Carlo simulations without lattice approximation and predefined event table"
+    notes: "Older paper."
+    authors:
+      - family-names: Henkelman
+        given-names: Graeme
+      - family-names: Jónsson
+        given-names: Hannes
+    journal: "The Journal of Chemical Physics"
+    volume: 115
+    issue: 21
+    start: "9657"
+    end: "9666"
+    year: 2001
+    doi: 10.1063/1.1415500
+  - type: article
+    title: "Adaptive kinetic Monte Carlo for first-principles accelerated dynamics"
+    notes: "Older paper."
+    authors:
+      - family-names: Xu
+        given-names: Lijun
+      - family-names: Henkelman
+        given-names: Graeme
+    journal: "The Journal of Chemical Physics"
+    volume: 129
+    issue: 11
+    start: "114104"
+    year: 2008
+    doi: 10.1063/1.2976010
+  - type: article
+    title: "Long time scale simulation of a grain boundary in copper"
+    notes: "Older paper."
+    authors:
+      - family-names: Pedersen
+        given-names: Andreas
+      - family-names: Henkelman
+        given-names: Graeme
+      - family-names: Schiøtz
+        given-names: Jakob
+      - family-names: Jónsson
+        given-names: Hannes
+    journal: "New Journal of Physics"
+    volume: 11
+    issue: 7
+    start: "073034"
+    year: 2009
+    doi: 10.1088/1367-2630/11/7/073034
+  - type: article
+    title: "Distributed implementation of the adaptive kinetic Monte Carlo method"
+    notes: "Older paper (EON2)."
+    authors:
+      - family-names: Pedersen
+        given-names: Andreas
+      - family-names: Jónsson
+        given-names: Hannes
+    journal: "Mathematics and Computers in Simulation"
+    volume: 80
+    issue: 7
+    start: "1487"
+    end: "1498"
+    year: 2010
+    doi: 10.1016/j.matcom.2009.02.010
+  - type: article
+    title: "EON: software for long time simulations of atomic scale systems"
+    notes: "Older paper (EON, 2014)."
+    authors:
+      - family-names: Chill
+        given-names: Samuel T.
+      - family-names: Welborn
+        given-names: Matthew
+      - family-names: Terrell
+        given-names: Rye
+      - family-names: Zhang
+        given-names: Liang
+      - family-names: Berthet
+        given-names: Jean-Claude
+      - family-names: Pedersen
+        given-names: Andreas
+      - family-names: Jónsson
+        given-names: Hannes
+      - family-names: Henkelman
+        given-names: Graeme
+    journal: "Modelling and Simulation in Materials Science and Engineering"
+    volume: 22
+    issue: 5
+    start: "055002"
+    year: 2014
+    doi: 10.1088/0965-0393/22/5/055002

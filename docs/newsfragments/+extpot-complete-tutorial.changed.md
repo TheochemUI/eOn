@@ -1,1 +1,1 @@
-Expand the external-potential guide with a complete Pixi setup, a runnable harmonic point example, and CPMD launch, unit-conversion and troubleshooting instructions.
+Expand the external-potential guide with a self-contained Pixi harmonic point example and a runnable CPMD example covering `.env` paths, workstation point and NEB commands, XYZ conversion, cell warnings and explicit unit conversions. The CPMD launcher runs under the Bash 3.2 that macOS ships.
