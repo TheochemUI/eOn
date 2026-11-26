@@ -25,12 +25,15 @@ for (long i = 0; i < nAtoms; i++) {
     builder.add_atom(symbol, x, y, z, is_fixed, atom_id, mass);
 }
 auto frame = builder.build();
-readcon::ConFrameWriter writer(filename, precision);
+readcon::ConFrameWriter writer(filename);
 writer.extend({frame});
 ```
 
-Position precision is 17 digits (matching the previous `%22.17f` format).
-Velocity files use 6-digit precision.
+The client constructs `ConFrameWriter` without a precision argument, so
+positions, velocities and every other value are written as binary64
+round-trip text (readcon-core 0.20): each finite double reads back exactly.
+Passing `precision` selects a fixed number of digits after the decimal
+instead.
 
 Movie-like outputs can also carry structured frame metadata:
 

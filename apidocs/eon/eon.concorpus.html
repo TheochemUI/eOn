@@ -84,6 +84,7 @@ data-aria-dark="Switch to auto color mode">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../team.html">eOn team</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../citing.html">Citing eOn</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../install/eessi.html">Build develop on EESSI</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../install/lammps.html">LAMMPS</a></li>
@@ -360,8 +361,14 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#data">Data</a></li>
 <li><a class="reference internal" href="#api">API</a><ul>
 <li><a class="reference internal" href="#eon.concorpus.logger"><code class="docutils literal notranslate"><span class="pre">logger</span></code></a></li>
-<li><a class="reference internal" href="#eon.concorpus.traj_id"><code class="docutils literal notranslate"><span class="pre">traj_id()</span></code></a></li>
+<li><a class="reference internal" href="#eon.concorpus.blob_id"><code class="docutils literal notranslate"><span class="pre">blob_id()</span></code></a></li>
+<li><a class="reference internal" href="#eon.concorpus.generation_id"><code class="docutils literal notranslate"><span class="pre">generation_id()</span></code></a></li>
 <li><a class="reference internal" href="#eon.concorpus.corpus_dir"><code class="docutils literal notranslate"><span class="pre">corpus_dir()</span></code></a></li>
+<li><a class="reference internal" href="#eon.concorpus.start_generation"><code class="docutils literal notranslate"><span class="pre">start_generation()</span></code></a></li>
+<li><a class="reference internal" href="#eon.concorpus.note_corpus_append"><code class="docutils literal notranslate"><span class="pre">note_corpus_append()</span></code></a></li>
+<li><a class="reference internal" href="#eon.concorpus.flush_corpus_appends"><code class="docutils literal notranslate"><span class="pre">flush_corpus_appends()</span></code></a></li>
+<li><a class="reference internal" href="#eon.concorpus.corpus_buffered_frames"><code class="docutils literal notranslate"><span class="pre">corpus_buffered_frames()</span></code></a></li>
+<li><a class="reference internal" href="#eon.concorpus.generation_frame_texts"><code class="docutils literal notranslate"><span class="pre">generation_frame_texts()</span></code></a></li>
 <li><a class="reference internal" href="#eon.concorpus.mirror_con_text"><code class="docutils literal notranslate"><span class="pre">mirror_con_text()</span></code></a></li>
 <li><a class="reference internal" href="#eon.concorpus.store_frame_text"><code class="docutils literal notranslate"><span class="pre">store_frame_text()</span></code></a></li>
 <li><a class="reference internal" href="#eon.concorpus.load_frame_text"><code class="docutils literal notranslate"><span class="pre">load_frame_text()</span></code></a></li>
@@ -439,6 +446,9 @@ data-aria-dark="Switch to auto color mode">
 trajectory per distinct path plus blob, next to the run when <code class="docutils literal notranslate"><span class="pre">config.ini</span></code>
 is at most eight directories up, otherwise beside the con file. A missing
 <code class="docutils literal notranslate"><span class="pre">readcon_db</span></code> install leaves the con file as the only copy.</p>
+<p>An overwrite of a path starts a generation, a trajectory whose frame 0 is
+the written frame, and later appends extend that trajectory. Compressed
+con files stay out of the corpus.</p>
 <p>A dynamics movie can also ingest each directory of a simulation tree and
 read those frames back with one read-only <code class="docutils literal notranslate"><span class="pre">get_frame_texts</span></code> call. The
 <code class="docutils literal notranslate"><span class="pre">.con</span></code> files remain the store.</p>
@@ -449,11 +459,29 @@ read those frames back with one read-only <code class="docutils literal notransl
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-left">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.concorpus.traj_id" title="eon.concorpus.traj_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">traj_id</span></code></a></p></td>
-<td><p>FNV-1a 64 over the absolute path, a NUL, and the con text.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.concorpus.blob_id" title="eon.concorpus.blob_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">blob_id</span></code></a></p></td>
+<td><p>FNV-1a 64 over the canonical path, a NUL, and the con text.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.concorpus.corpus_dir" title="eon.concorpus.corpus_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">corpus_dir</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.concorpus.generation_id" title="eon.concorpus.generation_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generation_id</span></code></a></p></td>
+<td><p>Trajectory id of one generation of <code class="docutils literal notranslate"><span class="pre">path</span></code> whose frame 0 is <code class="docutils literal notranslate"><span class="pre">first_text</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.concorpus.corpus_dir" title="eon.concorpus.corpus_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">corpus_dir</span></code></a></p></td>
 <td><p>Directory of the LMDB corpus for this con path.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.concorpus.start_generation" title="eon.concorpus.start_generation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start_generation</span></code></a></p></td>
+<td><p>Start the trajectory an overwrite of <code class="docutils literal notranslate"><span class="pre">path</span></code> with one frame <code class="docutils literal notranslate"><span class="pre">text</span></code> begins.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.concorpus.note_corpus_append" title="eon.concorpus.note_corpus_append"><code class="xref py py-obj docutils literal notranslate"><span class="pre">note_corpus_append</span></code></a></p></td>
+<td><p>Buffer one appended frame for the path’s generation. Flush at 64 frames.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.concorpus.flush_corpus_appends" title="eon.concorpus.flush_corpus_appends"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flush_corpus_appends</span></code></a></p></td>
+<td><p>Extend every buffered batch. A crash before this drops at most 63 frames.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.concorpus.corpus_buffered_frames" title="eon.concorpus.corpus_buffered_frames"><code class="xref py py-obj docutils literal notranslate"><span class="pre">corpus_buffered_frames</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.concorpus.generation_frame_texts" title="eon.concorpus.generation_frame_texts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generation_frame_texts</span></code></a></p></td>
+<td><p>Frame texts of the path’s current generation, oldest first.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#eon.concorpus.mirror_con_text" title="eon.concorpus.mirror_con_text"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mirror_con_text</span></code></a></p></td>
 <td><p>Insert one con blob. Identical path-and-text pairs are stored once.</p></td>
@@ -468,7 +496,7 @@ read those frames back with one read-only <code class="docutils literal notransl
 <td><p>Frame text for this path’s current blob, or None when the corpus has no copy.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#eon.concorpus.mirror_con_path" title="eon.concorpus.mirror_con_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mirror_con_path</span></code></a></p></td>
-<td><p>Insert the con file’s current bytes.</p></td>
+<td><p>Insert the con file’s current bytes. A .gz or .zst path is skipped.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#eon.concorpus.directories_with_con" title="eon.concorpus.directories_with_con"><code class="xref py py-obj docutils literal notranslate"><span class="pre">directories_with_con</span></code></a></p></td>
 <td><p>Directories under <code class="docutils literal notranslate"><span class="pre">tree</span></code> that directly contain <code class="docutils literal notranslate"><span class="pre">.con</span></code> or <code class="docutils literal notranslate"><span class="pre">.convel</span></code>.</p></td>
@@ -501,15 +529,65 @@ read those frames back with one read-only <code class="docutils literal notransl
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="eon.concorpus.traj_id">
-<span class="sig-prename descclassname"><span class="pre">eon.concorpus.</span></span><span class="sig-name descname"><span class="pre">traj_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../_modules/eon/concorpus.html#traj_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.concorpus.traj_id" title="Link to this definition">¶</a></dt>
-<dd><p>FNV-1a 64 over the absolute path, a NUL, and the con text.</p>
+<dt class="sig sig-object py" id="eon.concorpus.blob_id">
+<span class="sig-prename descclassname"><span class="pre">eon.concorpus.</span></span><span class="sig-name descname"><span class="pre">blob_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../_modules/eon/concorpus.html#blob_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.concorpus.blob_id" title="Link to this definition">¶</a></dt>
+<dd><p>FNV-1a 64 over the canonical path, a NUL, and the con text.</p>
+<p>Whole-file blobs are keyed by content. The corpus has no replace, so
+a rewrite of a path stores a new blob under a new id, and a reader
+finds the current one from the file’s text. The C++ mirror uses the
+same bytes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.concorpus.generation_id">
+<span class="sig-prename descclassname"><span class="pre">eon.concorpus.</span></span><span class="sig-name descname"><span class="pre">generation_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">generation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../_modules/eon/concorpus.html#generation_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.concorpus.generation_id" title="Link to this definition">¶</a></dt>
+<dd><p>Trajectory id of one generation of <code class="docutils literal notranslate"><span class="pre">path</span></code> whose frame 0 is <code class="docutils literal notranslate"><span class="pre">first_text</span></code>.</p>
+<p>Generation 0 is <code class="docutils literal notranslate"><span class="pre">blob_id(path,</span> <span class="pre">first_text)</span></code>, so the blob an overwrite
+stores is the trajectory its appends extend. The corpus cannot drop
+frames, so an overwrite that repeats the first frame of an extended
+generation takes the next one: FNV-1a 64 over the path, a NUL, the
+text, a NUL and the decimal generation. The C++ mirror uses the same
+bytes.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.concorpus.corpus_dir">
 <span class="sig-prename descclassname"><span class="pre">eon.concorpus.</span></span><span class="sig-name descname"><span class="pre">corpus_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">con_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.15)"><span class="pre">pathlib.Path</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.15)"><span class="pre">pathlib.Path</span></a></span></span><a class="reference internal" href="../../_modules/eon/concorpus.html#corpus_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.concorpus.corpus_dir" title="Link to this definition">¶</a></dt>
 <dd><p>Directory of the LMDB corpus for this con path.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.concorpus.start_generation">
+<span class="sig-prename descclassname"><span class="pre">eon.concorpus.</span></span><span class="sig-name descname"><span class="pre">start_generation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/eon/concorpus.html#start_generation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.concorpus.start_generation" title="Link to this definition">¶</a></dt>
+<dd><p>Start the trajectory an overwrite of <code class="docutils literal notranslate"><span class="pre">path</span></code> with one frame <code class="docutils literal notranslate"><span class="pre">text</span></code> begins.</p>
+<p>Frames still buffered for the previous generation go to it first.
+A generation that holds only this frame is reused. Returns the
+trajectory id, or None when no corpus takes the frame.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.concorpus.note_corpus_append">
+<span class="sig-prename descclassname"><span class="pre">eon.concorpus.</span></span><span class="sig-name descname"><span class="pre">note_corpus_append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/eon/concorpus.html#note_corpus_append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.concorpus.note_corpus_append" title="Link to this definition">¶</a></dt>
+<dd><p>Buffer one appended frame for the path’s generation. Flush at 64 frames.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.concorpus.flush_corpus_appends">
+<span class="sig-prename descclassname"><span class="pre">eon.concorpus.</span></span><span class="sig-name descname"><span class="pre">flush_corpus_appends</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/eon/concorpus.html#flush_corpus_appends"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.concorpus.flush_corpus_appends" title="Link to this definition">¶</a></dt>
+<dd><p>Extend every buffered batch. A crash before this drops at most 63 frames.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.concorpus.corpus_buffered_frames">
+<span class="sig-prename descclassname"><span class="pre">eon.concorpus.</span></span><span class="sig-name descname"><span class="pre">corpus_buffered_frames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../_modules/eon/concorpus.html#corpus_buffered_frames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.concorpus.corpus_buffered_frames" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.concorpus.generation_frame_texts">
+<span class="sig-prename descclassname"><span class="pre">eon.concorpus.</span></span><span class="sig-name descname"><span class="pre">generation_frame_texts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/eon/concorpus.html#generation_frame_texts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.concorpus.generation_frame_texts" title="Link to this definition">¶</a></dt>
+<dd><p>Frame texts of the path’s current generation, oldest first.</p>
+<p>Empty when this process holds no generation for the path or no
+corpus is loaded.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -542,7 +620,7 @@ the displacements section.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.concorpus.mirror_con_path">
 <span class="sig-prename descclassname"><span class="pre">eon.concorpus.</span></span><span class="sig-name descname"><span class="pre">mirror_con_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/eon/concorpus.html#mirror_con_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.concorpus.mirror_con_path" title="Link to this definition">¶</a></dt>
-<dd><p>Insert the con file’s current bytes.</p>
+<dd><p>Insert the con file’s current bytes. A .gz or .zst path is skipped.</p>
 </dd></dl>
 
 <dl class="py function">
