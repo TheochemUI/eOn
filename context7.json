@@ -3,5 +3,35 @@
   "url": "https://context7.com/theochemui/eon",
   "public_key": "pk_gq0VEaRq7MjJWbmNFu1Se",
   "projectTitle": "eOn",
-  "description": "eOn is a software package for modeling the long-time evolution of atomic scale systems using saddle point finding methods, parallel replica dynamics, and kinetic Monte Carlo."
+  "description": "eOn models the long-time evolution of atomic systems: saddle searches, NEB, OCI-NEB, parallel replica dynamics and adaptive kinetic Monte Carlo.",
+  "excludeFolders": [
+    "docs/newsfragments",
+    "docs/old_docs",
+    "docs/source/_extra",
+    "docs/source/_templates",
+    "packages/eon-schema/src/eon_schema/ssot",
+    "benchmarks/data",
+    "client/unit_tests",
+    "bench",
+    "subprojects",
+    "tests",
+    "scripts",
+    "ci",
+    ".github",
+    ".proseguard",
+    "condaEnvs",
+    "nativeFiles"
+  ],
+  "excludeFiles": [
+    "CHANGELOG.md",
+    "CODE_OF_CONDUCT.md",
+    "LICENSE",
+    "CMakeLists.txt",
+    "meson_options.txt",
+    "Deprecated_Docs.org",
+    ".dynamics.txt"
+  ],
+  "rules": [
+    "Install with pixi or conda-forge (eon); see eondocs.org."
+  ]
 }
