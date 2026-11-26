@@ -11,6 +11,13 @@ myst:
 Force call tracking fixed to use the job's potential instance.
 ```
 
+```{versionchanged} 3.6
+For non-periodic systems where every atom is mobile, Lanczos now projects out
+global translations and rotations from the Hessian-vector products and Krylov
+directions. If a projected trial direction is degenerate, Lanczos reseeds from
+the projected subspace with a direction orthogonal to the current Krylov basis.
+```
+
 The Lanczos method determines the lowest curvature mode of the potential energy
 surface using the iterative Lanczos algorithm
 {cite:t}`lcz-malekDynamicsLennardJonesClusters2000`. It is an alternative to
